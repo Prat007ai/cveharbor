@@ -50,7 +50,8 @@ assert.equal(document.querySelectorAll('#chartInsights .chart-insight').length,4
 document.querySelector('[data-chart-period="published30"]').click();
 assert.equal(document.querySelectorAll('#chartInsights .chart-insight').length,4,'chart insights update with period');
 document.querySelector('[data-chart-period="all"]').click();
-assert.match($('heroFeedPulse').textContent,/4 of 4 sources/,'feed status visible');
+assert.equal($('heroFeedSummary'),null,'hero feed banner removed');
+assert.match($('feedStatus').textContent,/Feeds responding/,'feed status remains in footer');
 assert.equal(document.querySelectorAll('.advisory-table thead th').length,6,'no Exploited column');
 assert.match(fs.readFileSync('styles.css','utf8'),/\.advisory-table tbody td::before/,'mobile table labels');
 assert.doesNotMatch(document.querySelector('.advisory-table thead').textContent,/Exploited/i);
