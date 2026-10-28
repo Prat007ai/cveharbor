@@ -16,6 +16,29 @@ class ThreatFeedTests(unittest.TestCase):
         self.assertIn('dshield_scanners',mod.FEEDS)
         self.assertIn('feodo_c2',mod.FEEDS)
         self.assertNotEqual(mod.FEEDS['dshield_scanners'][2],mod.FEEDS['feodo_c2'][2])
+    def test_firewall_exports_create_objects_without_automatic_deny_rules(self):
+        import tempfile
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as folder:
+            report={"checked_at":"2026-10-28T12:00:00Z","sources":{
+                "dshield_scanners":{"ok":True},"feodo_c2":{"ok":True}},
+                "indicators":[
+                    {"ip":"8.8.8.8","source_id":"dshield_scanners"},
+                    {"ip":"1.1.1.1","source_id":"feodo_c2"},
+                    {"ip":"127.0.0.1","source_id":"feodo_c2"}]}
+            with patch.object(mod,"ROOT",Path(folder)):
+                mod.export_templates(report)
+                fortinet=(Path(folder)/"fortigate-threat-ip-objects.txt").read_text()
+                sophos=(Path(folder)/"sophos-threat-ip-api.txt").read_text()
+            self.assertIn("config firewall address",fortinet)
+            self.assertIn("set subnet 8.8.8.8 255.255.255.255",fortinet)
+            self.assertIn('append member "CVEH_8_8_8_8"',fortinet)
+            self.assertNotIn("config firewall policy",fortinet)
+            self.assertIn("<HostType>IPList</HostType>",sophos)
+            self.assertIn("<ListOfIPAddresses>8.8.8.8</ListOfIPAddresses>",sophos)
+            self.assertNotIn("127.0.0.1",sophos)
+            self.assertNotIn("<FirewallRule>",sophos)
+
     def test_does_not_label_collection_time_as_last_seen(self):
         content=(root/'scripts/update_threats.py').read_text()
         self.assertIn('"observed_at":None',content)
