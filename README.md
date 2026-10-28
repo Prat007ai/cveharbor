@@ -25,9 +25,9 @@ This initial implementation is **not exhaustive** across all 15 categories. It i
 ## Install in your personally owned GitHub account
 
 1. Create a **public GitHub repository** called `cveharbor` under your personal GitHub account, not Whitecap's account.
-2. Upload this package including the hidden `.github/workflows/hourly-update.yml` folder to the `main` branch. GitHub Desktop or regular Git is the easiest way to preserve the complete directory structure.
+2. The website source and automated collector are committed to `main`. The hourly job is part of `.github/workflows/bootstrap.yml`, so no separate workflow file is needed.
 3. In the repository, go to **Settings → Pages → Build and deployment → Source → GitHub Actions**.
-4. In **Actions**, select **CVEHarbor hourly advisory sync**, then choose **Run workflow**. The first run will execute unit tests, pull advisories, update the dataset, and deploy GitHub Pages.
+4. In **Actions**, select **CVEHarbor setup and hourly sync**, choose **Run workflow**, check the **deploy** input, and run it on `main`. That run executes unit tests, pulls advisories, updates the dataset, and deploys GitHub Pages. Leave **deploy** unchecked only to rerun the one-time source restore.
 5. Confirm the workflow succeeds, confirm the public Pages preview URL, and verify **Last success** and individual feed status indicators on the page. If GitHub, NVD or CISA blocks a request, the banner must indicate partial or degraded coverage.
 6. For a stable production service, optionally request an NVD API key and store it under **Settings → Secrets and variables → Actions → New repository secret** as `NVD_API_KEY`. Never put API keys in source files. GitHub's automatically generated `GITHUB_TOKEN` is already used for the GitHub advisory API.
 7. Enable GitHub Actions failure notifications in the GitHub account, then add a third-party uptime monitor if you want an independent alert when publication stops.
@@ -61,7 +61,7 @@ Use your actual GitHub username for `www`, leave unrelated MX/TXT records unchan
 
 ## Running and testing locally
 
-You need Python 3.12+ and optional Node.js. The collector uses the standard Python library, without installing third-party packages.
+You need Python 3.12+ and optional Node.js. The collector uses the standard Python library, without installing third-party packages. The hourly schedule and manual deployment entrypoint are configured in `.github/workflows/bootstrap.yml`. GitHub Pages must be enabled first.
 
 ```bash
 python -m unittest discover -s tests -v
