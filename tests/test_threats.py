@@ -26,7 +26,7 @@ class ThreatFeedTests(unittest.TestCase):
                     {"ip":"8.8.8.8","source_id":"dshield_scanners"},
                     {"ip":"1.1.1.1","source_id":"feodo_c2"},
                     {"ip":"127.0.0.1","source_id":"feodo_c2"}]}
-            with patch.object(mod,"ROOT",Path(folder)):
+            with patch.object(mod,"ROOT",Path(folder)), patch.object(mod,"HISTORY",Path(folder)/"data"/"threat-ip-history.json"):
                 mod.export_templates(report)
                 fortinet=(Path(folder)/"fortigate-threat-ip-objects.txt").read_text()
                 sophos=(Path(folder)/"sophos-threat-ip-api.txt").read_text()
@@ -34,8 +34,8 @@ class ThreatFeedTests(unittest.TestCase):
             self.assertIn("set subnet 8.8.8.8 255.255.255.255",fortinet)
             self.assertIn('append member "CVEH_8_8_8_8"',fortinet)
             self.assertNotIn("config firewall policy",fortinet)
-            self.assertIn("<HostType>IPList</HostType>",sophos)
-            self.assertIn("<ListOfIPAddresses>8.8.8.8</ListOfIPAddresses>",sophos)
+            self.assertIn("<HostType>IP</HostType>",sophos)
+            self.assertIn("<IPAddress>8.8.8.8</IPAddress>",sophos)
             self.assertNotIn("127.0.0.1",sophos)
             self.assertNotIn("<FirewallRule>",sophos)
 
