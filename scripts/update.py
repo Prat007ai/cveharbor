@@ -550,7 +550,7 @@ def from_vendor_rss(entry: dict) -> dict | None:
     description = crop(entry.get("summary"), 1200)
     published = datepart(entry.get("published"))
     url = clean_url(entry.get("url"))
-    matches = list(dict.fromkeys(re.findall(r"\\bCVE-\\d{4}-\\d{4,}\\b", title + " " + description, re.I)))
+    matches = list(dict.fromkeys(re.findall(r"\bCVE-\d{4}-\d{4,}\b", title + " " + description, re.I)))
     if not matches or not url or not published:
         return None
     fid = matches[0].upper()
@@ -695,7 +695,7 @@ def wordfence_items() -> list[dict]:
 def from_wordfence(item:dict) -> dict | None:
     ids=item.get("cve") or item.get("cve_id") or ""
     if isinstance(ids,list):ids=" ".join(str(x) for x in ids)
-    match=re.search(r"\\bCVE-\\d{4}-\\d{4,}\\b",str(ids),re.I)
+    match=re.search(r"\bCVE-\d{4}-\d{4,}\b",str(ids),re.I)
     if not match:return None
     fid=match.group(0).upper()
     title=crop(item.get("title") or fid,175)
