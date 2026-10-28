@@ -869,3 +869,26 @@ button.tech-chart-link b{
 .detail-dialog .detail-source-links{margin:10px 0 0;padding:0 0 0 22px;display:grid;gap:7px}
 .detail-dialog .detail-source-links li{font-size:13px;line-height:1.6;overflow-wrap:anywhere}
 .detail-dialog .detail-source-links a{word-break:break-word}
+
+
+/* Read-only public malware sample dialog. Uses the existing vulnerability modal. */
+.malware-entry .malware-detail-trigger{display:inline-flex;align-items:center;justify-content:center;margin-top:8px;border:1px solid #328c86;border-radius:7px;padding:9px 13px;background:#15494b;color:#a3f3e4;font-size:12px;font-weight:750;cursor:pointer;text-align:left}
+.malware-entry .malware-detail-trigger:hover{background:#206269;color:#fff}
+.malware-entry .malware-detail-trigger:focus-visible{outline:2px solid #8eeedc;outline-offset:3px}
+.malware-detail-dialog{max-width:710px}
+.malware-detail-dialog .malware-detail-overline{color:#7be3d4;font-size:11px;font-weight:800;letter-spacing:1.8px;margin:1px 0 10px}
+.malware-detail-dialog h2{padding-right:50px;overflow-wrap:anywhere}
+.malware-detail-dialog .malware-type-badge{display:inline-flex;font-size:11px;margin-bottom:10px}
+.malware-detail-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px 0 23px}
+.malware-detail-fact{min-width:0;border:1px solid #2d4e62;border-radius:8px;background:#112d41;padding:12px 13px}
+.malware-detail-fact dt{font-size:10px;color:#91adbf;margin-bottom:5px}
+.malware-detail-fact dd{margin:0;font-size:13px;color:#ecfaff;font-weight:700;overflow-wrap:anywhere;line-height:1.55}
+.malware-detail-dialog .malware-detail-hash{display:block;color:#b6f4ed;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#071c2b;border:1px solid #345266;border-radius:8px;padding:13px 14px;overflow-wrap:anywhere;white-space:normal;font-size:12px;line-height:1.7}
+.malware-detail-tags{display:flex;gap:8px;flex-wrap:wrap;list-style:none;padding:0;margin:10px 0 18px}
+.malware-detail-tags li{border:1px solid #44627a;background:#123848;border-radius:6px;padding:6px 9px;color:#c5e2ec;font-size:12px;overflow-wrap:anywhere}
+.malware-detail-source{margin:20px 0 13px;padding:12px 15px 16px;background:#102c40;border:1px solid #315467;border-radius:9px}
+.malware-detail-source h3{margin:5px 0 12px}
+.malware-detail-dialog .malware-detail-source-link{display:inline-flex;background:#145057;border:1px solid #328982;border-radius:8px;color:#b7f6e8;text-decoration:none;padding:11px 14px;line-height:1.4;font-size:12px;font-weight:750;word-break:normal}
+.malware-detail-dialog .malware-detail-source-link:hover{background:#1d6569;color:#fff}
+.malware-detail-dialog .disclaimer{padding-top:15px;margin-top:18px}
+@media(max-width:600px){.malware-detail-facts{grid-template-columns:1fr}.malware-detail-dialog .dialog-layout{padding:18px}}
