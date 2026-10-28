@@ -16,7 +16,7 @@ OUT.mkdir()
 
 for name in ('index.html', 'styles.css', 'app.js', 'data.js', 'CNAME', 'robots.txt'):
     shutil.copy2(ROOT / name, OUT / name)
-for name in ('threats.js','threat-data.js'):
+for name in ('threats.js','threat-data.js','fortigate-threat-ip-objects.txt','sophos-threat-ip-api.txt'):
     if (ROOT / name).exists():
         shutil.copy2(ROOT / name, OUT / name)
 # Public snapshot health report is generated on each actual feed refresh.

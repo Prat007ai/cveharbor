@@ -158,6 +158,9 @@ jobs:
           cp data/feed-health.json "$RUNNER_TEMP/cveharbor-health.json"
           cp data.js "$RUNNER_TEMP/cveharbor-data.js"
           if [ -f threat-data.js ]; then cp threat-data.js "$RUNNER_TEMP/cveharbor-threat-data.js"; fi
+          for file in fortigate-threat-ip-objects.txt sophos-threat-ip-api.txt; do
+            if [ -f "$file" ]; then cp "$file" "$RUNNER_TEMP/$file"; fi
+          done
           git config user.name 'cveharbor-updater[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           success=false
@@ -168,8 +171,14 @@ jobs:
             cp "$RUNNER_TEMP/cveharbor-health.json" data/feed-health.json
             cp "$RUNNER_TEMP/cveharbor-data.js" data.js
             if [ -f "$RUNNER_TEMP/cveharbor-threat-data.js" ]; then cp "$RUNNER_TEMP/cveharbor-threat-data.js" threat-data.js; fi
+            for file in fortigate-threat-ip-objects.txt sophos-threat-ip-api.txt; do
+              if [ -f "$RUNNER_TEMP/$file" ]; then cp "$RUNNER_TEMP/$file" "$file"; fi
+            done
             git add data/advisories.json data/feed-health.json data.js
             if [ -f threat-data.js ]; then git add threat-data.js; fi
+            for file in fortigate-threat-ip-objects.txt sophos-threat-ip-api.txt; do
+              if [ -f "$file" ]; then git add "$file"; fi
+            done
             if git diff --cached --quiet; then
               echo "Advisory data is already up to date."
               success=true
