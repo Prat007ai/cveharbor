@@ -3,8 +3,14 @@ name: CVEHarbor setup and hourly sync
 on:
   push:
     paths:
-      - deployment/source.tar.xz.b64
       - .github/workflows/bootstrap.yml
+      - index.html
+      - styles.css
+      - app.js
+      - data/demo-advisories.json
+      - scripts/update.py
+      - scripts/build_site.py
+      - tests/test_update.py
   schedule:
     - cron: '17 * * * *'
   workflow_dispatch:
@@ -27,7 +33,7 @@ concurrency:
 jobs:
   restore:
     name: Restore site files
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.deploy != true)
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy != true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -71,7 +77,7 @@ jobs:
 
   sync:
     name: Collect public advisories and deploy
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true)
+    if: github.event_name == 'push' || github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true)
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -86,6 +92,8 @@ jobs:
           python-version: '3.12'
       - name: Unit tests
         run: python -m unittest discover -s tests -v
+      - name: Validate browser JavaScript
+        run: node --check app.js && node --check data.js
       - name: Fetch advisories
         id: collect
         continue-on-error: true
