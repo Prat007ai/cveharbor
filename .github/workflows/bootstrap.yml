@@ -13,6 +13,8 @@ on:
       - scripts/build_site.py
       - tests/test_update.py
       - scripts/browser_smoke.mjs
+      - scripts/update_threats.py
+      - threats.js
   pull_request:
     paths:
       - .github/workflows/bootstrap.yml
@@ -141,6 +143,10 @@ jobs:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
           WORDFENCE_API_KEY: ${{ secrets.WORDFENCE_API_KEY }}
         run: python scripts/update.py
+      - name: Collect public threat IP indicators
+        id: threat_collect
+        continue-on-error: true
+        run: python scripts/update_threats.py
       - name: Save public data safely if other commits arrived
         shell: bash
         run: |
@@ -151,6 +157,7 @@ jobs:
           cp data/advisories.json "$RUNNER_TEMP/cveharbor-advisories.json"
           cp data/feed-health.json "$RUNNER_TEMP/cveharbor-health.json"
           cp data.js "$RUNNER_TEMP/cveharbor-data.js"
+          if [ -f threat-data.js ]; then cp threat-data.js "$RUNNER_TEMP/cveharbor-threat-data.js"; fi
           git config user.name 'cveharbor-updater[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           success=false
@@ -160,7 +167,9 @@ jobs:
             cp "$RUNNER_TEMP/cveharbor-advisories.json" data/advisories.json
             cp "$RUNNER_TEMP/cveharbor-health.json" data/feed-health.json
             cp "$RUNNER_TEMP/cveharbor-data.js" data.js
+            if [ -f "$RUNNER_TEMP/cveharbor-threat-data.js" ]; then cp "$RUNNER_TEMP/cveharbor-threat-data.js" threat-data.js; fi
             git add data/advisories.json data/feed-health.json data.js
+            if [ -f threat-data.js ]; then git add threat-data.js; fi
             if git diff --cached --quiet; then
               echo "Advisory data is already up to date."
               success=true
