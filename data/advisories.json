@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-28",
   "mode": "live",
   "coverage_limited": false,
-  "candidate_records": 1437,
+  "candidate_records": 1442,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -607,32 +607,145 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-108142",
-      "title": "Veeam Backup & Replication CDP Coordinator authorization bypass",
-      "severity": "critical",
-      "cvss": "9.1",
+      "id": "CVE-2026-111255",
+      "title": "The affiliate-toolkit – Multi-Network Affiliate & Amazon Product Display plugin for WordPress is vulnerable to Arbitrary File Upload in all versions up to, and including, 3.9.",
+      "severity": "high",
       "categories": [
-        "Veeam Backup & Replication"
+        "WordPress / Plugins"
       ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "An unauthenticated attacker can bypass authorization in the CDP Coordinator Service on affected Veeam Backup & Replication version 13 deployments.",
-      "affected": "Veeam Backup & Replication 13.1.1.18 and earlier 13.1 builds, or 13.0.2.29 and earlier 13.0 builds. Vendor states 12.x is not affected.",
-      "remediation": "Install Veeam Backup & Replication 13.1.2.57 or 13.0.3.63, respectively, or a newer fixed build. Validate backup infrastructure exposure.",
-      "exploitation": "No confirmed exploitation indicated in the cited vendor bulletin.",
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The affiliate-toolkit – Multi-Network Affiliate & Amazon Product Display plugin for WordPress is vulnerable to Arbitrary File Upload in all versions up to, and including, 3.9.2 via the upload_image function. This is due to insufficient file type validation in upload_image due to a weak Content-Type prefix check and extension derivation from the attacker-controlled URL path, with no dangerous-extension stripping. This makes it possible for authenticated attackers, with contributor-level access and above, to upload files that may be executable, which makes remote code execution possible. Exploitation requires the \"import product image\" option to be enabled in the plugin settings, as this activates the image download pipeline triggered on product post save.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
       "sources": [
         {
-          "label": "Veeam Security KB4948",
-          "url": "https://www.veeam.com/kb4948"
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111255"
         }
       ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-27",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation."
+      "cvss": "7.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T04:56:55Z",
+      "source_updated_at": "2026-10-28T04:17:56.390",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-111727",
+      "title": "The Appointment Booking Calendar plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'vs_text_submitbtn' parameter in all versions up to, and including, ",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Appointment Booking Calendar plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'vs_text_submitbtn' parameter in all versions up to, and including, 1.4.05 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with subscriber-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. This requires the attacker to be assigned as a calendar owner, a per-user grant that any administrator can extend to users as low as Subscriber level through the plugin's calendar list screen. Exploitation by attackers with subscriber-level access and above requires that an administrator has assigned the attacker's account as owner (`conwer`) of a calendar via the plugin's calendar list screen; the plugin's UI lists all registered users regardless of role, so a Subscriber can be assigned. On a default installation, where that is not configured, the vulnerability requires attackers with editor-level access and above.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111727"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T04:56:55Z",
+      "source_updated_at": "2026-10-28T04:17:57.220",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116613",
+      "title": "The Animated Text Block plugin for WordPress is vulnerable to Sensitive Information Exposure in versions up to, and including, 1.2.6 via the 'animated-text' shortcode",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Animated Text Block plugin for WordPress is vulnerable to Sensitive Information Exposure in versions up to, and including, 1.2.6 via the 'animated-text' shortcode. This is due to the atb_shortcode_handler() function fetching an arbitrary post by attacker-supplied ID and, in the 'publish' branch, calling displayContent() with no capability check and no validation that the post's post_type is the plugin's own CPT or is otherwise viewable (is_post_type_viewable()). This makes it possible for authenticated attackers, with Contributor-level access and above, to read the rendered block content of any published post, including posts of non-public custom post types (public=false, show_in_rest=false) that WordPress would otherwise hide from direct URLs and the REST API.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116613"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T04:56:55Z",
+      "source_updated_at": "2026-10-28T04:17:57.390",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-1928",
+      "title": "The Rank Math SEO – AI SEO Tools to Dominate SEO Rankings plugin for WordPress is vulnerable to PHP Object Injection in all versions up to, and including, 1.0.276 via deserial",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins",
+        "PHP"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Rank Math SEO – AI SEO Tools to Dominate SEO Rankings plugin for WordPress is vulnerable to PHP Object Injection in all versions up to, and including, 1.0.276 via deserialization of untrusted input in the updateMeta REST API endpoint. This makes it possible forauthenticated attackers, with Contributor-level access and above, to inject a PHP Object. The additional presence of a POP chain allows attackers to achieve remote code execution by writing a webshell to the uploads directory.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-1928"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T04:56:55Z",
+      "source_updated_at": "2026-10-28T04:18:02.320",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-99100",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: wifi: p54: validate firmware record lengths The p54 firmware parser accesses component ID and component ver",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: wifi: p54: validate firmware record lengths The p54 firmware parser accesses component ID and component version records without checking that their lengths cover the fields being read. A malformed record can therefore make the parser read past the record. Validate the component ID and component version record lengths before accessing their data. The descriptor record is also checked against the shortest descriptor length found in the supported firmware images. Reject descriptor values that underflow the RX offset or produce an empty RX range before updating the driver state.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99100"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T04:56:55Z",
+      "source_updated_at": "2026-10-28T04:18:07.417",
+      "source_type": "nvd",
+      "known_exploited": false
     },
     {
       "id": "CVE-2026-105477",
@@ -657,6 +770,34 @@
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-105477"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-27",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
+    },
+    {
+      "id": "CVE-2026-108142",
+      "title": "Veeam Backup & Replication CDP Coordinator authorization bypass",
+      "severity": "critical",
+      "cvss": "9.1",
+      "categories": [
+        "Veeam Backup & Replication"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-27",
+      "summary": "An unauthenticated attacker can bypass authorization in the CDP Coordinator Service on affected Veeam Backup & Replication version 13 deployments.",
+      "affected": "Veeam Backup & Replication 13.1.1.18 and earlier 13.1 builds, or 13.0.2.29 and earlier 13.0 builds. Vendor states 12.x is not affected.",
+      "remediation": "Install Veeam Backup & Replication 13.1.2.57 or 13.0.3.63, respectively, or a newer fixed build. Validate backup infrastructure exposure.",
+      "exploitation": "No confirmed exploitation indicated in the cited vendor bulletin.",
+      "sources": [
+        {
+          "label": "Veeam Security KB4948",
+          "url": "https://www.veeam.com/kb4948"
         }
       ],
       "kind": "cve",
@@ -11709,6 +11850,95 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-109619",
+      "title": "RCE via stale global state",
+      "severity": "critical",
+      "categories": [
+        "PHP",
+        "React / Next.js"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-28",
+      "summary": "## Summary PHP contains various global state, such as error, session, object and extension state that is retained by a worker but points to memory owned by one request. That state must be reset before the request memory is released. Some input, configuration, session and error handling operations run before normal initialization of the next request. They inadvertently access stale state not reset by the previous request before initialization has a chance to replace it, causing a use after free. A strategically crafted heap layout can produce full remote code execution (RCE). State can survive for more than one reason. A fatal error, including one caused by memory exhaustion, can abandon an operation before it performs its matching reset. A warning or other nonfatal diagnostic can also repopulate error state after that state was already cleared during shutdown. The request heap is then freed while the worker global field still refers to it. A later operation that runs before normal request initialization can consume the stale value. Successful exploitation of this vulnerability requires both a producer and a consumer. The producer is a PHP operation that stores state owned by one request in a location PHP can access later in a subsequent request. The consumer is a subsequent PHP o",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-6wmf-4rv5-p3rp"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:13Z",
+      "source_type": "php_upstream",
+      "known_exploited": true
+    },
+    {
+      "id": "CVE-2026-109618",
+      "title": "RCE via OOM corruption",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-28",
+      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:25Z",
+      "source_type": "php_upstream",
+      "known_exploited": true
+    },
+    {
       "id": "CVE-2026-113790",
       "title": "pypdf is a free and open-source pure-python PDF library",
       "severity": "medium",
@@ -12084,95 +12314,6 @@
       "source_updated_at": "2026-10-28T02:17:06.110",
       "source_type": "nvd",
       "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-109618",
-      "title": "RCE via OOM corruption",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-27",
-      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "PHP upstream security advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:25Z",
-      "source_type": "php_upstream",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2026-109619",
-      "title": "RCE via stale global state",
-      "severity": "critical",
-      "categories": [
-        "PHP",
-        "React / Next.js"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-27",
-      "summary": "## Summary PHP contains various global state, such as error, session, object and extension state that is retained by a worker but points to memory owned by one request. That state must be reset before the request memory is released. Some input, configuration, session and error handling operations run before normal initialization of the next request. They inadvertently access stale state not reset by the previous request before initialization has a chance to replace it, causing a use after free. A strategically crafted heap layout can produce full remote code execution (RCE). State can survive for more than one reason. A fatal error, including one caused by memory exhaustion, can abandon an operation before it performs its matching reset. A warning or other nonfatal diagnostic can also repopulate error state after that state was already cleared during shutdown. The request heap is then freed while the worker global field still refers to it. A later operation that runs before normal request initialization can consume the stale value. Successful exploitation of this vulnerability requires both a producer and a consumer. The producer is a PHP operation that stores state owned by one request in a location PHP can access later in a subsequent request. The consumer is a subsequent PHP o",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "PHP upstream security advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-6wmf-4rv5-p3rp"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:13Z",
-      "source_type": "php_upstream",
-      "known_exploited": true
     },
     {
       "id": "CVE-2026-114048",
@@ -14678,64 +14819,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation."
-    },
-    {
-      "id": "CVE-2026-70188",
-      "title": "ASP.NET Core HTTP/2 Kestrel request desynchronization",
-      "severity": "critical",
-      "cvss": "9.1",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "Kestrel accepts newline characters in HTTP/2 trailers or dynamic HPACK table values when it should reject malformed headers, allowing potential HTTP request desynchronization and a security feature bypass.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12, and .NET 11 prereleases through RC1.",
-      "remediation": "Fixed initially in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Install the newer supported October 25 releases where applicable (8.0.33, 9.0.22, 10.0.14, RC3).",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core HTTP/2 security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-fpq8-4vhr-rcxx"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation."
-    },
-    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -14808,6 +14891,64 @@
       "status": "Vendor-sourced historical baseline; not newly disclosed",
       "first_seen_at": "2026-10-28T01:29:29Z",
       "known_exploited": true,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
+    },
+    {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
+    },
+    {
+      "id": "CVE-2026-70188",
+      "title": "ASP.NET Core HTTP/2 Kestrel request desynchronization",
+      "severity": "critical",
+      "cvss": "9.1",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "Kestrel accepts newline characters in HTTP/2 trailers or dynamic HPACK table values when it should reject malformed headers, allowing potential HTTP request desynchronization and a security feature bypass.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12, and .NET 11 prereleases through RC1.",
+      "remediation": "Fixed initially in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Install the newer supported October 25 releases where applicable (8.0.33, 9.0.22, 10.0.14, RC3).",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core HTTP/2 security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-fpq8-4vhr-rcxx"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
@@ -45020,34 +45161,34 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-28T04:08:38Z",
-      "last_attempt": "2026-10-28T04:08:38Z",
+      "last_success": "2026-10-28T04:56:55Z",
+      "last_attempt": "2026-10-28T04:56:55Z",
       "items_processed": 273,
       "url": "https://api.github.com/advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-28T04:08:38Z",
-      "last_attempt": "2026-10-28T04:08:38Z",
-      "items_processed": 254,
+      "last_success": "2026-10-28T04:56:55Z",
+      "last_attempt": "2026-10-28T04:56:55Z",
+      "items_processed": 258,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-28T04:08:38Z",
-      "last_attempt": "2026-10-28T04:08:38Z",
+      "last_success": "2026-10-28T04:56:55Z",
+      "last_attempt": "2026-10-28T04:56:55Z",
       "items_processed": 482,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-28T04:08:38Z",
-      "last_attempt": "2026-10-28T04:08:38Z",
+      "last_success": "2026-10-28T04:56:55Z",
+      "last_attempt": "2026-10-28T04:56:55Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     }
   },
-  "last_checked_at": "2026-10-28T04:08:38Z",
-  "last_successful_update": "2026-10-28T04:08:38Z",
+  "last_checked_at": "2026-10-28T04:56:55Z",
+  "last_successful_update": "2026-10-28T04:56:55Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
