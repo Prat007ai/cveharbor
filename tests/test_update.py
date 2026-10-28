@@ -406,6 +406,20 @@ class FeedTests(unittest.TestCase):
         react=next(a for a in data['advisories'] if a['id']=='GHSA-xqc2-xf4c-x3h3')
         self.assertEqual('advisory',react['kind'])
 
+    def test_ten_advisory_preview_cards_and_layout(self):
+        html=(root/'index.html').read_text(encoding='utf-8')
+        js=(root/'app.js').read_text(encoding='utf-8')
+        css=(root/'styles.css').read_text(encoding='utf-8')
+        self.assertIn('const PAGE_SIZE = 10',js)
+        self.assertIn('const TABLE_PAGE_SIZE = 25',js)
+        self.assertIn('selected.slice(0,visibleCount)',js)
+        self.assertIn("text('p','card-summary',x.summary)",js)
+        self.assertIn('Show 10 more',html)
+        self.assertIn('ten-card-grid-1',html)
+        self.assertIn('grid-template-columns:repeat(5,minmax(0,1fr))',css)
+        self.assertIn('-webkit-line-clamp:6',css)
+        self.assertIn('block(\'Description\',x.summary)',js)
+
     def test_url_rejection(self):
         self.assertFalse(u.clean_url('javascript:alert(1)'))
         self.assertFalse(u.clean_url('http://example.org'))
