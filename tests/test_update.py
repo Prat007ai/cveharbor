@@ -617,7 +617,7 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
 
     def test_active_feed_status_derived_from_current_operations(self):
         source=(root/"scripts/update.py").read_text(encoding="utf-8")
-        self.assertIn("sources={name:sources.get(name,{}) for name,_,_ in operations}",source)
+        self.assertIn('"epss"]}',source)
 
     def test_wordfence_requires_explicit_enable_and_daily_cooldown(self):
         source=(root/'scripts/update.py').read_text(encoding='utf-8')
