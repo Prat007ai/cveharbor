@@ -1,5 +1,8 @@
 import importlib.util
 import unittest
+import json
+import subprocess
+import sys
 from pathlib import Path
 root=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('updater',root/'scripts/update.py')
@@ -104,6 +107,24 @@ class FeedTests(unittest.TestCase):
             self.assertIn(item['categories'][0],[x['name'] for x in u.CATEGORIES])
             self.assertEqual(item['source_type'],'vendor_baseline')
             self.assertEqual(item['status'],'Vendor-sourced historical baseline; not newly disclosed')
+    def test_public_site_build_contains_vendor_catalog(self):
+        result = subprocess.run([sys.executable,str(root/'scripts/build_site.py')],cwd=root,
+                                capture_output=True,text=True,check=True)
+        exported = root/'public'/'catalog.js'
+        self.assertTrue(exported.exists(),result.stdout + result.stderr)
+        body=exported.read_text(encoding='utf-8')
+        self.assertTrue(body.startswith('window.CVEHARBOR_CATALOG = '))
+        obj=json.loads(body.partition(' = ')[2].rstrip('\\n;'))
+        self.assertEqual(25,len(obj['categories']))
+        for name in ('Progress Telerik','Sitefinity','Veeam Backup & Replication',
+                     'Sophos Firewall','Windows 11 OS','Exchange SE'):
+            self.assertIn(name,[c['name'] for c in obj['categories']])
+        self.assertGreaterEqual(len(obj['advisories']),8)
+        self.assertIn('CVE-2026-13185',[x['id'] for x in obj['advisories']])
+    def test_site_places_source_health_after_main(self):
+        html=(root/'index.html').read_text(encoding='utf-8')
+        self.assertGreater(html.index('id="feedHeadline"'),html.index('</main>'))
+        self.assertIn('catalog.js?v=',html)
     def test_pip_classification(self):
         self.assertIn('Python / PyPI',u.classify(product='hydra-core',ecosystem='pip'))
         self.assertIn('Application dependencies',u.classify(product='hydra-core',ecosystem='pip'))
