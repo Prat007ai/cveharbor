@@ -8,7 +8,7 @@
   <meta property="og:title" content="CVEHarbor | Know the risk. Find the fix.">
   <meta property="og:description" content="Vulnerability advisories, severity dashboards, affected versions, vendor sources and remediation guidance.">
   <title>CVEHarbor | Vulnerability Intelligence</title>
-  <link rel="stylesheet" href="styles.css?v=technology-chart-links-1">
+  <link rel="stylesheet" href="styles.css?v=new-disclosures-1">
 </head>
 <body>
   <a class="skip-link" href="#advisories">Skip to advisories</a>
@@ -48,13 +48,13 @@
     <section id="dashboard" class="shell section" aria-labelledby="overviewTitle">
       <div class="section-heading"><div><p class="eyebrow">OVERVIEW</p><h2 id="overviewTitle">Vulnerability intelligence at a glance</h2><p class="section-sub">Summary totals include all indexed advisories. Use the date filter to see newly published CVEs. These counts do not represent vulnerabilities on your infrastructure.</p></div><div class="section-side">HOURLY COLLECTION <span class="small-star">✦</span> OPEN SOURCES</div></div>
       <div class="metric-grid">
-        <button class="metric metric-action" type="button" data-metric="all" aria-label="View the full list of indexed CVEs" aria-controls="advisories"><span class="metric-top"><span>Unique CVEs</span><span class="metric-symbol">◎</span></span><strong id="statTotal">0</strong><span class="metric-desc">Click to view all indexed CVEs ↗</span><span class="metric-line blue"></span></button>
+        <button class="metric metric-action" type="button" data-metric="all" aria-label="View the full list of indexed CVEs" aria-controls="advisories"><span class="metric-top"><span>Indexed CVEs</span><span class="metric-symbol">◎</span></span><strong id="statTotal">0</strong><span class="metric-desc">Click to view all indexed CVEs ↗</span><span class="metric-line blue"></span></button>
         <button class="metric metric-action" type="button" data-metric="critical" aria-label="View all critical CVEs" aria-controls="advisories"><span class="metric-top"><span>Critical findings</span><span class="metric-symbol critical-text">◈</span></span><strong id="statCritical">0</strong><span class="metric-desc">Click to view all critical CVEs ↗</span><span class="metric-line red"></span></button>
         <button class="metric metric-action" type="button" data-metric="high" aria-label="View all high severity CVEs" aria-controls="advisories"><span class="metric-top"><span>High findings</span><span class="metric-symbol high-text">△</span></span><strong id="statHigh">0</strong><span class="metric-desc">Click to view all high CVEs ↗</span><span class="metric-line amber"></span></button>
         <button class="metric metric-action" type="button" data-metric="technologies" aria-label="Browse all technology categories" aria-controls="technology"><span class="metric-top"><span>Technology areas</span><span class="metric-symbol">▤</span></span><strong id="statCategories">25</strong><span class="metric-desc">Browse all technology groups ↗</span><span class="metric-line mint"></span></button>
       </div>
       <div class="analytics-grid">
-        <article class="data-panel"><div class="panel-heading"><div><h3>Vulnerabilities by technology</h3><p>Select a technology bar to view its full list of matching CVEs</p></div><span class="mini-label" id="chartDateLabel">INDEXED RECORDS</span></div><div id="techBars" class="tech-bars"></div><div class="chart-note">This chart shows new disclosures from the last 30 days, not older CVEs modified recently. The summary above covers the full indexed archive.</div></article>
+        <article class="data-panel"><div class="panel-heading"><div><h3>New disclosures by technology</h3><p>CVEs originally published in the last 30 days. Select a bar to view them.</p></div><span class="mini-label" id="chartDateLabel">INDEXED RECORDS</span></div><div id="techBars" class="tech-bars"></div><div class="chart-note">This chart shows new disclosures from the last 30 days, not older CVEs modified recently. The summary above covers the full indexed archive.</div></article>
         <article class="data-panel right-panel"><div class="panel-heading"><div><h3>Focus areas</h3><p>Where to start reviewing</p></div><span class="mini-label">REVIEW PRIORITIES</span></div><div id="priorityList" class="focus-list"></div><a class="quiet-link" href="#advisories">See all findings <span aria-hidden="true">↗</span></a></article>
       </div>
     </section>
@@ -97,6 +97,6 @@
     <div class="shell footer-status"><div class="notice" role="status"><span class="notice-icon">i</span><div><span class="preview-status" id="feedStatus"><span class="status-dot"></span> Starting feed...</span> <b id="feedHeadline">Feed startup required.</b> <span id="feedDescription">No hourly sync has completed. Counts shown here are not evidence that monitored technologies are safe.</span><div id="sourceHealth" class="source-health" aria-label="Feed source status"></div></div><span class="notice-date" id="snapshotDate">Last success: Never</span></div></div>
   </footer>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=freshness-2"></script>
+  <script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=new-disclosures-1"></script>
 </body>
 </html>
