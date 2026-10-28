@@ -3,7 +3,7 @@
   const state = { q: '', severity: 'all', tech: 'all' };
   const PAGE_SIZE = 6;
   const TABLE_PAGE_SIZE = 25;
-  const isCVE = x => /^CVE-\\d{4}-\\d+$/i.test(x.id);
+  const isCVE = x => /^CVE-\d{4}-\d+$/i.test(x.id);
   let visibleCount = PAGE_SIZE;
   let tablePage = 0;
   let listMode = 'cards';
