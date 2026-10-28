@@ -29,7 +29,7 @@ for entry in baseline['advisories']:
         raise ValueError(f"Invalid dated vendor advisory: {entry.get('id')}")
     record = {
         **entry,
-        'kind': 'cve',
+        'kind': 'cve' if str(entry.get('id','')).startswith('CVE-') else 'advisory',
         'source_type': 'vendor_baseline',
         'status': 'Historical vendor advisory (not a new disclosure)',
         'known_exploited': bool(entry.get('known_exploited', False)),
