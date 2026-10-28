@@ -8,7 +8,7 @@
   <meta property="og:title" content="CVEHarbor | Know the risk. Find the fix.">
   <meta property="og:description" content="Vulnerability advisories, severity dashboards, affected versions, vendor sources and remediation guidance.">
   <title>CVEHarbor | Vulnerability Intelligence</title>
-  <link rel="stylesheet" href="styles.css?v=tech-date-badges-1">
+  <link rel="stylesheet" href="styles.css?v=site-audit-3">
 </head>
 <body>
   <a class="skip-link" href="#advisories">Skip to advisories</a>
@@ -31,6 +31,7 @@
           <h1 id="heroTitle">Know the risk.<br><em>Find the fix.</em></h1>
           <p>Clear, useful vulnerability intelligence for the technologies you rely on. Discover verified advisories, understand exposure, and find the right patch without digging through dozens of sources.</p>
           <div class="hero-actions"><a href="#advisories" class="primary-btn">Explore advisories <span aria-hidden="true">↗</span></a><a href="#technology" class="ghost-btn">Browse technologies <span aria-hidden="true">→</span></a></div>
+          <div class="hero-feed-status" id="heroFeedSummary" role="status" aria-live="polite"><span id="heroFeedPulse">Checking source status</span><span id="heroFeedAge">Data freshness will appear here.</span></div>
         </div>
         <div class="hero-visual" aria-label="Security intelligence site status">
           <div class="orb orb-one"></div><div class="orb orb-two"></div>
@@ -72,19 +73,19 @@
           <div class="tech-chart-empty" id="chartNoRecords" hidden>No indexed advisories match this reporting period. Select All indexed for older records.</div>
           <div id="techBars" class="tech-bars"></div>
           <button type="button" class="tech-chart-showall" id="chartShowAll">Show all 38 technologies</button><div class="chart-note">All indexed includes historical records. New in 30 days uses original publication dates. Provider data may be incomplete during a source outage; zero means no indexed match, not a confirmed absence of vulnerabilities.</div></article>
-        <article class="data-panel right-panel"><div class="panel-heading"><div><h3>Focus areas</h3><p>Where to start reviewing</p></div><span class="mini-label">REVIEW PRIORITIES</span></div><div id="priorityList" class="focus-list"></div><a class="quiet-link" href="#advisories">See all findings <span aria-hidden="true">↗</span></a></article>
+        <article class="data-panel right-panel"><div class="panel-heading"><div><h3>Focus areas</h3><p>Recent high impact disclosures, confirmed exploitation and important updates. Select an item to see its details.</p></div><span class="mini-label">UP TO 9 ITEMS</span></div><div id="priorityList" class="focus-list"></div><a class="quiet-link" href="#advisories">See all findings <span aria-hidden="true">↗</span></a></article>
       </div>
     </section>
     <section id="advisories" class="shell section" aria-labelledby="advisoryTitle">
       <div class="section-heading"><div><p class="eyebrow">SECURITY ADVISORIES</p><h2 id="advisoryTitle">Explore published advisories</h2><p class="section-sub">Browse newly disclosed advisories first. Switch to Updated or Full archive to see older CVEs.</p></div><span class="result-pill" id="resultCount">0 advisories</span></div>
-      <div class="finder"><label class="searchbox"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Search CVE, software, issue or version..." autocomplete="off" aria-label="Search vulnerabilities"></label><label class="selectbox"><span>Severity</span><select id="severity" aria-label="Filter severity"><option value="all">All severities</option><option value="critical">Critical</option><option value="high">High</option><option value="medium">Medium</option><option value="bulletin">Security bulletins</option></select></label><label class="selectbox"><span>Disclosure period</span><select id="dateRange" aria-label="Filter vulnerability disclosure or update date"><option value="published30" selected>New in last 30 days</option><option value="today">Published today</option><option value="yesterday">Published yesterday</option><option value="twoDays">Published 2 days ago</option><option value="published7">New in last 7 days</option><option value="updated7">Updated in last 7 days</option><option value="all">Full archive</option></select></label><label class="selectbox"><span>Technology</span><select id="technologyFilter" aria-label="Filter technology"><option value="all">All technologies</option></select></label><button class="reset-btn" type="button" id="clearFilters">Clear</button></div>
+      <div class="finder"><label class="searchbox"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Search CVE, software, issue or version..." autocomplete="off" aria-label="Search vulnerabilities"></label><label class="selectbox"><span>Severity</span><select id="severity" aria-label="Filter severity"><option value="all">All severities</option><option value="critical">Critical</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option><option value="bulletin">Security bulletins</option></select></label><label class="selectbox"><span>Disclosure period</span><select id="dateRange" aria-label="Filter vulnerability disclosure or update date"><option value="published30" selected>New in last 30 days</option><option value="today">Published today</option><option value="yesterday">Published yesterday</option><option value="twoDays">Published 2 days ago</option><option value="published7">New in last 7 days</option><option value="updated7">Updated in last 7 days</option><option value="all">Full archive</option></select></label><label class="selectbox"><span>Technology</span><select id="technologyFilter" aria-label="Filter technology"><option value="all">All technologies</option></select></label><button class="reset-btn" type="button" id="clearFilters">Clear</button></div>
       <div class="advisory-view-tools" role="group" aria-label="Advisory display mode">
         <div class="view-title"><strong id="listContext">Latest indexed advisories</strong><span>Red pulsing labels identify original disclosure dates: Today, Yesterday, or within the last three Toronto calendar days. An advisory updated today is not necessarily newly disclosed.</span></div>
         <div class="view-switch"><button id="cardViewBtn" type="button" class="view-choice is-active" aria-pressed="true">Card preview</button><button id="listViewBtn" type="button" class="view-choice" aria-pressed="false">Full list</button></div>
       </div>
       <div class="advisory-table-wrap" id="advisoryTableWrap" hidden>
         <table class="advisory-table" aria-label="Full vulnerability advisory list">
-          <thead><tr><th scope="col">CVE / Advisory</th><th scope="col">Severity</th><th scope="col">Affected technology</th><th scope="col">Description</th><th scope="col">Published</th><th scope="col">Exploited</th><th scope="col">Details</th></tr></thead>
+          <thead><tr><th scope="col">CVE / Advisory</th><th scope="col">Severity</th><th scope="col">Affected technology</th><th scope="col">Description</th><th scope="col">Published</th><th scope="col">Details</th></tr></thead>
           <tbody id="advisoryTableBody"></tbody>
         </table>
       </div>
@@ -114,6 +115,6 @@
     <div class="shell footer-status"><div class="notice feed-notice" role="status"><span class="notice-icon" aria-hidden="true">i</span><div class="feed-notice-content"><div class="feed-status-heading"><span class="preview-status" id="feedStatus"><span class="status-dot"></span> Starting feed...</span><strong id="feedHeadline">Feed startup required.</strong></div><p id="feedDescription">No hourly sync has completed. Counts shown here are not evidence that monitored technologies are safe.</p><div id="sourceHealth" class="source-health" aria-label="Feed source status"></div></div><span class="notice-date" id="snapshotDate">Last success: Never</span></div></div>
   </footer>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=tech-date-badges-1"></script>
+  <script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=site-audit-3"></script>
 </body>
 </html>

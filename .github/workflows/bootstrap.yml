@@ -12,6 +12,15 @@ on:
       - scripts/update.py
       - scripts/build_site.py
       - tests/test_update.py
+  pull_request:
+    paths:
+      - .github/workflows/bootstrap.yml
+      - index.html
+      - styles.css
+      - app.js
+      - scripts/update.py
+      - scripts/build_site.py
+      - tests/test_update.py
   schedule:
     - cron: '17 * * * *'
   workflow_dispatch:
@@ -32,6 +41,22 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  verify:
+    name: Test proposed website changes
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit and integration tests
+        run: python -m unittest discover -s tests -v
+      - name: Validate JavaScript
+        run: node --check app.js && node --check data.js
+      - name: Verify public build
+        run: python scripts/build_site.py
+
   restore:
     name: Restore site files
     if: github.event_name == 'workflow_dispatch' && inputs.deploy != true
@@ -78,7 +103,7 @@ jobs:
 
   sync:
     name: Collect public advisories and deploy
-    if: github.event_name == 'push' || github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true)
+    if: (github.ref == 'refs/heads/main') && (github.event_name == 'push' || github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true))
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -96,7 +121,6 @@ jobs:
       - name: Validate browser JavaScript
         run: node --check app.js && node --check data.js
       - name: Fetch advisories
-        if: github.event_name != 'push'
         id: collect
         continue-on-error: true
         env:
@@ -104,7 +128,6 @@ jobs:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: python scripts/update.py
       - name: Save public data safely if other commits arrived
-        if: github.event_name != 'push'
         shell: bash
         run: |
           set -euo pipefail
@@ -112,6 +135,7 @@ jobs:
           # Retain the generated data, sync to the latest main, and retry
           # optimistic pushes. Never force push or discard other changes.
           cp data/advisories.json "$RUNNER_TEMP/cveharbor-advisories.json"
+          cp data/feed-health.json "$RUNNER_TEMP/cveharbor-health.json"
           cp data.js "$RUNNER_TEMP/cveharbor-data.js"
           git config user.name 'cveharbor-updater[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -120,8 +144,9 @@ jobs:
             git fetch --no-tags origin main
             git reset --hard origin/main
             cp "$RUNNER_TEMP/cveharbor-advisories.json" data/advisories.json
+            cp "$RUNNER_TEMP/cveharbor-health.json" data/feed-health.json
             cp "$RUNNER_TEMP/cveharbor-data.js" data.js
-            git add data/advisories.json data.js
+            git add data/advisories.json data/feed-health.json data.js
             if git diff --cached --quiet; then
               echo "Advisory data is already up to date."
               success=true
@@ -150,8 +175,19 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Flag incomplete source collection
+        if: always() && steps.collect.outcome == 'success'
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report=json.loads(Path('data/feed-health.json').read_text())
+          if report.get('mode') != 'live':
+              raise SystemExit('One or more vulnerability sources failed: ' + str(report.get('sources')))
+          print('All configured vulnerability feeds responded during this collection.')
+          PY
       - name: Flag failed source collection
-        if: github.event_name != 'push' && steps.collect.outcome == 'failure'
+        if: always() && steps.collect.outcome == 'failure'
         run: |
           echo 'Source collection failed; do not assume this dashboard is current.' >&2
           exit 1

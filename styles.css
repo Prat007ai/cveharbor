@@ -516,3 +516,35 @@ button.tech-chart-link b{
   .technology-age-badge{font-size:9px}
 }
 @media(prefers-reduced-motion:reduce){.technology-age-badge.today{animation:none}}
+
+/* Focus areas are actionable, source-grounded advisory shortcuts. */
+.focus-list{display:grid;gap:3px;margin:13px 0}
+.focus.focus-action{
+  width:100%;display:grid;grid-template-columns:36px minmax(0,1fr);align-items:start;
+  gap:11px;background:transparent;border:0;border-bottom:1px solid #213b50;
+  border-radius:7px;padding:11px 5px;text-align:left;color:inherit;cursor:pointer;font:inherit;
+}
+.focus.focus-action:hover{background:#143348}
+.focus.focus-action:focus-visible{outline:2px solid var(--aqua);outline-offset:-2px}
+.focus-action .rank{width:33px;height:33px;border-radius:7px}
+.focus-content{display:block;min-width:0}
+.focus-top{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:5px}
+.focus-group{font-size:9px;text-transform:uppercase;letter-spacing:.6px;font-weight:800;color:#8de6d6}
+.focus-top .severity-badge{font-size:9px;padding:3px 6px}
+.focus-kev{background:#5d3040;color:#ffc5ce;border-radius:5px;padding:3px 6px;font-size:9px;font-weight:750}
+.focus-action .focus-title{font-size:12px;line-height:1.4;display:block;color:#eaf5fb;margin-bottom:4px}
+.focus-action .focus-meta{font-size:10px;color:#9fb8cb;line-height:1.5;display:block}
+.severity-badge.low{background:#21413e;color:#a8e3cf}
+.right-panel .panel-heading{align-items:flex-start}
+.right-panel .panel-heading p{max-width:370px;line-height:1.5}
+
+/* Report actual collector freshness near the top instead of only in the footer. */
+.hero-feed-status{
+  margin-top:23px;display:flex;align-items:center;gap:8px 15px;flex-wrap:wrap;
+  color:#baf4e4;font-size:11px;line-height:1.55;
+}
+.hero-feed-status>span:first-child{
+  padding:6px 10px;background:#123d42;border:1px solid #347e70;border-radius:7px;font-weight:800;
+}
+.hero-feed-status>span:last-child{color:#b2cbd8}
+.hero-feed-status.is-degraded>span:first-child{color:#ffe0b0;background:#5b3624;border-color:#a97a42}

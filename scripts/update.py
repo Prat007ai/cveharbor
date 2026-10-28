@@ -32,6 +32,7 @@ SOURCES = {
     "cisa_kev": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
 }
 MAX_RECORDS = 900
+HEALTH = ROOT / "data" / "feed-health.json"
 ALLOWED = {x["name"] for x in CATEGORIES}
 CVERE = re.compile(r"^CVE-\d{4}-\d{4,}$", re.I)
 GHSA = re.compile(r"^GHSA-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}$", re.I)
@@ -42,9 +43,15 @@ def utc_iso() -> str:
 
 
 def datepart(s: str | None) -> str:
+    """Only source-provided valid dates count as publication or update dates."""
     if not s:
-        return NOW.date().isoformat()
-    return str(s)[:10]
+        return ""
+    candidate = str(s)[:10]
+    try:
+        parsed = datetime.strptime(candidate, "%Y-%m-%d")
+        return candidate if parsed.strftime("%Y-%m-%d") == candidate else ""
+    except ValueError:
+        return ""
 
 
 def crop(s: object, limit: int = 900) -> str:
@@ -245,6 +252,8 @@ def ghsa_items() -> list[dict]:
                         output[item["ghsa_id"]] = item
                 if len(batch) < 100:
                     break
+    if not output:
+        raise RuntimeError("GitHub advisory feed returned no published records")
     return list(output.values())
 
 def from_ghsa(item: dict) -> dict | None:
@@ -285,7 +294,7 @@ def from_ghsa(item: dict) -> dict | None:
     sev = base_sev if base_sev in {"critical", "high", "medium", "low"} else "bulletin"
     if item.get("type") == "malware":
         sev = "bulletin"
-    if sev not in {"critical", "high", "medium", "bulletin"}:
+    if sev not in {"critical", "high", "medium", "low", "bulletin"}:
         return None
     cvss_obj = item.get("cvss") or {}
     cvss = cvss_obj.get("score") if isinstance(cvss_obj, dict) else None
@@ -330,6 +339,8 @@ def php_upstream_items() -> list[dict]:
         for item in batch:
             if isinstance(item, dict) and item.get("ghsa_id"):
                 output[item["ghsa_id"]] = item
+    if not output:
+        raise RuntimeError("PHP upstream feed returned no published advisories")
     return list(output.values())
 
 
@@ -408,13 +419,13 @@ def nvd_items() -> list[dict]:
                 break
             # Unauthenticated NVD API requests have strict rate limits.
             time.sleep(7 if not os.getenv("NVD_API_KEY") else 1)
-        else:
-            if index < int(data.get("totalResults", 0)):
-                print(f"WARNING: NVD {start_name} window has more records than "
-                      f"the {max_pages} page sampling cap.", file=sys.stderr, flush=True)
+        if index < int(data.get("totalResults", 0)):
+            raise RuntimeError(f"NVD {start_name} pagination incomplete: {index} of {data.get('totalResults')} returned")
         # Avoid burst limits when moving between NVD query windows.
         if not os.getenv("NVD_API_KEY"):
             time.sleep(6)
+    if not collected:
+        raise RuntimeError("NVD returned no CVEs for its publication and modification windows")
     return list(collected.values())
 
 def from_nvd(v: dict) -> dict | None:
@@ -445,7 +456,7 @@ def from_nvd(v: dict) -> dict | None:
     elif score >= 4.0:
         sev = "medium"
     else:
-        return None
+        sev = "low"
     references = [{"label": "NVD CVE record", "url": f"https://nvd.nist.gov/vuln/detail/{fid}"}]
     primary = [x for x in cve.get("references") or [] if "Vendor Advisory" in (x.get("tags") or [])]
     for x in primary[:3]:
@@ -470,6 +481,8 @@ def kev_items() -> list[dict]:
     data = get_json(SOURCES["cisa_kev"], "cisa_kev")
     if not isinstance(data, dict) or not isinstance(data.get("vulnerabilities"), list):
         raise ValueError("CISA KEV response missing vulnerabilities")
+    if len(data["vulnerabilities"]) < 100:
+        raise RuntimeError("CISA KEV returned an unexpectedly small catalog")
     return data["vulnerabilities"]
 
 
@@ -502,7 +515,7 @@ def merge_record(old: dict, new: dict) -> dict:
         return new
     # GitHub generally provides better fixed package versions. Do not replace
     # an actionable package detail with NVD's generic patch instructions.
-    rank = {"vendor_baseline": 4, "php_upstream": 3.5, "github": 3, "nvd": 2, "cisa_kev": 1}
+    rank = {"php_upstream": 4, "github": 3, "vendor_baseline": 2.5, "nvd": 2, "cisa_kev": 1}
     chosen = new if rank.get(new.get("source_type"), 0) >= rank.get(old.get("source_type"), 0) else old
     merged = dict(chosen)
     merged["categories"] = sorted(set(old.get("categories") or []) | set(new.get("categories") or []))
@@ -612,7 +625,10 @@ def run() -> int:
         return 1
     records = choose_records(merged, baseline_ids)
     result = {"siteName":"CVEHarbor", "snapshotDate": NOW.date().isoformat(),
-              "mode":"live" if good == len(operations) else "partial", "categories":CATEGORIES, "advisories":records,
+              "mode":"live" if good == len(operations) else "partial",
+              "coverage_limited":len(merged)>len(records),
+              "candidate_records":len(merged),
+              "categories":CATEGORIES, "advisories":records,
               "sources":sources, "last_checked_at":utc_iso(), "last_successful_update":utc_iso(),
               "note":"Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."}
     publish(result)
@@ -621,12 +637,40 @@ def run() -> int:
 
 
 def publish(data: dict):
+    """Validate a snapshot and publish a small machine-readable health report."""
     DATA.parent.mkdir(parents=True, exist_ok=True)
+    entries = data.get("advisories") or []
+    ids = [str(x.get("id") or "") for x in entries]
+    if len(ids) != len(set(ids)):
+        raise ValueError("Duplicate advisory identifiers in public snapshot")
+    for record in entries:
+        if not (CVERE.match(str(record.get("id") or "")) or GHSA.match(str(record.get("id") or ""))):
+            raise ValueError("Unrecognized public advisory identifier")
+        if not record.get("categories") or any(x not in ALLOWED for x in record["categories"]):
+            raise ValueError("Unrecognized or missing technology category")
+        for field in ("published", "updated"):
+            value = record.get(field) or ""
+            if value and datepart(value) != value[:10]:
+                raise ValueError("Invalid advisory " + field + " date")
     text = json.dumps(data, ensure_ascii=False, indent=2)
     DATA.write_text(text + "\n", encoding="utf-8")
     # Escape closing script markup for safe embedding even if vendor text is hostile.
     embed = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     SCRIPT.write_text("/* Automatically generated. Do not edit directly. */\nwindow.CVEHARBOR_DATA = " + embed + ";\n", encoding="utf-8")
+    counts = {category["name"]:0 for category in CATEGORIES}
+    for record in entries:
+        for category in record["categories"]:
+            counts[category] += 1
+    sources = {}
+    for name, source in (data.get("sources") or {}).items():
+        sources[name] = {key:source.get(key) for key in ("ok","last_attempt","last_success","items_processed","error")}
+    health = {"mode":data.get("mode"),"last_checked_at":data.get("last_checked_at"),
+              "last_successful_update":data.get("last_successful_update"),
+              "records_indexed":len(entries),"candidate_records":data.get("candidate_records"),
+              "coverage_limited":bool(data.get("coverage_limited")),
+              "category_counts":counts,"sources":sources,
+              "note":"Snapshot status reports feed collection, not exhaustive vendor coverage or deployed-system exposure."}
+    HEALTH.write_text(json.dumps(health, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

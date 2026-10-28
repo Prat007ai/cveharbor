@@ -285,7 +285,8 @@ class FeedTests(unittest.TestCase):
             seen.append(query)
             return {'vulnerabilities':[], 'totalResults':0}
         with patch.object(u,'get_json',side_effect=sample),patch.object(u.time,'sleep'):
-            u.nvd_items()
+            with self.assertRaisesRegex(RuntimeError,'NVD returned no CVEs'):
+                u.nvd_items()
         self.assertEqual(2,len(seen))
         self.assertIn('pubStartDate',seen[0])
         self.assertIn('lastModStartDate',seen[1])
@@ -296,7 +297,8 @@ class FeedTests(unittest.TestCase):
             seen.append(parse_qs(urlparse(url).query))
             return []
         with patch.object(u,'get_json',side_effect=sample):
-            u.ghsa_items()
+            with self.assertRaisesRegex(RuntimeError,'GitHub advisory feed returned no'):
+                u.ghsa_items()
         self.assertEqual({'published','updated'},{x['sort'][0] for x in seen})
         self.assertEqual({'reviewed','malware'},{x['type'][0] for x in seen})
 
@@ -317,7 +319,7 @@ class FeedTests(unittest.TestCase):
         self.assertNotIn('id="otherCategoryGrid"',html)
         self.assertIn('technology-redesign',html)
         self.assertIn("technologySearch').addEventListener('input',renderCategories)",js)
-        self.assertIn("openTechnologyAdvisories(x.name)",js)
+        self.assertIn("openTechnologyAdvisories(x.name,false,openPeriod)",js)
         self.assertIn('technology-row',js)
         self.assertIn('advisoryIDs',js)
         groups=json.loads(js.split('const technologyGroups = ',1)[1].split(';',1)[0])
@@ -456,7 +458,7 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
         self.assertIn("detailMarkers.append(firstPublished)",js)
         self.assertIn("animation:cveharborFreshDisclosurePulse",css)
         self.assertIn("@media(prefers-reduced-motion:reduce)",css)
-        self.assertIn("tech-date-badges-1",html)
+        self.assertIn("site-audit-3",html)
         self.assertIn("original disclosure dates",html)
 
     def test_category_publication_badges_group_drilldown_and_day_filters(self):
@@ -476,6 +478,59 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
         self.assertIn('value="twoDays"',html)
         subprocess.run(['node','--check',str(root/'app.js')],cwd=root,
                        capture_output=True,text=True,check=True)
+
+
+    def test_no_false_today_for_missing_or_invalid_dates(self):
+        self.assertEqual("",u.datepart(None))
+        self.assertEqual("",u.datepart("not a date"))
+        self.assertEqual("",u.datepart("2026-02-30"))
+        self.assertEqual("2026-10-27",u.datepart("2026-10-27T12:00:00Z"))
+        fake={'ghsa_id':'GHSA-abcd-1234-efgh','severity':'high',
+              'summary':'A vulnerability in an npm package',
+              'vulnerabilities':[{'package':{'ecosystem':'npm','name':'example'}}]}
+        self.assertEqual("",u.from_ghsa(fake)['published'])
+
+    def test_low_severity_advisories_are_preserved(self):
+        item={'ghsa_id':'GHSA-abcd-1234-efgh','severity':'low',
+              'published_at':'2026-10-26','summary':'Python package issue',
+              'vulnerabilities':[{'package':{'ecosystem':'pip','name':'example'}}]}
+        self.assertEqual("low",u.from_ghsa(item)['severity'])
+
+    def test_exploited_column_removed_and_focus_is_expandable(self):
+        html=(root/'index.html').read_text(encoding='utf-8')
+        js=(root/'app.js').read_text(encoding='utf-8')
+        css=(root/'styles.css').read_text(encoding='utf-8')
+        self.assertNotIn('<th scope="col">Exploited</th>',html)
+        self.assertNotIn("cell(x.known_exploited?'CISA KEV'",js)
+        self.assertIn("function renderFocus()",js)
+        self.assertIn("row.addEventListener('click',()=>showDetail(x))",js)
+        self.assertIn("Math.max(0,9-priority.length)",js)
+        self.assertIn("openTechnologyAdvisories(x.name,false,openPeriod)",js)
+        self.assertIn('id="heroFeedSummary"',html)
+        self.assertIn("focus-action",css)
+        self.assertIn("Boolean(prior.known_exploited||baseline.known_exploited)",js)
+        self.assertIn("value=\"low\"",html)
+
+
+    def test_public_feed_health_and_snapshot_validation(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as temp:
+            with patch.object(u,'DATA',Path(temp)/'advisories.json'), \
+                 patch.object(u,'SCRIPT',Path(temp)/'data.js'), \
+                 patch.object(u,'HEALTH',Path(temp)/'feed-health.json'):
+                sample={"mode":"partial","advisories":[{"id":"CVE-2026-123456",
+                       "categories":["PHP"],"published":"2026-10-21","updated":"2026-10-26"}],
+                        "sources":{"nvd":{"ok":False,"last_attempt":"2026-10-27T15:00:00Z",
+                                         "error":"rate limited"}}}
+                u.publish(sample)
+                summary=json.loads((Path(temp)/'feed-health.json').read_text())
+                self.assertEqual('partial',summary['mode'])
+                self.assertEqual(1,summary['records_indexed'])
+                self.assertEqual(1,summary['category_counts']['PHP'])
+                self.assertFalse(summary['sources']['nvd']['ok'])
+                sample['advisories'].append(sample['advisories'][0])
+                with self.assertRaisesRegex(ValueError,'Duplicate'):
+                    u.publish(sample)
 
     def test_url_rejection(self):
         self.assertFalse(u.clean_url('javascript:alert(1)'))
