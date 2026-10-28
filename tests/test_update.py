@@ -8,8 +8,8 @@ spec.loader.exec_module(u)
 
 class FeedTests(unittest.TestCase):
     def test_all_requested_categories(self):
-        self.assertEqual(19,len(u.CATEGORIES))
-        self.assertEqual([c['name'] for c in u.CATEGORIES[:15]], ["Windows Server OS",".NET / ASP.NET",".NET Core","WordPress / Plugins","Linux","PHP","Python / PyPI","Azure","Microsoft 365","SQL Server","MySQL / MariaDB","Fortinet","VMware","HyperV","Docker / Kubernetes"])
+        self.assertEqual(25,len(u.CATEGORIES))
+        self.assertEqual([c['name'] for c in u.CATEGORIES[:21]], ["Windows Server OS","Windows 11 OS",".NET / ASP.NET",".NET Core","WordPress / Plugins","Linux","PHP","Python / PyPI","Azure","Microsoft 365","Exchange SE","SQL Server","MySQL / MariaDB","Fortinet","Sophos Firewall","VMware","Veeam Backup & Replication","HyperV","Docker / Kubernetes","Progress Telerik","Sitefinity"])
         self.assertIn('HyperV',[c['name'] for c in u.CATEGORIES])
         self.assertIn('.NET Core',[c['name'] for c in u.CATEGORIES])
         self.assertIn('Windows Server OS',[c['name'] for c in u.CATEGORIES])
@@ -65,6 +65,44 @@ class FeedTests(unittest.TestCase):
         migrated = u.recategorize_existing(old)
         self.assertIn('Windows Server OS', migrated['categories'])
         self.assertNotIn('Windows', migrated['categories'])
+    def test_progress_telerik_category(self):
+        found = u.classify(product='Progress Telerik UI for ASP.NET AJAX',text='RadAsyncUpload vulnerability')
+        self.assertIn('Progress Telerik',found)
+        self.assertIn('.NET / ASP.NET',found)
+    def test_sitefinity_is_separate_from_drupal(self):
+        found = u.classify(product='Progress Sitefinity CMS',text='Sitefinity web services authentication')
+        self.assertIn('Sitefinity',found)
+        self.assertNotIn('Drupal / CMS',found)
+    def test_veeam_backup_category(self):
+        found = u.classify(product='Veeam Backup & Replication',text='CDP coordinator authorization bypass')
+        self.assertIn('Veeam Backup & Replication',found)
+    def test_managed_veeam_agent(self):
+        found = u.classify(product='Veeam Agent for Linux',text='Managed backup agent privilege escalation')
+        self.assertIn('Veeam Backup & Replication',found)
+        self.assertIn('Linux',found)
+    def test_sophos_firewall_only(self):
+        self.assertIn('Sophos Firewall',u.classify(product='Sophos Firewall SFOS 21.5'))
+        self.assertNotIn('Sophos Firewall',u.classify(product='Sophos Endpoint'))
+    def test_windows11_separate(self):
+        found=u.classify(product='Microsoft Windows 11 Version 25H2')
+        self.assertIn('Windows 11 OS',found)
+        self.assertNotIn('Windows Server OS',found)
+        self.assertNotIn('Windows',found)
+    def test_exchange_se_separate(self):
+        found=u.classify(product='Microsoft Exchange Server Subscription Edition RTM')
+        self.assertIn('Exchange SE',found)
+    def test_old_sitefinity_migration(self):
+        found=u.recategorize_existing({'categories':['Drupal / CMS'], 'title':'Progress Sitefinity', 'affected':'Progress Sitefinity CMS 15.4', 'summary':'Sitefinity security'})
+        self.assertIn('Sitefinity',found['categories'])
+        self.assertNotIn('Drupal / CMS',found['categories'])
+    def test_vendor_baseline_records_have_sources_and_historical_dates(self):
+        records=u.vendor_baseline_items()
+        self.assertGreaterEqual(len(records),6)
+        for item in records:
+            self.assertTrue(item['sources'])
+            self.assertIn(item['categories'][0],[x['name'] for x in u.CATEGORIES])
+            self.assertEqual(item['source_type'],'vendor_baseline')
+            self.assertEqual(item['status'],'Vendor-sourced historical baseline; not newly disclosed')
     def test_pip_classification(self):
         self.assertIn('Python / PyPI',u.classify(product='hydra-core',ecosystem='pip'))
         self.assertIn('Application dependencies',u.classify(product='hydra-core',ecosystem='pip'))
