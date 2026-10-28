@@ -665,3 +665,39 @@ button.tech-chart-link b{
 .chart-insight-label{font-size:10px;font-weight:700;color:#b1cadd}
 .chart-insights-foot{font-size:10px;line-height:1.6;color:#91aec0;margin:12px 0 0}
 @media(max-width:480px){.chart-insight{padding:11px}.chart-insight-number{font-size:20px}}
+
+/* Compact dark-theme action for the threat intelligence cards. */
+.threat-entry .threat-view-details{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  align-self:start;
+  justify-self:start;
+  width:auto;
+  max-width:100%;
+  min-height:34px;
+  padding:7px 13px;
+  color:#91e9da;
+  background:#123c49;
+  border:1px solid #347e83;
+  border-radius:7px;
+  box-shadow:none;
+  text-decoration:none;
+  font-size:11px;
+  font-weight:750;
+  line-height:1.2;
+  white-space:nowrap;
+  appearance:none;
+}
+.threat-entry .threat-view-details:hover{
+  background:#195464;
+  border-color:#68d9ca;
+  color:#eafffa;
+}
+.threat-entry .threat-view-details:focus-visible{
+  outline:2px solid #79ead8;
+  outline-offset:3px;
+}
+@media(max-width:700px){
+  .threat-entry .threat-view-details{min-height:40px;padding:10px 15px;font-size:12px}
+}
