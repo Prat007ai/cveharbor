@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const state = { q: '', severity: 'all', tech: 'all' };
+  const state = { q: '', severity: 'all', tech: 'all', period: 'published30' };
   const PAGE_SIZE = 6;
   const TABLE_PAGE_SIZE = 25;
   const isCVE = x => /^CVE-\d{4}-\d+$/i.test(x.id);
@@ -44,9 +44,25 @@
     if((record.categories||[]).includes('.NET Core') && !(record.categories||[]).includes('.NET / ASP.NET'))
       return {...record,categories:['.NET / ASP.NET',...record.categories]};
     return record;
-  }).sort((a,b)=>String(b.updated||b.published||'').localeCompare(String(a.updated||a.published||'')));
+  }).sort((a,b)=>String(b.published||'').localeCompare(String(a.published||'')) || String(b.updated||'').localeCompare(String(a.updated||'')));
   const $ = id => document.getElementById(id);
   const cveIDs = rows => [...new Set(rows.filter(x => /^CVE-\d{4}-\d+$/i.test(x.id)).map(x => x.id))];
+  // Publication date means original disclosure. A routine vendor/NVD metadata
+  // update should not make a months-old vulnerability look newly published.
+  const recentDate = (dateString,days) => {
+    if (!/^\d{4}-\d{2}-\d{2}/.test(dateString||'')) return false;
+    const published=Date.parse(dateString.slice(0,10)+'T23:59:59Z');
+    return Number.isFinite(published) && published >= Date.now()-days*86400000;
+  };
+  const newlyPublished = (record,days=30) => recentDate(record.published,days) && record.source_type!=='cisa_kev';
+  const recentRevision = (record,days=7) => recentDate(record.updated,days);
+  const periodMatches = record => {
+    if(state.period==='all') return true;
+    if(state.period==='published7') return newlyPublished(record,7);
+    if(state.period==='updated7') return recentRevision(record,7);
+    return newlyPublished(record,30);
+  };
+
   const text = (tag, className, content) => {const n=document.createElement(tag);if(className)n.className=className;n.textContent=content||'';return n;};
   const fmtDate = s => {if(!s||!/^\d{4}-\d{2}-\d{2}/.test(s))return 'Not available';let d=new Date(s.slice(0,10)+'T12:00:00Z');return Number.isFinite(d.getTime())?d.toLocaleDateString('en-CA',{year:'numeric',month:'short',day:'numeric',timeZone:'UTC'}):'Not available';};
   const fmtStamp = s => {if(!s)return 'Never';let d=new Date(s);return Number.isFinite(d.getTime())?d.toLocaleString('en-CA',{dateStyle:'medium',timeStyle:'short',timeZone:'UTC'})+' UTC':'Not available';};
@@ -81,14 +97,14 @@
   const sourceHealth=$('sourceHealth');
   Object.entries(info.sources||{}).forEach(([k,v])=>{let n=text('span','feed-chip '+(v.ok?'feed-ok':'feed-bad'),`${k.toUpperCase()}: ${v.ok?'OK':'UNAVAILABLE'}`);n.title='Last successful: '+fmtStamp(v.last_success);sourceHealth.append(n);});
   let frag=document.createDocumentFragment();categories.forEach(t=>{const el=document.createElement('option');el.value=t.name;el.textContent=t.name;frag.append(el);});$('technologyFilter').append(frag);
-  function catCount(cat){return cveIDs(items.filter(x=>(x.categories||[]).includes(cat))).length;}
+  function catCount(cat){return cveIDs(items.filter(x=>(x.categories||[]).includes(cat) && newlyPublished(x,30))).length;}
   function openTechnologyAdvisories(technology, cveOnly=false){
     // Synchronize all controls so an old search or severity filter cannot hide results.
-    state.tech=technology;state.q='';state.severity='all';
+    state.tech=technology;state.q='';state.severity='all';state.period='published30';
     metricScope=cveOnly?'cves':'all';
     listMode='list';visibleCount=PAGE_SIZE;tablePage=0;
     $('technologyFilter').value=technology;
-    $('search').value='';$('severity').value='all';
+    $('search').value='';$('severity').value='all';$('dateRange').value='published30';
     render();
     $('advisories').scrollIntoView({behavior:'smooth',block:'start'});
   }
@@ -100,8 +116,8 @@
       const row=document.createElement('button');
       row.type='button';
       row.className='bar-item tech-chart-link';
-      row.setAttribute('aria-label',`View all ${x.count} indexed CVEs for ${x.name}`);
-      row.title=`View ${x.name} vulnerabilities`;
+      row.setAttribute('aria-label',`View ${x.count} CVEs newly disclosed within 30 days for ${x.name}`);
+      row.title=`View ${x.name} CVEs newly disclosed in the last 30 days`;
       const track=text('div','bar-track','');
       const fill=text('div','bar-fill','');
       fill.style.width=x.count?Math.max(3,x.count/max*100)+'%':'0%';
@@ -115,10 +131,11 @@
     const primaryGrid=$('categoryGrid'), otherGrid=$('otherCategoryGrid');
     primaryGrid.replaceChildren();otherGrid.replaceChildren();
     categories.forEach(x=>{
-      const n=items.filter(a=>a.categories.includes(x.name)).length;
+      const n=items.filter(a=>(a.categories||[]).includes(x.name) && newlyPublished(a,30)).length;
+      const total=items.filter(a=>(a.categories||[]).includes(x.name)).length;
       const b=document.createElement('button');
       b.type='button';b.className='category-item';
-      b.append(text('span','category-icon',x.icon),text('span','category-label',x.name),text('span','category-count',n?`${n} indexed ${n===1?'record':'records'}`:'No matching indexed records'));
+      b.append(text('span','category-icon',x.icon),text('span','category-label',x.name),text('span','category-count',`${n} new in 30 days · ${total} indexed`));
       b.addEventListener('click',()=>openTechnologyAdvisories(x.name));
       (featured.has(x.name)?primaryGrid:otherGrid).append(b);
     });
@@ -133,11 +150,12 @@
     return items.filter(x=>{
       const query=[x.id,x.title,x.summary,x.affected,x.remediation,x.action,...x.categories].join(' ').toLowerCase();
       const metricMatches=metricScope==='all'||(isCVE(x)&&(metricScope==='cves'||x.severity===metricScope));
-      return metricMatches&&(state.tech==='all'||x.categories.includes(state.tech))&&(state.severity==='all'||x.severity===state.severity)&&(!state.q||query.includes(state.q));
+      return periodMatches(x) && metricMatches && (state.tech==='all'||(x.categories||[]).includes(state.tech)) && (state.severity==='all'||x.severity===state.severity) && (!state.q||query.includes(state.q));
     });
   }
   function render(){
     const selected=filterItems();
+    if(state.period==='updated7') selected.sort((a,b)=>String(b.updated||'').localeCompare(String(a.updated||'')));
     $('resultCount').textContent=`${selected.length} of ${items.length} indexed advisories`;
     $('advisoryCards').replaceChildren();
     $('advisoryTableBody').replaceChildren();
@@ -151,9 +169,9 @@
     $('cardViewBtn').setAttribute('aria-pressed',String(!full));
     $('listViewBtn').setAttribute('aria-pressed',String(full));
     const descriptions={all:'Latest indexed advisories',cves:'All indexed CVEs',critical:'Critical CVEs',high:'High severity CVEs'};
-    $('listContext').textContent=state.tech!=='all'
-      ? state.tech+(metricScope==='cves'?' CVEs':' advisories')
-      : (descriptions[metricScope]||descriptions.all);
+    const periodNames={published7:'new in the last 7 days',published30:'new in the last 30 days',updated7:'updated in the last 7 days',all:'from the indexed archive'};
+    const title = state.tech!=='all'?state.tech+(metricScope==='cves'?' CVEs':' advisories'):(descriptions[metricScope]||descriptions.all);
+    $('listContext').textContent=title+' · '+periodNames[state.period];
     const pages=Math.max(1,Math.ceil(selected.length/TABLE_PAGE_SIZE));
     tablePage=Math.min(tablePage,pages-1);
     const pageStart=tablePage*TABLE_PAGE_SIZE;
@@ -185,6 +203,7 @@
       $('pageNext').disabled=tablePage>=pages-1;
     }
     $('noResults').hidden=selected.length!==0;
+    $('archiveEmpty').hidden=selected.length!==0 || state.period==='all';
     if(!full) selected.slice(0,visibleCount).forEach(x=>{
       const card=text('article','advisory-card',''),head=text('div','card-head','');
       head.append(text('span','cat-badge',x.categories[0]),text('span','severity-badge '+x.severity,severityText(x.severity)));
@@ -220,12 +239,14 @@
   }
   function resetPaging(){visibleCount=PAGE_SIZE;tablePage=0;}
   function clear(){
-    state.q='';state.tech='all';state.severity='all';metricScope='all';resetPaging();
-    $('search').value='';$('technologyFilter').value='all';$('severity').value='all';render();
+    state.q='';state.tech='all';state.severity='all';state.period='published30';metricScope='all';resetPaging();
+    $('search').value='';$('technologyFilter').value='all';$('severity').value='all';$('dateRange').value='published30';render();
   }
   $('search').addEventListener('input',e=>{state.q=e.target.value.trim().toLowerCase();resetPaging();render();});
   $('technologyFilter').addEventListener('change',e=>{state.tech=e.target.value;metricScope='all';resetPaging();render();});
   $('severity').addEventListener('change',e=>{state.severity=e.target.value;metricScope='all';resetPaging();render();});
+  $('dateRange').addEventListener('change',e=>{state.period=e.target.value;resetPaging();render();});
+  $('archiveEmpty').addEventListener('click',()=>{state.period='all';$('dateRange').value='all';resetPaging();render();});
   $('clearFilters').addEventListener('click',clear);$('resetEmpty').addEventListener('click',clear);
   $('showMore').addEventListener('click',()=>{visibleCount+=PAGE_SIZE;render();});
   $('showFewer').addEventListener('click',()=>{visibleCount=PAGE_SIZE;render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});});
@@ -241,8 +262,8 @@
         $('technology').scrollIntoView({behavior:'smooth',block:'start'});
         return;
       }
-      state.q='';state.tech='all';state.severity='all';
-      $('search').value='';$('technologyFilter').value='all';$('severity').value='all';
+      state.q='';state.tech='all';state.severity='all';state.period='all';
+      $('search').value='';$('technologyFilter').value='all';$('severity').value='all';$('dateRange').value='all';
       metricScope=scope==='all'?'cves':scope;
       listMode='list';resetPaging();render();
       $('advisories').scrollIntoView({behavior:'smooth',block:'start'});
