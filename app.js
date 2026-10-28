@@ -8,7 +8,9 @@
   let tablePage = 0;
   let listMode = 'cards';
   let metricScope = 'all';
-  const technologyGroups = {"microsoft":["Windows Server OS","Windows 11 OS",".NET / ASP.NET",".NET Core","Azure","Microsoft 365","Exchange SE"],"applications":["WordPress / Plugins","PHP","Python / PyPI","SQL Server","MySQL / MariaDB","Progress Telerik","Sitefinity"],"infrastructure":["Linux","Fortinet","Sophos Firewall","VMware","Veeam Backup & Replication","HyperV","Docker / Kubernetes"]};
+  let chartPeriod = 'all';
+  let chartShowAll = false;
+  const technologyGroups = {"microsoft":["Windows Server OS","Windows 11 OS","Azure","Microsoft 365","Exchange SE","SharePoint / SharePoint Server","Microsoft Power Platform","Dynamics 365","Microsoft Fabric / Power BI","Azure AI / AI SDK"],"applications":[".NET / ASP.NET",".NET Core","WordPress / Plugins","PHP","Python / PyPI","Angular","React / Next.js","JavaScript / TypeScript","Node.js / npm","Drupal / CMS"],"infrastructure":["Linux","Fortinet","Sophos Firewall","VMware","Veeam Backup & Replication","HyperV","Docker / Kubernetes","AWS","Windows"],"data":["SQL Server","MySQL / MariaDB","NoSQL / MongoDB","Progress Telerik","Sitefinity","Kendo UI","jQuery / Bootstrap","Application dependencies","iOS / Android"]};
   const featured = new Set(Object.values(technologyGroups).flat());
   const info = window.CVEHARBOR_DATA || {categories:[],advisories:[],mode:'awaiting_first_sync'};
   // The category taxonomy and historical vendor entries are published by the
@@ -107,92 +109,100 @@
     sourceHealth.append(n);
   });
   let frag=document.createDocumentFragment();categories.forEach(t=>{const el=document.createElement('option');el.value=t.name;el.textContent=t.name;frag.append(el);});$('technologyFilter').append(frag);
-  function catCount(cat){return advisoryIDs(items.filter(x=>(x.categories||[]).includes(cat) && newlyPublished(x,30))).length;}
-  function openTechnologyAdvisories(technology, cveOnly=false){
-    // Synchronize all controls so an old search or severity filter cannot hide results.
+  function chartRecordMatches(item){
+    if(chartPeriod==='published30')return newlyPublished(item,30);
+    if(chartPeriod==='updated7')return recentRevision(item,7);
+    return true;
+  }
+  function catCount(tech){
+    return advisoryIDs(items.filter(x=>(x.categories||[]).includes(tech)&&chartRecordMatches(x))).length;
+  }
+  function openTechnologyAdvisories(technology,cveOnly=false,periodOverride=null){
     const recentAvailable=items.some(x=>(x.categories||[]).includes(technology)&&newlyPublished(x,30));
-    const targetPeriod=recentAvailable?'published30':'all';
-    state.tech=technology;state.q='';state.severity='all';state.period=targetPeriod;
-    metricScope=cveOnly?'cves':'all';
-    listMode='list';visibleCount=PAGE_SIZE;tablePage=0;
+    const selectedPeriod=periodOverride||(recentAvailable?'published30':'all');
+    state.tech=technology;state.q='';state.severity='all';state.period=selectedPeriod;
+    metricScope=cveOnly?'cves':'all';listMode='list';visibleCount=PAGE_SIZE;tablePage=0;
     $('technologyFilter').value=technology;
-    $('search').value='';$('severity').value='all';$('dateRange').value=targetPeriod;
-    render();
-    $('advisories').scrollIntoView({behavior:'smooth',block:'start'});
+    $('search').value='';$('severity').value='all';$('dateRange').value=selectedPeriod;
+    render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});
   }
   function renderBars(){
-    $('techBars').replaceChildren();
-    const sorted=categories.map(x=>({...x,count:catCount(x.name)})).sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name));
-    const max=Math.max(1,...sorted.map(x=>x.count));
-    sorted.forEach(x=>{
-      const row=document.createElement('button');
-      row.type='button';
-      row.className='bar-item tech-chart-link';
-      row.setAttribute('aria-label',`View ${x.count} security advisories newly disclosed within 30 days for ${x.name}`);
-      row.title=`View ${x.name} advisories newly disclosed in the last 30 days`;
-      const track=text('div','bar-track','');
-      const fill=text('div','bar-fill','');
+    const host=$('techBars');host.replaceChildren();
+    const sorted=categories.map(x=>({...x,count:catCount(x.name)}))
+      .sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name));
+    const nonzero=sorted.filter(x=>x.count>0);
+    const displayed=chartShowAll?sorted:nonzero.slice(0,15);
+    const max=Math.max(1,...displayed.map(x=>x.count));
+    displayed.forEach(x=>{
+      const b=document.createElement('button');
+      b.type='button';b.className='bar-item tech-chart-link';
+      b.setAttribute('aria-label',`Open ${x.name}, ${x.count} indexed advisories in the selected period`);
+      b.title=`Open ${x.name} advisories`;
+      const track=text('div','bar-track',''),fill=text('div','bar-fill','');
       fill.style.width=x.count?Math.max(3,x.count/max*100)+'%':'0%';
       track.append(fill);
-      row.append(text('span','',x.name),track,text('b','',String(x.count)));
-      row.addEventListener('click',()=>openTechnologyAdvisories(x.name,false));
-      $('techBars').append(row);
+      b.append(text('span','',x.name),track,text('b','',String(x.count)));
+      b.addEventListener('click',()=>openTechnologyAdvisories(x.name,false,chartPeriod));
+      host.append(b);
+    });
+    const caption=chartPeriod==='all'?'all indexed advisories':chartPeriod==='updated7'?'advisories modified in the past seven days':'advisories originally disclosed in the last 30 days';
+    $('chartModeDescription').textContent='CVE and GHSA records by technology, showing '+caption+'.';
+    $('chartShowAll').hidden=categories.length<=15;
+    $('chartShowAll').textContent=chartShowAll?'Show top 15':'Show all '+categories.length+' technologies';
+    $('chartNoRecords').hidden=displayed.length!==0;
+    document.querySelectorAll('[data-chart-period]').forEach(button=>{
+      const selected=button.dataset.chartPeriod===chartPeriod;
+      button.classList.toggle('is-active',selected);
+      button.setAttribute('aria-pressed',String(selected));
     });
   }
   function renderCategories(){
-    const main=$('categoryGrid'),extra=$('otherCategoryGrid');
-    const q=$('technologySearch').value.trim().toLowerCase();
-    main.replaceChildren();extra.replaceChildren();
+    const main=$('categoryGrid'),q=$('technologySearch').value.trim().toLowerCase();
+    main.replaceChildren();
     const matches=x=>!q||(x.name+' '+(x.description||'')).toLowerCase().includes(q);
-    let visible=0,extraVisible=0;
-    function row(x){
+    let visible=0;
+    function makeRow(x){
       const total=advisoryIDs(items.filter(a=>(a.categories||[]).includes(x.name))).length;
       const recent=advisoryIDs(items.filter(a=>(a.categories||[]).includes(x.name)&&newlyPublished(a,30))).length;
-      const b=document.createElement('button');
-      b.type='button';b.className='technology-row';
-      b.setAttribute('aria-label',`View ${x.name}: ${recent} recent security advisories and ${total} total indexed`);
-      const glyph=text('span','technology-glyph',x.icon||'◇');glyph.setAttribute('aria-hidden','true');
+      const button=document.createElement('button');
+      button.type='button';button.className='technology-row';
+      button.setAttribute('aria-label',`View ${x.name}, ${recent} newly disclosed in 30 days, ${total} indexed total`);
+      const icon=text('span','technology-glyph',x.icon||'◇');icon.setAttribute('aria-hidden','true');
       const label=text('span','technology-row-main','');
-      label.append(text('span','technology-row-name',x.name),text('span','technology-row-sub',x.description||'Security advisories'));
+      label.append(text('span','technology-row-name',x.name),
+                   text('span','technology-row-sub',x.description||'Security advisories'));
       const counts=text('span','technology-row-counts','');
-      counts.append(text('span','technology-count-new'+(recent?' has-new':''),`${recent} new`),text('span','technology-count-all',`${total} total`));
+      counts.append(text('span','technology-count-new'+(recent?' has-new':''),`${recent} new`),
+                    text('span','technology-count-all',`${total} total`));
       const arrow=text('span','technology-arrow','↗');arrow.setAttribute('aria-hidden','true');
-      b.append(glyph,label,counts,arrow);
-      b.addEventListener('click',()=>openTechnologyAdvisories(x.name));
-      return b;
+      button.append(icon,label,counts,arrow);
+      button.addEventListener('click',()=>openTechnologyAdvisories(x.name));
+      return button;
     }
-    const headings={
+    const meta={
       microsoft:['01 / PLATFORMS','Microsoft & Cloud','▦'],
-      applications:['02 / SOFTWARE','Applications & Data','⌘'],
-      infrastructure:['03 / OPERATIONS','Infrastructure & Security','⬡']
+      applications:['02 / APPLICATIONS','Applications & Frameworks','⌘'],
+      infrastructure:['03 / OPERATIONS','Infrastructure & Security','⬡'],
+      data:['04 / DATA & UI','Data, UI & Dependencies','◫']
     };
-    for(const [key,names] of Object.entries(technologyGroups)){
-      const found=names.map(n=>categories.find(x=>x.name===n)).filter(x=>x&&matches(x));
-      if(!found.length)continue;
-      const panel=text('article','technology-panel','');panel.dataset.domain=key;
+    for(const [name,techs] of Object.entries(technologyGroups)){
+      const matched=techs.map(label=>categories.find(x=>x.name===label)).filter(x=>x&&matches(x));
+      if(!matched.length)continue;
+      const panel=text('article','technology-panel','');panel.dataset.domain=name;
       const head=text('div','technology-panel-head','');
-      const icon=text('span','technology-panel-icon',headings[key][2]);icon.setAttribute('aria-hidden','true');
-      const title=text('div','technology-panel-heading','');
-      title.append(text('span','',headings[key][0]),text('h3','',headings[key][1]));
-      head.append(icon,title,text('span','technology-panel-total',String(found.length).padStart(2,'0')));
-      const list=text('div','technology-panel-rows','');
-      found.forEach(x=>list.append(row(x)));
-      panel.append(head,list);main.append(panel);visible+=found.length;
+      const glyph=text('span','technology-panel-icon',meta[name][2]);glyph.setAttribute('aria-hidden','true');
+      const label=text('div','technology-panel-heading','');
+      label.append(text('span','',meta[name][0]),text('h3','',meta[name][1]));
+      head.append(glyph,label,text('span','technology-panel-total',String(matched.length).padStart(2,'0')));
+      const rows=text('div','technology-panel-rows','');
+      matched.forEach(x=>rows.append(makeRow(x)));
+      panel.append(head,rows);main.append(panel);visible+=matched.length;
     }
-    for(const x of categories){
-      if(featured.has(x.name)||!matches(x))continue;
-      extra.append(row(x));visible++;extraVisible++;
-    }
-    const caption=document.querySelector('.technology-more-caption');
-    if(caption) caption.textContent=(categories.length-featured.size)+' additional platforms';
-    const more=$('additionalTech');
-    more.hidden=Boolean(q)&&extraVisible===0;
-    if(q&&extraVisible)more.open=true;
     $('technologyEmpty').hidden=visible!==0;
     $('technologyTotal').textContent=String(categories.length);
     $('technologySearchSummary').textContent=q
-      ? `${visible} of ${categories.length} technology groups match your search`
-      : `${featured.size} featured platforms and ${categories.length-featured.size} additional groups. Counts describe indexed security advisories, not visitor exposure.`;
+      ? `${visible} of ${categories.length} technologies match your search`
+      : `All ${categories.length} technologies are visible. Recent means first published within 30 days; total is the indexed CVE and GHSA archive. Zero indexed does not mean no vulnerabilities exist.`;
   }
   function renderFocus(){
     const priorities=items.filter(x=>x.known_exploited||x.severity==='critical'||x.severity==='high').sort((a,b)=>Number(!!b.known_exploited)-Number(!!a.known_exploited)||({critical:0,high:1}[a.severity]??2)-({critical:0,high:1}[b.severity]??2)).slice(0,3);
@@ -312,7 +322,7 @@
     btn.addEventListener('click',()=>{
       const scope=btn.dataset.metric;
       if(scope==='technologies'){
-        $('additionalTech').open=true;
+        // Every technology is already visible in the main explorer.
         $('technology').scrollIntoView({behavior:'smooth',block:'start'});
         return;
       }
@@ -324,6 +334,10 @@
     });
   });
   $('closeDialog').addEventListener('click',()=>$('detailDialog').close());$('detailDialog').addEventListener('click',e=>{if(e.target===$('detailDialog'))$('detailDialog').close();});
+  document.querySelectorAll('[data-chart-period]').forEach(button=>{
+    button.addEventListener('click',()=>{chartPeriod=button.dataset.chartPeriod;chartShowAll=false;renderBars();});
+  });
+  $('chartShowAll').addEventListener('click',()=>{chartShowAll=!chartShowAll;renderBars();});
   $('technologySearch').addEventListener('input',renderCategories);
   renderBars();renderFocus();renderCategories();render();
 })();
