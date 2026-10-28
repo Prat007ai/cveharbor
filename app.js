@@ -38,7 +38,8 @@
       sources:[...links.values()].slice(0,8),
       affected:prior.source_type==='nvd' ? baseline.affected : (prior.affected||baseline.affected),
       remediation:prior.source_type==='nvd' ? baseline.remediation : (prior.remediation||baseline.remediation),
-      known_exploited:Boolean(prior.known_exploited),
+      known_exploited:Boolean(prior.known_exploited||baseline.known_exploited),
+      exploitation:(prior.known_exploited||baseline.known_exploited)?'Confirmed: listed in CISA KEV':(prior.exploitation||baseline.exploitation),
       status:prior.status||baseline.status,
     });
   }
@@ -116,7 +117,7 @@
     const zone = new Intl.DateTimeFormat('en-US',{timeZone:'America/Toronto',timeZoneName:'short'}).formatToParts(d).find(x=>x.type==='timeZoneName')?.value||'ET';
     return date+', '+time+' '+zone;
   };
-  const severityText=s=>({critical:'CRITICAL',high:'HIGH',medium:'MEDIUM',bulletin:'BULLETIN'})[s]||'UNKNOWN';
+  const severityText=s=>({critical:'CRITICAL',high:'HIGH',medium:'MEDIUM',low:'LOW',bulletin:'BULLETIN'})[s]||'UNKNOWN';
   const stat=(id,num)=>{$(id).textContent=String(num);};
   stat('statTotal',cveIDs(items).length);
   stat('statCritical',cveIDs(items.filter(x=>x.severity==='critical')).length);
@@ -276,10 +277,40 @@
       : `All ${categories.length} technologies are visible. Recent means first published within 30 days; total is the indexed CVE and GHSA archive. Zero indexed does not mean no vulnerabilities exist.`;
   }
   function renderFocus(){
-    const priorities=items.filter(x=>x.known_exploited||x.severity==='critical'||x.severity==='high').sort((a,b)=>Number(!!b.known_exploited)-Number(!!a.known_exploited)||({critical:0,high:1}[a.severity]??2)-({critical:0,high:1}[b.severity]??2)).slice(0,3);
-    $('priorityList').replaceChildren();
-    if(!priorities.length){$('priorityList').append(text('p','','No priority items indexed. This is not a security clearance.'));return;}
-    priorities.forEach((x,i)=>{const row=text('div','focus',''),detail=text('div','','');detail.append(text('b','',x.title),text('p','',`${x.id}${x.known_exploited?' · CISA KEV listed':''} · ${x.categories[0]}`));row.append(text('span','rank',`0${i+1}`),detail);$('priorityList').append(row);});
+    const root=$('priorityList');root.replaceChildren();
+    const ranked=items.filter(x=>x.known_exploited||x.severity==='critical'||x.severity==='high');
+    const newest=(a,b)=>String(b.published||'').localeCompare(String(a.published||''))||String(b.updated||'').localeCompare(String(a.updated||''));
+    const bySeverity=(a,b)=>({critical:0,high:1,medium:2,low:3,bulletin:4}[a.severity]??5)-({critical:0,high:1,medium:2,low:3,bulletin:4}[b.severity]??5)||newest(a,b);
+    const added=new Set();
+    const priority=[];
+    const add=(group,records,limit)=>{
+      let used=0;
+      for(const x of records){
+        if(added.has(x.id)||used>=limit)continue;
+        added.add(x.id);priority.push({record:x,group});used++;
+      }
+    };
+    add('Recently disclosed',ranked.filter(x=>newlyPublished(x,30)&&['critical','high'].includes(x.severity)).sort(bySeverity),4);
+    add('Known exploited',ranked.filter(x=>x.known_exploited).sort((a,b)=>String(b.updated||'').localeCompare(String(a.updated||''))||newest(a,b)),3);
+    add('Recently updated',ranked.filter(x=>recentRevision(x,7)).sort((a,b)=>String(b.updated||'').localeCompare(String(a.updated||''))),2);
+    add('Other high priority',ranked.sort(bySeverity),Math.max(0,9-priority.length));
+    if(!priority.length){root.append(text('p','','No high priority advisories are indexed. This does not establish that any technology is secure.'));return;}
+    for(const [i,entry] of priority.entries()){
+      const x=entry.record;
+      const row=text('button','focus focus-action','');
+      row.type='button';
+      row.setAttribute('aria-label','View '+x.id+', '+severityText(x.severity)+', '+x.title);
+      const rank=text('span','rank',String(i+1).padStart(2,'0'));
+      const detail=text('span','focus-content','');
+      const top=text('span','focus-top','');
+      top.append(text('span','focus-group',entry.group),text('span','severity-badge '+x.severity,severityText(x.severity)));
+      if(x.known_exploited)top.append(text('span','focus-kev','CISA KEV'));
+      detail.append(top,text('b','focus-title',x.title||x.id),
+        text('span','focus-meta',x.id+' · '+(x.categories||[]).slice(0,2).join(' / ')+' · Published '+fmtDate(x.published)));
+      row.append(rank,detail);
+      row.addEventListener('click',()=>showDetail(x));
+      root.append(row);
+    }
   }
   function filterItems(){
     return items.filter(x=>{
@@ -325,7 +356,6 @@
         cell(x.categories.join(' · '),'table-tech');
         cell(x.title||x.summary||'See source advisory','table-description');
         cell(fmtDate(x.published),'table-date');
-        cell(x.known_exploited?'CISA KEV':'Not confirmed',x.known_exploited?'table-exploited':'table-unconfirmed');
         const action=cell('','table-action');
         const link=text('button','table-details','View ↗');
         link.type='button';
