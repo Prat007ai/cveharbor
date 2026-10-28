@@ -559,6 +559,35 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
             record=u.rss_vendor_items("fortinet_rss")[0]
         self.assertEqual(record["published"],"2026-10-26")
 
+
+    def test_kubernetes_official_json_feed(self):
+        item={"id":"https://example.org/CVE-2026-87654",
+              "title":"CVE-2026-87654 Kubernetes security issue",
+              "date_published":"2026-10-27T00:00:00Z",
+              "url":"https://github.com/kubernetes/kubernetes/issues/123"}
+        record=u.from_kubernetes(item)
+        self.assertEqual("CVE-2026-87654",record["id"])
+        self.assertIn("Docker / Kubernetes",record["categories"])
+        self.assertEqual("2026-10-27",record["published"])
+
+    def test_mariadb_reuses_official_upstream_metadata(self):
+        entry={"ghsa_id":"GHSA-abcd-1234-efgh","severity":"high",
+               "summary":"MariaDB server privilege escalation",
+               "published_at":"2026-10-21T12:00:00Z",
+               "vulnerabilities":[],"references":[]}
+        rec=u.from_mariadb(entry)
+        self.assertIn("MySQL / MariaDB",rec["categories"])
+        self.assertEqual("mariadb",rec["source_type"])
+
+    def test_vendor_rss_debian_docker_category(self):
+        for vendor,category in (("debian_rss","Linux"),("docker_rss","Docker / Kubernetes")):
+            record=u.from_vendor_rss({"vendor":vendor,
+                  "title":"CVE-2026-87654 vulnerability fix",
+                  "summary":"Security update",
+                  "published":"2026-10-27",
+                  "url":"https://example.org/security"})
+            self.assertIn(category,record["categories"])
+
     def test_url_rejection(self):
         self.assertFalse(u.clean_url('javascript:alert(1)'))
         self.assertFalse(u.clean_url('http://example.org'))
