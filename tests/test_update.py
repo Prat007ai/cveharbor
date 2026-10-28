@@ -458,7 +458,7 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
         self.assertIn("detailMarkers.append(firstPublished)",js)
         self.assertIn("animation:cveharborFreshDisclosurePulse",css)
         self.assertIn("@media(prefers-reduced-motion:reduce)",css)
-        self.assertIn("compact-threat-button-1",html)
+        self.assertIn("firewall-exports-1",html)
         self.assertIn("original disclosure dates",html)
 
     def test_category_publication_badges_group_drilldown_and_day_filters(self):
