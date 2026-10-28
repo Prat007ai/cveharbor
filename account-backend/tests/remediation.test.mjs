@@ -73,7 +73,7 @@ class MockD1{
             const k=db.key(args[0],args[1]);db.rows.delete(k);db.assignments.delete(k);
             return {meta:{changes:1}};
           }
-          if(query.includes('INSERT INTO auth_rate_limits(')){
+          if(query.includes('INSERT INTO remediation_assignment_limits(')){
             const [key,now,cutoff,,,,max]=args,old=db.rate.get(key);
             if(old&&old.window>=cutoff&&old.count>=max)return {meta:{changes:0}};
             db.rate.set(key,{window:!old||old.window<cutoff?now:old.window,
