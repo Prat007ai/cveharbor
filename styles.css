@@ -407,3 +407,32 @@ button.tech-chart-link b{
   .tech-chart-mode{padding:8px;font-size:10px}
 }
 @media(prefers-reduced-motion:reduce){.tech-chart-mode{transition:none}}
+
+/* Ten-card advisory preview: balanced two-row desktop grid, full text in details. */
+.advisory-grid{align-items:stretch}
+.advisory-card{min-height:270px}
+.advisory-card h3{
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:3;
+  line-clamp:3;
+  overflow:hidden;
+}
+.advisory-card .card-summary{
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:6;
+  line-clamp:6;
+  overflow:hidden;
+  max-height:9.9em;
+}
+@media(min-width:1500px){
+  .advisory-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+  .advisory-card{padding:16px}
+}
+@media(max-width:1499px) and (min-width:1100px){
+  .advisory-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:780px){
+  .advisory-card{min-height:240px}
+}
