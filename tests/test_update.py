@@ -3,6 +3,8 @@ import unittest
 import json
 import subprocess
 import sys
+from unittest.mock import patch
+from urllib.parse import parse_qs, urlparse
 from pathlib import Path
 root=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('updater',root/'scripts/update.py')
@@ -214,6 +216,49 @@ class FeedTests(unittest.TestCase):
         self.assertTrue(merged['known_exploited'])
         self.assertEqual(merged['first_seen_at'],old['first_seen_at'])
         self.assertEqual(merged['summary'],'vendor report')
+    def test_new_publications_are_prioritized_above_old_metadata_updates(self):
+        today = u.NOW.date().isoformat()
+        old = {f'CVE-2026-{n:06d}': {'id':f'CVE-2026-{n:06d}',
+               'published':'2026-04-02','updated':today,
+               'source_updated_at':today,'categories':['PHP']} for n in range(950)}
+        new = {'CVE-2026-999991': {'id':'CVE-2026-999991',
+               'published':today,'updated':today,
+               'source_updated_at':today,'categories':['PHP']}}
+        selected=u.choose_records({**old,**new},set())
+        self.assertEqual(900,len(selected))
+        self.assertEqual(selected[0]['id'],'CVE-2026-999991')
+        self.assertNotEqual(selected[0]['published'],'2026-04-02')
+
+    def test_nvd_fetches_new_publications_separately_from_updates(self):
+        seen=[]
+        def sample(url,source):
+            query=parse_qs(urlparse(url).query)
+            seen.append(query)
+            return {'vulnerabilities':[], 'totalResults':0}
+        with patch.object(u,'get_json',side_effect=sample),patch.object(u.time,'sleep'):
+            u.nvd_items()
+        self.assertEqual(2,len(seen))
+        self.assertIn('pubStartDate',seen[0])
+        self.assertIn('lastModStartDate',seen[1])
+
+    def test_ghsa_checks_published_and_modified_advisories(self):
+        seen=[]
+        def sample(url,source):
+            seen.append(parse_qs(urlparse(url).query))
+            return []
+        with patch.object(u,'get_json',side_effect=sample):
+            u.ghsa_items()
+        self.assertEqual({'published','updated'},{x['sort'][0] for x in seen})
+        self.assertEqual({'reviewed','malware'},{x['type'][0] for x in seen})
+
+    def test_cisa_date_added_is_not_original_published_date(self):
+        result=u.from_kev({'cveID':'CVE-2026-91818',
+           'vendorProject':'Microsoft','product':'Windows Server',
+           'vulnerabilityName':'Windows Server vulnerability',
+           'dateAdded':'2026-10-27'})
+        self.assertEqual('',result['published'])
+        self.assertEqual('2026-10-27',result['updated'])
+
     def test_url_rejection(self):
         self.assertFalse(u.clean_url('javascript:alert(1)'))
         self.assertFalse(u.clean_url('http://example.org'))
