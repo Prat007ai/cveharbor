@@ -436,3 +436,54 @@ button.tech-chart-link b{
 @media(max-width:780px){
   .advisory-card{min-height:240px}
 }
+
+/* Fresh original disclosures: slow red highlight for Toronto calendar dates.
+   One badge covers Today, Yesterday or the 2-day-old portion of 72 hours. */
+@keyframes cveharborFreshDisclosurePulse{
+  0%,100%{background:#702032;border-color:#dc5269;color:#ffe5e9;box-shadow:0 0 0 0 rgba(255,66,94,.16)}
+  50%{background:#cf2748;border-color:#ff7789;color:#fff;box-shadow:0 0 14px 3px rgba(248,45,86,.5)}
+}
+.fresh-disclosure-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  width:max-content;
+  max-width:100%;
+  padding:4px 7px;
+  line-height:1.25;
+  font-size:10px;
+  letter-spacing:.35px;
+  font-weight:850;
+  color:#fff;
+  border:1px solid #f05b72;
+  border-radius:6px;
+  white-space:nowrap;
+  background:#a9223b;
+  animation:cveharborFreshDisclosurePulse 2.7s ease-in-out infinite;
+}
+.card-head{align-items:flex-start;gap:6px}
+.card-labels{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:5px;min-width:0}
+.card-labels .severity-badge{flex:0 0 auto}
+.advisory-card.has-fresh-disclosure{border-color:#6e344b}
+.advisory-table .table-cve .fresh-disclosure-badge{
+  display:flex;
+  width:max-content;
+  margin-top:6px;
+  font-family:inherit;
+}
+.detail-labels{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0 15px}
+.detail-labels .fresh-disclosure-badge{font-size:11px;padding:6px 9px}
+@media(max-width:550px){
+  .card-head{flex-wrap:wrap}
+  .card-labels{justify-content:flex-start}
+}
+@media(prefers-reduced-motion:reduce){
+  .fresh-disclosure-badge{
+    animation:none;
+    background:#ad233e;
+    border-color:#eb5871;
+    color:#fff;
+    box-shadow:none;
+  }
+}
