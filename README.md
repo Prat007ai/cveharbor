@@ -1,6 +1,6 @@
 # CVEHarbor.com — hourly vulnerability intelligence website
 
-CVEHarbor is a public vulnerability **advisory index** with all 19 technology categories requested. It is entirely separate from Whitecap's Gmail automations and does not read those emails or any Whitecap infrastructure.
+CVEHarbor is a public vulnerability **advisory index** with all 25 technology categories requested. It is entirely separate from Whitecap's Gmail automations and does not read those emails or any Whitecap infrastructure.
 
 ## Release status
 
@@ -20,7 +20,7 @@ The site uses conservative category mapping and shows **source status**, date la
 
 ### Coverage limitations that matter before public launch
 
-This initial implementation is **not exhaustive** across all 19 categories. It indexes matches from the above three sources; vendor-specific feeds are not yet integrated for Microsoft MSRC, Azure service advisories, Wordfence/Patchstack/WPScan, PHP.net, Python security releases, MariaDB, Oracle MySQL, Fortinet PSIRT, VMware/Broadcom, Ubuntu/Debian/Red Hat, Docker, Kubernetes and other products. Some vendor patch levels are absent in NVD and must be checked via official advisories. Further feeds, QA monitoring, uptime checks and a source review policy are needed before positioning the service as a comprehensive security monitoring service. Do not claim 100% coverage or guarantee one-hour disclosure.
+This initial implementation is **not exhaustive** across all 25 categories. It indexes matches from the above three sources; vendor-specific feeds are not yet integrated for Microsoft MSRC, Azure service advisories, Wordfence/Patchstack/WPScan, PHP.net, Python security releases, MariaDB, Oracle MySQL, Fortinet PSIRT, VMware/Broadcom, Ubuntu/Debian/Red Hat, Docker, Kubernetes and other products. Some vendor patch levels are absent in NVD and must be checked via official advisories. Further feeds, QA monitoring, uptime checks and a source review policy are needed before positioning the service as a comprehensive security monitoring service. Do not claim 100% coverage or guarantee one-hour disclosure.
 
 ## Install in your personally owned GitHub account
 
@@ -87,3 +87,8 @@ The website is designed for **personal ownership**, under the `cveharbor.com` do
 ## Website navigation and categories
 
 The website places 15 commonly used categories at the top, before the dashboard. Additional categories are available through the **More technology groups** disclosure. Clicking a category filters the advisory list and jumps directly to it. The advisory list initially displays six cards, with **Show more** and **Show fewer** controls. The .NET / ASP.NET (classic) and .NET Core (modern) categories are separate; Windows Server OS and HyperV are also separate, with generic Windows advisories retained under the additional Windows category.
+
+
+## Additional vendor sections and initial CVE records
+
+Dedicated coverage now includes Progress Telerik, Sitefinity, Veeam Backup & Replication, Sophos Firewall, Windows 11 OS and Exchange Server Subscription Edition. The top navigation contains 21 frequently used technology shortcuts, with four extra categories under More technology groups. A curated vendor baseline at `data/vendor-baseline.json` seeds dated, source-linked advisories for the new sections. Those entries retain their original disclosure and update dates and are never characterized as newly disclosed or verified exploited simply because they were recently indexed. They are supplemented and deduplicated with the automated NVD, GitHub Advisory Database and CISA KEV feeds every hour. This coverage is not a vendor-certified comprehensive vulnerability database; continue reviewing official advisories for urgent patch decisions.
