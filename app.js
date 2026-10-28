@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const state = { q: '', severity: 'all', tech: 'all', period: 'published30' };
+  const state = { q: '', severity: 'all', tech: 'all', group: 'all', period: 'published30' };
   const PAGE_SIZE = 10;
   const TABLE_PAGE_SIZE = 25;
   const isCVE = x => /^CVE-\d{4}-\d+$/i.test(x.id);
@@ -12,6 +12,7 @@
   let chartShowAll = false;
   const technologyGroups = {"microsoft":["Windows Server OS","Windows 11 OS","Azure","Microsoft 365","Exchange SE","SharePoint / SharePoint Server","Microsoft Power Platform","Dynamics 365","Microsoft Fabric / Power BI","Azure AI / AI SDK"],"applications":[".NET / ASP.NET",".NET Core","WordPress / Plugins","PHP","Python / PyPI","Angular","React / Next.js","JavaScript / TypeScript","Node.js / npm","Drupal / CMS"],"infrastructure":["Linux","Fortinet","Sophos Firewall","VMware","Veeam Backup & Replication","HyperV","Docker / Kubernetes","AWS","Windows"],"data":["SQL Server","MySQL / MariaDB","NoSQL / MongoDB","Progress Telerik","Sitefinity","Kendo UI","jQuery / Bootstrap","Application dependencies","iOS / Android"]};
   const featured = new Set(Object.values(technologyGroups).flat());
+  const groupTitles = {microsoft:'Microsoft & Cloud',applications:'Applications & Frameworks',infrastructure:'Infrastructure & Security',data:'Data, UI & Dependencies'};
   const info = window.CVEHARBOR_DATA || {categories:[],advisories:[],mode:'awaiting_first_sync'};
   // The category taxonomy and historical vendor entries are published by the
   // static site build, independently from the hourly data feed.
@@ -88,9 +89,16 @@
     return badge;
   };
 
+  // Calendar-day categories always use the original first-publication date,
+  // not source update, crawl time, or KEV catalog entry time.
+  const matchesDisclosureDay = (record, label) =>
+    record.source_type!=='cisa_kev' && disclosureAgeLabel(record)===label;
   const recentRevision = (record,days=7) => recentDate(record.updated,days);
   const periodMatches = record => {
     if(state.period==='all') return true;
+    if(state.period==='today') return matchesDisclosureDay(record,'TODAY');
+    if(state.period==='yesterday') return matchesDisclosureDay(record,'YESTERDAY');
+    if(state.period==='twoDays') return matchesDisclosureDay(record,'72 HOURS');
     if(state.period==='published7') return newlyPublished(record,7);
     if(state.period==='updated7') return recentRevision(record,7);
     return newlyPublished(record,30);
@@ -149,9 +157,20 @@
   function openTechnologyAdvisories(technology,cveOnly=false,periodOverride=null){
     const recentAvailable=items.some(x=>(x.categories||[]).includes(technology)&&newlyPublished(x,30));
     const selectedPeriod=periodOverride||(recentAvailable?'published30':'all');
-    state.tech=technology;state.q='';state.severity='all';state.period=selectedPeriod;
+    state.tech=technology;state.group='all';state.q='';state.severity='all';state.period=selectedPeriod;
     metricScope=cveOnly?'cves':'all';listMode='list';visibleCount=PAGE_SIZE;tablePage=0;
     $('technologyFilter').value=technology;
+    $('search').value='';$('severity').value='all';$('dateRange').value=selectedPeriod;
+    render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function openTechnologyGroup(group){
+    const members=technologyGroups[group]||[];
+    if(!members.length)return;
+    const recentAvailable=items.some(x=>(x.categories||[]).some(t=>members.includes(t))&&newlyPublished(x,30));
+    const selectedPeriod=recentAvailable?'published30':'all';
+    state.group=group;state.tech='all';state.q='';state.severity='all';state.period=selectedPeriod;
+    metricScope='all';listMode='list';resetPaging();
+    $('technologyFilter').value='all';
     $('search').value='';$('severity').value='all';$('dateRange').value=selectedPeriod;
     render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});
   }
@@ -191,15 +210,34 @@
     const matches=x=>!q||(x.name+' '+(x.description||'')).toLowerCase().includes(q);
     let visible=0;
     function makeRow(x){
-      const total=advisoryIDs(items.filter(a=>(a.categories||[]).includes(x.name))).length;
-      const recent=advisoryIDs(items.filter(a=>(a.categories||[]).includes(x.name)&&newlyPublished(a,30))).length;
+      const categoryRecords=items.filter(a=>(a.categories||[]).includes(x.name));
+      const total=advisoryIDs(categoryRecords).length;
+      const recent=advisoryIDs(categoryRecords.filter(a=>newlyPublished(a,30))).length;
+      const ages={'TODAY':0,'YESTERDAY':0,'72 HOURS':0};
+      categoryRecords.forEach(a=>{
+        if(a.source_type==='cisa_kev')return;
+        const label=disclosureAgeLabel(a);
+        if(Object.hasOwn(ages,label))ages[label]++;
+      });
+      const dated=categoryRecords.filter(a=>a.source_type!=='cisa_kev' && /^\d{4}-\d{2}-\d{2}/.test(a.published||''))
+        .map(a=>a.published.slice(0,10)).sort().reverse();
+      const latest=dated[0]||'';
       const button=document.createElement('button');
       button.type='button';button.className='technology-row';
-      button.setAttribute('aria-label',`View ${x.name}, ${recent} newly disclosed in 30 days, ${total} indexed total`);
+      button.setAttribute('aria-label',`View ${x.name}: ${ages.TODAY} published today, ${ages.YESTERDAY} yesterday, ${ages['72 HOURS']} two days ago, ${recent} new in 30 days, ${total} total`);
       const icon=text('span','technology-glyph',x.icon||'◇');icon.setAttribute('aria-hidden','true');
       const label=text('span','technology-row-main','');
-      label.append(text('span','technology-row-name',x.name),
-                   text('span','technology-row-sub',x.description||'Security advisories'));
+      const freshness=text('span','technology-row-fresh','');
+      for(const [age,cls,display] of [['TODAY','today','Today'],['YESTERDAY','yesterday','Yesterday'],['72 HOURS','two-days','2 days ago']]){
+        if(!ages[age])continue;
+        const badge=text('span','technology-age-badge '+cls,display+' '+ages[age]);
+        badge.title=ages[age]+' advisories originally published '+display.toLowerCase()+'. Open the category to review.';
+        freshness.append(badge);
+      }
+      if(!freshness.children.length){
+        freshness.append(text('span','technology-age-muted',latest?'Latest '+fmtDate(latest):'No dated advisories'));
+      }
+      label.append(text('span','technology-row-name',x.name),freshness);
       const counts=text('span','technology-row-counts','');
       counts.append(text('span','technology-count-new'+(recent?' has-new':''),`${recent} new`),
                     text('span','technology-count-all',`${total} total`));
@@ -218,7 +256,11 @@
       const matched=techs.map(label=>categories.find(x=>x.name===label)).filter(x=>x&&matches(x));
       if(!matched.length)continue;
       const panel=text('article','technology-panel','');panel.dataset.domain=name;
-      const head=text('div','technology-panel-head','');
+      const head=text('button','technology-panel-head','');
+      head.type='button';
+      head.setAttribute('aria-label','View all '+groupTitles[name]+' advisories');
+      head.title='Open all advisories in '+groupTitles[name];
+      head.addEventListener('click',()=>openTechnologyGroup(name));
       const glyph=text('span','technology-panel-icon',meta[name][2]);glyph.setAttribute('aria-hidden','true');
       const label=text('div','technology-panel-heading','');
       label.append(text('span','',meta[name][0]),text('h3','',meta[name][1]));
@@ -243,7 +285,7 @@
     return items.filter(x=>{
       const query=[x.id,x.title,x.summary,x.affected,x.remediation,x.action,...x.categories].join(' ').toLowerCase();
       const metricMatches=metricScope==='all'||(isCVE(x)&&(metricScope==='cves'||x.severity===metricScope));
-      return periodMatches(x) && metricMatches && (state.tech==='all'||(x.categories||[]).includes(state.tech)) && (state.severity==='all'||x.severity===state.severity) && (!state.q||query.includes(state.q));
+      return periodMatches(x) && metricMatches && (state.group==='all'||(technologyGroups[state.group]||[]).some(t=>(x.categories||[]).includes(t))) && (state.tech==='all'||(x.categories||[]).includes(state.tech)) && (state.severity==='all'||x.severity===state.severity) && (!state.q||query.includes(state.q));
     });
   }
   function render(){
@@ -262,8 +304,8 @@
     $('cardViewBtn').setAttribute('aria-pressed',String(!full));
     $('listViewBtn').setAttribute('aria-pressed',String(full));
     const descriptions={all:'Latest indexed advisories',cves:'All indexed CVEs',critical:'Critical CVEs',high:'High severity CVEs'};
-    const periodNames={published7:'new in the last 7 days',published30:'new in the last 30 days',updated7:'updated in the last 7 days',all:'from the indexed archive'};
-    const title = state.tech!=='all'?state.tech+(metricScope==='cves'?' CVEs':' advisories'):(descriptions[metricScope]||descriptions.all);
+    const periodNames={today:'originally published today',yesterday:'originally published yesterday',twoDays:'originally published two days ago',published7:'new in the last 7 days',published30:'new in the last 30 days',updated7:'updated in the last 7 days',all:'from the indexed archive'};
+    const title = state.group!=='all'?groupTitles[state.group]+' advisories':state.tech!=='all'?state.tech+(metricScope==='cves'?' CVEs':' advisories'):(descriptions[metricScope]||descriptions.all);
     $('listContext').textContent=title+' · '+periodNames[state.period];
     const pages=Math.max(1,Math.ceil(selected.length/TABLE_PAGE_SIZE));
     tablePage=Math.min(tablePage,pages-1);
@@ -345,11 +387,11 @@
   }
   function resetPaging(){visibleCount=PAGE_SIZE;tablePage=0;}
   function clear(){
-    state.q='';state.tech='all';state.severity='all';state.period='published30';metricScope='all';resetPaging();
+    state.q='';state.tech='all';state.group='all';state.severity='all';state.period='published30';metricScope='all';resetPaging();
     $('search').value='';$('technologyFilter').value='all';$('severity').value='all';$('dateRange').value='published30';render();
   }
   $('search').addEventListener('input',e=>{state.q=e.target.value.trim().toLowerCase();resetPaging();render();});
-  $('technologyFilter').addEventListener('change',e=>{state.tech=e.target.value;metricScope='all';resetPaging();render();});
+  $('technologyFilter').addEventListener('change',e=>{state.tech=e.target.value;state.group='all';metricScope='all';resetPaging();render();});
   $('severity').addEventListener('change',e=>{state.severity=e.target.value;metricScope='all';resetPaging();render();});
   $('dateRange').addEventListener('change',e=>{state.period=e.target.value;resetPaging();render();});
   $('archiveEmpty').addEventListener('click',()=>{state.period='all';$('dateRange').value='all';resetPaging();render();});
@@ -368,7 +410,7 @@
         $('technology').scrollIntoView({behavior:'smooth',block:'start'});
         return;
       }
-      state.q='';state.tech='all';state.severity='all';state.period='all';
+      state.q='';state.tech='all';state.group='all';state.severity='all';state.period='all';
       $('search').value='';$('technologyFilter').value='all';$('severity').value='all';$('dateRange').value='all';
       metricScope=scope==='all'?'cves':scope;
       listMode='list';resetPaging();render();
