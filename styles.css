@@ -765,3 +765,32 @@ button.tech-chart-link b{
 .account-panel #accountDelete{margin-top:10px}
 .account-panel input[type="checkbox"]{width:auto;min-height:auto;margin-right:8px}
 @media(max-width:600px){.account-panel{padding:15px}}
+
+
+/* Threat origin world map and malware intelligence */
+.geo-map-panel{background:#0b2032;border:1px solid #294459;border-radius:14px;padding:23px;margin:18px 0}
+.geo-map-head{display:flex;align-items:start;justify-content:space-between;gap:12px}
+.geo-map-head h3,.geo-map-panel h3{font-size:18px;margin:0 0 6px}
+.geo-map-head p{font-size:12px;color:#9db6c9;max-width:660px;line-height:1.6;margin:0}
+.geo-map-controls{display:flex;gap:12px;align-items:end;margin:15px 0}
+.geo-map-controls label{font-size:11px;color:#9db6c9;display:flex;flex-direction:column;gap:6px}
+.geo-map-controls select{padding:10px;border:1px solid #35566b;border-radius:7px;background:#071827;color:white}
+.geo-map-controls button{background:#123d4d;color:#81e9df;border:1px solid #327c84;border-radius:7px;padding:10px 14px;cursor:pointer}
+.geo-map-layout{display:grid;grid-template-columns:minmax(0,3fr) minmax(190px,1fr);gap:14px}
+#threatWorldMap{height:440px;background:#122d42;border-radius:10px;overflow:hidden;min-width:0}
+.geo-ranking{background:#0e2a3d;border:1px solid #294a5c;border-radius:9px;padding:12px;max-height:440px;overflow:auto}
+.geo-ranking h4{margin:2px 0 12px;font-size:13px}
+.geo-ranking-row{display:flex;justify-content:space-between;align-items:center;width:100%;padding:10px 9px;background:transparent;border:0;border-bottom:1px solid #29475a;color:#cce0e9;text-align:left;cursor:pointer;font-size:12px}
+.geo-ranking-row strong{color:#69e0d3}
+.geo-ranking-row:hover,.geo-ranking-row.selected{background:#185164;border-radius:6px}
+.malware-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.malware-entry,.malware-advisory{background:#102d42;border:1px solid #2e4c63;border-radius:10px;padding:17px;min-width:0;overflow-wrap:anywhere}
+.malware-entry-heading{display:flex;justify-content:space-between;gap:8px;align-items:start}
+.malware-entry strong,.malware-advisory a{font-size:14px;color:#e1f4f8}
+.malware-entry p{font-size:11px;color:#a5bcd0;overflow-wrap:anywhere;line-height:1.6}
+.malware-entry small,.malware-advisory small{display:block;color:#819eaf;font-size:11px;margin:10px 0}
+.malware-entry a,.malware-advisory a{color:#72dfd5;font-size:12px;line-height:1.5}
+.malware-advisory p{font-size:12px;color:#a8c4d5;line-height:1.7}
+.malware-type-badge{font-size:10px;color:#ffc68e;background:#5b3b27;border-radius:5px;padding:5px 7px;white-space:nowrap}
+#threatWorldMap .leaflet-container,#threatWorldMap .leaflet-popup-content{font-family:Arial,sans-serif}
+@media(max-width:780px){.geo-map-layout{grid-template-columns:1fr}.geo-ranking{max-height:220px}.geo-map-head{display:block}#threatWorldMap{height:335px}.malware-grid{grid-template-columns:1fr}}
