@@ -122,3 +122,7 @@ Other requested vendor sources, including Debian, Red Hat, Broadcom/VMware, MySQ
 ## Additional official adapters
 
 Debian Security Advisories, Docker Security Announcements, Kubernetes official CVE JSON feed and MariaDB's upstream GitHub security advisories are configured as separate hourly sources. Feed health must be consulted to confirm live availability. The OSV bulk modified-ID export is temporarily disabled after a size-limit error in production, pending a bounded API implementation. Red Hat, Broadcom, PostgreSQL and the other database sources are still pending vetted adapters. Wordfence remains optional until its API key is supplied.
+
+## Network threat IP intelligence
+
+The site has a separate, review-only page of public IP indicators derived from SANS Internet Storm Center's top observed source IPs and Feodo Tracker's active botnet command and control IP blocklist. Data is collected at most hourly as part of the existing workflow and each source is labeled separately. The public list includes the source, activity classification and actual collection time but never implies source-reported last-seen time without evidence. Validate an address against local logs, cloud-provider infrastructure and trusted scanner allowlists before blocking. This is not a CVE scanner nor a production-ready automatic blocklist. A failed or empty feed is shown as unavailable and never means the network is secure.

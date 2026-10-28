@@ -1,0 +1,45 @@
+(() => {
+  'use strict';
+  const report=window.CVEHARBOR_THREATS || {indicators:[],sources:{},count:0};
+  const root=document.getElementById('threatRows');
+  if(!root)return;
+  const count=document.getElementById('threatCount');
+  const status=document.getElementById('threatStatus');
+  const select=document.getElementById('threatSourceFilter');
+  const search=document.getElementById('threatSearch');
+  const items=Array.isArray(report.indicators)?report.indicators:[];
+  const sources=Object.entries(report.sources||{});
+  count.textContent=items.length+' observed indicators';
+  const healthy=sources.filter(([,s])=>s.ok).length;
+  const checked=report.checked_at ? new Date(report.checked_at) : null;
+  status.textContent=(checked&&!Number.isNaN(checked.getTime())?'Collected '+checked.toLocaleString('en-CA',{timeZone:'America/Toronto'})+' ET. ':'No successful collection yet. ')+healthy+' of '+sources.length+' sources responded. IPs are third-party reports, not evidence of attacks on your network.';
+  for(const [id,s] of sources){
+    const option=document.createElement('option');
+    option.value=id;
+    option.textContent=(id==='dshield_scanners'?'Observed scanning':id==='feodo_c2'?'Botnet C2':id)+(s.ok?'':' (feed unavailable)');
+    select.append(option);
+  }
+  const make=(tag,value)=>{const el=document.createElement(tag);el.textContent=value;return el;};
+  function render(){
+    root.replaceChildren();
+    const filter=select.value,q=search.value.trim().toLowerCase();
+    const visible=items.filter(x=>(filter==='all'||x.source_id===filter)&&(!q||x.ip.includes(q)||x.activity.toLowerCase().includes(q))).slice(0,150);
+    if(!visible.length){
+      const p=make('p','No indicators match. A missing or failed feed is not a security clearance.');
+      p.className='threat-empty';root.append(p);return;
+    }
+    for(const x of visible){
+      const row=make('article','');row.className='threat-entry';
+      const name=make('strong',x.ip);name.className='threat-ip';
+      const tag=make('span',x.activity);tag.className='threat-type';
+      const meta=make('div',x.source+' · Source-reported activity · No verified last-seen timestamp');
+      meta.className='threat-meta';
+      const link=make('a','View source ↗');link.href=x.source_url;link.target='_blank';link.rel='noopener noreferrer';
+      const head=make('div','');head.className='threat-entry-head';head.append(name,tag);
+      row.append(head,meta,link);root.append(row);
+    }
+  }
+  select.addEventListener('change',render);
+  search.addEventListener('input',render);
+  render();
+})();
