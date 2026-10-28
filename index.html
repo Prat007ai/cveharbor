@@ -19,7 +19,7 @@
         <span class="brand-type">CVE<span>Harbor</span><small>VULNERABILITY INTELLIGENCE</small></span>
       </a>
       <nav class="topnav" aria-label="Main navigation">
-        <a href="#dashboard">Overview</a><a href="#advisories">Advisories</a><a href="#technology">Technologies</a><a href="#threat-intelligence">Threat IPs</a><a href="#methodology">Methodology</a>
+        <a href="#dashboard">Overview</a><a href="#advisories">Advisories</a><a href="#technology">Technologies</a><a href="#securityWorkspace">My Stack & Lookup</a><a href="#threat-intelligence">Threat IPs</a><a href="#methodology">Methodology</a>
       </nav>
     </div>
   </div>
@@ -53,6 +53,24 @@
       <div class="category-grid" id="categoryGrid" aria-label="All 38 technology groups in four sections"></div>
       <div class="technology-empty" id="technologyEmpty" hidden>No matching technologies. Try another name or product.</div>
       <p class="technology-footnote" id="technologySearchSummary" aria-live="polite">All 38 technology categories appear above. “New” means first published in the last 30 days; “total” includes older indexed advisories. Zero does not establish that a product is secure.</p>
+    </section>
+    <section id="securityWorkspace" class="shell section" aria-labelledby="workspaceTitle">
+      <div class="section-heading"><div><p class="eyebrow">SECURITY WORKSPACE</p><h2 id="workspaceTitle">My Technology Stack & Security Lookup</h2><p class="section-sub">Find indexed CVEs, product names and reported IPs. Select your technology areas to see relevant advisories. Your selections remain in this browser.</p></div><span class="result-pill">No account required</span></div>
+      <div class="workspace-grid">
+        <article class="data-panel workspace-panel">
+          <div class="panel-heading"><div><h3>Universal security lookup</h3><p>Search the currently published vulnerability and threat IP data.</p></div></div>
+          <label class="workspace-search-label" for="securityLookup">CVE, technology, package or IP address</label>
+          <input id="securityLookup" type="search" placeholder="Example: CVE-2026, WordPress, 23.94..." autocomplete="off"/>
+          <div id="securityLookupResults" class="workspace-results" aria-live="polite"></div>
+        </article>
+        <article class="data-panel workspace-panel">
+          <div class="panel-heading"><div><h3>My Technology Stack</h3><p>Choose the technologies you manage. Stored only in this browser.</p></div><span id="stackCount" class="mini-label">0 selected</span></div>
+          <div id="stackTechnologyList" class="workspace-technologies"></div>
+          <div class="workspace-summary"><p id="stackSummary" aria-live="polite"></p><button type="button" id="stackClear" class="workspace-clear">Clear selection</button></div>
+          <p id="stackStorageNote" class="workspace-note">This is a local convenience watchlist. It does not verify your deployed versions or send alerts.</p>
+          <div id="stackAdvisories" class="workspace-results"></div>
+        </article>
+      </div>
     </section>
     <section id="dashboard" class="shell section" aria-labelledby="overviewTitle">
       <div class="section-heading"><div><p class="eyebrow">OVERVIEW</p><h2 id="overviewTitle">Vulnerability intelligence at a glance</h2><p class="section-sub">Summary totals include all indexed advisories. Use the date filter to see newly published CVEs. These counts do not represent vulnerabilities on your infrastructure.</p></div><div class="section-side">HOURLY COLLECTION <span class="small-star">✦</span> OPEN SOURCES</div></div>
@@ -149,6 +167,6 @@
     </div>
   </dialog>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=footer-feed-status-1"></script>
+  <script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=footer-feed-status-1"></script><script src="workspace.js?v=workspace-1"></script>
 </body>
 </html>

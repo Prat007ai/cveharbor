@@ -98,4 +98,16 @@ threatButton.click();
 assert.match(threatDocument.getElementById('threatDetailContent').textContent,/8.8.8.8/);
 assert.match(threatDocument.getElementById('threatDetailContent').textContent,/Not supplied by this feed/);
 
+const workspaceWindow=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'}).window;
+workspaceWindow.CVEHARBOR_DATA=window.CVEHARBOR_DATA;
+workspaceWindow.CVEHARBOR_CATALOG=window.CVEHARBOR_CATALOG;
+workspaceWindow.eval(fs.readFileSync('workspace.js','utf8'));
+const workspaceDocument=workspaceWindow.document;
+assert.equal(workspaceDocument.querySelectorAll('.workspace-checkbox').length,38,'all technology choices available');
+const phpChoice=[...workspaceDocument.querySelectorAll('.workspace-checkbox')].find(n=>n.textContent==='PHP');
+phpChoice.querySelector('input').click();
+assert.match(workspaceDocument.getElementById('stackSummary').textContent,/indexed matches/,'stack matches shown');
+workspaceDocument.getElementById('securityLookup').value='CVE-2026';
+workspaceDocument.getElementById('securityLookup').dispatchEvent(new workspaceWindow.Event('input'));
+assert.ok(workspaceDocument.querySelectorAll('#securityLookupResults .workspace-result').length>0,'lookup results visible');
 console.log('CVEHarbor browser smoke passed: 38 categories, publication badges, list, details, focus, search and feed status.');

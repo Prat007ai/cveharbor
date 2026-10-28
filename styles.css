@@ -711,3 +711,27 @@ button.tech-chart-link b{
 .threat-download-link:hover{background:#1a6060;color:#fff}
 .threat-download-link:focus-visible{outline:2px solid #8df2dd;outline-offset:2px}
 @media(max-width:700px){.threat-downloads{align-items:stretch}.threat-download-actions{display:grid;grid-template-columns:minmax(0,1fr);width:100%}}
+
+.workspace-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.workspace-panel{min-width:0}
+.workspace-search-label{display:block;font-size:11px;color:#a9c9d7;margin:17px 0 6px;font-weight:700}
+#securityLookup{width:100%;min-height:44px;border:1px solid #376279;background:#071b2d;border-radius:8px;padding:11px;color:#f0fbff;font:inherit}
+.workspace-results{display:grid;gap:9px;margin-top:15px;max-height:480px;overflow-y:auto}
+.workspace-result{min-width:0;border:1px solid #2c4c60;border-radius:9px;background:#102b40;padding:12px}
+.workspace-result-header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.workspace-result strong{font-size:12px;color:#e9f8ff;overflow-wrap:anywhere}
+.workspace-result p{font-size:11px;color:#a6bdcb;line-height:1.6;margin:6px 0}
+.workspace-severity{border-radius:5px;padding:3px 6px;font-size:9px;white-space:nowrap;color:#afcfde;background:#19394a;font-weight:800}
+.workspace-severity.critical{background:#6b2639;color:#ffd9de}.workspace-severity.high{background:#554023;color:#ffe4b9}
+.workspace-kev{display:block;color:#ffbeae!important;margin:6px 0}
+.workspace-link{font-size:11px;color:#70e2d5;text-decoration:none}
+.workspace-note{font-size:11px;color:#93b2c4;line-height:1.6;margin:8px 0}
+.workspace-technologies{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));max-height:230px;overflow-y:auto;gap:7px;margin-top:15px}
+.workspace-checkbox{display:flex;align-items:center;gap:8px;font-size:11px;color:#d1e5ef;cursor:pointer;min-width:0}
+.workspace-checkbox input{accent-color:#65e6d2;flex-shrink:0}
+.workspace-checkbox span{overflow-wrap:anywhere}
+.workspace-summary{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:15px;padding-top:12px;border-top:1px solid #284658}
+.workspace-summary p{font-size:11px;color:#9ad3ca;margin:0}
+.workspace-clear{border:1px solid #356d70;border-radius:7px;background:#143c48;color:#baf5e8;padding:7px 10px;cursor:pointer;font-size:11px;white-space:nowrap}
+@media(max-width:950px){.workspace-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:460px){.workspace-technologies{grid-template-columns:minmax(0,1fr)}.workspace-summary{flex-wrap:wrap}}
