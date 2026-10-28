@@ -128,7 +128,7 @@ def classify(*, product: str = "", ecosystem: str = "", text: str = "", cpes: li
     generic_dotnet = eco == "nuget" or has(r"(?:\bdotnet\b|\.net\b|entity framework|blazor|nuget)")
     add(".NET / ASP.NET", legacy_dotnet or generic_dotnet or modern_dotnet)
     add(".NET Core", modern_dotnet)
-    add("WordPress / Plugins", has(r"\b(?:wordpress|woocommerce|wp[-_ ]?(?:plugin|core))\b") or hp(r"\bwp[-_][a-z0-9_-]+"))
+    add("WordPress / Plugins", has(r"\b(?:wordpress|woocommerce|wp[-_ ]?(?:plugin|core))\b") or hp(r"\bwp[-_](?!squared\b)[a-z0-9_-]+"))
     add("PHP", eco == "composer" or has(r"\b(?:php|laravel|symfony|composer|php-fpm)\b"))
     add("Python / PyPI", eco == "pip" or has(r"\b(?:python|pypi|django|flask|fastapi)\b"))
     add("Node.js / npm", eco == "npm" or has(r"\b(?:node\.js|nodejs|npm|express\.js|next\.js|react(?:\.js)?|angular|vue(?:\.js)?)\b"))
@@ -209,6 +209,12 @@ def recategorize_existing(record: dict) -> dict:
         categories = [c for c in categories if c != "Windows"]
     if "Windows Server OS" in hints and "Windows" not in hints:
         categories = [c for c in categories if c != "Windows"]
+    # cPanel WP Squared is a hosting product, not necessarily WordPress core/plugins.
+    # Remove a legacy false-positive WordPress tag if no actual WordPress evidence exists.
+    if ("WordPress / Plugins" in categories and "WordPress / Plugins" not in hints
+        and re.search(r"\bcpanel\b", evidence, re.I)
+        and re.search(r"\bwp_squared\b", evidence, re.I)):
+        categories = [c for c in categories if c != "WordPress / Plugins"]
     if "Sitefinity" in hints and not re.search(r"\b(?:drupal|dotnetnuke|kentico|umbraco)\b", evidence, re.I):
         categories = [c for c in categories if c != "Drupal / CMS"]
     entry["categories"] = [c for c in categories if c in ALLOWED]
