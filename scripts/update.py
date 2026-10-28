@@ -208,19 +208,28 @@ def vendor_baseline_items() -> list[dict]:
 
 
 def ghsa_items() -> list[dict]:
-    output = []
-    for advisory_type in ("reviewed", "malware"):
-        for page in (1, 2):
-            # GitHub global advisories list can be read without private account data.
-            params = urllib.parse.urlencode({"type": advisory_type, "sort": "updated", "direction": "desc", "per_page": 100, "page": page})
-            batch = get_json(SOURCES["github"] + "?" + params, "github")
-            if not isinstance(batch, list):
-                raise ValueError("GitHub returned an unexpected structure")
-            output += batch
-            if len(batch) < 100:
-                break
-    return output
+    """Retrieve recently published AND recently revised GitHub advisories.
 
+    Sorting exclusively by updated date can bury disclosures in batches of
+    historical records that received routine metadata changes.
+    """
+    output = {}
+    for advisory_type in ("reviewed", "malware"):
+        for order in ("published", "updated"):
+            for page in (1, 2):
+                params = urllib.parse.urlencode({
+                    "type": advisory_type, "sort": order, "direction": "desc",
+                    "per_page": 100, "page": page
+                })
+                batch = get_json(SOURCES["github"] + "?" + params, "github")
+                if not isinstance(batch, list):
+                    raise ValueError("GitHub returned an unexpected structure")
+                for item in batch:
+                    if isinstance(item, dict) and item.get("ghsa_id"):
+                        output[item["ghsa_id"]] = item
+                if len(batch) < 100:
+                    break
+    return list(output.values())
 
 def from_ghsa(item: dict) -> dict | None:
     ghsa = str(item.get("ghsa_id") or "")
@@ -305,21 +314,45 @@ def cpe_text(vuln: dict) -> list[str]:
 
 
 def nvd_items() -> list[dict]:
-    start = NOW - timedelta(hours=60)
-    fmt = lambda dt: dt.strftime("%Y-%m-%dT%H:%M:%S.000+00:00")
-    collected = []
-    index = 0
-    for _ in range(4):
-        params = urllib.parse.urlencode({"lastModStartDate": fmt(start), "lastModEndDate": fmt(NOW), "startIndex": index, "resultsPerPage": 1000})
-        data = get_json(SOURCES["nvd"] + "?" + params, "nvd")
-        batch = data.get("vulnerabilities") or []
-        collected += batch
-        index += len(batch)
-        if index >= int(data.get("totalResults", 0)) or not batch:
-            break
-        time.sleep(1)
-    return collected
+    """Sample new publications explicitly, plus recently modified records.
 
+    A last-modified search alone can be dominated by months-old CVEs, hiding
+    truly new disclosures behind pagination.
+    """
+    fmt = lambda dt: dt.strftime("%Y-%m-%dT%H:%M:%S.000+00:00")
+    collected = {}
+    queries = (
+        # Prioritize actual new publications for the main dashboard.
+        ("pubStartDate", "pubEndDate", NOW - timedelta(hours=48), 2),
+        # Also refresh changed CVSS, references, patches, and exploitation.
+        ("lastModStartDate", "lastModEndDate", NOW - timedelta(hours=12), 3),
+    )
+    for start_name, end_name, start_time, max_pages in queries:
+        index = 0
+        for _ in range(max_pages):
+            params = urllib.parse.urlencode({
+                start_name: fmt(start_time), end_name: fmt(NOW),
+                "startIndex": index, "resultsPerPage": 1000
+            })
+            data = get_json(SOURCES["nvd"] + "?" + params, "nvd")
+            batch = data.get("vulnerabilities") or []
+            for item in batch:
+                cve_id = (item.get("cve") or {}).get("id")
+                if cve_id:
+                    collected[cve_id] = item
+            index += len(batch)
+            if index >= int(data.get("totalResults", 0)) or not batch:
+                break
+            # Unauthenticated NVD API requests have strict rate limits.
+            time.sleep(7 if not os.getenv("NVD_API_KEY") else 1)
+        else:
+            if index < int(data.get("totalResults", 0)):
+                print(f"WARNING: NVD {start_name} window has more records than "
+                      f"the {max_pages} page sampling cap.", file=sys.stderr, flush=True)
+        # Avoid burst limits when moving between NVD query windows.
+        if not os.getenv("NVD_API_KEY"):
+            time.sleep(6)
+    return list(collected.values())
 
 def from_nvd(v: dict) -> dict | None:
     cve = v.get("cve") or {}
@@ -471,24 +504,40 @@ def run() -> int:
                 "last_checked_at": utc_iso(), "last_successful_update": prev.get("last_successful_update")}
         publish(fail)
         return 1
-    # Preserve the newest disclosures while reserving space for CISA KEV entries.
-    # Do not let thousands of old KEV entries crowd out today's newly updated CVEs.
-    recent = sorted(merged.values(), key=lambda x:(x.get("source_updated_at") or x.get("updated") or "", x.get("published") or ""), reverse=True)
-    # Reserve space for vendor-confirmed baseline advisories so newly created
-    # category sections are populated even when 900 more recent items exist.
+    # Prioritize genuinely NEW CVEs before older records with recent metadata
+    # updates. Retain important vendor baselines and known exploited issues.
+    published_cutoff = (NOW - timedelta(days=30)).date().isoformat()
+    updated_cutoff = (NOW - timedelta(days=7)).date().isoformat()
+    all_records = list(merged.values())
+    def publish_order(r):
+        return (r.get("published") or "", r.get("updated") or "")
+    newly_disclosed = sorted(
+        [r for r in all_records if (r.get("published") or "") >= published_cutoff],
+        key=publish_order, reverse=True
+    )
+    recently_revised = sorted(
+        [r for r in all_records if (r.get("published") or "") < published_cutoff
+         and (r.get("updated") or "") >= updated_cutoff],
+        key=lambda r:(r.get("updated") or "",r.get("published") or ""), reverse=True
+    )
+    historical = sorted(all_records, key=publish_order, reverse=True)
     chosen = {rid: merged[rid] for rid in baseline_ids if rid in merged}
-    for r in recent[:max(0, 700 - len(chosen))]:
-        chosen.setdefault(r["id"], r)
-    exploited = [r for r in recent if r.get("known_exploited")]
-    for r in exploited[:200]:
+    for group in (newly_disclosed, recently_revised):
+        for record in group:
+            if len(chosen) >= MAX_RECORDS:
+                break
+            chosen.setdefault(record["id"], record)
+    for record in sorted((r for r in all_records if r.get("known_exploited")),
+                         key=lambda r:r.get("updated") or "", reverse=True):
         if len(chosen) >= MAX_RECORDS:
             break
-        chosen.setdefault(r["id"], r)
-    for r in recent:
+        chosen.setdefault(record["id"], record)
+    for record in historical:
         if len(chosen) >= MAX_RECORDS:
             break
-        chosen.setdefault(r["id"], r)
-    records = sorted(chosen.values(), key=lambda x:(x.get("updated") or "", x.get("published") or ""), reverse=True)
+        chosen.setdefault(record["id"], record)
+    # Public list is ordered by original disclosure, not last-modified metadata.
+    records = sorted(chosen.values(), key=publish_order, reverse=True)
     result = {"siteName":"CVEHarbor", "snapshotDate": NOW.date().isoformat(),
               "mode":"live" if good == len(operations) else "partial", "categories":CATEGORIES, "advisories":records,
               "sources":sources, "last_checked_at":utc_iso(), "last_successful_update":utc_iso(),
