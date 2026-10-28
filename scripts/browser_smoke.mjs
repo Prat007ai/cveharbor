@@ -124,6 +124,17 @@ opsDoc.getElementById('remediationCve').value='CVE-2026-12345';
 opsDoc.getElementById('remediationForm').dispatchEvent(new opsDom.window.Event('submit',{bubbles:true,cancelable:true}));
 assert.match(opsDoc.getElementById('remediationCount').textContent,/1 tracked/,'local remediation form saves item');
 assert.equal(opsDoc.querySelectorAll('#firewallDownloads a').length,4,'firewall downloads available');
+const threatSection=document.getElementById('threat-intelligence');
+const firewallSection=document.getElementById('firewallCentre');
+assert.ok(threatSection.querySelector('a[href="#firewallCentre"]'),
+  'Threat IP Intelligence links to its single firewall export location');
+assert.equal(threatSection.querySelectorAll('a[download]').length,0,
+  'Threat IP Intelligence has no duplicate configuration download buttons');
+assert.ok(firewallSection.querySelector('#firewallDownloads'),
+  'Admin Toolkit remains the single canonical firewall download section');
+assert.equal(opsDoc.querySelectorAll('#firewallDownloads a[download]').length,4,
+  'all four FortiGate and Sophos exports remain downloadable');
+
 
 assert.ok(html.includes('id="remediationForm"')&&html.includes('id="firewallCentre"'),'tracker and firewall centre present');
 assert.ok(html.includes('id="accountWorkspace"')&&html.includes('id="accountVerify"'),'account section and verification UI present');
