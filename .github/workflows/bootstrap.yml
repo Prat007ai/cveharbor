@@ -1,40 +1,120 @@
-name: Restore CVEHarbor website source
+name: CVEHarbor setup and hourly sync
+
 on:
   push:
     paths:
       - deployment/source.tar.xz.b64
       - .github/workflows/bootstrap.yml
+  schedule:
+    - cron: '17 * * * *'
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: 'Publish the hourly advisory site now (enable Pages first)'
+        required: false
+        default: false
+        type: boolean
+
 permissions:
   contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: cveharbor-site
+  cancel-in-progress: false
+
 jobs:
   restore:
+    name: Restore site files
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.deploy != true)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Extract website files
+        with:
+          ref: main
+      - name: Extract site source without creating other workflow files
         run: |
           python - <<'PY'
           from pathlib import Path
-          import base64,tarfile,io,lzma
-          root=Path('.').resolve()
-          data=base64.b64decode(Path('deployment/source.tar.xz.b64').read_text())
-          with tarfile.open(fileobj=io.BytesIO(data),mode='r:xz') as archive:
+          import base64
+          import io
+          import tarfile
+
+          root = Path.cwd().resolve()
+          data = base64.b64decode(Path('deployment/source.tar.xz.b64').read_text())
+          with tarfile.open(fileobj=io.BytesIO(data), mode='r:xz') as archive:
+              safe_members = []
               for member in archive.getmembers():
-                  target=(root/member.name).resolve()
+                  path = Path(member.name)
+                  target = (root / path).resolve()
                   if not target.is_relative_to(root):
-                      raise ValueError("Unsafe archive path")
+                      raise ValueError('Unsafe archive path')
                   if not member.isfile() and not member.isdir():
-                      raise ValueError("Unexpected archive member")
-              archive.extractall(root, filter='data')
-          print("Source extracted")
+                      raise ValueError('Unexpected archive member')
+                  if path.parts and path.parts[0] == '.github':
+                      print('Skipping bundled workflow:', member.name)
+                      continue
+                  safe_members.append(member)
+              archive.extractall(root, members=safe_members, filter='data')
+          print('Site source extracted successfully')
           PY
-      - name: Commit restored website
+      - name: Commit website files only
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
+          git add index.html app.js data.js styles.css README.md CNAME robots.txt data scripts tests public
           if ! git diff --cached --quiet; then
-            git commit -m 'Restore CVEHarbor website and hourly security collector'
-            git push
+            git commit -m 'Restore CVEHarbor website, data collector and tests'
+            git push origin main
           fi
+
+  sync:
+    name: Collect public advisories and deploy
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true)
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Fetch advisories
+        id: collect
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: python scripts/update.py
+      - name: Save public data
+        run: |
+          git config user.name 'cveharbor-updater[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/advisories.json data.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Refresh CVEHarbor public advisories'
+            git push origin main
+          fi
+      - name: Build public site files
+        run: python scripts/build_site.py
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Flag failed source collection
+        if: steps.collect.outcome == 'failure'
+        run: |
+          echo 'Source collection failed; do not assume this dashboard is current.' >&2
+          exit 1
