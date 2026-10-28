@@ -456,7 +456,7 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
         self.assertIn("detailMarkers.append(firstPublished)",js)
         self.assertIn("animation:cveharborFreshDisclosurePulse",css)
         self.assertIn("@media(prefers-reduced-motion:reduce)",css)
-        self.assertIn("site-audit-2",html)
+        self.assertIn("site-audit-3",html)
         self.assertIn("original disclosure dates",html)
 
     def test_category_publication_badges_group_drilldown_and_day_filters(self):
@@ -503,6 +503,8 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
         self.assertIn("function renderFocus()",js)
         self.assertIn("row.addEventListener('click',()=>showDetail(x))",js)
         self.assertIn("Math.max(0,9-priority.length)",js)
+        self.assertIn("openTechnologyAdvisories(x.name,false,openPeriod)",js)
+        self.assertIn('id="heroFeedSummary"',html)
         self.assertIn("focus-action",css)
         self.assertIn("Boolean(prior.known_exploited||baseline.known_exploited)",js)
         self.assertIn("value=\"low\"",html)
