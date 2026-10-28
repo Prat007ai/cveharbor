@@ -198,3 +198,16 @@ button.tech-chart-link b{
 @media (prefers-reduced-motion: reduce){
   button.tech-chart-link{transition:none}
 }
+
+/* Keep both UTC and Toronto time visible even when the feed status text is long. */
+.footer-status .notice{flex-wrap:wrap}
+.footer-status .notice > div{flex:1 1 80%;min-width:0}
+.footer-status .notice-date{
+  display:block;
+  margin:0 0 0 38px;
+  flex:0 0 calc(100% - 38px);
+  white-space:normal;
+  text-align:left;
+  overflow-wrap:anywhere;
+  font-size:12px;
+}
