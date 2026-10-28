@@ -98,20 +98,20 @@ export async function dispatchDueDigests(env, currentDate = new Date()) {
   if (env.ALERT_DELIVERY_ENABLED !== 'true') return { status: 'disabled' };
   const hour = localClock(currentDate).hour;
   if (!env.DB || !(env.ALERT_SMTP2GO_API_KEY || env.SMTP2GO_API_KEY) || !env.EMAIL_FROM) throw Error('Digest backend is not configured');
+  const hourlySlot = digestSlot('hourly', currentDate);
+  const dailySlot = digestSlot('daily', currentDate);
+  // Prioritize due daily reports, and leave completed slots out of the query
+  // so older subscribers do not starve other customers as the audience grows.
   const subscribers = await env.DB.prepare(
-    'SELECT u.id,u.email,p.severity,p.frequency,o.unsubscribe_token FROM users u JOIN alert_preferences p ON p.user_id=u.id JOIN alert_optins o ON o.user_id=u.id WHERE p.enabled=1 AND (p.frequency=? OR (p.frequency=? AND ? >= 8)) ORDER BY o.consented_at LIMIT 500'
-  ).bind('hourly', 'daily', hour).all();
-  const candidates = (subscribers.results || []);
-  if (!candidates.length) return { status: 'no_subscribers' };
-  const pending = [];
-  for (const user of candidates) {
-    const slot = digestSlot(user.frequency, currentDate);
-    const existing = await env.DB.prepare('SELECT status,claimed_at FROM alert_digest_runs WHERE user_id=? AND slot=?').bind(user.id, slot).first();
-    if (!existing || existing.status === 'failed' || (existing.status === 'sending' && existing.claimed_at < nowSec() - 3600)) {
-      pending.push({ ...user, slot });
-      if (pending.length >= MAX_SEND_PER_TICK) break;
-    }
-  }
+    "SELECT u.id,u.email,p.severity,p.frequency,o.unsubscribe_token FROM users u " +
+    "JOIN alert_preferences p ON p.user_id=u.id JOIN alert_optins o ON o.user_id=u.id " +
+    "WHERE p.enabled=1 AND (p.frequency='hourly' OR (p.frequency='daily' AND ? >= 8)) " +
+    "AND NOT EXISTS (SELECT 1 FROM alert_digest_runs r WHERE r.user_id=u.id " +
+    "AND r.slot=CASE WHEN p.frequency='hourly' THEN ? ELSE ? END " +
+    "AND (r.status IN ('sent','empty') OR (r.status='sending' AND r.claimed_at>=?))) " +
+    "ORDER BY CASE WHEN p.frequency='daily' THEN 0 ELSE 1 END, o.consented_at LIMIT ?"
+  ).bind(hour, hourlySlot, dailySlot, nowSec() - 3600, MAX_SEND_PER_TICK).all();
+  const pending = (subscribers.results || []).map(user => ({ ...user, slot: digestSlot(user.frequency, currentDate) }));
   if (!pending.length) return { status: 'up_to_date' };
   const feed = await loadPublicFeed();
   let sent = 0, empty = 0, failed = 0;
@@ -139,9 +139,6 @@ export async function dispatchDueDigests(env, currentDate = new Date()) {
 }
 
 export async function sendUserSample(env, user) {
-  const count = await env.DB.prepare(
-    'SELECT count FROM auth_rate_limits WHERE key=?'
-  ).bind('digest-test:' + user.id).first();
   // Each user may request at most two tests in a rolling hour.
   const now = nowSec();
   await env.DB.prepare("DELETE FROM auth_rate_limits WHERE window_start<?").bind(now - 3600).run();
