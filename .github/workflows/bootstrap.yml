@@ -102,14 +102,40 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: python scripts/update.py
-      - name: Save public data
+      - name: Save public data safely if other commits arrived
+        shell: bash
         run: |
+          set -euo pipefail
+          # Long feed collection can overlap changes to the website source.
+          # Retain the generated data, sync to the latest main, and retry
+          # optimistic pushes. Never force push or discard other changes.
+          cp data/advisories.json "$RUNNER_TEMP/cveharbor-advisories.json"
+          cp data.js "$RUNNER_TEMP/cveharbor-data.js"
           git config user.name 'cveharbor-updater[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/advisories.json data.js
-          if ! git diff --cached --quiet; then
+          success=false
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/cveharbor-advisories.json" data/advisories.json
+            cp "$RUNNER_TEMP/cveharbor-data.js" data.js
+            git add data/advisories.json data.js
+            if git diff --cached --quiet; then
+              echo "Advisory data is already up to date."
+              success=true
+              break
+            fi
             git commit -m 'Refresh CVEHarbor public advisories'
-            git push origin main
+            if git push origin HEAD:main; then
+              success=true
+              break
+            fi
+            echo "Concurrent edit detected; retrying data-only commit (attempt $attempt)" >&2
+            sleep $((attempt * 2))
+          done
+          if [ "$success" != true ]; then
+            echo "Failed to publish advisory dataset after five safe retries." >&2
+            exit 1
           fi
       - name: Build public site files
         run: python scripts/build_site.py
