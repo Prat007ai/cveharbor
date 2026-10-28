@@ -32,7 +32,7 @@ for entry in baseline['advisories']:
         'kind': 'cve',
         'source_type': 'vendor_baseline',
         'status': 'Historical vendor advisory (not a new disclosure)',
-        'known_exploited': False,
+        'known_exploited': bool(entry.get('known_exploited', False)),
         'first_seen_at': None,
         'action': 'Verify your deployed version and follow the linked official vendor advisory.',
     }
