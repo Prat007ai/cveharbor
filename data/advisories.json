@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-28",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4288,
+  "candidate_records": 4281,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -7919,8 +7919,8 @@
       "title": "Malicious code in black-spindle (npm)",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -7952,8 +7952,8 @@
       "title": "Malware in itsa-utils",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -7981,8 +7981,8 @@
       "title": "Malware in itsa-react-checkbox",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -8010,8 +8010,8 @@
       "title": "Malware in @walknpm/todo-cli",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -8039,8 +8039,8 @@
       "title": "Malware in dsh-plugin-blender-3d",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -9374,6 +9374,38 @@
       "epss": 0.00112,
       "epss_percentile": 0.01358,
       "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-118314",
+      "title": "Improper input validation in UI in Google Chrome on on Android prior to 156.0.8078.73 allowed a remote attacker to potentially execute arbitrary code inside the sandbox via a ",
+      "severity": "high",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-28",
+      "summary": "Improper input validation in UI in Google Chrome on on Android prior to 156.0.8078.73 allowed a remote attacker to potentially execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: High)",
+      "affected": "Products identified in NVD configurations: google chrome; google android",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118314"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://chromereleases.googleblog.com/2026/10/stable-channel-update-for-desktop_0562499947.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T19:09:19Z",
+      "source_updated_at": "2026-10-28T19:07:37.963",
+      "source_type": "nvd",
+      "known_exploited": false
     },
     {
       "id": "CVE-2026-108142",
@@ -25520,6 +25552,7 @@
       "title": "Javo Spot theme for WordPress before 3.0.0 contains a path traversal vulnerability that allows unauthenticated attackers to read arbitrary files via the fn parameter of the jv",
       "severity": "high",
       "categories": [
+        "PHP",
         "WordPress / Plugins"
       ],
       "published": "2026-10-22",
@@ -26206,6 +26239,54 @@
       "epss_as_of": "2026-10-28"
     },
     {
+      "id": "CVE-2026-109618",
+      "title": "RCE via OOM corruption",
+      "severity": "critical",
+      "categories": [
+        "Fortinet",
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-28",
+      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "PHP upstream security advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:25Z",
+      "source_type": "php_upstream",
+      "known_exploited": true,
+      "epss": 0.99999,
+      "epss_percentile": 0.99998,
+      "epss_as_of": "2026-10-28"
+    },
+    {
       "id": "CVE-2026-109619",
       "title": "RCE via stale global state",
       "severity": "critical",
@@ -26252,54 +26333,6 @@
       "known_exploited": true,
       "epss": 0.99999,
       "epss_percentile": 0.99999,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-109618",
-      "title": "RCE via OOM corruption",
-      "severity": "critical",
-      "categories": [
-        "Fortinet",
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-28",
-      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "PHP upstream security advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:25Z",
-      "source_type": "php_upstream",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99998,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -40299,6 +40332,42 @@
       "epss_as_of": "2026-10-28"
     },
     {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60635,
+      "epss_as_of": "2026-10-28"
+    },
+    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -40337,42 +40406,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55752,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60635,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -66066,6 +66099,34 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-98097",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: tipc: Dont send random pad bytes in RESET/ACTIVATE messages The interface name is passed in a fixed length ",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-09-25",
+      "updated": "2026-10-28",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: tipc: Dont send random pad bytes in RESET/ACTIVATE messages The interface name is passed in a fixed length (TIPC_MAX_IF_NAME) buffer. Replace the strcpy(data, l->if_name) with memcpy() so that the pad bytes are actually written (l->if_name[] is zero padded) rather than sending random bytes from the skb to the remote system. Replace two other strcpy() with strscpy().",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-98097"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T19:09:19Z",
+      "source_updated_at": "2026-10-28T19:06:51.223",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-98141",
       "title": "In the Linux kernel, the following vulnerability has been resolved: ntfs: propagate reparse index insertion failure update_reparse_data() ignores the return value of set_repar",
       "severity": "medium",
@@ -78458,104 +78519,6 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-40299",
-      "title": "next-intl provides internationalization for Next.js",
-      "severity": "medium",
-      "categories": [
-        "Node.js / npm",
-        "React / Next.js"
-      ],
-      "published": "2026-04-17",
-      "updated": "2026-10-26",
-      "summary": "next-intl provides internationalization for Next.js. Applications using the `next-intl` middleware prior to version 4.9.1with `localePrefix: 'as-needed'` could construct URLs where path handling and the WHATWG URL parser resolved a relative redirect target to another host (e.g. scheme-relative `//` or control characters stripped by the URL parser), so the middleware could redirect the browser off-site while the user still started from a trusted app URL. The problem has been patchedin `next-intl@4.9.1`.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-40299"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00339,
-      "epss_percentile": 0.27266,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-40301",
-      "title": "DOMSanitizer is a DOM/SVG/MathML Sanitizer for PHP 7.3+",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-04-17",
-      "updated": "2026-10-26",
-      "summary": "DOMSanitizer is a DOM/SVG/MathML Sanitizer for PHP 7.3+. Prior to version 1.0.10, DOMSanitizer::sanitize() allows <style> elements in SVG content but never inspects their text content. CSS url() references and @import rules pass through unfiltered, causing the browser to issue HTTP requests to attacker-controlled hosts when the sanitized SVG is rendered. Version 1.0.10 fixes the issue.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-40301"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00322,
-      "epss_percentile": 0.25123,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-40305",
-      "title": "DNN (formerly DotNetNuke) is an open-source web content management platform (CMS) in the Microsoft ecosystem",
-      "severity": "medium",
-      "categories": [
-        "Drupal / CMS"
-      ],
-      "published": "2026-04-17",
-      "updated": "2026-10-26",
-      "summary": "DNN (formerly DotNetNuke) is an open-source web content management platform (CMS) in the Microsoft ecosystem. Starting in version 6.0.0 and prior to version 10.2.2, in the friends feature, a user could craft a request that would force the acceptance of a friend request on another user. Version 10.2.2 patches the issue.",
-      "affected": "Products identified in NVD configurations: dnnsoftware dotnetnuke",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-40305"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://github.com/dnnsoftware/Dnn.Platform/security/advisories/GHSA-fpj4-9qhx-5m6m"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00183,
-      "epss_percentile": 0.07856,
-      "epss_as_of": "2026-10-28"
-    },
-    {
       "id": "CVE-2025-65136",
       "title": "In manikandan580 School-management-system 1.0, a reflected XSS vulnerability exists in /studentms/admin/contact-us.php via the pagedes POST parameter.",
       "severity": "medium",
@@ -81635,6 +81598,46 @@
       "epss_as_of": "2026-10-28"
     },
     {
+      "id": "CVE-2023-52356",
+      "title": "A segment fault (SEGV) flaw was found in libtiff that could be triggered by passing a crafted tiff file to the TIFFReadRGBATileExt() API",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2024-01-25",
+      "updated": "2026-10-28",
+      "summary": "A segment fault (SEGV) flaw was found in libtiff that could be triggered by passing a crafted tiff file to the TIFFReadRGBATileExt() API. This flaw allows a remote attacker to cause a heap-buffer overflow, leading to a denial of service.",
+      "affected": "Products identified in NVD configurations: debian debian_linux; apple ipados; apple iphone_os; apple macos; apple tvos; apple visionos; apple watchos; libtiff libtiff; redhat ai_inference_server; redhat codeready_linux_builder; redhat codeready_linux_builder_eus; redhat discovery",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-52356"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://access.redhat.com/errata/RHSA-2024:5079"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://access.redhat.com/errata/RHSA-2025:20801"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://access.redhat.com/errata/RHSA-2025:21994"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T19:09:19Z",
+      "source_updated_at": "2026-10-28T19:06:50.917",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2024-23730",
       "title": "Unsafe yaml deserialization in llama-hub",
       "severity": "critical",
@@ -82336,85 +82339,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-28T19:01:39Z",
-      "last_attempt": "2026-10-28T19:01:39Z",
-      "items_processed": 251,
+      "last_success": "2026-10-28T19:09:19Z",
+      "last_attempt": "2026-10-28T19:09:19Z",
+      "items_processed": 250,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-28T19:01:39Z",
-      "last_attempt": "2026-10-28T19:01:39Z",
+      "last_success": "2026-10-28T19:09:19Z",
+      "last_attempt": "2026-10-28T19:09:19Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-28T19:01:39Z",
-      "last_attempt": "2026-10-28T19:01:39Z",
-      "items_processed": 588,
+      "last_success": "2026-10-28T19:09:19Z",
+      "last_attempt": "2026-10-28T19:09:19Z",
+      "items_processed": 591,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-28T19:01:39Z",
-      "last_attempt": "2026-10-28T19:01:39Z",
+      "last_success": "2026-10-28T19:09:19Z",
+      "last_attempt": "2026-10-28T19:09:19Z",
       "items_processed": 482,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-28T19:01:39Z",
-      "last_attempt": "2026-10-28T19:01:39Z",
+      "last_success": "2026-10-28T19:09:19Z",
+      "last_attempt": "2026-10-28T19:09:19Z",
       "items_processed": 2553,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-28T19:01:39Z",
-      "last_attempt": "2026-10-28T19:01:39Z",
+      "last_success": "2026-10-28T19:09:19Z",
+      "last_attempt": "2026-10-28T19:09:19Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-28T19:01:39Z",
-      "last_attempt": "2026-10-28T19:01:39Z",
+      "last_success": "2026-10-28T19:09:19Z",
+      "last_attempt": "2026-10-28T19:09:19Z",
       "items_processed": 23,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-28T19:01:39Z",
-      "last_attempt": "2026-10-28T19:01:39Z",
+      "last_success": "2026-10-28T19:09:19Z",
+      "last_attempt": "2026-10-28T19:09:19Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-28T19:01:39Z",
-      "last_attempt": "2026-10-28T19:01:39Z",
+      "last_success": "2026-10-28T19:09:19Z",
+      "last_attempt": "2026-10-28T19:09:19Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-28T19:01:39Z",
-      "last_attempt": "2026-10-28T19:01:39Z",
+      "last_success": "2026-10-28T19:09:19Z",
+      "last_attempt": "2026-10-28T19:09:19Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-28T19:01:39Z",
-      "last_attempt": "2026-10-28T19:01:39Z",
+      "last_success": "2026-10-28T19:09:19Z",
+      "last_attempt": "2026-10-28T19:09:19Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-28T19:01:39Z",
-      "last_attempt": "2026-10-28T19:01:39Z",
+      "last_success": "2026-10-28T19:09:19Z",
+      "last_attempt": "2026-10-28T19:09:19Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -82426,7 +82429,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-28T19:01:39Z",
-  "last_successful_update": "2026-10-28T19:01:39Z",
+  "last_checked_at": "2026-10-28T19:09:19Z",
+  "last_successful_update": "2026-10-28T19:09:19Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
