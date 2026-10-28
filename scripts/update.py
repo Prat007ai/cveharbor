@@ -99,7 +99,11 @@ def classify(*, product: str = "", ecosystem: str = "", text: str = "", cpes: li
         return bool(re.search(r, p, re.I))
 
     eco = ecosystem.lower()
-    add(".NET / ASP.NET", eco == "nuget" or has(r"\b(?:asp\.net|\.net framework|dotnet|blazor|entity framework|nuget|microsoft\.aspnetcore)\b"))
+    modern_dotnet = has(r"(?:\.net core|dotnet[ ._-]?core|asp\.net[\s._-]*core|aspnetcore|microsoft\.aspnetcore|coreclr|netcoreapp|\.net (?:[5-9]|1[0-9])(?:\.[0-9]+)?\b|dotnet[- ]?(?:[5-9]|1[0-9])(?:\.[0-9]+)?\b)")
+    legacy_dotnet = has(r"(?:\.net framework|asp\.net(?![\s._-]*core)|aspnet(?!core)|system\.web|web forms|winforms|entity framework 6|netfx)")
+    generic_dotnet = eco == "nuget" or has(r"(?:\bdotnet\b|\.net\b|entity framework|blazor|nuget)")
+    add(".NET / ASP.NET", legacy_dotnet or (generic_dotnet and not modern_dotnet))
+    add(".NET Core", modern_dotnet)
     add("WordPress / Plugins", has(r"\b(?:wordpress|woocommerce|wp[-_ ]?(?:plugin|core))\b") or hp(r"\bwp[-_][a-z0-9_-]+"))
     add("PHP", eco == "composer" or has(r"\b(?:php|laravel|symfony|composer|php-fpm)\b"))
     add("Python / PyPI", eco == "pip" or has(r"\b(?:python|pypi|django|flask|fastapi)\b"))
@@ -110,8 +114,12 @@ def classify(*, product: str = "", ecosystem: str = "", text: str = "", cpes: li
     add("MySQL / MariaDB", has(r"\b(?:mysql|mariadb|percona)\b"))
     add("Drupal / CMS", has(r"\b(?:drupal|dotnetnuke|dnn cms|sitefinity|kentico|xperience cms|umbraco)\b"))
     add("Fortinet", has(r"\b(?:fortinet|fortigate|fortios|fortisiem|fortimanager|fortianalyzer)\b"))
-    add("Windows", has(r"\b(?:microsoft windows|windows(?: server| kernel| operating system| 10| 11| 8(?:\.1)?| 7| nt| xp)?|win32)\b"))
+    server_windows = has(r"\b(?:windows[\s_-]+server(?:[\s_-]+(?:[0-9]{4}|[0-9]+))?|windows_server(?:_[0-9]+)?|hyper[\s_-]?v server)\b")
+    generic_windows = has(r"\b(?:microsoft windows(?![\s_-]+server)|windows(?![\s_-]+server)|win32)\b")
+    add("Windows Server OS", server_windows)
+    add("Windows", generic_windows)
     add("Linux", has(r"\b(?:linux(?: kernel| server| distribution)?|ubuntu|debian|centos|red hat enterprise linux|rhel|almalinux|rocky linux|fedora|systemd)\b"))
+    add("HyperV", has(r"\b(?:hyper[\s_-]?v|hyperv|hypervisor(?:\s+platform)?|vmms\.exe|vmwp\.exe)\b"))
     add("Docker / Kubernetes", has(r"\b(?:docker|kubernetes|containerd|runc|kubelet|kube-apiserver|k8s|helm chart)\b"))
     add("VMware", has(r"\b(?:vmware|vcenter|vsphere|esxi|broadcom virtualization)\b"))
     add("Application dependencies", eco in {"pip", "npm", "nuget", "composer"} or has(r"\b(?:dependency|dependencies|supply chain|package manager|npm package|python package|nuget package|composer package)\b"))
@@ -139,6 +147,25 @@ def migrate_legacy_categories(record: dict) -> dict:
             labels.append(label)
     updated["categories"] = labels
     return updated
+
+
+def recategorize_existing(record: dict) -> dict:
+    """Add new platform tags to previously indexed CVEs without false Server tags."""
+    entry = dict(record)
+    categories = list(entry.get("categories") or [])
+    hints = classify(
+        product=f"{entry.get('title') or ''} {entry.get('affected') or ''}",
+        text=str(entry.get("summary") or ""),
+    )
+    for category in ("Windows Server OS", ".NET Core", "HyperV"):
+        if category in hints and category not in categories:
+            categories.append(category)
+    if "Windows Server OS" in hints and "Windows" not in hints:
+        categories = [c for c in categories if c != "Windows"]
+    if ".NET Core" in hints and ".NET / ASP.NET" not in hints:
+        categories = [c for c in categories if c != ".NET / ASP.NET"]
+    entry["categories"] = [c for c in categories if c in ALLOWED]
+    return entry
 
 
 def ghsa_items() -> list[dict]:
@@ -357,7 +384,7 @@ def run() -> int:
     for item in prev.get("advisories") or []:
         if not item.get("id"):
             continue
-        migrated = migrate_legacy_categories(item)
+        migrated = recategorize_existing(migrate_legacy_categories(item))
         if migrated.get("categories"):
             previous[migrated["id"]] = migrated
     merged = dict(previous)
