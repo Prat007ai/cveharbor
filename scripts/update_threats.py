@@ -16,7 +16,7 @@ FEEDS={
 def public_ipv4(value):
     try:
         address=ipaddress.ip_address(value)
-        return str(address) if address.version==4 and address.is_global else None
+        return str(address) if address.version==4 and address.is_global and not address.is_multicast and not address.is_reserved else None
     except ValueError:
         return None
 
