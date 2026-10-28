@@ -1,14 +1,29 @@
 {
   "categories": [
     {
+      "name": "Windows Server OS",
+      "icon": "▦",
+      "description": "Microsoft Windows Server, server components and OS security updates"
+    },
+    {
       "name": ".NET / ASP.NET",
       "icon": "◈",
-      "description": "Framework, Core, ASP.NET, Blazor and NuGet packages"
+      "description": "Classic .NET Framework, ASP.NET, MVC, Web Forms and legacy libraries"
+    },
+    {
+      "name": ".NET Core",
+      "icon": "◈",
+      "description": "Modern .NET, .NET Core, ASP.NET Core, Blazor, CoreCLR and SDKs"
     },
     {
       "name": "WordPress / Plugins",
       "icon": "◉",
       "description": "WordPress core, themes, plugins and WooCommerce"
+    },
+    {
+      "name": "Linux",
+      "icon": "⌘",
+      "description": "Linux kernel, Ubuntu, Debian, Red Hat, CentOS, AlmaLinux, Rocky Linux and system components"
     },
     {
       "name": "PHP",
@@ -19,11 +34,6 @@
       "name": "Python / PyPI",
       "icon": "⌁",
       "description": "Python runtime and package dependencies"
-    },
-    {
-      "name": "Node.js / npm",
-      "icon": "⬡",
-      "description": "Node.js, npm and JavaScript packages"
     },
     {
       "name": "Azure",
@@ -46,29 +56,9 @@
       "description": "MySQL, MariaDB and associated connectors"
     },
     {
-      "name": "Drupal / CMS",
-      "icon": "✧",
-      "description": "Drupal, DNN, Sitefinity, Kentico and CMS platforms"
-    },
-    {
       "name": "Fortinet",
       "icon": "⬟",
       "description": "FortiGate, FortiOS and Fortinet products"
-    },
-    {
-      "name": "Windows",
-      "icon": "⊞",
-      "description": "Microsoft Windows, Windows Server and Windows platform security advisories"
-    },
-    {
-      "name": "Linux",
-      "icon": "⌘",
-      "description": "Linux kernel, Ubuntu, Debian, Red Hat, CentOS, AlmaLinux, Rocky Linux and system components"
-    },
-    {
-      "name": "Docker / Kubernetes",
-      "icon": "▣",
-      "description": "Container runtime, images and Kubernetes"
     },
     {
       "name": "VMware",
@@ -76,9 +66,34 @@
       "description": "vSphere, ESXi and related virtualization"
     },
     {
+      "name": "HyperV",
+      "icon": "▤",
+      "description": "Microsoft Hyper V hypervisor, integration services and virtualization components"
+    },
+    {
+      "name": "Docker / Kubernetes",
+      "icon": "▣",
+      "description": "Container runtime, images and Kubernetes"
+    },
+    {
+      "name": "Node.js / npm",
+      "icon": "⬡",
+      "description": "Node.js, npm and JavaScript packages"
+    },
+    {
+      "name": "Drupal / CMS",
+      "icon": "✧",
+      "description": "Drupal, DNN, Sitefinity, Kentico and CMS platforms"
+    },
+    {
       "name": "Application dependencies",
       "icon": "{ }",
       "description": "Composer, NuGet, npm, PyPI and third party libraries"
+    },
+    {
+      "name": "Windows",
+      "icon": "⊞",
+      "description": "Windows desktop, client systems and Windows advisories without confirmed server applicability"
     }
   ]
 }
