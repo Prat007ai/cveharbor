@@ -652,3 +652,16 @@ button.tech-chart-link b{
 .threat-detail-warning{padding:13px;border-radius:9px;background:#413121;color:#ffdfb2!important;margin-top:16px!important}
 .threat-detail-source{overflow-wrap:anywhere;font-size:11px!important;margin-top:12px!important;color:#91b8ca!important}
 @media(max-width:550px){.threat-detail-field{grid-template-columns:minmax(0,1fr);gap:3px}.threat-detail-dialog .dialog-layout{padding:20px}}
+
+/* Add useful, live summary metrics below the technology bar chart. */
+.chart-insights{margin-top:19px;padding-top:17px;border-top:1px solid #27465a}
+.chart-insights-title{margin:0 0 3px;font-size:13px;letter-spacing:.1px;color:#eafaff}
+.chart-insights-sub{margin:0 0 13px;font-size:11px;line-height:1.6;color:#9bb7c7}
+.chart-insight-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.chart-insight{min-width:0;display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:2px;background:#122f43;border:1px solid #2c586d;border-radius:9px;padding:12px 14px;color:#f0fbff;font:inherit;cursor:pointer}
+.chart-insight:hover{background:#194158;border-color:#67d8c7}
+.chart-insight:focus-visible{outline:2px solid #77e8d7;outline-offset:2px}
+.chart-insight-number{font-size:22px;line-height:1.25;font-weight:850;color:#7ae9d4;font-variant-numeric:tabular-nums}
+.chart-insight-label{font-size:10px;font-weight:700;color:#b1cadd}
+.chart-insights-foot{font-size:10px;line-height:1.6;color:#91aec0;margin:12px 0 0}
+@media(max-width:480px){.chart-insight{padding:11px}.chart-insight-number{font-size:20px}}
