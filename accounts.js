@@ -18,9 +18,16 @@ function state(isAuth,address=''){
 }
 async function loadPrefs(){
  const data=await call('/alerts'),prefs=data.preferences||{};
- $('alertEnabled').checked=prefs.enabled===1||prefs.enabled===true;
+ $('alertEnabled').checked=!!data.consented&&(prefs.enabled===1||prefs.enabled===true);
  $('alertSeverity').value=prefs.severity==='high'?'high':'critical';
  $('alertFrequency').value=prefs.frequency==='hourly'?'hourly':'daily';
+ const node=$('alertDeliveryStatus');
+ if(node){
+  node.textContent=data.migration_required?'Alert database upgrade is pending. Email delivery is not enabled.':
+   !data.consented?'Email reports are not subscribed. Check the box and save to explicitly subscribe.':
+   data.delivery_active?'Email reports are enabled. You will receive matching advisories when they are available.':
+   'Your subscription is saved. Scheduled email delivery is awaiting activation.';
+ }
 }
 async function check(){
  try{
@@ -82,7 +89,18 @@ $('accountAlerts').addEventListener('submit',async ev=>{
  try{
   const data=await call('/alerts','PUT',{enabled:$('alertEnabled').checked,severity:$('alertSeverity').value,frequency:$('alertFrequency').value});
   note(data.message||'Preferences saved.');
+  await loadPrefs();
  }catch(e){note(e.message)}
+});
+$('accountSendTest').addEventListener('click',async()=>{
+ if(!authenticated)return;
+ const button=$('accountSendTest');button.disabled=true;
+ note('Preparing a sample email using your saved cloud technology stack...');
+ try{
+  const data=await call('/alerts/test','POST');
+  note(data.message||'Sample email accepted by SMTP2GO.');
+ }catch(error){note('Sample email not sent: '+error.message)}
+ finally{button.disabled=false}
 });
 $('accountDelete').addEventListener('click',async()=>{
  if(!authenticated||!confirm('Permanently delete your CVEHarbor account, saved stack, remediation records and alert preferences? This cannot be undone.'))return;
