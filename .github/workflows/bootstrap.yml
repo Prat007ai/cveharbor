@@ -12,6 +12,7 @@ on:
       - scripts/update.py
       - scripts/build_site.py
       - tests/test_update.py
+      - scripts/browser_smoke.mjs
   pull_request:
     paths:
       - .github/workflows/bootstrap.yml
@@ -21,6 +22,7 @@ on:
       - scripts/update.py
       - scripts/build_site.py
       - tests/test_update.py
+      - scripts/browser_smoke.mjs
   schedule:
     - cron: '17 * * * *'
   workflow_dispatch:
@@ -57,6 +59,10 @@ jobs:
         run: node --check app.js && node --check data.js
       - name: Verify public build
         run: python scripts/build_site.py
+      - name: Install DOM smoke test dependency
+        run: npm install --no-save --no-package-lock jsdom@26
+      - name: Exercise site interactions
+        run: node scripts/browser_smoke.mjs
 
   restore:
     name: Restore site files
@@ -121,6 +127,12 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Validate browser JavaScript
         run: node --check app.js && node --check data.js
+      - name: Install smoke test dependency
+        if: github.event_name == 'push'
+        run: npm install --no-save --no-package-lock jsdom@26
+      - name: Exercise site interactions
+        if: github.event_name == 'push'
+        run: node scripts/browser_smoke.mjs
       - name: Fetch advisories
         id: collect
         continue-on-error: true
