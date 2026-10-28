@@ -319,7 +319,7 @@ class FeedTests(unittest.TestCase):
         self.assertNotIn('id="otherCategoryGrid"',html)
         self.assertIn('technology-redesign',html)
         self.assertIn("technologySearch').addEventListener('input',renderCategories)",js)
-        self.assertIn("openTechnologyAdvisories(x.name)",js)
+        self.assertIn("openTechnologyAdvisories(x.name,false,openPeriod)",js)
         self.assertIn('technology-row',js)
         self.assertIn('advisoryIDs',js)
         groups=json.loads(js.split('const technologyGroups = ',1)[1].split(';',1)[0])
