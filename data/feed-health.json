@@ -1,13 +1,13 @@
 {
-  "mode": "partial",
-  "last_checked_at": "2026-10-28T12:31:43Z",
-  "last_successful_update": "2026-10-28T12:31:43Z",
+  "mode": "live",
+  "last_checked_at": "2026-10-28T12:40:44Z",
+  "last_successful_update": "2026-10-28T12:40:44Z",
   "records_indexed": 2500,
-  "candidate_records": 3855,
+  "candidate_records": 3961,
   "coverage_limited": true,
   "category_counts": {
-    "Windows Server OS": 46,
-    "Windows 11 OS": 38,
+    "Windows Server OS": 51,
+    "Windows 11 OS": 43,
     ".NET / ASP.NET": 83,
     ".NET Core": 44,
     "WordPress / Plugins": 148,
@@ -40,58 +40,58 @@
     "NoSQL / MongoDB": 12,
     "AWS": 4,
     "iOS / Android": 59,
-    "Node.js / npm": 169,
+    "Node.js / npm": 170,
     "Drupal / CMS": 11,
     "Application dependencies": 292,
-    "Windows": 1246
+    "Windows": 1248
   },
   "sources": {
     "github": {
       "ok": true,
-      "last_attempt": "2026-10-28T12:31:43Z",
-      "last_success": "2026-10-28T12:31:43Z",
+      "last_attempt": "2026-10-28T12:40:44Z",
+      "last_success": "2026-10-28T12:40:44Z",
       "items_processed": 275,
       "error": null
     },
     "nvd": {
       "ok": true,
-      "last_attempt": "2026-10-28T12:31:43Z",
-      "last_success": "2026-10-28T12:31:43Z",
-      "items_processed": 375,
+      "last_attempt": "2026-10-28T12:40:44Z",
+      "last_success": "2026-10-28T12:40:44Z",
+      "items_processed": 381,
       "error": null
     },
     "cisa_kev": {
       "ok": true,
-      "last_attempt": "2026-10-28T12:31:43Z",
-      "last_success": "2026-10-28T12:31:43Z",
+      "last_attempt": "2026-10-28T12:40:44Z",
+      "last_success": "2026-10-28T12:40:44Z",
       "items_processed": 482,
       "error": null
     },
     "php_upstream": {
       "ok": true,
-      "last_attempt": "2026-10-28T12:31:43Z",
-      "last_success": "2026-10-28T12:31:43Z",
+      "last_attempt": "2026-10-28T12:40:44Z",
+      "last_success": "2026-10-28T12:40:44Z",
       "items_processed": 66,
       "error": null
     },
     "msrc_rss": {
       "ok": true,
-      "last_attempt": "2026-10-28T12:31:43Z",
-      "last_success": "2026-10-28T12:31:43Z",
+      "last_attempt": "2026-10-28T12:40:44Z",
+      "last_success": "2026-10-28T12:40:44Z",
       "items_processed": 2553,
       "error": null
     },
     "fortinet_rss": {
       "ok": true,
-      "last_attempt": "2026-10-28T12:31:43Z",
-      "last_success": "2026-10-28T12:31:43Z",
+      "last_attempt": "2026-10-28T12:40:44Z",
+      "last_success": "2026-10-28T12:40:44Z",
       "items_processed": 4,
       "error": null
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_attempt": "2026-10-28T12:31:43Z",
-      "last_success": "2026-10-28T12:31:43Z",
+      "last_attempt": "2026-10-28T12:40:44Z",
+      "last_success": "2026-10-28T12:40:44Z",
       "items_processed": 4,
       "error": null
     },
@@ -101,6 +101,34 @@
       "last_success": null,
       "items_processed": null,
       "error": "osv_recent: ValueError: Feed response exceeds the configured byte limit"
+    },
+    "debian_rss": {
+      "ok": true,
+      "last_attempt": "2026-10-28T12:40:44Z",
+      "last_success": "2026-10-28T12:40:44Z",
+      "items_processed": 0,
+      "error": null
+    },
+    "docker_rss": {
+      "ok": true,
+      "last_attempt": "2026-10-28T12:40:44Z",
+      "last_success": "2026-10-28T12:40:44Z",
+      "items_processed": 0,
+      "error": null
+    },
+    "kubernetes": {
+      "ok": true,
+      "last_attempt": "2026-10-28T12:40:44Z",
+      "last_success": "2026-10-28T12:40:44Z",
+      "items_processed": 94,
+      "error": null
+    },
+    "mariadb": {
+      "ok": true,
+      "last_attempt": "2026-10-28T12:40:44Z",
+      "last_success": "2026-10-28T12:40:44Z",
+      "items_processed": 13,
+      "error": null
     }
   },
   "note": "Snapshot status reports feed collection, not exhaustive vendor coverage or deployed-system exposure."
