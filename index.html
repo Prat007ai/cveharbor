@@ -8,7 +8,7 @@
   <meta property="og:title" content="CVEHarbor | Know the risk. Find the fix.">
   <meta property="og:description" content="Vulnerability advisories, severity dashboards, affected versions, vendor sources and remediation guidance.">
   <title>CVEHarbor | Vulnerability Intelligence</title>
-  <link rel="stylesheet" href="styles.css?v=live-cve-search-1">
+  <link rel="stylesheet" href="styles.css?v=onsite-cve-dialog-1">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
@@ -124,7 +124,7 @@
         </article>
       </div>
       <article class="data-panel workspace-panel watchlist-lookup">
-        <div class="panel-heading"><div><h3>Universal security lookup</h3><p>Search the local vulnerability index, or enter any complete CVE ID to retrieve its published CVE Program record.</p></div></div>
+        <div class="panel-heading"><div><h3>Universal security lookup</h3><p>Search CVEs and select <strong>View details &amp; sources</strong> to review the vulnerability without leaving CVEHarbor. Exact IDs outside our index use the CVE Program.</p></div></div>
         <label class="workspace-search-label" for="securityLookup">CVE, technology, package or IP address</label>
         <input id="securityLookup" type="search" placeholder="Enter CVE-2026-65640, WordPress or an IP..." autocomplete="off">
         <div id="securityLookupResults" class="workspace-results" aria-live="polite"></div>
@@ -242,6 +242,6 @@
     </div>
   </dialog>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="malware-data.js"></script><script src="malware.js?v=compact-1"></script><script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script defer src="geo-map.js?v=1"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=epss-priority-1"></script><script src="workspace.js?v=live-cve-search-1"></script><script src="lifecycle.js"></script><script src="operations.js?v=ops-v1"></script><script src="accounts.js?v=watchlist-unified-1"></script>
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="malware-data.js"></script><script src="malware.js?v=compact-1"></script><script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script defer src="geo-map.js?v=1"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=onsite-cve-dialog-1"></script><script src="workspace.js?v=onsite-cve-dialog-1"></script><script src="lifecycle.js"></script><script src="operations.js?v=ops-v1"></script><script src="accounts.js?v=watchlist-unified-1"></script>
 </body>
 </html>
