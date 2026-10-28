@@ -82,7 +82,7 @@ def export_templates(report):
         "Do not put actual credentials into a file retained on shared systems.",
         "Save ONE XML Request block at a time as an .xml file, replace the credentials,",
         "and submit using an authenticated POST from a trusted admin workstation:",
-        'curl -X POST "https://FIREWALL_HOST:PORT/webconsole/APIController" -F "reqxml=@request.xml"',
+        'curl -X POST "https://FIREWALL_HOST:PORT/webconsole/APIController" -F "reqxml=<request.xml"',
         "Use your firewall's valid HTTPS certificate. Check the API response for errors.",
         "Generated IPList host objects are NOT linked to firewall deny rules.",
         "",
