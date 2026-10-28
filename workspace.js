@@ -49,6 +49,7 @@
     row.append(make('p','',item.id+' · Published '+fmt(item.published)
       +' · '+(item.categories||[]).join(', ')));
     if(item.known_exploited)row.append(make('strong','workspace-kev','CISA KEV listed'));
+    if(typeof item.epss==='number')row.append(make('p','workspace-epss','FIRST EPSS: '+(item.epss*100).toFixed(2)+'% predicted 30 day exploitation probability ('+(item.epss_as_of||'date unavailable')+')'));
     const sources=(item.sources||[]).filter(x=>/^https:\/\//.test(x.url||''));
     if(sources.length){
       const link=make('a','workspace-link','Official / indexed source ↗');
