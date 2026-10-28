@@ -943,3 +943,24 @@ button.tech-chart-link b{
   .disclosure-chart-ticks{font-size:8px}
 }
 @media(prefers-reduced-motion:reduce){.disclosure-day-bar{transition:none}}
+
+
+/* Private D1 remediation assignment controls. */
+.remediation-detail-assign{margin:13px 0;min-height:40px}
+.remediation-row-assign{padding:6px 10px;min-height:30px;font-size:11px}
+.remediation-assignee{color:#9fe8df!important}
+#remediationImport{margin:7px 0 10px;max-width:100%;white-space:normal}
+.remediation-assign-dialog{width:min(680px,calc(100vw - 24px));max-width:680px;max-height:90vh;overflow:auto}
+.remediation-assign-dialog .dialog-layout{padding:27px 29px}
+.remediation-assign-dialog .eyebrow{font-size:11px;letter-spacing:1.2px;color:#6ce5d7;margin:0 0 8px}
+.remediation-assign-dialog h2{margin:0 0 15px;color:#e8f8ff;font-size:23px}
+.remediation-assign-dialog .ops-note{font-size:12px;line-height:1.7}
+.remediation-assign-dialog .ops-form{grid-template-columns:minmax(0,1fr);margin:15px 0;gap:15px}
+.remediation-assign-dialog .ops-form label{font-size:12px}
+.remediation-assign-dialog .ops-form input{min-height:45px;font-size:13px}
+.remediation-assign-dialog .remediation-confirm{grid-column:auto}
+.remediation-assign-dialog .remediation-confirm span{display:flex;align-items:flex-start;gap:10px;line-height:1.6}
+.remediation-assign-dialog .remediation-confirm input[type=checkbox]{min-height:auto;width:auto;accent-color:#63e7d7;flex:0 0 auto;margin-top:4px}
+.remediation-assign-dialog #remediationSendAssignment{min-height:43px;font-size:12px}
+.remediation-assign-dialog #remediationAssignMessage{background:#103146;border-left:3px solid #60e0ce;padding:11px 12px;border-radius:5px}
+@media(max-width:600px){.remediation-assign-dialog .dialog-layout{padding:23px 17px}.remediation-assign-dialog h2{font-size:19px}}
