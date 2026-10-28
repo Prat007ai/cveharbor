@@ -209,6 +209,47 @@
     $('chartShowAll').hidden=categories.length<=15;
     $('chartShowAll').textContent=chartShowAll?'Show top 15':'Show all '+categories.length+' technologies';
     $('chartNoRecords').hidden=displayed.length!==0;
+    const insights=$('chartInsights');
+    if(insights){
+      insights.replaceChildren();
+      const periodItems=items.filter(chartRecordMatches);
+      const periodLabel=chartPeriod==='published30'?'New in 30 days':chartPeriod==='updated7'?'Updated in 7 days':'Indexed archive';
+      const total=advisoryIDs(periodItems).length;
+      const critical=advisoryIDs(periodItems.filter(a=>a.severity==='critical')).length;
+      const high=advisoryIDs(periodItems.filter(a=>a.severity==='high')).length;
+      const technologies=categories.filter(c=>periodItems.some(a=>(a.categories||[]).includes(c.name))).length;
+      const h=text('h4','chart-insights-title','Snapshot insights');
+      const intro=text('p','chart-insights-sub','Calculated from the same indexed records as the chart. Select a metric to open the matching advisory list.');
+      insights.append(h,intro);
+      const metrics=text('div','chart-insight-grid','');
+      const definitions=[
+        ['Advisories',total,'all'],
+        ['Critical',critical,'critical'],
+        ['High',high,'high'],
+        ['Active technologies',technologies,'technologies']
+      ];
+      for(const [label,value,scope] of definitions){
+        const button=text('button','chart-insight','');
+        button.type='button';
+        button.append(text('span','chart-insight-number',String(value)),text('span','chart-insight-label',label));
+        button.setAttribute('aria-label','Open '+label.toLowerCase()+' in '+periodLabel);
+        button.addEventListener('click',()=>{
+          if(scope==='technologies'){
+            $('technology').scrollIntoView({behavior:'smooth',block:'start'});return;
+          }
+          state.q='';state.tech='all';state.group='all';state.severity=scope==='all'?'all':scope;state.period=chartPeriod;
+          metricScope='all';listMode='list';resetPaging();
+          $('search').value='';$('technologyFilter').value='all';$('severity').value=state.severity;
+          $('dateRange').value=state.period;
+          render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});
+        });
+        metrics.append(button);
+      }
+      insights.append(metrics);
+      const latest=periodItems.filter(a=>/^\d{4}-\d{2}-\d{2}/.test(a.published||'')).sort((a,b)=>String(b.published).localeCompare(String(a.published)))[0];
+      insights.append(text('p','chart-insights-foot',latest?'Latest originally published advisory in this selection: '+fmtDate(latest.published)+'.':'No source-dated advisories found in this selection.'));
+    }
+
     document.querySelectorAll('[data-chart-period]').forEach(button=>{
       const selected=button.dataset.chartPeriod===chartPeriod;
       button.classList.toggle('is-active',selected);
