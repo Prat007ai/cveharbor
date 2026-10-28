@@ -1,4 +1,5 @@
-// CVEHarbor account API. Cloudflare Worker + D1. No public registration until configured.
+// CVEHarbor account API with opt-in vulnerability digest support.
+import { saveOptin, loadAlertSubscription, sendUserSample, dispatchDueDigests, unsubscribe } from './delivery.js';
 // The sender address must be verified in SMTP2GO. Never place credentials in GitHub.
 const ALLOWED_ORIGIN='https://cveharbor.com';
 const enc=new TextEncoder();
@@ -15,6 +16,11 @@ export default {async fetch(req,env){
  const url=new URL(req.url),origin=req.headers.get('origin');
  if(req.method==='OPTIONS'){if(origin!==ALLOWED_ORIGIN)return response({error:'Forbidden'},403);return new Response(null,{status:204,headers:{'Access-Control-Allow-Origin':ALLOWED_ORIGIN,'Access-Control-Allow-Credentials':'true','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST,PUT,DELETE,OPTIONS','Vary':'Origin'}})}
  if(!url.pathname.startsWith('/v1/'))return response({error:'Not found'},404);
+ const unsub=/^\/v1\/unsubscribe\/([a-f0-9]{64})$/.exec(url.pathname);
+ if(unsub && (req.method==='GET'||req.method==='POST')) {
+  if(!env.DB)return response({error:'Account database unavailable'},503);
+  try {return await unsubscribe(req,env,unsub[1])}catch(_) {return response({error:'Unable to process unsubscribe request'},503)}
+ }
  if(origin&&origin!==ALLOWED_ORIGIN)return response({error:'Forbidden origin'},403);
  if(req.method!=='GET'&&origin!==ALLOWED_ORIGIN)return response({error:'Invalid request origin'},403);
  if(!env.DB)return response({error:'Account service not configured'},503);
@@ -68,15 +74,37 @@ export default {async fetch(req,env){
    const ops=[env.DB.prepare('DELETE FROM remediations WHERE user_id=?').bind(user.id),...rows.map(x=>env.DB.prepare('INSERT INTO remediations(user_id,cve_id,status,owner,due,notes,updated_at) VALUES(?,?,?,?,?,?,?)').bind(user.id,x.id,x.status,x.owner,x.due,x.notes,new Date().toISOString().slice(0,10)))];
    await env.DB.batch(ops);return response({saved:rows.length});
   }
-  if(path==='/v1/alerts'&&req.method==='GET'){const row=await env.DB.prepare('SELECT enabled,severity,frequency FROM alert_preferences WHERE user_id=?').bind(user.id).first();return response({preferences:row||{enabled:0,severity:'critical',frequency:'daily'},delivery_active:false})}
+  if(path==='/v1/alerts'&&req.method==='GET'){
+   const row=await env.DB.prepare('SELECT enabled,severity,frequency FROM alert_preferences WHERE user_id=?').bind(user.id).first();
+   const subscription=await loadAlertSubscription(env,user.id);
+   return response({preferences:row||{enabled:0,severity:'critical',frequency:'daily'},
+    ...subscription,delivery_active:env.ALERT_DELIVERY_ENABLED==='true'});
+  }
   if(path==='/v1/alerts'&&req.method==='PUT'){
-   const data=await body(req);if(!['critical','high'].includes(data.severity)||!['daily','hourly'].includes(data.frequency))return response({error:'Invalid preferences'},400);
-   await env.DB.prepare('INSERT INTO alert_preferences(user_id,enabled,severity,frequency) VALUES(?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET enabled=excluded.enabled,severity=excluded.severity,frequency=excluded.frequency,updated_at=CURRENT_TIMESTAMP').bind(user.id,data.enabled?1:0,data.severity,data.frequency).run();
-   return response({saved:true,delivery_active:false,message:'Preferences saved. Alert sending is not yet enabled.'});
+   const data=await body(req);
+   if(!['critical','high'].includes(data.severity)||!['daily','hourly'].includes(data.frequency)||typeof data.enabled!=='boolean')
+    return response({error:'Invalid alert preferences'},400);
+   const subscribed=await loadAlertSubscription(env,user.id);
+   if(subscribed.migration_required)return response({error:'Alert tables have not been initialized'},503);
+   await env.DB.prepare('INSERT INTO alert_preferences(user_id,enabled,severity,frequency) VALUES(?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET enabled=excluded.enabled,severity=excluded.severity,frequency=excluded.frequency,updated_at=CURRENT_TIMESTAMP')
+    .bind(user.id,data.enabled?1:0,data.severity,data.frequency).run();
+   await saveOptin(env,user.id,data.enabled);
+   return response({saved:true,consented:data.enabled,delivery_active:env.ALERT_DELIVERY_ENABLED==='true',
+    message:data.enabled?'Subscription saved. You will receive matching advisories once scheduled delivery is enabled.':'Email vulnerability notifications have been disabled.'});
+  }
+  if(path==='/v1/alerts/test'&&req.method==='POST'){
+   const status=await loadAlertSubscription(env,user.id);
+   if(status.migration_required)return response({error:'Alert tables have not been initialized'},503);
+   return await sendUserSample(env,user);
   }
   if(path==='/v1/account'&&req.method==='DELETE'){
    await env.DB.prepare('DELETE FROM users WHERE id=?').bind(user.id).run();return response({deleted:true},200,{'Set-Cookie':setCookie('',0)});
   }
   return response({error:'Not found'},404);
  }catch(error){return response({error:'Unable to process request'},500)}
-}};
+},
+ async scheduled(_event,env,ctx) {
+  if(env.ALERT_DELIVERY_ENABLED!=='true')return;
+  ctx.waitUntil(dispatchDueDigests(env));
+ }
+};
