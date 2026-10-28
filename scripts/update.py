@@ -234,17 +234,24 @@ def from_ghsa(item: dict) -> dict | None:
     affected = []
     fixes = []
     for x in vulnerabilities:
+        if not isinstance(x, dict):
+            continue
         pkg = x.get("package") or {}
+        if not isinstance(pkg, dict):
+            pkg = {"name": str(pkg)}
         name, eco = str(pkg.get("name") or ""), str(pkg.get("ecosystem") or "")
         for tag in classify(product=name, ecosystem=eco, text=item.get("summary") or ""):
             if tag not in cats:
                 cats.append(tag)
         rng = crop(x.get("vulnerable_version_range"), 130)
-        fixed = (x.get("first_patched_version") or {}).get("identifier")
+        # REST global advisories return first_patched_version as a string.
+        # Some other GitHub schemas represent it as an object with identifier.
+        version = x.get("first_patched_version")
+        fixed = version.get("identifier") if isinstance(version, dict) else version
         if name:
             affected.append(f"{eco}: {name}" + (f" ({rng})" if rng else ""))
             if fixed:
-                fixes.append(f"{name}: {fixed}")
+                fixes.append(f"{name}: {crop(fixed, 120)}")
     if not cats:
         cats = classify(product=item.get("summary") or "", text=item.get("description") or "")
     if not cats:
@@ -255,7 +262,8 @@ def from_ghsa(item: dict) -> dict | None:
         sev = "bulletin"
     if sev not in {"critical", "high", "medium", "bulletin"}:
         return None
-    cvss = (item.get("cvss") or {}).get("score")
+    cvss_obj = item.get("cvss") or {}
+    cvss = cvss_obj.get("score") if isinstance(cvss_obj, dict) else None
     sources = [{"label": "GitHub reviewed advisory", "url": f"https://github.com/advisories/{ghsa}"}]
     for ref in item.get("references") or []:
         url = clean_url(ref.get("url") if isinstance(ref, dict) else ref)
