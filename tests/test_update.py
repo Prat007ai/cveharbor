@@ -285,7 +285,8 @@ class FeedTests(unittest.TestCase):
             seen.append(query)
             return {'vulnerabilities':[], 'totalResults':0}
         with patch.object(u,'get_json',side_effect=sample),patch.object(u.time,'sleep'):
-            u.nvd_items()
+            with self.assertRaisesRegex(RuntimeError,'NVD returned no CVEs'):
+                u.nvd_items()
         self.assertEqual(2,len(seen))
         self.assertIn('pubStartDate',seen[0])
         self.assertIn('lastModStartDate',seen[1])
@@ -296,7 +297,8 @@ class FeedTests(unittest.TestCase):
             seen.append(parse_qs(urlparse(url).query))
             return []
         with patch.object(u,'get_json',side_effect=sample):
-            u.ghsa_items()
+            with self.assertRaisesRegex(RuntimeError,'GitHub advisory feed returned no'):
+                u.ghsa_items()
         self.assertEqual({'published','updated'},{x['sort'][0] for x in seen})
         self.assertEqual({'reviewed','malware'},{x['type'][0] for x in seen})
 
