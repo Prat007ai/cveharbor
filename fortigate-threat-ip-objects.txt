@@ -1,0 +1,108 @@
+# CVEHarbor Threat IP Intelligence
+# Generated: 2026-10-28T14:08:13.485362+00:00
+# Review only. Never apply blindly to a production firewall.
+# Third party scanning and botnet C2 reports are DIFFERENT signal classes.
+# Validate against local security logs and trusted scanners / cloud service allowlists.
+# No deny policies or firewall rule modifications are included.
+# Source IPs have no verified last seen timestamp in this dataset.
+
+# FortiOS: run these commands in the intended VDOM after backup and review.
+# Objects are grouped by report type. Add groups to a reviewed deny policy manually.
+# Existing object names are reused, and members are appended; review before rerunning.
+# SCANNING: 15 source-reported IPv4 addresses
+config firewall address
+    edit "CVEH_5_189_160_21"
+        set subnet 5.189.160.21 255.255.255.255
+    next
+    edit "CVEH_23_94_68_19"
+        set subnet 23.94.68.19 255.255.255.255
+    next
+    edit "CVEH_62_167_236_39"
+        set subnet 62.167.236.39 255.255.255.255
+    next
+    edit "CVEH_79_124_62_126"
+        set subnet 79.124.62.126 255.255.255.255
+    next
+    edit "CVEH_79_124_62_134"
+        set subnet 79.124.62.134 255.255.255.255
+    next
+    edit "CVEH_79_124_62_230"
+        set subnet 79.124.62.230 255.255.255.255
+    next
+    edit "CVEH_89_248_163_200"
+        set subnet 89.248.163.200 255.255.255.255
+    next
+    edit "CVEH_173_249_4_73"
+        set subnet 173.249.4.73 255.255.255.255
+    next
+    edit "CVEH_173_249_33_72"
+        set subnet 173.249.33.72 255.255.255.255
+    next
+    edit "CVEH_177_129_99_94"
+        set subnet 177.129.99.94 255.255.255.255
+    next
+    edit "CVEH_193_46_255_51"
+        set subnet 193.46.255.51 255.255.255.255
+    next
+    edit "CVEH_194_180_49_217"
+        set subnet 194.180.49.217 255.255.255.255
+    next
+    edit "CVEH_204_76_203_212"
+        set subnet 204.76.203.212 255.255.255.255
+    next
+    edit "CVEH_207_180_192_205"
+        set subnet 207.180.192.205 255.255.255.255
+    next
+    edit "CVEH_207_180_192_206"
+        set subnet 207.180.192.206 255.255.255.255
+    next
+end
+config firewall addrgrp
+    edit "CVEH_SCANNING"
+        append member "CVEH_5_189_160_21"
+        append member "CVEH_23_94_68_19"
+        append member "CVEH_62_167_236_39"
+        append member "CVEH_79_124_62_126"
+        append member "CVEH_79_124_62_134"
+        append member "CVEH_79_124_62_230"
+        append member "CVEH_89_248_163_200"
+        append member "CVEH_173_249_4_73"
+        append member "CVEH_173_249_33_72"
+        append member "CVEH_177_129_99_94"
+        append member "CVEH_193_46_255_51"
+        append member "CVEH_194_180_49_217"
+        append member "CVEH_204_76_203_212"
+        append member "CVEH_207_180_192_205"
+        append member "CVEH_207_180_192_206"
+    next
+end
+
+# BOTNET_C2: 5 source-reported IPv4 addresses
+config firewall address
+    edit "CVEH_27_133_154_218"
+        set subnet 27.133.154.218 255.255.255.255
+    next
+    edit "CVEH_34_204_119_63"
+        set subnet 34.204.119.63 255.255.255.255
+    next
+    edit "CVEH_50_16_16_211"
+        set subnet 50.16.16.211 255.255.255.255
+    next
+    edit "CVEH_162_243_103_246"
+        set subnet 162.243.103.246 255.255.255.255
+    next
+    edit "CVEH_178_62_3_223"
+        set subnet 178.62.3.223 255.255.255.255
+    next
+end
+config firewall addrgrp
+    edit "CVEH_BOTNET_C2"
+        append member "CVEH_27_133_154_218"
+        append member "CVEH_34_204_119_63"
+        append member "CVEH_50_16_16_211"
+        append member "CVEH_162_243_103_246"
+        append member "CVEH_178_62_3_223"
+    next
+end
+
+# No policy is created or activated. Validate objects and attach the chosen group through change control.
