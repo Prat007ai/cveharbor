@@ -14,3 +14,10 @@ CREATE TABLE IF NOT EXISTS remediation_assignments (
   FOREIGN KEY(user_id,cve_id) REFERENCES remediations(user_id,cve_id) ON DELETE CASCADE
 );
 CREATE INDEX IF NOT EXISTS idx_remediation_assignment_assignee ON remediation_assignments(assignee_email,state);
+-- Separate assignment quota counters from the authentication rate table. 
+-- OTP request cleanup must never reset assignment daily limits.
+CREATE TABLE IF NOT EXISTS remediation_assignment_limits (
+  key TEXT PRIMARY KEY,
+  window_start INTEGER NOT NULL,
+  count INTEGER NOT NULL
+);
