@@ -199,6 +199,9 @@ jobs:
             echo "Failed to publish advisory dataset after five safe retries." >&2
             exit 1
           fi
+      - name: Collect public lifecycle dates
+        continue-on-error: true
+        run: python scripts/update_lifecycle.py
       - name: Build public site files
         run: python scripts/build_site.py
       - name: Configure GitHub Pages
