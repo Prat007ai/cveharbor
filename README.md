@@ -1,13 +1,13 @@
 # CVEHarbor.com — hourly vulnerability intelligence website
 
-CVEHarbor is a public vulnerability **advisory index** with all 25 technology categories requested. It is entirely separate from Whitecap's Gmail automations and does not read those emails or any Whitecap infrastructure.
+CVEHarbor is a public vulnerability **advisory index** with 38 technology groups, including thirteen categories identified in public Whitecap service and careers materials. It is entirely separate from Whitecap's Gmail automations and does not read those emails or any Whitecap infrastructure.
 
 ## Release status
 
 - The website, browser-side search/filtering, data normalization and hourly publishing workflow are implemented in this package.
-- It **has not been deployed to the Internet**. Until the first successful collection, the page deliberately displays *Awaiting first sync* and no advisory counts.
+- The site is published through GitHub Pages. Each GitHub Actions run should be checked for publication and upstream feed health.
 - No connected account or secret is included here.
-- A GitHub repository owned by you, GitHub Pages and GoDaddy DNS must be configured before `cveharbor.com` will work.
+- The live site uses the personal `Prat007ai/cveharbor` GitHub repository and `cveharbor.com` DNS.
 - The collector relies on external feeds, which have their own delays and outages. An hourly schedule is a **target collection cadence**, not guaranteed immediate advisory publication.
 
 ## Initial data sources
@@ -86,9 +86,19 @@ The website is designed for **personal ownership**, under the `cveharbor.com` do
 
 ## Website navigation and categories
 
-The website places 15 commonly used categories at the top, before the dashboard. Additional categories are available through the **More technology groups** disclosure. Clicking a category filters the advisory list and jumps directly to it. The advisory list initially displays six cards, with **Show more** and **Show fewer** controls. The .NET / ASP.NET (classic) and .NET Core (modern) categories are separate; Windows Server OS and HyperV are also separate, with generic Windows advisories retained under the additional Windows category.
+The website places 21 commonly used categories in three grouped panels, before the dashboard. Additional categories are available through the **More technology groups** disclosure. Clicking a category filters the advisory list and jumps directly to it. The advisory list initially displays six cards, with **Show more** and **Show fewer** controls. The .NET / ASP.NET (classic) and .NET Core (modern) categories are separate; Windows Server OS and HyperV are also separate, with generic Windows advisories retained under the additional Windows category.
 
 
 ## Additional vendor sections and initial CVE records
 
-Dedicated coverage now includes Progress Telerik, Sitefinity, Veeam Backup & Replication, Sophos Firewall, Windows 11 OS and Exchange Server Subscription Edition. The top navigation contains 21 frequently used technology shortcuts, with four extra categories under More technology groups. A curated vendor baseline at `data/vendor-baseline.json` seeds dated, source-linked advisories for the new sections. Those entries retain their original disclosure and update dates and are never characterized as newly disclosed or verified exploited simply because they were recently indexed. They are supplemented and deduplicated with the automated NVD, GitHub Advisory Database and CISA KEV feeds every hour. This coverage is not a vendor-certified comprehensive vulnerability database; continue reviewing official advisories for urgent patch decisions.
+Dedicated coverage now includes Progress Telerik, Sitefinity, Veeam Backup & Replication, Sophos Firewall, Windows 11 OS and Exchange Server Subscription Edition. The top navigation contains 21 frequently used technology shortcuts, with seventeen extra categories under More technology groups. A curated vendor baseline at `data/vendor-baseline.json` seeds dated, source-linked advisories for the new sections. Those entries retain their original disclosure and update dates and are never characterized as newly disclosed or verified exploited simply because they were recently indexed. They are supplemented and deduplicated with the automated NVD, GitHub Advisory Database and CISA KEV feeds every hour. This coverage is not a vendor-certified comprehensive vulnerability database; continue reviewing official advisories for urgent patch decisions.
+
+## Whitecap website technology gap analysis (October 27, 2026)
+
+The [Whitecap custom software technologies page](https://www.whitecapcanada.com/services/custom-software-development/), [Whitecap careers](https://www.whitecapcanada.com/careers/), [Whitecap partners](https://www.whitecapcanada.com/partners/), and [Whitecap application modernization](https://www.whitecapcanada.com/services/application-modernization/) provide public evidence of capabilities including Angular, React, JavaScript / TypeScript, Kendo UI, Microsoft SharePoint, Power Platform, Dynamics 365, Fabric / Power BI, Azure AI, NoSQL, and mobile application development; AWS appears in Whitecap modernization materials. These statements describe Whitecap's service and development capabilities, **not a validated inventory of Whitecap or client production systems or versions**.
+
+CVEHarbor expanded from 25 to 38 groups. The 13 additions are Angular, React / Next.js, JavaScript / TypeScript, jQuery / Bootstrap, Kendo UI, SharePoint / SharePoint Server, Microsoft Power Platform, Dynamics 365, Microsoft Fabric / Power BI, Azure AI / AI SDK, NoSQL / MongoDB, AWS, and iOS / Android. Subproducts such as MongoDB or Next.js are examples within broader product families, not independently verified Whitecap production installations.
+
+The dated initial advisories for new groups include Angular CVE-2026-111753, React's October 2026 GHSA-xqc2-xf4c-x3h3 without an assigned CVE, historical React CVE-2025-55182, SharePoint CVE-2026-70266 and CVE-2026-70259, Kendo UI CVE-2025-6725, and MongoDB CVE-2025-14847. Do not count a GHSA without a CVE as a unique CVE. Each record links to original project/vendor advisories, and updates/fixes require confirmation with the latest vendor guidance. For Microsoft managed SaaS services, local patching is generally different from product configuration or connector updates. **A zero category count means no indexed matching advisory, not that a technology was checked exhaustively or is safe.**
+
+Hourly scheduled checks still use GitHub, NVD, CISA KEV, and the separately implemented PHP upstream feed. This is not a complete coverage guarantee for every new category, especially SaaS products, hosted applications, Kendo UI and third party SDKs. Additional vendor API integration should be added before asserting comprehensive, near-real-time security coverage.
