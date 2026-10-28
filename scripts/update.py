@@ -110,11 +110,35 @@ def classify(*, product: str = "", ecosystem: str = "", text: str = "", cpes: li
     add("MySQL / MariaDB", has(r"\b(?:mysql|mariadb|percona)\b"))
     add("Drupal / CMS", has(r"\b(?:drupal|dotnetnuke|dnn cms|sitefinity|kentico|xperience cms|umbraco)\b"))
     add("Fortinet", has(r"\b(?:fortinet|fortigate|fortios|fortisiem|fortimanager|fortianalyzer)\b"))
-    add("Windows / Linux", has(r"\b(?:windows (?:server|kernel|operating system)|linux kernel|ubuntu|debian|centos|red hat enterprise linux|rhel|openssh|systemd)\b"))
+    add("Windows", has(r"\b(?:microsoft windows|windows(?: server| kernel| operating system| 10| 11| 8(?:\.1)?| 7| nt| xp)?|win32)\b"))
+    add("Linux", has(r"\b(?:linux(?: kernel| server| distribution)?|ubuntu|debian|centos|red hat enterprise linux|rhel|almalinux|rocky linux|fedora|systemd)\b"))
     add("Docker / Kubernetes", has(r"\b(?:docker|kubernetes|containerd|runc|kubelet|kube-apiserver|k8s|helm chart)\b"))
     add("VMware", has(r"\b(?:vmware|vcenter|vsphere|esxi|broadcom virtualization)\b"))
     add("Application dependencies", eco in {"pip", "npm", "nuget", "composer"} or has(r"\b(?:dependency|dependencies|supply chain|package manager|npm package|python package|nuget package|composer package)\b"))
     return tags
+
+
+def migrate_legacy_categories(record: dict) -> dict:
+    """Replace historic combined Windows / Linux tags with accurate platform labels.
+
+    Stored advisories from older hourly runs may have the retired category.
+    Reclassify them using product and description evidence. Never assume that
+    a Linux issue affects Windows or vice versa.
+    """
+    old = list(record.get("categories") or [])
+    if "Windows / Linux" not in old:
+        return record
+    updated = dict(record)
+    labels = [c for c in old if c != "Windows / Linux"]
+    hints = classify(
+        product=f"{record.get('title') or ''} {record.get('affected') or ''}",
+        text=str(record.get("summary") or ""),
+    )
+    for label in ("Windows", "Linux"):
+        if label in hints and label not in labels:
+            labels.append(label)
+    updated["categories"] = labels
+    return updated
 
 
 def ghsa_items() -> list[dict]:
@@ -329,7 +353,13 @@ def merge_record(old: dict, new: dict) -> dict:
 
 def run() -> int:
     prev = json.loads(DATA.read_text(encoding="utf-8")) if DATA.exists() else {}
-    previous = {x["id"]: x for x in prev.get("advisories") or [] if x.get("id")}
+    previous = {}
+    for item in prev.get("advisories") or []:
+        if not item.get("id"):
+            continue
+        migrated = migrate_legacy_categories(item)
+        if migrated.get("categories"):
+            previous[migrated["id"]] = migrated
     merged = dict(previous)
     sources = dict(prev.get("sources") or {})
     operations = (("github", ghsa_items, from_ghsa), ("nvd", nvd_items, from_nvd), ("cisa_kev", kev_items, from_kev))
