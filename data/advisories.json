@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-28",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4296,
+  "candidate_records": 4268,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -9096,6 +9096,8 @@
       "title": "FearlessCMS is a flat-file `content` management system centered on simplicity and open source",
       "severity": "critical",
       "categories": [
+        "Docker / Kubernetes",
+        "JavaScript / TypeScript",
         "PHP"
       ],
       "published": "2026-10-28",
@@ -9117,6 +9119,35 @@
       "first_seen_at": "2026-10-28T20:29:53Z",
       "source_updated_at": "2026-10-28T20:18:37.470",
       "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-ffq4-h5jm-8pqr",
+      "title": "Malware in @zaip-ai/cli",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: @zaip-ai/cli (= 6.4.0); npm: @zaip-ai/cli (= 7.2.0); npm: @zaip-ai/cli (= 6.5.0); npm: @zaip-ai/cli (= 7.4.0); npm: @zaip-ai/cli (= 7.1.0); npm: @zaip-ai/cli (= 7.0.0); npm: @zaip-ai/cli (= 7.3.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-ffq4-h5jm-8pqr"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-28T20:54:47Z",
+      "source_updated_at": "2026-10-28T20:40:54Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -27351,6 +27382,54 @@
       "epss_as_of": "2026-10-28"
     },
     {
+      "id": "CVE-2026-109618",
+      "title": "RCE via OOM corruption",
+      "severity": "critical",
+      "categories": [
+        "Fortinet",
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-28",
+      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "PHP upstream security advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:25Z",
+      "source_type": "php_upstream",
+      "known_exploited": true,
+      "epss": 0.99999,
+      "epss_percentile": 0.99998,
+      "epss_as_of": "2026-10-28"
+    },
+    {
       "id": "CVE-2026-109619",
       "title": "RCE via stale global state",
       "severity": "critical",
@@ -27397,54 +27476,6 @@
       "known_exploited": true,
       "epss": 0.99999,
       "epss_percentile": 0.99999,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-109618",
-      "title": "RCE via OOM corruption",
-      "severity": "critical",
-      "categories": [
-        "Fortinet",
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-28",
-      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "PHP upstream security advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:25Z",
-      "source_type": "php_upstream",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99998,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -40398,6 +40429,117 @@
       "epss_as_of": "2026-10-28"
     },
     {
+      "id": "CVE-2026-85935",
+      "title": "CVE-2026-85935 Windows USB Driver Information Disclosure Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Buffer over-read in Windows USB Driver allows an authorized attacker to disclose information locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-85935"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-85935"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00396,
+      "epss_percentile": 0.33722,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-85938",
+      "title": "CVE-2026-85938 Windows Broadcast DVR User Service Information Disclosure Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Improper access control in Windows Broadcast DVR User Service allows an authorized attacker to disclose information locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-85938"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-85938"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00342,
+      "epss_percentile": 0.27638,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-85936",
+      "title": "CVE-2026-85936 Windows Shell Remote Code Execution Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Double free in Windows Shell allows an unauthorized attacker to execute code over a network.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-85936"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-85936"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00557,
+      "epss_percentile": 0.46292,
+      "epss_as_of": "2026-10-28"
+    },
+    {
       "id": "CVE-2026-103555",
       "title": "Heap-based buffer overflow in Virtual Hard Disk (VHD) Miniport Driver allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
@@ -42154,46 +42296,6 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-102870",
-      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-25",
-      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
-      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
-      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
-      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft corrected Blazor debugger security advisory",
-          "url": "https://github.com/dotnet/announcements/issues/492"
-        },
-        {
-          "label": "ASP.NET Core GHSA vendor record",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-25",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00906,
-      "epss_percentile": 0.59726,
-      "epss_as_of": "2026-10-28"
-    },
-    {
       "id": "CVE-2026-70197",
       "title": ".NET SocketAsyncEventArgs memory corruption remote code execution",
       "severity": "high",
@@ -42233,6 +42335,46 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00788,
       "epss_percentile": 0.56072,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-102870",
+      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-25",
+      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
+      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
+      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
+      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "ASP.NET Core GHSA vendor record",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-25",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00906,
+      "epss_percentile": 0.59726,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -44010,33 +44152,28 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-108398",
-      "title": ".NET Framework untrusted search path security feature bypass",
-      "severity": "high",
-      "cvss": "8.8",
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
       "categories": [
         ".NET / ASP.NET",
-        "Windows",
-        "Windows Server OS"
+        ".NET Core"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
-      "summary": "Untrusted search path handling in classic Microsoft .NET Framework permits a locally authorized attacker to bypass a security feature. The patch is part of Microsoft's October 2026 .NET Framework cumulative security updates.",
-      "affected": "Multiple .NET Framework 3.5, 4.6.2 through 4.8.1 configurations across supported Windows versions, subject to Microsoft update applicability. This is a separate classic .NET Framework CVE, not the modern .NET Brotli issue.",
-      "remediation": "Install the correct October 13, 2026 .NET Framework cumulative update or a newer superseding Windows update for the installed Windows and .NET Framework versions. Consult the Microsoft patch matrix for the specific KB.",
-      "exploitation": "No confirmed active exploitation in the referenced Microsoft advisories.",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
       "sources": [
         {
-          "label": "Microsoft .NET Framework October cumulative update",
-          "url": "https://learn.microsoft.com/en-us/dotnet/framework/release-notes/2026/10-13-october-cumulative-update"
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
         },
         {
           "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-108398"
-        },
-        {
-          "label": "NVD product applicability",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108398"
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
         }
       ],
       "kind": "cve",
@@ -44046,8 +44183,8 @@
       "first_seen_at": "2026-10-28T02:30:57Z",
       "known_exploited": false,
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00779,
-      "epss_percentile": 0.55752,
+      "epss": 0.00934,
+      "epss_percentile": 0.60635,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -44091,28 +44228,33 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
+      "id": "CVE-2026-108398",
+      "title": ".NET Framework untrusted search path security feature bypass",
+      "severity": "high",
+      "cvss": "8.8",
       "categories": [
         ".NET / ASP.NET",
-        ".NET Core"
+        "Windows",
+        "Windows Server OS"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "summary": "Untrusted search path handling in classic Microsoft .NET Framework permits a locally authorized attacker to bypass a security feature. The patch is part of Microsoft's October 2026 .NET Framework cumulative security updates.",
+      "affected": "Multiple .NET Framework 3.5, 4.6.2 through 4.8.1 configurations across supported Windows versions, subject to Microsoft update applicability. This is a separate classic .NET Framework CVE, not the modern .NET Brotli issue.",
+      "remediation": "Install the correct October 13, 2026 .NET Framework cumulative update or a newer superseding Windows update for the installed Windows and .NET Framework versions. Consult the Microsoft patch matrix for the specific KB.",
+      "exploitation": "No confirmed active exploitation in the referenced Microsoft advisories.",
       "sources": [
         {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+          "label": "Microsoft .NET Framework October cumulative update",
+          "url": "https://learn.microsoft.com/en-us/dotnet/framework/release-notes/2026/10-13-october-cumulative-update"
         },
         {
           "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-108398"
+        },
+        {
+          "label": "NVD product applicability",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108398"
         }
       ],
       "kind": "cve",
@@ -44122,8 +44264,8 @@
       "first_seen_at": "2026-10-28T02:30:57Z",
       "known_exploited": false,
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60635,
+      "epss": 0.00779,
+      "epss_percentile": 0.55752,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -53997,99 +54139,6 @@
       "known_exploited": false,
       "epss": 0.00252,
       "epss_percentile": 0.1663,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-85935",
-      "title": "CVE-2026-85935 Windows USB Driver Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Buffer over-read in Windows USB Driver allows an authorized attacker to disclose information locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-85935"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00396,
-      "epss_percentile": 0.33722,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-85938",
-      "title": "CVE-2026-85938 Windows Broadcast DVR User Service Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Improper access control in Windows Broadcast DVR User Service allows an authorized attacker to disclose information locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-85938"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00342,
-      "epss_percentile": 0.27638,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-85936",
-      "title": "CVE-2026-85936 Windows Shell Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Double free in Windows Shell allows an unauthorized attacker to execute code over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-85936"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00557,
-      "epss_percentile": 0.46292,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -69452,8 +69501,8 @@
       "categories": [
         ".NET / ASP.NET",
         ".NET Core",
-        "Windows",
-        "Linux"
+        "Linux",
+        "Windows"
       ],
       "published": "2026-07-14",
       "updated": "2026-10-28",
@@ -69487,8 +69536,8 @@
       "categories": [
         ".NET / ASP.NET",
         ".NET Core",
-        "Windows",
-        "Linux"
+        "Linux",
+        "Windows"
       ],
       "published": "2026-07-14",
       "updated": "2026-10-28",
@@ -69522,8 +69571,8 @@
       "categories": [
         ".NET / ASP.NET",
         ".NET Core",
-        "Windows",
-        "Linux"
+        "Linux",
+        "Windows"
       ],
       "published": "2026-07-14",
       "updated": "2026-10-28",
@@ -69556,10 +69605,10 @@
       "severity": "high",
       "categories": [
         ".NET / ASP.NET",
-        "Windows 11 OS",
-        "Windows Server OS",
+        "Linux",
         "Windows",
-        "Linux"
+        "Windows 11 OS",
+        "Windows Server OS"
       ],
       "published": "2026-07-14",
       "updated": "2026-10-28",
@@ -69592,10 +69641,10 @@
       "severity": "critical",
       "categories": [
         ".NET / ASP.NET",
-        "Windows 11 OS",
-        "Windows Server OS",
+        "Linux",
         "Windows",
-        "Linux"
+        "Windows 11 OS",
+        "Windows Server OS"
       ],
       "published": "2026-07-14",
       "updated": "2026-10-28",
@@ -69628,8 +69677,8 @@
       "severity": "high",
       "categories": [
         ".NET / ASP.NET",
-        "Windows",
-        "Linux"
+        "Linux",
+        "Windows"
       ],
       "published": "2026-07-14",
       "updated": "2026-10-28",
@@ -69662,10 +69711,10 @@
       "severity": "high",
       "categories": [
         ".NET / ASP.NET",
-        "Windows 11 OS",
-        "Windows Server OS",
+        "Linux",
         "Windows",
-        "Linux"
+        "Windows 11 OS",
+        "Windows Server OS"
       ],
       "published": "2026-07-14",
       "updated": "2026-10-28",
@@ -69698,8 +69747,8 @@
       "severity": "medium",
       "categories": [
         ".NET / ASP.NET",
-        "Windows",
-        "Linux"
+        "Linux",
+        "Windows"
       ],
       "published": "2026-07-14",
       "updated": "2026-10-28",
@@ -69732,10 +69781,10 @@
       "severity": "high",
       "categories": [
         ".NET / ASP.NET",
-        "Windows 11 OS",
-        "Windows Server OS",
+        "Linux",
         "Windows",
-        "Linux"
+        "Windows 11 OS",
+        "Windows Server OS"
       ],
       "published": "2026-07-14",
       "updated": "2026-10-28",
@@ -69768,8 +69817,8 @@
       "severity": "high",
       "categories": [
         ".NET / ASP.NET",
-        "Windows",
-        "Linux"
+        "Linux",
+        "Windows"
       ],
       "published": "2026-07-14",
       "updated": "2026-10-28",
@@ -69802,9 +69851,9 @@
       "severity": "high",
       "categories": [
         ".NET / ASP.NET",
+        "Windows",
         "Windows 11 OS",
-        "Windows Server OS",
-        "Windows"
+        "Windows Server OS"
       ],
       "published": "2026-07-14",
       "updated": "2026-10-28",
@@ -69837,10 +69886,10 @@
       "severity": "high",
       "categories": [
         ".NET / ASP.NET",
-        "Windows 11 OS",
-        "Windows Server OS",
+        "Linux",
         "Windows",
-        "Linux"
+        "Windows 11 OS",
+        "Windows Server OS"
       ],
       "published": "2026-07-14",
       "updated": "2026-10-28",
@@ -69873,9 +69922,9 @@
       "severity": "high",
       "categories": [
         ".NET / ASP.NET",
+        "Windows",
         "Windows 11 OS",
-        "Windows Server OS",
-        "Windows"
+        "Windows Server OS"
       ],
       "published": "2026-07-14",
       "updated": "2026-10-28",
@@ -69908,9 +69957,9 @@
       "severity": "high",
       "categories": [
         ".NET / ASP.NET",
+        "Windows",
         "Windows 11 OS",
-        "Windows Server OS",
-        "Windows"
+        "Windows Server OS"
       ],
       "published": "2026-07-14",
       "updated": "2026-10-28",
@@ -69943,8 +69992,8 @@
       "severity": "high",
       "categories": [
         ".NET / ASP.NET",
-        "Windows",
-        "Linux"
+        "Linux",
+        "Windows"
       ],
       "published": "2026-07-14",
       "updated": "2026-10-28",
@@ -74299,41 +74348,6 @@
       "known_exploited": false,
       "epss": 0.00247,
       "epss_percentile": 0.16033,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-8001",
-      "title": "Use After Free in Printing in Google Chrome on Linux, Mac, ChromeOS prior to 148.0.7778.96 allowed a remote attacker who had compromised the renderer process to potentially pe",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-05-06",
-      "updated": "2026-10-26",
-      "summary": "Use After Free in Printing in Google Chrome on Linux, Mac, ChromeOS prior to 148.0.7778.96 allowed a remote attacker who had compromised the renderer process to potentially perform a sandbox escape via a crafted HTML page. (Chromium security severity: Low)",
-      "affected": "Products identified in NVD configurations: google chrome; apple macos; google chrome_os; linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-8001"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://chromereleases.googleblog.com/2026/05/stable-channel-update-for-desktop.html"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00178,
-      "epss_percentile": 0.07339,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -82012,85 +82026,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-28T20:29:53Z",
-      "last_attempt": "2026-10-28T20:29:53Z",
-      "items_processed": 220,
+      "last_success": "2026-10-28T20:54:47Z",
+      "last_attempt": "2026-10-28T20:54:47Z",
+      "items_processed": 221,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-28T20:29:53Z",
-      "last_attempt": "2026-10-28T20:29:53Z",
+      "last_success": "2026-10-28T20:54:47Z",
+      "last_attempt": "2026-10-28T20:54:47Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-28T20:29:53Z",
-      "last_attempt": "2026-10-28T20:29:53Z",
-      "items_processed": 827,
+      "last_success": "2026-10-28T20:54:47Z",
+      "last_attempt": "2026-10-28T20:54:47Z",
+      "items_processed": 830,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-28T20:29:53Z",
-      "last_attempt": "2026-10-28T20:29:53Z",
+      "last_success": "2026-10-28T20:54:47Z",
+      "last_attempt": "2026-10-28T20:54:47Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-28T20:29:53Z",
-      "last_attempt": "2026-10-28T20:29:53Z",
+      "last_success": "2026-10-28T20:54:47Z",
+      "last_attempt": "2026-10-28T20:54:47Z",
       "items_processed": 2558,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-28T20:29:53Z",
-      "last_attempt": "2026-10-28T20:29:53Z",
+      "last_success": "2026-10-28T20:54:47Z",
+      "last_attempt": "2026-10-28T20:54:47Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-28T20:29:53Z",
-      "last_attempt": "2026-10-28T20:29:53Z",
+      "last_success": "2026-10-28T20:54:47Z",
+      "last_attempt": "2026-10-28T20:54:47Z",
       "items_processed": 23,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-28T20:29:53Z",
-      "last_attempt": "2026-10-28T20:29:53Z",
+      "last_success": "2026-10-28T20:54:47Z",
+      "last_attempt": "2026-10-28T20:54:47Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-28T20:29:53Z",
-      "last_attempt": "2026-10-28T20:29:53Z",
+      "last_success": "2026-10-28T20:54:47Z",
+      "last_attempt": "2026-10-28T20:54:47Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-28T20:29:53Z",
-      "last_attempt": "2026-10-28T20:29:53Z",
+      "last_success": "2026-10-28T20:54:47Z",
+      "last_attempt": "2026-10-28T20:54:47Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-28T20:29:53Z",
-      "last_attempt": "2026-10-28T20:29:53Z",
+      "last_success": "2026-10-28T20:54:47Z",
+      "last_attempt": "2026-10-28T20:54:47Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-28T20:29:53Z",
-      "last_attempt": "2026-10-28T20:29:53Z",
+      "last_success": "2026-10-28T20:54:47Z",
+      "last_attempt": "2026-10-28T20:54:47Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -82102,7 +82116,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-28T20:29:53Z",
-  "last_successful_update": "2026-10-28T20:29:53Z",
+  "last_checked_at": "2026-10-28T20:54:47Z",
+  "last_successful_update": "2026-10-28T20:54:47Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
