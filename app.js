@@ -44,6 +44,15 @@
   const text = (tag, className, content) => {const n=document.createElement(tag);if(className)n.className=className;n.textContent=content||'';return n;};
   const fmtDate = s => {if(!s||!/^\d{4}-\d{2}-\d{2}/.test(s))return 'Not available';let d=new Date(s.slice(0,10)+'T12:00:00Z');return Number.isFinite(d.getTime())?d.toLocaleDateString('en-CA',{year:'numeric',month:'short',day:'numeric',timeZone:'UTC'}):'Not available';};
   const fmtStamp = s => {if(!s)return 'Never';let d=new Date(s);return Number.isFinite(d.getTime())?d.toLocaleString('en-CA',{dateStyle:'medium',timeStyle:'short',timeZone:'UTC'})+' UTC':'Not available';};
+  const fmtEastern = s => {
+    if (!s) return 'Not available';
+    const d = new Date(s);
+    if (!Number.isFinite(d.getTime())) return 'Not available';
+    const date = new Intl.DateTimeFormat('en-CA',{month:'short',day:'numeric',year:'numeric',timeZone:'America/Toronto'}).format(d);
+    const time = new Intl.DateTimeFormat('en-CA',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:'America/Toronto'}).format(d);
+    const zone = new Intl.DateTimeFormat('en-US',{timeZone:'America/Toronto',timeZoneName:'short'}).formatToParts(d).find(x=>x.type==='timeZoneName')?.value||'ET';
+    return date+', '+time+' '+zone;
+  };
   const severityText=s=>({critical:'CRITICAL',high:'HIGH',medium:'MEDIUM',bulletin:'BULLETIN'})[s]||'UNKNOWN';
   const stat=(id,num)=>{$(id).textContent=String(num);};
   stat('statTotal',cveIDs(items).length);
@@ -61,7 +70,7 @@
   $('feedStatus').textContent=stateLabel;
   $('feedHeadline').textContent=headline+'.';
   $('feedDescription').textContent=expl;
-  $('snapshotDate').textContent='Last success: '+fmtStamp(lastSuccess);
+  $('snapshotDate').textContent='Last success: '+fmtStamp(lastSuccess)+(lastSuccess?' ('+fmtEastern(lastSuccess)+')':'');
   $('chartDateLabel').textContent=lastSuccess?'AS OF '+fmtDate(lastSuccess):'NO VERIFIED LIVE DATA';
   const sourceHealth=$('sourceHealth');
   Object.entries(info.sources||{}).forEach(([k,v])=>{let n=text('span','feed-chip '+(v.ok?'feed-ok':'feed-bad'),`${k.toUpperCase()}: ${v.ok?'OK':'UNAVAILABLE'}`);n.title='Last successful: '+fmtStamp(v.last_success);sourceHealth.append(n);});
