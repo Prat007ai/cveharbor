@@ -925,6 +925,8 @@ def run() -> int:
                   ("redhat",redhat_items,from_redhat))
     if os.getenv("WORDFENCE_API_KEY"):
         operations += (("wordfence",wordfence_items,from_wordfence),)
+    # Do not preserve stale error statuses for intentionally retired adapters.
+    sources={name:sources.get(name,{}) for name,_,_ in operations}
     good = 0
     for name, fetch, transform in operations:
         try:

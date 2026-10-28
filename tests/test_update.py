@@ -615,6 +615,10 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
         self.assertEqual({"CVE-2026-12345","CVE-2026-12346"},
                          {u.from_vendor_rss(x)["id"] for x in items})
 
+    def test_active_feed_status_derived_from_current_operations(self):
+        source=(root/"scripts/update.py").read_text(encoding="utf-8")
+        self.assertIn("sources={name:sources.get(name,{}) for name,_,_ in operations}",source)
+
     def test_url_rejection(self):
         self.assertFalse(u.clean_url('javascript:alert(1)'))
         self.assertFalse(u.clean_url('http://example.org'))
