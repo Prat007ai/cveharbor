@@ -121,6 +121,39 @@
             </details>
             <button id="accountLogout" type="button" class="workspace-clear watchlist-signout">Sign out</button>
           </div>
+          <section id="disclosureTrend" class="disclosure-trend" aria-labelledby="disclosureTrendTitle">
+            <div class="disclosure-trend-heading">
+              <p class="eyebrow">30 DAY VULNERABILITY ACTIVITY</p>
+              <h4 id="disclosureTrendTitle">How quickly are new vulnerabilities being published?</h4>
+              <p>New CVEs published each day across CVEHarbor's monitored sources. Each CVE is counted once, using its original publication date.</p>
+              <span id="disclosureTrendDates" class="disclosure-period">Loading the latest 30 days</span>
+            </div>
+            <div class="disclosure-trend-metrics" aria-label="Thirty day vulnerability publishing summary">
+              <div class="disclosure-trend-metric"><strong id="disclosureTrendTotal">—</strong><span>Published in 30 days</span></div>
+              <div class="disclosure-trend-metric"><strong id="disclosureTrendAverage">—</strong><span>Average per day</span></div>
+              <div class="disclosure-trend-metric"><strong id="disclosureTrendChange">—</strong><span>Last 7 days vs prior 7 days</span></div>
+            </div>
+            <p id="disclosureTrendCompare" class="disclosure-trend-comparison">Comparing the last two completed weeks</p>
+            <div class="disclosure-trend-legend" aria-label="Graph legend"><span><i class="disclosure-legend-bar" aria-hidden="true"></i>Daily published CVEs</span><span><i class="disclosure-legend-line" aria-hidden="true"></i>7 day average</span></div>
+            <div class="disclosure-chart" role="group" aria-label="Daily published CVEs for the last 30 completed UTC days. Select a bar for its exact value.">
+              <div class="disclosure-chart-y" aria-hidden="true"><span id="disclosureTrendTop"></span><span id="disclosureTrendMiddle"></span><span>0</span></div>
+              <div class="disclosure-chart-main">
+                <div id="disclosureTrendPlot" class="disclosure-plot">
+                  <div class="disclosure-guide" aria-hidden="true"></div>
+                  <div id="disclosureTrendBars" class="disclosure-bars"></div>
+                </div>
+                <div id="disclosureTrendTicks" class="disclosure-chart-ticks" aria-hidden="true"></div>
+              </div>
+            </div>
+            <p id="disclosureTrendSelected" class="disclosure-day-selected" role="status">Select a day to see its total.</p>
+            <p id="disclosureTrendStatus" class="disclosure-trend-status" role="status">Loading the public vulnerability index.</p>
+            <p id="disclosureTrendNote" class="disclosure-trend-method">Source: CVEHarbor monitored advisory feeds. These figures are not worldwide totals.</p>
+            <div class="disclosure-ai-context">
+              <strong>Where does AI fit into this?</strong>
+              <p><b>Security researchers</b> can use AI to identify code flaws sooner. <b>Attackers</b> may use AI to analyze published vulnerabilities and patches faster.</p>
+              <p>The graph shows public CVE publication activity, not the number found or exploited using AI. CVE records do not consistently identify AI involvement. <a href="https://cloud.google.com/blog/topics/threat-intelligence/vulnerability-discovery-and-exploitation-trends-in-the-ai-era" target="_blank" rel="noopener noreferrer">Read Google Threat Intelligence's 2026 research</a>.</p>
+            </div>
+          </section>
         </article>
       </div>
       <article class="data-panel workspace-panel watchlist-lookup">
@@ -248,6 +281,6 @@
     </div>
   </dialog>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="malware-data.js"></script><script src="malware.js?v=family-profiles-3"></script><script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script defer src="geo-map.js?v=1"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=onsite-cve-dialog-1"></script><script src="workspace.js?v=onsite-cve-dialog-1"></script><script src="lifecycle.js"></script><script src="operations.js?v=ops-v1"></script><script src="accounts.js?v=watchlist-unified-1"></script>
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="malware-data.js"></script><script src="malware.js?v=family-profiles-3"></script><script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script defer src="geo-map.js?v=1"></script><script src="data.js"></script><script src="disclosure-trend.js?v=30day-1"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=onsite-cve-dialog-1"></script><script src="workspace.js?v=onsite-cve-dialog-1"></script><script src="lifecycle.js"></script><script src="operations.js?v=ops-v1"></script><script src="accounts.js?v=watchlist-unified-1"></script>
 </body>
 </html>
