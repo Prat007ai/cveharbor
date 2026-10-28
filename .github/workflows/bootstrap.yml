@@ -1,0 +1,40 @@
+name: Restore CVEHarbor website source
+on:
+  push:
+    paths:
+      - deployment/source.tar.xz.b64
+      - .github/workflows/bootstrap.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract website files
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64,tarfile,io,lzma
+          root=Path('.').resolve()
+          data=base64.b64decode(Path('deployment/source.tar.xz.b64').read_text())
+          with tarfile.open(fileobj=io.BytesIO(data),mode='r:xz') as archive:
+              for member in archive.getmembers():
+                  target=(root/member.name).resolve()
+                  if not target.is_relative_to(root):
+                      raise ValueError("Unsafe archive path")
+                  if not member.isfile() and not member.isdir():
+                      raise ValueError("Unexpected archive member")
+              archive.extractall(root, filter='data')
+          print("Source extracted")
+          PY
+      - name: Commit restored website
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m 'Restore CVEHarbor website and hourly security collector'
+            git push
+          fi
