@@ -20,7 +20,7 @@
         <span class="brand-type">CVE<span>Harbor</span><small>VULNERABILITY INTELLIGENCE</small></span>
       </a>
       <nav class="topnav" aria-label="Main navigation">
-        <a href="#dashboard">Overview</a><a href="#advisories">Advisories</a><a href="#technology">Technologies</a><a href="#securityWorkspace">My Stack & Lookup</a><a href="#operationsCentre">Admin Toolkit</a><a href="#accountWorkspace">My Account</a><a href="#threat-intelligence">Threat IPs</a><a href="#malware-intelligence">Malware</a><a href="#methodology">Methodology</a>
+        <a href="#dashboard">Overview</a><a href="#advisories">Advisories</a><a href="#technology">Technologies</a><a href="#securityWorkspace">My Watchlist &amp; Alerts</a><a href="#operationsCentre">Admin Toolkit</a><a href="#threat-intelligence">Threat IPs</a><a href="#malware-intelligence">Malware</a><a href="#methodology">Methodology</a>
       </nav>
     </div>
   </div>
@@ -56,22 +56,79 @@
       <p class="technology-footnote" id="technologySearchSummary" aria-live="polite">All 38 technology categories appear above. “New” means first published in the last 30 days; “total” includes older indexed advisories. Zero does not establish that a product is secure.</p>
     </section>
     <section id="securityWorkspace" class="shell section" aria-labelledby="workspaceTitle">
-      <div class="section-heading"><div><p class="eyebrow">SECURITY WORKSPACE</p><h2 id="workspaceTitle">My Technology Stack & Security Lookup</h2><p class="section-sub">Find indexed CVEs, product names and reported IPs. Select your technology areas to see relevant advisories. Your selections remain in this browser.</p></div><span class="result-pill">No account required</span></div>
-      <div class="workspace-grid">
-        <article class="data-panel workspace-panel">
-          <div class="panel-heading"><div><h3>Universal security lookup</h3><p>Search the currently published vulnerability and threat IP data.</p></div></div>
-          <label class="workspace-search-label" for="securityLookup">CVE, technology, package or IP address</label>
-          <input id="securityLookup" type="search" placeholder="Example: CVE-2026, WordPress, 23.94..." autocomplete="off"/>
-          <div id="securityLookupResults" class="workspace-results" aria-live="polite"></div>
-        </article>
-        <article class="data-panel workspace-panel">
-          <div class="panel-heading"><div><h3>My Technology Stack</h3><p>Choose the technologies you manage. Stored only in this browser.</p></div><span id="stackCount" class="mini-label">0 selected</span></div>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">PERSONAL SECURITY WORKSPACE</p>
+          <h2 id="workspaceTitle">My Technology Watchlist &amp; Email Alerts</h2>
+          <p class="section-sub">Choose the technologies you manage, connect your account, and set the alerts you want to receive. Your email report uses the technology selections saved to your CVEHarbor account.</p>
+        </div>
+        <span class="result-pill">Personalized security reports</span>
+      </div>
+      <div class="watchlist-layout">
+        <article class="data-panel workspace-panel watchlist-panel">
+          <div class="panel-heading"><div><p class="eyebrow">STEP 1 · TECHNOLOGIES</p><h3>Choose technologies to monitor</h3><p>These are the technologies CVEHarbor uses to match vulnerabilities for your personal email report.</p></div><span id="stackCount" class="mini-label">0 selected</span></div>
           <div id="stackTechnologyList" class="workspace-technologies"></div>
           <div class="workspace-summary"><p id="stackSummary" aria-live="polite"></p><button type="button" id="stackClear" class="workspace-clear">Clear selection</button></div>
-          <p id="stackStorageNote" class="workspace-note">This is a local convenience watchlist. It does not verify your deployed versions or send alerts.</p>
+          <div class="watchlist-sync" aria-live="polite">
+            <strong id="stackSyncHeadline">Email report watchlist</strong>
+            <p id="stackSyncStatus">Checking your account. Changes are saved in this browser until they are connected to your email watchlist.</p>
+            <div class="watchlist-sync-buttons">
+              <button id="accountSaveStack" class="ops-download" type="button" disabled>Save selections for email reports</button>
+              <button id="accountLoadStack" class="workspace-clear" type="button" hidden>Load my saved selections</button>
+            </div>
+          </div>
+          <p id="stackStorageNote" class="workspace-note">Checking a technology saves it in this browser. Once your account watchlist is connected, subsequent changes are synchronized automatically. Email delivery also requires a saved subscription.</p>
+          <h4 class="watchlist-preview-title">Vulnerabilities matching your selections</h4>
           <div id="stackAdvisories" class="workspace-results"></div>
         </article>
+        <article id="accountWorkspace" class="data-panel account-panel watchlist-account" aria-labelledby="accountTitle">
+          <div class="watchlist-account-head">
+            <p class="eyebrow">STEP 2 · ACCOUNT &amp; ALERTS</p>
+            <div class="watchlist-account-headline"><h3 id="accountTitle">Email alerts and cloud sync</h3><span id="accountServiceStatus" class="mini-label">Checking account</span></div>
+            <p class="workspace-note">Sign in to connect your selected technologies to your email report. Then choose your severity and delivery frequency.</p>
+          </div>
+          <p id="accountMessage" class="ops-note" role="status">Checking whether the account service is available...</p>
+          <div id="accountSignedOut">
+            <form id="accountRequest" class="ops-form">
+              <label>Email address<input id="accountEmail" type="email" autocomplete="email" placeholder="you@example.com" maxlength="254" required></label>
+              <button class="ops-download" id="accountSendCode" type="submit">Email sign in code</button>
+            </form>
+            <form id="accountVerify" class="ops-form" hidden>
+              <input id="accountChallenge" type="hidden">
+              <input id="accountSalt" type="hidden">
+              <label>Six digit email code<input id="accountCode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required autocomplete="one-time-code"></label>
+              <button class="ops-download" type="submit" id="accountVerifyButton">Verify and sign in</button>
+            </form>
+            <p class="workspace-note">You can browse CVEs without an account. Sign in and save your technology selection to use it for email reports.</p>
+          </div>
+          <div id="accountSignedIn" hidden>
+            <p id="accountIdentity" class="ops-note"></p>
+            <div class="watchlist-alert-explain"><strong>How your email is prepared</strong><p>Your saved cloud watchlist determines which technology advisories are included. Severity and frequency are set below. Changes sync automatically after you connect this browser's watchlist.</p></div>
+            <form id="accountAlerts" class="ops-form">
+              <label class="ops-span"><span>Vulnerability email notifications</span><span><input type="checkbox" id="alertEnabled"> Email me advisories for my saved technologies</span></label>
+              <label>Severity<select id="alertSeverity"><option value="critical">Critical</option><option value="high">High and Critical</option></select></label>
+              <label>Frequency<select id="alertFrequency"><option value="daily">Daily</option><option value="hourly">Hourly</option></select></label>
+              <button id="accountSavePrefs" type="submit" class="ops-download">Save alert settings</button>
+            </form>
+            <p id="alertDeliveryStatus" class="ops-note" role="status">Only subscriptions that have been explicitly saved can receive email alerts.</p>
+            <div class="ops-downloads"><button id="accountSendTest" type="button" class="ops-download">Send me a sample email report</button></div>
+            <p class="workspace-note">Scheduled delivery is activated separately. Sample emails show what your selected technologies would receive.</p>
+            <details class="watchlist-advanced">
+              <summary>Advanced browser and cloud data sync</summary>
+              <p class="ops-note">These actions replace the destination technology selections and remediation records. Export important remediation records before replacing them.</p>
+              <div class="ops-downloads"><button type="button" id="accountUpload" class="ops-download">Upload browser data</button><button type="button" id="accountDownload" class="ops-download">Download account data</button></div>
+              <button id="accountDelete" type="button" class="ops-remove">Permanently delete account and cloud records</button>
+            </details>
+            <button id="accountLogout" type="button" class="workspace-clear watchlist-signout">Sign out</button>
+          </div>
+        </article>
       </div>
+      <article class="data-panel workspace-panel watchlist-lookup">
+        <div class="panel-heading"><div><h3>Universal security lookup</h3><p>Search CVEs, technologies, software packages or reported suspicious IP addresses.</p></div></div>
+        <label class="workspace-search-label" for="securityLookup">CVE, technology, package or IP address</label>
+        <input id="securityLookup" type="search" placeholder="Example: CVE-2026, WordPress, 23.94..." autocomplete="off">
+        <div id="securityLookupResults" class="workspace-results" aria-live="polite"></div>
+      </article>
     </section>
     <section id="dashboard" class="shell section" aria-labelledby="overviewTitle">
       <div class="section-heading"><div><p class="eyebrow">OVERVIEW</p><h2 id="overviewTitle">Vulnerability intelligence at a glance</h2><p class="section-sub">Summary totals include all indexed advisories. Use the date filter to see newly published CVEs. These counts do not represent vulnerabilities on your infrastructure.</p></div><div class="section-side">HOURLY COLLECTION <span class="small-star">✦</span> OPEN SOURCES</div></div>
@@ -184,26 +241,6 @@
         <article id="firewallCentre" class="data-panel ops-panel"><h3>Firewall &amp; WAF Intelligence Center</h3><p class="ops-note">Review sourced indicator observations and download configuration templates. Never deploy an unreviewed or permanently growing blocklist to production.</p><p class="ops-note" id="firewallObservedCount">Loading indicators</p><div id="firewallDownloads" class="ops-downloads"></div><div class="ops-results"><div class="ops-result"><strong>FortiGate</strong><p>Full and incremental commands for the persistent Suspicious IP Block group. Confirm VDOM, existing objects, firmware and change approval.</p></div><div class="ops-result"><strong>Sophos Firewall</strong><p>XML API templates. Incremental host group membership requires merging with current firewall members. Do not replace an existing HostList with the delta alone.</p></div><div class="ops-result"><strong>Other WAF &amp; firewall vendors</strong><p>Palo Alto, Cisco, Check Point, Cloudflare and Imperva exporters are not yet available. Vendor-specific commands must be validated before release.</p></div></div><p class="ops-note">A suspicious IP observation is not an approved block decision. Review shared infrastructure, stale indicators, false positives and allowlists.</p></article>
       </div>
     </section>
-    <section id="accountWorkspace" class="shell section" aria-labelledby="accountTitle">
-      <div class="section-heading"><div><p class="eyebrow">PERSONAL SECURITY WORKSPACE</p><h2 id="accountTitle">CVEHarbor Accounts & Cloud Sync</h2>
-      <p class="section-sub">Optional email sign in to sync your technology stack and remediation records between devices. Your existing local records remain available without an account.</p></div><span id="accountServiceStatus" class="result-pill">Checking account service</span></div>
-      <div class="data-panel account-panel"><p id="accountMessage" class="ops-note" role="status">Checking whether the account service is available...</p>
-        <div id="accountSignedOut">
-          <form id="accountRequest" class="ops-form"><label>Email address<input id="accountEmail" type="email" autocomplete="email" placeholder="you@example.com" required maxlength="254"></label>
-          <button class="ops-download" id="accountSendCode" type="submit">Email sign in code</button></form>
-          <form id="accountVerify" class="ops-form" hidden><input id="accountChallenge" type="hidden"><input id="accountSalt" type="hidden"><label>Six digit email code<input id="accountCode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required autocomplete="one-time-code"></label><button class="ops-download" type="submit" id="accountVerifyButton">Verify and sign in</button></form>
-        </div>
-        <div id="accountSignedIn" hidden>
-          <p id="accountIdentity" class="ops-note"></p>
-          <div class="ops-downloads"><button type="button" id="accountUpload" class="ops-download">Upload this browser's data</button><button type="button" id="accountDownload" class="ops-download">Download saved account data</button><button type="button" id="accountLogout" class="ops-download">Sign out</button></div>
-          <p class="ops-note">Sync actions replace the destination dataset only after confirmation. Export local remediation records before replacing them.</p>
-          <form id="accountAlerts" class="ops-form"><label><span>Vulnerability email notifications</span><span><input type="checkbox" id="alertEnabled"> Email me advisories matching my saved technology stack</span></label><label>Severity<select id="alertSeverity"><option value="critical">Critical</option><option value="high">High and Critical</option></select></label><label>Frequency<select id="alertFrequency"><option value="daily">Daily</option><option value="hourly">Hourly</option></select></label><button type="submit" class="ops-download">Save preferences</button></form>
-          <p id="alertDeliveryStatus" class="ops-note" role="status">Review your choices and select Save preferences to subscribe. Only confirmed subscriptions can receive emails. Reports contain up to 30 recent matching advisories, with links to the full index.</p><div class="ops-downloads"><button id="accountSendTest" type="button" class="ops-download">Send me a sample vulnerability report</button></div><p class="ops-note">Email reports are sent only when scheduled delivery is enabled. You can turn them off here or unsubscribe using a link in every report.</p>
-          <button id="accountDelete" type="button" class="ops-remove">Permanently delete account and cloud records</button>
-        </div>
-        <p class="ops-note">Your browser data remains local until you choose to upload it. Downloading replaces data saved in this browser. Export important remediation records before replacing them.</p>
-      </div>
-    </section>
     <section id="methodology" class="shell section"><div class="method-grid"><div><p class="eyebrow">TRUST & TRANSPARENCY</p><h2>Source first. Clarity always.</h2><p class="method-copy">CVEHarbor is being built to turn technical advisories into decisions people can act on. Each record distinguishes <strong>published</strong>, <strong>last source update</strong> and <strong>first indexed</strong>. Feed health is visible. A record being indexed does not mean it has been independently reproduced or that your systems are affected.</p><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener noreferrer" class="quiet-link">Explore CISA Known Exploited Vulnerabilities ↗</a></div><div class="method-steps"><div><span>01</span><div><b>Verify</b><small>Collect GitHub reviewed advisories, NVD entries and CISA KEV data each hour, alongside dated historical vendor advisories. Historical records retain their original disclosure dates.</small></div></div><div><span>02</span><div><b>Explain</b><small>Include confirmed affected versions, impact, fixes and exploitation status.</small></div></div><div><span>03</span><div><b>Review</b><small>Deduplicate records and display source timestamps, feed failures and coverage limitations.</small></div></div></div></div></section>
   </main>
   <footer class="footer"><div class="shell footer-row"><div><b>CVE<span>Harbor</span></b><small>Independent vulnerability intelligence</small></div><p>© <span id="year">2026</span> CVEHarbor. Public source aggregation. Not a vulnerability scan or professional incident determination.</p><a href="#top">Back to top ↑</a></div>
@@ -216,6 +253,6 @@
     </div>
   </dialog>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="malware-data.js"></script><script src="malware.js?v=3"></script><script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script defer src="geo-map.js?v=1"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=epss-priority-1"></script><script src="workspace.js?v=epss-priority-1"></script><script src="lifecycle.js"></script><script src="operations.js?v=ops-v1"></script><script src="accounts.js?v=email-digest-1"></script>
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="malware-data.js"></script><script src="malware.js?v=3"></script><script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script defer src="geo-map.js?v=1"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=epss-priority-1"></script><script src="workspace.js?v=watchlist-unified-1"></script><script src="lifecycle.js"></script><script src="operations.js?v=ops-v1"></script><script src="accounts.js?v=watchlist-unified-1"></script>
 </body>
 </html>
