@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import csv
+import gzip
 import io
 import os
 import xml.etree.ElementTree as ET
@@ -893,6 +894,70 @@ def choose_records(merged: dict[str,dict], baseline_ids: set[str]) -> list[dict]
     return records
 
 
+EPSS_URL="https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
+
+def parse_epss_rows(lines, wanted: set[str]) -> dict[str, dict]:
+    """Read FIRST's daily gzip CSV without loading all scores into memory."""
+    rows=(line for line in lines if line.strip() and not line.startswith("#"))
+    scores={}
+    for row in csv.DictReader(rows):
+        fid=str(row.get("cve") or "").strip().upper()
+        if fid not in wanted:
+            continue
+        try:
+            score=float(row["epss"])
+            percentile=float(row["percentile"])
+        except (KeyError, ValueError, TypeError):
+            continue
+        if 0 <= score <= 1 and 0 <= percentile <= 1:
+            scores[fid]={"score":round(score,6),"percentile":round(percentile,6)}
+    return scores
+
+
+def enrich_epss(records: list[dict], previous: dict, sources: dict) -> None:
+    """Enrich only CVEs in this snapshot; collect the daily bulk dataset once."""
+    wanted={r["id"] for r in records if CVERE.fullmatch(r.get("id") or "")}
+    old={r.get("id"):r for r in previous.get("advisories") or []}
+    status=sources.get("epss") or {}
+    last=status.get("last_success") or ""
+    reuse=last[:10]==NOW.date().isoformat()
+    if reuse:
+        for record in records:
+            previous_record=old.get(record["id"]) or {}
+            if isinstance(previous_record.get("epss"),(int,float)):
+                record["epss"]=previous_record["epss"]
+                record["epss_percentile"]=previous_record.get("epss_percentile")
+                record["epss_as_of"]=previous_record.get("epss_as_of") or last[:10]
+        return
+    try:
+        req=urllib.request.Request(EPSS_URL,headers={"User-Agent":"CVEHarbor-PublicFeed/1.0","Accept":"application/gzip"})
+        with urllib.request.urlopen(req,timeout=50) as resp:
+            with gzip.GzipFile(fileobj=resp) as gz:
+                with io.TextIOWrapper(gz,encoding="utf-8-sig") as reader:
+                    scores=parse_epss_rows(reader,wanted)
+        if not scores:
+            raise RuntimeError("EPSS dataset contained no matching CVEs")
+        for record in records:
+            score=scores.get(record["id"])
+            if score:
+                record["epss"]=score["score"]
+                record["epss_percentile"]=score["percentile"]
+                record["epss_as_of"]=NOW.date().isoformat()
+        sources["epss"]={"ok":True,"last_success":utc_iso(),"last_attempt":utc_iso(),
+                         "items_processed":len(scores),"url":EPSS_URL}
+        print(f"epss: enriched {len(scores)} CVEs",flush=True)
+    except Exception as exc:
+        for record in records:
+            prior=old.get(record["id"]) or {}
+            if isinstance(prior.get("epss"),(float,int)):
+                record["epss"]=prior["epss"]
+                record["epss_percentile"]=prior.get("epss_percentile")
+                record["epss_as_of"]=prior.get("epss_as_of")
+        sources["epss"]={**status,"ok":False,"last_attempt":utc_iso(),
+                         "error":crop(exc,200),"url":EPSS_URL}
+        print(f"WARNING: epss: {exc}",file=sys.stderr,flush=True)
+
+
 def run() -> int:
     prev = json.loads(DATA.read_text(encoding="utf-8")) if DATA.exists() else {}
     previous = {}
@@ -938,7 +1003,7 @@ def run() -> int:
     if wf_enabled and os.getenv("WORDFENCE_API_KEY") and wf_allowed:
         operations += (("wordfence", wordfence_items, from_wordfence),)
     # Do not preserve stale error statuses for intentionally retired adapters.
-    sources={name:sources.get(name,{}) for name,_,_ in operations}
+    sources={name:sources.get(name,{}) for name in [*(name for name,_,_ in operations),"epss"]}
     good = 0
     for name, fetch, transform in operations:
         try:
@@ -967,8 +1032,9 @@ def run() -> int:
         publish(fail)
         return 1
     records = choose_records(merged, baseline_ids)
+    enrich_epss(records, prev, sources)
     result = {"siteName":"CVEHarbor", "snapshotDate": NOW.date().isoformat(),
-              "mode":"live" if good == len(operations) else "partial",
+              "mode":"live" if good == len(operations) and sources.get("epss",{}).get("ok") else "partial",
               "coverage_limited":len(merged)>len(records),
               "candidate_records":len(merged),
               "categories":CATEGORIES, "advisories":records,

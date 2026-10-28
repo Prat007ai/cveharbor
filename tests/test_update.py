@@ -617,7 +617,7 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
 
     def test_active_feed_status_derived_from_current_operations(self):
         source=(root/"scripts/update.py").read_text(encoding="utf-8")
-        self.assertIn("sources={name:sources.get(name,{}) for name,_,_ in operations}",source)
+        self.assertIn('"epss"]}',source)
 
     def test_wordfence_requires_explicit_enable_and_daily_cooldown(self):
         source=(root/'scripts/update.py').read_text(encoding='utf-8')
@@ -625,6 +625,15 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
         self.assertIn('24 * 3600',source)
         self.assertIn('and wf_allowed',source)
         self.assertIn('Merely setting the secret must NEVER trigger a request.',source)
+
+    def test_epss_parses_only_requested_valid_scores(self):
+        content=["#model_version=v4.0.0","cve,epss,percentile",
+                 "CVE-2026-12345,0.324,0.93",
+                 "CVE-2026-12346,1.2,0.95",
+                 "CVE-2026-99999,0.12,0.32"]
+        scores=u.parse_epss_rows(content,{"CVE-2026-12345","CVE-2026-12346"})
+        self.assertEqual(scores["CVE-2026-12345"]["score"],0.324)
+        self.assertNotIn("CVE-2026-12346",scores)
 
     def test_url_rejection(self):
         self.assertFalse(u.clean_url('javascript:alert(1)'))
