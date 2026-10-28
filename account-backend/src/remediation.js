@@ -142,6 +142,8 @@ export function renderAssignmentEmail(cve,recipient,requester){
 }
 async function quota(env,key,seconds,max){
   const now=time(),cutoff=now-seconds;
+  // Prune counters only after every possible 24 hour notification window.
+  await env.DB.prepare('DELETE FROM remediation_assignment_limits WHERE window_start<?').bind(now-86400).run();
   const result=await env.DB.prepare(
     'INSERT INTO remediation_assignment_limits(key,window_start,count) VALUES(?,?,1) ON CONFLICT(key) DO UPDATE SET '+
     'count=CASE WHEN window_start<? THEN 1 ELSE count+1 END,'+
