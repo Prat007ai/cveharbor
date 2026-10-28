@@ -8,7 +8,11 @@ spec.loader.exec_module(u)
 
 class FeedTests(unittest.TestCase):
     def test_all_requested_categories(self):
-        self.assertEqual(16,len(u.CATEGORIES))
+        self.assertEqual(19,len(u.CATEGORIES))
+        self.assertEqual([c['name'] for c in u.CATEGORIES[:15]], ["Windows Server OS",".NET / ASP.NET",".NET Core","WordPress / Plugins","Linux","PHP","Python / PyPI","Azure","Microsoft 365","SQL Server","MySQL / MariaDB","Fortinet","VMware","HyperV","Docker / Kubernetes"])
+        self.assertIn('HyperV',[c['name'] for c in u.CATEGORIES])
+        self.assertIn('.NET Core',[c['name'] for c in u.CATEGORIES])
+        self.assertIn('Windows Server OS',[c['name'] for c in u.CATEGORIES])
         self.assertIn('Windows',[c['name'] for c in u.CATEGORIES])
         self.assertIn('Linux',[c['name'] for c in u.CATEGORIES])
         self.assertNotIn('Windows / Linux',[c['name'] for c in u.CATEGORIES])
@@ -34,6 +38,32 @@ class FeedTests(unittest.TestCase):
         labels = u.classify(product="OpenSSH", text="A remote service vulnerability")
         self.assertNotIn('Linux',labels)
         self.assertNotIn('Windows',labels)
+    def test_windows_server_category(self):
+        labels = u.classify(product="Microsoft Windows Server 2022", text="Security issue in Windows Server")
+        self.assertIn('Windows Server OS', labels)
+        self.assertNotIn('Windows', labels)
+        self.assertNotIn('Linux', labels)
+    def test_client_windows_category(self):
+        labels = u.classify(product="Microsoft Windows 11", text="Client security fix")
+        self.assertIn('Windows', labels)
+        self.assertNotIn('Windows Server OS', labels)
+    def test_modern_dotnet(self):
+        labels = u.classify(product="Microsoft ASP.NET Core 8.0", text="ASP.NET Core runtime security update")
+        self.assertIn('.NET Core', labels)
+        self.assertNotIn('.NET / ASP.NET', labels)
+    def test_legacy_dotnet(self):
+        labels = u.classify(product="ASP.NET Framework 4.8", text="Web Forms")
+        self.assertIn('.NET / ASP.NET', labels)
+        self.assertNotIn('.NET Core', labels)
+    def test_hyperv(self):
+        labels = u.classify(product="Microsoft Hyper-V", text="VM management service")
+        self.assertIn('HyperV', labels)
+    def test_new_category_migration(self):
+        old = {'categories':['Windows'], 'title':'Microsoft Windows Server 2025',
+               'affected':'Windows Server 2025','summary':'Server privilege elevation'}
+        migrated = u.recategorize_existing(old)
+        self.assertIn('Windows Server OS', migrated['categories'])
+        self.assertNotIn('Windows', migrated['categories'])
     def test_pip_classification(self):
         self.assertIn('Python / PyPI',u.classify(product='hydra-core',ecosystem='pip'))
         self.assertIn('Application dependencies',u.classify(product='hydra-core',ecosystem='pip'))
