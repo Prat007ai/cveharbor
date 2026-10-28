@@ -21,6 +21,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data" / "advisories.json"
 SCRIPT = ROOT / "data.js"
+VENDOR_BASELINE = ROOT / "data" / "vendor-baseline.json"
 CATEGORIES = json.loads((ROOT / "data" / "demo-advisories.json").read_text(encoding="utf-8"))["categories"]
 UTC = timezone.utc
 NOW = datetime.now(UTC)
@@ -112,10 +113,16 @@ def classify(*, product: str = "", ecosystem: str = "", text: str = "", cpes: li
     add("Microsoft 365", has(r"\b(?:microsoft 365|office 365|exchange (?:server|online)|entra id|sharepoint|teams (?:client|server)|power automate|power apps|dynamics 365|microsoft fabric)\b"))
     add("SQL Server", has(r"\b(?:sql server|mssql|sqlserver|azure sql)\b"))
     add("MySQL / MariaDB", has(r"\b(?:mysql|mariadb|percona)\b"))
-    add("Drupal / CMS", has(r"\b(?:drupal|dotnetnuke|dnn cms|sitefinity|kentico|xperience cms|umbraco)\b"))
+    add("Drupal / CMS", has(r"\\b(?:drupal|dotnetnuke|dnn cms|kentico|xperience cms|umbraco)\\b"))
+    add("Progress Telerik", has(r"(?:progress[ _-]*telerik|telerik[ _.-]*(?:ui|web|reporting|controls|asp|kendo)|telerik\.web\.ui|radasyncupload|radpersistence(?:manager)?|raddocklayout|radimageeditor|radfileexplorer|radeditor)"))
+    add("Sitefinity", has(r"(?:sitefinity|sitefinity[_-]nextjs[_-]sdk|@progress/sitefinity)"))
+    add("Veeam Backup & Replication", has(r"(?:veeam[ _-]*(?:backup[ &+_\-]*replication|b[&_ ]r|agent for linux|backup server)|veeam_backup_&_replication|veeam_backup_and_replication|veeam[ _-]*vbr)"))
+    add("Sophos Firewall", has(r"(?:sophos[ _-]*(?:firewall|sfos|xg\b|xgs\b)|sophos_firewall|sophos_xg_firewall|sophos_xgs_firewall)"))
+    add("Exchange SE", has(r"(?:exchange[ _-]*server[ _-]*(?:subscription[ _-]*edition|se\b)|exchange[ _-]*se\b|exchange_server_subscription_edition)"))
+    add("Windows 11 OS", has(r"\b(?:microsoft[ _-]*)?windows[ _-]*11(?:\b|[_-])"))
     add("Fortinet", has(r"\b(?:fortinet|fortigate|fortios|fortisiem|fortimanager|fortianalyzer)\b"))
     server_windows = has(r"\b(?:windows[\s_-]+server(?:[\s_-]+(?:[0-9]{4}|[0-9]+))?|windows_server(?:_[0-9]+)?|hyper[\s_-]?v server)\b")
-    generic_windows = has(r"\b(?:microsoft windows(?![\s_-]+server)|windows(?![\s_-]+server)|win32)\b")
+    generic_windows = has(r"\b(?:microsoft[ _-]+windows(?![\s_-]+(?:server|11))|windows(?![\s_-]+(?:server|11))|win32)\b")
     add("Windows Server OS", server_windows)
     add("Windows", generic_windows)
     add("Linux", has(r"\b(?:linux(?: kernel| server| distribution)?|ubuntu|debian|centos|red hat enterprise linux|rhel|almalinux|rocky linux|fedora|systemd)\b"))
@@ -150,22 +157,56 @@ def migrate_legacy_categories(record: dict) -> dict:
 
 
 def recategorize_existing(record: dict) -> dict:
-    """Add new platform tags to previously indexed CVEs without false Server tags."""
+    """Map historical records to dedicated products without inventing affected products.
+
+    Existing NVD records were classified before these categories existed. Match
+    only explicitly identified products in title, affected versions and summary.
+    """
     entry = dict(record)
-    categories = list(entry.get("categories") or [])
-    hints = classify(
-        product=f"{entry.get('title') or ''} {entry.get('affected') or ''}",
-        text=str(entry.get("summary") or ""),
-    )
-    for category in ("Windows Server OS", ".NET Core", "HyperV"):
-        if category in hints and category not in categories:
-            categories.append(category)
+    old_categories = list(entry.get("categories") or [])
+    evidence = " ".join([str(entry.get(k) or "") for k in ("title", "affected", "summary")])
+    hints = classify(product=evidence, text=evidence)
+    categories = list(dict.fromkeys(old_categories + hints))
+    if "Windows 11 OS" in hints:
+        categories = [c for c in categories if c != "Windows"]
     if "Windows Server OS" in hints and "Windows" not in hints:
         categories = [c for c in categories if c != "Windows"]
     if ".NET Core" in hints and ".NET / ASP.NET" not in hints:
         categories = [c for c in categories if c != ".NET / ASP.NET"]
+    if "Sitefinity" in hints and not re.search(r"\\b(?:drupal|dotnetnuke|kentico|umbraco)\\b", evidence, re.I):
+        categories = [c for c in categories if c != "Drupal / CMS"]
     entry["categories"] = [c for c in categories if c in ALLOWED]
     return entry
+
+
+def vendor_baseline_items() -> list[dict]:
+    """Older official advisories that seed new product sections, not fresh discoveries."""
+    if not VENDOR_BASELINE.exists():
+        return []
+    data = json.loads(VENDOR_BASELINE.read_text(encoding="utf-8"))
+    result = []
+    for entry in data.get("advisories") or []:
+        fid = str(entry.get("id") or "")
+        cats = entry.get("categories") or []
+        if not CVERE.match(fid) or not cats or any(c not in ALLOWED for c in cats):
+            raise ValueError(f"Invalid vendor baseline advisory {fid}")
+        sources = [source for source in entry.get("sources") or []
+                   if clean_url(source.get("url"))]
+        if not sources:
+            raise ValueError(f"Missing official reference for {fid}")
+        record = dict(entry)
+        record.update({
+            "kind": "cve",
+            "source_type": "vendor_baseline",
+            "source_updated_at": entry.get("updated") or entry.get("published") or "",
+            "status": "Vendor-sourced historical baseline; not newly disclosed",
+            "first_seen_at": utc_iso(),
+            "known_exploited": False,
+            "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+            "sources": sources,
+        })
+        result.append(record)
+    return result
 
 
 def ghsa_items() -> list[dict]:
@@ -358,7 +399,7 @@ def merge_record(old: dict, new: dict) -> dict:
         return new
     # GitHub generally provides better fixed package versions. Do not replace
     # an actionable package detail with NVD's generic patch instructions.
-    rank = {"github": 3, "nvd": 2, "cisa_kev": 1}
+    rank = {"github": 3, "vendor_baseline": 2.5, "nvd": 2, "cisa_kev": 1}
     chosen = new if rank.get(new.get("source_type"), 0) >= rank.get(old.get("source_type"), 0) else old
     merged = dict(chosen)
     merged["categories"] = sorted(set(old.get("categories") or []) | set(new.get("categories") or []))
@@ -388,6 +429,11 @@ def run() -> int:
         if migrated.get("categories"):
             previous[migrated["id"]] = migrated
     merged = dict(previous)
+    # Seed historically verified vendor advisories as baseline records. They
+    # retain original disclosure dates and are not treated as new feed events.
+    for record in vendor_baseline_items():
+        rid = record["id"]
+        merged[rid] = merge_record(merged.get(rid), record)
     sources = dict(prev.get("sources") or {})
     operations = (("github", ghsa_items, from_ghsa), ("nvd", nvd_items, from_nvd), ("cisa_kev", kev_items, from_kev))
     good = 0
@@ -413,7 +459,7 @@ def run() -> int:
         # A failed sync must not publish a new green successful timestamp.
         # Still exit non-zero so operator receives a workflow failure signal.
         fail = {"siteName":"CVEHarbor", "snapshotDate": datepart(prev.get("snapshotDate")), "mode":"degraded", "categories":CATEGORIES,
-                "advisories": list(previous.values()), "sources":sources,
+                "advisories": list(merged.values()), "sources":sources,
                 "last_checked_at": utc_iso(), "last_successful_update": prev.get("last_successful_update")}
         publish(fail)
         return 1
