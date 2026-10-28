@@ -701,3 +701,13 @@ button.tech-chart-link b{
 @media(max-width:700px){
   .threat-entry .threat-view-details{min-height:40px;padding:10px 15px;font-size:12px}
 }
+
+.threat-downloads{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border:1px solid #285a64;border-radius:11px;background:#10313d;padding:15px 17px;margin:16px 0}
+.threat-downloads-copy{display:grid;gap:5px;max-width:740px;min-width:0}
+.threat-downloads-copy strong{font-size:13px;color:#e7f9fa}
+.threat-downloads-copy span{color:#abc8d3;font-size:11px;line-height:1.6}
+.threat-download-actions{display:flex;gap:9px;flex-wrap:wrap}
+.threat-download-link{display:inline-flex;align-items:center;justify-content:center;min-height:39px;padding:9px 13px;background:#164b50;border:1px solid #378c83;border-radius:8px;color:#c5fff2;font-size:11px;text-decoration:none;font-weight:800}
+.threat-download-link:hover{background:#1a6060;color:#fff}
+.threat-download-link:focus-visible{outline:2px solid #8df2dd;outline-offset:2px}
+@media(max-width:700px){.threat-downloads{align-items:stretch}.threat-download-actions{display:grid;grid-template-columns:minmax(0,1fr);width:100%}}
