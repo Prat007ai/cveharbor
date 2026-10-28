@@ -132,6 +132,15 @@
   else if(status==='partial'&&lag<=2.5){stateLabel='Partial feed coverage';headline='Some sources failed during the last published collection';expl='The saved snapshot contains updates from available sources, but at least one feed failed during that collection. This is historical collection status, not evidence of a current provider outage.';}
   else if(lastSuccess){stateLabel='Data may be stale';headline='Hourly refresh not confirmed';expl='The latest successful collection is older than expected or a source has failed. Consult official vendor advisories for time-sensitive decisions.';}
   if(info.coverage_limited){stateLabel='Indexed archive limited';expl+=' The public index has reached its record cap and does not display every candidate advisory.';}
+  const sourceEntries=Object.values(info.sources||{});
+  const responding=sourceEntries.filter(s=>s.ok).length;
+  const heroSummary=$('heroFeedSummary');
+  if(heroSummary){
+    const healthy=status==='live'&&lag<=2.5&&!info.coverage_limited&&responding===4;
+    heroSummary.classList.toggle('is-degraded',!healthy);
+    $('heroFeedPulse').textContent=healthy?'4 of 4 sources responded at last collection':stateLabel+' · '+responding+' of 4 feeds responded';
+    $('heroFeedAge').textContent='Last successful collection: '+fmtEastern(lastSuccess)+'. This does not guarantee full vendor coverage.';
+  }
   $('feedStatus').textContent=stateLabel;
   $('feedHeadline').textContent=headline+'.';
   $('feedDescription').textContent=expl;
@@ -245,7 +254,9 @@
                     text('span','technology-count-all',`${total} total`));
       const arrow=text('span','technology-arrow','↗');arrow.setAttribute('aria-hidden','true');
       button.append(icon,label,counts,arrow);
-      button.addEventListener('click',()=>openTechnologyAdvisories(x.name));
+      // Open the most recent disclosure day shown by this technology's badge.
+      const openPeriod=ages.TODAY?'today':ages.YESTERDAY?'yesterday':ages['72 HOURS']?'twoDays':recent?'published30':'all';
+      button.addEventListener('click',()=>openTechnologyAdvisories(x.name,false,openPeriod));
       return button;
     }
     const meta={
