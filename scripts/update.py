@@ -321,9 +321,14 @@ def php_upstream_items() -> list[dict]:
 def from_php_upstream(item: dict) -> dict | None:
     if not isinstance(item, dict):
         return None
-    record = from_ghsa(item)
+    parsed = dict(item)
+    # Force the first party PHP classification even when an upstream advisory
+    # title is generic (for example, 'RCE via stale global state').
+    parsed["summary"] = "PHP runtime: " + str(item.get("summary") or "")
+    record = from_ghsa(parsed)
     if not record:
         return None
+    record["title"] = crop(item.get("summary") or record["title"], 175)
     # The upstream advisory belongs to the PHP interpreter, including
     # extensions, even when the GHSA summary omits the word 'PHP'.
     record["categories"] = list(dict.fromkeys(["PHP", *record["categories"]]))
