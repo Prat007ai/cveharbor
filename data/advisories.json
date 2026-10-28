@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-28",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4295,
+  "candidate_records": 4262,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -8097,6 +8097,7 @@
       "severity": "low",
       "categories": [
         "Application dependencies",
+        "JavaScript / TypeScript",
         "Node.js / npm"
       ],
       "published": "2026-10-28",
@@ -8142,6 +8143,7 @@
       "severity": "high",
       "categories": [
         "Application dependencies",
+        "JavaScript / TypeScript",
         "Node.js / npm"
       ],
       "published": "2026-10-28",
@@ -9252,6 +9254,7 @@
       "severity": "medium",
       "categories": [
         "Application dependencies",
+        "JavaScript / TypeScript",
         "Node.js / npm"
       ],
       "published": "2026-10-28",
@@ -9538,6 +9541,7 @@
       "severity": "medium",
       "categories": [
         "Application dependencies",
+        "JavaScript / TypeScript",
         "Linux",
         "Node.js / npm"
       ],
@@ -10274,7 +10278,8 @@
       "severity": "medium",
       "categories": [
         "Application dependencies",
-        "Python / PyPI"
+        "Python / PyPI",
+        "React / Next.js"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -10403,7 +10408,9 @@
       "severity": "medium",
       "categories": [
         "Application dependencies",
-        "Python / PyPI"
+        "Linux",
+        "Python / PyPI",
+        "React / Next.js"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -10446,8 +10453,8 @@
       "title": "Electrum: Malicious server can replace a just-broadcast tx and try to trick user into RBF-ing it",
       "severity": "critical",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Python / PyPI"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -10487,8 +10494,9 @@
       "title": "Waline login accepts a non-string email as a match-all MongoDB query",
       "severity": "medium",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "NoSQL / MongoDB",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -10528,8 +10536,8 @@
       "title": "vLLM: Phi-4 multimodal audio encoder materializes and retains full attention matrices: a single max-length audio OOM-crashes the vLLM engine",
       "severity": "medium",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Python / PyPI"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -10569,8 +10577,9 @@
       "title": "LangGraph CLI prints the registry push token in `langgraph deploy --verbose` output",
       "severity": "medium",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Docker / Kubernetes",
+        "Python / PyPI"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -10610,8 +10619,9 @@
       "title": "graphql-scalars PhoneNumber scalar is vulnerable to regular expression denial of service",
       "severity": "high",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "JavaScript / TypeScript",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -10651,8 +10661,8 @@
       "title": "RE2JS: Quadratic-time denial of service in re2js lookbehind matching",
       "severity": "high",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -10692,8 +10702,9 @@
       "title": "LangGraph JavaScript custom authentication may permit cross-user Store access",
       "severity": "high",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "JavaScript / TypeScript",
+        "Python / PyPI"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -10725,8 +10736,9 @@
       "title": "filelock: StrictSoftFileLock creates its claim directories without the lock mode, so another local user with a write bit on them can end a live hold",
       "severity": "medium",
       "categories": [
+        "Application dependencies",
         "Python / PyPI",
-        "Application dependencies"
+        "React / Next.js"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -10766,8 +10778,9 @@
       "title": "filelock: WindowsFileLock ignores mode: a 0o600 lock file and the ReadWriteLock database inherit the directory ACL",
       "severity": "medium",
       "categories": [
+        "Application dependencies",
         "Python / PyPI",
-        "Application dependencies"
+        "Windows"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -10807,8 +10820,8 @@
       "title": "filelock ReadWriteLock: a crafted lock database makes every acquire stall or hang regardless of timeout",
       "severity": "medium",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Python / PyPI"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -10848,8 +10861,9 @@
       "title": "filelock: SoftFileLock removes a live holder's marker when another user forges the PID in a writable marker",
       "severity": "medium",
       "categories": [
+        "Application dependencies",
         "Python / PyPI",
-        "Application dependencies"
+        "React / Next.js"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -10889,8 +10903,9 @@
       "title": "filelock: Symlink swap during SoftFileLock's writability check leaks whether a path exists and is writable by the lock taker",
       "severity": "low",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Linux",
+        "Python / PyPI"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -10930,8 +10945,9 @@
       "title": "filelock: ReadWriteLock follows a symlink at the lock path into SQLite",
       "severity": "medium",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Linux",
+        "Python / PyPI"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -10971,8 +10987,8 @@
       "title": "filelock: StrictSoftFileLock follows a symbolic link swapped in at <path>.filelock and creates claim files in a directory another local user chooses",
       "severity": "medium",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Python / PyPI"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -11012,8 +11028,8 @@
       "title": "filelock: SoftReadWriteLock holder refresh writes through a hard link and hangs on a named pipe that another local user renames over its record",
       "severity": "medium",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Python / PyPI"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -11053,8 +11069,9 @@
       "title": "Happy DOM: SSRF via iframe and link stylesheet when parsing untrusted HTML",
       "severity": "high",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "JavaScript / TypeScript",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -11094,8 +11111,8 @@
       "title": "Happy DOM has cookie scope forgery: no DNS-label boundary on Domain= matching , attacker origin sets victim cookies",
       "severity": "medium",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -11180,8 +11197,8 @@
       "title": "GraphQL Tools: Per-request connection parameters persist into later users' WebSocket authentications",
       "severity": "high",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -11221,8 +11238,8 @@
       "title": "GraphQL Tools: Shared legacy executor routes one subscription's results to a different caller",
       "severity": "medium",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -28833,53 +28850,6 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-109619",
-      "title": "RCE via stale global state",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-28",
-      "summary": "## Summary PHP contains various global state, such as error, session, object and extension state that is retained by a worker but points to memory owned by one request. That state must be reset before the request memory is released. Some input, configuration, session and error handling operations run before normal initialization of the next request. They inadvertently access stale state not reset by the previous request before initialization has a chance to replace it, causing a use after free. A strategically crafted heap layout can produce full remote code execution (RCE). State can survive for more than one reason. A fatal error, including one caused by memory exhaustion, can abandon an operation before it performs its matching reset. A warning or other nonfatal diagnostic can also repopulate error state after that state was already cleared during shutdown. The request heap is then freed while the worker global field still refers to it. A later operation that runs before normal request initialization can consume the stale value. Successful exploitation of this vulnerability requires both a producer and a consumer. The producer is a PHP operation that stores state owned by one request in a location PHP can access later in a subsequent request. The consumer is a subsequent PHP o",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "PHP upstream security advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-6wmf-4rv5-p3rp"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:13Z",
-      "source_type": "php_upstream",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99999,
-      "epss_as_of": "2026-10-28"
-    },
-    {
       "id": "CVE-2026-109618",
       "title": "RCE via OOM corruption",
       "severity": "critical",
@@ -28924,6 +28894,53 @@
       "known_exploited": true,
       "epss": 0.99999,
       "epss_percentile": 0.99998,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-109619",
+      "title": "RCE via stale global state",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-28",
+      "summary": "## Summary PHP contains various global state, such as error, session, object and extension state that is retained by a worker but points to memory owned by one request. That state must be reset before the request memory is released. Some input, configuration, session and error handling operations run before normal initialization of the next request. They inadvertently access stale state not reset by the previous request before initialization has a chance to replace it, causing a use after free. A strategically crafted heap layout can produce full remote code execution (RCE). State can survive for more than one reason. A fatal error, including one caused by memory exhaustion, can abandon an operation before it performs its matching reset. A warning or other nonfatal diagnostic can also repopulate error state after that state was already cleared during shutdown. The request heap is then freed while the worker global field still refers to it. A later operation that runs before normal request initialization can consume the stale value. Successful exploitation of this vulnerability requires both a producer and a consumer. The producer is a PHP operation that stores state owned by one request in a location PHP can access later in a subsequent request. The consumer is a subsequent PHP o",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "PHP upstream security advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-6wmf-4rv5-p3rp"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:13Z",
+      "source_type": "php_upstream",
+      "known_exploited": true,
+      "epss": 0.99999,
+      "epss_percentile": 0.99999,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -32889,8 +32906,8 @@
       "title": "nodejs-whisper allows OS command injection through crafted audio file paths",
       "severity": "critical",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-14",
       "updated": "2026-10-28",
@@ -45638,6 +45655,47 @@
       "epss_as_of": "2026-10-28"
     },
     {
+      "id": "CVE-2026-108398",
+      "title": ".NET Framework untrusted search path security feature bypass",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        "Windows",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "Untrusted search path handling in classic Microsoft .NET Framework permits a locally authorized attacker to bypass a security feature. The patch is part of Microsoft's October 2026 .NET Framework cumulative security updates.",
+      "affected": "Multiple .NET Framework 3.5, 4.6.2 through 4.8.1 configurations across supported Windows versions, subject to Microsoft update applicability. This is a separate classic .NET Framework CVE, not the modern .NET Brotli issue.",
+      "remediation": "Install the correct October 13, 2026 .NET Framework cumulative update or a newer superseding Windows update for the installed Windows and .NET Framework versions. Consult the Microsoft patch matrix for the specific KB.",
+      "exploitation": "No confirmed active exploitation in the referenced Microsoft advisories.",
+      "sources": [
+        {
+          "label": "Microsoft .NET Framework October cumulative update",
+          "url": "https://learn.microsoft.com/en-us/dotnet/framework/release-notes/2026/10-13-october-cumulative-update"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-108398"
+        },
+        {
+          "label": "NVD product applicability",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108398"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00779,
+      "epss_percentile": 0.55752,
+      "epss_as_of": "2026-10-28"
+    },
+    {
       "id": "CVE-2026-96951",
       "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
       "severity": "high",
@@ -45711,47 +45769,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00934,
       "epss_percentile": 0.60635,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-108398",
-      "title": ".NET Framework untrusted search path security feature bypass",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        ".NET / ASP.NET",
-        "Windows",
-        "Windows Server OS"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "Untrusted search path handling in classic Microsoft .NET Framework permits a locally authorized attacker to bypass a security feature. The patch is part of Microsoft's October 2026 .NET Framework cumulative security updates.",
-      "affected": "Multiple .NET Framework 3.5, 4.6.2 through 4.8.1 configurations across supported Windows versions, subject to Microsoft update applicability. This is a separate classic .NET Framework CVE, not the modern .NET Brotli issue.",
-      "remediation": "Install the correct October 13, 2026 .NET Framework cumulative update or a newer superseding Windows update for the installed Windows and .NET Framework versions. Consult the Microsoft patch matrix for the specific KB.",
-      "exploitation": "No confirmed active exploitation in the referenced Microsoft advisories.",
-      "sources": [
-        {
-          "label": "Microsoft .NET Framework October cumulative update",
-          "url": "https://learn.microsoft.com/en-us/dotnet/framework/release-notes/2026/10-13-october-cumulative-update"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-108398"
-        },
-        {
-          "label": "NVD product applicability",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108398"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00779,
-      "epss_percentile": 0.55752,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -70226,8 +70243,8 @@
       "title": "langgraph-api: Incomplete assistant authorization in LangGraph Server run creation",
       "severity": "medium",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Python / PyPI"
       ],
       "published": "2026-08-19",
       "updated": "2026-10-28",
@@ -70267,8 +70284,9 @@
       "title": "langgraph-api: Relative webhook targets in LangGraph Server can reach in-process routes without authentication",
       "severity": "medium",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Docker / Kubernetes",
+        "Python / PyPI"
       ],
       "published": "2026-08-19",
       "updated": "2026-10-28",
@@ -77826,8 +77844,8 @@
       "title": "LangGraph SQLite Checkpoint Filter Key SQL Injection POC for SqliteStore",
       "severity": "high",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Python / PyPI"
       ],
       "published": "2025-10-29",
       "updated": "2026-10-28",
@@ -82593,85 +82611,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-28T21:25:30Z",
-      "last_attempt": "2026-10-28T21:25:30Z",
+      "last_success": "2026-10-28T21:33:28Z",
+      "last_attempt": "2026-10-28T21:33:28Z",
       "items_processed": 200,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-28T21:25:30Z",
-      "last_attempt": "2026-10-28T21:25:30Z",
+      "last_success": "2026-10-28T21:33:28Z",
+      "last_attempt": "2026-10-28T21:33:28Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-28T21:25:30Z",
-      "last_attempt": "2026-10-28T21:25:30Z",
+      "last_success": "2026-10-28T21:33:28Z",
+      "last_attempt": "2026-10-28T21:33:28Z",
       "items_processed": 833,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-28T21:25:30Z",
-      "last_attempt": "2026-10-28T21:25:30Z",
+      "last_success": "2026-10-28T21:33:28Z",
+      "last_attempt": "2026-10-28T21:33:28Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-28T21:25:30Z",
-      "last_attempt": "2026-10-28T21:25:30Z",
+      "last_success": "2026-10-28T21:33:28Z",
+      "last_attempt": "2026-10-28T21:33:28Z",
       "items_processed": 2558,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-28T21:25:30Z",
-      "last_attempt": "2026-10-28T21:25:30Z",
+      "last_success": "2026-10-28T21:33:28Z",
+      "last_attempt": "2026-10-28T21:33:28Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-28T21:25:30Z",
-      "last_attempt": "2026-10-28T21:25:30Z",
+      "last_success": "2026-10-28T21:33:28Z",
+      "last_attempt": "2026-10-28T21:33:28Z",
       "items_processed": 23,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-28T21:25:30Z",
-      "last_attempt": "2026-10-28T21:25:30Z",
+      "last_success": "2026-10-28T21:33:28Z",
+      "last_attempt": "2026-10-28T21:33:28Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-28T21:25:30Z",
-      "last_attempt": "2026-10-28T21:25:30Z",
+      "last_success": "2026-10-28T21:33:28Z",
+      "last_attempt": "2026-10-28T21:33:28Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-28T21:25:30Z",
-      "last_attempt": "2026-10-28T21:25:30Z",
+      "last_success": "2026-10-28T21:33:28Z",
+      "last_attempt": "2026-10-28T21:33:28Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-28T21:25:30Z",
-      "last_attempt": "2026-10-28T21:25:30Z",
+      "last_success": "2026-10-28T21:33:28Z",
+      "last_attempt": "2026-10-28T21:33:28Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-28T21:25:30Z",
-      "last_attempt": "2026-10-28T21:25:30Z",
+      "last_success": "2026-10-28T21:33:28Z",
+      "last_attempt": "2026-10-28T21:33:28Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -82683,7 +82701,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-28T21:25:30Z",
-  "last_successful_update": "2026-10-28T21:25:30Z",
+  "last_checked_at": "2026-10-28T21:33:28Z",
+  "last_successful_update": "2026-10-28T21:33:28Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
