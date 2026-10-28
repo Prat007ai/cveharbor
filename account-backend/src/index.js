@@ -1,5 +1,6 @@
 // CVEHarbor account API with opt-in vulnerability digest support.
 import { saveOptin, loadAlertSubscription, sendUserSample, dispatchDueDigests, unsubscribe } from './delivery.js';
+import { handlePublicCveLookup } from './cve-lookup.js';
 // The sender address must be verified in SMTP2GO. Never place credentials in GitHub.
 const ALLOWED_ORIGIN='https://cveharbor.com';
 const enc=new TextEncoder();
@@ -12,7 +13,7 @@ async function me(req,env){const value=cookie(req);if(!/^[a-f0-9]{64}$/.test(val
 async function body(req){const size=Number(req.headers.get('content-length')||0);if(size>18000)throw Error('Request too large');const raw=await req.text();if(raw.length>18000)throw Error('Request too large');return JSON.parse(raw)}
 async function limit(env,key,max){const now=Math.floor(Date.now()/1000),start=now-3600;await env.DB.prepare('DELETE FROM auth_rate_limits WHERE window_start<?').bind(start).run();await env.DB.prepare('INSERT INTO auth_rate_limits(key,window_start,count) VALUES(?,?,1) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN window_start<? THEN 1 ELSE count+1 END,window_start=CASE WHEN window_start<? THEN ? ELSE window_start END').bind(key,now,start,start,now).run();const row=await env.DB.prepare('SELECT count FROM auth_rate_limits WHERE key=?').bind(key).first();return row.count<=max}
 async function emailCode(env,address,code){const response=await fetch('https://api.smtp2go.com/v3/email/send',{method:'POST',headers:{'Content-Type':'application/json','X-Smtp2go-Api-Key':env.SMTP2GO_API_KEY},body:JSON.stringify({sender:env.EMAIL_FROM,to:[address],subject:'CVEHarbor sign in code',text_body:'Your CVEHarbor code: '+code+'\n\nExpires in 10 minutes. If you did not request this, ignore this email.'})});if(!response.ok)throw Error('Email delivery unavailable');const payload=await response.json();if(!payload.data||payload.data.failed>0||payload.data.succeeded<1)throw Error('Email delivery unsuccessful')}
-export default {async fetch(req,env){
+export default {async fetch(req,env,ctx){
  const url=new URL(req.url),origin=req.headers.get('origin');
  if(req.method==='OPTIONS'){if(origin!==ALLOWED_ORIGIN)return response({error:'Forbidden'},403);return new Response(null,{status:204,headers:{'Access-Control-Allow-Origin':ALLOWED_ORIGIN,'Access-Control-Allow-Credentials':'true','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST,PUT,DELETE,OPTIONS','Vary':'Origin'}})}
  if(!url.pathname.startsWith('/v1/'))return response({error:'Not found'},404);
@@ -23,6 +24,8 @@ export default {async fetch(req,env){
  }
  if(origin&&origin!==ALLOWED_ORIGIN)return response({error:'Forbidden origin'},403);
  if(req.method!=='GET'&&origin!==ALLOWED_ORIGIN)return response({error:'Invalid request origin'},403);
+ // Published CVE lookup is public, read-only, and independent of account login or D1.
+ if(url.pathname.startsWith('/v1/cve/'))return handlePublicCveLookup(req,ctx);
  if(!env.DB)return response({error:'Account service not configured'},503);
  const path=url.pathname;
  try {

@@ -833,3 +833,15 @@ button.tech-chart-link b{
 .malware-show-all:hover{background:#1b5a60;border-color:#65dccc;color:#ffffff}
 .malware-show-all:focus-visible{outline:2px solid #9ceedd;outline-offset:3px}
 .malware-show-all[hidden]{display:none!important}
+
+
+/* Live CVE detail cards for exact IDs outside the bounded public index. */
+.workspace-live{border-color:#386d7b;background:#0e3044;margin-top:10px;padding:17px 19px}
+.workspace-live .workspace-result-header strong{font-size:15px;line-height:1.45}
+.workspace-live .workspace-live-id{color:#76ded2;font-size:12px;font-weight:700}
+.workspace-live .workspace-live-description{font-size:13px;color:#c6dce6;line-height:1.75;white-space:pre-line}
+.workspace-live .workspace-live-heading{display:block;font-size:12px;margin-top:13px;color:#a7e7dc}
+.workspace-live p{line-height:1.7}
+.workspace-live-links{display:flex;align-items:center;flex-wrap:wrap;gap:11px;margin-top:14px;padding-top:12px;border-top:1px solid #365565}
+.workspace-live-links a{display:inline-block;line-height:1.5}
+.workspace-error{color:#ffccae!important}

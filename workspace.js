@@ -80,12 +80,98 @@
     for(const item of rows.slice(0,8))stackResults.append(itemRow(item));
     if(rows.length>8)stackResults.append(make('p','workspace-note','Showing the eight highest priority indexed matches. Use the full advisory search to review more.'));
   }
+  let lookupTimer=null,lookupAbort=null,lookupVersion=0;
+  const validId=/^CVE-\d{4}-\d{4,10}$/i;
+  function makeOfficialLinks(row,id,references=[]){
+    const wrap=make('div','workspace-live-links');
+    const links=[
+      {label:'Open CVE Program record',url:'https://www.cve.org/CVERecord?id='+id},
+      {label:'View NVD entry',url:'https://nvd.nist.gov/vuln/detail/'+id},
+      ...(Array.isArray(references)?references.slice(0,4):[])
+    ];
+    for(const source of links){
+      try {
+        const u=new URL(source.url);
+        if(u.protocol!=='https:')continue;
+        const link=make('a','workspace-link',source.label||u.hostname);
+        link.href=u.href;link.target='_blank';link.rel='noopener noreferrer';
+        wrap.append(link);
+      }catch(_){}
+    }
+    row.append(wrap);
+  }
+  function showExactStatus(id,message,isError=false){
+    output.replaceChildren();
+    const row=make('article','workspace-result workspace-live');
+    row.append(make('strong','',id));
+    row.append(make('p',isError?'workspace-error':'workspace-note',message));
+    makeOfficialLinks(row,id);
+    output.append(row);
+  }
+  function showExternalCve(record){
+    output.replaceChildren();
+    const card=make('article','workspace-result workspace-live');
+    const head=make('div','workspace-result-header');
+    head.append(make('strong','',record.title||record.id));
+    const label=String(record.severity||'unrated').toLowerCase();
+    head.append(make('span','workspace-severity '+label,label.toUpperCase()));
+    card.append(head);
+    card.append(make('p','workspace-live-id',record.id+' · Source: '+(record.source||'CVE Program')));
+    const meta=[
+      record.published?'Published '+String(record.published).slice(0,10):'',
+      record.updated?'Updated '+String(record.updated).slice(0,10):'',
+      record.cvss!==null&&record.cvss!==undefined?'CVSS '+record.cvss+(record.cvssVersion?' (v'+record.cvssVersion+')':''):'',
+      record.cwe||''
+    ].filter(Boolean);
+    if(meta.length)card.append(make('p','workspace-note',meta.join(' · ')));
+    if(record.description)card.append(make('p','workspace-live-description',record.description));
+    const affected=Array.isArray(record.affected)?record.affected:[];
+    if(affected.length){
+      card.append(make('strong','workspace-live-heading','Reported affected products'));
+      card.append(make('p','',affected.join(' · ')));
+    }
+    if(record.remediation){
+      card.append(make('strong','workspace-live-heading','Vendor remediation information'));
+      card.append(make('p','',record.remediation));
+    }
+    card.append(make('p','workspace-note','Live record from the CVE Program. Check affected versions and prerequisites before acting. This lookup does not scan your systems.'));
+    makeOfficialLinks(card,record.id,record.references);
+    output.append(card);
+  }
+  async function runExactLookup(id,version){
+    const controller=new AbortController();
+    lookupAbort=controller;
+    try{
+      const res=await fetch('https://api.cveharbor.com/v1/cve/'+id,{
+        method:'GET',credentials:'omit',headers:{Accept:'application/json'},signal:controller.signal
+      });
+      let data={};try{data=await res.json()}catch(_){}
+      if(version!==lookupVersion||controller.signal.aborted)return;
+      if(res.ok&&data.status==='published'&&data.id===id)showExternalCve(data);
+      else if(res.ok&&data.status==='rejected')showExactStatus(id,
+        data.message||'The CVE Program rejected this identifier. It is not an active vulnerability record.');
+      else if(res.status===404)showExactStatus(id,
+        'No published record was found in the official CVE sources. The ID may be reserved, not yet published, or unavailable.');
+      else showExactStatus(id,
+        'The official CVE lookup is temporarily unavailable. The vulnerability may still exist. Use the CVE Program or NVD link below.',true);
+    }catch(error){
+      if(version!==lookupVersion||controller.signal.aborted)return;
+      showExactStatus(id,'The live lookup could not connect. Try again or open the official CVE record below.',true);
+    }finally{
+      if(lookupAbort===controller)lookupAbort=null;
+    }
+  }
   function renderLookup(){
+    const version=++lookupVersion;
+    if(lookupTimer!==null){clearTimeout(lookupTimer);lookupTimer=null;}
+    if(lookupAbort){lookupAbort.abort();lookupAbort=null;}
     const q=lookup.value.trim().toLowerCase();
     output.replaceChildren();
     if(q.length<2){
-      output.append(make('p','workspace-note','Enter at least two characters to search indexed CVEs, packages, products, or IP indicators.'));return;
+      output.append(make('p','workspace-note','Search indexed advisories or enter an exact CVE ID to look up the official public record.'));return;
     }
+    const id=q.toUpperCase();
+    const exact=validId.test(id);
     const found=advisories.filter(item=>[item.id,item.title,item.summary,item.affected,...(item.categories||[])].some(v=>String(v||'').toLowerCase().includes(q))).sort(priority).slice(0,12);
     const ips=(threats.indicators||[]).filter(x=>x.ip.includes(q)).slice(0,6);
     for(const entry of ips){
@@ -95,7 +181,15 @@
       output.append(row);
     }
     for(const record of found)output.append(itemRow(record));
-    if(!found.length&&!ips.length)output.append(make('p','workspace-note','No matching records in the indexed snapshot. This does not establish that a product or address is safe.'));
+    if(exact&&!found.some(item=>String(item.id).toUpperCase()===id)){
+      const row=make('article','workspace-result workspace-live');
+      row.append(make('strong','',id));
+      row.append(make('p','workspace-note','Not in the local index. Checking the official CVE Program record...'));
+      output.append(row);
+      lookupTimer=setTimeout(()=>{lookupTimer=null;runExactLookup(id,version);},320);
+    }else if(!found.length&&!ips.length){
+      output.append(make('p','workspace-note','No matching records in the current indexed snapshot. For older or unindexed vulnerabilities, search by their complete CVE ID.'));
+    }
   }
   function saveSelection(){
     persist();
