@@ -13,7 +13,7 @@ spec.loader.exec_module(u)
 
 class FeedTests(unittest.TestCase):
     def test_all_requested_categories(self):
-        self.assertEqual(25,len(u.CATEGORIES))
+        self.assertEqual(38,len(u.CATEGORIES))
         self.assertEqual([c['name'] for c in u.CATEGORIES[:21]], ["Windows Server OS","Windows 11 OS",".NET / ASP.NET",".NET Core","WordPress / Plugins","Linux","PHP","Python / PyPI","Azure","Microsoft 365","Exchange SE","SQL Server","MySQL / MariaDB","Fortinet","Sophos Firewall","VMware","Veeam Backup & Replication","HyperV","Docker / Kubernetes","Progress Telerik","Sitefinity"])
         self.assertIn('HyperV',[c['name'] for c in u.CATEGORIES])
         self.assertIn('.NET Core',[c['name'] for c in u.CATEGORIES])
@@ -317,6 +317,9 @@ class FeedTests(unittest.TestCase):
         self.assertIn('technology-redesign',html)
         self.assertIn("technologySearch').addEventListener('input',renderCategories)",js)
         self.assertIn('technology-row',js)
+        self.assertIn('technology-more-caption',html)
+        self.assertIn('caption.textContent',js)
+        self.assertIn('advisoryIDs',js)
         group_json=js.split('const technologyGroups = ',1)[1].split(';',1)[0]
         groups=json.loads(group_json)
         self.assertEqual(set(groups),{'microsoft','applications','infrastructure'})
@@ -325,6 +328,61 @@ class FeedTests(unittest.TestCase):
         self.assertTrue(all(len(group)==7 for group in groups.values()))
         self.assertTrue(set(names).issubset({c['name'] for c in u.CATEGORIES}))
         self.assertEqual(4,len(u.CATEGORIES)-len(names))
+
+    def test_whitecap_public_site_added_technology_categories(self):
+        names={c['name'] for c in u.CATEGORIES}
+        expected={'Angular','React / Next.js','JavaScript / TypeScript',
+                  'jQuery / Bootstrap','Kendo UI','SharePoint / SharePoint Server',
+                  'Microsoft Power Platform','Dynamics 365','Microsoft Fabric / Power BI',
+                  'Azure AI / AI SDK','NoSQL / MongoDB','AWS','iOS / Android'}
+        self.assertTrue(expected.issubset(names))
+        self.assertEqual(13,len(expected))
+        self.assertEqual(38,len(names))
+
+    def test_new_product_classifier_positive_and_negative_cases(self):
+        cases={
+            '@angular/common': ('Angular','npm'),
+            'react-server-dom-webpack': ('React / Next.js','npm'),
+            'TypeScript compiler': ('JavaScript / TypeScript','npm'),
+            'jquery': ('jQuery / Bootstrap','npm'),
+            'Kendo UI for jQuery': ('Kendo UI',''),
+            'Microsoft SharePoint Server Subscription Edition': ('SharePoint / SharePoint Server',''),
+            'Microsoft Power Apps': ('Microsoft Power Platform',''),
+            'Dynamics 365 CRM': ('Dynamics 365',''),
+            'Microsoft Power BI': ('Microsoft Fabric / Power BI',''),
+            'Azure OpenAI Service': ('Azure AI / AI SDK',''),
+            'MongoDB Server': ('NoSQL / MongoDB',''),
+            'AWS SDK for Python': ('AWS',''),
+            'Android SDK': ('iOS / Android',''),
+        }
+        for name,(label,eco) in cases.items():
+            with self.subTest(name=name):
+                self.assertIn(label,u.classify(product=name,ecosystem=eco))
+        self.assertNotIn('SharePoint / SharePoint Server',u.classify(product='Share point of sale display'))
+        self.assertNotIn('NoSQL / MongoDB',u.classify(product='An unrelated SQL Server'))
+
+    def test_source_verified_technology_advisories_are_seeded(self):
+        found={x['id']:x for x in u.vendor_baseline_items()}
+        expected={'CVE-2026-111753','GHSA-xqc2-xf4c-x3h3',
+                  'CVE-2025-55182','CVE-2026-70266',
+                  'CVE-2026-70259','CVE-2025-6725','CVE-2025-14847'}
+        self.assertTrue(expected.issubset(found))
+        self.assertEqual('advisory',found['GHSA-xqc2-xf4c-x3h3']['kind'])
+        self.assertEqual('critical',found['GHSA-xqc2-xf4c-x3h3']['severity'])
+        self.assertEqual('2026-10-14',found['GHSA-xqc2-xf4c-x3h3']['published'])
+        self.assertTrue(found['CVE-2025-14847']['known_exploited'])
+        for id in expected:
+            self.assertGreater(len(found[id]['sources']),0)
+
+    def test_catalog_build_preserves_ghsa_only_records(self):
+        import subprocess,sys
+        result=subprocess.run([sys.executable,str(root/'scripts/build_site.py')],cwd=root,
+                              capture_output=True,text=True,check=True)
+        payload=(root/'public'/'catalog.js').read_text(encoding='utf-8')
+        data=json.loads(payload.partition(' = ')[2].strip().removesuffix(';'))
+        self.assertEqual(38,len(data['categories']))
+        react=next(a for a in data['advisories'] if a['id']=='GHSA-xqc2-xf4c-x3h3')
+        self.assertEqual('advisory',react['kind'])
 
     def test_url_rejection(self):
         self.assertFalse(u.clean_url('javascript:alert(1)'))
