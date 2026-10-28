@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const state = { q: '', severity: 'all', tech: 'all', period: 'published30' };
-  const PAGE_SIZE = 6;
+  const PAGE_SIZE = 10;
   const TABLE_PAGE_SIZE = 25;
   const isCVE = x => /^CVE-\d{4}-\d+$/i.test(x.id);
   let visibleCount = PAGE_SIZE;
@@ -271,7 +271,7 @@
     if(!full) selected.slice(0,visibleCount).forEach(x=>{
       const card=text('article','advisory-card',''),head=text('div','card-head','');
       head.append(text('span','cat-badge',x.categories[0]),text('span','severity-badge '+x.severity,severityText(x.severity)));
-      card.append(head);card.append(text('h3','',x.title),text('p','',x.summary));
+      card.append(head);card.append(text('h3','',x.title),text('p','card-summary',x.summary));
       const meta=text('div','card-meta','');
       meta.append(text('span','',fmtDate(x.published)),text('span','',x.categories.length===1?'1 technology':`${x.categories.length} technologies`));
       if(x.cvss)meta.append(text('span','',`CVSS ${x.cvss}`));
