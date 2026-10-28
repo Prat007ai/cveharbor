@@ -8,7 +8,7 @@
   <meta property="og:title" content="CVEHarbor | Know the risk. Find the fix.">
   <meta property="og:description" content="Vulnerability advisories, severity dashboards, affected versions, vendor sources and remediation guidance.">
   <title>CVEHarbor | Vulnerability Intelligence</title>
-  <link rel="stylesheet" href="styles.css?v=onsite-cve-dialog-1">
+  <link rel="stylesheet" href="styles.css?v=malware-popup-1">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
@@ -241,7 +241,13 @@
       <div id="threatDetailContent"></div>
     </div>
   </dialog>
+  <dialog id="malwareDetailDialog" class="detail-dialog malware-detail-dialog" aria-labelledby="malwareDetailTitle">
+    <div class="dialog-layout">
+      <button type="button" id="closeMalwareDetail" class="close-dialog" aria-label="Close malware sample details">×</button>
+      <div id="malwareDetailContent"></div>
+    </div>
+  </dialog>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="malware-data.js"></script><script src="malware.js?v=compact-1"></script><script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script defer src="geo-map.js?v=1"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=onsite-cve-dialog-1"></script><script src="workspace.js?v=onsite-cve-dialog-1"></script><script src="lifecycle.js"></script><script src="operations.js?v=ops-v1"></script><script src="accounts.js?v=watchlist-unified-1"></script>
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="malware-data.js"></script><script src="malware.js?v=sample-popup-1"></script><script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script defer src="geo-map.js?v=1"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=onsite-cve-dialog-1"></script><script src="workspace.js?v=onsite-cve-dialog-1"></script><script src="lifecycle.js"></script><script src="operations.js?v=ops-v1"></script><script src="accounts.js?v=watchlist-unified-1"></script>
 </body>
 </html>
