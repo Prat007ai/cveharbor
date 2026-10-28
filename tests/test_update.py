@@ -21,6 +21,30 @@ class FeedTests(unittest.TestCase):
         self.assertIn('Windows',[c['name'] for c in u.CATEGORIES])
         self.assertIn('Linux',[c['name'] for c in u.CATEGORIES])
         self.assertNotIn('Windows / Linux',[c['name'] for c in u.CATEGORIES])
+    def test_cpanel_wp_squared_is_not_wordpress_plugin(self):
+        self.assertNotIn("WordPress / Plugins", u.classify(
+            product="cpanel cpanel; cpanel whm; cpanel wp_squared",
+            text="cPanel and WHM authentication bypass"))
+        reclassified = u.recategorize_existing({
+            "id":"CVE-2026-41940",
+            "categories":["WordPress / Plugins"],
+            "title":"cPanel and WHM authentication bypass",
+            "summary":"Control panel login vulnerability",
+            "affected":"cpanel cpanel; cpanel whm; cpanel wp_squared"
+        })
+        self.assertNotIn("WordPress / Plugins", reclassified["categories"])
+
+    def test_alert_schema_creates_tables_without_erasing_existing_users(self):
+        import sqlite3
+        conn = sqlite3.connect(":memory:")
+        conn.executescript((root / "account-backend/schema.sql").read_text())
+        conn.execute("INSERT INTO users(id,email) VALUES(?,?)", ("sample-user", "test@example.com"))
+        conn.executescript((root / "account-backend/alert-schema.sql").read_text())
+        names = {row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        self.assertTrue({"alert_optins", "alert_digest_runs", "alert_delivery_items"}.issubset(names))
+        self.assertEqual(conn.execute("SELECT count(*) FROM users").fetchone()[0], 1)
+        conn.close()
+
     def test_windows_only(self):
         labels = u.classify(product="Microsoft Windows Server 2025", text="Windows Server operating system security update")
         self.assertIn('Windows Server OS',labels)
