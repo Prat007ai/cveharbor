@@ -46,8 +46,9 @@ class FeedTests(unittest.TestCase):
         self.assertNotIn('Linux', labels)
     def test_client_windows_category(self):
         labels = u.classify(product="Microsoft Windows 11", text="Client security fix")
-        self.assertIn('Windows', labels)
+        self.assertIn('Windows 11 OS', labels)
         self.assertNotIn('Windows Server OS', labels)
+        self.assertNotIn('Windows', labels)
     def test_modern_dotnet(self):
         labels = u.classify(product="Microsoft ASP.NET Core 8.0", text="ASP.NET Core runtime security update")
         self.assertIn('.NET Core', labels)
