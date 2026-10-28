@@ -167,6 +167,40 @@ class FeedTests(unittest.TestCase):
         self.assertIn('Python / PyPI',a['categories'])
         self.assertIn('2.0',a['remediation'])
         self.assertFalse(a['known_exploited'])
+    def test_github_rest_patched_version_string(self):
+        advisory={
+            'ghsa_id':'GHSA-abcd-2345-fghi', 'cve_id':'CVE-2026-123456',
+            'type':'reviewed', 'severity':'high',
+            'summary':'Vulnerable npm package parsing', 'description':'Node.js npm package',
+            'published_at':'2026-10-27T00:00:00Z',
+            'updated_at':'2026-10-27T01:00:00Z',
+            'vulnerabilities':[{
+                'package':{'ecosystem':'npm','name':'example-pkg'},
+                'first_patched_version':'2.4.1',
+                'vulnerable_version_range':'< 2.4.1'
+            }],
+            'cvss':{'score':7.8},
+            'references':['https://github.com/advisories/GHSA-abcd-2345-fghi']
+        }
+        result=u.from_ghsa(advisory)
+        self.assertIsNotNone(result)
+        self.assertIn('example-pkg: 2.4.1',result['remediation'])
+        self.assertIn('Node.js / npm',result['categories'])
+        self.assertEqual(result['cvss'],'7.8')
+
+    def test_github_optional_malformed_fields_do_not_abort_source(self):
+        advisory={
+            'ghsa_id':'GHSA-bcde-2345-fghi','type':'reviewed',
+            'severity':'critical','summary':'Python package dependency',
+            'description':'Python PyPI package vulnerability',
+            'vulnerabilities':[{'package':{'ecosystem':'pip','name':'my-package'},
+                'first_patched_version':None},'bad-field'],
+            'cvss':None,'references':[]
+        }
+        result=u.from_ghsa(advisory)
+        self.assertIn('Python / PyPI',result['categories'])
+        self.assertEqual(result['severity'],'critical')
+
     def test_cisa_flag_merges(self):
         old={'id':'CVE-2026-99999','categories':['PHP'],'first_seen_at':'2026-10-26T01:00:00Z',
              'source_type':'github','known_exploited':False,'summary':'vendor report',
