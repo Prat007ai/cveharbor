@@ -19,7 +19,7 @@
         <span class="brand-type">CVE<span>Harbor</span><small>VULNERABILITY INTELLIGENCE</small></span>
       </a>
       <nav class="topnav" aria-label="Main navigation">
-        <a href="#dashboard">Overview</a><a href="#advisories">Advisories</a><a href="#technology">Technologies</a><a href="#methodology">Methodology</a>
+        <a href="#dashboard">Overview</a><a href="#advisories">Advisories</a><a href="#technology">Technologies</a><a href="#threat-intelligence">Threat IPs</a><a href="#methodology">Methodology</a>
       </nav>
     </div>
   </div>
@@ -109,12 +109,29 @@
       <div class="bottom-explain"><span class="callout-dot">!</span><p>Public advisories describe potentially vulnerable products, not CVEHarbor visitor systems. Confirm affected versions and prerequisites against vendor sources before patching a production environment.</p></div>
     </section>
 
+
+    <section id="threat-intelligence" class="shell section" aria-labelledby="threatTitle">
+      <div class="section-heading">
+        <div><p class="eyebrow">NETWORK THREAT INTELLIGENCE</p>
+          <h2 id="threatTitle">Reported suspicious IP addresses</h2>
+          <p class="section-sub">Publicly reported scanning sources and botnet command-and-control infrastructure. Review before adding to firewall or WAF rules.</p>
+        </div><span class="result-pill" id="threatCount">Awaiting data</span>
+      </div>
+      <div class="threat-advisory"><strong>Important:</strong> These are third-party observations, not proof of attempted exploitation against your systems. Scanning and botnet C2 activity are different categories. Never automatically block all addresses: check source evidence, local logs, allowlists, shared-cloud ownership and age first.</div>
+      <div class="threat-toolbar">
+        <label>Activity source <select id="threatSourceFilter" aria-label="Filter suspicious IP by activity"><option value="all">All sources</option></select></label>
+        <label>Search IP <input id="threatSearch" type="search" placeholder="Search an IP address" aria-label="Search suspicious IP address"></label>
+      </div>
+      <p class="technology-footnote" id="threatStatus" role="status">Threat intelligence collection has not been verified.</p>
+      <div class="threat-list" id="threatRows"><p class="threat-empty">No verified threat IP data available yet.</p></div>
+      <p class="technology-footnote">Sources: <a href="https://isc.sans.edu/" target="_blank" rel="noopener noreferrer">SANS Internet Storm Center</a> and <a href="https://feodotracker.abuse.ch/blocklist/" target="_blank" rel="noopener noreferrer">abuse.ch Feodo Tracker</a>. Attribution: SANS Technology Institute, Internet Storm Center. This page is a review aid, not a production-ready blocklist or proof of current malicious activity.</p>
+    </section>
     <section id="methodology" class="shell section"><div class="method-grid"><div><p class="eyebrow">TRUST & TRANSPARENCY</p><h2>Source first. Clarity always.</h2><p class="method-copy">CVEHarbor is being built to turn technical advisories into decisions people can act on. Each record distinguishes <strong>published</strong>, <strong>last source update</strong> and <strong>first indexed</strong>. Feed health is visible. A record being indexed does not mean it has been independently reproduced or that your systems are affected.</p><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener noreferrer" class="quiet-link">Explore CISA Known Exploited Vulnerabilities ↗</a></div><div class="method-steps"><div><span>01</span><div><b>Verify</b><small>Collect GitHub reviewed advisories, NVD entries and CISA KEV data each hour, alongside dated historical vendor advisories. Historical records retain their original disclosure dates.</small></div></div><div><span>02</span><div><b>Explain</b><small>Include confirmed affected versions, impact, fixes and exploitation status.</small></div></div><div><span>03</span><div><b>Review</b><small>Deduplicate records and display source timestamps, feed failures and coverage limitations.</small></div></div></div></div></section>
   </main>
   <footer class="footer"><div class="shell footer-row"><div><b>CVE<span>Harbor</span></b><small>Independent vulnerability intelligence</small></div><p>© <span id="year">2026</span> CVEHarbor. Public source aggregation. Not a vulnerability scan or professional incident determination.</p><a href="#top">Back to top ↑</a></div>
     <div class="shell footer-status"><div class="notice feed-notice" role="status"><span class="notice-icon" aria-hidden="true">i</span><div class="feed-notice-content"><div class="feed-status-heading"><span class="preview-status" id="feedStatus"><span class="status-dot"></span> Starting feed...</span><strong id="feedHeadline">Feed startup required.</strong></div><p id="feedDescription">No hourly sync has completed. Counts shown here are not evidence that monitored technologies are safe.</p><div id="sourceHealth" class="source-health" aria-label="Feed source status"></div></div><span class="notice-date" id="snapshotDate">Last success: Never</span></div></div>
   </footer>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=mobile-layout-1"></script>
+  <script src="threat-data.js"></script><script src="threats.js?v=1"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=mobile-layout-1"></script>
 </body>
 </html>
