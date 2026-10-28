@@ -94,3 +94,60 @@
 .pagination-btn:disabled{opacity:.45;cursor:not-allowed}
 @media(max-width:780px){.advisory-view-tools{flex-direction:column;align-items:stretch}.view-switch{align-self:stretch}.view-choice{flex:1}}
 @media(max-width:550px){.table-page .pagination-actions{justify-content:space-between;align-items:center}.table-page .pagination-btn{flex:0 0 auto}.page-number{min-width:auto}}
+
+
+/* Animated high-severity markers: gently pulse, never disappear or strobe. */
+@keyframes cveharborCriticalPulse {
+  0%,100% { background-color:#592437; color:#ffd4dc; box-shadow:0 0 0 0 rgba(248,69,95,.12); }
+  50% { background-color:#b32142; color:#ffffff; box-shadow:0 0 14px 2px rgba(255,55,91,.52); }
+}
+@keyframes cveharborHighPulse {
+  0%,100% { background-color:#55401d; color:#ffe9a3; box-shadow:0 0 0 0 rgba(255,206,53,.12); }
+  50% { background-color:#a46c0b; color:#ffffff; box-shadow:0 0 14px 2px rgba(255,203,35,.45); }
+}
+@keyframes cveharborCriticalText {
+  0%,100% { color:#ff9daf; text-shadow:0 0 0 transparent; }
+  50% { color:#ffffff; text-shadow:0 0 9px rgba(255,52,85,.95); }
+}
+@keyframes cveharborHighText {
+  0%,100% { color:#ffd179; text-shadow:0 0 0 transparent; }
+  50% { color:#fff6ca; text-shadow:0 0 9px rgba(255,196,42,.95); }
+}
+/* These cover the overview labels, advisory cards, expanded details and list rows. */
+.severity-badge.critical,
+.metric-action[data-metric="critical"] .metric-top > span:first-child {
+  display:inline-block;
+  width:fit-content;
+  border-radius:6px;
+  padding:4px 9px;
+  animation:cveharborCriticalPulse 2.8s ease-in-out infinite;
+}
+.severity-badge.high,
+.metric-action[data-metric="high"] .metric-top > span:first-child {
+  display:inline-block;
+  width:fit-content;
+  border-radius:6px;
+  padding:4px 9px;
+  animation:cveharborHighPulse 2.8s ease-in-out infinite;
+}
+.advisory-table .table-severity[data-level="critical"] { animation:cveharborCriticalText 2.8s ease-in-out infinite; }
+.advisory-table .table-severity[data-level="high"] { animation:cveharborHighText 2.8s ease-in-out infinite; }
+/* Accessibility: maintain severity colors but disable animation for visitors requesting reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .severity-badge.critical,
+  .severity-badge.high,
+  .metric-action[data-metric="critical"] .metric-top > span:first-child,
+  .metric-action[data-metric="high"] .metric-top > span:first-child,
+  .advisory-table .table-severity[data-level="critical"],
+  .advisory-table .table-severity[data-level="high"] {
+    animation:none;
+    box-shadow:none;
+    text-shadow:none;
+  }
+  .severity-badge.critical,
+  .metric-action[data-metric="critical"] .metric-top > span:first-child { background-color:#a52540; color:#ffffff; }
+  .severity-badge.high,
+  .metric-action[data-metric="high"] .metric-top > span:first-child { background-color:#94610a; color:#ffffff; }
+  .advisory-table .table-severity[data-level="critical"] { color:#ff9daf; }
+  .advisory-table .table-severity[data-level="high"] { color:#ffe29b; }
+}
