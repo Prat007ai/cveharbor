@@ -184,7 +184,7 @@ def enforce_authoritative_categories(record: dict) -> dict:
     categories = list(entry.get("categories") or [])
     affected = str(entry.get("affected") or "")
     if (entry.get("source_type") == "php_upstream"
-        and re.search(r"\\bphp[-_: ]?src\\b", affected, re.I)):
+        and re.search(r"\bphp[-_: ]?src\b", affected, re.I)):
         categories = ["PHP"]
     if entry.get("id") == "CVE-2026-111497" and entry.get("source_type") == "vendor_baseline":
         # .NET Brotli plus PHP Windows builds in the source-verified baseline.
