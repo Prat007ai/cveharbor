@@ -140,7 +140,7 @@ class FeedTests(unittest.TestCase):
         body=exported.read_text(encoding='utf-8')
         self.assertTrue(body.startswith('window.CVEHARBOR_CATALOG = '))
         obj=json.loads(body.partition(' = ')[2].strip().removesuffix(';'))
-        self.assertEqual(25,len(obj['categories']))
+        self.assertEqual(38,len(obj['categories']))
         for name in ('Progress Telerik','Sitefinity','Veeam Backup & Replication',
                      'Sophos Firewall','Windows 11 OS','Exchange SE'):
             self.assertIn(name,[c['name'] for c in obj['categories']])
@@ -327,7 +327,7 @@ class FeedTests(unittest.TestCase):
         self.assertEqual(len(set(names)),21)
         self.assertTrue(all(len(group)==7 for group in groups.values()))
         self.assertTrue(set(names).issubset({c['name'] for c in u.CATEGORIES}))
-        self.assertEqual(4,len(u.CATEGORIES)-len(names))
+        self.assertEqual(17,len(u.CATEGORIES)-len(names))
 
     def test_whitecap_public_site_added_technology_categories(self):
         names={c['name'] for c in u.CATEGORIES}
