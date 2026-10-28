@@ -46,6 +46,7 @@ assert.equal($('statTotal').textContent,'12','total CVE count');
 assert.equal(document.querySelectorAll('.technology-panel').length,4,'four platform groups');
 assert.equal(document.querySelectorAll('.technology-row').length,38,'all categories visible');
 assert.equal(document.querySelectorAll('.focus-action').length,9,'focus panel populated');
+assert.match(fs.readFileSync('app.js','utf8'),/FIRST EPSS, 30 day exploitation probability/,'EPSS details supported');
 assert.equal(document.querySelectorAll('#chartInsights .chart-insight').length,4,'chart insights populated');
 document.querySelector('[data-chart-period="published30"]').click();
 assert.equal(document.querySelectorAll('#chartInsights .chart-insight').length,4,'chart insights update with period');
