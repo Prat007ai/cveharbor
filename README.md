@@ -1,6 +1,6 @@
 # CVEHarbor.com — hourly vulnerability intelligence website
 
-CVEHarbor is a public vulnerability **advisory index** with all 16 technology categories requested. It is entirely separate from Whitecap's Gmail automations and does not read those emails or any Whitecap infrastructure.
+CVEHarbor is a public vulnerability **advisory index** with all 19 technology categories requested. It is entirely separate from Whitecap's Gmail automations and does not read those emails or any Whitecap infrastructure.
 
 ## Release status
 
@@ -20,7 +20,7 @@ The site uses conservative category mapping and shows **source status**, date la
 
 ### Coverage limitations that matter before public launch
 
-This initial implementation is **not exhaustive** across all 16 categories. It indexes matches from the above three sources; vendor-specific feeds are not yet integrated for Microsoft MSRC, Azure service advisories, Wordfence/Patchstack/WPScan, PHP.net, Python security releases, MariaDB, Oracle MySQL, Fortinet PSIRT, VMware/Broadcom, Ubuntu/Debian/Red Hat, Docker, Kubernetes and other products. Some vendor patch levels are absent in NVD and must be checked via official advisories. Further feeds, QA monitoring, uptime checks and a source review policy are needed before positioning the service as a comprehensive security monitoring service. Do not claim 100% coverage or guarantee one-hour disclosure.
+This initial implementation is **not exhaustive** across all 19 categories. It indexes matches from the above three sources; vendor-specific feeds are not yet integrated for Microsoft MSRC, Azure service advisories, Wordfence/Patchstack/WPScan, PHP.net, Python security releases, MariaDB, Oracle MySQL, Fortinet PSIRT, VMware/Broadcom, Ubuntu/Debian/Red Hat, Docker, Kubernetes and other products. Some vendor patch levels are absent in NVD and must be checked via official advisories. Further feeds, QA monitoring, uptime checks and a source review policy are needed before positioning the service as a comprehensive security monitoring service. Do not claim 100% coverage or guarantee one-hour disclosure.
 
 ## Install in your personally owned GitHub account
 
@@ -82,3 +82,8 @@ Browse `http://localhost:8080` after the first sync. Browser JavaScript files an
 ## Ownership and separation
 
 The website is designed for **personal ownership**, under the `cveharbor.com` domain purchased through GoDaddy. Neither the Whitecap Urgent CVE Alerts task nor its Gmail sending settings is modified by this code. This website pipeline never uses `prat.chatgptai@gmail.com`, never sends mail, and does not access Whitecap client assets.
+
+
+## Website navigation and categories
+
+The website places 15 commonly used categories at the top, before the dashboard. Additional categories are available through the **More technology groups** disclosure. Clicking a category filters the advisory list and jumps directly to it. The advisory list initially displays six cards, with **Show more** and **Show fewer** controls. The .NET / ASP.NET (classic) and .NET Core (modern) categories are separate; Windows Server OS and HyperV are also separate, with generic Windows advisories retained under the additional Windows category.
