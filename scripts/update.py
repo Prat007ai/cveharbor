@@ -8,7 +8,11 @@ into confirmed exploitation. Data freshness and feed failures are exposed.
 from __future__ import annotations
 
 import json
+import csv
+import io
 import os
+import xml.etree.ElementTree as ET
+from email.utils import parsedate_to_datetime
 import re
 import sys
 import time
@@ -30,6 +34,11 @@ SOURCES = {
     "php_upstream": "https://api.github.com/repos/php/php-src/security-advisories",
     "nvd": "https://services.nvd.nist.gov/rest/json/cves/2.0",
     "cisa_kev": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+    "msrc_rss": "https://api.msrc.microsoft.com/update-guide/rss",
+    "fortinet_rss": "https://filestore.fortinet.com/fortiguard/rss/ir.xml",
+    "ubuntu_rss": "https://ubuntu.com/security/notices/rss.xml",
+    "osv_recent": "https://storage.googleapis.com/osv-vulnerabilities/modified_id.csv",
+    "wordfence": "https://www.wordfence.com/api/intelligence/v3/vulnerabilities/production",
 }
 MAX_RECORDS = 2500
 HEALTH = ROOT / "data" / "feed-health.json"
@@ -509,13 +518,215 @@ def from_kev(x: dict) -> dict | None:
     }
 
 
+
+def get_text(url: str, source: str, limit: int = 6_000_000) -> str:
+    """Bounded download, with retries and explicit failure status."""
+    last = None
+    for attempt in range(3):
+        try:
+            req = urllib.request.Request(url, headers={
+                "User-Agent":"CVEHarbor-PublicFeed/1.0 (https://cveharbor.com)",
+                "Accept":"application/rss+xml, application/atom+xml, text/csv, application/json, */*",
+            })
+            with urllib.request.urlopen(req, timeout=25) as resp:
+                raw = resp.read(limit + 1)
+                if len(raw) > limit:
+                    raise ValueError("Feed response exceeds the configured byte limit")
+                return raw.decode("utf-8-sig")
+        except (urllib.error.URLError, TimeoutError, UnicodeError, ValueError) as exc:
+            last = exc
+            if attempt < 2:
+                time.sleep(2 + attempt * 2)
+    raise RuntimeError(f"{source}: {type(last).__name__}: {crop(last, 180)}")
+
+
+def from_vendor_rss(entry: dict) -> dict | None:
+    """Only ingest vendor RSS entries with explicitly identified CVE IDs.
+
+    Non-CVE news, generic release notices, and undated entries are ignored.
+    """
+    vendor = entry.get("vendor") or ""
+    title = crop(entry.get("title"), 175)
+    description = crop(entry.get("summary"), 1200)
+    published = datepart(entry.get("published"))
+    url = clean_url(entry.get("url"))
+    matches = list(dict.fromkeys(CVERE.findall(title + " " + description)))
+    if not matches or not url or not published:
+        return None
+    fid = matches[0].upper()
+    label = {"msrc_rss":"Microsoft Security Update Guide",
+             "fortinet_rss":"Fortinet PSIRT", "ubuntu_rss":"Ubuntu Security Notice"}.get(vendor, "Vendor security notice")
+    cats = {"msrc_rss":classify(product=title, text=description),
+            "fortinet_rss":["Fortinet"],"ubuntu_rss":["Linux"]}.get(vendor, [])
+    if not cats:
+        return None
+    return {"id":fid,"title":title or fid,"severity":"bulletin",
+            "categories":cats,"published":published,"updated":published,
+            "summary":description or title,
+            "affected":"Confirm affected products and versions in the linked official vendor notice.",
+            "remediation":"Consult the official notice for fixed versions and mitigation.",
+            "action":"Check whether your installed product and version are affected.",
+            "sources":[{"label":label,"url":url}],
+            "exploitation":"Not confirmed by this source; check CISA KEV",
+            "kind":"cve","cvss":None,"status":label+" RSS notice",
+            "first_seen_at":utc_iso(),"source_updated_at":published,
+            "source_type":vendor,"known_exploited":False}
+
+
+def rss_vendor_items(vendor: str) -> list[dict]:
+    data = get_text(SOURCES[vendor], vendor)
+    try:
+        root = ET.fromstring(data)
+    except ET.ParseError as exc:
+        raise ValueError(f"Invalid XML from {vendor}: {exc}") from exc
+    records = []
+    for item in root.iter():
+        name = item.tag.rsplit("}",1)[-1]
+        if name not in {"item","entry"}:
+            continue
+        fields = {}
+        for child in item:
+            key=child.tag.rsplit("}",1)[-1]
+            value=" ".join(child.itertext()).strip()
+            if key=="link" and not value:
+                value=child.attrib.get("href","")
+            fields.setdefault(key,value)
+        date = fields.get("pubDate") or fields.get("published") or fields.get("updated") or ""
+        if date and not datepart(date):
+            try:
+                date=parsedate_to_datetime(date).date().isoformat()
+            except (TypeError, ValueError, IndexError):
+                date=""
+        records.append({"vendor":vendor,"title":fields.get("title"),
+                        "summary":fields.get("description") or fields.get("summary") or fields.get("content"),
+                        "published":date,"url":fields.get("link") or fields.get("id")})
+    if not records:
+        raise RuntimeError(f"{vendor} returned no RSS or Atom entries")
+    return records
+
+
+def osv_recent_items() -> list[dict]:
+    """Incremental OSV modified-ID export, not OSV's package/version query API."""
+    text_data = get_text(SOURCES["osv_recent"],"osv_recent",limit=9_000_000)
+    cutoff=(NOW-timedelta(days=7))
+    results=[]
+    for row in csv.reader(io.StringIO(text_data)):
+        if len(row)<2:
+            continue
+        try:
+            changed=datetime.fromisoformat(row[0].strip().replace("Z","+00:00"))
+        except ValueError:
+            continue
+        if changed.tzinfo is None:
+            changed=changed.replace(tzinfo=UTC)
+        if changed < cutoff:
+            break
+        path=row[1].strip()
+        parts=path.split("/")
+        if len(parts)!=2 or not re.fullmatch(r"[A-Za-z0-9_.+-]+",parts[0]):
+            continue
+        if not (CVERE.match(parts[1]) or GHSA.match(parts[1])):
+            continue
+        if len(results)>=80:
+            break
+        url="https://storage.googleapis.com/osv-vulnerabilities/"+urllib.parse.quote(parts[0])+"/"+urllib.parse.quote(parts[1])+".json"
+        try:
+            item=get_json(url,"osv_recent")
+            if isinstance(item,dict) and item.get("id"):
+                results.append(item)
+        except Exception as exc:
+            print(f"WARNING: OSV record {parts[1]} failed: {exc}",file=sys.stderr,flush=True)
+    return results
+
+
+def from_osv(item: dict) -> dict | None:
+    aliases=[item.get("id"),*(item.get("aliases") or [])]
+    fid=next((x for x in aliases if isinstance(x,str) and CVERE.fullmatch(x)),None)
+    if not fid:
+        fid=next((x for x in aliases if isinstance(x,str) and GHSA.fullmatch(x)),None)
+    if not fid or item.get("withdrawn"):
+        return None
+    packages=[];ecosystems=[];fixes=[]
+    for affected in item.get("affected") or []:
+        pkg=affected.get("package") or {}
+        if pkg.get("name"):
+            packages.append(str(pkg["name"]))
+        if pkg.get("ecosystem"):
+            ecosystems.append(str(pkg["ecosystem"]))
+        for rng in affected.get("ranges") or []:
+            for ev in rng.get("events") or []:
+                if ev.get("fixed"):
+                    fixes.append(str(ev["fixed"]))
+    cats=[]
+    for name in packages:
+        for eco in ecosystems:
+            for label in classify(product=name,ecosystem=eco,text=item.get("summary") or ""):
+                if label not in cats:cats.append(label)
+    if not cats:
+        return None
+    refs=[{"label":"OSV advisory","url":"https://osv.dev/vulnerability/"+urllib.parse.quote(str(item["id"]))}]
+    summary=crop(item.get("summary") or item.get("details") or fid,1100)
+    return {"id":fid,"title":crop(item.get("summary") or fid,175),
+            "severity":"bulletin","categories":cats,
+            "published":datepart(item.get("published")),"updated":datepart(item.get("modified")),
+            "summary":summary,"affected":crop(", ".join(packages),600) or "See OSV record",
+            "remediation":("Fixed versions reported: "+crop(", ".join(sorted(set(fixes))),450)) if fixes else "Review linked OSV advisory for fixes.",
+            "action":"Verify the affected dependency version against your software bill of materials.",
+            "sources":refs,"exploitation":"Not confirmed by this source; check CISA KEV",
+            "kind":"cve" if CVERE.match(fid) else "advisory","cvss":None,
+            "status":"OSV indexed package advisory","first_seen_at":utc_iso(),
+            "source_updated_at":item.get("modified") or "","source_type":"osv_recent","known_exploited":False}
+
+
+def wordfence_items() -> list[dict]:
+    key=os.getenv("WORDFENCE_API_KEY")
+    if not key:
+        raise RuntimeError("Requires WORDFENCE_API_KEY in GitHub Actions secrets")
+    req=urllib.request.Request(SOURCES["wordfence"],headers={"Authorization":"Bearer "+key,
+                                                               "User-Agent":"CVEHarbor-PublicFeed/1.0"})
+    with urllib.request.urlopen(req,timeout=40) as resp:
+        raw=resp.read(35_000_001)
+    if len(raw)>35_000_000:raise ValueError("Wordfence feed too large for configured response limit")
+    data=json.loads(raw)
+    if not isinstance(data,dict):raise ValueError("Unexpected Wordfence response schema")
+    return list(data.values())
+
+
+def from_wordfence(item:dict) -> dict | None:
+    ids=item.get("cve") or item.get("cve_id") or ""
+    if isinstance(ids,list):ids=" ".join(str(x) for x in ids)
+    match=CVERE.search(str(ids))
+    if not match:return None
+    fid=match.group(0).upper()
+    title=crop(item.get("title") or fid,175)
+    score=item.get("cvss") or {}
+    if isinstance(score,dict):
+        score=score.get("score") or score.get("cvss_score")
+    try:cvss=float(score)
+    except (ValueError,TypeError):cvss=None
+    sev="critical" if cvss is not None and cvss>=9 else "high" if cvss is not None and cvss>=7 else "medium" if cvss is not None and cvss>=4 else "bulletin"
+    products=[str(x.get("name") or "") for x in item.get("software") or [] if isinstance(x,dict)]
+    return {"id":fid,"title":title,"severity":sev,"categories":["WordPress / Plugins"],
+            "published":datepart(item.get("published") or item.get("published_at")),
+            "updated":datepart(item.get("updated") or item.get("updated_at")),
+            "summary":crop(item.get("description") or title,1150),
+            "affected":crop(", ".join(products),700) or "See Wordfence advisory",
+            "remediation":"Review the Wordfence advisory for patched versions.",
+            "action":"Check installed WordPress plugins and themes against affected versions.",
+            "sources":[{"label":"Wordfence Intelligence","url":"https://www.wordfence.com/threat-intel/vulnerabilities/"}],
+            "exploitation":"Not confirmed by this source; check CISA KEV",
+            "kind":"cve","cvss":str(cvss) if cvss is not None else None,
+            "status":"Wordfence Intelligence advisory","first_seen_at":utc_iso(),
+            "source_updated_at":item.get("updated") or "","source_type":"wordfence","known_exploited":False}
+
+
 def merge_record(old: dict, new: dict) -> dict:
     """Merge source observations without discarding first seen time or KEV flags."""
     if not old:
         return new
     # GitHub generally provides better fixed package versions. Do not replace
     # an actionable package detail with NVD's generic patch instructions.
-    rank = {"php_upstream": 4, "github": 3, "vendor_baseline": 2.5, "nvd": 2, "cisa_kev": 1}
+    rank = {"php_upstream": 5, "wordfence":4.5, "github": 4, "osv_recent": 3.5, "vendor_baseline": 3, "nvd": 2, "msrc_rss":2, "fortinet_rss":2, "ubuntu_rss":2, "cisa_kev": 1}
     chosen = new if rank.get(new.get("source_type"), 0) >= rank.get(old.get("source_type"), 0) else old
     merged = dict(chosen)
     merged["categories"] = sorted(set(old.get("categories") or []) | set(new.get("categories") or []))
@@ -595,7 +806,13 @@ def run() -> int:
     operations = (("github", ghsa_items, from_ghsa),
                   ("php_upstream", php_upstream_items, from_php_upstream),
                   ("nvd", nvd_items, from_nvd),
-                  ("cisa_kev", kev_items, from_kev))
+                  ("cisa_kev", kev_items, from_kev),
+                  ("msrc_rss", lambda:rss_vendor_items("msrc_rss"), from_vendor_rss),
+                  ("fortinet_rss", lambda:rss_vendor_items("fortinet_rss"), from_vendor_rss),
+                  ("ubuntu_rss", lambda:rss_vendor_items("ubuntu_rss"), from_vendor_rss),
+                  ("osv_recent", osv_recent_items, from_osv))
+    if os.getenv("WORDFENCE_API_KEY"):
+        operations += (("wordfence",wordfence_items,from_wordfence),)
     good = 0
     for name, fetch, transform in operations:
         try:
