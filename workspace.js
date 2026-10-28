@@ -50,11 +50,16 @@
       +' · '+(item.categories||[]).join(', ')));
     if(item.known_exploited)row.append(make('strong','workspace-kev','CISA KEV listed'));
     if(typeof item.epss==='number')row.append(make('p','workspace-epss','FIRST EPSS: '+(item.epss*100).toFixed(2)+'% predicted 30 day exploitation probability ('+(item.epss_as_of||'date unavailable')+')'));
-    const sources=(item.sources||[]).filter(x=>/^https:\/\//.test(x.url||''));
-    if(sources.length){
-      const link=make('a','workspace-link','Official / indexed source ↗');
-      link.href=sources[0].url;link.target='_blank';link.rel='noopener noreferrer';row.append(link);
-    }
+    // Show the full indexed advisory in CVEHarbor instead of leaving the site.
+    // The original vendor and indexed references remain available inside the dialog.
+    const button=make('button','workspace-link workspace-detail-trigger','View details & sources');
+    button.type='button';
+    button.setAttribute('aria-haspopup','dialog');
+    button.setAttribute('aria-controls','detailDialog');
+    button.addEventListener('click',()=>window.dispatchEvent(
+      new CustomEvent('cveharbor:review-advisory',{detail:{id:item.id}})
+    ));
+    row.append(button);
     return row;
   }
   function renderStack(){

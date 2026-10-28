@@ -845,3 +845,27 @@ button.tech-chart-link b{
 .workspace-live-links{display:flex;align-items:center;flex-wrap:wrap;gap:11px;margin-top:14px;padding-top:12px;border-top:1px solid #365565}
 .workspace-live-links a{display:inline-block;line-height:1.5}
 .workspace-error{color:#ffccae!important}
+
+
+/* Details popup links within the unified CVEHarbor workspace */
+.workspace-detail-trigger{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ border:1px solid #358e86;
+ border-radius:7px;
+ padding:7px 11px;
+ margin-top:7px;
+ background:#123f47;
+ color:#91f2e0;
+ font-size:12px;
+ font-weight:750;
+ text-decoration:none;
+ cursor:pointer;
+}
+.workspace-detail-trigger:hover{background:#1b5558;color:#fff;text-decoration:none}
+.workspace-detail-trigger:focus-visible{outline:2px solid #9ff4e4;outline-offset:3px}
+.detail-dialog .source-note{color:#a5c9d4;line-height:1.65;margin-bottom:9px}
+.detail-dialog .detail-source-links{margin:10px 0 0;padding:0 0 0 22px;display:grid;gap:7px}
+.detail-dialog .detail-source-links li{font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.detail-dialog .detail-source-links a{word-break:break-word}

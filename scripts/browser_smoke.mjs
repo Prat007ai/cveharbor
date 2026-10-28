@@ -71,7 +71,7 @@ $('dateRange').dispatchEvent(new window.Event('change'));
 assert.equal(document.querySelectorAll('#advisoryTableBody tr').length,12,'full category archive');
 document.querySelector('#advisoryTableBody .table-details').click();
 assert.match($('dialogContent').textContent,/Affected software and versions/,'advisory detail populated');
-assert.match($('dialogContent').textContent,/Public sources/,'source links in detail');
+assert.match($('dialogContent').textContent,/Original advisory and source references/,'source links in detail');
 
 $('closeDialog').click();
 $('search').value='nonexistent string';
@@ -292,5 +292,64 @@ cveInput.dispatchEvent(new cveWindow.Event('input'));
 await new Promise(resolve=>setTimeout(resolve,450));
 assert.match(cveOutput.textContent,/No published record was found/,'missing publication is distinguished from local absence');
 cveWindow.close();
+
+
+// Universal lookup opens indexed advisory details and source links inside CVEHarbor.
+const detailDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only',pretendToBeVisual:true});
+const detailWindow=detailDom.window,detailDoc=detailWindow.document;
+detailWindow.HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','');};
+detailWindow.HTMLDialogElement.prototype.close=function(){this.removeAttribute('open');};
+detailWindow.Element.prototype.scrollIntoView=function(){};
+detailWindow.CVEHARBOR_DATA={...window.CVEHARBOR_DATA,advisories:[
+  {...records[0],
+    summary:'Demonstration description of a PHP vulnerability with prerequisites.',
+    affected:'PHP 8.4.20 before a vendor patch',
+    remediation:'Apply the fixed vendor package.',
+    action:'Check the deployed PHP version.',
+    exploitation:'Not confirmed by the source.',
+    sources:[
+      {label:'Unsafe source',url:'javascript:alert(1)'},
+      {label:'Original vendor notice',url:'https://example.com/security/vendor-advisory'}
+    ]
+  }
+]};
+detailWindow.CVEHARBOR_CATALOG=window.CVEHARBOR_CATALOG;
+detailWindow.eval(fs.readFileSync('app.js','utf8'));
+detailWindow.eval(fs.readFileSync('workspace.js','utf8'));
+const detailLookup=detailDoc.getElementById('securityLookup');
+detailLookup.value='CVE-2026-300000';
+detailLookup.dispatchEvent(new detailWindow.Event('input'));
+const resultCard=detailDoc.querySelector('#securityLookupResults .workspace-result');
+assert.ok(resultCard,'indexed CVE result is visible');
+const detailTrigger=resultCard.querySelector('.workspace-detail-trigger');
+assert.equal(detailTrigger?.tagName,'BUTTON','indexed sources button opens local dialog instead of external URL');
+assert.equal(detailTrigger?.getAttribute('aria-haspopup'),'dialog','button is announced as a dialog trigger');
+assert.equal(resultCard.querySelectorAll('a[href]').length,0,'result does not navigate to source directly');
+detailTrigger.click();
+const detailDialog=detailDoc.getElementById('detailDialog');
+const detailBody=detailDoc.getElementById('dialogContent');
+assert.ok(detailDialog.hasAttribute('open'),'vulnerability details open in on-site popup');
+assert.match(detailBody.textContent,/Demonstration description/,'description is visible in dialog');
+assert.match(detailBody.textContent,/PHP 8\.4\.20/,'affected software is visible in dialog');
+assert.match(detailBody.textContent,/Apply the fixed vendor package/,'remediation is visible in dialog');
+assert.match(detailBody.textContent,/Suggested next step/,'suggested action is visible in dialog');
+assert.match(detailBody.textContent,/Original advisory and source references/,'source links appear inside dialog');
+const sourceLinks=[...detailBody.querySelectorAll('.detail-source-links a')];
+assert.ok(sourceLinks.some(a=>a.textContent==='Original vendor notice'),'original source link is listed');
+assert.ok(sourceLinks.some(a=>a.href.includes('cve.org/CVERecord')),'CVE Program link is listed');
+assert.ok(sourceLinks.some(a=>a.href.includes('nvd.nist.gov')),'NVD link is listed');
+assert.equal(sourceLinks.some(a=>a.href.startsWith('javascript:')),false,'unsafe external links are not displayed');
+assert.ok(sourceLinks.every(a=>a.target==='_blank'&&a.rel.includes('noopener')),'source links open safely');
+detailDoc.getElementById('closeDialog').click();
+assert.equal(detailDialog.hasAttribute('open'),false,'popup closes with the existing close button');
+// My Technology Stack uses the very same details popup.
+const selectedPhp=[...detailDoc.querySelectorAll('#stackTechnologyList .workspace-checkbox')]
+  .find(n=>n.textContent==='PHP');
+selectedPhp.querySelector('input').click();
+const stackTrigger=detailDoc.querySelector('#stackAdvisories .workspace-detail-trigger');
+assert.ok(stackTrigger,'watchlist advisories also show on-site detail button');
+stackTrigger.click();
+assert.ok(detailDialog.hasAttribute('open'),'watchlist item opens same popup');
+detailWindow.close();
 
 console.log('CVEHarbor browser smoke passed: 38 categories, publication badges, list, details, focus, search and feed status.');
