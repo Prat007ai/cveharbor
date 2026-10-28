@@ -506,7 +506,7 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
         self.assertIn("row.addEventListener('click',()=>showDetail(x))",js)
         self.assertIn("Math.max(0,9-priority.length)",js)
         self.assertIn("openTechnologyAdvisories(x.name,false,openPeriod)",js)
-        self.assertIn('id="heroFeedSummary"',html)
+        self.assertNotIn('id="heroFeedSummary"',html)
         self.assertIn("focus-action",css)
         self.assertIn("Boolean(prior.known_exploited||baseline.known_exploited)",js)
         self.assertIn("value=\"low\"",html)
