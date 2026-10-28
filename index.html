@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#061523">
+  <meta name="description" content="CVEHarbor: Independent, source-backed vulnerability intelligence across application frameworks, CMS, cloud, databases and IT infrastructure.">
+  <meta property="og:title" content="CVEHarbor | Know the risk. Find the fix.">
+  <meta property="og:description" content="Vulnerability advisories, severity dashboards, affected versions, vendor sources and remediation guidance.">
+  <title>CVEHarbor | Vulnerability Intelligence</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#advisories">Skip to advisories</a>
+  <div class="site-header" id="top">
+    <div class="shell topbar">
+      <a class="brand" href="#top" aria-label="CVEHarbor Home">
+        <span class="brand-mark" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 32 32" fill="none"><path d="M16 2.7 27 7v8.3c0 7.4-4.8 11.9-11 14-6.2-2.1-11-6.6-11-14V7l11-4.3Z" stroke="currentColor" stroke-width="1.8"/><path d="m10.2 16 3.8 3.8 7.8-8.2" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="brand-type">CVE<span>Harbor</span><small>VULNERABILITY INTELLIGENCE</small></span>
+      </a>
+      <nav class="topnav" aria-label="Main navigation">
+        <a href="#dashboard">Overview</a><a href="#advisories">Advisories</a><a href="#technology">Technologies</a><a href="#methodology">Methodology</a>
+      </nav>
+      <span class="preview-status" id="feedStatus"><span class="status-dot"></span> Starting feed...</span>
+    </div>
+  </div>
+  <main>
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="shell hero-grid">
+        <div class="hero-copy">
+          <div class="overline"><span class="little-rule"></span> YOUR SECURITY INTELLIGENCE, SIMPLIFIED</div>
+          <h1 id="heroTitle">Know the risk.<br><em>Find the fix.</em></h1>
+          <p>Clear, useful vulnerability intelligence for the technologies you rely on. Discover verified advisories, understand exposure, and find the right patch without digging through dozens of sources.</p>
+          <div class="hero-actions"><a href="#advisories" class="primary-btn">Explore advisories <span aria-hidden="true">↗</span></a><a href="#technology" class="ghost-btn">Browse technologies <span aria-hidden="true">→</span></a></div>
+        </div>
+        <div class="hero-visual" aria-label="Security intelligence site status">
+          <div class="orb orb-one"></div><div class="orb orb-two"></div>
+          <div class="hero-panel"><div class="hp-head"><span class="hp-signal"><i></i> PUBLIC ADVISORY FEEDS</span><span class="hp-gridicon">▦</span></div><div class="pulse-graphic"><div class="pulse-line"></div><div class="pulse-ring ring-a"></div><div class="pulse-ring ring-b"></div><div class="pulse-center">CVE</div></div><div class="hp-foot"><strong>Security intelligence</strong><span>Across applications, cloud & infrastructure</span></div></div>
+          <div class="floating-tag tag-a">Vulnerability tracking <b>✓</b></div><div class="floating-tag tag-b">15 technology groups</div>
+        </div>
+      </div>
+    </section>
+    <div class="shell"><div class="notice" role="status"><span class="notice-icon">i</span><div><b id="feedHeadline">Feed startup required.</b> <span id="feedDescription">No hourly sync has completed. Counts shown here are not evidence that monitored technologies are safe.</span><div id="sourceHealth" class="source-health" aria-label="Feed source status"></div></div><span class="notice-date" id="snapshotDate">Last success: Never</span></div></div>
+    <section id="dashboard" class="shell section" aria-labelledby="overviewTitle">
+      <div class="section-heading"><div><p class="eyebrow">OVERVIEW</p><h2 id="overviewTitle">Vulnerability intelligence at a glance</h2><p class="section-sub">Metrics calculated from indexed public advisories. Counts do not represent vulnerabilities on your infrastructure.</p></div><div class="section-side">HOURLY COLLECTION <span class="small-star">✦</span> OPEN SOURCES</div></div>
+      <div class="metric-grid">
+        <div class="metric"><div class="metric-top"><span>Unique CVEs</span><span class="metric-symbol">◎</span></div><strong id="statTotal">0</strong><p>Deduplicated advisory IDs</p><div class="metric-line blue"></div></div>
+        <div class="metric"><div class="metric-top"><span>Critical findings</span><span class="metric-symbol critical-text">◈</span></div><strong id="statCritical">0</strong><p>Critical in indexed advisories</p><div class="metric-line red"></div></div>
+        <div class="metric"><div class="metric-top"><span>High findings</span><span class="metric-symbol high-text">△</span></div><strong id="statHigh">0</strong><p>High in indexed advisories</p><div class="metric-line amber"></div></div>
+        <div class="metric"><div class="metric-top"><span>Technology areas</span><span class="metric-symbol">▤</span></div><strong id="statCategories">15</strong><p>Monitored scope for launch</p><div class="metric-line mint"></div></div>
+      </div>
+      <div class="analytics-grid">
+        <article class="data-panel"><div class="panel-heading"><div><h3>Vulnerabilities by technology</h3><p>Distinct CVE IDs in each technology group</p></div><span class="mini-label" id="chartDateLabel">INDEXED RECORDS</span></div><div id="techBars" class="tech-bars"></div><div class="chart-note">One CVE can appear in more than one technology group. The overall total counts each CVE once.</div></article>
+        <article class="data-panel right-panel"><div class="panel-heading"><div><h3>Focus areas</h3><p>Where to start reviewing</p></div><span class="mini-label">REVIEW PRIORITIES</span></div><div id="priorityList" class="focus-list"></div><a class="quiet-link" href="#advisories">See all findings <span aria-hidden="true">↗</span></a></article>
+      </div>
+    </section>
+    <section id="advisories" class="shell section" aria-labelledby="advisoryTitle">
+      <div class="section-heading"><div><p class="eyebrow">SECURITY ADVISORIES</p><h2 id="advisoryTitle">Explore published advisories</h2><p class="section-sub">Search CVE and GHSA records by product, affected version or technology category.</p></div><span class="result-pill" id="resultCount">0 advisories</span></div>
+      <div class="finder"><label class="searchbox"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Search CVE, software, issue or version..." autocomplete="off" aria-label="Search vulnerabilities"></label><label class="selectbox"><span>Severity</span><select id="severity" aria-label="Filter severity"><option value="all">All severities</option><option value="critical">Critical</option><option value="high">High</option><option value="medium">Medium</option><option value="bulletin">Security bulletins</option></select></label><label class="selectbox"><span>Technology</span><select id="technologyFilter" aria-label="Filter technology"><option value="all">All technologies</option></select></label><button class="reset-btn" type="button" id="clearFilters">Clear</button></div>
+      <div class="advisory-grid" id="advisoryCards"></div>
+      <div class="no-results" id="noResults" hidden><span aria-hidden="true">⌕</span><b>No matching advisories in the current dataset.</b><p>Try another search or select a different technology. A category with no records has not been cleared of vulnerabilities.</p><button id="resetEmpty">Show all indexed records</button></div>
+      <div class="bottom-explain"><span class="callout-dot">!</span><p>Public advisories describe potentially vulnerable products, not CVEHarbor visitor systems. Confirm affected versions and prerequisites against vendor sources before patching a production environment.</p></div>
+    </section>
+    <section id="technology" class="shell section" aria-labelledby="categoryTitle"><div class="section-heading"><div><p class="eyebrow">COVERAGE</p><h2 id="categoryTitle">15 technology groups. One clear view.</h2><p class="section-sub">All 15 areas are included in the taxonomy. Coverage completeness differs by source and product.</p></div></div><div class="category-grid" id="categoryGrid"></div></section>
+    <section id="methodology" class="shell section"><div class="method-grid"><div><p class="eyebrow">TRUST & TRANSPARENCY</p><h2>Source first. Clarity always.</h2><p class="method-copy">CVEHarbor is being built to turn technical advisories into decisions people can act on. Each record distinguishes <strong>published</strong>, <strong>last source update</strong> and <strong>first indexed</strong>. Feed health is visible. A record being indexed does not mean it has been independently reproduced or that your systems are affected.</p><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener noreferrer" class="quiet-link">Explore CISA Known Exploited Vulnerabilities ↗</a></div><div class="method-steps"><div><span>01</span><div><b>Verify</b><small>Import GitHub reviewed advisories, NVD entries and CISA KEV data. Vendor verification is indicated only when sourced.</small></div></div><div><span>02</span><div><b>Explain</b><small>Include confirmed affected versions, impact, fixes and exploitation status.</small></div></div><div><span>03</span><div><b>Review</b><small>Deduplicate records and display source timestamps, feed failures and coverage limitations.</small></div></div></div></div></section>
+  </main>
+  <footer class="footer"><div class="shell footer-row"><div><b>CVE<span>Harbor</span></b><small>Independent vulnerability intelligence</small></div><p>© <span id="year">2026</span> CVEHarbor. Public source aggregation. Not a vulnerability scan or professional incident determination.</p><a href="#top">Back to top ↑</a></div></footer>
+  <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
+  <script src="data.js"></script><script src="app.js"></script>
+</body>
+</html>
