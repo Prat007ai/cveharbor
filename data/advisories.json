@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-28",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4196,
+  "candidate_records": 4198,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -7238,8 +7238,8 @@
       "title": "Malware in camelotlabs-utils",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -7267,8 +7267,8 @@
       "title": "Malware in camelotlabs-worker",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -7296,8 +7296,8 @@
       "title": "Malware in camelotlabs-sdk",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -7325,8 +7325,8 @@
       "title": "Malware in camelotlabs-config",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -7354,8 +7354,8 @@
       "title": "Malware in camelotlabs-core",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -23684,7 +23684,7 @@
       "published": "2026-10-22",
       "updated": "2026-10-28",
       "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
-      "affected": "npm: @factiii/runner (= 0.28.0); npm: @factiii/runner (= 0.33.0); npm: @factiii/runner (= 0.35.0); npm: @factiii/runner (= 0.22.0); npm: @factiii/runner (= 0.16.0); npm: @factiii/runner (= 0.26.2); npm: @factiii/runner (= 0.25.0); npm: @factiii/runner (= 0.17.1); npm: @factiii/runner (= 0.21.0); npm: @factiii/runner (= 0.23.2); npm: @factiii/runner (= 0.19.0)",
+      "affected": "npm: @factiii/runner (= 0.28.0); npm: @factiii/runner (= 0.33.0); npm: @factiii/runner (= 0.35.0); npm: @factiii/runner (= 0.22.0); npm: @factiii/runner (= 0.16.0); npm: @factiii/runner (= 0.26.2); npm: @factiii/runner (= 0.25.0); npm: @factiii/runner (= 0.17.1); npm: @factiii/runner (= 0.21.0); npm: @factiii/runner (= 0.23.2); npm: @factiii/runner (= 0.19.0); npm: @factiii/runner (= 0.20.0); npm: @factiii/runner (= 0.17.0); npm: @factiii/runner (= 0.22.1); npm: @factiii/runner (= 0.26.1); npm: @factiii/runner (= 0.18.0); npm: @factiii/runner (= 0.20.1); npm: @factiii/runner (= 0.18.1); npm: @factiii/runner (= 0.26.0)",
       "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
@@ -23698,7 +23698,7 @@
       "cvss": null,
       "status": "GitHub malware advisory",
       "first_seen_at": "2026-10-28T08:09:31Z",
-      "source_updated_at": "2026-10-28T15:04:35Z",
+      "source_updated_at": "2026-10-28T15:13:23Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -30929,40 +30929,41 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "id": "CVE-2026-108398",
+      "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
       "cvss": "8.8",
       "categories": [
+        ".NET / ASP.NET",
         "Windows",
-        "Windows 11 OS"
+        "Windows Server OS"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
+      "summary": "Untrusted search path handling in classic Microsoft .NET Framework permits a locally authorized attacker to bypass a security feature. The patch is part of Microsoft's October 2026 .NET Framework cumulative security updates.",
+      "affected": "Multiple .NET Framework 3.5, 4.6.2 through 4.8.1 configurations across supported Windows versions, subject to Microsoft update applicability. This is a separate classic .NET Framework CVE, not the modern .NET Brotli issue.",
+      "remediation": "Install the correct October 13, 2026 .NET Framework cumulative update or a newer superseding Windows update for the installed Windows and .NET Framework versions. Consult the Microsoft patch matrix for the specific KB.",
+      "exploitation": "No confirmed active exploitation in the referenced Microsoft advisories.",
       "sources": [
         {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+          "label": "Microsoft .NET Framework October cumulative update",
+          "url": "https://learn.microsoft.com/en-us/dotnet/framework/release-notes/2026/10-13-october-cumulative-update"
         },
         {
           "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-108398"
         },
         {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+          "label": "NVD product applicability",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108398"
         }
       ],
       "kind": "cve",
       "source_type": "vendor_baseline",
       "source_updated_at": "2026-10-13",
       "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
@@ -30999,41 +31000,40 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
-      "id": "CVE-2026-108398",
-      "title": ".NET Framework untrusted search path security feature bypass",
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
       "severity": "high",
       "cvss": "8.8",
       "categories": [
-        ".NET / ASP.NET",
         "Windows",
-        "Windows Server OS"
+        "Windows 11 OS"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
-      "summary": "Untrusted search path handling in classic Microsoft .NET Framework permits a locally authorized attacker to bypass a security feature. The patch is part of Microsoft's October 2026 .NET Framework cumulative security updates.",
-      "affected": "Multiple .NET Framework 3.5, 4.6.2 through 4.8.1 configurations across supported Windows versions, subject to Microsoft update applicability. This is a separate classic .NET Framework CVE, not the modern .NET Brotli issue.",
-      "remediation": "Install the correct October 13, 2026 .NET Framework cumulative update or a newer superseding Windows update for the installed Windows and .NET Framework versions. Consult the Microsoft patch matrix for the specific KB.",
-      "exploitation": "No confirmed active exploitation in the referenced Microsoft advisories.",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
       "sources": [
         {
-          "label": "Microsoft .NET Framework October cumulative update",
-          "url": "https://learn.microsoft.com/en-us/dotnet/framework/release-notes/2026/10-13-october-cumulative-update"
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
         },
         {
           "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-108398"
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
         },
         {
-          "label": "NVD product applicability",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108398"
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
         }
       ],
       "kind": "cve",
       "source_type": "vendor_baseline",
       "source_updated_at": "2026-10-13",
       "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
@@ -58227,6 +58227,47 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-71553",
+      "title": "ApostropheCMS: 2nd-order prototype pollution via PATCH leading to single-request persistent DoS",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-09-02",
+      "updated": "2026-10-28",
+      "summary": "The vulnerability is a single-request persistent DoS by submitting e.g. \"PATCH /api/v1/article/<id>\" with a valid editor session and body of {\"toString.call\":\"x\"}, overwriting the global toString function with value x. Fabian",
+      "affected": "npm: apostrophe (<= 4.32.0)",
+      "remediation": "apostrophe: 4.32.1",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-vmg4-6gfg-83qx"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/apostrophecms/apostrophe/security/advisories/GHSA-vmg4-6gfg-83qx"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-71553"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/apostrophecms/apostrophe/commit/5a3746aaed49761e171c2cbfe793267c959829fd"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T15:13:33Z",
+      "source_updated_at": "2026-10-28T15:12:57Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2024-3773",
       "title": "The LiveJournal Shortcode WordPress plugin through 1.1.1 does not validate and escape some of its shortcode attributes before outputting them back in a page/post where the sho",
       "severity": "medium",
@@ -58603,6 +58644,48 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-61459",
+      "title": "mcp-server-kubernetes argument injection can expose Kubernetes cluster credentials",
+      "severity": "critical",
+      "categories": [
+        "Node.js / npm",
+        "Docker / Kubernetes",
+        "Application dependencies"
+      ],
+      "published": "2026-07-10",
+      "updated": "2026-10-28",
+      "summary": "MCP Server Kubernetes before 3.9.0 contains an argument injection vulnerability in structured tools (kubectl_get, kubectl_describe, kubectl_delete) that allows attackers to bypass the assertNoDangerousFlags security check by supplying resourceType and name parameters with leading dashes. Attackers can inject the --server flag to redirect kubectl commands to an attacker-controlled API server, causing the operator's bearer token to be transmitted externally and enabling full cluster compromise.",
+      "affected": "npm: mcp-server-kubernetes (< 3.9.0)",
+      "remediation": "mcp-server-kubernetes: 3.9.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-wmg3-h8mf-wgvr"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61459"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/Flux159/mcp-server-kubernetes/issues/328"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/Flux159/mcp-server-kubernetes/pull/329"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.8",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T15:13:33Z",
+      "source_updated_at": "2026-10-28T15:08:29Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-11592",
       "title": "The Email Subscribers & Newsletters – Email Marketing, Post Notifications & Newsletter Plugin for WordPress plugin for WordPress is vulnerable to authorization bypass in all v",
       "severity": "medium",
@@ -58737,8 +58820,8 @@
       "title": "LiquidJS has a memory and render limit bypass via unbounded width padding in `date` filter (strftime)",
       "severity": "high",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-05-27",
       "updated": "2026-10-28",
@@ -71142,8 +71225,8 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "id": "CVE-2025-7624",
+      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
       "cvss": null,
       "categories": [
@@ -71151,9 +71234,9 @@
       ],
       "published": "2025-07-21",
       "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
+      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
+      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
       "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
       "sources": [
         {
@@ -71170,8 +71253,8 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
-      "id": "CVE-2025-7624",
-      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
       "severity": "critical",
       "cvss": null,
       "categories": [
@@ -71179,9 +71262,9 @@
       ],
       "published": "2025-07-21",
       "updated": "2025-07-21",
-      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
-      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
-      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
       "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
       "sources": [
         {
@@ -74975,153 +75058,95 @@
       "source_updated_at": "2025-08-21",
       "source_type": "cisa_kev",
       "known_exploited": true
-    },
-    {
-      "id": "CVE-2025-49704",
-      "title": "Microsoft SharePoint Code Injection Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365",
-        "SharePoint / SharePoint Server"
-      ],
-      "published": "",
-      "updated": "2025-07-22",
-      "summary": "Microsoft SharePoint contains a code injection vulnerability that could allow an authorized attacker to execute code over a network. This vulnerability could be chained with CVE-2025-49706. CVE-2025-53770 is a patch bypass for CVE-2025-49704, and the updates for CVE-2025-53770 include more robust protection than those for CVE-2025-49704.",
-      "affected": "Microsoft SharePoint. Consult vendor advisory for affected versions.",
-      "remediation": "Disconnect public-facing versions of SharePoint Server that have reached their end-of-life (EOL) or end-of-service (EOS) to include SharePoint Server 2013 and earlier versions. For supported versions, please follow the mitigations according to CISA (URL listed below in Notes) and vendor instructions (URL listed below in Notes). Adhere to the applicable BOD 22-01 guidance for cloud services or discontinue use of the product if mitigations are not available.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-07-22",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2025-49706",
-      "title": "Microsoft SharePoint Improper Authentication Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365",
-        "SharePoint / SharePoint Server"
-      ],
-      "published": "",
-      "updated": "2025-07-22",
-      "summary": "Microsoft SharePoint contains an improper authentication vulnerability that allows an authorized attacker to perform spoofing over a network. Successfully exploitation could allow an attacker to view sensitive information and make some changes to disclosed information. This vulnerability could be chained with CVE-2025-49704. CVE-2025-53771 is a patch bypass for CVE-2025-49706, and the updates for CVE-2025-53771 include more robust protection than those for CVE-2025-49706.",
-      "affected": "Microsoft SharePoint. Consult vendor advisory for affected versions.",
-      "remediation": "Disconnect public-facing versions of SharePoint Server that have reached their end-of-life (EOL) or end-of-service (EOS) to include SharePoint Server 2013 and earlier versions. For supported versions, please follow the mitigations according to CISA (URL listed below in Notes) and vendor instructions (URL listed below in Notes). Adhere to the applicable BOD 22-01 guidance for cloud services or discontinue use of the product if mitigations are not available.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-07-22",
-      "source_type": "cisa_kev",
-      "known_exploited": true
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-28T15:04:39Z",
-      "last_attempt": "2026-10-28T15:04:39Z",
+      "last_success": "2026-10-28T15:13:33Z",
+      "last_attempt": "2026-10-28T15:13:33Z",
       "items_processed": 275,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-28T15:04:39Z",
-      "last_attempt": "2026-10-28T15:04:39Z",
+      "last_success": "2026-10-28T15:13:33Z",
+      "last_attempt": "2026-10-28T15:13:33Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-28T15:04:39Z",
-      "last_attempt": "2026-10-28T15:04:39Z",
+      "last_success": "2026-10-28T15:13:33Z",
+      "last_attempt": "2026-10-28T15:13:33Z",
       "items_processed": 395,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-28T15:04:39Z",
-      "last_attempt": "2026-10-28T15:04:39Z",
+      "last_success": "2026-10-28T15:13:33Z",
+      "last_attempt": "2026-10-28T15:13:33Z",
       "items_processed": 482,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-28T15:04:39Z",
-      "last_attempt": "2026-10-28T15:04:39Z",
+      "last_success": "2026-10-28T15:13:33Z",
+      "last_attempt": "2026-10-28T15:13:33Z",
       "items_processed": 2553,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-28T15:04:39Z",
-      "last_attempt": "2026-10-28T15:04:39Z",
+      "last_success": "2026-10-28T15:13:33Z",
+      "last_attempt": "2026-10-28T15:13:33Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-28T15:04:39Z",
-      "last_attempt": "2026-10-28T15:04:39Z",
+      "last_success": "2026-10-28T15:13:33Z",
+      "last_attempt": "2026-10-28T15:13:33Z",
       "items_processed": 23,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-28T15:04:39Z",
-      "last_attempt": "2026-10-28T15:04:39Z",
+      "last_success": "2026-10-28T15:13:33Z",
+      "last_attempt": "2026-10-28T15:13:33Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-28T15:04:39Z",
-      "last_attempt": "2026-10-28T15:04:39Z",
+      "last_success": "2026-10-28T15:13:33Z",
+      "last_attempt": "2026-10-28T15:13:33Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-28T15:04:39Z",
-      "last_attempt": "2026-10-28T15:04:39Z",
+      "last_success": "2026-10-28T15:13:33Z",
+      "last_attempt": "2026-10-28T15:13:33Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-28T15:04:39Z",
-      "last_attempt": "2026-10-28T15:04:39Z",
+      "last_success": "2026-10-28T15:13:33Z",
+      "last_attempt": "2026-10-28T15:13:33Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-28T15:04:39Z",
-      "last_attempt": "2026-10-28T15:04:39Z",
+      "last_success": "2026-10-28T15:13:33Z",
+      "last_attempt": "2026-10-28T15:13:33Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     }
   },
-  "last_checked_at": "2026-10-28T15:04:39Z",
-  "last_successful_update": "2026-10-28T15:04:39Z",
+  "last_checked_at": "2026-10-28T15:13:33Z",
+  "last_successful_update": "2026-10-28T15:13:33Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
