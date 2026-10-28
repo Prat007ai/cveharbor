@@ -113,7 +113,7 @@ def classify(*, product: str = "", ecosystem: str = "", text: str = "", cpes: li
     add("Microsoft 365", has(r"\b(?:microsoft 365|office 365|exchange (?:server|online)|entra id|sharepoint|teams (?:client|server)|power automate|power apps|dynamics 365|microsoft fabric)\b"))
     add("SQL Server", has(r"\b(?:sql server|mssql|sqlserver|azure sql)\b"))
     add("MySQL / MariaDB", has(r"\b(?:mysql|mariadb|percona)\b"))
-    add("Drupal / CMS", has(r"\\b(?:drupal|dotnetnuke|dnn cms|kentico|xperience cms|umbraco)\\b"))
+    add("Drupal / CMS", has(r"\b(?:drupal|dotnetnuke|dnn cms|kentico|xperience cms|umbraco)\b"))
     add("Progress Telerik", has(r"(?:progress[ _-]*telerik|telerik[ _.-]*(?:ui|web|reporting|controls|asp|kendo)|telerik\.web\.ui|radasyncupload|radpersistence(?:manager)?|raddocklayout|radimageeditor|radfileexplorer|radeditor)"))
     add("Sitefinity", has(r"(?:sitefinity|sitefinity[_-]nextjs[_-]sdk|@progress/sitefinity)"))
     add("Veeam Backup & Replication", has(r"(?:veeam[ _-]*(?:backup[ &+_\-]*replication|b[&_ ]r|agent for linux|backup server)|veeam_backup_&_replication|veeam_backup_and_replication|veeam[ _-]*vbr)"))
@@ -173,7 +173,7 @@ def recategorize_existing(record: dict) -> dict:
         categories = [c for c in categories if c != "Windows"]
     if ".NET Core" in hints and ".NET / ASP.NET" not in hints:
         categories = [c for c in categories if c != ".NET / ASP.NET"]
-    if "Sitefinity" in hints and not re.search(r"\\b(?:drupal|dotnetnuke|kentico|umbraco)\\b", evidence, re.I):
+    if "Sitefinity" in hints and not re.search(r"\b(?:drupal|dotnetnuke|kentico|umbraco)\b", evidence, re.I):
         categories = [c for c in categories if c != "Drupal / CMS"]
     entry["categories"] = [c for c in categories if c in ALLOWED]
     return entry
