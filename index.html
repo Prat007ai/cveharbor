@@ -9,6 +9,7 @@
   <meta property="og:description" content="Vulnerability advisories, severity dashboards, affected versions, vendor sources and remediation guidance.">
   <title>CVEHarbor | Vulnerability Intelligence</title>
   <link rel="stylesheet" href="styles.css?v=account-beta-1">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
   <a class="skip-link" href="#advisories">Skip to advisories</a>
@@ -140,6 +141,13 @@
         <label>Search IP <input id="threatSearch" type="search" placeholder="Search an IP address" aria-label="Search suspicious IP address"></label>
       </div>
       <p class="technology-footnote" id="threatStatus" role="status">Threat intelligence collection has not been verified.</p>
+      <div class="geo-map-panel">
+        <div class="geo-map-head"><div><h3>Global suspicious IP origin map</h3><p>Approximate IP network locations. Higher counts represent more listed IP addresses, not attack volume or national responsibility.</p></div><span class="mini-label" id="geoMapSummary">Loading locations</span></div>
+        <div class="geo-map-controls"><label>Source <select id="geoMapSourceFilter"><option value="all">All sources</option></select></label><button type="button" id="geoMapReset">Reset map</button></div>
+        <div class="geo-map-layout"><div id="threatWorldMap" role="region" aria-label="Interactive world map of suspicious IP network locations"></div><div class="geo-ranking"><h4>Countries by reported IP count</h4><div id="geoCountryRanking"></div></div></div>
+        <p class="technology-footnote" id="geoMapStatus" role="status">Preparing geolocation data</p>
+        <p class="technology-footnote">For geo blocking, compare these IPs against your WAF and firewall logs, allowlists, VPNs and CDN traffic. Review legitimate user impact first. Network geolocation does not establish an attacker's physical location.</p>
+      </div>
       <div class="threat-downloads">
         <div class="threat-downloads-copy">
           <strong>Firewall import templates</strong>
@@ -198,6 +206,6 @@
     </div>
   </dialog>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=epss-priority-1"></script><script src="workspace.js?v=epss-priority-1"></script><script src="lifecycle.js"></script><script src="operations.js?v=ops-v1"></script><script src="accounts.js?v=email-digest-1"></script>
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script defer src="geo-map.js?v=1"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=epss-priority-1"></script><script src="workspace.js?v=epss-priority-1"></script><script src="lifecycle.js"></script><script src="operations.js?v=ops-v1"></script><script src="accounts.js?v=email-digest-1"></script>
 </body>
 </html>
