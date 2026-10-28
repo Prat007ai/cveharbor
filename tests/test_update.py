@@ -313,21 +313,43 @@ class FeedTests(unittest.TestCase):
         js=(root/'app.js').read_text(encoding='utf-8')
         self.assertIn('id="technologySearch"',html)
         self.assertIn('id="categoryGrid"',html)
-        self.assertIn('id="additionalTech"',html)
+        self.assertNotIn('id="additionalTech"',html)
+        self.assertNotIn('id="otherCategoryGrid"',html)
         self.assertIn('technology-redesign',html)
         self.assertIn("technologySearch').addEventListener('input',renderCategories)",js)
+        self.assertIn("openTechnologyAdvisories(x.name)",js)
         self.assertIn('technology-row',js)
-        self.assertIn('technology-more-caption',html)
-        self.assertIn('caption.textContent',js)
         self.assertIn('advisoryIDs',js)
-        group_json=js.split('const technologyGroups = ',1)[1].split(';',1)[0]
-        groups=json.loads(group_json)
-        self.assertEqual(set(groups),{'microsoft','applications','infrastructure'})
+        groups=json.loads(js.split('const technologyGroups = ',1)[1].split(';',1)[0])
+        self.assertEqual(set(groups),{'microsoft','applications','infrastructure','data'})
         names=[n for group in groups.values() for n in group]
-        self.assertEqual(len(set(names)),21)
-        self.assertTrue(all(len(group)==7 for group in groups.values()))
-        self.assertTrue(set(names).issubset({c['name'] for c in u.CATEGORIES}))
-        self.assertEqual(17,len(u.CATEGORIES)-len(names))
+        self.assertEqual(len(names),38)
+        self.assertEqual(len(set(names)),38)
+        self.assertEqual(sorted(names),sorted(c['name'] for c in u.CATEGORIES))
+
+    def test_technology_chart_switches_between_new_and_historical(self):
+        html=(root/'index.html').read_text(encoding='utf-8')
+        js=(root/'app.js').read_text(encoding='utf-8')
+        for element in ('chartShowAll','chartModeDescription','chartNoRecords'):
+            self.assertIn('id="'+element+'"',html)
+        self.assertIn('data-chart-period="all"',html)
+        self.assertIn('data-chart-period="published30"',html)
+        self.assertIn('data-chart-period="updated7"',html)
+        self.assertIn("let chartPeriod = 'all'",js)
+        self.assertIn('chartRecordMatches(x)',js)
+        self.assertIn('openTechnologyAdvisories(x.name,false,chartPeriod)',js)
+        self.assertIn("chartShowAll').addEventListener('click'",js)
+        self.assertIn("state.period=selectedPeriod",js)
+
+    def test_new_advisory_index_has_historical_vendor_examples(self):
+        records=u.vendor_baseline_items()
+        for category in ('Kendo UI','NoSQL / MongoDB','Progress Telerik','Sitefinity',
+                         'Sophos Firewall','VMware'):
+            # Some platforms have no corresponding curated baseline record;
+            # zero remains legitimate and must not imply verified safety.
+            self.assertIn(category,{x['name'] for x in u.CATEGORIES})
+        for category in ('Kendo UI','NoSQL / MongoDB','Progress Telerik','Sitefinity','Sophos Firewall'):
+            self.assertTrue(any(category in x['categories'] for x in records),category)
 
     def test_whitecap_public_site_added_technology_categories(self):
         names={c['name'] for c in u.CATEGORIES}
