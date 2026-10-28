@@ -55,7 +55,29 @@ class FeedTests(unittest.TestCase):
     def test_modern_dotnet(self):
         labels = u.classify(product="Microsoft ASP.NET Core 8.0", text="ASP.NET Core runtime security update")
         self.assertIn('.NET Core', labels)
-        self.assertNotIn('.NET / ASP.NET', labels)
+        self.assertIn('.NET / ASP.NET', labels)
+    def test_dotnet_umbrella_includes_runtime_packages(self):
+        labels = u.classify(product="Microsoft.NETCore.App.Runtime", ecosystem="nuget",text="Modern .NET runtime issue")
+        self.assertIn('.NET / ASP.NET', labels)
+    def test_recent_official_dotnet_advisories_are_in_catalog(self):
+        data=u.vendor_baseline_items()
+        by_id={x['id']:x for x in data}
+        modern=('CVE-2026-111497','CVE-2026-114148','CVE-2026-70197',
+                'CVE-2026-102870','CVE-2026-88092','CVE-2026-70188')
+        for cve in modern:
+            self.assertIn(cve,by_id)
+            self.assertIn('.NET Core',by_id[cve]['categories'])
+            self.assertIn('.NET / ASP.NET',by_id[cve]['categories'])
+            self.assertTrue(by_id[cve]['sources'])
+        self.assertIn('CVE-2026-108398',by_id)
+        self.assertIn('.NET / ASP.NET',by_id['CVE-2026-108398']['categories'])
+        self.assertNotIn('.NET Core',by_id['CVE-2026-108398']['categories'])
+    def test_recategorization_keeps_dotnet_overview(self):
+        entry = {'categories':['.NET Core'], 'title':'ASP.NET Core 8.0',
+                 'affected':'ASP.NET Core runtime', 'summary':'Modern .NET runtime vulnerability'}
+        tagged=u.recategorize_existing(entry)
+        self.assertIn('.NET / ASP.NET',tagged['categories'])
+        self.assertIn('.NET Core',tagged['categories'])
     def test_legacy_dotnet(self):
         labels = u.classify(product="ASP.NET Framework 4.8", text="Web Forms")
         self.assertIn('.NET / ASP.NET', labels)
