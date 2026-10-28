@@ -128,4 +128,57 @@ assert.equal(opsDoc.querySelectorAll('#firewallDownloads a').length,4,'firewall 
 assert.ok(html.includes('id="remediationForm"')&&html.includes('id="firewallCentre"'),'tracker and firewall centre present');
 assert.ok(html.includes('id="accountWorkspace"')&&html.includes('id="accountVerify"'),'account section and verification UI present');
 assert.ok(fs.readFileSync('accounts.js','utf8').includes('accountDownload'),'account sync frontend installed');
+
+// The watchlist and email preferences must share one unified workspace.
+assert.ok(document.getElementById('securityWorkspace').contains(document.getElementById('accountWorkspace')),
+  'email account controls live beside the technology watchlist');
+assert.ok(html.includes('id="accountSaveStack"') && html.includes('id="accountLoadStack"'),
+  'visible cloud alert watchlist save and restore controls');
+
+const makeSignedInWatchlist = async (local,cloud) => {
+  const browser=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
+  const w=browser.window,d=w.document;
+  w.CVEHARBOR_DATA=window.CVEHARBOR_DATA;
+  w.CVEHARBOR_CATALOG=window.CVEHARBOR_CATALOG;
+  w.localStorage.setItem('cveharbor.stack.v1',JSON.stringify(local));
+  w.confirm=()=>true;
+  let saved=cloud.map(technology=>({technology,product_version:''}));
+  const writes=[];
+  w.fetch=async (url,opts={})=>{
+    const route=new URL(url).pathname;
+    const method=opts.method||'GET';
+    let data={},status=200;
+    if(route==='/v1/me')data={authenticated:true,email:'example@example.com'};
+    else if(route==='/v1/alerts'&&method==='GET')data={preferences:{enabled:0,severity:'critical',frequency:'daily'},consented:false,delivery_active:false};
+    else if(route==='/v1/stack'&&method==='GET')data={stack:saved};
+    else if(route==='/v1/stack'&&method==='PUT'){
+      data=JSON.parse(opts.body);writes.push(data.stack.map(x=>x.technology));saved=data.stack;data={saved:saved.length};
+    }else if(route==='/v1/alerts/test'&&method==='POST')data={sent:true,message:'Sample accepted'};
+    else if(route==='/v1/auth/logout'&&method==='POST')data={authenticated:false};
+    else{data={error:'Unexpected route '+route};status=404;}
+    return {ok:status<400,status,json:async()=>data};
+  };
+  w.eval(fs.readFileSync('workspace.js','utf8'));
+  w.eval(fs.readFileSync('accounts.js','utf8'));
+  await new Promise(resolve=>setTimeout(resolve,70));
+  return {w,d,writes};
+};
+const synced=await makeSignedInWatchlist(['PHP'],['PHP']);
+assert.match(synced.d.getElementById('stackSyncHeadline').textContent,/up to date/i);
+const addWordpress=[...synced.d.querySelectorAll('#stackTechnologyList .workspace-checkbox')]
+  .find(n=>n.textContent==='WordPress / Plugins');
+addWordpress.querySelector('input').click();
+await new Promise(resolve=>setTimeout(resolve,700));
+assert.equal(synced.writes.length,1,'technology change saved to cloud automatically');
+assert.deepEqual(synced.writes[0].slice().sort(),['PHP','WordPress / Plugins'].sort());
+assert.match(synced.d.getElementById('stackSyncStatus').textContent,/saved to your account/i);
+synced.w.close();
+const conflict=await makeSignedInWatchlist([],['PHP','WordPress / Plugins']);
+assert.equal(conflict.writes.length,0,'new empty browser does not overwrite existing cloud watchlist');
+assert.match(conflict.d.getElementById('stackSyncStatus').textContent,/2 saved in your email watchlist/);
+conflict.d.getElementById('accountLoadStack').click();
+await new Promise(resolve=>setTimeout(resolve,90));
+assert.equal(conflict.d.querySelector('#stackTechnologyList input:checked')!==null,true,'load saved cloud watchlist checks technology boxes');
+assert.equal(conflict.writes.length,0,'loading cloud selections does not re-upload or erase server data');
+conflict.w.close();
 console.log('CVEHarbor browser smoke passed: 38 categories, publication badges, list, details, focus, search and feed status.');

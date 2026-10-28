@@ -81,3 +81,12 @@ The cron uses UTC scheduling and determines the local time using America/Toronto
 * Reports may cover old vulnerabilities whose upstream records were recently updated. Publication dates remain those supplied by the original sources. A matched category does not prove an installed version is vulnerable.
 * A sample report is available immediately without scheduled delivery. No other account is emailed just because this code was deployed.
 * Review contact information and unsubscribe requirements before inviting public subscribers; do not send promotional material through this security digest without an appropriate compliance review.
+
+
+## Unified My Technology Watchlist and Email Alerts
+
+The website now displays the technology checkbox list alongside account sign in and alert preferences in one security workspace. Technology selections are still stored locally first. Only the technology list saved in D1 is used by personalized email reports.
+
+When a user signs in, the page compares this browser's list with the cloud account watchlist. If they are identical, future technology checkbox changes save automatically to D1. If the lists differ, the user must choose **Use these selections for email reports** or **Load my saved selections** before automatic synchronization starts. This prevents an empty new browser from silently erasing an existing cloud watchlist. A clear selection requires confirmation.
+
+A subscription is separate from saving technologies. Users must choose a severity, delivery frequency and explicit email consent. The sample email action checks that the current browser list has been saved before generating a report. Scheduled report delivery continues to use the independent ALERT_DELIVERY_ENABLED setting.

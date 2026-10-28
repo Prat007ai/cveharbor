@@ -794,3 +794,42 @@ button.tech-chart-link b{
 .malware-type-badge{font-size:10px;color:#ffc68e;background:#5b3b27;border-radius:5px;padding:5px 7px;white-space:nowrap}
 #threatWorldMap .leaflet-container,#threatWorldMap .leaflet-popup-content{font-family:Arial,sans-serif}
 @media(max-width:780px){.geo-map-layout{grid-template-columns:1fr}.geo-ranking{max-height:220px}.geo-map-head{display:block}#threatWorldMap{height:335px}.malware-grid{grid-template-columns:1fr}}
+
+
+/* Unified technology watchlist and account email reports */
+.watchlist-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(390px,.9fr);gap:17px;align-items:start}
+.watchlist-layout>*{min-width:0;height:100%}
+.watchlist-panel .workspace-technologies{max-height:355px;gap:10px 18px;padding:6px 4px 6px 0}
+.watchlist-panel .workspace-checkbox{font-size:13px;padding:2px 0;line-height:1.5}
+.watchlist-panel .panel-heading h3,.watchlist-account h3{font-size:18px;line-height:1.35;margin:2px 0 7px}
+.watchlist-panel .eyebrow,.watchlist-account .eyebrow{font-size:10px;margin:0 0 6px}
+.watchlist-sync{margin-top:20px;padding:16px;background:#0d3041;border:1px solid #366b74;border-radius:10px}
+.watchlist-sync strong{font-size:13px;color:#b3f2e6}
+.watchlist-sync p{font-size:12px;line-height:1.75;color:#b5cfda;margin:7px 0 12px}
+.watchlist-sync-buttons{display:flex;gap:10px;flex-wrap:wrap}
+.watchlist-sync-buttons button{font-size:12px;padding:11px 13px;max-width:100%}
+.watchlist-sync-buttons button:disabled{opacity:.5;cursor:not-allowed}
+.watchlist-preview-title{font-size:13px;margin:18px 0 8px;color:#daeff7}
+.watchlist-panel .workspace-results{max-height:345px}
+.watchlist-account{max-width:none;margin:0;padding:23px}
+.watchlist-account-headline{display:flex;justify-content:space-between;align-items:start;gap:8px}
+.watchlist-account-headline h3{margin:0}
+.watchlist-account-headline .mini-label{white-space:normal;text-align:center;font-size:9px}
+.watchlist-account-head .workspace-note{margin-top:12px}
+.watchlist-account .ops-form{align-items:end}
+.watchlist-account .ops-form button{width:max-content;max-width:100%}
+.watchlist-account .ops-form .ops-span{grid-column:span 2}
+.watchlist-alert-explain{background:#12374a;border:1px solid #326074;border-radius:10px;padding:13px 14px;margin:16px 0}
+.watchlist-alert-explain strong{font-size:13px;color:#91eadc}
+.watchlist-alert-explain p{color:#bfd3dc;font-size:12px;line-height:1.7;margin:7px 0 0}
+.watchlist-account #alertDeliveryStatus{background:#102e3d;border-left:3px solid #69daca;padding:11px 12px;border-radius:3px}
+.watchlist-account .ops-downloads{margin:12px 0}
+.watchlist-advanced{margin:20px 0 14px;border:1px solid #304b61;border-radius:9px;padding:11px 14px}
+.watchlist-advanced summary{color:#9cddd4;font-size:12px;font-weight:700;cursor:pointer}
+.watchlist-advanced .ops-downloads{margin:13px 0}
+.watchlist-advanced .ops-remove{margin-top:12px}
+.watchlist-signout{margin-top:4px}
+.watchlist-lookup{margin-top:16px}
+.watchlist-lookup .workspace-results{max-height:260px}
+@media(max-width:1050px){.watchlist-layout{grid-template-columns:1fr}.watchlist-layout>*{height:auto}}
+@media(max-width:600px){.watchlist-account{padding:17px}.watchlist-panel .workspace-technologies{max-height:285px}.watchlist-account .ops-form .ops-span{grid-column:auto}.watchlist-account-headline{display:block}.watchlist-account-headline .mini-label{display:inline-block;margin-top:7px}}
