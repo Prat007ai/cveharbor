@@ -126,11 +126,13 @@
       <div class="threat-downloads">
         <div class="threat-downloads-copy">
           <strong>Firewall import templates</strong>
-          <span>Review-only object definitions from the last successful threat IP collection. Validate every address before applying a deny policy.</span>
+          <span>Cumulative Suspicious IP Block group and new additions since the last published snapshot. Downloads require administrator review. Sophos incremental updates require merging the existing group members.</span>
         </div>
         <div class="threat-download-actions">
-          <a class="threat-download-link" href="fortigate-threat-ip-objects.txt" download="fortigate-threat-ip-objects.txt">Download FortiGate CLI (.txt)</a>
-          <a class="threat-download-link" href="sophos-threat-ip-api.txt" download="sophos-threat-ip-api.txt">Download Sophos API template (.txt)</a>
+          <a class="threat-download-link" href="fortigate-suspicious-ip-initial.txt" download>FortiGate initial setup</a>
+          <a class="threat-download-link" href="fortigate-suspicious-ip-incremental.txt" download>FortiGate new IPs</a>
+          <a class="threat-download-link" href="sophos-suspicious-ip-initial.txt" download>Sophos initial setup</a>
+          <a class="threat-download-link" href="sophos-suspicious-ip-incremental.txt" download>Sophos new IPs</a>
         </div>
       </div>
       <div class="threat-list" id="threatRows"><p class="threat-empty">No verified threat IP data available yet.</p></div>
