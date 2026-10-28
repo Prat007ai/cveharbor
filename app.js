@@ -81,10 +81,35 @@
   const sourceHealth=$('sourceHealth');
   Object.entries(info.sources||{}).forEach(([k,v])=>{let n=text('span','feed-chip '+(v.ok?'feed-ok':'feed-bad'),`${k.toUpperCase()}: ${v.ok?'OK':'UNAVAILABLE'}`);n.title='Last successful: '+fmtStamp(v.last_success);sourceHealth.append(n);});
   let frag=document.createDocumentFragment();categories.forEach(t=>{const el=document.createElement('option');el.value=t.name;el.textContent=t.name;frag.append(el);});$('technologyFilter').append(frag);
-  function catCount(cat){return cveIDs(items.filter(x=>x.categories.includes(cat))).length;}
+  function catCount(cat){return cveIDs(items.filter(x=>(x.categories||[]).includes(cat))).length;}
+  function openTechnologyAdvisories(technology, cveOnly=false){
+    // Synchronize all controls so an old search or severity filter cannot hide results.
+    state.tech=technology;state.q='';state.severity='all';
+    metricScope=cveOnly?'cves':'all';
+    listMode='list';visibleCount=PAGE_SIZE;tablePage=0;
+    $('technologyFilter').value=technology;
+    $('search').value='';$('severity').value='all';
+    render();
+    $('advisories').scrollIntoView({behavior:'smooth',block:'start'});
+  }
   function renderBars(){
-    $('techBars').replaceChildren();const sorted=categories.map(x=>({...x,count:catCount(x.name)})).sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name));const max=Math.max(1,...sorted.map(x=>x.count));
-    sorted.forEach(x=>{const row=text('div','bar-item',''),track=text('div','bar-track',''),fill=text('div','bar-fill','');fill.style.width=x.count?Math.max(3,x.count/max*100)+'%':'0%';track.append(fill);row.append(text('span','',x.name),track,text('b','',String(x.count)));$('techBars').append(row);});
+    $('techBars').replaceChildren();
+    const sorted=categories.map(x=>({...x,count:catCount(x.name)})).sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name));
+    const max=Math.max(1,...sorted.map(x=>x.count));
+    sorted.forEach(x=>{
+      const row=document.createElement('button');
+      row.type='button';
+      row.className='bar-item tech-chart-link';
+      row.setAttribute('aria-label',`View all ${x.count} indexed CVEs for ${x.name}`);
+      row.title=`View ${x.name} vulnerabilities`;
+      const track=text('div','bar-track','');
+      const fill=text('div','bar-fill','');
+      fill.style.width=x.count?Math.max(3,x.count/max*100)+'%':'0%';
+      track.append(fill);
+      row.append(text('span','',x.name),track,text('b','',String(x.count)));
+      row.addEventListener('click',()=>openTechnologyAdvisories(x.name,true));
+      $('techBars').append(row);
+    });
   }
   function renderCategories(){
     const primaryGrid=$('categoryGrid'), otherGrid=$('otherCategoryGrid');
@@ -94,11 +119,7 @@
       const b=document.createElement('button');
       b.type='button';b.className='category-item';
       b.append(text('span','category-icon',x.icon),text('span','category-label',x.name),text('span','category-count',n?`${n} indexed ${n===1?'record':'records'}`:'No matching indexed records'));
-      b.addEventListener('click',()=>{
-        state.tech=x.name;visibleCount=PAGE_SIZE;tablePage=0;metricScope='all';listMode='list';
-        $('technologyFilter').value=x.name;
-        render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});
-      });
+      b.addEventListener('click',()=>openTechnologyAdvisories(x.name));
       (featured.has(x.name)?primaryGrid:otherGrid).append(b);
     });
   }
@@ -130,7 +151,9 @@
     $('cardViewBtn').setAttribute('aria-pressed',String(!full));
     $('listViewBtn').setAttribute('aria-pressed',String(full));
     const descriptions={all:'Latest indexed advisories',cves:'All indexed CVEs',critical:'Critical CVEs',high:'High severity CVEs'};
-    $('listContext').textContent=metricScope==='all'&&state.tech!=='all' ? state.tech+' advisories' : (descriptions[metricScope]||descriptions.all);
+    $('listContext').textContent=state.tech!=='all'
+      ? state.tech+(metricScope==='cves'?' CVEs':' advisories')
+      : (descriptions[metricScope]||descriptions.all);
     const pages=Math.max(1,Math.ceil(selected.length/TABLE_PAGE_SIZE));
     tablePage=Math.min(tablePage,pages-1);
     const pageStart=tablePage*TABLE_PAGE_SIZE;
