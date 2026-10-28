@@ -98,7 +98,7 @@ CVEHarbor already has a `remediations` D1 table. Do not recreate the database or
 ### Required existing-database migration and activation
 
 1. Back up the existing Cloudflare D1 `cveharbor-accounts` database.
-2. From `account-backend`, run `npx wrangler d1 execute cveharbor-accounts --remote --file=./remediation-schema.sql`, or apply the file in the D1 console. The migration adds just one assignment table and index. Existing account records stay in place.
+2. From `account-backend`, run `npx wrangler d1 execute cveharbor-accounts --remote --file=./remediation-schema.sql`, or apply the file in the D1 console. The migration adds an assignment history table, its index, and a separate rate limit table. Authentication rate limit cleanup cannot reset assignment limits. Existing account records stay in place.
 3. Deploy the Worker using `npx wrangler deploy`. No new database is created.
 4. After signing in, check `GET /v1/remediations/features`. It should report `storage: d1`, `version: 2`, and `assignments_available: true`. If migration is missing, records work but assignment emails are unavailable.
 5. Add Worker runtime variable `ASSIGNMENT_ALLOWED_DOMAINS` containing comma-separated trusted organization email domains (e.g. `example.org,example.net`). The sender and recipient domains must both be on the list. Set `ASSIGNMENT_EMAIL_ENABLED=true` only after reviewing your SMTP2GO limits, privacy and abuse controls. Until then, leave it unset or false. Existing `EMAIL_FROM` and `SMTP2GO_API_KEY` can be reused. Optional `ASSIGNMENT_SMTP2GO_API_KEY` can isolate assignment traffic. Never commit credentials.
