@@ -27,7 +27,7 @@ Architecture:
 - `POST /v1/auth/verify`: verifies the OTP and sets a 7-day session cookie.
 - `GET /v1/me`, `POST /v1/auth/logout`: account status and logout.
 - `GET|PUT /v1/stack`: saved technology profile. PUT replaces the full user's stack.
-- `GET|PUT /v1/remediations`: remediation records. PUT replaces the full user's dataset.
+- `GET|PUT /v1/remediations`: authenticated remediation records. Legacy PUT safely merges entries by CVE ID without deleting other cloud records or assignments. Individual PUT and DELETE operations manage one CVE.
 - `GET|PUT /v1/alerts`: preferences only. **No alert sending service is active.**
 - `DELETE /v1/account`: removes user and related data (cascading foreign keys).
 
