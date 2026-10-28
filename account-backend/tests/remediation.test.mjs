@@ -23,6 +23,12 @@ class MockD1{
   key(uid,cve){return uid+'|'+cve;}
   prepare(query){
     const db=this;
+    if(query.includes('SELECT user_id FROM remediation_assignments LIMIT 1')){
+      return {async first(){
+        if(!db.migrated)throw Error('no such table: remediation_assignments');
+        return null;
+      }};
+    }
     return {bind(...args){
       return {
         async first(){
