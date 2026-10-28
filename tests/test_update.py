@@ -602,6 +602,19 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
             with self.assertRaises(ValueError):
                 u.redhat_items()
 
+
+    def test_rss_tracks_each_cve_and_dc_date(self):
+        xml="""<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+          xmlns:dc="http://purl.org/dc/elements/1.1/">
+          <item><title>Fixes CVE-2026-12345 and CVE-2026-12346</title>
+          <link>https://example.org/advisory</link>
+          <dc:date>2026-10-27</dc:date></item></rdf:RDF>"""
+        with patch.object(u,"get_text",return_value=xml):
+            items=u.rss_vendor_items("debian_rss")
+        self.assertEqual(2,len(items))
+        self.assertEqual({"CVE-2026-12345","CVE-2026-12346"},
+                         {u.from_vendor_rss(x)["id"] for x in items})
+
     def test_url_rejection(self):
         self.assertFalse(u.clean_url('javascript:alert(1)'))
         self.assertFalse(u.clean_url('http://example.org'))
