@@ -75,4 +75,22 @@ $('clearFilters').click();
 assert.equal($('noResults').hidden,true,'filters reset');
 document.querySelector('.technology-panel-head').click();
 assert.equal($('listContext').textContent.includes('Microsoft & Cloud'),true,'section drilldown');
+
+const threatDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
+const threatWindow=threatDom.window;
+const threatDocument=threatWindow.document;
+threatWindow.CVEHARBOR_THREATS={
+  checked_at:new Date().toISOString(),
+  sources:{dshield_scanners:{ok:true,count:1}},
+  indicators:[{ip:'8.8.8.8',source:'SANS Internet Storm Center',source_id:'dshield_scanners',
+    activity:'Observed scanning and attack sources',source_url:'https://feeds.dshield.org/feeds/topips.txt',observed_at:null}]
+};
+threatWindow.eval(fs.readFileSync('threats.js','utf8'));
+const threatButton=threatDocument.querySelector('.threat-view-details');
+assert.ok(threatButton,'threat details button is visible');
+assert.equal(threatButton.tagName,'BUTTON','threat source is not an external navigation link');
+threatButton.click();
+assert.match(threatDocument.getElementById('threatDetailContent').textContent,/8.8.8.8/);
+assert.match(threatDocument.getElementById('threatDetailContent').textContent,/Not supplied by this feed/);
+
 console.log('CVEHarbor browser smoke passed: 38 categories, publication badges, list, details, focus, search and feed status.');
