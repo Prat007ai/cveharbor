@@ -39,6 +39,10 @@ SOURCES = {
     "ubuntu_rss": "https://ubuntu.com/security/notices/rss.xml",
     "osv_recent": "https://storage.googleapis.com/osv-vulnerabilities/modified_id.csv",
     "wordfence": "https://www.wordfence.com/api/intelligence/v3/vulnerabilities/production",
+    "debian_rss": "https://www.debian.org/security/dsa-long",
+    "docker_rss": "https://docs.docker.com/security/security-announcements/index.xml",
+    "kubernetes": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json",
+    "mariadb": "https://api.github.com/repos/MariaDB/server/security-advisories",
 }
 MAX_RECORDS = 2500
 HEALTH = ROOT / "data" / "feed-health.json"
@@ -555,9 +559,11 @@ def from_vendor_rss(entry: dict) -> dict | None:
         return None
     fid = matches[0].upper()
     label = {"msrc_rss":"Microsoft Security Update Guide",
-             "fortinet_rss":"Fortinet PSIRT", "ubuntu_rss":"Ubuntu Security Notice"}.get(vendor, "Vendor security notice")
+             "fortinet_rss":"Fortinet PSIRT", "ubuntu_rss":"Ubuntu Security Notice",
+             "debian_rss":"Debian Security Advisory", "docker_rss":"Docker Security Announcement"}.get(vendor, "Vendor security notice")
     cats = {"msrc_rss":classify(product=title, text=description),
-            "fortinet_rss":["Fortinet"],"ubuntu_rss":["Linux"]}.get(vendor, [])
+            "fortinet_rss":["Fortinet"],"ubuntu_rss":["Linux"],
+            "debian_rss":["Linux"],"docker_rss":["Docker / Kubernetes"]}.get(vendor, [])
     if not cats:
         return None
     return {"id":fid,"title":title or fid,"severity":"bulletin",
@@ -720,13 +726,73 @@ def from_wordfence(item:dict) -> dict | None:
             "source_updated_at":item.get("updated") or "","source_type":"wordfence","known_exploited":False}
 
 
+
+def kubernetes_items() -> list[dict]:
+    data=get_json(SOURCES["kubernetes"],"kubernetes")
+    if isinstance(data,dict):
+        entries=data.get("items") or []
+    elif isinstance(data,list):
+        entries=data
+    else:
+        raise ValueError("Unexpected Kubernetes CVE feed format")
+    if not isinstance(entries,list) or not entries:
+        raise ValueError("Kubernetes CVE feed returned no items")
+    return entries
+
+
+def from_kubernetes(item: dict) -> dict | None:
+    title=crop(item.get("title") or "",175)
+    content=crop(item.get("content_text") or item.get("summary") or item.get("content_html") or "",1100)
+    identifiers=re.findall(r"\bCVE-\d{4}-\d{4,}\b",title+" "+str(item.get("id") or ""),re.I)
+    if not identifiers:
+        return None
+    fid=identifiers[0].upper()
+    url=clean_url(item.get("url") or item.get("external_url"))
+    if not url:
+        url="https://kubernetes.io/docs/reference/issues-security/official-cve-feed/"
+    return {"id":fid,"title":title or fid,"severity":"bulletin",
+            "categories":["Docker / Kubernetes"],"published":datepart(item.get("date_published")),
+            "updated":datepart(item.get("date_modified") or item.get("date_published")),
+            "summary":content or title,
+            "affected":"See official Kubernetes CVE announcement for affected components and versions.",
+            "remediation":"See official Kubernetes security announcement for fixed versions.",
+            "action":"Confirm whether the affected Kubernetes components are deployed.",
+            "sources":[{"label":"Kubernetes official CVE feed","url":url}],
+            "exploitation":"Not confirmed by this source; check CISA KEV",
+            "kind":"cve","cvss":None,"status":"Kubernetes official CVE feed",
+            "first_seen_at":utc_iso(),"source_updated_at":item.get("date_modified") or "",
+            "source_type":"kubernetes","known_exploited":False}
+
+
+def mariadb_items() -> list[dict]:
+    """Repository-owned security advisories, rather than general package matches."""
+    url=SOURCES["mariadb"]+"?state=published&per_page=100"
+    result=get_json(url,"github")
+    if not isinstance(result,list) or not result:
+        raise ValueError("MariaDB official security advisory endpoint returned no records")
+    return result
+
+
+def from_mariadb(item:dict) -> dict | None:
+    record=from_ghsa(item)
+    if record is None:
+        return None
+    record["categories"]=list(dict.fromkeys(["MySQL / MariaDB",*record["categories"]]))
+    record["status"]="MariaDB upstream security advisory"
+    record["source_type"]="mariadb"
+    record["sources"]=[{"label":"MariaDB upstream advisory",
+                        "url":"https://github.com/MariaDB/server/security/advisories/"+str(item.get("ghsa_id"))},*record.get("sources",[])][:5]
+    if not item.get("published_at"):
+        record["published"]=""
+    return record
+
 def merge_record(old: dict, new: dict) -> dict:
     """Merge source observations without discarding first seen time or KEV flags."""
     if not old:
         return new
     # GitHub generally provides better fixed package versions. Do not replace
     # an actionable package detail with NVD's generic patch instructions.
-    rank = {"php_upstream": 5, "wordfence":4.5, "github": 4, "osv_recent": 3.5, "vendor_baseline": 3, "nvd": 2, "msrc_rss":2, "fortinet_rss":2, "ubuntu_rss":2, "cisa_kev": 1}
+    rank = {"php_upstream": 5, "mariadb": 4.8, "wordfence":4.5, "github": 4, "osv_recent": 3.5, "vendor_baseline": 3, "nvd": 2, "msrc_rss":2, "fortinet_rss":2, "ubuntu_rss":2, "debian_rss":2, "docker_rss":2, "kubernetes":2.5, "cisa_kev": 1}
     chosen = new if rank.get(new.get("source_type"), 0) >= rank.get(old.get("source_type"), 0) else old
     merged = dict(chosen)
     merged["categories"] = sorted(set(old.get("categories") or []) | set(new.get("categories") or []))
@@ -810,7 +876,10 @@ def run() -> int:
                   ("msrc_rss", lambda:rss_vendor_items("msrc_rss"), from_vendor_rss),
                   ("fortinet_rss", lambda:rss_vendor_items("fortinet_rss"), from_vendor_rss),
                   ("ubuntu_rss", lambda:rss_vendor_items("ubuntu_rss"), from_vendor_rss),
-                  ("osv_recent", osv_recent_items, from_osv))
+                  ("debian_rss",lambda:rss_vendor_items("debian_rss"),from_vendor_rss),
+                  ("docker_rss",lambda:rss_vendor_items("docker_rss"),from_vendor_rss),
+                  ("kubernetes",kubernetes_items,from_kubernetes),
+                  ("mariadb",mariadb_items,from_mariadb))
     if os.getenv("WORDFENCE_API_KEY"):
         operations += (("wordfence",wordfence_items,from_wordfence),)
     good = 0

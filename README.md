@@ -118,3 +118,7 @@ The hourly collector now also attempts Microsoft Security Update Guide RSS, Fort
 Wordfence Intelligence v3 adapter is available but disabled until the repository owner adds the `WORDFENCE_API_KEY` secret to GitHub Actions. The API key must never be committed. Create the key from the Integrations section of a Wordfence account and confirm its use complies with their current terms. When the secret exists, the hourly collector will attempt the authenticated Wordfence feed. A source marked OK means its endpoint responded, not that all vendor vulnerabilities were captured.
 
 Other requested vendor sources, including Debian, Red Hat, Broadcom/VMware, MySQL, MariaDB, PostgreSQL, Docker/Kubernetes and Patchstack, remain future integrations. Some require authenticated endpoints, custom adapters or access terms. Their absence is not evidence of a safe product. Always check primary vendor guidance before actioning production patches.
+
+## Additional official adapters
+
+Debian Security Advisories, Docker Security Announcements, Kubernetes official CVE JSON feed and MariaDB's upstream GitHub security advisories are configured as separate hourly sources. Feed health must be consulted to confirm live availability. The OSV bulk modified-ID export is temporarily disabled after a size-limit error in production, pending a bounded API implementation. Red Hat, Broadcom, PostgreSQL and the other database sources are still pending vetted adapters. Wordfence remains optional until its API key is supplied.
