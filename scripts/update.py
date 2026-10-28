@@ -1003,7 +1003,7 @@ def run() -> int:
     if wf_enabled and os.getenv("WORDFENCE_API_KEY") and wf_allowed:
         operations += (("wordfence", wordfence_items, from_wordfence),)
     # Do not preserve stale error statuses for intentionally retired adapters.
-    sources={name:sources.get(name,{}) for name,_,_ in operations}
+    sources={name:sources.get(name,{}) for name in [*(name for name,_,_ in operations),"epss"]}
     good = 0
     for name, fetch, transform in operations:
         try:
