@@ -59,6 +59,11 @@ class MockD1{
           return {results:[]};
         },
         async run(){
+          if(query.includes('DELETE FROM remediation_assignment_limits WHERE window_start<?')){
+            const cutoff=args[0];
+            for(const [key,value] of db.rate)if(value.window<cutoff)db.rate.delete(key);
+            return {meta:{changes:1}};
+          }
           if(query.includes('INSERT INTO remediations(user_id,cve_id,status,owner,due,notes,updated_at)')){
             const [uid,cve,status,owner,due,notes,updated]=args;
             db.rows.set(db.key(uid,cve),{id:cve,status,owner,due,notes,updated});
