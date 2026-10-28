@@ -247,4 +247,50 @@ assert.equal(sampleCards(),1,'type filters still work for recent samples');
 assert.equal(sampleToggle.hidden,true,'filtered list below six has no expansion button');
 malwareWindow.close();
 
+
+// An exact CVE outside the 2,500-record snapshot must use the live official lookup.
+const cveDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
+const cveWindow=cveDom.window,cveDocument=cveWindow.document;
+cveWindow.CVEHARBOR_DATA=window.CVEHARBOR_DATA;
+cveWindow.CVEHARBOR_CATALOG=window.CVEHARBOR_CATALOG;
+const remoteRequests=[];
+let fallbackStatus=200;
+cveWindow.fetch=async (url,options={})=>{
+  remoteRequests.push({url,credentials:options.credentials,method:options.method});
+  const id=String(url).split('/').pop();
+  const data=fallbackStatus===200?{
+    id,status:'published',title:'WordPress remote code execution via PostScript upload',
+    description:'Requires Imagick and Ghostscript on the server plus a user with upload permissions.',
+    affected:['WordPress: before 7.0.4'],severity:'high',cvss:8.8,cvssVersion:'3.0',
+    published:'2026-08-17T20:55:33Z',updated:'2026-08-18T15:17:13Z',
+    references:[{label:'WordPress release',url:'https://wordpress.org/news/2026/08/wordpress-7-0-4-release/'}],
+    source:'CVE Program official GitHub mirror'
+  }:{id,status:'not_published',message:'No published record found'};
+  return {ok:fallbackStatus===200,status:fallbackStatus,json:async()=>data};
+};
+cveWindow.eval(fs.readFileSync('workspace.js','utf8'));
+const cveInput=cveDocument.getElementById('securityLookup');
+const cveOutput=cveDocument.getElementById('securityLookupResults');
+cveInput.value='CVE-2026-65640';
+cveInput.dispatchEvent(new cveWindow.Event('input'));
+assert.match(cveOutput.textContent,/Checking the official CVE Program/);
+await new Promise(resolve=>setTimeout(resolve,450));
+assert.equal(remoteRequests.length,1,'one fallback lookup sent for exact unindexed CVE');
+assert.equal(remoteRequests[0].url,'https://api.cveharbor.com/v1/cve/CVE-2026-65640');
+assert.equal(remoteRequests[0].credentials,'omit','do not send account cookies to public lookup');
+assert.match(cveOutput.textContent,/WordPress remote code execution/,'live vulnerability title rendered');
+assert.match(cveOutput.textContent,/8\.8/,'CVSS score is visible');
+assert.match(cveOutput.textContent,/7\.0\.4/,'affected WordPress versions are visible');
+assert.ok(cveOutput.querySelector('a[href*="cve.org/CVERecord"]'),'CVE Program link provided');
+assert.ok(cveOutput.querySelector('a[href*="nvd.nist.gov"]'),'NVD cross-reference provided');
+cveInput.value='WordPress';
+cveInput.dispatchEvent(new cveWindow.Event('input'));
+assert.equal(remoteRequests.length,1,'partial text search stays local');
+fallbackStatus=404;
+cveInput.value='CVE-2026-99991234';
+cveInput.dispatchEvent(new cveWindow.Event('input'));
+await new Promise(resolve=>setTimeout(resolve,450));
+assert.match(cveOutput.textContent,/No published record was found/,'missing publication is distinguished from local absence');
+cveWindow.close();
+
 console.log('CVEHarbor browser smoke passed: 38 categories, publication badges, list, details, focus, search and feed status.');
