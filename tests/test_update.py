@@ -269,12 +269,12 @@ class FeedTests(unittest.TestCase):
         today = u.NOW.date().isoformat()
         old = {f'CVE-2026-{n:06d}': {'id':f'CVE-2026-{n:06d}',
                'published':'2026-04-02','updated':today,
-               'source_updated_at':today,'categories':['PHP']} for n in range(950)}
+               'source_updated_at':today,'categories':['PHP']} for n in range(2750)}
         new = {'CVE-2026-999991': {'id':'CVE-2026-999991',
                'published':today,'updated':today,
                'source_updated_at':today,'categories':['PHP']}}
         selected=u.choose_records({**old,**new},set())
-        self.assertEqual(900,len(selected))
+        self.assertEqual(2500,len(selected))
         self.assertEqual(selected[0]['id'],'CVE-2026-999991')
         self.assertNotEqual(selected[0]['published'],'2026-04-02')
 
