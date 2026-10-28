@@ -70,6 +70,7 @@ class FeedTests(unittest.TestCase):
             self.assertIn('.NET / ASP.NET',by_id[cve]['categories'])
             self.assertTrue(by_id[cve]['sources'])
         self.assertIn('CVE-2026-108398',by_id)
+        self.assertTrue(by_id['CVE-2026-111497']['known_exploited'])
         self.assertIn('.NET / ASP.NET',by_id['CVE-2026-108398']['categories'])
         self.assertNotIn('.NET Core',by_id['CVE-2026-108398']['categories'])
     def test_recategorization_keeps_dotnet_overview(self):
