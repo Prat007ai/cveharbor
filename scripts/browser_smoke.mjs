@@ -71,7 +71,7 @@ $('dateRange').dispatchEvent(new window.Event('change'));
 assert.equal(document.querySelectorAll('#advisoryTableBody tr').length,12,'full category archive');
 document.querySelector('#advisoryTableBody .table-details').click();
 assert.match($('dialogContent').textContent,/Affected software and versions/,'advisory detail populated');
-assert.match($('dialogContent').textContent,/Public sources/,'source links in detail');
+assert.match($('dialogContent').textContent,/Original advisory and source references/,'source links in detail');
 
 $('closeDialog').click();
 $('search').value='nonexistent string';
