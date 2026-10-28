@@ -461,8 +461,41 @@ def merge_record(old: dict, new: dict) -> dict:
 
 def choose_records(merged: dict[str,dict], baseline_ids: set[str]) -> list[dict]:
     """Prioritize original disclosure dates and retain separately revised issues."""
-    records = choose_records(merged, baseline_ids)
-
+    # Prioritize genuinely NEW CVEs before older records with recent metadata
+    # updates. Retain important vendor baselines and known exploited issues.
+    published_cutoff = (NOW - timedelta(days=30)).date().isoformat()
+    updated_cutoff = (NOW - timedelta(days=7)).date().isoformat()
+    all_records = list(merged.values())
+    def publish_order(r):
+        return (r.get("published") or "", r.get("updated") or "")
+    newly_disclosed = sorted(
+        [r for r in all_records if (r.get("published") or "") >= published_cutoff],
+        key=publish_order, reverse=True
+    )
+    recently_revised = sorted(
+        [r for r in all_records if (r.get("published") or "") < published_cutoff
+         and (r.get("updated") or "") >= updated_cutoff],
+        key=lambda r:(r.get("updated") or "",r.get("published") or ""), reverse=True
+    )
+    historical = sorted(all_records, key=publish_order, reverse=True)
+    chosen = {rid: merged[rid] for rid in baseline_ids if rid in merged}
+    for group in (newly_disclosed, recently_revised):
+        for record in group:
+            if len(chosen) >= MAX_RECORDS:
+                break
+            chosen.setdefault(record["id"], record)
+    for record in sorted((r for r in all_records if r.get("known_exploited")),
+                         key=lambda r:r.get("updated") or "", reverse=True):
+        if len(chosen) >= MAX_RECORDS:
+            break
+        chosen.setdefault(record["id"], record)
+    for record in historical:
+        if len(chosen) >= MAX_RECORDS:
+            break
+        chosen.setdefault(record["id"], record)
+    # Public list is ordered by original disclosure, not last-modified metadata.
+    records = sorted(chosen.values(), key=publish_order, reverse=True)
+    return records
 
 
 def run() -> int:
@@ -511,40 +544,7 @@ def run() -> int:
                 "last_checked_at": utc_iso(), "last_successful_update": prev.get("last_successful_update")}
         publish(fail)
         return 1
-    # Prioritize genuinely NEW CVEs before older records with recent metadata
-    # updates. Retain important vendor baselines and known exploited issues.
-    published_cutoff = (NOW - timedelta(days=30)).date().isoformat()
-    updated_cutoff = (NOW - timedelta(days=7)).date().isoformat()
-    all_records = list(merged.values())
-    def publish_order(r):
-        return (r.get("published") or "", r.get("updated") or "")
-    newly_disclosed = sorted(
-        [r for r in all_records if (r.get("published") or "") >= published_cutoff],
-        key=publish_order, reverse=True
-    )
-    recently_revised = sorted(
-        [r for r in all_records if (r.get("published") or "") < published_cutoff
-         and (r.get("updated") or "") >= updated_cutoff],
-        key=lambda r:(r.get("updated") or "",r.get("published") or ""), reverse=True
-    )
-    historical = sorted(all_records, key=publish_order, reverse=True)
-    chosen = {rid: merged[rid] for rid in baseline_ids if rid in merged}
-    for group in (newly_disclosed, recently_revised):
-        for record in group:
-            if len(chosen) >= MAX_RECORDS:
-                break
-            chosen.setdefault(record["id"], record)
-    for record in sorted((r for r in all_records if r.get("known_exploited")),
-                         key=lambda r:r.get("updated") or "", reverse=True):
-        if len(chosen) >= MAX_RECORDS:
-            break
-        chosen.setdefault(record["id"], record)
-    for record in historical:
-        if len(chosen) >= MAX_RECORDS:
-            break
-        chosen.setdefault(record["id"], record)
-    # Public list is ordered by original disclosure, not last-modified metadata.
-    records = sorted(chosen.values(), key=publish_order, reverse=True)
+    records = choose_records(merged, baseline_ids)
     result = {"siteName":"CVEHarbor", "snapshotDate": NOW.date().isoformat(),
               "mode":"live" if good == len(operations) else "partial", "categories":CATEGORIES, "advisories":records,
               "sources":sources, "last_checked_at":utc_iso(), "last_successful_update":utc_iso(),
