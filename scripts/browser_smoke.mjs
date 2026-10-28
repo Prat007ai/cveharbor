@@ -138,6 +138,57 @@ assert.equal(opsDoc.querySelectorAll('#firewallDownloads a[download]').length,4,
 
 assert.ok(html.includes('id="remediationForm"')&&html.includes('id="firewallCentre"'),'tracker and firewall centre present');
 assert.ok(html.includes('id="accountWorkspace"')&&html.includes('id="accountVerify"'),'account section and verification UI present');
+// The email/account panel contains a source-limited publication chart even before login.
+assert.ok(document.getElementById('accountWorkspace').contains(document.getElementById('disclosureTrend')),
+  'publication trend fills the account panel without requiring sign in');
+assert.ok(html.includes('disclosure-trend.js?v=30day-1'),'trends script is deployed with a versioned path');
+assert.ok(html.includes('not the number found or exploited using AI'),
+  'the chart does not imply that published CVE totals measure AI attribution');
+const trendDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
+const tw=trendDom.window,td=tw.document;
+const utcStart=Math.floor(Date.now()/86400000)*86400000;
+const utcAgo=n=>new Date(utcStart-n*86400000).toISOString().slice(0,10);
+tw.CVEHARBOR_DATA={
+  last_successful_update:new Date().toISOString(),
+  advisories:[
+    {id:'CVE-2026-90001',published:utcAgo(1)},
+    {id:'CVE-2026-90002',published:utcAgo(1)},
+    {id:'CVE-2026-90002',published:utcAgo(1)}, // duplicate across sources
+    {id:'CVE-2026-90003',published:utcAgo(8)},
+    {id:'CVE-2026-90004',published:utcAgo(16),updated:utcAgo(1)}, // updated, not new
+    {id:'CVE-2026-90005',published:utcAgo(30)}, // first included date
+    {id:'CVE-2026-90006',published:utcAgo(31)}, // older, excluded
+    {id:'CVE-2026-90007',published:utcAgo(0)}, // partial current day, excluded
+    {id:'CVE-2026-90008',published:utcAgo(1),status:'REJECTED'},
+    {id:'GHSA-test-test-test',published:utcAgo(1)}
+  ]
+};
+tw.eval(fs.readFileSync('disclosure-trend.js','utf8'));
+assert.equal(td.querySelectorAll('#disclosureTrendBars .disclosure-day-button').length,30,
+  'the trend contains thirty finished UTC days');
+assert.equal(td.getElementById('disclosureTrendTotal').textContent,'5',
+  'duplicates, rejected IDs, advisories and today are not counted');
+assert.equal(td.getElementById('disclosureTrendAverage').textContent,'0.2',
+  'daily average is based on thirty complete days');
+assert.equal(td.getElementById('disclosureTrendChange').textContent,'+100%',
+  'latest seven complete days compare to the previous seven days');
+assert.match(td.getElementById('disclosureTrendCompare').textContent,/2 in the latest 7 days vs 1/);
+assert.match(td.getElementById('disclosureTrendSelected').textContent,/2 CVEs published/,
+  'the most recent complete day is selected by default');
+const dayEight=td.querySelectorAll('#disclosureTrendBars .disclosure-day-button')[22];
+dayEight.click();
+assert.equal(dayEight.getAttribute('aria-pressed'),'true');
+assert.match(td.getElementById('disclosureTrendSelected').textContent,/1 CVE published/,
+  'selecting a bar reveals the exact date value');
+assert.match(td.getElementById('disclosureTrendNote').textContent,/not a worldwide CVE total/,
+  'public feed coverage limits are clear');
+assert.equal(td.querySelectorAll('.disclosure-trend-line path').length,1,
+  'seven day average line is rendered without an external chart dependency');
+const noFeedDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
+noFeedDom.window.eval(fs.readFileSync('disclosure-trend.js','utf8'));
+assert.match(noFeedDom.window.document.getElementById('disclosureTrendStatus').textContent,/unavailable/i,
+  'the trend never invents data during a feed outage');
+trendDom.window.close();noFeedDom.window.close();
 assert.ok(fs.readFileSync('accounts.js','utf8').includes('accountDownload'),'account sync frontend installed');
 
 // The watchlist and email preferences must share one unified workspace.

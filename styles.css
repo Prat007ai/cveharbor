@@ -892,3 +892,54 @@ button.tech-chart-link b{
 .malware-detail-dialog .malware-detail-source-link:hover{background:#1d6569;color:#fff}
 .malware-detail-dialog .disclaimer{padding-top:15px;margin-top:18px}
 @media(max-width:600px){.malware-detail-facts{grid-template-columns:1fr}.malware-detail-dialog .dialog-layout{padding:18px}}
+
+
+/* CVE publication activity in the account panel. Explicitly not AI attribution. */
+.disclosure-trend{margin-top:25px;padding:20px 18px;background:#0b283b;border:1px solid #2b5568;border-radius:13px;min-width:0}
+.disclosure-trend-heading .eyebrow{font-size:10px;letter-spacing:1.3px;color:#70e6d4;margin:0 0 8px;font-weight:850}
+.disclosure-trend-heading h4{font-size:17px;color:#f0faff;line-height:1.35;margin:0 0 8px}
+.disclosure-trend-heading p{color:#b1cada;font-size:12px;line-height:1.7;margin:0 0 11px}
+.disclosure-period{display:inline-block;font-size:10px;color:#bde7e2;border:1px solid #3b7280;border-radius:6px;padding:6px 9px;font-weight:700}
+.disclosure-trend-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:15px}
+.disclosure-trend-metric{background:#113448;border:1px solid #2a5968;border-radius:9px;padding:13px 11px;min-width:0}
+.disclosure-trend-metric strong{display:block;color:#83ead8;font-size:24px;font-weight:850;line-height:1.25;letter-spacing:-.7px;font-variant-numeric:tabular-nums}
+.disclosure-trend-metric span{display:block;color:#a6c4d2;font-size:10px;line-height:1.4;margin-top:5px}
+.disclosure-trend-comparison{color:#bed6e1;font-size:11px;line-height:1.6;margin:12px 0 8px}
+.disclosure-trend-legend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;color:#b2d1dd;font-size:10px;margin:12px 0 15px}
+.disclosure-trend-legend span{display:inline-flex;align-items:center;gap:7px}
+.disclosure-legend-bar{display:inline-block;width:10px;height:12px;border-radius:2px;background:#56d8cc}
+.disclosure-legend-line{display:inline-block;width:19px;height:0;border-top:3px solid #ffd08a}
+.disclosure-chart{display:grid;grid-template-columns:31px minmax(0,1fr);gap:7px;align-items:start}
+.disclosure-chart-y{height:174px;display:flex;flex-direction:column;justify-content:space-between;text-align:right;padding:0 1px 0 0;font-size:10px;color:#a9c1d2;font-variant-numeric:tabular-nums}
+.disclosure-chart-main{min-width:0}
+.disclosure-plot{position:relative;height:174px;isolation:isolate}
+.disclosure-guide{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(128,171,194,.20) 1px,transparent 1px) 0 0/100% 50%;border-bottom:1px solid rgba(128,171,194,.3);pointer-events:none}
+.disclosure-bars{position:absolute;inset:0;display:grid;grid-template-columns:repeat(30,minmax(0,1fr));gap:3px;z-index:1}
+.disclosure-day-button{height:100%;min-width:0;display:flex;align-items:flex-end;background:transparent;border:0;padding:0;cursor:pointer}
+.disclosure-day-bar{display:block;width:100%;background:linear-gradient(180deg,#67e5d5,#2485a2);border-radius:3px 3px 0 0;min-height:3px;opacity:.88;transition:filter .14s,opacity .14s}
+.disclosure-day-bar.is-zero{background:#557486;opacity:.4;min-height:2px}
+.disclosure-day-button:hover .disclosure-day-bar,.disclosure-day-button:focus-visible .disclosure-day-bar{filter:brightness(1.35);opacity:1}
+.disclosure-day-button[aria-pressed=true] .disclosure-day-bar{background:linear-gradient(180deg,#ffe0a4,#e8a859);opacity:1}
+.disclosure-day-button:focus-visible{outline:2px solid #fff0c4;outline-offset:2px;border-radius:2px}
+.disclosure-trend-line{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+.disclosure-chart-ticks{display:flex;justify-content:space-between;gap:2px;color:#adc9d7;font-size:9px;margin:8px 0 0;white-space:nowrap;font-variant-numeric:tabular-nums}
+.disclosure-day-selected{font-size:12px;color:#a5eee0;font-weight:750;line-height:1.55;margin:14px 0 6px}
+.disclosure-trend-status,.disclosure-trend-method{font-size:10px;line-height:1.7;color:#9db7c8;margin:6px 0}
+.disclosure-trend-method{padding-top:12px;border-top:1px solid #2f4e61;margin-top:12px}
+.disclosure-ai-context{background:#102e43;border:1px solid #2a5967;border-left:3px solid #63dece;border-radius:8px;padding:14px 15px;margin-top:19px}
+.disclosure-ai-context>strong{font-size:13px;color:#90f0e2}
+.disclosure-ai-context p{font-size:11px;color:#c4dce7;line-height:1.75;margin:8px 0 0}
+.disclosure-ai-context b{color:#effcff}
+.disclosure-ai-context a{color:#87ead8;text-decoration:underline;text-underline-offset:3px}
+.disclosure-ai-context a:focus-visible{outline:2px solid #87ead8;outline-offset:3px}
+@media(max-width:600px){
+  .disclosure-trend{padding:16px 12px}
+  .disclosure-trend-metrics{gap:6px}
+  .disclosure-trend-metric{padding:10px 7px}
+  .disclosure-trend-metric strong{font-size:21px}
+  .disclosure-trend-metric span{font-size:9px}
+  .disclosure-chart{grid-template-columns:25px minmax(0,1fr);gap:5px}
+  .disclosure-bars{gap:2px}
+  .disclosure-chart-ticks{font-size:8px}
+}
+@media(prefers-reduced-motion:reduce){.disclosure-day-bar{transition:none}}
