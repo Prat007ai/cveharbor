@@ -457,10 +457,37 @@
     const specs=text('div','spec-grid','');specs.append(rowSpec('Advisory ID',x.id),rowSpec('First published',fmtDate(x.published)),rowSpec('Last source update',fmtDate(x.updated)),rowSpec('First indexed',fmtStamp(x.first_seen_at)),rowSpec('Source status',x.status||'Vendor/source verification required'),rowSpec('Exploitation',x.exploitation));if(x.cvss)specs.append(rowSpec('Reported CVSS',x.cvss));if(typeof x.epss==='number')specs.append(rowSpec('FIRST EPSS, 30 day exploitation probability',(x.epss*100).toFixed(2)+'% ('+(x.epss_as_of||'date not available')+')'));root.append(specs);
     function block(h,body){root.append(text('h3','',h),text('p','',body||'Not provided by the indexed source.'));}
     if(typeof x.epss==='number')root.append(text('p','epss-note','EPSS estimates exploitation probability within 30 days. It is not a vulnerability severity score or proof that your environment is affected. Source: FIRST EPSS.'));block('Description',x.summary);block('Affected software and versions',x.affected);block('Fix or workaround',x.remediation);block('Suggested next step',x.action);
-    root.append(text('h3','','Public sources'));const list=document.createElement('ul');list.style.paddingLeft='20px';(x.sources||[]).forEach(s=>{try{const url=new URL(s.url);if(url.protocol!=='https:')return;const li=document.createElement('li'),a=text('a','',s.label);a.href=url.href;a.target='_blank';a.rel='noopener noreferrer';li.append(a);list.append(li);}catch(_e){}});root.append(list);
+    root.append(text('h3','','Original advisory and source references'));
+    root.append(text('p','source-note','You can review the available advisory details here. The source links below are optional and open in a new tab.'));
+    const list=document.createElement('ul');list.className='detail-source-links';
+    list.style.paddingLeft='20px';
+    const links=[...(x.sources||[])];
+    if(/^CVE-\d{4}-\d{4,}$/i.test(String(x.id||''))){
+      links.push({label:'CVE Program record',url:'https://www.cve.org/CVERecord?id='+x.id});
+      links.push({label:'NVD vulnerability record',url:'https://nvd.nist.gov/vuln/detail/'+x.id});
+    }
+    const seenLinks=new Set();
+    links.forEach(s=>{
+      try{
+        const url=new URL(s.url);
+        if(url.protocol!=='https:'||seenLinks.has(url.href))return;
+        seenLinks.add(url.href);
+        const li=document.createElement('li'),a=text('a','',s.label||url.hostname);
+        a.href=url.href;a.target='_blank';a.rel='noopener noreferrer';
+        li.append(a);list.append(li);
+      }catch(_e){}
+    });
+    if(list.childElementCount)root.append(list);
+    else root.append(text('p','','No direct source URLs were included in this indexed record.'));
     root.append(text('p','disclaimer','CVEHarbor aggregates public third-party advisory data. This record does not establish that your environment is vulnerable. Verify the primary vendor bulletin, affected versions, and patch applicability.'));
     const dlg=$('detailDialog');if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');
   }
+  // The watchlist and search share this same on-site advisory details dialog.
+  window.addEventListener('cveharbor:review-advisory',event=>{
+    const id=String(event.detail?.id||'');
+    const item=items.find(x=>x.id===id);
+    if(item)showDetail(item);
+  });
   function resetPaging(){visibleCount=PAGE_SIZE;tablePage=0;}
   function clear(){
     state.q='';state.tech='all';state.group='all';state.severity='all';state.period='published30';metricScope='all';resetPaging();
