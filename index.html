@@ -8,7 +8,7 @@
   <meta property="og:title" content="CVEHarbor | Know the risk. Find the fix.">
   <meta property="og:description" content="Vulnerability advisories, severity dashboards, affected versions, vendor sources and remediation guidance.">
   <title>CVEHarbor | Vulnerability Intelligence</title>
-  <link rel="stylesheet" href="styles.css?v=severity-pulse-1">
+  <link rel="stylesheet" href="styles.css?v=vendor-cats-1">
 </head>
 <body>
   <a class="skip-link" href="#advisories">Skip to advisories</a>
@@ -36,13 +36,13 @@
         <div class="hero-visual" aria-label="Security intelligence site status">
           <div class="orb orb-one"></div><div class="orb orb-two"></div>
           <div class="hero-panel"><div class="hp-head"><span class="hp-signal"><i></i> PUBLIC ADVISORY FEEDS</span><span class="hp-gridicon">▦</span></div><div class="pulse-graphic"><div class="pulse-line"></div><div class="pulse-ring ring-a"></div><div class="pulse-ring ring-b"></div><div class="pulse-center">CVE</div></div><div class="hp-foot"><strong>Security intelligence</strong><span>Across applications, cloud & infrastructure</span></div></div>
-          <div class="floating-tag tag-a">Vulnerability tracking <b>✓</b></div><div class="floating-tag tag-b">19 technology groups</div>
+          <div class="floating-tag tag-a">Vulnerability tracking <b>✓</b></div><div class="floating-tag tag-b">25 technology groups</div>
         </div>
       </div>
     </section>
     <div class="shell"><div class="notice" role="status"><span class="notice-icon">i</span><div><b id="feedHeadline">Feed startup required.</b> <span id="feedDescription">No hourly sync has completed. Counts shown here are not evidence that monitored technologies are safe.</span><div id="sourceHealth" class="source-health" aria-label="Feed source status"></div></div><span class="notice-date" id="snapshotDate">Last success: Never</span></div></div>
     <section id="technology" class="shell section technology-quickjump" aria-labelledby="categoryTitle">
-      <div class="section-heading"><div><p class="eyebrow">EXPLORE BY PLATFORM</p><h2 id="categoryTitle">19 technology groups. One clear view.</h2><p class="section-sub">Select a technology to jump directly to its advisories. Your most commonly used platforms appear first.</p></div><span class="section-side">CLICK TO FILTER AND JUMP <span class="small-star">✦</span></span></div>
+      <div class="section-heading"><div><p class="eyebrow">EXPLORE BY PLATFORM</p><h2 id="categoryTitle">25 technology groups. One clear view.</h2><p class="section-sub">Select a technology to jump directly to its advisories. Your most commonly used platforms appear first.</p></div><span class="section-side">CLICK TO FILTER AND JUMP <span class="small-star">✦</span></span></div>
       <div class="category-grid" id="categoryGrid" aria-label="Most commonly used technologies"></div>
       <details class="other-tech"><summary>More technology groups <span aria-hidden="true">⌄</span></summary><div class="category-grid secondary-grid" id="otherCategoryGrid"></div></details>
     </section>
@@ -52,7 +52,7 @@
         <button class="metric metric-action" type="button" data-metric="all" aria-label="View the full list of indexed CVEs" aria-controls="advisories"><span class="metric-top"><span>Unique CVEs</span><span class="metric-symbol">◎</span></span><strong id="statTotal">0</strong><span class="metric-desc">Click to view all indexed CVEs ↗</span><span class="metric-line blue"></span></button>
         <button class="metric metric-action" type="button" data-metric="critical" aria-label="View all critical CVEs" aria-controls="advisories"><span class="metric-top"><span>Critical findings</span><span class="metric-symbol critical-text">◈</span></span><strong id="statCritical">0</strong><span class="metric-desc">Click to view all critical CVEs ↗</span><span class="metric-line red"></span></button>
         <button class="metric metric-action" type="button" data-metric="high" aria-label="View all high severity CVEs" aria-controls="advisories"><span class="metric-top"><span>High findings</span><span class="metric-symbol high-text">△</span></span><strong id="statHigh">0</strong><span class="metric-desc">Click to view all high CVEs ↗</span><span class="metric-line amber"></span></button>
-        <button class="metric metric-action" type="button" data-metric="technologies" aria-label="Browse all technology categories" aria-controls="technology"><span class="metric-top"><span>Technology areas</span><span class="metric-symbol">▤</span></span><strong id="statCategories">19</strong><span class="metric-desc">Browse all technology groups ↗</span><span class="metric-line mint"></span></button>
+        <button class="metric metric-action" type="button" data-metric="technologies" aria-label="Browse all technology categories" aria-controls="technology"><span class="metric-top"><span>Technology areas</span><span class="metric-symbol">▤</span></span><strong id="statCategories">25</strong><span class="metric-desc">Browse all technology groups ↗</span><span class="metric-line mint"></span></button>
       </div>
       <div class="analytics-grid">
         <article class="data-panel"><div class="panel-heading"><div><h3>Vulnerabilities by technology</h3><p>Distinct CVE IDs in each technology group</p></div><span class="mini-label" id="chartDateLabel">INDEXED RECORDS</span></div><div id="techBars" class="tech-bars"></div><div class="chart-note">One CVE can appear in more than one technology group. The overall total counts each CVE once.</div></article>
@@ -96,6 +96,6 @@
   </main>
   <footer class="footer"><div class="shell footer-row"><div><b>CVE<span>Harbor</span></b><small>Independent vulnerability intelligence</small></div><p>© <span id="year">2026</span> CVEHarbor. Public source aggregation. Not a vulnerability scan or professional incident determination.</p><a href="#top">Back to top ↑</a></div></footer>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script src="data.js"></script><script src="app.js?v=kpi-list-1"></script>
+  <script src="data.js"></script><script src="app.js?v=vendor-cats-1"></script>
 </body>
 </html>
