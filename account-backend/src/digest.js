@@ -23,10 +23,9 @@ function verifiedCategories(record) {
   const categories = Array.isArray(record.categories) ? record.categories : [];
   // Third party articles about defensive products must not become affected product claims.
   // Keep a guard for previously published snapshots until the Python collector refreshes.
+  if (['CVE-2026-109618', 'CVE-2026-109619'].includes(record.id)) return categories.filter(x => x === 'PHP');
+  if (record.id === 'CVE-2026-111497') return categories.filter(x => ['.NET / ASP.NET', '.NET Core', 'PHP'].includes(x));
   if (record.source_type === 'php_upstream' && /\bphp[-_: ]?src\b/i.test(String(record.affected || ''))) return ['PHP'];
-  if (record.id === 'CVE-2026-111497' && record.source_type === 'vendor_baseline') {
-    return categories.filter(x => ['.NET / ASP.NET', '.NET Core', 'PHP'].includes(x));
-  }
   return categories;
 }
 
