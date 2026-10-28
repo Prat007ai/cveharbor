@@ -111,4 +111,7 @@ assert.match(workspaceDocument.getElementById('stackSummary').textContent,/index
 workspaceDocument.getElementById('securityLookup').value='CVE-2026';
 workspaceDocument.getElementById('securityLookup').dispatchEvent(new workspaceWindow.Event('input'));
 assert.ok(workspaceDocument.querySelectorAll('#securityLookupResults .workspace-result').length>0,'lookup results visible');
+assert.ok(html.includes('id="operationsCentre"'),'operations centre exists');
+assert.ok(fs.readFileSync('operations.js','utf8').includes('https://api.osv.dev/v1/query'),'version checker uses OSV');
+assert.ok(html.includes('id="remediationForm"')&&html.includes('id="firewallCentre"'),'tracker and firewall centre present');
 console.log('CVEHarbor browser smoke passed: 38 categories, publication badges, list, details, focus, search and feed status.');
