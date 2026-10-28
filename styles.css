@@ -158,3 +158,43 @@
 .footer-status .preview-status{margin-right:9px;display:inline-block;vertical-align:baseline}
 .footer-status .notice-date{color:#91c9d8}
 @media(max-width:780px){.footer-status .notice{flex-wrap:wrap}.footer-status .notice-date{display:block;margin-left:38px}}
+
+
+/* Technology chart rows now act as full-width links into filtered CVE lists. */
+button.tech-chart-link{
+  appearance:none;
+  -webkit-appearance:none;
+  width:100%;
+  background:transparent;
+  border:1px solid transparent;
+  padding:6px 5px;
+  margin:0;
+  color:var(--text);
+  font:inherit;
+  text-align:left;
+  cursor:pointer;
+  border-radius:8px;
+  transition:background-color .16s ease,border-color .16s ease;
+}
+button.tech-chart-link:hover{
+  background:#17435a;
+  border-color:#3c8997;
+}
+button.tech-chart-link:hover .bar-fill{
+  background:linear-gradient(90deg,#4ca6ef,#88f3d9);
+  box-shadow:0 0 11px rgba(101,230,210,.35);
+}
+button.tech-chart-link:focus-visible{
+  outline:3px solid var(--aqua);
+  outline-offset:2px;
+  background:#17435a;
+}
+button.tech-chart-link span:first-child{
+  overflow-wrap:anywhere;
+}
+button.tech-chart-link b{
+  color:#d9fff8;
+}
+@media (prefers-reduced-motion: reduce){
+  button.tech-chart-link{transition:none}
+}
