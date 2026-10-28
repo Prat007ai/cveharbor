@@ -214,6 +214,32 @@ const sampleCards=()=>malwareDoc.querySelectorAll('#malwareRows .malware-entry')
 const familyToggle=malwareDoc.getElementById('malwareShowAllFamilies');
 const sampleToggle=malwareDoc.getElementById('malwareShowAllSamples');
 assert.ok(malwareDoc.getElementById('malwareDetailDialog'),'malware detail popup exists');
+// Both malware sections must use the same on-site detail popup.
+assert.ok(html.includes('malware.js?v=both-popup-2'),
+  'new browser asset version prevents reuse of the old external links');
+const firstFamilyCard=malwareDoc.querySelector('#malwareFamilyDirectory .malware-entry');
+const familyDetailsButton=firstFamilyCard.querySelector('button.malware-detail-trigger');
+assert.equal(firstFamilyCard.querySelectorAll('a[href]').length,0,
+  'known malware family cards must not navigate directly to Malpedia');
+assert.equal(familyDetailsButton?.getAttribute('aria-haspopup'),'dialog',
+  'malware family button announces the on-site dialog');
+familyDetailsButton.click();
+const commonMalwareDialog=malwareDoc.getElementById('malwareDetailDialog');
+const commonMalwareContent=malwareDoc.getElementById('malwareDetailContent');
+assert.ok(commonMalwareDialog.hasAttribute('open'),'family popup opens without leaving CVEHarbor');
+assert.match(commonMalwareContent.textContent,/LockBit/,'family name is visible');
+assert.match(commonMalwareContent.textContent,/File encryption and double extortion/,'family behavior is visible');
+assert.match(commonMalwareContent.textContent,/Family reference, not a new sample/,
+  'the family directory is distinguished from live samples');
+assert.match(commonMalwareContent.textContent,/Matching samples in current feed/,
+  'family dialog shows the limited live sample count');
+const optionalFamilyLink=commonMalwareContent.querySelector('a.malware-detail-source-link');
+assert.equal(optionalFamilyLink?.href,'https://malpedia.caad.fkie.fraunhofer.de/',
+  'external malware family research appears only inside the popup');
+assert.equal(optionalFamilyLink?.target,'_blank','research link is optional');
+malwareDoc.getElementById('closeMalwareDetail').click();
+assert.ok(!commonMalwareDialog.hasAttribute('open'),'family dialog can be closed');
+
 const firstMalwareCard=malwareDoc.querySelector('#malwareRows .malware-entry');
 const sampleDetailsButton=firstMalwareCard.querySelector('.malware-detail-trigger');
 assert.equal(sampleDetailsButton?.tagName,'BUTTON','samples open an on-site detail dialog');
