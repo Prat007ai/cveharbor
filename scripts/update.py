@@ -103,7 +103,7 @@ def classify(*, product: str = "", ecosystem: str = "", text: str = "", cpes: li
     modern_dotnet = has(r"(?:\.net core|dotnet[ ._-]?core|asp\.net[\s._-]*core|aspnetcore|microsoft\.aspnetcore|coreclr|netcoreapp|\.net (?:[5-9]|1[0-9])(?:\.[0-9]+)?\b|dotnet[- ]?(?:[5-9]|1[0-9])(?:\.[0-9]+)?\b)")
     legacy_dotnet = has(r"(?:\.net framework|asp\.net(?![\s._-]*core)|aspnet(?!core)|system\.web|web forms|winforms|entity framework 6|netfx)")
     generic_dotnet = eco == "nuget" or has(r"(?:\bdotnet\b|\.net\b|entity framework|blazor|nuget)")
-    add(".NET / ASP.NET", legacy_dotnet or (generic_dotnet and not modern_dotnet))
+    add(".NET / ASP.NET", legacy_dotnet or generic_dotnet or modern_dotnet)
     add(".NET Core", modern_dotnet)
     add("WordPress / Plugins", has(r"\b(?:wordpress|woocommerce|wp[-_ ]?(?:plugin|core))\b") or hp(r"\bwp[-_][a-z0-9_-]+"))
     add("PHP", eco == "composer" or has(r"\b(?:php|laravel|symfony|composer|php-fpm)\b"))
@@ -171,8 +171,6 @@ def recategorize_existing(record: dict) -> dict:
         categories = [c for c in categories if c != "Windows"]
     if "Windows Server OS" in hints and "Windows" not in hints:
         categories = [c for c in categories if c != "Windows"]
-    if ".NET Core" in hints and ".NET / ASP.NET" not in hints:
-        categories = [c for c in categories if c != ".NET / ASP.NET"]
     if "Sitefinity" in hints and not re.search(r"\b(?:drupal|dotnetnuke|kentico|umbraco)\b", evidence, re.I):
         categories = [c for c in categories if c != "Drupal / CMS"]
     entry["categories"] = [c for c in categories if c in ALLOWED]
