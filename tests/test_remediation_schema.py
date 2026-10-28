@@ -14,6 +14,8 @@ class RemediationMigrationTest(unittest.TestCase):
         connection.execute("PRAGMA foreign_keys=ON")
         connection.executescript(SCHEMA)
         connection.executescript(MIGRATION)  # idempotent, existing installation
+        connection.execute("INSERT INTO remediation_assignment_limits(key,window_start,count) VALUES(?,?,?)", ("sender:u1", 100, 1))
+        self.assertEqual(connection.execute("SELECT count FROM remediation_assignment_limits WHERE key='sender:u1'").fetchone()[0], 1)
         connection.execute("INSERT INTO users(id,email) VALUES(?,?)", ("u1", "admin@example.org"))
         connection.execute(
             "INSERT INTO remediations(user_id,cve_id,status,owner,due,notes,updated_at) VALUES(?,?,?,?,?,?,?)",
