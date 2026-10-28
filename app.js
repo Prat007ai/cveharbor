@@ -59,6 +59,35 @@
     return Number.isFinite(published) && published >= Date.now()-days*86400000;
   };
   const newlyPublished = (record,days=30) => recentDate(record.published,days) && record.source_type!=='cisa_kev';
+  // Disclosure badge uses the ORIGINAL published date, never first-indexed
+  // or last-modified metadata. Source records frequently have date precision
+  // only, so label day groups in Toronto rather than claim an exact 72h SLA.
+  const disclosureAgeLabel = (record, now = new Date()) => {
+    const published = record && record.published;
+    if (!/^\d{4}-\d{2}-\d{2}(?:$|T)/.test(published||'')) return '';
+    const date = published.slice(0,10);
+    const parsed = new Date(date + 'T00:00:00Z');
+    if (!Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0,10)!==date) return '';
+    const parts = new Intl.DateTimeFormat('en-US',{
+      timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'
+    }).formatToParts(now);
+    const get = type => parts.find(x=>x.type===type)?.value;
+    const localDay = Date.UTC(Number(get('year')),Number(get('month'))-1,Number(get('day')));
+    const age = Math.round((localDay - parsed.getTime())/86400000);
+    if(age===0) return 'TODAY';
+    if(age===1) return 'YESTERDAY';
+    if(age===2) return '72 HOURS';
+    return '';
+  };
+  const makeDisclosureBadge = record => {
+    const label=disclosureAgeLabel(record);
+    if(!label) return null;
+    const badge=text('span','fresh-disclosure-badge',label);
+    badge.title='Original publication date: '+fmtDate(record.published)+'. Dates grouped by Toronto calendar day. Exact disclosure hour may be unavailable.';
+    badge.setAttribute('aria-label','New advisory '+label.toLowerCase()+', first published '+fmtDate(record.published));
+    return badge;
+  };
+
   const recentRevision = (record,days=7) => recentDate(record.updated,days);
   const periodMatches = record => {
     if(state.period==='all') return true;
@@ -246,7 +275,9 @@
           const el=text('td',className,value);
           row.append(el);return el;
         };
-        cell(x.id,'table-cve');
+        const idCell=cell(x.id,'table-cve');
+        const firstPublished=makeDisclosureBadge(x);
+        if(firstPublished) idCell.append(firstPublished);
         const sev=cell(severityText(x.severity),'table-severity');
         sev.dataset.level=x.severity;
         cell(x.categories.join(' · '),'table-tech');
@@ -270,7 +301,12 @@
     $('archiveEmpty').hidden=selected.length!==0 || state.period==='all';
     if(!full) selected.slice(0,visibleCount).forEach(x=>{
       const card=text('article','advisory-card',''),head=text('div','card-head','');
-      head.append(text('span','cat-badge',x.categories[0]),text('span','severity-badge '+x.severity,severityText(x.severity)));
+      const markers=text('div','card-labels','');
+      const freshness=makeDisclosureBadge(x);
+      if(freshness) markers.append(freshness);
+      markers.append(text('span','severity-badge '+x.severity,severityText(x.severity)));
+      head.append(text('span','cat-badge',x.categories[0]),markers);
+      if(freshness) card.classList.add('has-fresh-disclosure');
       card.append(head);card.append(text('h3','',x.title),text('p','card-summary',x.summary));
       const meta=text('div','card-meta','');
       meta.append(text('span','',fmtDate(x.published)),text('span','',x.categories.length===1?'1 technology':`${x.categories.length} technologies`));
@@ -293,7 +329,13 @@
   }
   function rowSpec(name,value){const el=text('div','spec','');el.append(text('small','',name),text('b','',value||'Not confirmed'));return el;}
   function showDetail(x){
-    const root=$('dialogContent');root.replaceChildren();root.append(text('span','cat-badge',x.categories.join(' · ')),text('h2','',x.title));root.append(text('span','severity-badge '+x.severity,severityText(x.severity)));
+    const root=$('dialogContent');root.replaceChildren();
+    root.append(text('span','cat-badge',x.categories.join(' · ')),text('h2','',x.title));
+    const detailMarkers=text('div','detail-labels','');
+    const firstPublished=makeDisclosureBadge(x);
+    if(firstPublished)detailMarkers.append(firstPublished);
+    detailMarkers.append(text('span','severity-badge '+x.severity,severityText(x.severity)));
+    root.append(detailMarkers);
     const specs=text('div','spec-grid','');specs.append(rowSpec('Advisory ID',x.id),rowSpec('First published',fmtDate(x.published)),rowSpec('Last source update',fmtDate(x.updated)),rowSpec('First indexed',fmtStamp(x.first_seen_at)),rowSpec('Source status',x.status||'Vendor/source verification required'),rowSpec('Exploitation',x.exploitation));if(x.cvss)specs.append(rowSpec('Reported CVSS',x.cvss));root.append(specs);
     function block(h,body){root.append(text('h3','',h),text('p','',body||'Not provided by the indexed source.'));}
     block('Description',x.summary);block('Affected software and versions',x.affected);block('Fix or workaround',x.remediation);block('Suggested next step',x.action);
