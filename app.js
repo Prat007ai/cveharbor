@@ -1,6 +1,9 @@
 (() => {
   'use strict';
   const state = { q: '', severity: 'all', tech: 'all' };
+  const PAGE_SIZE = 6;
+  let visibleCount = PAGE_SIZE;
+  const featured = new Set(["Windows Server OS",".NET / ASP.NET",".NET Core","WordPress / Plugins","Linux","PHP","Python / PyPI","Azure","Microsoft 365","SQL Server","MySQL / MariaDB","Fortinet","VMware","HyperV","Docker / Kubernetes"]);
   const info = window.CVEHARBOR_DATA || {categories:[],advisories:[],mode:'awaiting_first_sync'};
   const items = info.advisories || [];
   const categories = info.categories || [];
@@ -37,7 +40,20 @@
     sorted.forEach(x=>{const row=text('div','bar-item',''),track=text('div','bar-track',''),fill=text('div','bar-fill','');fill.style.width=x.count?Math.max(3,x.count/max*100)+'%':'0%';track.append(fill);row.append(text('span','',x.name),track,text('b','',String(x.count)));$('techBars').append(row);});
   }
   function renderCategories(){
-    $('categoryGrid').replaceChildren();categories.forEach(x=>{const n=items.filter(a=>a.categories.includes(x.name)).length,b=document.createElement('button');b.type='button';b.className='category-item';b.append(text('span','category-icon',x.icon),text('span','category-label',x.name),text('span','category-count',n?`${n} indexed ${n===1?'record':'records'}`:'No matching indexed records'));b.addEventListener('click',()=>{state.tech=x.name;$('technologyFilter').value=x.name;render();$('advisories').scrollIntoView({behavior:'smooth'});});$('categoryGrid').append(b);});
+    const primaryGrid=$('categoryGrid'), otherGrid=$('otherCategoryGrid');
+    primaryGrid.replaceChildren();otherGrid.replaceChildren();
+    categories.forEach(x=>{
+      const n=items.filter(a=>a.categories.includes(x.name)).length;
+      const b=document.createElement('button');
+      b.type='button';b.className='category-item';
+      b.append(text('span','category-icon',x.icon),text('span','category-label',x.name),text('span','category-count',n?`${n} indexed ${n===1?'record':'records'}`:'No matching indexed records'));
+      b.addEventListener('click',()=>{
+        state.tech=x.name;visibleCount=PAGE_SIZE;
+        $('technologyFilter').value=x.name;
+        render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});
+      });
+      (featured.has(x.name)?primaryGrid:otherGrid).append(b);
+    });
   }
   function renderFocus(){
     const priorities=items.filter(x=>x.known_exploited||x.severity==='critical'||x.severity==='high').sort((a,b)=>Number(!!b.known_exploited)-Number(!!a.known_exploited)||({critical:0,high:1}[a.severity]??2)-({critical:0,high:1}[b.severity]??2)).slice(0,3);
@@ -46,11 +62,34 @@
     priorities.forEach((x,i)=>{const row=text('div','focus',''),detail=text('div','','');detail.append(text('b','',x.title),text('p','',`${x.id}${x.known_exploited?' · CISA KEV listed':''} · ${x.categories[0]}`));row.append(text('span','rank',`0${i+1}`),detail);$('priorityList').append(row);});
   }
   function filterItems(){return items.filter(x=>{const query=[x.id,x.title,x.summary,x.affected,x.remediation,x.action,...x.categories].join(' ').toLowerCase();return(state.tech==='all'||x.categories.includes(state.tech))&&(state.severity==='all'||x.severity===state.severity)&&(!state.q||query.includes(state.q));});}
-  function render(){const selected=filterItems();$('resultCount').textContent=`${selected.length} of ${items.length} indexed advisories`;$('advisoryCards').replaceChildren();$('noResults').hidden=selected.length!==0;selected.forEach(x=>{
-    const card=text('article','advisory-card',''),head=text('div','card-head','');head.append(text('span','cat-badge',x.categories[0]),text('span','severity-badge '+x.severity,severityText(x.severity)));card.append(head);card.append(text('h3','',x.title),text('p','',x.summary));
-    const meta=text('div','card-meta','');meta.append(text('span','',fmtDate(x.published)),text('span','',x.categories.length===1?'1 technology':`${x.categories.length} technologies`));if(x.cvss)meta.append(text('span','',`CVSS ${x.cvss}`));if(x.known_exploited)meta.append(text('span','kev-mark','CISA KEV'));card.append(meta);
-    const foot=text('div','card-footer','');foot.append(text('small','',x.id));const btn=text('button','detail-btn','Review details ↗');btn.type='button';btn.addEventListener('click',()=>showDetail(x));foot.append(btn);card.append(foot);$('advisoryCards').append(card);
-  });}
+  function render(){
+    const selected=filterItems();
+    $('resultCount').textContent=`${selected.length} of ${items.length} indexed advisories`;
+    $('advisoryCards').replaceChildren();
+    $('noResults').hidden=selected.length!==0;
+    selected.slice(0,visibleCount).forEach(x=>{
+      const card=text('article','advisory-card',''),head=text('div','card-head','');
+      head.append(text('span','cat-badge',x.categories[0]),text('span','severity-badge '+x.severity,severityText(x.severity)));
+      card.append(head);card.append(text('h3','',x.title),text('p','',x.summary));
+      const meta=text('div','card-meta','');
+      meta.append(text('span','',fmtDate(x.published)),text('span','',x.categories.length===1?'1 technology':`${x.categories.length} technologies`));
+      if(x.cvss)meta.append(text('span','',`CVSS ${x.cvss}`));
+      if(x.known_exploited)meta.append(text('span','kev-mark','CISA KEV'));
+      card.append(meta);
+      const foot=text('div','card-footer','');
+      foot.append(text('small','',x.id));
+      const btn=text('button','detail-btn','Review details ↗');
+      btn.type='button';btn.addEventListener('click',()=>showDetail(x));
+      foot.append(btn);card.append(foot);$('advisoryCards').append(card);
+    });
+    const visible=Math.min(visibleCount,selected.length);
+    $('resultsPagination').hidden=selected.length===0;
+    $('pageSummary').textContent=`Showing ${visible} of ${selected.length} matching advisories`;
+    $('showMore').hidden=visible>=selected.length;
+    $('showFewer').hidden=visibleCount<=PAGE_SIZE;
+    const remaining=Math.max(0,selected.length-visible);
+    $('showMore').textContent=`Show ${Math.min(PAGE_SIZE,remaining)} more`;
+  }
   function rowSpec(name,value){const el=text('div','spec','');el.append(text('small','',name),text('b','',value||'Not confirmed'));return el;}
   function showDetail(x){
     const root=$('dialogContent');root.replaceChildren();root.append(text('span','cat-badge',x.categories.join(' · ')),text('h2','',x.title));root.append(text('span','severity-badge '+x.severity,severityText(x.severity)));
@@ -61,8 +100,13 @@
     root.append(text('p','disclaimer','CVEHarbor aggregates public third-party advisory data. This record does not establish that your environment is vulnerable. Verify the primary vendor bulletin, affected versions, and patch applicability.'));
     const dlg=$('detailDialog');if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');
   }
-  function clear(){state.q='';state.tech='all';state.severity='all';$('search').value='';$('technologyFilter').value='all';$('severity').value='all';render();}
-  $('search').addEventListener('input',e=>{state.q=e.target.value.trim().toLowerCase();render();});$('technologyFilter').addEventListener('change',e=>{state.tech=e.target.value;render();});$('severity').addEventListener('change',e=>{state.severity=e.target.value;render();});$('clearFilters').addEventListener('click',clear);$('resetEmpty').addEventListener('click',clear);
+  function clear(){state.q='';state.tech='all';state.severity='all';visibleCount=PAGE_SIZE;$('search').value='';$('technologyFilter').value='all';$('severity').value='all';render();}
+  $('search').addEventListener('input',e=>{state.q=e.target.value.trim().toLowerCase();visibleCount=PAGE_SIZE;render();});
+  $('technologyFilter').addEventListener('change',e=>{state.tech=e.target.value;visibleCount=PAGE_SIZE;render();});
+  $('severity').addEventListener('change',e=>{state.severity=e.target.value;visibleCount=PAGE_SIZE;render();});
+  $('clearFilters').addEventListener('click',clear);$('resetEmpty').addEventListener('click',clear);
+  $('showMore').addEventListener('click',()=>{visibleCount+=PAGE_SIZE;render();});
+  $('showFewer').addEventListener('click',()=>{visibleCount=PAGE_SIZE;render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});});
   $('closeDialog').addEventListener('click',()=>$('detailDialog').close());$('detailDialog').addEventListener('click',e=>{if(e.target===$('detailDialog'))$('detailDialog').close();});
   renderBars();renderFocus();renderCategories();render();
 })();
