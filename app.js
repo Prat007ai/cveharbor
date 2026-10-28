@@ -2,7 +2,12 @@
   'use strict';
   const state = { q: '', severity: 'all', tech: 'all' };
   const PAGE_SIZE = 6;
+  const TABLE_PAGE_SIZE = 25;
+  const isCVE = x => /^CVE-\\d{4}-\\d+$/i.test(x.id);
   let visibleCount = PAGE_SIZE;
+  let tablePage = 0;
+  let listMode = 'cards';
+  let metricScope = 'all';
   const featured = new Set(["Windows Server OS",".NET / ASP.NET",".NET Core","WordPress / Plugins","Linux","PHP","Python / PyPI","Azure","Microsoft 365","SQL Server","MySQL / MariaDB","Fortinet","VMware","HyperV","Docker / Kubernetes"]);
   const info = window.CVEHARBOR_DATA || {categories:[],advisories:[],mode:'awaiting_first_sync'};
   const items = info.advisories || [];
@@ -48,7 +53,7 @@
       b.type='button';b.className='category-item';
       b.append(text('span','category-icon',x.icon),text('span','category-label',x.name),text('span','category-count',n?`${n} indexed ${n===1?'record':'records'}`:'No matching indexed records'));
       b.addEventListener('click',()=>{
-        state.tech=x.name;visibleCount=PAGE_SIZE;
+        state.tech=x.name;visibleCount=PAGE_SIZE;tablePage=0;metricScope='all';listMode='list';
         $('technologyFilter').value=x.name;
         render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});
       });
@@ -61,13 +66,61 @@
     if(!priorities.length){$('priorityList').append(text('p','','No priority items indexed. This is not a security clearance.'));return;}
     priorities.forEach((x,i)=>{const row=text('div','focus',''),detail=text('div','','');detail.append(text('b','',x.title),text('p','',`${x.id}${x.known_exploited?' · CISA KEV listed':''} · ${x.categories[0]}`));row.append(text('span','rank',`0${i+1}`),detail);$('priorityList').append(row);});
   }
-  function filterItems(){return items.filter(x=>{const query=[x.id,x.title,x.summary,x.affected,x.remediation,x.action,...x.categories].join(' ').toLowerCase();return(state.tech==='all'||x.categories.includes(state.tech))&&(state.severity==='all'||x.severity===state.severity)&&(!state.q||query.includes(state.q));});}
+  function filterItems(){
+    return items.filter(x=>{
+      const query=[x.id,x.title,x.summary,x.affected,x.remediation,x.action,...x.categories].join(' ').toLowerCase();
+      const metricMatches=metricScope==='all'||(isCVE(x)&&(metricScope==='cves'||x.severity===metricScope));
+      return metricMatches&&(state.tech==='all'||x.categories.includes(state.tech))&&(state.severity==='all'||x.severity===state.severity)&&(!state.q||query.includes(state.q));
+    });
+  }
   function render(){
     const selected=filterItems();
     $('resultCount').textContent=`${selected.length} of ${items.length} indexed advisories`;
     $('advisoryCards').replaceChildren();
+    $('advisoryTableBody').replaceChildren();
+    const full=listMode==='list';
+    $('advisoryCards').hidden=full;
+    $('advisoryTableWrap').hidden=!full;
+    $('resultsPagination').hidden=full;
+    $('tablePagination').hidden=!full || selected.length===0;
+    $('cardViewBtn').classList.toggle('is-active',!full);
+    $('listViewBtn').classList.toggle('is-active',full);
+    $('cardViewBtn').setAttribute('aria-pressed',String(!full));
+    $('listViewBtn').setAttribute('aria-pressed',String(full));
+    const descriptions={all:'Latest indexed advisories',cves:'All indexed CVEs',critical:'Critical CVEs',high:'High severity CVEs'};
+    $('listContext').textContent=metricScope==='all'&&state.tech!=='all' ? state.tech+' advisories' : (descriptions[metricScope]||descriptions.all);
+    const pages=Math.max(1,Math.ceil(selected.length/TABLE_PAGE_SIZE));
+    tablePage=Math.min(tablePage,pages-1);
+    const pageStart=tablePage*TABLE_PAGE_SIZE;
+    if(full){
+      selected.slice(pageStart,pageStart+TABLE_PAGE_SIZE).forEach(x=>{
+        const row=document.createElement('tr');
+        const cell=(value,className='')=>{
+          const el=text('td',className,value);
+          row.append(el);return el;
+        };
+        cell(x.id,'table-cve');
+        const sev=cell(severityText(x.severity),'table-severity');
+        sev.dataset.level=x.severity;
+        cell(x.categories.join(' · '),'table-tech');
+        cell(x.title||x.summary||'See source advisory','table-description');
+        cell(fmtDate(x.published),'table-date');
+        cell(x.known_exploited?'CISA KEV':'Not confirmed',x.known_exploited?'table-exploited':'table-unconfirmed');
+        const action=cell('','table-action');
+        const link=text('button','table-details','View ↗');
+        link.type='button';
+        link.setAttribute('aria-label','View details for '+x.id);
+        link.addEventListener('click',()=>showDetail(x));
+        action.append(link);
+        $('advisoryTableBody').append(row);
+      });
+      $('tablePageSummary').textContent='Showing '+(selected.length?pageStart+1:0)+'–'+Math.min(pageStart+TABLE_PAGE_SIZE,selected.length)+' of '+selected.length+' advisories';
+      $('tablePageNumber').textContent='Page '+(tablePage+1)+' of '+pages;
+      $('pagePrevious').disabled=tablePage===0;
+      $('pageNext').disabled=tablePage>=pages-1;
+    }
     $('noResults').hidden=selected.length!==0;
-    selected.slice(0,visibleCount).forEach(x=>{
+    if(!full) selected.slice(0,visibleCount).forEach(x=>{
       const card=text('article','advisory-card',''),head=text('div','card-head','');
       head.append(text('span','cat-badge',x.categories[0]),text('span','severity-badge '+x.severity,severityText(x.severity)));
       card.append(head);card.append(text('h3','',x.title),text('p','',x.summary));
@@ -83,7 +136,7 @@
       foot.append(btn);card.append(foot);$('advisoryCards').append(card);
     });
     const visible=Math.min(visibleCount,selected.length);
-    $('resultsPagination').hidden=selected.length===0;
+    $('resultsPagination').hidden=full||selected.length===0;
     $('pageSummary').textContent=`Showing ${visible} of ${selected.length} matching advisories`;
     $('showMore').hidden=visible>=selected.length;
     $('showFewer').hidden=visibleCount<=PAGE_SIZE;
@@ -100,13 +153,36 @@
     root.append(text('p','disclaimer','CVEHarbor aggregates public third-party advisory data. This record does not establish that your environment is vulnerable. Verify the primary vendor bulletin, affected versions, and patch applicability.'));
     const dlg=$('detailDialog');if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');
   }
-  function clear(){state.q='';state.tech='all';state.severity='all';visibleCount=PAGE_SIZE;$('search').value='';$('technologyFilter').value='all';$('severity').value='all';render();}
-  $('search').addEventListener('input',e=>{state.q=e.target.value.trim().toLowerCase();visibleCount=PAGE_SIZE;render();});
-  $('technologyFilter').addEventListener('change',e=>{state.tech=e.target.value;visibleCount=PAGE_SIZE;render();});
-  $('severity').addEventListener('change',e=>{state.severity=e.target.value;visibleCount=PAGE_SIZE;render();});
+  function resetPaging(){visibleCount=PAGE_SIZE;tablePage=0;}
+  function clear(){
+    state.q='';state.tech='all';state.severity='all';metricScope='all';resetPaging();
+    $('search').value='';$('technologyFilter').value='all';$('severity').value='all';render();
+  }
+  $('search').addEventListener('input',e=>{state.q=e.target.value.trim().toLowerCase();resetPaging();render();});
+  $('technologyFilter').addEventListener('change',e=>{state.tech=e.target.value;metricScope='all';resetPaging();render();});
+  $('severity').addEventListener('change',e=>{state.severity=e.target.value;metricScope='all';resetPaging();render();});
   $('clearFilters').addEventListener('click',clear);$('resetEmpty').addEventListener('click',clear);
   $('showMore').addEventListener('click',()=>{visibleCount+=PAGE_SIZE;render();});
   $('showFewer').addEventListener('click',()=>{visibleCount=PAGE_SIZE;render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});});
+  $('cardViewBtn').addEventListener('click',()=>{listMode='cards';resetPaging();render();});
+  $('listViewBtn').addEventListener('click',()=>{listMode='list';resetPaging();render();});
+  $('pagePrevious').addEventListener('click',()=>{if(tablePage>0){tablePage--;render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});}});
+  $('pageNext').addEventListener('click',()=>{if((tablePage+1)*TABLE_PAGE_SIZE<filterItems().length){tablePage++;render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});}});
+  document.querySelectorAll('[data-metric]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const scope=btn.dataset.metric;
+      if(scope==='technologies'){
+        document.querySelector('.other-tech').open=true;
+        $('technology').scrollIntoView({behavior:'smooth',block:'start'});
+        return;
+      }
+      state.q='';state.tech='all';state.severity='all';
+      $('search').value='';$('technologyFilter').value='all';$('severity').value='all';
+      metricScope=scope==='all'?'cves':scope;
+      listMode='list';resetPaging();render();
+      $('advisories').scrollIntoView({behavior:'smooth',block:'start'});
+    });
+  });
   $('closeDialog').addEventListener('click',()=>$('detailDialog').close());$('detailDialog').addEventListener('click',e=>{if(e.target===$('detailDialog'))$('detailDialog').close();});
   renderBars();renderFocus();renderCategories();render();
 })();
