@@ -17,8 +17,9 @@ class FeedTests(unittest.TestCase):
         self.assertIn('Linux',[c['name'] for c in u.CATEGORIES])
         self.assertNotIn('Windows / Linux',[c['name'] for c in u.CATEGORIES])
     def test_windows_only(self):
-        labels = u.classify(product="Microsoft Windows Server 2025", text="Windows operating system security update")
-        self.assertIn('Windows',labels)
+        labels = u.classify(product="Microsoft Windows Server 2025", text="Windows Server operating system security update")
+        self.assertIn('Windows Server OS',labels)
+        self.assertNotIn('Windows',labels)
         self.assertNotIn('Linux',labels)
     def test_linux_only(self):
         labels = u.classify(product="Ubuntu Linux kernel", text="Ubuntu kernel privilege escalation")
@@ -26,7 +27,7 @@ class FeedTests(unittest.TestCase):
         self.assertNotIn('Windows',labels)
     def test_both_operating_systems(self):
         labels = u.classify(product="Windows Server and Ubuntu Linux", text="Shared library affects both systems")
-        self.assertIn('Windows',labels)
+        self.assertIn('Windows Server OS',labels)
         self.assertIn('Linux',labels)
     def test_legacy_category_migration(self):
         migrated = u.migrate_legacy_categories({
