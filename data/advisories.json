@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-28",
   "mode": "live",
   "coverage_limited": false,
-  "candidate_records": 1484,
+  "candidate_records": 1528,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -780,8 +780,9 @@
       "title": "Malicious code in csvflow-schema (npm)",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        ".NET / ASP.NET",
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -817,8 +818,8 @@
       "title": "Malicious code in @webapp-shared/login-vmok (npm)",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -938,6 +939,7 @@
       "title": "The Checkout Files Upload for WooCommerce WordPress plugin before 2.4.0 does not validate uploaded file types when its accepted file types setting is left empty, which it docu",
       "severity": "bulletin",
       "categories": [
+        "PHP",
         "WordPress / Plugins"
       ],
       "published": "2026-10-28",
@@ -1162,6 +1164,7 @@
       "title": "The Royal Addons for Elementor WordPress plugin before 1.7.1070 does not sanitise and escape one of its map widget's size settings before concatenating it into an HTML attribu",
       "severity": "bulletin",
       "categories": [
+        "JavaScript / TypeScript",
         "WordPress / Plugins"
       ],
       "published": "2026-10-28",
@@ -1610,6 +1613,7 @@
       "title": "The MP3 Audio Player WordPress plugin before 5.16 does not escape one of its audio player shortcode attributes before outputting it into an HTML attribute, allowing users with",
       "severity": "bulletin",
       "categories": [
+        "JavaScript / TypeScript",
         "WordPress / Plugins"
       ],
       "published": "2026-10-28",
@@ -1722,6 +1726,7 @@
       "title": "The GeoDirectory WordPress plugin before 2.8.196 does not properly escape a post badge shortcode attribute for a JavaScript context before placing it in an inline event handle",
       "severity": "bulletin",
       "categories": [
+        "JavaScript / TypeScript",
         "WordPress / Plugins"
       ],
       "published": "2026-10-28",
@@ -1942,32 +1947,1208 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-108142",
-      "title": "Veeam Backup & Replication CDP Coordinator authorization bypass",
-      "severity": "critical",
-      "cvss": "9.1",
+      "id": "CVE-2026-100175",
+      "title": "The Postie plugin for WordPress is vulnerable to Stored Cross-Site Scripting via Email Body URL Autolink in all versions up to, and including, 1.9.87 due to insufficient input",
+      "severity": "medium",
       "categories": [
-        "Veeam Backup & Replication"
+        "WordPress / Plugins"
       ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "An unauthenticated attacker can bypass authorization in the CDP Coordinator Service on affected Veeam Backup & Replication version 13 deployments.",
-      "affected": "Veeam Backup & Replication 13.1.1.18 and earlier 13.1 builds, or 13.0.2.29 and earlier 13.0 builds. Vendor states 12.x is not affected.",
-      "remediation": "Install Veeam Backup & Replication 13.1.2.57 or 13.0.3.63, respectively, or a newer fixed build. Validate backup infrastructure exposure.",
-      "exploitation": "No confirmed exploitation indicated in the cited vendor bulletin.",
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Postie plugin for WordPress is vulnerable to Stored Cross-Site Scripting via Email Body URL Autolink in all versions up to, and including, 1.9.87 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. This is possible because the ?postie=get-mail endpoint is reachable by unauthenticated users with no capability check, and the email processing path removes WordPress's kses output filters before saving raw markup, allowing the unescaped href attribute value to be stored as post content.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
       "sources": [
         {
-          "label": "Veeam Security KB4948",
-          "url": "https://www.veeam.com/kb4948"
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-100175"
         }
       ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-27",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation."
+      "cvss": "5.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:42.883",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-103370",
+      "title": "The Awesome Support – WordPress HelpDesk & Support Plugin plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'wpas_files' parameter in all versions up t",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Awesome Support – WordPress HelpDesk & Support Plugin plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'wpas_files' parameter in all versions up to, and including, 6.4.1 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with custom-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. This vulnerability is only exploitable when the \"Enable drag-n-drop uploader for ticket form\" setting is enabled, as it is disabled by default.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-103370"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:43.070",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-103996",
+      "title": "The If-So Dynamic Content – Elementor & All Page Builders Personalization plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'url' parameter in all vers",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The If-So Dynamic Content – Elementor & All Page Builders Personalization plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'url' parameter in all versions up to, and including, 1.10.2 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. The injected script executes specifically in the administrator's browser session, as the vulnerable branch only renders when an administrator previews or opens the post containing the crafted shortcode.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-103996"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:43.223",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-104729",
+      "title": "The Avada (Fusion) Builder plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'tab_index, empty_notice' parameter in all versions up to, and including, ",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Avada (Fusion) Builder plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'tab_index, empty_notice' parameter in all versions up to, and including, 3.16.2 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. wp_kses_post does not strip the payload on save because the dangerous characters reside within shortcode attribute text between square brackets, which kses treats as plain text rather than HTML markup.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-104729"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:43.370",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-104740",
+      "title": "The If-So Dynamic Content – Elementor & All Page Builders Personalization plugin for WordPress is vulnerable to Stored Cross-Site Scripting via 'conversion' Shortcode Attribut",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The If-So Dynamic Content – Elementor & All Page Builders Personalization plugin for WordPress is vulnerable to Stored Cross-Site Scripting via 'conversion' Shortcode Attribute in all versions up to, and including, 1.10.2 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-104740"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:43.513",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-104743",
+      "title": "The Tainacan plugin for WordPress is vulnerable to Directory Traversal in all versions up to, and including, 1.3.0 via the 'tmp_file' parameter parameter",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Tainacan plugin for WordPress is vulnerable to Directory Traversal in all versions up to, and including, 1.3.0 via the 'tmp_file' parameter parameter. This makes it possible for authenticated attackers, with editor-level access and above, to read the contents of arbitrary files on the server, which can contain sensitive information. The poisoned importer path is persisted to the database and later triggered via a separate GET request to the /source_info endpoint, which passes the attacker-controlled path to fopen() and fgetcsv() and returns parsed file contents in the REST response.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-104743"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:43.653",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-107710",
+      "title": "The Hustle – Email Marketing, Lead Generation, Optins, Popups plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'content[title]' parameter in all versi",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Hustle – Email Marketing, Lead Generation, Optins, Popups plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'content[title]' parameter in all versions up to, and including, 7.8.14.3 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with custom-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Exploitation requires that an administrator has explicitly granted the 'Create and Update Modules' (hustle_create / hustle_edit_module) capability to the attacker's role via the plugin's own Settings → Permissions feature; this delegation is not enabled by default.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107710"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:43.810",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-108366",
+      "title": "The easy.jobs – AI powered Job Listing, Job Board, Career Page, Recruitment & Hiring Solution plugin for WordPress is vulnerable to Authenticated (Contributor+) Stored Cross-S",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The easy.jobs – AI powered Job Listing, Job Board, Career Page, Recruitment & Hiring Solution plugin for WordPress is vulnerable to Authenticated (Contributor+) Stored Cross-Site Scripting via the 'icon' attribute of the easyjobs/job-list Gutenberg block in all versions up to, and including, 2.8.2 due to insufficient input sanitization and output escaping on user supplied attributes. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108366"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:43.963",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109218",
+      "title": "The Contact Manager plugin for WordPress is vulnerable to Arbitrary File Upload in all versions up to, and including, 9.1.2 via the add_message function",
+      "severity": "critical",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Contact Manager plugin for WordPress is vulnerable to Arbitrary File Upload in all versions up to, and including, 9.1.2 via the add_message function. This is due to an incomplete extension blacklist that fails to detect dangerous extensions when a trailing dot causes the extension-derivation routine to return an empty string, which sanitize_file_name() then silently removes before the file is written to disk. This makes it possible for unauthenticated attackers to upload files that may be executable, which makes remote code execution possible. Successful code execution additionally requires the server to use Apache with libapache2-mod-php (which maps .phar to PHP by default) and the attacker to retrieve the uploaded file within the brief window before it is removed by unlink() at end of request.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109218"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:44.120",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109370",
+      "title": "The Document Embedder – let visitors read files without downloading plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'content (post_content ",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Document Embedder – let visitors read files without downloading plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'content (post_content containing block JSON documentSource.doc)' parameter in all versions up to, and including, 2.4.0 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. The payload is triggered specifically when the victim clicks the embedded document's Download button, which causes the de_track_download AJAX fallback path to programmatically create an anchor with the attacker-controlled href and call .click() — a condition reached because supplying docId=0 causes can_read_document() to return false, bypassing the normal download flow.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109370"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:44.270",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109381",
+      "title": "The Mage Eventpress plugin for WordPress is vulnerable to privilege escalation in versions up to, and including, 5.7.8 This is due to the mep_grant_shop_manager_access() funct",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Mage Eventpress plugin for WordPress is vulnerable to privilege escalation in versions up to, and including, 5.7.8 This is due to the mep_grant_shop_manager_access() function hooking user_has_cap and unconditionally granting manage_options whenever an attacker-controllable request marker matches — most notably $_GET['page'] starting with 'mep_' or 'mpwem_', which is never validated against an actually registered EventPress screen. This makes it possible for authenticated attackers, with Shop Manager-level access and above, to elevate their privileges to Administrator by appending ?page=mep_x to core admin URLs (options-general.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109381"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:44.423",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109384",
+      "title": "The The Innovative Form Builder – IvyForms plugin for WordPress is vulnerable to Arbitrary File Upload in all versions up to, and including, 1.5.1 via the filterFiletypeAndExt",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The The Innovative Form Builder – IvyForms plugin for WordPress is vulnerable to Arbitrary File Upload in all versions up to, and including, 1.5.1 via the filterFiletypeAndExt function. This is due to insufficient file type validation due to the absence of a dangerous-extension denylist in the allowed-extensions sanitizer and deliberate override of WordPress's native MIME and extension defences via a registered wp_check_filetype_and_ext filter. This makes it possible for authenticated attackers, with custom-level access and above, to upload files that may be executable, which makes remote code execution possible. An authenticated attacker with the custom add_edit_forms capability must first configure a File Upload field with a dangerous extension (e.g., php) in the allowed-extensions list; once that form is published, any unauthenticated visitor can trigger the actual file upload via the publicly accessible /wp-json/ivyforms/v1/form/submission/ REST route.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109384"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:44.570",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109385",
+      "title": "The UiChemy – Convert Figma, Prompts and AI Builds to Elementor, Gutenberg and Bricks plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'actions[save_b",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The UiChemy – Convert Figma, Prompts and AI Builds to Elementor, Gutenberg and Bricks plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'actions[save_builder][data][elements][...][settings][slot_{N}_link][url]' parameter in all versions up to, and including, 5.3.0 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. The injected javascript: payload fires on click rather than on page load, making exploitation contingent on a privileged user such as an Editor or Administrator clicking the attacker-crafted link while reviewing or previewing the Contributor's post.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109385"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:44.720",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109590",
+      "title": "The Tour Booking Manager plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'width', 'height' and 'zoom' shortcode attributes of the [ttbm-hotel-map] sh",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Tour Booking Manager plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'width', 'height' and 'zoom' shortcode attributes of the [ttbm-hotel-map] shortcode in versions up to, and including, 2.3.6 This is due to insufficient input sanitization and output escaping on user supplied attributes in the ttbm_hotel_map_shortcode() function, which concatenates the raw attribute values into double-quoted HTML attributes of an <iframe> tag. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109590"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:44.867",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109972",
+      "title": "The s2Member – Excellent for All Kinds of Memberships, Content Restriction Paywalls & Member Access Subscriptions plugin for WordPress is vulnerable to Stored Cross-Site Scrip",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The s2Member – Excellent for All Kinds of Memberships, Content Restriction Paywalls & Member Access Subscriptions plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'date_format' parameter in all versions up to, and including, <= 261011 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. The payload bypasses wp_kses_post() on save because it contains no literal angle brackets — only backslash-escaped sequences that PHP's date() materializes into HTML tag characters at render time after WordPress's shortcode_parse_atts() applies stripcslashes() to the attribute value.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109972"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:45.017",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109975",
+      "title": "The Cozy Blocks – Website Builder for WordPress Block Editor | Gutenberg Blocks, Patterns & Templates plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Cozy Blocks – Website Builder for WordPress Block Editor | Gutenberg Blocks, Patterns & Templates plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'content (block attribute icon.view / icon.layout / icon.gap)' parameter in all versions up to, and including, 2.2.27 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Although wp_kses_post is applied on save, it does not neutralize a quote-only attribute-breakout payload containing no '<' character, leaving the block comment and its decoded JSON attributes intact and exploitable at render time.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109975"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:45.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109978",
+      "title": "The Cozy Blocks – Website Builder for WordPress Block Editor | Gutenberg Blocks, Patterns & Templates plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Cozy Blocks – Website Builder for WordPress Block Editor | Gutenberg Blocks, Patterns & Templates plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'productRating.iconColor' parameter in all versions up to, and including, 2.2.27 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. The vulnerable code path is only reached when the productRating option is enabled and the associated WooCommerce product has a non-zero rating.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109978"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:45.313",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109979",
+      "title": "The Related Posts for WordPress plugin for WordPress is vulnerable to Sensitive Information Exposure in versions up to, and including, 3.0.0 via the 'rp4wp_create_link' parame",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Related Posts for WordPress plugin for WordPress is vulnerable to Sensitive Information Exposure in versions up to, and including, 3.0.0 via the 'rp4wp_create_link' parameter of the hidden 'rp4wp_link_related' admin page. The handle_create_link() handler verifies the nonce and that the current user can edit the parent post, but never checks that the attacker-supplied child post ID is one the user is allowed to read; LinkRepository::insert() stores the arbitrary child ID without validation, and ManageLinks::render() later calls LinkRepository::get_children() in its no-extra-args fast path, which falls through to array_map('get_post', $child_ids) — bypassing read_private_posts/read_post capability checks — and then echoes esc_html($child->post_title) in the parent's editor meta box. This makes it possible for authenticated attackers, with Contributor-level access and above, to read the titles of arbitrary non-public posts (drafts, pending, private, future, trashed) authored by higher-privileged users by linking those post IDs to a draft they own and then reading the resulting meta box.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109979"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:45.453",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109980",
+      "title": "The Related Posts for WordPress plugin for WordPress is vulnerable to Sensitive Information Exposure in all versions up to, and including, 3.0.0 via the 'rp4wp_view' parameter",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Related Posts for WordPress plugin for WordPress is vulnerable to Sensitive Information Exposure in all versions up to, and including, 3.0.0 via the 'rp4wp_view' parameter. This makes it possible for authenticated attackers, with contributor-level access and above, to extract the titles and publication dates of all private posts site-wide, normally restricted to Editor-level users and above. The page's existing authorization check only verifies edit_posts and edit_post on a parent post the attacker owns, both of which any Contributor satisfies, leaving no effective gate against reading other authors' private posts.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109980"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:45.603",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109988",
+      "title": "The Product Addons for Woocommerce – Product Options with Custom Fields plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'fields[section][fields][row]",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Product Addons for Woocommerce – Product Options with Custom Fields plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'fields[section][fields][row][col][type]' parameter in all versions up to, and including, 3.1.8 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with shop manager-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109988"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:45.747",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-110020",
+      "title": "The Rich Showcase for Google Reviews plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 7.1.6 This is due to the plugin not prope",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Rich Showcase for Google Reviews plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 7.1.6 This is due to the plugin not properly verifying that a user is authorized to perform an action. This makes it possible for authenticated attackers, with contributor-level access and above, to retrieve the plugin's 127-character site-wide grw_auth_code authentication secret and use it to impersonate the WordPress site to the RichPlugins backend service at app.richplugins.com.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110020"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:45.897",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-110071",
+      "title": "The Mang Board plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'align' parameter in all versions up to, and including, 2.4.5 due to insufficient inpu",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Mang Board plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'align' parameter in all versions up to, and including, 2.4.5 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Because the payload contains no angle brackets, wp_kses_post leaves the shortcode intact on save, allowing the malicious attribute value to survive post submission and fire in any viewer's browser — including an administrator previewing a pending post.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110071"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:46.057",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-110185",
+      "title": "The Bit Flows: AI Agent Automation & Integrations for Forms, CRM, eCommerce, Google Sheets, and More plugin for WordPress is vulnerable to Local File Inclusion in all versions",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Bit Flows: AI Agent Automation & Integrations for Forms, CRM, eCommerce, Google Sheets, and More plugin for WordPress is vulnerable to Local File Inclusion in all versions up to, and including, 1.31.0 via the 'image (any body field referenced by the ImageHelper node's mix tag)' parameter parameter. This makes it possible for unauthenticated attackers to include and execute arbitrary .php files on the server, allowing the execution of any PHP code in those files. This can be used to bypass access controls, obtain sensitive data, or achieve code execution in cases where .php file types can be uploaded and included. Exploitation requires that an administrator has built a webhook-triggered flow that pipes a webhook body field into an ImageHelper imageToBase64 node, and that the webhook remains in its default configuration (no bearer secret enforced, no IP allowlist set) — a legitimate and documented use case.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110185"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:46.203",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-110662",
+      "title": "The MxChat – AI Chatbot & Content Generation for WordPress plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'feedback' parameter in all vers",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The MxChat – AI Chatbot & Content Generation for WordPress plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'feedback' parameter in all versions up to, and including, 3.2.25 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. The stored payload is written by any unauthenticated visitor via a single POST to admin-ajax.php and detonates automatically when any administrator next loads the Transcripts page.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110662"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:46.357",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-111068",
+      "title": "The DesignSetGo plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'tagName' parameter in all versions up to, and including, 2.11.0 due to insufficient ",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The DesignSetGo plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'tagName' parameter in all versions up to, and including, 2.11.0 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Successful exploitation requires an administrator to run the plugin's block-conversion migration (\"Scan & Convert Blocks\" during deactivation), which triggers the vulnerable build_group_block() function and promotes the dormant payload from a block delimiter comment into live post_content HTML. Successful exploitation additionally requires an action by an administrator — the attacker cannot trigger the vulnerability on their own.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111068"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:46.517",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-111111",
+      "title": "The Prime Slider – Hero Slider, Carousel, WooCommerce & Post Slider Elementor Addons plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'comment' parame",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Prime Slider – Hero Slider, Carousel, WooCommerce & Post Slider Elementor Addons plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'comment' parameter in all versions up to, and including, 4.7.2 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. This is possible because core wp_filter_kses leaves the submitted markup inert, but the plugin's subsequent regex fallback consumes closing quotes of allowed attribute values containing 'bdt-', promoting previously inert bytes — such as event handlers like onfocus — into real HTML attributes that are then written to the database and rendered without further sanitization.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111111"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:46.680",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-111120",
+      "title": "The VikRentCar Car Rental Management System plugin for WordPress is vulnerable to Cross-Site Request Forgery in all versions up to, and including, 1.4.8",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The VikRentCar Car Rental Management System plugin for WordPress is vulnerable to Cross-Site Request Forgery in all versions up to, and including, 1.4.8. This is due to missing or incorrect nonce validation on the condtext_update_tmpl function. This makes it possible for unauthenticated attackers to write arbitrary PHP code to the plugin's executable template files such as site/helpers/email_tmpl.php, which are later include()d by loadEmailTemplate() and loadPdfTemplate(), achieving remote code execution on the server via a forged request granted they can trick a site administrator into performing an action such as clicking on a link. The injected PHP payload bypasses sanitization because the plugin's own __PHP_OPEN__/__PHP_CLOSE__ placeholder expansion and cleanPHPSourceCode() logic explicitly reverse both sanitize_text_field filtering and saveHTML() HTML-encoding, restoring a literal <?php...?> payload to live PHP before it is written to disk. Successful exploitation additionally requires an action by an administrator — the attacker cannot trigger the vulnerability on their own.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111120"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:46.837",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-111213",
+      "title": "The Travelly – Tour & Travel Booking Manager for WooCommerce plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 2.3.6 This is due",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Travelly – Tour & Travel Booking Manager for WooCommerce plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 2.3.6 This is due to the plugin not properly verifying that a user is authorized to perform an action. This makes it possible for authenticated attackers, with contributor-level access and above, to duplicate arbitrary posts — including private, draft, and pending posts authored by Administrators and Editors — into drafts they own, thereby exposing the original post's content, excerpt, title, taxonomies, and metadata. A Contributor can harvest a valid nonce from the Duplicate row-action on their own posts list and reuse it against any victim post ID, since the nonce action is the static string 'TTBM_Admin.php' and is not bound to any specific post.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111213"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:46.990",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-111372",
+      "title": "The AI ChatBot for WooCommerce – WoowBot plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 5.0.0",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The AI ChatBot for WooCommerce – WoowBot plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 5.0.0. This is due to the plugin not properly verifying that a user is authorized to perform an action. This makes it possible for authenticated attackers, with subscriber-level access and above, to repeatedly trigger RAG document sync operations that issue paid embedding API calls to OpenAI, Gemini, OpenRouter, or xAI charged to the site administrator's stored API key, draining their AI API credits and causing financial loss. The wp_chatbot nonce required to reach this endpoint is emitted to every authenticated frontend visitor via wp_localize_script, making it trivially obtainable by any subscriber-level account.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111372"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:47.137",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116609",
+      "title": "The WP Visitor Statistics (Real Time Traffic) plugin for WordPress is vulnerable to SQL Injection via the 'from' (and sibling 'to'/'first'/'second') shortcode attribute of the",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The WP Visitor Statistics (Real Time Traffic) plugin for WordPress is vulnerable to SQL Injection via the 'from' (and sibling 'to'/'first'/'second') shortcode attribute of the [wsm_showTrafficStatsList] shortcode in versions up to, and including, 8.8 This is due to insufficient escaping on the user-supplied attribute and lack of sufficient preparation on the existing SQL query: `shortcode_atts()` returns attacker-supplied shortcode attributes verbatim (WP core performs no sanitization), only `$atts['id']` is re-sanitized afterward, and the raw value is then concatenated into a double-quoted SQL string literal inside `fnGetHourlyReportByDateNameTimeZone()` (`includes/wsm_db.php:1449`) and executed via `$wpdb->get_results()`. This makes it possible for authenticated attackers, with Contributor-level access and above, to append additional SQL queries into already existing queries that can be used to extract sensitive information from the database.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116609"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:47.287",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116610",
+      "title": "The Clean Login plugin for WordPress is vulnerable to Missing Authorization in versions up to, and including, 1.20.1 due to a missing capability check on the CleanLogin_Shortc",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Clean Login plugin for WordPress is vulnerable to Missing Authorization in versions up to, and including, 1.20.1 due to a missing capability check on the CleanLogin_Shortcode::get_pages_with_shortcodes() function hooked to the save_post action. This makes it possible for authenticated attackers, with Contributor-level access and above, to overwrite the plugin's cl_login_url/cl_login_id/cl_register_url/cl_register_id/cl_restore_url/cl_restore_id/cl_edit_url/cl_edit_id/cl_change_password_url/cl_change_password_id options with the ID and permalink of a post they themselves authored — simply by embedding the plugin's shortcodes in their own post content.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116610"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:47.450",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116749",
+      "title": "The VikRentCar Car Rental Management System plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'className' parameter in all versions up to, and includin",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The VikRentCar Car Rental Management System plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'className' parameter in all versions up to, and including, 1.4.10 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. wp_kses_post() applied at save time does not neutralize the payload because the injection lands in an HTML-attribute context where only a raw double-quote is needed to break out, and block-comment JSON encoding of that quote is decoded back to a literal character by do_blocks() at render time.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116749"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:47.610",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116750",
+      "title": "The VikRentCar Car Rental Management System plugin for WordPress is vulnerable to blind SQL Injection via the 'catid' parameter in all versions up to, and including, 1.4.10 du",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The VikRentCar Car Rental Management System plugin for WordPress is vulnerable to blind SQL Injection via the 'catid' parameter in all versions up to, and including, 1.4.10 due to insufficient escaping on the user supplied parameter and lack of sufficient preparation on the existing SQL query. This makes it possible for authenticated attackers, with contributor-level access and above, to append additional SQL queries into already existing queries that can be used to extract sensitive information from the database. A Contributor-level user can store a malicious block via the REST API in a pending post and trigger server-side rendering by previewing that post, bypassing wp_magic_quotes since the attribute is sourced from post_content via parse_blocks rather than a superglobal.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116750"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:47.753",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116761",
+      "title": "The CMB2 plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'cmb43ex1_grp[0][txt] (wysiwyg field inside group — field id controlled by integrator config",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The CMB2 plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'cmb43ex1_grp[0][txt] (wysiwyg field inside group — field id controlled by integrator config)' parameter in all versions up to, and including, 2.13.4 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. This is only exploitable when a site integrator renders the plugin's documented front-end form helper with a wysiwyg field inside a repeatable group on a publicly accessible page.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116761"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:47.893",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118164",
+      "title": "The If-So Dynamic Content – Elementor & All Page Builders Personalization plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'repeater[*][version_uid] (",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The If-So Dynamic Content – Elementor & All Page Builders Personalization plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'repeater[*][version_uid] (and many sibling fields: freeze-mode, cookie-input, ip-input, compare, utm-value, page-url-compare, group-name, custom, …)' parameter in all versions up to, and including, 1.10.2 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118164"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:48.050",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118169",
+      "title": "The Hustle – Email Marketing, Lead Generation, Optins, Popups plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'content[cta_label]' parameter in all v",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Hustle – Email Marketing, Lead Generation, Optins, Popups plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'content[cta_label]' parameter in all versions up to, and including, 7.8.14.3 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with custom-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. By default only Administrators hold the hustle_edit_module capability, but the plugin's built-in Permissions screen allows administrators to delegate this capability to lower roles including Subscriber, enabling Subscriber-level exploitation on sites where that delegation has been configured.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118169"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:48.213",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-2839",
+      "title": "The Advanced Custom Fields: Extended plugin for WordPress is vulnerable to unauthorized access of data and triggering of server-side actions in all versions up to, and includi",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Advanced Custom Fields: Extended plugin for WordPress is vulnerable to unauthorized access of data and triggering of server-side actions in all versions up to, and including, 0.9.2.7. This is due to multiple AJAX handlers registered for unauthenticated users (`wp_ajax_nopriv_*`) that fail to implement proper `current_user_can()` authorization checks. While these handlers use ACF's `acf_verify_ajax()` function to validate cryptographic nonces, the `acf_nonce` values are generated for guest users and publicly exposed in the page source of any frontend page utilizing an ACF form. This makes it possible for unauthenticated attackers to extract the guest nonce and bypass WordPress visibility permissions, leading to the unauthorized disclosure of post titles and internal Flexible Content layout structures. The vulnerability was partially patched in version 0.9.2.4.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-2839"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:48.367",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-76005",
+      "title": "The WP Inventory Manager plugin for WordPress is vulnerable to time-based SQL Injection via 'sort_order' Shortcode Attribute in all versions up to, and including, 2.5.5 due to",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The WP Inventory Manager plugin for WordPress is vulnerable to time-based SQL Injection via 'sort_order' Shortcode Attribute in all versions up to, and including, 2.5.5 due to insufficient escaping on the user supplied parameter and lack of sufficient preparation on the existing SQL query. This makes it possible for authenticated attackers, with contributor-level access and above, to append additional SQL queries into already existing queries that can be used to extract sensitive information from the database. This can be exploited by a Contributor via the [wpinventory_categories] shortcode embedded in a draft post rendered through preview, without requiring the post to be published.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-76005"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:48.707",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-76058",
+      "title": "The PayPal Brasil para WooCommerce plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 1.7.8",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The PayPal Brasil para WooCommerce plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 1.7.8. This is due to the plugin not properly verifying that a user is authorized to perform an action. This makes it possible for unauthenticated attackers to disable or enable the PayPal Brasil BCDC payment gateway and overwrite its WooCommerce gateway settings, removing PayPal from checkout for all customers.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-76058"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:48.880",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-76780",
+      "title": "The Beyondseo plugin for WordPress is vulnerable to unauthorized access in versions up to, and including, 1.3.6",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Beyondseo plugin for WordPress is vulnerable to unauthorized access in versions up to, and including, 1.3.6. This is due to the plugin permanently granting the 'rankingcoach_write_redirectManager' (and sibling rankingcoach_write_* module capabilities) to the Contributor role via BaseModule::defineCapabilities(), whose default role list includes 'contributor', combined with the module's REST endpoints (registered through BaseSubmoduleApi::registerRouteCreate/registerRouteEdit/registerRouteDelete) authorizing state-changing requests solely through checkPermissionsPost(), which only calls current_user_can('rankingcoach_write_<module>') and performs no admin capability, ownership, or additional nonce check inside the callback. This makes it possible for authenticated attackers, with Contributor-level access and above, to elevate their privileges to effectively that of an Administrator with respect to site-wide redirect management — creating, updating, or deleting 301/302 redirects that RedirectManagerHooks::handleRedirects() executes for every frontend visitor on template_redirect, allowing hijacking of arbitrary paths (including /checkout, /wp-login.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-76780"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:49.060",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-77188",
+      "title": "The Waitlist Woocommerce ( Back in stock notifier ) plugin for WordPress is vulnerable to Stored Cross-Site Scripting via 'type' Shortcode Attribute in all versions up to, and",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Waitlist Woocommerce ( Back in stock notifier ) plugin for WordPress is vulnerable to Stored Cross-Site Scripting via 'type' Shortcode Attribute in all versions up to, and including, 2.9.1 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. The wp_kses_post filter applied on contributor post save does not prevent this vulnerability because shortcode attribute values are not HTML and pass through kses unchanged; the payload is materialized only at render time when the shortcode is expanded.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-77188"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:49.223",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-77871",
+      "title": "The Post Snippets – Custom WordPress Code Snippets Customizer plugin for WordPress is vulnerable to Stored Cross-Site Scripting via Shortcode Attributes in all versions up to,",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Post Snippets – Custom WordPress Code Snippets Customizer plugin for WordPress is vulnerable to Stored Cross-Site Scripting via Shortcode Attributes in all versions up to, and including, 4.2.4 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Entity-encoded payloads such as &lt;script&gt;...&lt;/script&gt; survive WordPress's wp_kses_post on-save sanitization because kses does not decode HTML entities, and are only converted back into executable HTML tags at render time by the plugin's own shortcode filter. This requires snippet shortcodes to be enabled.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-77871"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:49.377",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-92098",
+      "title": "The Webheadcoder Multi-Step Forms for Contact Form 7 plugin for WordPress is vulnerable to Reflected Cross-Site Scripting via the 'l10n_print_after' parameter in all versions ",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Webheadcoder Multi-Step Forms for Contact Form 7 plugin for WordPress is vulnerable to Reflected Cross-Site Scripting via the 'l10n_print_after' parameter in all versions up to, and including, 4.7 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that execute if they can successfully trick a user into performing an action such as clicking on a link. Successful exploitation requires that the targeted site has at least one Contact Form 7 form configured with a [multistep] form-tag, as the canonicalization introduced in version 4.7 blocks the attack path on non-multistep forms.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-92098"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:16:49.540",
+      "source_type": "nvd",
+      "known_exploited": false
     },
     {
       "id": "CVE-2026-105477",
@@ -1992,6 +3173,34 @@
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-105477"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-27",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
+    },
+    {
+      "id": "CVE-2026-108142",
+      "title": "Veeam Backup & Replication CDP Coordinator authorization bypass",
+      "severity": "critical",
+      "cvss": "9.1",
+      "categories": [
+        "Veeam Backup & Replication"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-27",
+      "summary": "An unauthenticated attacker can bypass authorization in the CDP Coordinator Service on affected Veeam Backup & Replication version 13 deployments.",
+      "affected": "Veeam Backup & Replication 13.1.1.18 and earlier 13.1 builds, or 13.0.2.29 and earlier 13.0 builds. Vendor states 12.x is not affected.",
+      "remediation": "Install Veeam Backup & Replication 13.1.2.57 or 13.0.3.63, respectively, or a newer fixed build. Validate backup infrastructure exposure.",
+      "exploitation": "No confirmed exploitation indicated in the cited vendor bulletin.",
+      "sources": [
+        {
+          "label": "Veeam Security KB4948",
+          "url": "https://www.veeam.com/kb4948"
         }
       ],
       "kind": "cve",
@@ -13003,6 +14212,35 @@
       "known_exploited": false
     },
     {
+      "id": "GHSA-9j83-qj34-g5vc",
+      "title": "Malware in @factiii/runner",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-22",
+      "updated": "2026-10-28",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: @factiii/runner (= 0.28.0); npm: @factiii/runner (= 0.33.0); npm: @factiii/runner (= 0.35.0); npm: @factiii/runner (= 0.22.0); npm: @factiii/runner (= 0.16.0); npm: @factiii/runner (= 0.26.2)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-9j83-qj34-g5vc"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-28T08:09:31Z",
+      "source_updated_at": "2026-10-28T07:54:44Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
       "id": "GHSA-23vf-x9vg-87p2",
       "title": "Malicious code in event-emitter-testmetest (npm)",
       "severity": "bulletin",
@@ -13042,6 +14280,50 @@
       "source_updated_at": "2026-10-26T21:32:24Z",
       "source_type": "github",
       "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109618",
+      "title": "RCE via OOM corruption",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-28",
+      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:25Z",
+      "source_type": "php_upstream",
+      "known_exploited": true
     },
     {
       "id": "CVE-2026-109619",
@@ -13085,50 +14367,6 @@
       "status": "Published security advisory from PHP upstream",
       "first_seen_at": "2026-10-28T03:56:02Z",
       "source_updated_at": "2026-10-21T13:34:13Z",
-      "source_type": "php_upstream",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2026-109618",
-      "title": "RCE via OOM corruption",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-28",
-      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:25Z",
       "source_type": "php_upstream",
       "known_exploited": true
     },
@@ -15476,7 +16714,6 @@
       "title": "Buffer over-read in Windows Common Log File System Driver allows an authorized attacker to disclose information locally.",
       "severity": "medium",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -15510,7 +16747,6 @@
       "title": "Heap-based buffer overflow in Windows Event Tracing allows an unauthorized attacker to execute code locally.",
       "severity": "high",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -15544,7 +16780,6 @@
       "title": "Improper access control in Windows Kernel-Mode Drivers allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -15578,7 +16813,6 @@
       "title": "Integer underflow (wrap or wraparound) in Windows Bluetooth A2DP driver allows an authorized attacker to elevate privileges over an adjacent network.",
       "severity": "high",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -15613,7 +16847,6 @@
       "severity": "high",
       "categories": [
         "HyperV",
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -15647,7 +16880,6 @@
       "title": "Weak authentication in Windows Error Reporting allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -15681,7 +16913,6 @@
       "title": "Concurrent execution using shared resource with improper synchronization ('race condition') in Windows Win32K allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -16010,24 +17241,24 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "id": "CVE-2026-70188",
+      "title": "ASP.NET Core HTTP/2 Kestrel request desynchronization",
       "severity": "critical",
-      "cvss": "9.4",
+      "cvss": "9.1",
       "categories": [
         ".NET / ASP.NET",
         ".NET Core"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "summary": "Kestrel accepts newline characters in HTTP/2 trailers or dynamic HPACK table values when it should reject malformed headers, allowing potential HTTP request desynchronization and a security feature bypass.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12, and .NET 11 prereleases through RC1.",
+      "remediation": "Fixed initially in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Install the newer supported October 25 releases where applicable (8.0.33, 9.0.22, 10.0.14, RC3).",
       "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
       "sources": [
         {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+          "label": "Microsoft ASP.NET Core HTTP/2 security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-fpq8-4vhr-rcxx"
         }
       ],
       "kind": "cve",
@@ -16114,24 +17345,24 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
-      "id": "CVE-2026-70188",
-      "title": "ASP.NET Core HTTP/2 Kestrel request desynchronization",
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
       "severity": "critical",
-      "cvss": "9.1",
+      "cvss": "9.4",
       "categories": [
         ".NET / ASP.NET",
         ".NET Core"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
-      "summary": "Kestrel accepts newline characters in HTTP/2 trailers or dynamic HPACK table values when it should reject malformed headers, allowing potential HTTP request desynchronization and a security feature bypass.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12, and .NET 11 prereleases through RC1.",
-      "remediation": "Fixed initially in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Install the newer supported October 25 releases where applicable (8.0.33, 9.0.22, 10.0.14, RC3).",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
       "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
       "sources": [
         {
-          "label": "Microsoft ASP.NET Core HTTP/2 security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-fpq8-4vhr-rcxx"
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
         }
       ],
       "kind": "cve",
@@ -46352,34 +47583,34 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-28T07:10:47Z",
-      "last_attempt": "2026-10-28T07:10:47Z",
-      "items_processed": 274,
+      "last_success": "2026-10-28T08:09:31Z",
+      "last_attempt": "2026-10-28T08:09:31Z",
+      "items_processed": 275,
       "url": "https://api.github.com/advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-28T07:10:47Z",
-      "last_attempt": "2026-10-28T07:10:47Z",
-      "items_processed": 256,
+      "last_success": "2026-10-28T08:09:31Z",
+      "last_attempt": "2026-10-28T08:09:31Z",
+      "items_processed": 278,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-28T07:10:47Z",
-      "last_attempt": "2026-10-28T07:10:47Z",
+      "last_success": "2026-10-28T08:09:31Z",
+      "last_attempt": "2026-10-28T08:09:31Z",
       "items_processed": 482,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-28T07:10:47Z",
-      "last_attempt": "2026-10-28T07:10:47Z",
+      "last_success": "2026-10-28T08:09:31Z",
+      "last_attempt": "2026-10-28T08:09:31Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     }
   },
-  "last_checked_at": "2026-10-28T07:10:47Z",
-  "last_successful_update": "2026-10-28T07:10:47Z",
+  "last_checked_at": "2026-10-28T08:09:31Z",
+  "last_successful_update": "2026-10-28T08:09:31Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
