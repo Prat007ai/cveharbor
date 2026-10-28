@@ -181,4 +181,59 @@ await new Promise(resolve=>setTimeout(resolve,90));
 assert.equal(conflict.d.querySelector('#stackTechnologyList input:checked')!==null,true,'load saved cloud watchlist checks technology boxes');
 assert.equal(conflict.writes.length,0,'loading cloud selections does not re-upload or erase server data');
 conflict.w.close();
+
+// Malware lists show six cards by default, with separate expansion and filters.
+const malwareDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
+const malwareWindow=malwareDom.window, malwareDoc=malwareWindow.document;
+malwareWindow.CVEHARBOR_MALWARE={
+  checked_at:new Date().toISOString(),
+  samples:Array.from({length:11},(_,i)=>({
+    sha256:String(i+1).padStart(64,'0'),
+    family:i===10?'RedLine':'Mirai',
+    type:i===10?'Infostealer':'Botnet',
+    first_seen:'2026-10-28 12:00:00',file_type:'elf',
+    tags:[],source_url:'https://bazaar.abuse.ch/'
+  })),
+  advisories:[],sources:{malwarebazaar:{ok:true}}
+};
+malwareWindow.eval(fs.readFileSync('malware.js','utf8'));
+const familyCards=()=>malwareDoc.querySelectorAll('#malwareFamilyDirectory .malware-entry').length;
+const sampleCards=()=>malwareDoc.querySelectorAll('#malwareRows .malware-entry').length;
+const familyToggle=malwareDoc.getElementById('malwareShowAllFamilies');
+const sampleToggle=malwareDoc.getElementById('malwareShowAllSamples');
+assert.equal(familyCards(),6,'initial malware family preview is six cards');
+assert.equal(sampleCards(),6,'initial malware sample preview is six cards');
+assert.equal(familyToggle.hidden,false,'family expansion visible with more than six entries');
+assert.equal(sampleToggle.hidden,false,'sample expansion visible with more than six entries');
+assert.match(malwareDoc.getElementById('malwareFamilySummary').textContent,/Showing 6 of 26 families/);
+assert.match(malwareDoc.getElementById('malwareSampleSummary').textContent,/Showing 6 of 11 samples/);
+familyToggle.click();
+assert.equal(familyCards(),26,'Show All reveals every reference family');
+assert.equal(sampleCards(),6,'expanding families does not expand samples');
+assert.equal(familyToggle.getAttribute('aria-expanded'),'true');
+assert.match(familyToggle.textContent,/Show Less/);
+sampleToggle.click();
+assert.equal(sampleCards(),11,'Show All reveals every matching malware sample');
+assert.equal(sampleToggle.getAttribute('aria-expanded'),'true');
+sampleToggle.click();familyToggle.click();
+assert.equal(sampleCards(),6,'Show Less collapses sample cards');
+assert.equal(familyCards(),6,'Show Less collapses reference family cards');
+assert.equal(familyToggle.getAttribute('aria-expanded'),'false');
+assert.equal(sampleToggle.getAttribute('aria-expanded'),'false');
+malwareDoc.getElementById('malwareSearch').value='LockBit';
+malwareDoc.getElementById('malwareSearch').dispatchEvent(new malwareWindow.Event('input'));
+assert.equal(familyCards(),1,'family search applies before preview limit');
+assert.equal(sampleCards(),0,'search filters live sample cards too');
+assert.equal(familyToggle.hidden,true,'no Show All button for one family');
+assert.equal(sampleToggle.hidden,true,'no Show All button when no matching samples');
+malwareDoc.getElementById('malwareSearch').value='';
+malwareDoc.getElementById('malwareSearch').dispatchEvent(new malwareWindow.Event('input'));
+assert.equal(familyCards(),6,'clearing search restores six card family preview');
+assert.equal(sampleCards(),6,'clearing search restores six card sample preview');
+malwareDoc.getElementById('malwareType').value='Infostealer';
+malwareDoc.getElementById('malwareType').dispatchEvent(new malwareWindow.Event('change'));
+assert.equal(sampleCards(),1,'type filters still work for recent samples');
+assert.equal(sampleToggle.hidden,true,'filtered list below six has no expansion button');
+malwareWindow.close();
+
 console.log('CVEHarbor browser smoke passed: 38 categories, publication badges, list, details, focus, search and feed status.');
