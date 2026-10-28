@@ -20,6 +20,40 @@
     select.append(option);
   }
   const make=(tag,value)=>{const el=document.createElement(tag);el.textContent=value;return el;};
+  function showThreatDetail(x){
+    const dialog=document.getElementById('threatDetailDialog');
+    const content=document.getElementById('threatDetailContent');
+    if(!dialog||!content)return;
+    content.replaceChildren();
+    const heading=make('h2',x.ip);
+    heading.id='threatDetailTitle';
+    content.append(heading);
+    const type=make('p',x.activity);
+    type.className='threat-detail-type';content.append(type);
+    const details=[
+      ['Intelligence source',x.source],
+      ['Reported activity',x.activity],
+      ['Source category',x.source_id==='dshield_scanners'?'Observed scanning or attack source':x.source_id==='feodo_c2'?'Botnet command and control':'Third party report'],
+      ['CVEHarbor collection time',report.checked_at ? new Date(report.checked_at).toLocaleString('en-CA',{timeZone:'America/Toronto'})+' ET':'Not available'],
+      ['Source reported last seen',x.observed_at || 'Not supplied by this feed'],
+      ['Confidence / block status','Not independently validated. Manual review recommended']
+    ];
+    for(const [name,value] of details){
+      const item=make('div','');item.className='threat-detail-field';
+      const label=make('span',name);const val=make('strong',value);
+      item.append(label,val);content.append(item);
+    }
+    const caution=make('p','Review your firewall and WAF logs, trusted scanner allowlists, ownership, and impact before blocking. Inclusion in a third party feed does not confirm an attack on your environment.');
+    caution.className='threat-detail-warning';content.append(caution);
+    // Source reference is shown as text to keep the default action entirely in CVEHarbor.
+    const source=make('p','Original feed: '+x.source_url);source.className='threat-detail-source';content.append(source);
+    if(typeof dialog.showModal==='function')dialog.showModal();
+    else dialog.setAttribute('open','');
+  }
+  const close=document.getElementById('closeThreatDialog');
+  if(close)close.addEventListener('click',()=>document.getElementById('threatDetailDialog').close());
+  const dialog=document.getElementById('threatDetailDialog');
+  if(dialog)dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});
   function render(){
     root.replaceChildren();
     const filter=select.value,q=search.value.trim().toLowerCase();
@@ -34,7 +68,10 @@
       const tag=make('span',x.activity);tag.className='threat-type';
       const meta=make('div',x.source+' · Source-reported activity · No verified last-seen timestamp');
       meta.className='threat-meta';
-      const link=make('a','View source ↗');link.href=x.source_url;link.target='_blank';link.rel='noopener noreferrer';
+      const link=make('button','View details');
+      link.type='button';link.className='threat-view-details';
+      link.setAttribute('aria-label','View threat intelligence details for '+x.ip);
+      link.addEventListener('click',()=>showThreatDetail(x));
       const head=make('div','');head.className='threat-entry-head';head.append(name,tag);
       row.append(head,meta,link);root.append(row);
     }
