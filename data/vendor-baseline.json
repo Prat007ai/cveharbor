@@ -1,5 +1,5 @@
 {
-  "purpose": "Historical vendor verified advisories used to seed product-specific categories. Publication dates are original dates, not discovery dates. Recheck vendor sites for updates.",
+  "purpose": "Publicly documented historical vendor advisories with original publication/update dates, including Microsoft's October 2026 .NET Framework and modern .NET security updates. Records are not newly disclosed merely because indexed.",
   "advisories": [
     {
       "id": "CVE-2026-13185",
@@ -188,6 +188,186 @@
         {
           "label": "Microsoft Exchange build numbers",
           "url": "https://learn.microsoft.com/en-us/exchange/new-features/build-numbers-and-release-dates/"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-111497",
+      "title": ".NET Brotli decompression out of bounds write",
+      "severity": "high",
+      "cvss": "8.1",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-25",
+      "updated": "2026-10-25",
+      "summary": "An out of bounds memory write in the Brotli decoder used by modern .NET and ASP.NET Core may cause memory corruption, information disclosure, denial of service or privilege elevation when the application decompresses attacker-controlled Brotli data. Automatic request/response decompression is disabled by default.",
+      "affected": "Affected .NET 8 versions earlier than 8.0.33, .NET 9 earlier than 9.0.22, .NET 10 earlier than 10.0.14, and affected .NET 11 prereleases earlier than RC3. Specific NativeAOT and runtime packs vary by platform. Classic .NET Framework is not affected by this CVE.",
+      "remediation": "Update affected installations to .NET 8.0.33, 9.0.22 or 10.0.14 (or .NET 11 RC3 for prerelease installations). Rebuild self-contained apps and containers with the fixed runtimes, and update affected NuGet packages where the advisory requires it.",
+      "exploitation": "No confirmed in-the-wild exploitation in the cited Microsoft .NET advisory. Verify current CISA KEV before treating exploitation as known.",
+      "sources": [
+        {
+          "label": "Microsoft .NET October 25 emergency release",
+          "url": "https://devblogs.microsoft.com/dotnet/dotnet-october-2026-oob-security-updates/"
+        },
+        {
+          "label": "Microsoft runtime security advisory",
+          "url": "https://github.com/dotnet/runtime/security/advisories/GHSA-p3jp-9v83-76w9"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-114148",
+      "title": ".NET Linux tarball ownership privilege escalation",
+      "severity": "high",
+      "cvss": "7.8",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core",
+        "Linux"
+      ],
+      "published": "2026-10-25",
+      "updated": "2026-10-25",
+      "summary": "Incorrect ownership metadata in certain ASP.NET Core Linux runtime and targeting pack tarballs and source-built .NET archives could allow local privilege escalation when extracting affected distributions with unsafe ownership.",
+      "affected": "ASP.NET Core 8 and 9 Linux runtime or targeting-pack tarballs before 8.0.33 and 9.0.22. Source-built .NET 8/9/10/11 tarballs have separately listed affected ranges. Ordinary Microsoft-published .NET 10/11 runtime and SDK tarballs are not in scope.",
+      "remediation": "Replace affected ASP.NET Core Linux tarballs with corrected 8.0.33 / 9.0.22 distributions, or use patched source-build archives for applicable SDKs. Audit and correct ownership of files already extracted; merely downloading the new archive does not repair existing permissions.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft .NET tarball ownership advisory",
+          "url": "https://github.com/dotnet/announcements/issues/495"
+        },
+        {
+          "label": "ASP.NET Core vendor security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-r6pf-x897-gm86"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-70197",
+      "title": ".NET SocketAsyncEventArgs memory corruption remote code execution",
+      "severity": "high",
+      "cvss": "8.1",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-25",
+      "summary": "On Windows, reusing SocketAsyncEventArgs across IPv4 and IPv6 datagram sockets can retain an undersized native address buffer. Untrusted datagrams can trigger an out of bounds memory write. The original October 13 fix was incomplete; Microsoft provided corrected patches October 25.",
+      "affected": "Affected .NET 8 prior to 8.0.33, .NET 9 before 9.0.22, .NET 10 before 10.0.14, and affected .NET 11 previews before RC3 on Windows when the vulnerable socket behavior is reachable.",
+      "remediation": "Update affected installations to .NET 8.0.33, 9.0.22 or 10.0.14 (or .NET 11 RC3 for prerelease installations). Rebuild self-contained apps and containers with the fixed runtimes, and update affected NuGet packages where the advisory requires it. The October 13 releases alone do not fully fix this CVE.",
+      "exploitation": "No confirmed active exploitation stated in the cited Microsoft security advisory.",
+      "sources": [
+        {
+          "label": "Microsoft October 25 revised security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/493"
+        },
+        {
+          "label": "Microsoft .NET out of band release",
+          "url": "https://devblogs.microsoft.com/dotnet/dotnet-october-2026-oob-security-updates/"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-102870",
+      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-25",
+      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
+      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
+      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
+      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "ASP.NET Core GHSA vendor record",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-70188",
+      "title": "ASP.NET Core HTTP/2 Kestrel request desynchronization",
+      "severity": "critical",
+      "cvss": "9.1",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "Kestrel accepts newline characters in HTTP/2 trailers or dynamic HPACK table values when it should reject malformed headers, allowing potential HTTP request desynchronization and a security feature bypass.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12, and .NET 11 prereleases through RC1.",
+      "remediation": "Fixed initially in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Install the newer supported October 25 releases where applicable (8.0.33, 9.0.22, 10.0.14, RC3).",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core HTTP/2 security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-fpq8-4vhr-rcxx"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-108398",
+      "title": ".NET Framework untrusted search path security feature bypass",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "Untrusted search path handling in classic Microsoft .NET Framework permits a locally authorized attacker to bypass a security feature. The patch is part of Microsoft's October 2026 .NET Framework cumulative security updates.",
+      "affected": "Multiple .NET Framework 3.5, 4.6.2 through 4.8.1 configurations across supported Windows versions, subject to Microsoft update applicability. This is a separate classic .NET Framework CVE, not the modern .NET Brotli issue.",
+      "remediation": "Install the correct October 13, 2026 .NET Framework cumulative update or a newer superseding Windows update for the installed Windows and .NET Framework versions. Consult the Microsoft patch matrix for the specific KB.",
+      "exploitation": "No confirmed active exploitation in the referenced Microsoft advisories.",
+      "sources": [
+        {
+          "label": "Microsoft .NET Framework October cumulative update",
+          "url": "https://learn.microsoft.com/en-us/dotnet/framework/release-notes/2026/10-13-october-cumulative-update"
+        },
+        {
+          "label": "Microsoft CVE details",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-108398"
+        },
+        {
+          "label": "NVD product applicability",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108398"
         }
       ]
     }
