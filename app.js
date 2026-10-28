@@ -10,8 +10,35 @@
   let metricScope = 'all';
   const featured = new Set(["Windows Server OS","Windows 11 OS",".NET / ASP.NET",".NET Core","WordPress / Plugins","Linux","PHP","Python / PyPI","Azure","Microsoft 365","Exchange SE","SQL Server","MySQL / MariaDB","Fortinet","Sophos Firewall","VMware","Veeam Backup & Replication","HyperV","Docker / Kubernetes","Progress Telerik","Sitefinity"]);
   const info = window.CVEHARBOR_DATA || {categories:[],advisories:[],mode:'awaiting_first_sync'};
-  const items = info.advisories || [];
-  const categories = info.categories || [];
+  // The category taxonomy and historical vendor entries are published by the
+  // static site build, independently from the hourly data feed.
+  const catalog = window.CVEHARBOR_CATALOG || {categories:[],advisories:[]};
+  const categories = (Array.isArray(catalog.categories) && catalog.categories.length ? catalog.categories : info.categories) || [];
+  const records = new Map();
+  for (const advisory of info.advisories || []) {
+    if(advisory && advisory.id) records.set(advisory.id, advisory);
+  }
+  for (const baseline of catalog.advisories || []) {
+    if(!baseline || !baseline.id) continue;
+    const prior = records.get(baseline.id);
+    if(!prior){ records.set(baseline.id, baseline); continue; }
+    // A CVE may appear in both the hourly feeds and the older vendor baseline.
+    // Keep one record and retain verified KEV status, source links and categories.
+    const links = new Map();
+    for(const ref of [...(prior.sources||[]), ...(baseline.sources||[])]){
+      if(ref && ref.url) links.set(ref.url,ref);
+    }
+    records.set(baseline.id,{
+      ...prior,
+      categories:[...new Set([...(prior.categories||[]),...(baseline.categories||[])])],
+      sources:[...links.values()].slice(0,8),
+      affected:prior.source_type==='nvd' ? baseline.affected : (prior.affected||baseline.affected),
+      remediation:prior.source_type==='nvd' ? baseline.remediation : (prior.remediation||baseline.remediation),
+      known_exploited:Boolean(prior.known_exploited),
+      status:prior.status||baseline.status,
+    });
+  }
+  const items=[...records.values()].sort((a,b)=>String(b.updated||b.published||'').localeCompare(String(a.updated||a.published||'')));
   const $ = id => document.getElementById(id);
   const cveIDs = rows => [...new Set(rows.filter(x => /^CVE-\d{4}-\d+$/i.test(x.id)).map(x => x.id))];
   const text = (tag, className, content) => {const n=document.createElement(tag);if(className)n.className=className;n.textContent=content||'';return n;};
