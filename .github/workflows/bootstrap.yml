@@ -13,6 +13,8 @@ on:
       - scripts/update.py
       - scripts/build_site.py
       - tests/test_update.py
+      - account-backend/**
+      - accounts.js
       - scripts/browser_smoke.mjs
       - scripts/update_threats.py
       - threats.js
@@ -26,6 +28,8 @@ on:
       - scripts/build_site.py
       - tests/test_update.py
       - scripts/browser_smoke.mjs
+      - account-backend/**
+      - accounts.js
   schedule:
     - cron: '17 * * * *'
   workflow_dispatch:
@@ -59,7 +63,9 @@ jobs:
       - name: Unit and integration tests
         run: python -m unittest discover -s tests -v
       - name: Validate JavaScript
-        run: node --check app.js && node --check data.js && node --check accounts.js && node --check account-backend/src/index.js
+        run: node --check app.js && node --check data.js && node --check accounts.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js
+      - name: Test digest matching and email rendering
+        run: cd account-backend && npm test
       - name: Verify public build
         run: python scripts/build_site.py
       - name: Install DOM smoke test dependency
@@ -129,7 +135,9 @@ jobs:
       - name: Unit tests
         run: python -m unittest discover -s tests -v
       - name: Validate browser JavaScript
-        run: node --check app.js && node --check data.js && node --check accounts.js && node --check account-backend/src/index.js
+        run: node --check app.js && node --check data.js && node --check accounts.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js
+      - name: Test digest matching and email rendering
+        run: cd account-backend && npm test
       - name: Install smoke test dependency
         if: github.event_name == 'push'
         run: npm install --no-save --no-package-lock jsdom@26
