@@ -87,7 +87,7 @@
   const lag=lastSuccess?(Date.now()-new Date(lastSuccess).getTime())/(60*60*1000):Infinity;
   let stateLabel='Awaiting first sync', headline='No live sync has completed', expl='The site taxonomy is ready, but the hourly collector has not yet populated verified source data. Zero means no indexed records, not no vulnerabilities.';
   if(status==='live'&&lag<=2.5){stateLabel='Feeds responding';headline='Sources updated';expl='Public advisory data was collected from GitHub Security Advisories, NVD and CISA KEV. Advisories describe software products, not visitor exposure.';}
-  else if(status==='partial'&&lag<=2.5){stateLabel='Partial feed coverage';headline='One or more advisory sources unavailable';expl='Recent updates were retrieved from some sources. Other feeds failed and may be missing new records. Check each source below.';}
+  else if(status==='partial'&&lag<=2.5){stateLabel='Partial feed coverage';headline='Some sources failed during the last published collection';expl='The saved snapshot contains updates from available sources, but at least one feed failed during that collection. This is historical collection status, not evidence of a current provider outage.';}
   else if(lastSuccess){stateLabel='Data may be stale';headline='Hourly refresh not confirmed';expl='The latest successful collection is older than expected or a source has failed. Consult official vendor advisories for time-sensitive decisions.';}
   $('feedStatus').textContent=stateLabel;
   $('feedHeadline').textContent=headline+'.';
@@ -95,7 +95,15 @@
   $('snapshotDate').textContent='Last success: '+fmtStamp(lastSuccess)+(lastSuccess?' ('+fmtEastern(lastSuccess)+')':'');
   $('chartDateLabel').textContent=lastSuccess?'AS OF '+fmtDate(lastSuccess):'NO VERIFIED LIVE DATA';
   const sourceHealth=$('sourceHealth');
-  Object.entries(info.sources||{}).forEach(([k,v])=>{let n=text('span','feed-chip '+(v.ok?'feed-ok':'feed-bad'),`${k.toUpperCase()}: ${v.ok?'OK':'UNAVAILABLE'}`);n.title='Last successful: '+fmtStamp(v.last_success);sourceHealth.append(n);});
+  Object.entries(info.sources||{}).forEach(([k,v])=>{
+    const label=k.toUpperCase()+': '+(v.ok?'OK AT LAST SYNC':'FAILED AT LAST SYNC');
+    const n=text('span','feed-chip '+(v.ok?'feed-ok':'feed-bad'),label);
+    const details=['Last attempted: '+fmtStamp(v.last_attempt),'Last successful: '+fmtStamp(v.last_success)];
+    if(!v.ok && v.error) details.push('Saved error: '+String(v.error).slice(0,180));
+    n.title=details.join(' | ');
+    n.setAttribute('aria-label',label+'. '+details.join('. '));
+    sourceHealth.append(n);
+  });
   let frag=document.createDocumentFragment();categories.forEach(t=>{const el=document.createElement('option');el.value=t.name;el.textContent=t.name;frag.append(el);});$('technologyFilter').append(frag);
   function catCount(cat){return cveIDs(items.filter(x=>(x.categories||[]).includes(cat) && newlyPublished(x,30))).length;}
   function openTechnologyAdvisories(technology, cveOnly=false){
