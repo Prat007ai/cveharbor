@@ -183,13 +183,17 @@ def enforce_authoritative_categories(record: dict) -> dict:
     entry = dict(record)
     categories = list(entry.get("categories") or [])
     affected = str(entry.get("affected") or "")
-    if (entry.get("source_type") == "php_upstream"
-        and re.search(r"\bphp[-_: ]?src\b", affected, re.I)):
+    known_affected = {
+        "CVE-2026-109618": {"PHP"},
+        "CVE-2026-109619": {"PHP"},
+        # .NET Brotli also affects some Windows PHP builds per the curated baseline.
+        "CVE-2026-111497": {".NET / ASP.NET", ".NET Core", "PHP"},
+    }
+    if entry.get("id") in known_affected:
+        categories = [name for name in categories if name in known_affected[entry["id"]]]
+    elif (entry.get("source_type") == "php_upstream"
+          and re.search(r"\bphp[-_: ]?src\b", affected, re.I)):
         categories = ["PHP"]
-    if entry.get("id") == "CVE-2026-111497" and entry.get("source_type") == "vendor_baseline":
-        # .NET Brotli plus PHP Windows builds in the source-verified baseline.
-        allowed = {".NET / ASP.NET", ".NET Core", "PHP"}
-        categories = [name for name in categories if name in allowed]
     entry["categories"] = [name for name in dict.fromkeys(categories) if name in ALLOWED]
     return entry
 
