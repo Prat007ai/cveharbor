@@ -59,7 +59,7 @@ jobs:
       - name: Unit and integration tests
         run: python -m unittest discover -s tests -v
       - name: Validate JavaScript
-        run: node --check app.js && node --check data.js
+        run: node --check app.js && node --check data.js && node --check accounts.js && node --check account-backend/src/index.js
       - name: Verify public build
         run: python scripts/build_site.py
       - name: Install DOM smoke test dependency
@@ -129,7 +129,7 @@ jobs:
       - name: Unit tests
         run: python -m unittest discover -s tests -v
       - name: Validate browser JavaScript
-        run: node --check app.js && node --check data.js
+        run: node --check app.js && node --check data.js && node --check accounts.js && node --check account-backend/src/index.js
       - name: Install smoke test dependency
         if: github.event_name == 'push'
         run: npm install --no-save --no-package-lock jsdom@26

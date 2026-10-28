@@ -8,7 +8,7 @@
   <meta property="og:title" content="CVEHarbor | Know the risk. Find the fix.">
   <meta property="og:description" content="Vulnerability advisories, severity dashboards, affected versions, vendor sources and remediation guidance.">
   <title>CVEHarbor | Vulnerability Intelligence</title>
-  <link rel="stylesheet" href="styles.css?v=firewall-exports-1">
+  <link rel="stylesheet" href="styles.css?v=account-beta-1">
 </head>
 <body>
   <a class="skip-link" href="#advisories">Skip to advisories</a>
@@ -19,7 +19,7 @@
         <span class="brand-type">CVE<span>Harbor</span><small>VULNERABILITY INTELLIGENCE</small></span>
       </a>
       <nav class="topnav" aria-label="Main navigation">
-        <a href="#dashboard">Overview</a><a href="#advisories">Advisories</a><a href="#technology">Technologies</a><a href="#securityWorkspace">My Stack & Lookup</a><a href="#operationsCentre">Admin Toolkit</a><a href="#threat-intelligence">Threat IPs</a><a href="#methodology">Methodology</a>
+        <a href="#dashboard">Overview</a><a href="#advisories">Advisories</a><a href="#technology">Technologies</a><a href="#securityWorkspace">My Stack & Lookup</a><a href="#operationsCentre">Admin Toolkit</a><a href="#accountWorkspace">My Account</a><a href="#threat-intelligence">Threat IPs</a><a href="#methodology">Methodology</a>
       </nav>
     </div>
   </div>
@@ -166,6 +166,26 @@
         <article id="firewallCentre" class="data-panel ops-panel"><h3>Firewall &amp; WAF Intelligence Center</h3><p class="ops-note">Review sourced indicator observations and download configuration templates. Never deploy an unreviewed or permanently growing blocklist to production.</p><p class="ops-note" id="firewallObservedCount">Loading indicators</p><div id="firewallDownloads" class="ops-downloads"></div><div class="ops-results"><div class="ops-result"><strong>FortiGate</strong><p>Full and incremental commands for the persistent Suspicious IP Block group. Confirm VDOM, existing objects, firmware and change approval.</p></div><div class="ops-result"><strong>Sophos Firewall</strong><p>XML API templates. Incremental host group membership requires merging with current firewall members. Do not replace an existing HostList with the delta alone.</p></div><div class="ops-result"><strong>Other WAF &amp; firewall vendors</strong><p>Palo Alto, Cisco, Check Point, Cloudflare and Imperva exporters are not yet available. Vendor-specific commands must be validated before release.</p></div></div><p class="ops-note">A suspicious IP observation is not an approved block decision. Review shared infrastructure, stale indicators, false positives and allowlists.</p></article>
       </div>
     </section>
+    <section id="accountWorkspace" class="shell section" aria-labelledby="accountTitle">
+      <div class="section-heading"><div><p class="eyebrow">PERSONAL SECURITY WORKSPACE</p><h2 id="accountTitle">CVEHarbor Accounts & Cloud Sync</h2>
+      <p class="section-sub">Optional email sign in to sync your technology stack and remediation records between devices. Your existing local records remain available without an account.</p></div><span class="result-pill">Backend setup pending</span></div>
+      <div class="data-panel account-panel"><p id="accountMessage" class="ops-note" role="status">Checking whether the account service is available...</p>
+        <div id="accountSignedOut">
+          <form id="accountRequest" class="ops-form"><label>Email address<input id="accountEmail" type="email" autocomplete="email" placeholder="you@example.com" required maxlength="254"></label>
+          <button class="ops-download" id="accountSendCode" type="submit">Email sign in code</button></form>
+          <form id="accountVerify" class="ops-form" hidden><input id="accountChallenge" type="hidden"><input id="accountSalt" type="hidden"><label>Six digit email code<input id="accountCode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required autocomplete="one-time-code"></label><button class="ops-download" type="submit" id="accountVerifyButton">Verify and sign in</button></form>
+        </div>
+        <div id="accountSignedIn" hidden>
+          <p id="accountIdentity" class="ops-note"></p>
+          <div class="ops-downloads"><button type="button" id="accountUpload" class="ops-download">Upload this browser's data</button><button type="button" id="accountDownload" class="ops-download">Download saved account data</button><button type="button" id="accountLogout" class="ops-download">Sign out</button></div>
+          <p class="ops-note">Sync actions replace the destination dataset only after confirmation. Export local remediation records before replacing them.</p>
+          <form id="accountAlerts" class="ops-form"><label><span>Future email notifications</span><span><input type="checkbox" id="alertEnabled"> Save my alert preference</span></label><label>Severity<select id="alertSeverity"><option value="critical">Critical</option><option value="high">High and Critical</option></select></label><label>Frequency<select id="alertFrequency"><option value="daily">Daily</option><option value="hourly">Hourly</option></select></label><button type="submit" class="ops-download">Save preferences</button></form>
+          <p class="ops-note">Notifications are not being sent yet. Preferences are saved for the future email service. No delivery is promised until alert processing is activated.</p>
+          <button id="accountDelete" type="button" class="ops-remove">Permanently delete account and cloud records</button>
+        </div>
+        <p class="ops-note">The account API requires Cloudflare Workers, a D1 database, and verified SMTP2GO sender configuration. Until setup is complete, continue using local tracking and exports.</p>
+      </div>
+    </section>
     <section id="methodology" class="shell section"><div class="method-grid"><div><p class="eyebrow">TRUST & TRANSPARENCY</p><h2>Source first. Clarity always.</h2><p class="method-copy">CVEHarbor is being built to turn technical advisories into decisions people can act on. Each record distinguishes <strong>published</strong>, <strong>last source update</strong> and <strong>first indexed</strong>. Feed health is visible. A record being indexed does not mean it has been independently reproduced or that your systems are affected.</p><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener noreferrer" class="quiet-link">Explore CISA Known Exploited Vulnerabilities ↗</a></div><div class="method-steps"><div><span>01</span><div><b>Verify</b><small>Collect GitHub reviewed advisories, NVD entries and CISA KEV data each hour, alongside dated historical vendor advisories. Historical records retain their original disclosure dates.</small></div></div><div><span>02</span><div><b>Explain</b><small>Include confirmed affected versions, impact, fixes and exploitation status.</small></div></div><div><span>03</span><div><b>Review</b><small>Deduplicate records and display source timestamps, feed failures and coverage limitations.</small></div></div></div></div></section>
   </main>
   <footer class="footer"><div class="shell footer-row"><div><b>CVE<span>Harbor</span></b><small>Independent vulnerability intelligence</small></div><p>© <span id="year">2026</span> CVEHarbor. Public source aggregation. Not a vulnerability scan or professional incident determination.</p><a href="#top">Back to top ↑</a></div>
@@ -178,6 +198,6 @@
     </div>
   </dialog>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=epss-priority-1"></script><script src="workspace.js?v=epss-priority-1"></script><script src="lifecycle.js"></script><script src="operations.js?v=ops-v1"></script>
+  <script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=epss-priority-1"></script><script src="workspace.js?v=epss-priority-1"></script><script src="lifecycle.js"></script><script src="operations.js?v=ops-v1"></script><script src="accounts.js?v=account-beta-1"></script>
 </body>
 </html>

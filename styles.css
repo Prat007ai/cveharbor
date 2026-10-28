@@ -758,3 +758,10 @@ button.tech-chart-link b{
 .ops-download:disabled{opacity:.55;cursor:wait}
 @media(max-width:900px){.ops-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:480px){.ops-form{grid-template-columns:1fr}.ops-span{grid-column:auto}}
+
+.account-panel{max-width:920px;margin:0 auto;padding:22px}
+.account-panel [hidden],#accountVerify[hidden],#accountSignedIn[hidden],#accountSignedOut[hidden]{display:none!important}
+.account-panel .ops-form{align-items:end}
+.account-panel #accountDelete{margin-top:10px}
+.account-panel input[type="checkbox"]{width:auto;min-height:auto;margin-right:8px}
+@media(max-width:600px){.account-panel{padding:15px}}

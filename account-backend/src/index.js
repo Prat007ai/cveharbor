@@ -1,0 +1,82 @@
+// CVEHarbor account API. Cloudflare Worker + D1. No public registration until configured.
+// The sender address must be verified in SMTP2GO. Never place credentials in GitHub.
+const ALLOWED_ORIGIN='https://cveharbor.com';
+const enc=new TextEncoder();
+function response(body,status=200,extra={}){return new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Access-Control-Allow-Origin':ALLOWED_ORIGIN,'Access-Control-Allow-Credentials':'true','Vary':'Origin',...extra}})}
+async function sha(value){const digest=await crypto.subtle.digest('SHA-256',enc.encode(value));return [...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+function token(){return Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('')}
+function cookie(req){return (req.headers.get('cookie')||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('cvh_session='))?.slice(12)||''}
+function setCookie(value,maxAge){return 'cvh_session='+value+'; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age='+maxAge}
+async function me(req,env){const value=cookie(req);if(!/^[a-f0-9]{64}$/.test(value))return null;return env.DB.prepare('SELECT users.id,users.email,sessions.id AS sid FROM sessions JOIN users ON users.id=sessions.user_id WHERE sessions.token_hash=? AND sessions.expires_at>?').bind(await sha(value),Math.floor(Date.now()/1000)).first()}
+async function body(req){const size=Number(req.headers.get('content-length')||0);if(size>18000)throw Error('Request too large');const raw=await req.text();if(raw.length>18000)throw Error('Request too large');return JSON.parse(raw)}
+async function limit(env,key,max){const now=Math.floor(Date.now()/1000),start=now-3600;await env.DB.prepare('DELETE FROM auth_rate_limits WHERE window_start<?').bind(start).run();await env.DB.prepare('INSERT INTO auth_rate_limits(key,window_start,count) VALUES(?,?,1) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN window_start<? THEN 1 ELSE count+1 END,window_start=CASE WHEN window_start<? THEN ? ELSE window_start END').bind(key,now,start,start,now).run();const row=await env.DB.prepare('SELECT count FROM auth_rate_limits WHERE key=?').bind(key).first();return row.count<=max}
+async function emailCode(env,address,code){const response=await fetch('https://api.smtp2go.com/v3/email/send',{method:'POST',headers:{'Content-Type':'application/json','X-Smtp2go-Api-Key':env.SMTP2GO_API_KEY},body:JSON.stringify({sender:env.EMAIL_FROM,to:[address],subject:'CVEHarbor sign in code',text_body:'Your CVEHarbor code: '+code+'\n\nExpires in 10 minutes. If you did not request this, ignore this email.'})});if(!response.ok)throw Error('Email delivery unavailable');const payload=await response.json();if(!payload.data||payload.data.failed>0||payload.data.succeeded<1)throw Error('Email delivery unsuccessful')}
+export default {async fetch(req,env){
+ const url=new URL(req.url),origin=req.headers.get('origin');
+ if(req.method==='OPTIONS'){if(origin!==ALLOWED_ORIGIN)return response({error:'Forbidden'},403);return new Response(null,{status:204,headers:{'Access-Control-Allow-Origin':ALLOWED_ORIGIN,'Access-Control-Allow-Credentials':'true','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST,PUT,DELETE,OPTIONS','Vary':'Origin'}})}
+ if(!url.pathname.startsWith('/v1/'))return response({error:'Not found'},404);
+ if(origin&&origin!==ALLOWED_ORIGIN)return response({error:'Forbidden origin'},403);
+ if(req.method!=='GET'&&origin!==ALLOWED_ORIGIN)return response({error:'Invalid request origin'},403);
+ if(!env.DB)return response({error:'Account service not configured'},503);
+ const path=url.pathname;
+ try {
+  if(path==='/v1/health'&&req.method==='GET')return response({ready:!!(env.SMTP2GO_API_KEY&&env.EMAIL_FROM),accounts:'configured'});
+  if(path==='/v1/auth/request'&&req.method==='POST'){
+   if(!env.SMTP2GO_API_KEY||!env.EMAIL_FROM)return response({error:'Email login unavailable'},503);
+   const data=await body(req),address=String(data.email||'').trim().toLowerCase();
+   if(!/^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]+$/.test(address))return response({error:'Valid email required'},400);
+   const ip=req.headers.get('CF-Connecting-IP')||'unknown';
+   if(!await limit(env,'ip:'+await sha(ip),12)||!await limit(env,'email:'+await sha(address),5))return response({error:'Too many requests'},429);
+   const code=String(crypto.getRandomValues(new Uint32Array(1))[0]%1000000).padStart(6,'0');
+   const id=crypto.randomUUID(),salt=token();
+   await env.DB.prepare('INSERT INTO login_challenges(id,email,token_hash,expires_at,created_at) VALUES(?,?,?,?,?)').bind(id,address,await sha(salt+':'+code),Math.floor(Date.now()/1000)+600,Math.floor(Date.now()/1000)).run();
+   try{await emailCode(env,address,code)}catch(e){await env.DB.prepare('DELETE FROM login_challenges WHERE id=?').bind(id).run();return response({error:'Unable to deliver code'},503)}
+   return response({challenge_id:id,salt,message:'Check your email for a one-time code.'});
+  }
+  if(path==='/v1/auth/verify'&&req.method==='POST'){
+   const data=await body(req),id=String(data.challenge_id||''),salt=String(data.salt||''),code=String(data.code||'');
+   if(!/^[0-9]{6}$/.test(code)||!/^[a-f0-9]{64}$/.test(salt)||id.length>80)return response({error:'Invalid or expired code'},400);
+   const ip=req.headers.get('CF-Connecting-IP')||'unknown';
+   if(!await limit(env,'verify:'+await sha(ip),20))return response({error:'Too many attempts'},429);
+   const row=await env.DB.prepare('SELECT * FROM login_challenges WHERE id=? AND used_at IS NULL AND expires_at>?').bind(id,Math.floor(Date.now()/1000)).first();
+   if(!row||await sha(salt+':'+code)!==row.token_hash)return response({error:'Invalid or expired code'},401);
+   const consumed=await env.DB.prepare('UPDATE login_challenges SET used_at=? WHERE id=? AND used_at IS NULL').bind(Math.floor(Date.now()/1000),id).run();
+   if(consumed.meta.changes!==1)return response({error:'Already used'},401);
+   let user=await env.DB.prepare('SELECT id,email FROM users WHERE email=?').bind(row.email).first();
+   if(!user){const uid=crypto.randomUUID();await env.DB.prepare('INSERT OR IGNORE INTO users(id,email) VALUES(?,?)').bind(uid,row.email).run();user=await env.DB.prepare('SELECT id,email FROM users WHERE email=?').bind(row.email).first()}
+   const session=token();await env.DB.prepare('INSERT INTO sessions(id,user_id,token_hash,expires_at,created_at) VALUES(?,?,?,?,?)').bind(crypto.randomUUID(),user.id,await sha(session),Math.floor(Date.now()/1000)+604800,Math.floor(Date.now()/1000)).run();
+   return response({email:user.email,authenticated:true},200,{'Set-Cookie':setCookie(session,604800)});
+  }
+  const user=await me(req,env);
+  if(path==='/v1/me'&&req.method==='GET')return response(user?{authenticated:true,email:user.email}:{authenticated:false},user?200:401);
+  if(!user)return response({error:'Sign in required'},401);
+  if(path==='/v1/auth/logout'&&req.method==='POST'){await env.DB.prepare('DELETE FROM sessions WHERE id=?').bind(user.sid).run();return response({authenticated:false},200,{'Set-Cookie':setCookie('',0)})}
+  if(path==='/v1/stack'&&req.method==='GET'){const rows=await env.DB.prepare('SELECT technology,product_version FROM user_stack WHERE user_id=? ORDER BY technology').bind(user.id).all();return response({stack:rows.results})}
+  if(path==='/v1/stack'&&req.method==='PUT'){
+   const data=await body(req);if(!Array.isArray(data.stack)||data.stack.length>100)return response({error:'Invalid stack'},400);
+   const rows=data.stack.map(x=>({technology:String(x.technology||'').trim().slice(0,120),product_version:String(x.product_version||'').trim().slice(0,80)}));
+   if(rows.some(x=>!x.technology))return response({error:'Invalid technology'},400);
+   const ops=[env.DB.prepare('DELETE FROM user_stack WHERE user_id=?').bind(user.id),...rows.map(x=>env.DB.prepare('INSERT INTO user_stack(user_id,technology,product_version) VALUES(?,?,?)').bind(user.id,x.technology,x.product_version))];
+   await env.DB.batch(ops);return response({saved:rows.length});
+  }
+  if(path==='/v1/remediations'&&req.method==='GET'){const rows=await env.DB.prepare('SELECT cve_id AS id,status,owner,due,notes,updated_at AS updated FROM remediations WHERE user_id=? ORDER BY updated_at DESC LIMIT 250').bind(user.id).all();return response({remediations:rows.results})}
+  if(path==='/v1/remediations'&&req.method==='PUT'){
+   const data=await body(req);if(!Array.isArray(data.remediations)||data.remediations.length>250)return response({error:'Invalid records'},400);
+   const statuses=new Set(['Open','Investigating','Remediated','Accepted Risk','Not Applicable']);
+   const rows=data.remediations.map(x=>({id:String(x.id||'').toUpperCase(),status:x.status,owner:String(x.owner||'').slice(0,100),due:String(x.due||'').slice(0,10),notes:String(x.notes||'').slice(0,1200)}));
+   if(rows.some(x=>!/^CVE-\d{4}-\d{4,}$/.test(x.id)||!statuses.has(x.status)||x.due&&!/^\d{4}-\d{2}-\d{2}$/.test(x.due)))return response({error:'Invalid record'},400);
+   const ops=[env.DB.prepare('DELETE FROM remediations WHERE user_id=?').bind(user.id),...rows.map(x=>env.DB.prepare('INSERT INTO remediations(user_id,cve_id,status,owner,due,notes,updated_at) VALUES(?,?,?,?,?,?,?)').bind(user.id,x.id,x.status,x.owner,x.due,x.notes,new Date().toISOString().slice(0,10)))];
+   await env.DB.batch(ops);return response({saved:rows.length});
+  }
+  if(path==='/v1/alerts'&&req.method==='GET'){const row=await env.DB.prepare('SELECT enabled,severity,frequency FROM alert_preferences WHERE user_id=?').bind(user.id).first();return response({preferences:row||{enabled:0,severity:'critical',frequency:'daily'},delivery_active:false})}
+  if(path==='/v1/alerts'&&req.method==='PUT'){
+   const data=await body(req);if(!['critical','high'].includes(data.severity)||!['daily','hourly'].includes(data.frequency))return response({error:'Invalid preferences'},400);
+   await env.DB.prepare('INSERT INTO alert_preferences(user_id,enabled,severity,frequency) VALUES(?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET enabled=excluded.enabled,severity=excluded.severity,frequency=excluded.frequency,updated_at=CURRENT_TIMESTAMP').bind(user.id,data.enabled?1:0,data.severity,data.frequency).run();
+   return response({saved:true,delivery_active:false,message:'Preferences saved. Alert sending is not yet enabled.'});
+  }
+  if(path==='/v1/account'&&req.method==='DELETE'){
+   await env.DB.prepare('DELETE FROM users WHERE id=?').bind(user.id).run();return response({deleted:true},200,{'Set-Cookie':setCookie('',0)});
+  }
+  return response({error:'Not found'},404);
+ }catch(error){return response({error:'Unable to process request'},500)}
+}};
