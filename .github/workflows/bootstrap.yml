@@ -180,6 +180,7 @@ jobs:
           if [ -f malware-data.js ]; then cp malware-data.js "$RUNNER_TEMP/cveharbor-malware-data.js"; fi
           if [ -f threat-data.js ]; then cp threat-data.js "$RUNNER_TEMP/cveharbor-threat-data.js"; fi
           if [ -f data/threat-ip-history.json ]; then cp data/threat-ip-history.json "$RUNNER_TEMP/cveharbor-threat-history.json"; fi
+          if [ -f data/ip-geolocation-cache.json ]; then cp data/ip-geolocation-cache.json "$RUNNER_TEMP/cveharbor-geo-cache.json"; fi
           for file in fortigate-threat-ip-objects.txt sophos-threat-ip-api.txt fortigate-suspicious-ip-initial.txt fortigate-suspicious-ip-incremental.txt sophos-suspicious-ip-initial.txt sophos-suspicious-ip-incremental.txt; do
             if [ -f "$file" ]; then cp "$file" "$RUNNER_TEMP/$file"; fi
           done
@@ -195,6 +196,7 @@ jobs:
             if [ -f "$RUNNER_TEMP/cveharbor-malware-data.js" ]; then cp "$RUNNER_TEMP/cveharbor-malware-data.js" malware-data.js; fi
             if [ -f "$RUNNER_TEMP/cveharbor-threat-data.js" ]; then cp "$RUNNER_TEMP/cveharbor-threat-data.js" threat-data.js; fi
             if [ -f "$RUNNER_TEMP/cveharbor-threat-history.json" ]; then mkdir -p data; cp "$RUNNER_TEMP/cveharbor-threat-history.json" data/threat-ip-history.json; git add data/threat-ip-history.json; fi
+            if [ -f "$RUNNER_TEMP/cveharbor-geo-cache.json" ]; then mkdir -p data; cp "$RUNNER_TEMP/cveharbor-geo-cache.json" data/ip-geolocation-cache.json; git add data/ip-geolocation-cache.json; fi
             for file in fortigate-threat-ip-objects.txt sophos-threat-ip-api.txt fortigate-suspicious-ip-initial.txt fortigate-suspicious-ip-incremental.txt sophos-suspicious-ip-initial.txt sophos-suspicious-ip-incremental.txt; do
               if [ -f "$RUNNER_TEMP/$file" ]; then cp "$RUNNER_TEMP/$file" "$file"; fi
             done
