@@ -19,6 +19,16 @@ function falseWordPressMatch(record) {
   const summary = String(record.title || '') + ' ' + String(record.summary || '');
   return /\bcpanel\b/i.test(summary) && /\bwp_squared\b/i.test(affected) && !/\bwordpress\s+(?:core|plugin|theme)\b/i.test(summary);
 }
+function verifiedCategories(record) {
+  const categories = Array.isArray(record.categories) ? record.categories : [];
+  // Third party articles about defensive products must not become affected product claims.
+  // Keep a guard for previously published snapshots until the Python collector refreshes.
+  if (['CVE-2026-109618', 'CVE-2026-109619'].includes(record.id)) return categories.filter(x => x === 'PHP');
+  if (record.id === 'CVE-2026-111497') return categories.filter(x => ['.NET / ASP.NET', '.NET Core', 'PHP'].includes(x));
+  if (record.source_type === 'php_upstream' && /\bphp[-_: ]?src\b/i.test(String(record.affected || ''))) return ['PHP'];
+  return categories;
+}
+
 export function selectDigest(records, selectedTechnologies, severityPreference, lastSent = new Map(), now = Date.now(), max = MAX_DIGEST_ITEMS) {
   const selected = new Set((Array.isArray(selectedTechnologies) ? selectedTechnologies : []).filter(x => typeof x === 'string'));
   const minDate = new Date(now - LOOKBACK_DAYS * 86400000).toISOString().slice(0, 10);
@@ -29,7 +39,7 @@ export function selectDigest(records, selectedTechnologies, severityPreference, 
     if (!['critical', 'high'].includes(record.severity)) continue;
     if (severityPreference !== 'high' && record.severity !== 'critical') continue;
     if (!recent(record, minDate)) continue;
-    const matches = (record.categories || []).filter(x => selected.has(x) && !(x === 'WordPress / Plugins' && falseWordPressMatch(record)));
+    const matches = verifiedCategories(record).filter(x => selected.has(x) && !(x === 'WordPress / Plugins' && falseWordPressMatch(record)));
     if (!matches.length) continue;
     const revision = revisionOf(record);
     if (lastSent.has(record.id) && lastSent.get(record.id) >= revision) continue;

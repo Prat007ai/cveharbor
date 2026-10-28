@@ -43,6 +43,31 @@ test('excludes cPanel WP Squared false category matches from WordPress reports',
   });
   assert.equal(selectDigest([record], ['WordPress / Plugins'], 'high', new Map(), reference).items.length, 0);
 });
+test('source discussion does not falsely alert Fortinet or React subscribers about PHP', () => {
+  const php = example('CVE-2026-109618', {
+    source_type: 'php_upstream', title: 'RCE via OOM corruption',
+    affected: 'php: php-src (< 8.4.27)',
+    categories: ['Fortinet','PHP','React / Next.js'],
+    known_exploited: true
+  });
+  assert.equal(selectDigest([php], ['Fortinet'], 'high', new Map(), reference).items.length, 0);
+  assert.equal(selectDigest([php], ['React / Next.js'], 'high', new Map(), reference).items.length, 0);
+  const actual = selectDigest([php], ['PHP','Fortinet'], 'high', new Map(), reference);
+  assert.equal(actual.items.length, 1);
+  assert.deepEqual(actual.items[0].matchingCategories, ['PHP']);
+});
+test('the .NET Brotli CVE may concern PHP but not Fortinet or unrelated categories', () => {
+  const record = example('CVE-2026-111497', {
+    source_type: 'vendor_baseline', title: '.NET Brotli decompression out of bounds write',
+    categories: ['.NET / ASP.NET', '.NET Core', 'PHP', 'Fortinet','Linux','Windows'],
+    affected: 'Affected .NET runtime versions and Windows PHP cURL builds'
+  });
+  assert.deepEqual(
+    selectDigest([record], ['Fortinet'], 'critical', new Map(), reference).items, []);
+  assert.equal(selectDigest([record], ['PHP'], 'critical', new Map(), reference).items.length, 1);
+  assert.equal(selectDigest([record], ['.NET Core'], 'critical', new Map(), reference).items.length, 1);
+});
+
 test('caps email size and keeps the remaining unsent records eligible', () => {
   const records = Array.from({length: 45}, (_, i) => example('CVE-2026-' + (10000 + i)));
   const report = selectDigest(records, ['WordPress / Plugins'], 'high', new Map(), reference, 30);
