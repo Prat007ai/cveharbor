@@ -923,8 +923,20 @@ def run() -> int:
                   ("kubernetes",kubernetes_items,from_kubernetes),
                   ("mariadb",mariadb_items,from_mariadb),
                   ("redhat",redhat_items,from_redhat))
-    if os.getenv("WORDFENCE_API_KEY"):
-        operations += (("wordfence",wordfence_items,from_wordfence),)
+    # Disabled by default after Wordfence reported HTTP 429 and warned about
+    # account suspension. Merely setting the secret must NEVER trigger a request.
+    # Re-enable only with an explicit opt-in, at most once per 24 hours.
+    wf_enabled = os.getenv("WORDFENCE_FETCH_ENABLED") == "true"
+    wf_last = (sources.get("wordfence") or {}).get("last_attempt") or ""
+    wf_allowed = not wf_last
+    if wf_last:
+        try:
+            previous_attempt = datetime.fromisoformat(wf_last.replace("Z", "+00:00"))
+            wf_allowed = (NOW - previous_attempt).total_seconds() >= 24 * 3600
+        except ValueError:
+            wf_allowed = False
+    if wf_enabled and os.getenv("WORDFENCE_API_KEY") and wf_allowed:
+        operations += (("wordfence", wordfence_items, from_wordfence),)
     # Do not preserve stale error statuses for intentionally retired adapters.
     sources={name:sources.get(name,{}) for name,_,_ in operations}
     good = 0
