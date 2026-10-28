@@ -121,6 +121,21 @@ def classify(*, product: str = "", ecosystem: str = "", text: str = "", cpes: li
     add("Sophos Firewall", has(r"(?:sophos[ _-]*(?:firewall|sfos|xg\b|xgs\b)|sophos_firewall|sophos_xg_firewall|sophos_xgs_firewall)"))
     add("Exchange SE", has(r"(?:exchange[ _-]*server[ _-]*(?:subscription[ _-]*edition|se\b)|exchange[ _-]*se\b|exchange_server_subscription_edition)"))
     add("Windows 11 OS", has(r"\b(?:microsoft[ _-]*)?windows[ _-]*11(?:\b|[_-])"))
+    # Product-specific matches stay conservative. Public web marketing does
+    # not prove that any particular release is deployed by Whitecap.
+    add("Angular", eco == "npm" and hp(r"(?:^@angular/|^angular$|^angularjs$)") or hp(r"(?:\bangular (?:framework|core|ssr|http client)\b|angularjs)"))
+    add("React / Next.js", hp(r"(?:\breact[-_](?:server[-_])?dom\b|^react$|next(?:\.js)?|nextjs|react server components|react[-_]native(?:[-_]|$))"))
+    add("JavaScript / TypeScript", hp(r"(?:\btypescript\b|\bjavascript\b|\bdeno\b|\bvite\b|\bwebpack\b)"))
+    add("jQuery / Bootstrap", hp(r"(?:\bjquery\b|\bbootstrap\b|^@popperjs/core$)"))
+    add("Kendo UI", hp(r"(?:\bkendo(?:react|[_ .-]?ui)?\b|@progress/kendo)"))
+    add("SharePoint / SharePoint Server", has(r"(?:\bsharepoint\b|sharepoint_server|sharepoint online|sharepoint workflow manager)"))
+    add("Microsoft Power Platform", has(r"(?:\bpower platform\b|\bpower apps\b|\bpower automate\b|\bpower pages\b|\bmicrosoft dataverse\b|microsoft[_ .-]?powerplatform)"))
+    add("Dynamics 365", has(r"(?:\bdynamics 365\b|microsoft dynamics|dynamics[_ .-]?crm)"))
+    add("Microsoft Fabric / Power BI", has(r"(?:microsoft fabric|\bpower bi\b|powerbi\b|microsoft[_ .-]?fabric)"))
+    add("Azure AI / AI SDK", has(r"(?:azure openai|azure ai(?: services| foundry| search| sdk)?|azure cognitive services|azure-ai-|semantic kernel|\bcopilot studio\b|microsoft ai builder)"))
+    add("NoSQL / MongoDB", hp(r"(?:\bmongodb\b|mongo[_-]?db|^mongoose$|\bcouchdb\b|\bnosql\b|\bcosmos db\b|\bredis\b)"))
+    add("AWS", hp(r"(?:amazon web services|\baws(?:[-_ ](?:sdk|lambda|cli|cloud|ec2|s3))?\b|\bamazon (?:ec2|s3|cloudfront|lambda)\b)"))
+    add("iOS / Android", hp(r"(?:\bios\b|\bandroid\b|\bswiftui\b|\breact.native\b|\bflutter\b|\bxamarin\b|\bnet maui\b)"))
     add("Fortinet", has(r"\b(?:fortinet|fortigate|fortios|fortisiem|fortimanager|fortianalyzer)\b"))
     server_windows = has(r"\b(?:windows[\s_-]+server(?:[\s_-]+(?:[0-9]{4}|[0-9]+))?|windows_server(?:_[0-9]+)?|hyper[\s_-]?v server)\b")
     generic_windows = has(r"\b(?:microsoft[ _-]+windows(?![\s_-]+(?:server|11))|windows(?![\s_-]+(?:server|11))|win32)\b")
@@ -187,7 +202,7 @@ def vendor_baseline_items() -> list[dict]:
     for entry in data.get("advisories") or []:
         fid = str(entry.get("id") or "")
         cats = entry.get("categories") or []
-        if not CVERE.match(fid) or not cats or any(c not in ALLOWED for c in cats):
+        if not (CVERE.match(fid) or GHSA.match(fid)) or not cats or any(c not in ALLOWED for c in cats):
             raise ValueError(f"Invalid vendor baseline advisory {fid}")
         sources = [source for source in entry.get("sources") or []
                    if clean_url(source.get("url"))]
@@ -195,7 +210,7 @@ def vendor_baseline_items() -> list[dict]:
             raise ValueError(f"Missing official reference for {fid}")
         record = dict(entry)
         record.update({
-            "kind": "cve",
+            "kind": "cve" if CVERE.match(fid) else "advisory",
             "source_type": "vendor_baseline",
             "source_updated_at": entry.get("updated") or entry.get("published") or "",
             "status": "Vendor-sourced historical baseline; not newly disclosed",
