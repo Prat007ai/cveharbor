@@ -195,6 +195,39 @@ def collect():
             report["sources"][key]={"ok":True,"count":len(entries),"url":url}
         except Exception as exc:
             report["sources"][key]={"ok":False,"error":str(exc)[:160],"url":url}
+    # Geographic attribution is approximate IP network registration data, not
+    # the location of a person controlling the address. Cache to minimize API calls.
+    cache_path=ROOT/"data"/"ip-geolocation-cache.json"
+    try:
+        cache=json.loads(cache_path.read_text(encoding="utf-8")) if cache_path.exists() else {}
+    except (ValueError,OSError):
+        cache={}
+    for entry in report["indicators"]:
+        ip=entry["ip"]
+        geo=cache.get(ip)
+        if not isinstance(geo,dict):
+            try:
+                req=urllib.request.Request("https://ipwho.is/"+ip,
+                    headers={"User-Agent":"CVEHarbor-ThreatIntel/1.0 (https://cveharbor.com)"})
+                with urllib.request.urlopen(req,timeout=8) as response:
+                    result=json.loads(response.read(10000))
+                country=str(result.get("country") or "")[:70]
+                latitude=result.get("latitude")
+                longitude=result.get("longitude")
+                if (result.get("success") is True and country
+                    and isinstance(latitude,(float,int)) and isinstance(longitude,(float,int))
+                    and -90<=latitude<=90 and -180<=longitude<=180):
+                    geo={"country":country,"country_code":str(result.get("country_code") or "")[:3],
+                         "latitude":float(latitude),"longitude":float(longitude)}
+                    cache[ip]=geo
+            except (ValueError,OSError,TimeoutError,KeyError):
+                pass
+        if isinstance(geo,dict):
+            entry["geo"]=geo
+    cache_path.parent.mkdir(parents=True,exist_ok=True)
+    cache_path.write_text(json.dumps(cache,sort_keys=True,indent=2)+"\n",encoding="utf-8")
+    report["geolocated_count"]=sum(1 for x in report["indicators"] if x.get("geo"))
+    report["geo_source"]="ipwho.is IP geolocation; approximate network location, not verified origin"
     report["count"]=len(report["indicators"])
     export_templates(report)
     # Never make source first-seen or the collection timestamp look like attacker last-seen evidence.
