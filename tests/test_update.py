@@ -532,6 +532,33 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
                 with self.assertRaisesRegex(ValueError,'Duplicate'):
                     u.publish(sample)
 
+    def test_rss_vendor_advisory_requires_cve_and_publication(self):
+        payload={"vendor":"fortinet_rss","title":"FG-IR security advisory CVE-2026-12345",
+                 "summary":"FortiOS security issue","url":"https://www.fortiguard.com/psirt",
+                 "published":"2026-10-25"}
+        result=u.from_vendor_rss(payload)
+        self.assertEqual(result["id"],"CVE-2026-12345")
+        self.assertEqual(result["categories"],["Fortinet"])
+        self.assertIsNone(u.from_vendor_rss({**payload,"published":""}))
+        self.assertIsNone(u.from_vendor_rss({**payload,"title":"Security bulletin","summary":"no identifier"}))
+
+    def test_osv_package_cve_mapping(self):
+        item={"id":"GHSA-aaaa-bbbb-cccc","aliases":["CVE-2026-123456"],
+              "published":"2026-10-20T00:00:00Z","modified":"2026-10-26T00:00:00Z",
+              "summary":"Python package bug",
+              "affected":[{"package":{"name":"example","ecosystem":"PyPI"},
+                           "ranges":[{"events":[{"introduced":"0"},{"fixed":"2.0"}]}]}]}
+        record=u.from_osv(item)
+        self.assertEqual(record["id"],"CVE-2026-123456")
+        self.assertIn("Python / PyPI",record["categories"])
+        self.assertIn("2.0",record["remediation"])
+
+    def test_rss_xml_parser(self):
+        xml="<rss><channel><item><title>CVE-2026-56789 FortiOS</title><link>https://example.org</link><pubDate>Mon, 26 Oct 2026 09:00:00 GMT</pubDate><description>Security fix</description></item></channel></rss>"
+        with patch.object(u,"get_text",return_value=xml):
+            record=u.rss_vendor_items("fortinet_rss")[0]
+        self.assertEqual(record["published"],"2026-10-26")
+
     def test_url_rejection(self):
         self.assertFalse(u.clean_url('javascript:alert(1)'))
         self.assertFalse(u.clean_url('http://example.org'))
