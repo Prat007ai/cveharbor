@@ -38,7 +38,13 @@
       status:prior.status||baseline.status,
     });
   }
-  const items=[...records.values()].sort((a,b)=>String(b.updated||b.published||'').localeCompare(String(a.updated||a.published||'')));
+  const items=[...records.values()].map(record=>{
+    // .NET / ASP.NET is the inclusive overview. .NET Core remains a filter for
+    // the modern subset, including advisories previously tagged only .NET Core.
+    if((record.categories||[]).includes('.NET Core') && !(record.categories||[]).includes('.NET / ASP.NET'))
+      return {...record,categories:['.NET / ASP.NET',...record.categories]};
+    return record;
+  }).sort((a,b)=>String(b.updated||b.published||'').localeCompare(String(a.updated||a.published||'')));
   const $ = id => document.getElementById(id);
   const cveIDs = rows => [...new Set(rows.filter(x => /^CVE-\d{4}-\d+$/i.test(x.id)).map(x => x.id))];
   const text = (tag, className, content) => {const n=document.createElement(tag);if(className)n.className=className;n.textContent=content||'';return n;};
