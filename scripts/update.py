@@ -431,7 +431,9 @@ def run() -> int:
     merged = dict(previous)
     # Seed historically verified vendor advisories as baseline records. They
     # retain original disclosure dates and are not treated as new feed events.
-    for record in vendor_baseline_items():
+    baseline = vendor_baseline_items()
+    baseline_ids = {record["id"] for record in baseline}
+    for record in baseline:
         rid = record["id"]
         merged[rid] = merge_record(merged.get(rid), record)
     sources = dict(prev.get("sources") or {})
@@ -466,9 +468,15 @@ def run() -> int:
     # Preserve the newest disclosures while reserving space for CISA KEV entries.
     # Do not let thousands of old KEV entries crowd out today's newly updated CVEs.
     recent = sorted(merged.values(), key=lambda x:(x.get("source_updated_at") or x.get("updated") or "", x.get("published") or ""), reverse=True)
-    chosen = {r["id"]: r for r in recent[:700]}
+    # Reserve space for vendor-confirmed baseline advisories so newly created
+    # category sections are populated even when 900 more recent items exist.
+    chosen = {rid: merged[rid] for rid in baseline_ids if rid in merged}
+    for r in recent[:max(0, 700 - len(chosen))]:
+        chosen.setdefault(r["id"], r)
     exploited = [r for r in recent if r.get("known_exploited")]
     for r in exploited[:200]:
+        if len(chosen) >= MAX_RECORDS:
+            break
         chosen.setdefault(r["id"], r)
     for r in recent:
         if len(chosen) >= MAX_RECORDS:
