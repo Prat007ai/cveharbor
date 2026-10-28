@@ -39,6 +39,33 @@ class ThreatFeedTests(unittest.TestCase):
             self.assertNotIn("127.0.0.1",sophos)
             self.assertNotIn("<FirewallRule>",sophos)
 
+    def test_cumulative_and_incremental_exports(self):
+        import tempfile, json
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            first={"checked_at":"2026-10-28T10:00:00Z",
+                   "sources":{"dshield_scanners":{"ok":True}},
+                   "indicators":[{"ip":"8.8.8.8","source_id":"dshield_scanners"}]}
+            second={"checked_at":"2026-10-29T10:00:00Z",
+                    "sources":{"dshield_scanners":{"ok":True}},
+                    "indicators":[{"ip":"1.1.1.1","source_id":"dshield_scanners"}]}
+            with patch.object(mod,"ROOT",root),patch.object(mod,"HISTORY",root/"data"/"threat-ip-history.json"):
+                mod.export_templates(first)
+                mod.export_templates(second)
+            history=json.loads((root/"data"/"threat-ip-history.json").read_text())
+            self.assertEqual(set(history["addresses"]),{"8.8.8.8","1.1.1.1"})
+            full=(root/"fortigate-suspicious-ip-initial.txt").read_text()
+            delta=(root/"fortigate-suspicious-ip-incremental.txt").read_text()
+            self.assertIn('edit "Suspicious IP Block"',full)
+            self.assertIn('CVEH_8_8_8_8',full)
+            self.assertIn('CVEH_1_1_1_1',full)
+            self.assertIn('CVEH_1_1_1_1',delta)
+            self.assertNotIn('CVEH_8_8_8_8',delta)
+            sophos=(root/"sophos-suspicious-ip-incremental.txt").read_text()
+            self.assertIn("REPLACE the complete HostList",sophos)
+            self.assertNotIn("<IPHostGroup>",sophos)
+
     def test_does_not_label_collection_time_as_last_seen(self):
         content=(root/'scripts/update_threats.py').read_text()
         self.assertIn('"observed_at":None',content)
