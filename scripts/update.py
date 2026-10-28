@@ -42,9 +42,15 @@ def utc_iso() -> str:
 
 
 def datepart(s: str | None) -> str:
+    """Only source-provided valid dates count as publication or update dates."""
     if not s:
-        return NOW.date().isoformat()
-    return str(s)[:10]
+        return ""
+    candidate = str(s)[:10]
+    try:
+        parsed = datetime.strptime(candidate, "%Y-%m-%d")
+        return candidate if parsed.strftime("%Y-%m-%d") == candidate else ""
+    except ValueError:
+        return ""
 
 
 def crop(s: object, limit: int = 900) -> str:
@@ -245,6 +251,8 @@ def ghsa_items() -> list[dict]:
                         output[item["ghsa_id"]] = item
                 if len(batch) < 100:
                     break
+    if not output:
+        raise RuntimeError("GitHub advisory feed returned no published records")
     return list(output.values())
 
 def from_ghsa(item: dict) -> dict | None:
@@ -285,7 +293,7 @@ def from_ghsa(item: dict) -> dict | None:
     sev = base_sev if base_sev in {"critical", "high", "medium", "low"} else "bulletin"
     if item.get("type") == "malware":
         sev = "bulletin"
-    if sev not in {"critical", "high", "medium", "bulletin"}:
+    if sev not in {"critical", "high", "medium", "low", "bulletin"}:
         return None
     cvss_obj = item.get("cvss") or {}
     cvss = cvss_obj.get("score") if isinstance(cvss_obj, dict) else None
@@ -330,6 +338,8 @@ def php_upstream_items() -> list[dict]:
         for item in batch:
             if isinstance(item, dict) and item.get("ghsa_id"):
                 output[item["ghsa_id"]] = item
+    if not output:
+        raise RuntimeError("PHP upstream feed returned no published advisories")
     return list(output.values())
 
 
@@ -408,13 +418,13 @@ def nvd_items() -> list[dict]:
                 break
             # Unauthenticated NVD API requests have strict rate limits.
             time.sleep(7 if not os.getenv("NVD_API_KEY") else 1)
-        else:
-            if index < int(data.get("totalResults", 0)):
-                print(f"WARNING: NVD {start_name} window has more records than "
-                      f"the {max_pages} page sampling cap.", file=sys.stderr, flush=True)
+        if index < int(data.get("totalResults", 0)):
+            raise RuntimeError(f"NVD {start_name} pagination incomplete: {index} of {data.get('totalResults')} returned")
         # Avoid burst limits when moving between NVD query windows.
         if not os.getenv("NVD_API_KEY"):
             time.sleep(6)
+    if not collected:
+        raise RuntimeError("NVD returned no CVEs for its publication and modification windows")
     return list(collected.values())
 
 def from_nvd(v: dict) -> dict | None:
@@ -445,7 +455,7 @@ def from_nvd(v: dict) -> dict | None:
     elif score >= 4.0:
         sev = "medium"
     else:
-        return None
+        sev = "low"
     references = [{"label": "NVD CVE record", "url": f"https://nvd.nist.gov/vuln/detail/{fid}"}]
     primary = [x for x in cve.get("references") or [] if "Vendor Advisory" in (x.get("tags") or [])]
     for x in primary[:3]:
@@ -470,6 +480,8 @@ def kev_items() -> list[dict]:
     data = get_json(SOURCES["cisa_kev"], "cisa_kev")
     if not isinstance(data, dict) or not isinstance(data.get("vulnerabilities"), list):
         raise ValueError("CISA KEV response missing vulnerabilities")
+    if len(data["vulnerabilities"]) < 100:
+        raise RuntimeError("CISA KEV returned an unexpectedly small catalog")
     return data["vulnerabilities"]
 
 
@@ -502,7 +514,7 @@ def merge_record(old: dict, new: dict) -> dict:
         return new
     # GitHub generally provides better fixed package versions. Do not replace
     # an actionable package detail with NVD's generic patch instructions.
-    rank = {"vendor_baseline": 4, "php_upstream": 3.5, "github": 3, "nvd": 2, "cisa_kev": 1}
+    rank = {"php_upstream": 4, "github": 3, "vendor_baseline": 2.5, "nvd": 2, "cisa_kev": 1}
     chosen = new if rank.get(new.get("source_type"), 0) >= rank.get(old.get("source_type"), 0) else old
     merged = dict(chosen)
     merged["categories"] = sorted(set(old.get("categories") or []) | set(new.get("categories") or []))
