@@ -15,6 +15,7 @@ on:
       - tests/test_update.py
       - account-backend/**
       - accounts.js
+      - disclosure-trend.js
       - scripts/browser_smoke.mjs
       - scripts/update_threats.py
       - threats.js
@@ -38,6 +39,7 @@ on:
       - malware-data.js
       - account-backend/**
       - accounts.js
+      - disclosure-trend.js
   schedule:
     - cron: '17 * * * *'
   workflow_dispatch:
@@ -71,11 +73,11 @@ jobs:
       - name: Unit and integration tests
         run: python -m unittest discover -s tests -v && python -m py_compile scripts/update_malware.py
       - name: Validate JavaScript
-        run: node --check app.js && node --check data.js && node --check accounts.js && node --check geo-map.js && node --check malware.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js
+        run: node --check app.js && node --check data.js && node --check accounts.js && node --check disclosure-trend.js && node --check geo-map.js && node --check malware.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js
       - name: Test digest matching and email rendering
         run: cd account-backend && npm test
       - name: Verify public build
-        run: python scripts/build_site.py
+        run: python scripts/build_site.py && test -f public/disclosure-trend.js
       - name: Install DOM smoke test dependency
         run: npm install --no-save --no-package-lock jsdom@26
       - name: Exercise site interactions
@@ -143,7 +145,7 @@ jobs:
       - name: Unit tests
         run: python -m unittest discover -s tests -v && python -m py_compile scripts/update_malware.py
       - name: Validate browser JavaScript
-        run: node --check app.js && node --check data.js && node --check accounts.js && node --check geo-map.js && node --check malware.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js
+        run: node --check app.js && node --check data.js && node --check accounts.js && node --check disclosure-trend.js && node --check geo-map.js && node --check malware.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js
       - name: Test digest matching and email rendering
         run: cd account-backend && npm test
       - name: Install smoke test dependency
@@ -229,7 +231,7 @@ jobs:
         continue-on-error: true
         run: python scripts/update_lifecycle.py
       - name: Build public site files
-        run: python scripts/build_site.py
+        run: python scripts/build_site.py && test -f public/disclosure-trend.js
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload Pages artifact
