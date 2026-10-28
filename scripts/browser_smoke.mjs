@@ -113,5 +113,17 @@ workspaceDocument.getElementById('securityLookup').dispatchEvent(new workspaceWi
 assert.ok(workspaceDocument.querySelectorAll('#securityLookupResults .workspace-result').length>0,'lookup results visible');
 assert.ok(html.includes('id="operationsCentre"'),'operations centre exists');
 assert.ok(fs.readFileSync('operations.js','utf8').includes('https://api.osv.dev/v1/query'),'version checker uses OSV');
+const opsDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
+opsDom.window.CVEHARBOR_DATA=window.CVEHARBOR_DATA;
+opsDom.window.CVEHARBOR_CATALOG=window.CVEHARBOR_CATALOG;
+opsDom.window.CVEHARBOR_THREATS={indicators:[]};
+opsDom.window.eval(fs.readFileSync('operations.js','utf8'));
+const opsDoc=opsDom.window.document;
+assert.equal(opsDoc.querySelectorAll('#versionEcosystem option').length,8,'package ecosystems available');
+opsDoc.getElementById('remediationCve').value='CVE-2026-12345';
+opsDoc.getElementById('remediationForm').dispatchEvent(new opsDom.window.Event('submit',{bubbles:true,cancelable:true}));
+assert.match(opsDoc.getElementById('remediationCount').textContent,/1 tracked/,'local remediation form saves item');
+assert.equal(opsDoc.querySelectorAll('#firewallDownloads a').length,4,'firewall downloads available');
+
 assert.ok(html.includes('id="remediationForm"')&&html.includes('id="firewallCentre"'),'tracker and firewall centre present');
 console.log('CVEHarbor browser smoke passed: 38 categories, publication badges, list, details, focus, search and feed status.');
