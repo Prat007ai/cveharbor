@@ -8,7 +8,7 @@
   <meta property="og:title" content="CVEHarbor | Know the risk. Find the fix.">
   <meta property="og:description" content="Vulnerability advisories, severity dashboards, affected versions, vendor sources and remediation guidance.">
   <title>CVEHarbor | Vulnerability Intelligence</title>
-  <link rel="stylesheet" href="styles.css?v=vendor-cats-1">
+  <link rel="stylesheet" href="styles.css?v=20261028a">
 </head>
 <body>
   <a class="skip-link" href="#advisories">Skip to advisories</a>
@@ -21,7 +21,6 @@
       <nav class="topnav" aria-label="Main navigation">
         <a href="#dashboard">Overview</a><a href="#advisories">Advisories</a><a href="#technology">Technologies</a><a href="#methodology">Methodology</a>
       </nav>
-      <span class="preview-status" id="feedStatus"><span class="status-dot"></span> Starting feed...</span>
     </div>
   </div>
   <main>
@@ -40,7 +39,7 @@
         </div>
       </div>
     </section>
-    <div class="shell"><div class="notice" role="status"><span class="notice-icon">i</span><div><b id="feedHeadline">Feed startup required.</b> <span id="feedDescription">No hourly sync has completed. Counts shown here are not evidence that monitored technologies are safe.</span><div id="sourceHealth" class="source-health" aria-label="Feed source status"></div></div><span class="notice-date" id="snapshotDate">Last success: Never</span></div></div>
+
     <section id="technology" class="shell section technology-quickjump" aria-labelledby="categoryTitle">
       <div class="section-heading"><div><p class="eyebrow">EXPLORE BY PLATFORM</p><h2 id="categoryTitle">25 technology groups. One clear view.</h2><p class="section-sub">Select a technology to jump directly to its advisories. Your most commonly used platforms appear first.</p></div><span class="section-side">CLICK TO FILTER AND JUMP <span class="small-star">✦</span></span></div>
       <div class="category-grid" id="categoryGrid" aria-label="Most commonly used technologies"></div>
@@ -94,8 +93,10 @@
 
     <section id="methodology" class="shell section"><div class="method-grid"><div><p class="eyebrow">TRUST & TRANSPARENCY</p><h2>Source first. Clarity always.</h2><p class="method-copy">CVEHarbor is being built to turn technical advisories into decisions people can act on. Each record distinguishes <strong>published</strong>, <strong>last source update</strong> and <strong>first indexed</strong>. Feed health is visible. A record being indexed does not mean it has been independently reproduced or that your systems are affected.</p><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener noreferrer" class="quiet-link">Explore CISA Known Exploited Vulnerabilities ↗</a></div><div class="method-steps"><div><span>01</span><div><b>Verify</b><small>Collect GitHub reviewed advisories, NVD entries and CISA KEV data each hour, alongside dated historical vendor advisories. Historical records retain their original disclosure dates.</small></div></div><div><span>02</span><div><b>Explain</b><small>Include confirmed affected versions, impact, fixes and exploitation status.</small></div></div><div><span>03</span><div><b>Review</b><small>Deduplicate records and display source timestamps, feed failures and coverage limitations.</small></div></div></div></div></section>
   </main>
-  <footer class="footer"><div class="shell footer-row"><div><b>CVE<span>Harbor</span></b><small>Independent vulnerability intelligence</small></div><p>© <span id="year">2026</span> CVEHarbor. Public source aggregation. Not a vulnerability scan or professional incident determination.</p><a href="#top">Back to top ↑</a></div></footer>
+  <footer class="footer"><div class="shell footer-row"><div><b>CVE<span>Harbor</span></b><small>Independent vulnerability intelligence</small></div><p>© <span id="year">2026</span> CVEHarbor. Public source aggregation. Not a vulnerability scan or professional incident determination.</p><a href="#top">Back to top ↑</a></div>
+    <div class="shell footer-status"><div class="shell"><div class="notice" role="status"><span class="notice-icon">i</span><div><span class="preview-status" id="feedStatus"><span class="status-dot"></span> Starting feed...</span> <b id="feedHeadline">Feed startup required.</b> <span id="feedDescription">No hourly sync has completed. Counts shown here are not evidence that monitored technologies are safe.</span><div id="sourceHealth" class="source-health" aria-label="Feed source status"></div></div><span class="notice-date" id="snapshotDate">Last success: Never</span></div></div></div>
+  </footer>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script src="data.js"></script><script src="app.js?v=vendor-cats-1"></script>
+  <script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=20261028a"></script>
 </body>
 </html>
