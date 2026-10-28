@@ -114,7 +114,7 @@ class FeedTests(unittest.TestCase):
         self.assertTrue(exported.exists(),result.stdout + result.stderr)
         body=exported.read_text(encoding='utf-8')
         self.assertTrue(body.startswith('window.CVEHARBOR_CATALOG = '))
-        obj=json.loads(body.partition(' = ')[2].rstrip('\\n;'))
+        obj=json.loads(body.partition(' = ')[2].strip().removesuffix(';'))
         self.assertEqual(25,len(obj['categories']))
         for name in ('Progress Telerik','Sitefinity','Veeam Backup & Replication',
                      'Sophos Firewall','Windows 11 OS','Exchange SE'):
