@@ -1,0 +1,178 @@
+CVEHarbor Threat IP Intelligence | 2026-10-28T14:19:23.315278+00:00
+Permanent logical group: Suspicious IP Block
+Cumulative indexed IPs: 20
+New since prior published snapshot: 20
+REVIEW ONLY: reported indicators are NOT approved firewall blocks.
+Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
+No rules or policies are created or enabled. No old IPs are removed.
+The incremental file is not a comparison against your firewall.
+If you skipped an update, use the cumulative file and reconcile existing objects.
+Collection timestamps are NOT verified source last-seen times.
+
+Sophos Firewall uses an XML API, NOT FortiGate CLI syntax.
+Templates below contain placeholders, not credentials.
+Use a trusted management host and an authenticated POST to /webconsole/APIController.
+Ensure the firewall XML API supports this request on your firmware.
+Submit the XML portion as ONE request and inspect the API response.
+Add / update host objects only after admin review.
+Never overwrite an existing group HostList without reading its current members.
+No firewall rule is created or activated.
+
+===== XML REQUEST START =====
+<Request>
+  <Login>
+    <Username>REPLACE_ADMIN_USERNAME</Username>
+    <Password>REPLACE_ADMIN_PASSWORD</Password>
+  </Login>
+  <Set operation="add">
+    <IPHost>
+      <Name>CVEH_5_189_160_21</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>5.189.160.21</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_23_94_68_19</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>23.94.68.19</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_27_133_154_218</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>27.133.154.218</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_34_204_119_63</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>34.204.119.63</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_50_16_16_211</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>50.16.16.211</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_62_167_236_39</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>62.167.236.39</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_79_124_62_126</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>79.124.62.126</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_79_124_62_134</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>79.124.62.134</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_79_124_62_230</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>79.124.62.230</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_89_248_163_200</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>89.248.163.200</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_162_243_103_246</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>162.243.103.246</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_173_249_4_73</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>173.249.4.73</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_173_249_33_72</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>173.249.33.72</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_177_129_99_94</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>177.129.99.94</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_178_62_3_223</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>178.62.3.223</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_193_46_255_51</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>193.46.255.51</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_194_180_49_217</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>194.180.49.217</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_204_76_203_212</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>204.76.203.212</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_207_180_192_205</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>207.180.192.205</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_207_180_192_206</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>207.180.192.206</IPAddress>
+    </IPHost>
+  </Set>
+</Request>
+===== XML REQUEST END =====
+
+IMPORTANT: Host creation above does NOT add hosts to an existing group.
+Sophos group updates can REPLACE the complete HostList.
+Read the existing IPHostGroup named 'Suspicious IP Block' using the XML API.
+Merge the newly created host names with ALL existing members, deduplicate,
+then submit an IPHostGroup edit with that complete merged HostList.
+Do not issue a group edit containing only the new IPs.
+New host names to merge:
+CVEH_5_189_160_21
+CVEH_23_94_68_19
+CVEH_27_133_154_218
+CVEH_34_204_119_63
+CVEH_50_16_16_211
+CVEH_62_167_236_39
+CVEH_79_124_62_126
+CVEH_79_124_62_134
+CVEH_79_124_62_230
+CVEH_89_248_163_200
+CVEH_162_243_103_246
+CVEH_173_249_4_73
+CVEH_173_249_33_72
+CVEH_177_129_99_94
+CVEH_178_62_3_223
+CVEH_193_46_255_51
+CVEH_194_180_49_217
+CVEH_204_76_203_212
+CVEH_207_180_192_205
+CVEH_207_180_192_206
