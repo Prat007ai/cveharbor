@@ -27,7 +27,7 @@ export function normalizeRecord(id,record){
   const notes=String(data.notes||'').trim().slice(0,1200);
   if(!normalizeId(id)||!states.has(status)||due&&!/^\d{4}-\d{2}-\d{2}$/.test(due))
     throw new RemediationError('Invalid remediation record');
-  return {id,status,owner,due,notes};
+  return {id:normalizeId(id),status,owner,due,notes};
 }
 export async function isMigrated(env){
   try{
@@ -191,7 +191,8 @@ export async function assignRemediation(env,user,id,raw){
   const report=renderAssignmentEmail(cve,recipient,user.email);
   try{
     // A separate assignment key can isolate quota and abuse monitoring.
-    const senderEnv={...env,ALERT_SMTP2GO_API_KEY:env.ASSIGNMENT_SMTP2GO_API_KEY||env.SMTP2GO_API_KEY};
+    const senderEnv={EMAIL_FROM:env.EMAIL_FROM,SMTP2GO_API_KEY:env.SMTP2GO_API_KEY,
+      ALERT_SMTP2GO_API_KEY:env.ASSIGNMENT_SMTP2GO_API_KEY||env.SMTP2GO_API_KEY};
     const providerId=await sendEmail(senderEnv,recipient,report);
     await env.DB.prepare(
       "UPDATE remediation_assignments SET state='sent',last_sent_at=?,provider_id=? WHERE user_id=? AND cve_id=? AND state='sending' AND claimed_at=?"
