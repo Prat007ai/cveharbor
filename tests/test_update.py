@@ -420,6 +420,44 @@ class FeedTests(unittest.TestCase):
         self.assertIn('-webkit-line-clamp:6',css)
         self.assertIn('block(\'Description\',x.summary)',js)
 
+    def test_recent_disclosure_badges_use_toronto_date_and_original_publication(self):
+        js=(root/'app.js').read_text(encoding='utf-8')
+        start=js.index('  const disclosureAgeLabel =')
+        end=js.index('  const makeDisclosureBadge =',start)
+        helper=js[start:end]
+        script=helper+'''
+const now=new Date('2026-10-28T03:04:00Z');
+const dates=[
+  {published:'2026-10-27'},
+  {published:'2026-10-26'},
+  {published:'2026-10-25'},
+  {published:'2026-10-24'},
+  {published:'2026-10-28'},
+  {published:'2026-05-10',updated:'2026-10-27'},
+  {updated:'2026-10-27'},
+  {published:'invalid'},
+  {published:'2026-02-30'}
+];
+console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
+'''
+        result=subprocess.run(['node','-e',script],cwd=root,capture_output=True,text=True,check=True)
+        labels=json.loads(result.stdout.strip())
+        self.assertEqual(
+           ['TODAY','YESTERDAY','72 HOURS','','','','','',''],labels
+        )
+
+    def test_recent_disclosure_badges_appear_in_cards_table_and_details(self):
+        js=(root/'app.js').read_text(encoding='utf-8')
+        css=(root/'styles.css').read_text(encoding='utf-8')
+        html=(root/'index.html').read_text(encoding='utf-8')
+        self.assertIn("const freshness=makeDisclosureBadge(x)",js)
+        self.assertIn("idCell.append(firstPublished)",js)
+        self.assertIn("detailMarkers.append(firstPublished)",js)
+        self.assertIn("animation:cveharborFreshDisclosurePulse",css)
+        self.assertIn("@media(prefers-reduced-motion:reduce)",css)
+        self.assertIn("disclosure-pulse-1",html)
+        self.assertIn("original disclosure dates",html)
+
     def test_url_rejection(self):
         self.assertFalse(u.clean_url('javascript:alert(1)'))
         self.assertFalse(u.clean_url('http://example.org'))
