@@ -123,7 +123,7 @@ def classify(*, product: str = "", ecosystem: str = "", text: str = "", cpes: li
     add("Windows 11 OS", has(r"\b(?:microsoft[ _-]*)?windows[ _-]*11(?:\b|[_-])"))
     # Product-specific matches stay conservative. Public web marketing does
     # not prove that any particular release is deployed by Whitecap.
-    add("Angular", eco == "npm" and hp(r"(?:^@angular/|^angular$|^angularjs$)") or hp(r"(?:\bangular (?:framework|core|ssr|http client)\b|angularjs)"))
+    add("Angular", p.strip() == "angular" or (eco == "npm" and hp(r"(?:^@angular/|^angular$|^angularjs$)")) or hp(r"(?:\bangular (?:framework|core|ssr|http client)\b|angularjs)"))
     add("React / Next.js", hp(r"(?:\breact[-_](?:server[-_])?dom\b|^react$|next(?:\.js)?|nextjs|react server components|react[-_]native(?:[-_]|$))"))
     add("JavaScript / TypeScript", hp(r"(?:\btypescript\b|\bjavascript\b|\bdeno\b|\bvite\b|\bwebpack\b)"))
     add("jQuery / Bootstrap", hp(r"(?:\bjquery\b|\bbootstrap\b|^@popperjs/core$)"))
