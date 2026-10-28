@@ -4,10 +4,11 @@ const $=id=>document.getElementById(id), API='https://api.cveharbor.com/v1';
 if(!$('accountWorkspace'))return;
 let authenticated=false,email='';
 const note=(msg)=>{$('accountMessage').textContent=msg};
+const service=(msg)=>{const node=$('accountServiceStatus');if(node)node.textContent=msg};
 async function call(path,method='GET',payload){
  const res=await fetch(API+path,{method,credentials:'include',headers:{'Content-Type':'application/json'},body:payload===undefined?undefined:JSON.stringify(payload)});
  let body={};try{body=await res.json()}catch(_){}
- if(!res.ok)throw Error(body.error||'Account API not available');
+ if(!res.ok){const error=Error(body.error||'Account API not available');error.status=res.status;throw error}
  return body;
 }
 function state(isAuth,address=''){
@@ -15,9 +16,26 @@ function state(isAuth,address=''){
  $('accountSignedOut').hidden=isAuth;$('accountSignedIn').hidden=!isAuth;
  $('accountIdentity').textContent=isAuth?'Signed in: '+address:'';
 }
+async function loadPrefs(){
+ const data=await call('/alerts'),prefs=data.preferences||{};
+ $('alertEnabled').checked=prefs.enabled===1||prefs.enabled===true;
+ $('alertSeverity').value=prefs.severity==='high'?'high':'critical';
+ $('alertFrequency').value=prefs.frequency==='hourly'?'hourly':'daily';
+}
 async function check(){
- try{const data=await call('/me');state(!!data.authenticated,data.email||'');note(data.authenticated?'Your account is connected. You can sync your local data when ready.':'Sign in to synchronize data.')}
- catch(_){state(false);note('Account service not active yet. Existing local tracking continues to work.')}
+ try{
+  const data=await call('/me');
+  state(!!data.authenticated,data.email||'');
+  service('Account service available');
+  if(data.authenticated){
+   note('Your account is connected. You can sync your local data when ready.');
+   try{await loadPrefs()}catch(_){note('Signed in, but saved alert preferences could not be loaded.')}
+  }else note('Sign in to synchronize data.');
+ }catch(error){
+  state(false);
+  if(error.status===401){service('Account service available');note('Sign in to synchronize data.')}
+  else{service('Account service unavailable');note('Account service currently unavailable. Existing local tracking continues to work.')}
+ }
 }
 $('accountRequest').addEventListener('submit',async ev=>{
  ev.preventDefault();const button=$('accountSendCode');button.disabled=true;
@@ -32,17 +50,18 @@ $('accountVerify').addEventListener('submit',async ev=>{
  ev.preventDefault();const button=$('accountVerifyButton');button.disabled=true;
  try{
   const result=await call('/auth/verify','POST',{challenge_id:$('accountChallenge').value,salt:$('accountSalt').value,code:$('accountCode').value});
-  if(result.authenticated){state(true,result.email);note('Signed in. Your existing local selections are not overwritten until you choose a sync action.')}
+  if(result.authenticated){state(true,result.email);service('Account service available');note('Signed in. Your existing local selections are not overwritten until you choose a sync action.');try{await loadPrefs()}catch(_){note('Signed in, but saved alert preferences could not be loaded.')}}
  }catch(e){note(e.message)}finally{button.disabled=false}
 });
 $('accountLogout').addEventListener('click',async()=>{try{await call('/auth/logout','POST');state(false);note('Signed out. Locally saved data remains on this browser.')}catch(e){note(e.message)}});
 $('accountUpload').addEventListener('click',async()=>{
  if(!authenticated)return;
- if(!confirm('Replace the data currently stored in your CVEHarbor account with records from THIS browser? This cannot be undone.'))return;
  try{
   const selected=JSON.parse(localStorage.getItem('cveharbor.stack.v1')||'[]');
   const remediation=JSON.parse(localStorage.getItem('cveharbor.remediation.v1')||'[]');
   if(!Array.isArray(selected)||!Array.isArray(remediation))throw Error('Invalid locally saved data');
+  if(!confirm('Upload '+selected.length+' saved technologies and '+remediation.length+' remediation records from THIS browser? This replaces the records currently saved in your CVEHarbor account.'))return;
+  if(selected.length===0&&remediation.length===0&&!confirm('This browser has no saved records. Uploading will CLEAR any cloud technology selections and remediation records. Are you sure?'))return;
   await call('/stack','PUT',{stack:selected.slice(0,100).map(technology=>({technology,product_version:''}))});
   await call('/remediations','PUT',{remediations:remediation.slice(0,250)});
   note('Local technology selections and remediation records uploaded to your account.');

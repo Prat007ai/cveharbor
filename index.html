@@ -168,7 +168,7 @@
     </section>
     <section id="accountWorkspace" class="shell section" aria-labelledby="accountTitle">
       <div class="section-heading"><div><p class="eyebrow">PERSONAL SECURITY WORKSPACE</p><h2 id="accountTitle">CVEHarbor Accounts & Cloud Sync</h2>
-      <p class="section-sub">Optional email sign in to sync your technology stack and remediation records between devices. Your existing local records remain available without an account.</p></div><span class="result-pill">Backend setup pending</span></div>
+      <p class="section-sub">Optional email sign in to sync your technology stack and remediation records between devices. Your existing local records remain available without an account.</p></div><span id="accountServiceStatus" class="result-pill">Checking account service</span></div>
       <div class="data-panel account-panel"><p id="accountMessage" class="ops-note" role="status">Checking whether the account service is available...</p>
         <div id="accountSignedOut">
           <form id="accountRequest" class="ops-form"><label>Email address<input id="accountEmail" type="email" autocomplete="email" placeholder="you@example.com" required maxlength="254"></label>
@@ -183,7 +183,7 @@
           <p class="ops-note">Notifications are not being sent yet. Preferences are saved for the future email service. No delivery is promised until alert processing is activated.</p>
           <button id="accountDelete" type="button" class="ops-remove">Permanently delete account and cloud records</button>
         </div>
-        <p class="ops-note">The account API requires Cloudflare Workers, a D1 database, and verified SMTP2GO sender configuration. Until setup is complete, continue using local tracking and exports.</p>
+        <p class="ops-note">Your browser data remains local until you choose to upload it. Downloading replaces data saved in this browser. Export important remediation records before replacing them.</p>
       </div>
     </section>
     <section id="methodology" class="shell section"><div class="method-grid"><div><p class="eyebrow">TRUST & TRANSPARENCY</p><h2>Source first. Clarity always.</h2><p class="method-copy">CVEHarbor is being built to turn technical advisories into decisions people can act on. Each record distinguishes <strong>published</strong>, <strong>last source update</strong> and <strong>first indexed</strong>. Feed health is visible. A record being indexed does not mean it has been independently reproduced or that your systems are affected.</p><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener noreferrer" class="quiet-link">Explore CISA Known Exploited Vulnerabilities ↗</a></div><div class="method-steps"><div><span>01</span><div><b>Verify</b><small>Collect GitHub reviewed advisories, NVD entries and CISA KEV data each hour, alongside dated historical vendor advisories. Historical records retain their original disclosure dates.</small></div></div><div><span>02</span><div><b>Explain</b><small>Include confirmed affected versions, impact, fixes and exploitation status.</small></div></div><div><span>03</span><div><b>Review</b><small>Deduplicate records and display source timestamps, feed failures and coverage limitations.</small></div></div></div></div></section>
@@ -198,6 +198,6 @@
     </div>
   </dialog>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=epss-priority-1"></script><script src="workspace.js?v=epss-priority-1"></script><script src="lifecycle.js"></script><script src="operations.js?v=ops-v1"></script><script src="accounts.js?v=account-beta-1"></script>
+  <script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=epss-priority-1"></script><script src="workspace.js?v=epss-priority-1"></script><script src="lifecycle.js"></script><script src="operations.js?v=ops-v1"></script><script src="accounts.js?v=account-beta-2"></script>
 </body>
 </html>
