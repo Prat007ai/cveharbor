@@ -130,3 +130,16 @@ The site has a separate, review-only page of public IP indicators derived from S
 ## Wordfence API rate-limit safety (October 28, 2026)
 
 Wordfence sent a 429 warning after the integration attempted a full production feed. To protect the API key from suspension, Wordfence is disabled by default even when `WORDFENCE_API_KEY` exists. Normal hourly runs no longer contact Wordfence. Re-enabling requires a separate explicit environment variable `WORDFENCE_FETCH_ENABLED=true` plus the API key. A persisted last-attempt timestamp also enforces a minimum 24-hour delay between attempts. Do not enable until Wordfence confirms the key's rate-limit reset and acceptable intended use. Their V3 endpoint returns the entire large feed, not a small incremental hourly response; use webhooks or approved low-frequency polling for ongoing intelligence.
+
+
+## Thirty day publication trend in the account panel (October 2026)
+
+The blank portion of **Email alerts and cloud sync** now shows a public, read-only disclosure chart whether the visitor is signed in or not. It uses the existing public advisory snapshot and requires no new customer data, API permissions, charting library or database tables.
+
+* Count each unique, non-rejected CVE ID once by its original publication date in the public index, not by update or first-seen dates. Show the last 30 **completed UTC days**; the current incomplete day is excluded.
+* Display daily bars and a seven day rolling average, 30 day total, daily average and a comparison of the last two complete seven day periods. Select a bar for the dated total. All bars are keyboard accessible.
+* Report the latest public feed timestamp and explain that the CVEHarbor source index is limited, late source publication can revise earlier days, and the graph is not a worldwide disclosure count or a measurement of user exposure.
+* An accompanying research note explains how AI may help security researchers find code vulnerabilities and threat actors analyze disclosed flaws. It links to Google Threat Intelligence Group research, while explicitly stating that this dataset does not measure the share discovered or exploited with AI. Do not infer AI causation from a rising chart.
+* Browser tests cover duplicate IDs, rejected or non-CVE advisories, updates to old CVEs, UTC date edges, weekly comparisons and feed failures. A separate workflow confirms the public chart and actual advisory source after GitHub Pages deployment.
+
+This chart uses only advisory metadata already published on CVEHarbor. It does not enable email delivery or change Cloudflare D1, SMTP2GO, account access or the malware directory.
