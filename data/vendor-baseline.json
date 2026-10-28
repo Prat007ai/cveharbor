@@ -1,5 +1,5 @@
 {
-  "purpose": "Publicly documented historical vendor advisories with original publication/update dates, including Microsoft's October 2026 .NET Framework and modern .NET security updates. Records are not newly disclosed merely because indexed.",
+  "purpose": "Dated, official vendor advisories for selected technology categories. PHP October 2026 security announcements and PHP Windows dependency updates are included with original disclosure and update dates. The entries must not be described as newly disclosed merely because first indexed here.",
   "advisories": [
     {
       "id": "CVE-2026-13185",
@@ -198,13 +198,14 @@
       "cvss": "8.1",
       "categories": [
         ".NET / ASP.NET",
-        ".NET Core"
+        ".NET Core",
+        "PHP"
       ],
       "published": "2026-10-25",
       "updated": "2026-10-27",
-      "summary": "An out of bounds memory write in the Brotli decoder used by modern .NET and ASP.NET Core may cause memory corruption, information disclosure, denial of service or privilege elevation when the application decompresses attacker-controlled Brotli data. Automatic request/response decompression is disabled by default.",
-      "affected": "Affected .NET 8 versions earlier than 8.0.33, .NET 9 earlier than 9.0.22, .NET 10 earlier than 10.0.14, and affected .NET 11 prereleases earlier than RC3. Specific NativeAOT and runtime packs vary by platform. Classic .NET Framework is not affected by this CVE.",
-      "remediation": "Update affected installations to .NET 8.0.33, 9.0.22 or 10.0.14 (or .NET 11 RC3 for prerelease installations). Rebuild self-contained apps and containers with the fixed runtimes, and update affected NuGet packages where the advisory requires it.",
+      "summary": "An out of bounds memory write in the Brotli decoder used by modern .NET and ASP.NET Core may cause memory corruption, information disclosure, denial of service or privilege elevation when the application decompresses attacker-controlled Brotli data. Automatic request/response decompression is disabled by default. On Windows, PHP 8.5.12-1, 8.4.27-1, 8.3.36-1 and 8.2.35-1 package rebuilds include Brotli 1.2.1 to fix this vulnerability in cURL decompression dependencies; it is not an additional PHP language CVE.",
+      "affected": "Affected .NET 8 versions earlier than 8.0.33, .NET 9 earlier than 9.0.22, .NET 10 earlier than 10.0.14, and affected .NET 11 prereleases earlier than RC3. Specific NativeAOT and runtime packs vary by platform. Classic .NET Framework is not affected by this CVE. PHP Windows builds without the October 26 -1 Brotli dependency rebuild may carry a vulnerable decoder in the cURL extension when automatic HTTP decompression is enabled.",
+      "remediation": "Update affected installations to .NET 8.0.33, 9.0.22 or 10.0.14 (or .NET 11 RC3 for prerelease installations). Rebuild self-contained apps and containers with the fixed runtimes, and update affected NuGet packages where the advisory requires it. For affected PHP Windows distributions, install the corresponding PHP 8.5.12-1, 8.4.27-1, 8.3.36-1 or 8.2.35-1 build including Brotli 1.2.1.",
       "exploitation": "CISA KEV added the underlying Google Brotli CVE on October 27, 2026, indicating confirmed exploitation of the vulnerable component. This does not establish exploitation of a .NET deployment or a specific CVEHarbor visitor's application.",
       "sources": [
         {
@@ -218,6 +219,10 @@
         {
           "label": "CISA Known Exploited Vulnerabilities entry",
           "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog?search_api_fulltext=CVE-2026-111497"
+        },
+        {
+          "label": "PHP Windows package rebuild advisory",
+          "url": "https://www.php.net/archive/2026.php"
         }
       ],
       "known_exploited": true
@@ -373,6 +378,92 @@
         {
           "label": "NVD product applicability",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108398"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-109618",
+      "title": "PHP critical remote code execution via out-of-memory corruption",
+      "severity": "critical",
+      "cvss": "9.2",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-27",
+      "summary": "Out-of-memory handling can interrupt PHP while internal request data is only partially initialized. Unsafe request cleanup can lead to memory corruption and unauthenticated remote code execution. All web request serving installations require version and exposure checks, with demonstrated risk for Apache mod_php.",
+      "affected": "PHP 8.5.0–8.5.11; 8.4.0–8.4.26; 8.3.0–8.3.35; 8.2.0–8.2.34. Older end-of-life branches may also be affected; upstream fixed versions are unavailable for them.",
+      "remediation": "Upgrade supported PHP branches to 8.5.12, 8.4.27, 8.3.36 or 8.2.35, respectively. Rebuild and restart affected web workers and containers. PHP 8.1 and older need a supported upgrade or validated distribution backports. PHP says configuration workarounds do not fully mitigate these vulnerabilities.",
+      "exploitation": "Confirmed actively exploited: CISA added the CVE to its Known Exploited Vulnerabilities catalog on October 26, 2026.",
+      "known_exploited": true,
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "PHP upstream security advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-109619",
+      "title": "PHP critical remote code execution via stale global state",
+      "severity": "critical",
+      "cvss": "9.2",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-27",
+      "summary": "PHP request-owned internal state may outlive freed memory. A subsequent web request can access that stale state, potentially allowing unauthenticated remote code execution via use-after-free, particularly in affected request initialization and session processing paths.",
+      "affected": "PHP 8.5.0–8.5.11; 8.4.0–8.4.26; 8.3.0–8.3.35; 8.2.0–8.2.34. Older end-of-life branches may also be affected; upstream fixed versions are unavailable for them.",
+      "remediation": "Upgrade supported PHP branches to 8.5.12, 8.4.27, 8.3.36 or 8.2.35, respectively. Rebuild and restart affected web workers and containers. PHP 8.1 and older need a supported upgrade or validated distribution backports. PHP says configuration workarounds do not fully mitigate these vulnerabilities.",
+      "exploitation": "Confirmed actively exploited: CISA added the CVE to its Known Exploited Vulnerabilities catalog on October 26, 2026.",
+      "known_exploited": true,
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "PHP upstream security advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-115560",
+      "title": "PHP session upload progress security advisory under unusual configuration",
+      "severity": "bulletin",
+      "cvss": null,
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-23",
+      "updated": "2026-10-27",
+      "summary": "The PHP project identified an additional potential remote code execution vector involving session upload progress and an unusual sequence: an application configures session.serialize_handler as php_binary or php_serialize, switches it to php at runtime using ini_set, and then calls session_start. This specific issue was not fixed by the October 21 security releases. Vendor rates the circumstance unlikely; no standalone CVSS rating is asserted here.",
+      "affected": "PHP installations that enable session.upload_progress and use the unusual runtime session.serialize_handler switching sequence. Affected version ranges and the precise final fixed version await the PHP project's dedicated advisory.",
+      "remediation": "Until the dedicated patch is available, set session.upload_progress.enabled=0 in the administrative PHP configuration and restart relevant PHP workers if the feature is not required. Review application behavior. Follow future upstream PHP advisories for the actual fix.",
+      "exploitation": "No confirmed active exploitation of this separate configuration-dependent issue in the cited PHP announcement.",
+      "known_exploited": false,
+      "sources": [
+        {
+          "label": "PHP project October 23 informational advisory",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "Canadian Cyber Centre October 27 update",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
         }
       ]
     }
