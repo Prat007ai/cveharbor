@@ -502,8 +502,20 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
         self.assertIn("detailMarkers.append(firstPublished)",js)
         self.assertIn("animation:cveharborFreshDisclosurePulse",css)
         self.assertIn("@media(prefers-reduced-motion:reduce)",css)
-        self.assertIn("account-beta-1",html)
+        self.assertIn("styles.css?v=watchlist-unified-1",html)
         self.assertIn("original disclosure dates",html)
+
+    def test_watchlist_and_email_account_are_one_workspace(self):
+        html=(root/'index.html').read_text(encoding='utf-8')
+        self.assertEqual(1, html.count('id="securityWorkspace"'))
+        self.assertEqual(1, html.count('id="accountWorkspace"'))
+        self.assertLess(html.index('id="securityWorkspace"'),
+                        html.index('id="accountWorkspace"'))
+        self.assertLess(html.index('id="accountWorkspace"'),
+                        html.index('id="dashboard"'))
+        for item in ('accountSaveStack','accountLoadStack','stackSyncHeadline',
+                     'alertEnabled','accountSendTest'):
+            self.assertIn('id="'+item+'"', html)
 
     def test_category_publication_badges_group_drilldown_and_day_filters(self):
         html=(root/'index.html').read_text(encoding='utf-8')
