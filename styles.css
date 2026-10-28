@@ -634,3 +634,21 @@ button.tech-chart-link b{
 .threat-empty{grid-column:1/-1;color:#a7c3d4;padding:23px;border:1px dashed #34576a;border-radius:10px}
 @media(max-width:1100px){.threat-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.threat-list{grid-template-columns:minmax(0,1fr)}.threat-toolbar{display:grid;grid-template-columns:minmax(0,1fr)}.threat-toolbar label{min-width:0}}
+
+/* Local threat source detail dialog. No navigation on the card action. */
+.threat-view-details{
+  justify-self:start;color:#7de3d5;font-size:12px;font-weight:800;
+  background:none;border:0;padding:4px 0;text-decoration:underline;
+  text-underline-offset:3px;cursor:pointer;
+}
+.threat-view-details:hover{color:#b7fff0}
+.threat-view-details:focus-visible{outline:2px solid #7de3d5;outline-offset:4px}
+.threat-detail-dialog{max-width:620px}
+.threat-detail-dialog h2{font-family:ui-monospace,Consolas,monospace;overflow-wrap:anywhere}
+.threat-detail-type{color:#f0c68f!important;font-weight:750}
+.threat-detail-field{display:grid;grid-template-columns:180px minmax(0,1fr);gap:12px;padding:11px 0;border-bottom:1px solid #29495d;font-size:12px}
+.threat-detail-field span{color:#93b6c9}
+.threat-detail-field strong{color:#eff8fb;overflow-wrap:anywhere}
+.threat-detail-warning{padding:13px;border-radius:9px;background:#413121;color:#ffdfb2!important;margin-top:16px!important}
+.threat-detail-source{overflow-wrap:anywhere;font-size:11px!important;margin-top:12px!important;color:#91b8ca!important}
+@media(max-width:550px){.threat-detail-field{grid-template-columns:minmax(0,1fr);gap:3px}.threat-detail-dialog .dialog-layout{padding:20px}}
