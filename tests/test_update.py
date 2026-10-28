@@ -619,6 +619,13 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
         source=(root/"scripts/update.py").read_text(encoding="utf-8")
         self.assertIn("sources={name:sources.get(name,{}) for name,_,_ in operations}",source)
 
+    def test_wordfence_requires_explicit_enable_and_daily_cooldown(self):
+        source=(root/'scripts/update.py').read_text(encoding='utf-8')
+        self.assertIn('os.getenv("WORDFENCE_FETCH_ENABLED") == "true"',source)
+        self.assertIn('24 * 3600',source)
+        self.assertIn('and wf_allowed',source)
+        self.assertIn('Merely setting the secret must NEVER trigger a request.',source)
+
     def test_url_rejection(self):
         self.assertFalse(u.clean_url('javascript:alert(1)'))
         self.assertFalse(u.clean_url('http://example.org'))
