@@ -211,3 +211,28 @@ button.tech-chart-link b{
   overflow-wrap:anywhere;
   font-size:12px;
 }
+
+
+/* Feed status is a historical collection report, not a live health check. */
+.footer-status .feed-notice { gap:14px; }
+.footer-status .feed-notice-content { min-width:0; flex:1 1 80%; }
+.footer-status .feed-status-heading {
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px 13px;
+  margin-bottom:9px;
+  line-height:1.5;
+}
+.footer-status .feed-status-heading .preview-status {margin:0;flex-shrink:0;}
+.footer-status .feed-status-heading strong {color:#e9f6ff;font-size:13px;font-weight:750;}
+.footer-status #feedDescription {
+  display:block;
+  margin:0 0 12px;
+  line-height:1.7;
+  max-width:1100px;
+  color:#bdd1dd;
+}
+.footer-status #sourceHealth {margin-top:0;gap:8px;row-gap:8px;}
+.footer-status .feed-chip {white-space:normal;padding:4px 9px;}
+.footer-status #snapshotDate {margin-top:7px;}
