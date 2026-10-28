@@ -276,6 +276,26 @@ class FeedTests(unittest.TestCase):
         self.assertEqual(record['published'],'')
         self.assertIn('PHP',record['categories'])
 
+    def test_php_cves_do_not_inherit_fortinet_or_react_labels(self):
+        for cve, title in (("CVE-2026-109618","RCE via OOM corruption"),
+                           ("CVE-2026-109619","RCE via stale global state")):
+            old = {"id":cve, "title":title, "affected":"php: php-src (< 8.4.27)",
+                   "categories":["Fortinet", "React / Next.js", "PHP"],
+                   "source_type":"php_upstream", "known_exploited":True}
+            self.assertEqual(["PHP"], u.recategorize_existing(old)["categories"])
+            new = {"id":cve, "title":title, "categories":["Fortinet"],
+                   "source_type":"fortinet_rss", "known_exploited":False}
+            merged = u.merge_record(old, new)
+            self.assertEqual(["PHP"], merged["categories"])
+            self.assertTrue(merged["known_exploited"])
+
+    def test_net_brotli_keeps_actual_php_dependency_not_unrelated_products(self):
+        baseline = next(x for x in u.vendor_baseline_items() if x["id"]=="CVE-2026-111497")
+        self.assertEqual(set(baseline["categories"]), {".NET / ASP.NET",".NET Core","PHP"})
+        record = {**baseline,"categories":[*baseline["categories"],"Fortinet","Linux","Windows","React / Next.js"]}
+        self.assertEqual(set(baseline["categories"]),
+                         set(u.enforce_authoritative_categories(record)["categories"]))
+
     def test_cisa_flag_merges(self):
         old={'id':'CVE-2026-99999','categories':['PHP'],'first_seen_at':'2026-10-26T01:00:00Z',
              'source_type':'github','known_exploited':False,'summary':'vendor report',
