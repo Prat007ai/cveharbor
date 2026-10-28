@@ -8,7 +8,8 @@
   let tablePage = 0;
   let listMode = 'cards';
   let metricScope = 'all';
-  const featured = new Set(["Windows Server OS","Windows 11 OS",".NET / ASP.NET",".NET Core","WordPress / Plugins","Linux","PHP","Python / PyPI","Azure","Microsoft 365","Exchange SE","SQL Server","MySQL / MariaDB","Fortinet","Sophos Firewall","VMware","Veeam Backup & Replication","HyperV","Docker / Kubernetes","Progress Telerik","Sitefinity"]);
+  const technologyGroups = {"microsoft":["Windows Server OS","Windows 11 OS",".NET / ASP.NET",".NET Core","Azure","Microsoft 365","Exchange SE"],"applications":["WordPress / Plugins","PHP","Python / PyPI","SQL Server","MySQL / MariaDB","Progress Telerik","Sitefinity"],"infrastructure":["Linux","Fortinet","Sophos Firewall","VMware","Veeam Backup & Replication","HyperV","Docker / Kubernetes"]};
+  const featured = new Set(Object.values(technologyGroups).flat());
   const info = window.CVEHARBOR_DATA || {categories:[],advisories:[],mode:'awaiting_first_sync'};
   // The category taxonomy and historical vendor entries are published by the
   // static site build, independently from the hourly data feed.
@@ -108,11 +109,13 @@
   function catCount(cat){return cveIDs(items.filter(x=>(x.categories||[]).includes(cat) && newlyPublished(x,30))).length;}
   function openTechnologyAdvisories(technology, cveOnly=false){
     // Synchronize all controls so an old search or severity filter cannot hide results.
-    state.tech=technology;state.q='';state.severity='all';state.period='published30';
+    const recentAvailable=items.some(x=>(x.categories||[]).includes(technology)&&newlyPublished(x,30));
+    const targetPeriod=recentAvailable?'published30':'all';
+    state.tech=technology;state.q='';state.severity='all';state.period=targetPeriod;
     metricScope=cveOnly?'cves':'all';
     listMode='list';visibleCount=PAGE_SIZE;tablePage=0;
     $('technologyFilter').value=technology;
-    $('search').value='';$('severity').value='all';$('dateRange').value='published30';
+    $('search').value='';$('severity').value='all';$('dateRange').value=targetPeriod;
     render();
     $('advisories').scrollIntoView({behavior:'smooth',block:'start'});
   }
@@ -136,17 +139,57 @@
     });
   }
   function renderCategories(){
-    const primaryGrid=$('categoryGrid'), otherGrid=$('otherCategoryGrid');
-    primaryGrid.replaceChildren();otherGrid.replaceChildren();
-    categories.forEach(x=>{
-      const n=items.filter(a=>(a.categories||[]).includes(x.name) && newlyPublished(a,30)).length;
-      const total=items.filter(a=>(a.categories||[]).includes(x.name)).length;
+    const main=$('categoryGrid'),extra=$('otherCategoryGrid');
+    const q=$('technologySearch').value.trim().toLowerCase();
+    main.replaceChildren();extra.replaceChildren();
+    const matches=x=>!q||(x.name+' '+(x.description||'')).toLowerCase().includes(q);
+    let visible=0,extraVisible=0;
+    function row(x){
+      const total=cveIDs(items.filter(a=>(a.categories||[]).includes(x.name))).length;
+      const recent=cveIDs(items.filter(a=>(a.categories||[]).includes(x.name)&&newlyPublished(a,30))).length;
       const b=document.createElement('button');
-      b.type='button';b.className='category-item';
-      b.append(text('span','category-icon',x.icon),text('span','category-label',x.name),text('span','category-count',`${n} new in 30 days · ${total} indexed`));
+      b.type='button';b.className='technology-row';
+      b.setAttribute('aria-label',`View ${x.name}: ${recent} new CVEs and ${total} total indexed`);
+      const glyph=text('span','technology-glyph',x.icon||'◇');glyph.setAttribute('aria-hidden','true');
+      const label=text('span','technology-row-main','');
+      label.append(text('span','technology-row-name',x.name),text('span','technology-row-sub',x.description||'Security advisories'));
+      const counts=text('span','technology-row-counts','');
+      counts.append(text('span','technology-count-new'+(recent?' has-new':''),`${recent} new`),text('span','technology-count-all',`${total} total`));
+      const arrow=text('span','technology-arrow','↗');arrow.setAttribute('aria-hidden','true');
+      b.append(glyph,label,counts,arrow);
       b.addEventListener('click',()=>openTechnologyAdvisories(x.name));
-      (featured.has(x.name)?primaryGrid:otherGrid).append(b);
-    });
+      return b;
+    }
+    const headings={
+      microsoft:['01 / PLATFORMS','Microsoft & Cloud','▦'],
+      applications:['02 / SOFTWARE','Applications & Data','⌘'],
+      infrastructure:['03 / OPERATIONS','Infrastructure & Security','⬡']
+    };
+    for(const [key,names] of Object.entries(technologyGroups)){
+      const found=names.map(n=>categories.find(x=>x.name===n)).filter(x=>x&&matches(x));
+      if(!found.length)continue;
+      const panel=text('article','technology-panel','');panel.dataset.domain=key;
+      const head=text('div','technology-panel-head','');
+      const icon=text('span','technology-panel-icon',headings[key][2]);icon.setAttribute('aria-hidden','true');
+      const title=text('div','technology-panel-heading','');
+      title.append(text('span','',headings[key][0]),text('h3','',headings[key][1]));
+      head.append(icon,title,text('span','technology-panel-total',String(found.length).padStart(2,'0')));
+      const list=text('div','technology-panel-rows','');
+      found.forEach(x=>list.append(row(x)));
+      panel.append(head,list);main.append(panel);visible+=found.length;
+    }
+    for(const x of categories){
+      if(featured.has(x.name)||!matches(x))continue;
+      extra.append(row(x));visible++;extraVisible++;
+    }
+    const more=$('additionalTech');
+    more.hidden=Boolean(q)&&extraVisible===0;
+    if(q&&extraVisible)more.open=true;
+    $('technologyEmpty').hidden=visible!==0;
+    $('technologyTotal').textContent=String(categories.length);
+    $('technologySearchSummary').textContent=q
+      ? `${visible} of ${categories.length} technology groups match your search`
+      : `${featured.size} featured platforms and ${categories.length-featured.size} additional groups. Counts describe indexed CVEs, not visitor exposure.`;
   }
   function renderFocus(){
     const priorities=items.filter(x=>x.known_exploited||x.severity==='critical'||x.severity==='high').sort((a,b)=>Number(!!b.known_exploited)-Number(!!a.known_exploited)||({critical:0,high:1}[a.severity]??2)-({critical:0,high:1}[b.severity]??2)).slice(0,3);
@@ -266,7 +309,7 @@
     btn.addEventListener('click',()=>{
       const scope=btn.dataset.metric;
       if(scope==='technologies'){
-        document.querySelector('.other-tech').open=true;
+        $('additionalTech').open=true;
         $('technology').scrollIntoView({behavior:'smooth',block:'start'});
         return;
       }
@@ -278,5 +321,6 @@
     });
   });
   $('closeDialog').addEventListener('click',()=>$('detailDialog').close());$('detailDialog').addEventListener('click',e=>{if(e.target===$('detailDialog'))$('detailDialog').close();});
+  $('technologySearch').addEventListener('input',renderCategories);
   renderBars();renderFocus();renderCategories();render();
 })();
