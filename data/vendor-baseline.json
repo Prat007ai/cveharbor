@@ -1,5 +1,5 @@
 {
-  "purpose": "Dated, official vendor advisories for selected technology categories. PHP October 2026 security announcements and PHP Windows dependency updates are included with original disclosure and update dates. The entries must not be described as newly disclosed merely because first indexed here.",
+  "purpose": "Curated dated vendor CVE and GHSA security advisories for product-specific categories. Every entry retains the original publication date, and GHSA-only entries are not counted as CVEs. Whitecap public service descriptions do not establish that any product or affected version is deployed.",
   "advisories": [
     {
       "id": "CVE-2026-13185",
@@ -464,6 +464,201 @@
         {
           "label": "Canadian Cyber Centre October 27 update",
           "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-111753",
+      "title": "Angular HTTP Client can leak XSRF tokens through URL parsing discrepancy",
+      "severity": "high",
+      "cvss": null,
+      "categories": [
+        "Angular",
+        "JavaScript / TypeScript"
+      ],
+      "published": "2026-10-16",
+      "updated": "2026-10-20",
+      "summary": "Angular HttpClient's earlier URL parsing fix was incomplete. Carefully crafted cross-origin requests can send an XSRF token to an attacker-controlled endpoint when attack preconditions are met. The Angular project calls this High while the GitHub reviewed database currently lists Moderate; the score is not asserted here.",
+      "affected": "@angular/common 21.0.0 to below 21.0.3, 20.0.0 to below 20.3.34, and 19.2.25 or earlier. Angular 19 is outside security support.",
+      "remediation": "Upgrade @angular/common to 21.0.3 or later within the 21 branch, or 20.3.34 or later within the 20 branch. Angular 19 deployments should migrate to a supported release. Validate URLs and do not pass untrusted destinations to mutating HttpClient requests.",
+      "exploitation": "No confirmed exploitation in the cited Angular advisory.",
+      "known_exploited": false,
+      "sources": [
+        {
+          "label": "Angular official security advisory",
+          "url": "https://github.com/angular/angular/security/advisories/GHSA-jfgx-762w-99vr"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-jfgx-762w-99vr"
+        }
+      ]
+    },
+    {
+      "id": "GHSA-xqc2-xf4c-x3h3",
+      "title": "React Server Components unauthenticated remote code execution",
+      "severity": "critical",
+      "cvss": "9.5",
+      "categories": [
+        "React / Next.js",
+        "JavaScript / TypeScript",
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-14",
+      "updated": "2026-10-14",
+      "summary": "React Server Components can permit remote code execution from specially crafted payloads under rare conditions involving multiple typed arrays and attacker-controlled values. This official upstream advisory currently has no assigned CVE, so it must not be included in unique CVE totals.",
+      "affected": "react-server-dom-webpack, react-server-dom-parcel and react-server-dom-turbopack 19.0.0 through 19.0.8, 19.1.0 through 19.1.9, 19.2.0 through 19.2.8 and 19.3.0. Client-only React applications without Server Components are not affected by this issue.",
+      "remediation": "Upgrade the affected React Server Components packages to 19.0.9, 19.1.10, 19.2.9, 19.3.1 or later fixed equivalents, and confirm the related framework's own patch status.",
+      "exploitation": "No confirmed exploitation asserted by the cited upstream advisory.",
+      "known_exploited": false,
+      "sources": [
+        {
+          "label": "React project's official security advisory",
+          "url": "https://github.com/react/react/security/advisories/GHSA-xqc2-xf4c-x3h3"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2025-55182",
+      "title": "React Server Components unauthenticated remote code execution (2025 disclosure)",
+      "severity": "critical",
+      "cvss": "10.0",
+      "categories": [
+        "React / Next.js",
+        "JavaScript / TypeScript",
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2025-12-03",
+      "updated": "2025-12-09",
+      "summary": "Affected React Server Components packages allow an unauthenticated attacker to exploit unsafe deserialization of Server Function requests, potentially leading to remote code execution. This is a historical 2025 advisory, distinct from the October 2026 GHSA-only issue.",
+      "affected": "react-server-dom-webpack, react-server-dom-parcel and react-server-dom-turbopack versions 19.0.0, 19.1.0, 19.1.1 and 19.2.0. Client-only React applications that do not use React Server Components are not affected.",
+      "remediation": "Upgrade affected packages to 19.0.1, 19.1.2 or 19.2.1 or a later fixed release. If using Next.js, install the corresponding patched Next.js release as documented by its security advisory.",
+      "exploitation": "No current exploitation assertion is made here; check CISA KEV and the vendor record before treating exploitation as confirmed.",
+      "known_exploited": false,
+      "sources": [
+        {
+          "label": "React project's security advisory",
+          "url": "https://github.com/react/react/security/advisories/GHSA-fv66-9v8q-g76r"
+        },
+        {
+          "label": "GitHub reviewed CVE advisory",
+          "url": "https://github.com/advisories/GHSA-fv66-9v8q-g76r"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-70266",
+      "title": "SharePoint Server SQL injection privilege elevation",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "SharePoint / SharePoint Server",
+        "Microsoft 365"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-26",
+      "summary": "An authenticated attacker can exploit improper neutralization of SQL input in Microsoft Office SharePoint to elevate privileges over the network. This is a SharePoint Server Subscription Edition issue rather than proof of a vulnerability in SharePoint Online.",
+      "affected": "SharePoint Server Subscription Edition builds before October 13, 2026 security update 16.0.20326.20190 for affected servicing configurations. Confirm precise applicability with the Microsoft Security Update Guide.",
+      "remediation": "Apply Microsoft SharePoint Server Subscription Edition October 13, 2026 security update KB5002927 (build 16.0.20326.20190), or a newer superseding update. If using SharePoint Workflow Manager, first install KB5002799 as Microsoft directs.",
+      "exploitation": "No confirmed exploitation stated in Microsoft's referenced October security update.",
+      "known_exploited": false,
+      "sources": [
+        {
+          "label": "Microsoft SharePoint KB5002927",
+          "url": "https://support.microsoft.com/en-us/servicing/office/hotfix/sharepoint/5002927"
+        },
+        {
+          "label": "Microsoft CVE security record",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-70266"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-70259",
+      "title": "SharePoint Server SSRF information disclosure",
+      "severity": "medium",
+      "cvss": "6.5",
+      "categories": [
+        "SharePoint / SharePoint Server",
+        "Microsoft 365"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-21",
+      "summary": "Server-side request forgery in SharePoint Server can allow an authenticated attacker to disclose information across a network. This is not a claim that SharePoint Online tenants have this exposure.",
+      "affected": "Microsoft SharePoint Server Subscription Edition 16.0 builds before 16.0.20326.20190 under the affected configuration; confirm patch and applicability with MSRC.",
+      "remediation": "Deploy the applicable SharePoint Server security update KB5002927 (build 16.0.20326.20190) or a newer superseding update. Validate Workflow Manager prerequisites.",
+      "exploitation": "No confirmed active exploitation in the cited MSRC record.",
+      "known_exploited": false,
+      "sources": [
+        {
+          "label": "Microsoft SharePoint security update",
+          "url": "https://support.microsoft.com/en-us/servicing/office/hotfix/sharepoint/5002927"
+        },
+        {
+          "label": "Microsoft MSRC CVE record",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-70259"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2025-6725",
+      "title": "Kendo UI PDFViewer cross-site scripting",
+      "severity": "medium",
+      "cvss": "5.4",
+      "categories": [
+        "Kendo UI",
+        "Progress Telerik",
+        "jQuery / Bootstrap",
+        "Angular",
+        "React / Next.js"
+      ],
+      "published": "2025-07-02",
+      "updated": "2025-12-10",
+      "summary": "The Progress Kendo UI and Telerik PDFViewer can execute attacker-controlled JavaScript when an application loads a specially crafted document and a user interacts with functionality that rerenders the DOM. Affected products include Kendo UI for jQuery, Kendo UI for Angular and KendoReact; this does not mean jQuery, Angular or React core is vulnerable.",
+      "affected": "Kendo UI for jQuery versions 2024.4.1112 through 2025.2.520, Kendo UI for Angular 18.5.0 through 19.1.2, and KendoReact 5.10.0 through 11.1.0, plus affected Telerik UI PDFViewer products.",
+      "remediation": "Upgrade Kendo UI for jQuery to 2025.2.702 or later, Kendo UI for Angular to 19.2.0 or later, and use the corresponding vendor fixed KendoReact/Telerik release. If the PDFViewer component is not used, the described impact does not apply.",
+      "exploitation": "No known active exploitation confirmed in the cited vendor advisory.",
+      "known_exploited": false,
+      "sources": [
+        {
+          "label": "Progress Kendo UI for jQuery official security notice",
+          "url": "https://www.telerik.com/kendo-jquery-ui/documentation/knowledge-base/kb-security-pdfviewer-xss-cve-2025-6725"
+        },
+        {
+          "label": "Progress Kendo UI for Angular notice",
+          "url": "https://www.telerik.com/kendo-angular-ui/components/knowledge-base/kb-security-pdfviewer-xss-cve-2025-6725"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2025-14847",
+      "title": "MongoDB Server compressed-message heap memory disclosure",
+      "severity": "high",
+      "cvss": "8.7",
+      "categories": [
+        "NoSQL / MongoDB"
+      ],
+      "published": "2025-12-19",
+      "updated": "2025-12-29",
+      "summary": "Unauthenticated clients can induce uninitialized heap memory disclosure through inconsistent length fields in compressed MongoDB protocol headers. This vulnerability is in MongoDB Server and may expose secrets, session data or query information.",
+      "affected": "MongoDB 8.2 below 8.2.3; 8.0 below 8.0.17; 7.0 below 7.0.28; 6.0 below 6.0.27; 5.0 below 5.0.32; 4.4 below 4.4.30. Older unsupported MongoDB 4.2, 4.0 and 3.6 branches require a supported upgrade.",
+      "remediation": "Upgrade to MongoDB 8.2.3, 8.0.17, 7.0.28, 6.0.27, 5.0.32 or 4.4.30 as applicable. If patching is delayed, disable zlib network compression and restrict exposure following the vendor's guidance.",
+      "exploitation": "Confirmed exploited: CISA added CVE-2025-14847 to its Known Exploited Vulnerabilities catalog on December 29, 2025.",
+      "known_exploited": true,
+      "sources": [
+        {
+          "label": "MongoDB fix tracking",
+          "url": "https://jira.mongodb.org/browse/SERVER-115508"
+        },
+        {
+          "label": "Canadian Cyber Centre exploitation bulletin",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/mongodb-security-advisory-av25-862"
+        },
+        {
+          "label": "NVD CVE and CISA KEV record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-14847"
         }
       ]
     }
