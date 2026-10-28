@@ -479,6 +479,16 @@
     });
     if(list.childElementCount)root.append(list);
     else root.append(text('p','','No direct source URLs were included in this indexed record.'));
+    if(/^CVE-\d{4}-\d{4,}$/i.test(String(x.id||''))){
+      const assign=text('button','ops-download remediation-detail-assign','Assign vulnerability by email');
+      assign.type='button';
+      assign.addEventListener('click',()=>{
+        const dialog=$('detailDialog');
+        if(typeof dialog.close==='function')dialog.close();else dialog.removeAttribute('open');
+        window.dispatchEvent(new CustomEvent('cveharbor:assign-remediation',{detail:{id:x.id}}));
+      });
+      root.append(assign);
+    }
     root.append(text('p','disclaimer','CVEHarbor aggregates public third-party advisory data. This record does not establish that your environment is vulnerable. Verify the primary vendor bulletin, affected versions, and patch applicability.'));
     const dlg=$('detailDialog');if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');
   }
