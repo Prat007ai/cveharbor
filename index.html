@@ -8,7 +8,7 @@
   <meta property="og:title" content="CVEHarbor | Know the risk. Find the fix.">
   <meta property="og:description" content="Vulnerability advisories, severity dashboards, affected versions, vendor sources and remediation guidance.">
   <title>CVEHarbor | Vulnerability Intelligence</title>
-  <link rel="stylesheet" href="styles.css?v=compact-threat-button-1">
+  <link rel="stylesheet" href="styles.css?v=firewall-exports-1">
 </head>
 <body>
   <a class="skip-link" href="#advisories">Skip to advisories</a>
@@ -123,6 +123,16 @@
         <label>Search IP <input id="threatSearch" type="search" placeholder="Search an IP address" aria-label="Search suspicious IP address"></label>
       </div>
       <p class="technology-footnote" id="threatStatus" role="status">Threat intelligence collection has not been verified.</p>
+      <div class="threat-downloads">
+        <div class="threat-downloads-copy">
+          <strong>Firewall import templates</strong>
+          <span>Review-only object definitions from the last successful threat IP collection. Validate every address before applying a deny policy.</span>
+        </div>
+        <div class="threat-download-actions">
+          <a class="threat-download-link" href="fortigate-threat-ip-objects.txt" download="fortigate-threat-ip-objects.txt">Download FortiGate CLI (.txt)</a>
+          <a class="threat-download-link" href="sophos-threat-ip-api.txt" download="sophos-threat-ip-api.txt">Download Sophos API template (.txt)</a>
+        </div>
+      </div>
       <div class="threat-list" id="threatRows"><p class="threat-empty">No verified threat IP data available yet.</p></div>
       <p class="technology-footnote">Sources: <a href="https://isc.sans.edu/" target="_blank" rel="noopener noreferrer">SANS Internet Storm Center</a> and <a href="https://feodotracker.abuse.ch/blocklist/" target="_blank" rel="noopener noreferrer">abuse.ch Feodo Tracker</a>. Attribution: SANS Technology Institute, Internet Storm Center. This page is a review aid, not a production-ready blocklist or proof of current malicious activity.</p>
     </section>
