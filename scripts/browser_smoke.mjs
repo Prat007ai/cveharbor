@@ -126,4 +126,6 @@ assert.match(opsDoc.getElementById('remediationCount').textContent,/1 tracked/,'
 assert.equal(opsDoc.querySelectorAll('#firewallDownloads a').length,4,'firewall downloads available');
 
 assert.ok(html.includes('id="remediationForm"')&&html.includes('id="firewallCentre"'),'tracker and firewall centre present');
+assert.ok(html.includes('id="accountWorkspace"')&&html.includes('id="accountVerify"'),'account section and verification UI present');
+assert.ok(fs.readFileSync('accounts.js','utf8').includes('accountDownload'),'account sync frontend installed');
 console.log('CVEHarbor browser smoke passed: 38 categories, publication badges, list, details, focus, search and feed status.');
