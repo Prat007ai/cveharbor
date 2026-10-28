@@ -143,7 +143,7 @@ export function renderAssignmentEmail(cve,recipient,requester){
 async function quota(env,key,seconds,max){
   const now=time(),cutoff=now-seconds;
   const result=await env.DB.prepare(
-    'INSERT INTO auth_rate_limits(key,window_start,count) VALUES(?,?,1) ON CONFLICT(key) DO UPDATE SET '+
+    'INSERT INTO remediation_assignment_limits(key,window_start,count) VALUES(?,?,1) ON CONFLICT(key) DO UPDATE SET '+
     'count=CASE WHEN window_start<? THEN 1 ELSE count+1 END,'+
     'window_start=CASE WHEN window_start<? THEN ? ELSE window_start END '+
     'WHERE window_start<? OR count<?'
