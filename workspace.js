@@ -141,6 +141,10 @@
     }
     card.append(make('p','workspace-note','Live record from the CVE Program. Check affected versions and prerequisites before acting. This lookup does not scan your systems.'));
     makeOfficialLinks(card,record.id,record.references);
+    const assign=make('button','ops-download remediation-detail-assign','Assign vulnerability by email');
+    assign.type='button';
+    assign.addEventListener('click',()=>window.dispatchEvent(new CustomEvent('cveharbor:assign-remediation',{detail:{id:record.id}})));
+    card.append(assign);
     output.append(card);
   }
   async function runExactLookup(id,version){
