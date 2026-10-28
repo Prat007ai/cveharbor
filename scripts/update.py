@@ -27,6 +27,7 @@ UTC = timezone.utc
 NOW = datetime.now(UTC)
 SOURCES = {
     "github": "https://api.github.com/advisories",
+    "php_upstream": "https://api.github.com/repos/php/php-src/security-advisories",
     "nvd": "https://services.nvd.nist.gov/rest/json/cves/2.0",
     "cisa_kev": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
 }
@@ -57,7 +58,7 @@ def clean_url(s: object) -> str:
 
 def get_json(url: str, source: str) -> dict | list:
     headers = {"Accept": "application/json", "User-Agent": "CVEHarbor-PublicFeed/1.0 (https://cveharbor.com)", "Cache-Control": "no-cache"}
-    if source == "github":
+    if source in {"github", "php_upstream"}:
         headers["Accept"] = "application/vnd.github+json"
         token = os.getenv("GITHUB_TOKEN", "")
         if token:
@@ -296,6 +297,48 @@ def from_ghsa(item: dict) -> dict | None:
     }
 
 
+def php_upstream_items() -> list[dict]:
+    """Fetch PHP project's published repository advisories directly.
+
+    GitHub's repository security advisory API is publicly readable for
+    published advisories. This is separate from the global GHSA ranking feed.
+    """
+    output = {}
+    for sort_by in ("published", "updated"):
+        query = urllib.parse.urlencode({
+            "state": "published", "sort": sort_by,
+            "direction": "desc", "per_page": 100
+        })
+        batch = get_json(SOURCES["php_upstream"]+"?"+query, "php_upstream")
+        if not isinstance(batch, list):
+            raise ValueError("PHP upstream security advisory response was not an array")
+        for item in batch:
+            if isinstance(item, dict) and item.get("ghsa_id"):
+                output[item["ghsa_id"]] = item
+    return list(output.values())
+
+
+def from_php_upstream(item: dict) -> dict | None:
+    if not isinstance(item, dict):
+        return None
+    record = from_ghsa(item)
+    if not record:
+        return None
+    # The upstream advisory belongs to the PHP interpreter, including
+    # extensions, even when the GHSA summary omits the word 'PHP'.
+    record["categories"] = list(dict.fromkeys(["PHP", *record["categories"]]))
+    record["status"] = "Published security advisory from PHP upstream"
+    record["source_type"] = "php_upstream"
+    record["sources"] = [{
+        "label":"PHP upstream security advisory",
+        "url":"https://github.com/php/php-src/security/advisories/" + str(item["ghsa_id"])
+    }, *record.get("sources", [])][:5]
+    # Never treat a missing original publication date as a disclosure today.
+    if not item.get("published_at"):
+        record["published"] = ""
+    return record
+
+
 def cpe_text(vuln: dict) -> list[str]:
     result = []
     def walk(node: object):
@@ -439,7 +482,7 @@ def merge_record(old: dict, new: dict) -> dict:
         return new
     # GitHub generally provides better fixed package versions. Do not replace
     # an actionable package detail with NVD's generic patch instructions.
-    rank = {"github": 3, "vendor_baseline": 2.5, "nvd": 2, "cisa_kev": 1}
+    rank = {"vendor_baseline": 4, "php_upstream": 3.5, "github": 3, "nvd": 2, "cisa_kev": 1}
     chosen = new if rank.get(new.get("source_type"), 0) >= rank.get(old.get("source_type"), 0) else old
     merged = dict(chosen)
     merged["categories"] = sorted(set(old.get("categories") or []) | set(new.get("categories") or []))
@@ -516,7 +559,10 @@ def run() -> int:
         rid = record["id"]
         merged[rid] = merge_record(merged.get(rid), record)
     sources = dict(prev.get("sources") or {})
-    operations = (("github", ghsa_items, from_ghsa), ("nvd", nvd_items, from_nvd), ("cisa_kev", kev_items, from_kev))
+    operations = (("github", ghsa_items, from_ghsa),
+                  ("php_upstream", php_upstream_items, from_php_upstream),
+                  ("nvd", nvd_items, from_nvd),
+                  ("cisa_kev", kev_items, from_kev))
     good = 0
     for name, fetch, transform in operations:
         try:
