@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-28",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4412,
+  "candidate_records": 4296,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -8152,7 +8152,9 @@
       "title": "i18next-http-backend is a backend layer for i18next that loads translation resources in Node.js, browsers, and Deno",
       "severity": "low",
       "categories": [
-        "Node.js / npm"
+        "JavaScript / TypeScript",
+        "Node.js / npm",
+        "React / Next.js"
       ],
       "published": "2026-10-28",
       "updated": "2026-10-28",
@@ -8230,6 +8232,621 @@
       "first_seen_at": "2026-10-28T19:35:42Z",
       "source_updated_at": "2026-10-28T19:17:34.413",
       "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118251",
+      "title": "Highcharts: javascript: URL in credits.href runs script on click",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "### Impact A `credits.href` value beginning with `javascript:` is assigned to the window location when the credits label is clicked, without being checked against an allowed-scheme list. An attacker who controls the chart configuration can therefore run script in the origin of the page hosting the chart. Exploitation requires that untrusted data reach the chart configuration and that a user click the credits label. Charts built with Highcharts Stock, Maps and Gantt are included, since those ship from the same package as Core. ### Workarounds Drop-in fix - for any versions affected (5.0.0-13.0.2). Add the below IIFE to run after Highcharts is loaded, but before a chart is created. ```js !function(t){if(t&&t.Chart&&!t.Chart.prototype.creditsHrefPatched){var r=t.Chart.prototype,e=r.addCredits;r.addCredits=function(n){var o=t.merge(!0,this.options.credits,n);return o&&o.href&&!c(o.href)&&delete o.href,e.call(this,o)},r.creditsHrefPatched=!0}function c(r){var e=t.AST&&t.AST.allowedReferences||[\"https://\",\"http://\",\"mailto:\",\"/\",\"../\",\"./\",\"#\"];return\"string\"==typeof r&&e.some(function(t){return 0===r.indexOf(t)})}}(Highcharts); ``` [Live demo & testing](https://jsfiddle.net/BlackLabel/6a09ws1f/) ### Obtaining the patched version The patched releases are available from all the usual di",
+      "affected": "npm: highcharts (< 11.4.9); npm: highcharts (>= 12.0.0, < 12.6.1); npm: highcharts (>= 13.0.0, <= 13.0.2)",
+      "remediation": "highcharts: 11.4.9; highcharts: 12.6.1; highcharts: 13.1.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-5793-x2q3-c3q7"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/security/advisories/GHSA-5793-x2q3-c3q7"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/pull/25315"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/commit/9534773d0f41400aac0945bf8aaebc38dfc72aff"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T19:56:25Z",
+      "source_updated_at": "2026-10-28T19:56:25Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118250",
+      "title": "Highcharts: dotted series.keys paths write to Object.prototype",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "### Impact A dot-separated key path taken from `series.keys` is followed without filtering the individual segments. An attacker who controls `series.keys` and the matching point data can use a path such as `__proto__.polluted` to set arbitrary properties on `Object.prototype`. The resulting properties are visible to all JavaScript running in the page, not only to the chart. No user interaction is required beyond rendering the chart. The injected properties are inert until other code on the page reads them, so consequences depend on the consuming application. ### Workarounds Drop-in fix - for any versions affected (6.1.0-13.0.2). Add the below IIFE to run after Highcharts is loaded. ```javascript ((H)=>{const X = H.isObject;H.Point.prototype.setNestedProperty = function setNestedProperty(t,e,i){let s=i.split(\".\");return s.some(t=>\"__proto__\"===t||\"constructor\"===t)||s.reduce(function(t,i,s,o){let r=o.length-1===s;return t[i]=r?e:X(t[i],!0)?t[i]:{},t[i]},t),t};})(Highcharts); ``` [Live demo & testing](https://jsfiddle.net/BlackLabel/z3rbtm7u/) ### Obtaining the patched version The patched releases are available from all the usual distribution channels. With npm, upgrade the affected package to the patched version listed above, for example `npm install highcharts@13.1.1`. If you loa",
+      "affected": "npm: highcharts (>= 12.0.0, < 12.6.1); npm: highcharts (>= 13.0.0, <= 13.0.2); npm: highcharts (>= 6.1.0, < 11.4.9)",
+      "remediation": "highcharts: 12.6.1; highcharts: 13.1.0; highcharts: 11.4.9",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-rmqc-xvr3-v46c"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/security/advisories/GHSA-rmqc-xvr3-v46c"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118250"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/pull/25313"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T19:56:25Z",
+      "source_updated_at": "2026-10-28T19:56:20Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118249",
+      "title": "Highcharts: series column construction writes to Object.prototype",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "### Impact When series columns are built from point objects, the point option keys are used directly as data column ids, so the write that populates a column reaches `Object.prototype` and the `Object` constructor. Keys named `__proto__` and `constructor` survive `JSON.parse` as own enumerable properties, so an attacker who controls the point objects can set integer-keyed properties on `Object.prototype`, one per point index, to values of their choosing. Named properties cannot be reached this way. The integer keys still affect every object in the page: reading an out-of-range index on any array or plain object returns the attacker's value, and `for...in` over any object yields the injected keys, so unrelated code can take branches it should not using attacker-supplied data, and rendering can fail as a side effect. The properties remain in place once the chart has been built, and no user interaction is required beyond rendering the chart. Consequences beyond disruption depend on the consuming application. ### Workarounds Drop-in fix - for any versions affected (6.1.0-13.0.2). Add the below IIFE to run after Highcharts is loaded. ```javascript ;!function(t){if(t&&t.Point&&!t.Point.prototype.protoPollutionPatched){var o=t.Point.prototype,r=o.optionsToObject,e=o.setNestedProperty,n=",
+      "affected": "npm: highcharts (>= 13.0.0, <= 13.0.2)",
+      "remediation": "highcharts: 13.1.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-gfvx-2c2g-38wq"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/security/advisories/GHSA-gfvx-2c2g-38wq"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118249"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/pull/25321"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T19:56:25Z",
+      "source_updated_at": "2026-10-28T19:56:15Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118246",
+      "title": "Highcharts Core: `breadcrumbs.style` keys become SVG event-handler attributes",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "### Impact The breadcrumbs `style` option is applied to the breadcrumb button as SVG attributes rather than as CSS, and the attribute names are not filtered. An attacker who controls the chart configuration can supply keys under `breadcrumbs.style` that name event handlers, and those keys become live handlers on the breadcrumb button, so the attacker's script runs in the origin of the page hosting the chart. The option is reached through `drilldown.breadcrumbs`, `navigation.breadcrumbs` and the `breadcrumbs` option of the treemap, sunburst and treegraph series. Exploitation requires that untrusted data reach the chart configuration and that a user drill down, or traverse into a level of a hierarchical series, so that the breadcrumbs render, and then hover over or activate the breadcrumb button. Charts rendered in styled mode do not apply the option and are not affected. Charts built with Highcharts Stock, Maps and Gantt are included, since those ship from the same package as Core. ### Workarounds Verified against published bundles on 10.0.0, 11.4.8, 12.3.0 and 13.0.2. Load immediately after Highcharts, before any chart is created: ```js // Workaround fix for all affected Highcharts versions: 10.0.0-13.0.2 ((H)=>{const S=H.SVGElement.prototype,D=S._defaultSetter;S._defaultSetter=f",
+      "affected": "npm: highcharts (>= 10.0.0, < 11.4.9); npm: highcharts (>= 12.0.0, < 12.6.1); npm: highcharts (>= 13.0.0, <= 13.0.2)",
+      "remediation": "highcharts: 11.4.9; highcharts: 12.6.1; highcharts: 13.1.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-35rr-xwfh-x789"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/security/advisories/GHSA-35rr-xwfh-x789"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118246"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/commit/b0fafdaaee7d0cac2ecfeb0eaf37b11cd40594ef"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T19:56:25Z",
+      "source_updated_at": "2026-10-28T19:56:11Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116797",
+      "title": "Highcharts Grid Pro: cell-renderer `attributes` map written with raw `setAttribute`",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "### Impact The input-type cell renderers copy every entry of the renderer's `attributes` option onto the input or select element they create, without checking the attribute names. An attacker who controls the Grid configuration can supply entries under a column's `cells.renderer.attributes` or `cells.editMode.renderer.attributes` whose names are event handlers, and those handlers execute in the origin of the page hosting the Grid. A view renderer places the handler on the input rendered in every row of the column as soon as the Grid renders; an edit-mode renderer places it on the input created when a cell enters edit mode, and that input is focused immediately, so a `focus` handler runs as soon as the user starts editing. Exploitation requires that untrusted data reach the Grid configuration and that a user hover over or focus one of the rendered inputs, or begin editing a cell. The Pro DataGrid that shipped inside the Dashboards package is included. ### Workarounds If your column configuration comes from a source you do not fully control, paste this snippet right after importing the `Grid` module: ```ts const ALLOWED_RENDERER_ATTRIBUTES = [ 'autofocus', 'checked', 'max', 'maxlength', 'min', 'minlength', 'multiple', 'pattern', 'placeholder', 'size', 'step' ]; const scrubColumn = ",
+      "affected": "npm: @highcharts/grid-pro (>= 2.0.0, <= 3.1.0); npm: @highcharts/dashboards (= 3.6.0)",
+      "remediation": "@highcharts/grid-pro: 3.2.0; @highcharts/dashboards: 4.0.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-5ghw-9mgr-jvx2"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/security/advisories/GHSA-5ghw-9mgr-jvx2"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116797"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/commit/52abd4f8f8db87dd20eab7c01444112380e30e98"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T19:56:25Z",
+      "source_updated_at": "2026-10-28T19:56:05Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118242",
+      "title": "Highcharts Grid: custom icon definition objects written with raw `setAttribute` on `<path>`",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "### Impact A custom icon supplied under `rendering.icons` as an icon definition object is built by creating an SVG path for each of its child entries and setting every key of that entry as an attribute of the path, without filtering the attribute names; only the string form of the option is passed through the markup allow-list. An attacker who controls the Grid configuration can therefore supply child entries whose keys name event handlers, and those handlers execute in the origin of the page hosting the Grid. Custom icons take precedence over the built-in ones, so the attacker can replace icons that render without any further configuration, such as the sort icon shown in every column header by default and the pagination controls where pagination is enabled, and does not need any reference to a custom icon name. Exploitation requires that untrusted data reach the Grid configuration and that a user hover over or activate an affected icon. ### Workarounds If your Grid configuration comes from a source you do not fully control, paste this snippet right after importing the Grid module: ```ts (function () { const GridNS = typeof Grid !== 'undefined' ? Grid : undefined; const GridClass = GridNS && GridNS.Grid; if (!GridClass || !GridClass.prototype.loadUserOptions) { return; // Grid no",
+      "affected": "npm: @highcharts/grid-lite (>= 2.3.0, <= 3.1.0); npm: @highcharts/grid-pro (>= 2.3.0, <= 3.1.0)",
+      "remediation": "@highcharts/grid-lite: 3.2.0; @highcharts/grid-pro: 3.2.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-6g3c-p4fg-xv47"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/security/advisories/GHSA-6g3c-p4fg-xv47"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118242"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/commit/8fc970658fee6601625b42da29d27c3ef7c45e30"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T19:56:25Z",
+      "source_updated_at": "2026-10-28T19:55:46Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118245",
+      "title": "Highcharts Dashboards: `chartConstructor` is an unchecked lookup into the Highcharts namespace",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "### Impact The Highcharts component uses the value of `chartConstructor` to select a function from the Highcharts namespace and invokes it with the component's container element and its `chartOptions`, without checking the value against the supported chart constructors. An attacker who controls the dashboard configuration can therefore name any other public member of that namespace; utility functions in that namespace copy the supplied options onto the container element as properties or attributes, so markup and event handlers carried in `chartOptions` land in the page and run in the origin of the page hosting the dashboard. Exploitation requires that untrusted data reach the Dashboards component configuration. No user interaction is required beyond rendering the board. ### Workarounds If your board configuration comes from a source you do not fully control, paste this snippet right after importing libraries: ```ts (function () { const HighchartsComponent = Dashboards && Dashboards.HighchartsComponent; if (!HighchartsComponent || !HighchartsComponent.prototype.createChart) { return; // HighchartsComponent not loaded } const allowedConstructors = [ 'chart', 'stockChart', 'mapChart', 'ganttChart' ]; const originalCreateChart = HighchartsComponent.prototype.createChart; HighchartsCo",
+      "affected": "npm: @highcharts/dashboards (>= 1.0.0, <= 4.2.1)",
+      "remediation": "@highcharts/dashboards: 4.2.2",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-grj7-r4jv-pw9j"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/security/advisories/GHSA-grj7-r4jv-pw9j"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118245"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/commit/98d3652cdc4f66fbccbbb8b4184ecd8f647f74de"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T19:56:25Z",
+      "source_updated_at": "2026-10-28T19:55:42Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118247",
+      "title": "Highcharts Dashboards / Grid Pro: `DataTable.setCell` and column writers treat `__proto__` as an existing column.",
+      "severity": "medium",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "### Impact When a single cell value is written to a data table, the column id is used as a key on the table's column collection without filtering, so a column id of `__proto__` resolves to `Object.prototype`, is taken for an existing column, and the write lands at the row index on `Object.prototype`; a column id of `constructor` writes onto the `Object` constructor in the same way. In Dashboards releases that still supported column aliases, the id is first resolved through the alias map, so a literal `__proto__` id is redirected harmlessly there, while an alias whose target is `__proto__`, which the connector's data table options accept, reaches the same write. An attacker who controls the column id can thereby set integer-keyed properties on `Object.prototype`, one per row index, holding the written value; named properties cannot be reached through these paths, because the row index is a number. The integer keys still affect every object in the page: reading an out-of-range index on any array or plain object returns the injected value, and `for...in` over any object yields the injected keys, so unrelated code can take branches it should not using attacker-supplied data, and rendering can fail as a side effect. In Dashboards the write is reached through the Highcharts component's",
+      "affected": "npm: @highcharts/dashboards (>= 1.0.0, <= 4.2.1); npm: @highcharts/grid-pro (>= 2.0.0, <= 3.1.0)",
+      "remediation": "@highcharts/dashboards: 4.2.2; @highcharts/grid-pro: 3.2.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-c75x-9x9h-28rm"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/security/advisories/GHSA-c75x-9x9h-28rm"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118247"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/commit/02dd9349aeb6f4cc9c98806120d917ed316b4c74"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T19:56:25Z",
+      "source_updated_at": "2026-10-28T19:55:37Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118243",
+      "title": "Highcharts Dashboards: `__proto__` data table id writes sync listeners to `Object.prototype`",
+      "severity": "medium",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "### Impact The data cursor keeps its listener and state bookkeeping in plain objects keyed by data table id, so a table id of `__proto__` supplied in the `dataPool` connector configuration resolves to `Object.prototype` when a sync registers its listeners, and the registration creates a property on `Object.prototype` named after the sync state and holding the internal listener array. The property name begins with a state prefix fixed by the library, to which the sync `group` option can append an attacker-chosen suffix, and its value is the library's own listener array, but the property is enumerable and visible on every object in the page, and emitting a lasting state for that table id then throws, so syncs that keep lasting states, such as `extremes`, stop working. Exploitation requires that untrusted data reach the Dashboards configuration and that a sync such as `highlight` or `extremes` be enabled on a component using that table, which the same configuration can do. No user interaction is required beyond loading the board. The injected property is inert until other code on the page reads or enumerates it, so consequences depend on the consuming application. ### Workarounds **Drop-in fix - for any Highcharts Dashboards versions affected (1.0.0-4.2.1).** Add the below IIFE to r",
+      "affected": "npm: @highcharts/dashboards (>= 1.0.0, <= 4.2.1)",
+      "remediation": "@highcharts/dashboards: 4.2.2",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-jqgh-w3cc-7jqw"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/security/advisories/GHSA-jqgh-w3cc-7jqw"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118243"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/commit/ade5a41a700212f09133223ca990a3737d1d9ec6"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T19:56:25Z",
+      "source_updated_at": "2026-10-28T19:55:35Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118244",
+      "title": "Highcharts Core: HTML text parsing falls back to unfiltered `innerHTML` during printing",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "### Impact When the HTML text parser cannot obtain a document from `DOMParser` because the call throws, it falls back to assigning the raw markup to the `innerHTML` of an element created in the hosting document, and the allow-list is applied only to the resulting DOM afterwards. In Chromium the Trusted Types policy callback that the parser uses throws while a `beforeprint` handler is running, so if the hosting page re-renders the chart from a `beforeprint` handler, every HTML-rendered text option parsed at that moment, such as `useHTML` titles, axis labels and data labels or text set by responsive rules, is inserted unsanitized, and event handlers embedded in that markup run in the origin of the page hosting the chart. Exploitation requires that untrusted data reach the chart configuration, that the hosting page update the chart from a `beforeprint` handler in Chromium, and that printing be started, which the print item of the exporting menu does on its own. Charts built with Highcharts Stock, Maps and Gantt are included, since those ship from the same package as Core. ### Workarounds **Drop-in fix - for any versions affected (12.0.0-13.0.2).** Add the below IIFE to run after Highcharts is loaded. ``` ((n)=>{n.AST.prototype.parseMarkup=function parseMarkup(t){let e,i=[];t=t.trim(",
+      "affected": "npm: highcharts (>= 12.0.0, < 12.6.1); npm: highcharts (>= 13.0.0, <= 13.0.2)",
+      "remediation": "highcharts: 12.6.1; highcharts: 13.1.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-65hg-cf3f-5m39"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/security/advisories/GHSA-65hg-cf3f-5m39"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118244"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/commit/abde7c576793bf50b0e0636e59b49630de6dd0d5"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T19:56:25Z",
+      "source_updated_at": "2026-10-28T19:55:25Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116796",
+      "title": "Highcharts Core: `javascript:` URL in an `xlink:href` attribute survives text filtering and reaches exported charts",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "### Impact The filter applied to markup in text options checks `href`, `src` and a few similar attributes against an allowed-scheme list, but accepts `xlink:href` without that check, so an SVG anchor whose `xlink:href` is a `javascript:` URL passes the filter, whether or not the option is rendered with `useHTML`. In the live page the attribute is written without the XLink namespace, so browsers do not treat the anchor as a link there. The attribute is preserved verbatim in the chart's serialised output: the SVG produced by the exporting module, including the default SVG download, declares the XLink namespace and contains the anchor, and so does the markup of the chart container. Any document that parses that output again, such as the downloaded SVG opened in a browser or a page that inlines exported or server-rendered chart markup, then holds a working link, and an attacker who controls the chart configuration can thereby run script in the origin of that document when a user activates the link. Exploitation requires that untrusted data reach a text option such as the title, that the chart be exported or its markup be serialised and parsed again, and that a user activate the link. ### Workarounds Drop-in fix for all affected versions (10.3.2 - 13.1.0). Add the below IIFE to run af",
+      "affected": "npm: highcharts (>= 10.3.2, < 11.4.9); npm: highcharts (>= 12.0.0, < 12.6.2); npm: highcharts (>= 13.0.0, <= 13.1.0)",
+      "remediation": "highcharts: 11.4.9; highcharts: 12.6.2; highcharts: 13.1.1",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-mw4f-gj5x-6xr4"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/security/advisories/GHSA-mw4f-gj5x-6xr4"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116796"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/highcharts/highcharts/commit/6cf359fb144aa51fdc105e2b9bbd013439b02c88"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T19:56:25Z",
+      "source_updated_at": "2026-10-28T19:55:11Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-4mfg-r38w-w8fg",
+      "title": "mcp-sanitizer: URL sanitizer allows localhost/IPv6 loopback SSRF bypass via explicit port or bracketed IPv6",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "## URL sanitizer allows localhost/IPv6 loopback SSRF bypass via explicit port or bracketed IPv6 ### Summary `mcp-sanitizer` v1.3.3 fails to block Server-Side Request Forgery (SSRF) targets when a `localhost` URL includes an explicit port (e.g., `http://localhost:8080/`) or when an IPv6 loopback/link-local address is expressed in bracketed notation (e.g., `http://[::1]:8080/`, `http://[fe80::1]:8080/`). Because the library is explicitly designed to gate MCP tool parameters such as `web_fetch` and `web_scraper` before outbound HTTP requests are made, a bypass here directly enables an attacker-controlled URL to reach internal services, leaking their responses. ### Details The vulnerability exists in `src/utils/validation-utils.js` inside the `validateURLLocation()` function that is called by `_secureSanitizeURL()` in `src/sanitizer/mcp-sanitizer.js:698`. **Bug 1 — Port-guarded localhost check (line 274–276):** ```js // src/utils/validation-utils.js:274-276 if ((hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') && !parsedUrl.port) { throw new Error('URL points to localhost without explicit port'); } ``` The `&& !parsedUrl.port` guard means that any localhost URL that includes a port number is *not* thrown. `http://localhost:8080/` passes the check entirely, ",
+      "affected": "npm: mcp-sanitizer (< 1.4.0)",
+      "remediation": "mcp-sanitizer: 1.4.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-4mfg-r38w-w8fg"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/starman69/mcp-sanitizer/security/advisories/GHSA-4mfg-r38w-w8fg"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/starman69/mcp-sanitizer/commit/200685889b073f7470859b0941b67b7f46255f09"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/starman69/mcp-sanitizer/releases/tag/v1.4.0"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "advisory",
+      "cvss": "8.2",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T19:56:25Z",
+      "source_updated_at": "2026-10-28T19:51:40Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-7w82-6f9j-v9jp",
+      "title": "mcp-sanitizer: File Path Sanitizer Permits Arbitrary User-Home Absolute Paths",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "## File Path Sanitizer Permits Arbitrary User-Home Absolute Paths ### Summary `mcp-sanitizer` v1.3.3 explicitly whitelists `/home/` and `/Users/` as allowed absolute path prefixes in its file path validation logic (`src/utils/validation-utils.js:188-196`). As a result, paths such as `/home/alice/.ssh/id_rsa` and `/home/alice/.aws/credentials` pass through `sanitizer.sanitize()` with `blocked=false`, even though they point to highly sensitive files outside any configured safe root. Any consumer application that trusts the sanitized path and passes it to a filesystem read/write operation (e.g., `fs.readFile`) will expose arbitrary user-home directory files to an unauthenticated network attacker. Dynamic reproduction confirmed exfiltration of a simulated SSH private key and AWS credentials via a single HTTP POST request. ### Details The vulnerability resides in the `validateFilePath` function inside `src/utils/validation-utils.js`. When an absolute path falls outside the configured safe root directories, the function performs a secondary check against a hardcoded allowlist: ```js // src/utils/validation-utils.js:188-196 if (!isInSafeLocation && path.isAbsolute(normalizedPath)) { const allowedAbsolutePaths = ['/tmp/', '/var/tmp/', '/home/', '/Users/']; const isAllowedAbsolute = allow",
+      "affected": "npm: mcp-sanitizer (< 1.4.0)",
+      "remediation": "mcp-sanitizer: 1.4.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-7w82-6f9j-v9jp"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/starman69/mcp-sanitizer/security/advisories/GHSA-7w82-6f9j-v9jp"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/starman69/mcp-sanitizer/commit/200685889b073f7470859b0941b67b7f46255f09"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/starman69/mcp-sanitizer/releases/tag/v1.4.0"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "advisory",
+      "cvss": "7.5",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T19:56:25Z",
+      "source_updated_at": "2026-10-28T19:51:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-58273",
+      "title": "rucio has an Authorization Bypass on REST API endpoint for signing URLs",
+      "severity": "high",
+      "categories": [
+        "Python / PyPI",
+        "Application dependencies"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "## Summary The `/credentials/signurl` endpoint decides authorization from the client-supplied `X-Rucio-Account` HTTP header instead of the authenticated token's account. Any client holding **any** valid auth token (even a low-privilege account they legitimately own) can send `X-Rucio-Account: root` to pass the root-only permission check and have the Rucio server mint a presigned **read / write / delete** URL for an **arbitrary** object, signed with the RSE's stored S3 / GCS / Swift credentials. ## Details `SignURL.get()` takes the authorization principal from a request header and never uses the token-authenticated identity: ```python # lib/rucio/web/rest/flaskapi/v1/credentials.py account = request.headers.get('X-Rucio-Account', default=None) # L165 (attacker-controlled) ... result = get_signed_url(account, rse=rse, service=service, # L194 operation=operation, url=url, lifetime=lifetime, vo=vo) ``` The gateway then uses that header value as the `issuer` for the permission check: ```python # lib/rucio/gateway/credential.py auth_result = permission.has_permission(issuer=account, vo=vo, # L57 action='get_signed_url', kwargs=kwargs, ...) ``` and the permission function is root-only: ```python # lib/rucio/core/permission/generic.py def perm_get_signed_url(issuer, kwargs, session): ret",
+      "affected": "pip: rucio (>= 1.16.1, < 35.9.0); pip: rucio (>= 36.0.0rc1, < 38.6.0); pip: rucio (>= 39.0.0rc1, < 41.0.0rc1)",
+      "remediation": "rucio: 35.9.0; rucio: 38.6.0; rucio: 41.0.0rc1",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-5j9r-fx4x-rpvg"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/rucio/rucio/security/advisories/GHSA-5j9r-fx4x-rpvg"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/rucio/rucio/commit/64c0e6a6a93ae88427ff3b7d77532ce08c8a69ec"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/rucio/rucio/commit/8bdc38994a8766658d0314d36afc104c9242c96f"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T19:56:25Z",
+      "source_updated_at": "2026-10-28T19:50:05Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-473q-m89c-ghf8",
+      "title": "MySqlConnector: Account password disclosed to a man-in-the-middle in zero-configuration TLS mode (clear-text password sent before certificate is verified)",
+      "severity": "medium",
+      "categories": [
+        ".NET / ASP.NET",
+        "Application dependencies"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "## Summary With `SslMode` set to `VerifyCA` or `VerifyFull` with no configured CA certificate, an unvalidated TLS connection is treated as secure and a clear-text password can be sent before the certificate is checked. This can occur when relying on the password to validate a self-signed cert, e.g., MariaDB's [zero-configuration TLS](https://mariadb.com/docs/server/security/encryption/data-in-transit-encryption/zero-configuration-ssl). ## Impact An attacker who can deploy a man-in-the-middle MySQL proxy presenting any self-signed certificate can capture the plaintext database password of a client that: - uses `SslMode = VerifyCA` or `VerifyFull`, and - does not use the `SslCa` connection string option, and - uses a non-empty password. The attacker completes the TLS handshake with its own cert, requests a clear-text password authentication scheme (`mysql_clear_password`, or forces the `caching_sha2_password`/`sha256_password` clear-text fallback), and receives the password before the fingerprint check rejects the connection, defeating the man-in-the-middle protection `VerifyFull` is expected to provide. Not affected: a configured CA (`SslCa`), CA-validated TLS, local connections (Unix socket / loopback), or empty passwords. Using `SslMode` set to `Preferred` or `Required` is out o",
+      "affected": "nuget: MySqlConnector (< 2.6.1)",
+      "remediation": "MySqlConnector: 2.6.1",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-473q-m89c-ghf8"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/mysql-net/MySqlConnector/security/advisories/GHSA-473q-m89c-ghf8"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/mysql-net/MySqlConnector/commit/86503613fe3b72ae26c03dd1ea92f0e1e6e208f9"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/mysql-net/MySqlConnector/releases/tag/2.6.1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T19:56:25Z",
+      "source_updated_at": "2026-10-28T19:49:45Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -27585,8 +28202,8 @@
       "title": "Laravel is a web application framework",
       "severity": "critical",
       "categories": [
-        "PHP",
-        "MySQL / MariaDB"
+        "MySQL / MariaDB",
+        "PHP"
       ],
       "published": "2026-10-21",
       "updated": "2026-10-28",
@@ -37606,6 +38223,1042 @@
       "epss_as_of": "2026-10-28"
     },
     {
+      "id": "CVE-2026-83584",
+      "title": "CVE-2026-83584 Windows Smart Card Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Use after free in Windows Smart Card allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83584"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83584"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.0",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00286,
+      "epss_percentile": 0.2108,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-83843",
+      "title": "CVE-2026-83843 Windows Internet Key Exchange (IKE) Extension Denial of Service Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Out-of-bounds read in Windows Internet Key Exchange (IKE) Protocol allows an unauthorized attacker to deny service over a network.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83843"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83843"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.01301,
+      "epss_percentile": 0.70359,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-88124",
+      "title": "CVE-2026-88124 Windows Installer Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Use after free in Windows Installer allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88124"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88124"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.0",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00252,
+      "epss_percentile": 0.16631,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-88157",
+      "title": "CVE-2026-88157 Microsoft OpenSSH for Windows Remote Code Execution Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Heap-based buffer overflow in OpenSSH for Windows allows an unauthorized attacker to execute code over a network.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88157"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88157"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00535,
+      "epss_percentile": 0.45036,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-88159",
+      "title": "CVE-2026-88159 Windows Background Intelligent Transfer Service (BITS) Remote Code Execution Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Use after free in Windows Background Intelligent Transfer Service (BITS) allows an unauthorized attacker to execute code over a network.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88159"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88159"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.01441,
+      "epss_percentile": 0.73104,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-88140",
+      "title": "CVE-2026-88140 Windows Key Storage Provider Information Disclosure Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Out-of-bounds read in Windows Key Storage Provider allows an authorized attacker to disclose information locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88140"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88140"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00396,
+      "epss_percentile": 0.33721,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-88143",
+      "title": "CVE-2026-88143 Windows Storage Spaces Controller Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Heap-based buffer overflow in Windows Storage Spaces Controller allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88143"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88143"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00256,
+      "epss_percentile": 0.17218,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-88146",
+      "title": "CVE-2026-88146 Windows Background Intelligent Transfer Service (BITS) Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Concurrent execution using shared resource with improper synchronization ('race condition') in Windows Background Intelligent Transfer Service (BITS) allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88146"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88146"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.0",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00193,
+      "epss_percentile": 0.08958,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-83579",
+      "title": "CVE-2026-83579 Windows Smart Card Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Heap-based buffer overflow in Windows Smart Card allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83579"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83579"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00388,
+      "epss_percentile": 0.32781,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-83582",
+      "title": "CVE-2026-83582 Windows Graphics Kernel Information Disclosure Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Use after free in Windows Graphics Kernel allows an authorized attacker to disclose information locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83582"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83582"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.7",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00362,
+      "epss_percentile": 0.2993,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-83585",
+      "title": "CVE-2026-83585 Windows NTFS Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Use of externally-controlled format string in Windows NTFS allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83585"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83585"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00361,
+      "epss_percentile": 0.29848,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-83588",
+      "title": "CVE-2026-83588 Windows USB Driver Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Heap-based buffer overflow in Windows USB Driver allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83588"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83588"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00361,
+      "epss_percentile": 0.29851,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-83634",
+      "title": "CVE-2026-83634 Windows BitLocker Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Double free in Windows BitLocker allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83634"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83634"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00361,
+      "epss_percentile": 0.29845,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-83636",
+      "title": "CVE-2026-83636 Windows Hyper-V Denial of Service Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "HyperV",
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Null pointer dereference in Windows Hyper-V allows an authorized attacker to deny service locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83636"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83636"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00445,
+      "epss_percentile": 0.38569,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-83637",
+      "title": "CVE-2026-83637 Windows Kernel-Mode Drivers Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Out-of-bounds read in Windows Kernel-Mode Drivers allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83637"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83637"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00388,
+      "epss_percentile": 0.32777,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-83638",
+      "title": "CVE-2026-83638 Windows USB Driver Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Heap-based buffer overflow in Windows USB Driver allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83638"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83638"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00361,
+      "epss_percentile": 0.29851,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-83639",
+      "title": "CVE-2026-83639 Windows Sensor Data Service Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Heap-based buffer overflow in Windows Sensor Data Service allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83639"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83639"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00361,
+      "epss_percentile": 0.29851,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-83640",
+      "title": "CVE-2026-83640 Windows NTFS Remote Code Execution Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Heap-based buffer overflow in Windows NTFS allows an authorized attacker to execute code locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83640"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83640"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00361,
+      "epss_percentile": 0.2985,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-88134",
+      "title": "CVE-2026-88134 Windows Kernel Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Use after free in Windows Kernel allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88134"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88134"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00361,
+      "epss_percentile": 0.29844,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-88113",
+      "title": "CVE-2026-88113 Windows Broadcast DVR User Service Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Use after free in Windows Broadcast DVR User Service allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88113"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88113"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.0",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00258,
+      "epss_percentile": 0.17409,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-88128",
+      "title": "CVE-2026-88128 Windows DWM Core Library Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Heap-based buffer overflow in Windows DWM Core Library allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88128"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88128"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00361,
+      "epss_percentile": 0.29845,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-88118",
+      "title": "CVE-2026-88118 Windows Background Intelligent Transfer Service (BITS) Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Integer overflow or wraparound in Windows Background Intelligent Transfer Service (BITS) allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88118"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88118"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.0042,
+      "epss_percentile": 0.36177,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-88147",
+      "title": "CVE-2026-88147 Windows Secure Socket Tunneling Protocol (SSTP) Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Heap-based buffer overflow in Windows Secure Socket Tunneling Protocol (SSTP) allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88147"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88147"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00344,
+      "epss_percentile": 0.27855,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-88121",
+      "title": "CVE-2026-88121 Windows Background Intelligent Transfer Service (BITS) Remote Code Execution Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Use after free in Windows Background Intelligent Transfer Service (BITS) allows an unauthorized attacker to execute code over a network.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88121"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88121"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00554,
+      "epss_percentile": 0.46129,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-88133",
+      "title": "CVE-2026-88133 Windows Portable Device Enumerator Service Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Improper authorization in Windows Portable Device Enumerator Service allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88133"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88133"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.0055,
+      "epss_percentile": 0.45896,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-88142",
+      "title": "CVE-2026-88142 Windows Background Intelligent Transfer Service (BITS) Remote Code Execution Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Use after free in Windows Background Intelligent Transfer Service (BITS) allows an unauthorized attacker to execute code over a network.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88142"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88142"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00851,
+      "epss_percentile": 0.58081,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-88149",
+      "title": "CVE-2026-88149 Windows Ancillary Function Driver for WinSock Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Double free in Windows Ancillary Function Driver for WinSock allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88149"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88149"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.0",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00204,
+      "epss_percentile": 0.1032,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-96858",
+      "title": "CVE-2026-96858 Windows Security Account Manager Tampering Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Missing authentication for critical function in Windows Security Account Manager allows an authorized attacker to perform tampering locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96858"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96858"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00472,
+      "epss_percentile": 0.40728,
+      "epss_as_of": "2026-10-28"
+    },
+    {
       "id": "CVE-2026-103555",
       "title": "Heap-based buffer overflow in Virtual Hard Disk (VHD) Miniport Driver allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
@@ -41218,44 +42871,43 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-108398",
-      "title": ".NET Framework untrusted search path security feature bypass",
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
       "severity": "high",
       "cvss": "8.8",
       "categories": [
-        ".NET / ASP.NET",
         "Windows",
-        "Windows Server OS"
+        "Windows 11 OS"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
-      "summary": "Untrusted search path handling in classic Microsoft .NET Framework permits a locally authorized attacker to bypass a security feature. The patch is part of Microsoft's October 2026 .NET Framework cumulative security updates.",
-      "affected": "Multiple .NET Framework 3.5, 4.6.2 through 4.8.1 configurations across supported Windows versions, subject to Microsoft update applicability. This is a separate classic .NET Framework CVE, not the modern .NET Brotli issue.",
-      "remediation": "Install the correct October 13, 2026 .NET Framework cumulative update or a newer superseding Windows update for the installed Windows and .NET Framework versions. Consult the Microsoft patch matrix for the specific KB.",
-      "exploitation": "No confirmed active exploitation in the referenced Microsoft advisories.",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
       "sources": [
         {
-          "label": "Microsoft .NET Framework October cumulative update",
-          "url": "https://learn.microsoft.com/en-us/dotnet/framework/release-notes/2026/10-13-october-cumulative-update"
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
         },
         {
           "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-108398"
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
         },
         {
-          "label": "NVD product applicability",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108398"
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
         }
       ],
       "kind": "cve",
       "source_type": "vendor_baseline",
       "source_updated_at": "2026-10-13",
       "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00779,
-      "epss_percentile": 0.55752,
+      "epss": 0.09813,
+      "epss_percentile": 0.95532,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -41295,43 +42947,44 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "id": "CVE-2026-108398",
+      "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
       "cvss": "8.8",
       "categories": [
+        ".NET / ASP.NET",
         "Windows",
-        "Windows 11 OS"
+        "Windows Server OS"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
+      "summary": "Untrusted search path handling in classic Microsoft .NET Framework permits a locally authorized attacker to bypass a security feature. The patch is part of Microsoft's October 2026 .NET Framework cumulative security updates.",
+      "affected": "Multiple .NET Framework 3.5, 4.6.2 through 4.8.1 configurations across supported Windows versions, subject to Microsoft update applicability. This is a separate classic .NET Framework CVE, not the modern .NET Brotli issue.",
+      "remediation": "Install the correct October 13, 2026 .NET Framework cumulative update or a newer superseding Windows update for the installed Windows and .NET Framework versions. Consult the Microsoft patch matrix for the specific KB.",
+      "exploitation": "No confirmed active exploitation in the referenced Microsoft advisories.",
       "sources": [
         {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+          "label": "Microsoft .NET Framework October cumulative update",
+          "url": "https://learn.microsoft.com/en-us/dotnet/framework/release-notes/2026/10-13-october-cumulative-update"
         },
         {
           "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-108398"
         },
         {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+          "label": "NVD product applicability",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108398"
         }
       ],
       "kind": "cve",
       "source_type": "vendor_baseline",
       "source_updated_at": "2026-10-13",
       "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.09813,
-      "epss_percentile": 0.95532,
+      "epss": 0.00779,
+      "epss_percentile": 0.55752,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -44727,37 +46380,6 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-83584",
-      "title": "CVE-2026-83584 Windows Smart Card Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Use after free in Windows Smart Card allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83584"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00286,
-      "epss_percentile": 0.2108,
-      "epss_as_of": "2026-10-28"
-    },
-    {
       "id": "CVE-2026-83641",
       "title": "CVE-2026-83641 Windows Media Elevation of Privilege Vulnerability",
       "severity": "bulletin",
@@ -46337,37 +47959,6 @@
       "known_exploited": false,
       "epss": 0.00304,
       "epss_percentile": 0.231,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-83843",
-      "title": "CVE-2026-83843 Windows Internet Key Exchange (IKE) Extension Denial of Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Out-of-bounds read in Windows Internet Key Exchange (IKE) Protocol allows an unauthorized attacker to deny service over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83843"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.01301,
-      "epss_percentile": 0.70359,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -50649,68 +52240,6 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-88124",
-      "title": "CVE-2026-88124 Windows Installer Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Use after free in Windows Installer allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88124"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00252,
-      "epss_percentile": 0.16631,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-88157",
-      "title": "CVE-2026-88157 Microsoft OpenSSH for Windows Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Heap-based buffer overflow in OpenSSH for Windows allows an unauthorized attacker to execute code over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88157"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00535,
-      "epss_percentile": 0.45036,
-      "epss_as_of": "2026-10-28"
-    },
-    {
       "id": "CVE-2026-88161",
       "title": "CVE-2026-88161 Windows Local Security Authority (LSA) Elevation of Privilege Vulnerability",
       "severity": "bulletin",
@@ -50770,37 +52299,6 @@
       "known_exploited": false,
       "epss": 0.00153,
       "epss_percentile": 0.04377,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-88159",
-      "title": "CVE-2026-88159 Windows Background Intelligent Transfer Service (BITS) Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Use after free in Windows Background Intelligent Transfer Service (BITS) allows an unauthorized attacker to execute code over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88159"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.01441,
-      "epss_percentile": 0.73104,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -52229,99 +53727,6 @@
       "known_exploited": false,
       "epss": 0.00157,
       "epss_percentile": 0.04789,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-88140",
-      "title": "CVE-2026-88140 Windows Key Storage Provider Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Out-of-bounds read in Windows Key Storage Provider allows an authorized attacker to disclose information locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88140"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00396,
-      "epss_percentile": 0.33721,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-88143",
-      "title": "CVE-2026-88143 Windows Storage Spaces Controller Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Heap-based buffer overflow in Windows Storage Spaces Controller allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88143"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00256,
-      "epss_percentile": 0.17218,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-88146",
-      "title": "CVE-2026-88146 Windows Background Intelligent Transfer Service (BITS) Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Concurrent execution using shared resource with improper synchronization ('race condition') in Windows Background Intelligent Transfer Service (BITS) allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88146"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00193,
-      "epss_percentile": 0.08958,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -55595,99 +57000,6 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-83579",
-      "title": "CVE-2026-83579 Windows Smart Card Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Heap-based buffer overflow in Windows Smart Card allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83579"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00388,
-      "epss_percentile": 0.32781,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-83582",
-      "title": "CVE-2026-83582 Windows Graphics Kernel Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Use after free in Windows Graphics Kernel allows an authorized attacker to disclose information locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83582"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00362,
-      "epss_percentile": 0.2993,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-83585",
-      "title": "CVE-2026-83585 Windows NTFS Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Use of externally-controlled format string in Windows NTFS allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83585"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00361,
-      "epss_percentile": 0.29848,
-      "epss_as_of": "2026-10-28"
-    },
-    {
       "id": "CVE-2026-83587",
       "title": "CVE-2026-83587 Windows Core Messaging Elevation of Privilege Vulnerability",
       "severity": "bulletin",
@@ -55716,224 +57028,6 @@
       "known_exploited": false,
       "epss": 0.00361,
       "epss_percentile": 0.29847,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-83588",
-      "title": "CVE-2026-83588 Windows USB Driver Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Heap-based buffer overflow in Windows USB Driver allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83588"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00361,
-      "epss_percentile": 0.29851,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-83634",
-      "title": "CVE-2026-83634 Windows BitLocker Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Double free in Windows BitLocker allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83634"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00361,
-      "epss_percentile": 0.29845,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-83636",
-      "title": "CVE-2026-83636 Windows Hyper-V Denial of Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "HyperV",
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Null pointer dereference in Windows Hyper-V allows an authorized attacker to deny service locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83636"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00445,
-      "epss_percentile": 0.38569,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-83637",
-      "title": "CVE-2026-83637 Windows Kernel-Mode Drivers Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Out-of-bounds read in Windows Kernel-Mode Drivers allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83637"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00388,
-      "epss_percentile": 0.32777,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-83638",
-      "title": "CVE-2026-83638 Windows USB Driver Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Heap-based buffer overflow in Windows USB Driver allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83638"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00361,
-      "epss_percentile": 0.29851,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-83639",
-      "title": "CVE-2026-83639 Windows Sensor Data Service Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Heap-based buffer overflow in Windows Sensor Data Service allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83639"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00361,
-      "epss_percentile": 0.29851,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-83640",
-      "title": "CVE-2026-83640 Windows NTFS Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Heap-based buffer overflow in Windows NTFS allows an authorized attacker to execute code locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83640"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00361,
-      "epss_percentile": 0.2985,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -59787,285 +60881,6 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-88134",
-      "title": "CVE-2026-88134 Windows Kernel Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Use after free in Windows Kernel allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88134"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00361,
-      "epss_percentile": 0.29844,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-88113",
-      "title": "CVE-2026-88113 Windows Broadcast DVR User Service Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Use after free in Windows Broadcast DVR User Service allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88113"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00258,
-      "epss_percentile": 0.17409,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-88128",
-      "title": "CVE-2026-88128 Windows DWM Core Library Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Heap-based buffer overflow in Windows DWM Core Library allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88128"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00361,
-      "epss_percentile": 0.29845,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-88118",
-      "title": "CVE-2026-88118 Windows Background Intelligent Transfer Service (BITS) Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Integer overflow or wraparound in Windows Background Intelligent Transfer Service (BITS) allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88118"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.0042,
-      "epss_percentile": 0.36177,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-88147",
-      "title": "CVE-2026-88147 Windows Secure Socket Tunneling Protocol (SSTP) Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Heap-based buffer overflow in Windows Secure Socket Tunneling Protocol (SSTP) allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88147"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00344,
-      "epss_percentile": 0.27855,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-88121",
-      "title": "CVE-2026-88121 Windows Background Intelligent Transfer Service (BITS) Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Use after free in Windows Background Intelligent Transfer Service (BITS) allows an unauthorized attacker to execute code over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88121"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00554,
-      "epss_percentile": 0.46129,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-88133",
-      "title": "CVE-2026-88133 Windows Portable Device Enumerator Service Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Improper authorization in Windows Portable Device Enumerator Service allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88133"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.0055,
-      "epss_percentile": 0.45896,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-88142",
-      "title": "CVE-2026-88142 Windows Background Intelligent Transfer Service (BITS) Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Use after free in Windows Background Intelligent Transfer Service (BITS) allows an unauthorized attacker to execute code over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88142"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00851,
-      "epss_percentile": 0.58081,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-88149",
-      "title": "CVE-2026-88149 Windows Ancillary Function Driver for WinSock Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Double free in Windows Ancillary Function Driver for WinSock allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88149"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00204,
-      "epss_percentile": 0.1032,
-      "epss_as_of": "2026-10-28"
-    },
-    {
       "id": "CVE-2026-88171",
       "title": "CVE-2026-88171 Windows DHCP Server Remote Code Execution Vulnerability",
       "severity": "bulletin",
@@ -62182,37 +62997,6 @@
       "known_exploited": false,
       "epss": 0.00234,
       "epss_percentile": 0.14274,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-96858",
-      "title": "CVE-2026-96858 Windows Security Account Manager Tampering Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Missing authentication for critical function in Windows Security Account Manager allows an authorized attacker to perform tampering locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96858"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00472,
-      "epss_percentile": 0.40728,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -66744,7 +67528,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: ipv6: mcast: use rcu_assign_pointer() for __rcu list updates Several places in net/ipv6/mcast.c update RCU-",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-25",
       "updated": "2026-10-28",
@@ -74097,565 +74882,6 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-42525",
-      "title": "Jenkins Microsoft Entra ID (previously Azure AD) Plugin 666.v6060de32f87d and earlier does not restrict the redirect URL after login, allowing attackers to perform phishing at",
-      "severity": "medium",
-      "categories": [
-        "Microsoft 365"
-      ],
-      "published": "2026-04-29",
-      "updated": "2026-10-26",
-      "summary": "Jenkins Microsoft Entra ID (previously Azure AD) Plugin 666.v6060de32f87d and earlier does not restrict the redirect URL after login, allowing attackers to perform phishing attacks.",
-      "affected": "Products identified in NVD configurations: jenkins azure_ad",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-42525"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://www.jenkins.io/security/advisory/2026-04-29/#SECURITY-3760"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00212,
-      "epss_percentile": 0.11507,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7466",
-      "title": "AgentFlow contains an arbitrary code execution vulnerability that allows attackers to execute local Python pipeline files by supplying a user-controlled pipeline_path paramete",
-      "severity": "high",
-      "categories": [
-        "Python / PyPI"
-      ],
-      "published": "2026-04-29",
-      "updated": "2026-10-26",
-      "summary": "AgentFlow contains an arbitrary code execution vulnerability that allows attackers to execute local Python pipeline files by supplying a user-controlled pipeline_path parameter to the POST /api/runs and POST /api/runs/validate endpoints. Attackers can induce requests to the local AgentFlow API to load and execute existing Python pipeline files on disk, resulting in code execution in the context of the user running AgentFlow.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7466"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00343,
-      "epss_percentile": 0.27714,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-25852",
-      "title": "Local privilege escalation due to DLL hijacking vulnerability",
-      "severity": "medium",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-04-29",
-      "updated": "2026-10-26",
-      "summary": "Local privilege escalation due to DLL hijacking vulnerability. The following products are affected: Acronis DeviceLock DLP (Windows) before build 9.0.93212.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-25852"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0009,
-      "epss_percentile": 0.00413,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-41220",
-      "title": "Local privilege escalation due to improper input validation",
-      "severity": "high",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-04-29",
-      "updated": "2026-10-26",
-      "summary": "Local privilege escalation due to improper input validation. The following products are affected: Acronis DeviceLock DLP (Windows) before build 9.0.93212, Acronis Cyber Protect Cloud Agent (Windows) before build 42183.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-41220"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00107,
-      "epss_percentile": 0.01142,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-41952",
-      "title": "Local privilege escalation due to improper input validation",
-      "severity": "high",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-04-29",
-      "updated": "2026-10-26",
-      "summary": "Local privilege escalation due to improper input validation. The following products are affected: Acronis DeviceLock DLP (Windows) before build 9.0.93212, Acronis Cyber Protect Cloud Agent (Windows) before build 42183.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-41952"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00107,
-      "epss_percentile": 0.01141,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-2810",
-      "title": "Netskope was notified about a potential gap in the Endpoint DLP Module for Netskope Client on Windows systems",
-      "severity": "medium",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-04-29",
-      "updated": "2026-10-26",
-      "summary": "Netskope was notified about a potential gap in the Endpoint DLP Module for Netskope Client on Windows systems. The successful exploitation of the gap can potentially allow an unprivileged user to trigger an out-of-bounds read within a driver, leading to a Blue-Screen-of-Death (BSOD). Successful exploitation would require the Endpoint DLP module to be enabled in the client configuration. A successful exploit can potentially result in a denial-of-service for the local machine.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-2810"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00116,
-      "epss_percentile": 0.01602,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7225",
-      "title": "A weakness has been identified in SourceCodester Pizzafy Ecommerce System 1.0",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-04-28",
-      "updated": "2026-10-26",
-      "summary": "A weakness has been identified in SourceCodester Pizzafy Ecommerce System 1.0. This vulnerability affects the function delete_menu of the file /admin/ajax.php?action=delete_menu. Executing a manipulation of the argument ID can lead to sql injection. The attack may be launched remotely. The exploit has been made available to the public and could be used for attacks.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7225"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T22:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00254,
-      "epss_percentile": 0.16912,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-40967",
-      "title": "In Spring AI, various FilterExpressionConverter implementations accept a filter expression object and translate them to specific vector store query languages",
-      "severity": "high",
-      "categories": [
-        "VMware"
-      ],
-      "published": "2026-04-28",
-      "updated": "2026-10-26",
-      "summary": "In Spring AI, various FilterExpressionConverter implementations accept a filter expression object and translate them to specific vector store query languages. In several cases, keys and values are not properly escaped, leading to the ability to alter the query. Affected versions: Spring AI: 1.0.0 - 1.0.5 (fixed in 1.0.6), 1.1.0 - 1.1.4 (fixed in 1.1.5)",
-      "affected": "Products identified in NVD configurations: vmware spring_ai",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-40967"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://spring.io/security/cve-2026-40967"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.6",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T22:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00394,
-      "epss_percentile": 0.33433,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-40978",
-      "title": "SQL injection vulnerability in Spring AI's `CosmosDBVectorStore` allows attackers to execute arbitrary SQL queries via crafted document IDs. Affected versions: Spring AI: 1.0.",
-      "severity": "high",
-      "categories": [
-        "VMware"
-      ],
-      "published": "2026-04-28",
-      "updated": "2026-10-26",
-      "summary": "SQL injection vulnerability in Spring AI's `CosmosDBVectorStore` allows attackers to execute arbitrary SQL queries via crafted document IDs. Affected versions: Spring AI: 1.0.0 - 1.0.5 (fixed in 1.0.6), 1.1.0 - 1.1.4 (fixed in 1.1.5)",
-      "affected": "Products identified in NVD configurations: vmware spring_ai",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-40978"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://spring.io/security/cve-2026-40978"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T22:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00338,
-      "epss_percentile": 0.27162,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7224",
-      "title": "A security flaw has been discovered in SourceCodester Pizzafy Ecommerce System 1.0",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-04-28",
-      "updated": "2026-10-26",
-      "summary": "A security flaw has been discovered in SourceCodester Pizzafy Ecommerce System 1.0. This affects the function delete_cart of the file /admin/ajax.php?action=delete_cart. Performing a manipulation of the argument ID results in sql injection. The attack may be initiated remotely. The exploit has been released to the public and may be used for attacks.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7224"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00254,
-      "epss_percentile": 0.16913,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7227",
-      "title": "A vulnerability was detected in SourceCodester Pizzafy Ecommerce System 1.0",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-04-28",
-      "updated": "2026-10-26",
-      "summary": "A vulnerability was detected in SourceCodester Pizzafy Ecommerce System 1.0. Impacted is the function Login of the file /admin/ajax.php?action=login. The manipulation of the argument e-mail results in sql injection. The attack can be executed remotely. The exploit is now public and may be used.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7227"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00254,
-      "epss_percentile": 0.16911,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7228",
-      "title": "A flaw has been found in SourceCodester Pizzafy Ecommerce System 1.0",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-04-28",
-      "updated": "2026-10-26",
-      "summary": "A flaw has been found in SourceCodester Pizzafy Ecommerce System 1.0. The affected element is the function get_cart_count of the file /admin/ajax.php?action=get_cart_count. This manipulation of the argument ID causes sql injection. The attack is possible to be carried out remotely. The exploit has been published and may be used.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7228"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00254,
-      "epss_percentile": 0.16914,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-40966",
-      "title": "In Spring AI, an attacker can bypass conversation isolation and exfiltrate sensitive memory from other users’ chat histories, including secrets and credentials, by injecting f",
-      "severity": "medium",
-      "categories": [
-        "VMware"
-      ],
-      "published": "2026-04-28",
-      "updated": "2026-10-26",
-      "summary": "In Spring AI, an attacker can bypass conversation isolation and exfiltrate sensitive memory from other users’ chat histories, including secrets and credentials, by injecting filter logic through conversationId. Only applications that use VectorStoreChatMemoryAdvisor and pass user-supplied input as a conversationId are affected.",
-      "affected": "Products identified in NVD configurations: vmware spring_ai",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-40966"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://spring.io/security/cve-2026-40966"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00233,
-      "epss_percentile": 0.14179,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-40980",
-      "title": "In Spring AI, a malicious PDF file can be crafted that triggers the allocation of unreasonable amounts of memory when handled by `ForkPDFLayoutTextStripper`. Affected versions",
-      "severity": "medium",
-      "categories": [
-        "VMware"
-      ],
-      "published": "2026-04-28",
-      "updated": "2026-10-26",
-      "summary": "In Spring AI, a malicious PDF file can be crafted that triggers the allocation of unreasonable amounts of memory when handled by `ForkPDFLayoutTextStripper`. Affected versions: Spring AI: 1.0.0 - 1.0.5 (fixed in 1.0.6), 1.1.0 - 1.1.4 (fixed in 1.1.5)",
-      "affected": "Products identified in NVD configurations: vmware spring_ai",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-40980"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://spring.io/security/cve-2026-40980"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0024,
-      "epss_percentile": 0.15117,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-41636",
-      "title": "Uncontrolled Recursion vulnerability in Apache Thrift Node.js bindings This issue affects Apache Thrift: before 0.23.0. Users are recommended to upgrade to version 0.23.0, whi",
-      "severity": "high",
-      "categories": [
-        "Node.js / npm"
-      ],
-      "published": "2026-04-28",
-      "updated": "2026-10-26",
-      "summary": "Uncontrolled Recursion vulnerability in Apache Thrift Node.js bindings This issue affects Apache Thrift: before 0.23.0. Users are recommended to upgrade to version 0.23.0, which fixes the issue.",
-      "affected": "Products identified in NVD configurations: apache thrift",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-41636"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00451,
-      "epss_percentile": 0.39068,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7309",
-      "title": "A flaw was found in the OpenShift Container Platform build system",
-      "severity": "medium",
-      "categories": [
-        "Docker / Kubernetes"
-      ],
-      "published": "2026-04-28",
-      "updated": "2026-10-26",
-      "summary": "A flaw was found in the OpenShift Container Platform build system. A user with the `edit` ClusterRole can inject arbitrary environment variables, such as `LD_PRELOAD` or `http_proxy`, into `docker-build` containers through the `buildconfigs/instantiate` API. This incomplete fix for a previous vulnerability allows for information disclosure, specifically impacting the confidentiality of build traffic.",
-      "affected": "Products identified in NVD configurations: redhat openshift_container_platform",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7309"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-7309"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://bugzilla.redhat.com/show_bug.cgi?id=2463451"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00179,
-      "epss_percentile": 0.07457,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-40968",
-      "title": "When an authenticated user is denied access to a gRPC method, their authenticated identity remains bound to the gRPC worker thread and can be inherited by a subsequent unauthe",
-      "severity": "high",
-      "categories": [
-        "VMware"
-      ],
-      "published": "2026-04-28",
-      "updated": "2026-10-26",
-      "summary": "When an authenticated user is denied access to a gRPC method, their authenticated identity remains bound to the gRPC worker thread and can be inherited by a subsequent unauthenticated request on the same thread. This may allow the subsequent user to gain escalated permissions. Affected versions: Spring gRPC: 1.0.0 - 1.0.2 (fixed in 1.0.3). Older, unsupported versions are also affected.",
-      "affected": "Products identified in NVD configurations: vmware spring_grpc",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-40968"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://spring.io/security/cve-2026-40968"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00171,
-      "epss_percentile": 0.06525,
-      "epss_as_of": "2026-10-28"
-    },
-    {
       "id": "CVE-2026-7025",
       "title": "A vulnerability was found in Typecho up to 1.3.0",
       "severity": "medium",
@@ -76139,6 +76365,7 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: btrfs: fix lockdep splat and potential deadlock after failure running delayed items When running delayed it",
       "severity": "bulletin",
       "categories": [
+        "Application dependencies",
         "Linux"
       ],
       "published": "2025-12-30",
@@ -76279,7 +76506,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: wifi: ath11k: fix registration of 6Ghz-only phy without the full channel range Because of what seems to be ",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2025-12-30",
       "updated": "2026-10-28",
@@ -77467,6 +77695,7 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: riscv: ftrace: Fixup panic by disabling preemption In RISCV, we must use an AUIPC + JALR pair to encode an ",
       "severity": "bulletin",
       "categories": [
+        "Application dependencies",
         "Linux"
       ],
       "published": "2025-10-22",
@@ -77691,7 +77920,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: HID: amd_sfh: Fix for shift-out-of-bounds Shift operation of 'exp' and 'shift' variables exceeds the maximu",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2025-10-22",
       "updated": "2026-10-28",
@@ -78447,6 +78677,7 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: netlink: fix potential deadlock in netlink_set_err() syzbot reported a possible deadlock in netlink_set_err",
       "severity": "bulletin",
       "categories": [
+        "Application dependencies",
         "Linux"
       ],
       "published": "2025-10-22",
@@ -79224,37 +79455,6 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.11772,
-      "epss_percentile": 0.96062,
-      "epss_as_of": "2026-10-28"
-    },
-    {
       "id": "CVE-2025-7624",
       "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
@@ -79283,6 +79483,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.10514,
       "epss_percentile": 0.95747,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.11772,
+      "epss_percentile": 0.96062,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -80666,6 +80897,7 @@
       "title": "The Page Builder by AZEXO plugin for WordPress is vulnerable to Cross-Site Request Forgery in versions up to, and including, 1.27.133",
       "severity": "medium",
       "categories": [
+        "JavaScript / TypeScript",
         "WordPress / Plugins"
       ],
       "published": "2023-06-03",
@@ -81649,90 +81881,146 @@
       "epss": 0.01131,
       "epss_percentile": 0.66317,
       "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-41709",
+      "title": "Broadcom VMWare ESX Insufficient Logging Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "VMware"
+      ],
+      "published": "",
+      "updated": "2026-10-28",
+      "summary": "Broadcom VMWare ESX contains an insufficient logging vulnerability that could allow a malicious actor with admin access to perform certain operations without being logged.",
+      "affected": "Broadcom VMware ESX. Consult vendor advisory for affected versions.",
+      "remediation": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discontinue use of the product if mitigations are unavailable. Stakeholders are responsible for evaluating each asset's internet exposure and ensuring adherence to BOD 26-04 patching guidelines.",
+      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "CISA KEV listed",
+      "first_seen_at": "2026-10-28T19:56:25Z",
+      "source_updated_at": "2026-10-28",
+      "source_type": "cisa_kev",
+      "known_exploited": true
+    },
+    {
+      "id": "CVE-2026-46300",
+      "title": "Linux Kernel Missing Initialization of a Variable Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "",
+      "updated": "2026-10-28",
+      "summary": "Linux Kernel contains a missing initialization of a variable vulnerability that could allow for unintended modification of page-cache-backed data via failure to preserve the shared-fragment marker during socket buffer coalescing, causing ESP input processing to decrypt shared fragments in place. This vulnerability can be chained with CVE-2026-109618 and CVE-2026-109619 to implant PHP webshells and run commands as root.",
+      "affected": "Linux Kernel. Consult vendor advisory for affected versions.",
+      "remediation": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discontinue use of the product if mitigations are unavailable. Stakeholders are responsible for evaluating each asset's internet exposure and ensuring adherence to BOD 26-04 patching guidelines.",
+      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "CISA KEV listed",
+      "first_seen_at": "2026-10-28T19:56:25Z",
+      "source_updated_at": "2026-10-28",
+      "source_type": "cisa_kev",
+      "known_exploited": true
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-28T19:35:42Z",
-      "last_attempt": "2026-10-28T19:35:42Z",
-      "items_processed": 249,
+      "last_success": "2026-10-28T19:56:25Z",
+      "last_attempt": "2026-10-28T19:56:25Z",
+      "items_processed": 224,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-28T19:35:42Z",
-      "last_attempt": "2026-10-28T19:35:42Z",
+      "last_success": "2026-10-28T19:56:25Z",
+      "last_attempt": "2026-10-28T19:56:25Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-28T19:35:42Z",
-      "last_attempt": "2026-10-28T19:35:42Z",
-      "items_processed": 732,
+      "last_success": "2026-10-28T19:56:25Z",
+      "last_attempt": "2026-10-28T19:56:25Z",
+      "items_processed": 760,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-28T19:35:42Z",
-      "last_attempt": "2026-10-28T19:35:42Z",
-      "items_processed": 482,
+      "last_success": "2026-10-28T19:56:25Z",
+      "last_attempt": "2026-10-28T19:56:25Z",
+      "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-28T19:35:42Z",
-      "last_attempt": "2026-10-28T19:35:42Z",
+      "last_success": "2026-10-28T19:56:25Z",
+      "last_attempt": "2026-10-28T19:56:25Z",
       "items_processed": 2553,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-28T19:35:42Z",
-      "last_attempt": "2026-10-28T19:35:42Z",
+      "last_success": "2026-10-28T19:56:25Z",
+      "last_attempt": "2026-10-28T19:56:25Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-28T19:35:42Z",
-      "last_attempt": "2026-10-28T19:35:42Z",
+      "last_success": "2026-10-28T19:56:25Z",
+      "last_attempt": "2026-10-28T19:56:25Z",
       "items_processed": 23,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-28T19:35:42Z",
-      "last_attempt": "2026-10-28T19:35:42Z",
+      "last_success": "2026-10-28T19:56:25Z",
+      "last_attempt": "2026-10-28T19:56:25Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-28T19:35:42Z",
-      "last_attempt": "2026-10-28T19:35:42Z",
+      "last_success": "2026-10-28T19:56:25Z",
+      "last_attempt": "2026-10-28T19:56:25Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-28T19:35:42Z",
-      "last_attempt": "2026-10-28T19:35:42Z",
+      "last_success": "2026-10-28T19:56:25Z",
+      "last_attempt": "2026-10-28T19:56:25Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-28T19:35:42Z",
-      "last_attempt": "2026-10-28T19:35:42Z",
+      "last_success": "2026-10-28T19:56:25Z",
+      "last_attempt": "2026-10-28T19:56:25Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-28T19:35:42Z",
-      "last_attempt": "2026-10-28T19:35:42Z",
+      "last_success": "2026-10-28T19:56:25Z",
+      "last_attempt": "2026-10-28T19:56:25Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -81744,7 +82032,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-28T19:35:42Z",
-  "last_successful_update": "2026-10-28T19:35:42Z",
+  "last_checked_at": "2026-10-28T19:56:25Z",
+  "last_successful_update": "2026-10-28T19:56:25Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
