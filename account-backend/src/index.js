@@ -1,6 +1,7 @@
 // CVEHarbor account API with opt-in vulnerability digest support.
 import { saveOptin, loadAlertSubscription, sendUserSample, dispatchDueDigests, unsubscribe } from './delivery.js';
 import { handlePublicCveLookup } from './cve-lookup.js';
+import { RemediationError, capabilities, listRemediations, upsertRemediation, removeRemediation, importLegacy, assignRemediation } from './remediation.js';
 // The sender address must be verified in SMTP2GO. Never place credentials in GitHub.
 const ALLOWED_ORIGIN='https://cveharbor.com';
 const enc=new TextEncoder();
@@ -68,14 +69,18 @@ export default {async fetch(req,env,ctx){
    const ops=[env.DB.prepare('DELETE FROM user_stack WHERE user_id=?').bind(user.id),...rows.map(x=>env.DB.prepare('INSERT INTO user_stack(user_id,technology,product_version) VALUES(?,?,?)').bind(user.id,x.technology,x.product_version))];
    await env.DB.batch(ops);return response({saved:rows.length});
   }
-  if(path==='/v1/remediations'&&req.method==='GET'){const rows=await env.DB.prepare('SELECT cve_id AS id,status,owner,due,notes,updated_at AS updated FROM remediations WHERE user_id=? ORDER BY updated_at DESC LIMIT 250').bind(user.id).all();return response({remediations:rows.results})}
+  if(path==='/v1/remediations/features'&&req.method==='GET')return await capabilities(env);
+  if(path==='/v1/remediations'&&req.method==='GET')return await listRemediations(env,user);
   if(path==='/v1/remediations'&&req.method==='PUT'){
-   const data=await body(req);if(!Array.isArray(data.remediations)||data.remediations.length>250)return response({error:'Invalid records'},400);
-   const statuses=new Set(['Open','Investigating','Remediated','Accepted Risk','Not Applicable']);
-   const rows=data.remediations.map(x=>({id:String(x.id||'').toUpperCase(),status:x.status,owner:String(x.owner||'').slice(0,100),due:String(x.due||'').slice(0,10),notes:String(x.notes||'').slice(0,1200)}));
-   if(rows.some(x=>!/^CVE-\d{4}-\d{4,}$/.test(x.id)||!statuses.has(x.status)||x.due&&!/^\d{4}-\d{2}-\d{2}$/.test(x.due)))return response({error:'Invalid record'},400);
-   const ops=[env.DB.prepare('DELETE FROM remediations WHERE user_id=?').bind(user.id),...rows.map(x=>env.DB.prepare('INSERT INTO remediations(user_id,cve_id,status,owner,due,notes,updated_at) VALUES(?,?,?,?,?,?,?)').bind(user.id,x.id,x.status,x.owner,x.due,x.notes,new Date().toISOString().slice(0,10)))];
-   await env.DB.batch(ops);return response({saved:rows.length});
+   const data=await body(req);
+   return await importLegacy(env,user,data.remediations);
+  }
+  const remediationRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})(\/assign)?$/.exec(path);
+  if(remediationRoute){
+   const id=remediationRoute[1];
+   if(remediationRoute[2]&&req.method==='POST')return await assignRemediation(env,user,id,await body(req));
+   if(!remediationRoute[2]&&req.method==='PUT')return await upsertRemediation(env,user,id,await body(req));
+   if(!remediationRoute[2]&&req.method==='DELETE')return await removeRemediation(env,user,id);
   }
   if(path==='/v1/alerts'&&req.method==='GET'){
    const row=await env.DB.prepare('SELECT enabled,severity,frequency FROM alert_preferences WHERE user_id=?').bind(user.id).first();
@@ -104,7 +109,7 @@ export default {async fetch(req,env,ctx){
    await env.DB.prepare('DELETE FROM users WHERE id=?').bind(user.id).run();return response({deleted:true},200,{'Set-Cookie':setCookie('',0)});
   }
   return response({error:'Not found'},404);
- }catch(error){return response({error:'Unable to process request'},500)}
+ }catch(error){if(error instanceof RemediationError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
   if(env.ALERT_DELIVERY_ENABLED!=='true')return;

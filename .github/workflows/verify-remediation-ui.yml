@@ -1,0 +1,67 @@
+name: Verify live CVEHarbor remediation UI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - app.js
+      - workspace.js
+      - operations.js
+      - accounts.js
+      - .github/workflows/verify-remediation-ui.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Check published D1 tracker UI and assignment actions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm GitHub Pages serves new tracker and assignment dialog
+        run: |
+          python - <<'PY'
+          import urllib.request
+          import urllib.error
+          import time
+          base='https://cveharbor.com'
+          paths=['/?remediation_check=d1-assignments-1',
+                 '/operations.js?v=d1-assignments-1',
+                 '/app.js?v=d1-assignments-1',
+                 '/accounts.js?v=d1-assignments-1']
+          last=''
+          for attempt in range(1,16):
+              try:
+                  contents=[]
+                  for path in paths:
+                      req=urllib.request.Request(base+path,headers={
+                        'User-Agent':'CVEHarbor-Remediation-Live-Check/1.0',
+                        'Cache-Control':'no-cache'
+                      })
+                      with urllib.request.urlopen(req,timeout=18) as response:
+                          contents.append(response.read(200000).decode('utf-8'))
+                  html,tracker,app,accounts=contents
+                  checks={
+                    'assignment dialog published':'id="remediationAssignDialog"' in html,
+                    'versioned tracker deployed':'operations.js?v=d1-assignments-1' in html,
+                    'cloud storage message':'private Cloudflare D1 account' in html,
+                    'tracker sends authenticated requests':"credentials:'include'" in tracker,
+                    'tracker uses cloud feature checks':'/remediations/features' in tracker,
+                    'indexed CVE has assignment action':'cveharbor:assign-remediation' in app,
+                    'account announces auth changes':'cveharbor:account-state' in accounts,
+                    'old watchlist remains intact':'id="accountSaveStack"' in html
+                  }
+                  if all(checks.values()):
+                      print('PASS: production GitHub Pages contains the account-based remediation tracker UI')
+                      for name,good in checks.items():print(name,good)
+                      break
+                  last=', '.join(name for name,good in checks.items() if not good)
+              except (urllib.error.URLError,TimeoutError,ValueError) as error:
+                  last=type(error).__name__+' '+str(getattr(error,'code',''))
+              print('Attempt',attempt,'site not yet ready:',last)
+              if attempt==15:raise SystemExit('Live UI verification failed: '+last)
+              time.sleep(12)
+          print('Cloudflare Worker activation is a separate approved deployment.')
+          PY

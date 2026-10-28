@@ -122,7 +122,68 @@ const opsDoc=opsDom.window.document;
 assert.equal(opsDoc.querySelectorAll('#versionEcosystem option').length,8,'package ecosystems available');
 opsDoc.getElementById('remediationCve').value='CVE-2026-12345';
 opsDoc.getElementById('remediationForm').dispatchEvent(new opsDom.window.Event('submit',{bubbles:true,cancelable:true}));
-assert.match(opsDoc.getElementById('remediationCount').textContent,/1 tracked/,'local remediation form saves item');
+assert.match(opsDoc.getElementById('remediationCount').textContent,/1 tracked/,'legacy browser records remain available before backend activation');
+assert.ok(opsDoc.getElementById('remediationAssignDialog'),'assignment modal exists');
+opsDoc.getElementById('remediationAssign').click();
+assert.equal(opsDoc.getElementById('remediationAssignCve').value,'CVE-2026-12345');
+assert.equal(opsDoc.getElementById('remediationSendAssignment').disabled,true,
+  'anonymous visitors cannot send assignment emails');
+opsDoc.getElementById('closeRemediationAssign').click();
+const legacySnapshot=opsDom.window.localStorage.getItem('cveharbor.remediation.v1');
+const cloudRows=[];
+const cloudCalls=[];
+opsDom.window.confirm=()=>true;
+opsDom.window.fetch=async(url,options={})=>{
+  const path=new URL(url).pathname,method=options.method||'GET';
+  cloudCalls.push({path,method,credentials:options.credentials,body:options.body});
+  let data={},status=200;
+  if(path==='/v1/remediations/features')data={
+    storage:'d1',version:2,assignments_available:true,assignment_email_enabled:true
+  };
+  else if(path==='/v1/remediations'&&method==='GET')data={remediations:[...cloudRows]};
+  else if(path==='/v1/remediations/CVE-2026-12345'&&method==='PUT'){
+    const body=JSON.parse(options.body);
+    cloudRows.splice(0,cloudRows.length,{id:'CVE-2026-12345',...body,updated:'2026-10-28'});
+    data={saved:true,storage:'d1'};
+  }else if(path==='/v1/remediations/CVE-2026-12345/assign'&&method==='POST'){
+    const payload=JSON.parse(options.body);
+    cloudRows[0].assigned_to=payload.email;
+    cloudRows[0].assignment_status='sent';
+    data={assigned:true,notified:true,message:'Assignment accepted by SMTP2GO.'};
+  }else if(path==='/v1/remediations'&&method==='PUT')data={saved:1};
+  else {status=404;data={error:'No mock for '+method+' '+path};}
+  return {ok:status===200,status,json:async()=>data};
+};
+opsDom.window.dispatchEvent(new opsDom.window.CustomEvent('cveharbor:account-state',
+  {detail:{authenticated:true,email:'security@example.org'}}));
+await new Promise(resolve=>setTimeout(resolve,15));
+assert.match(opsDoc.getElementById('remediationStorage').textContent,/Cloudflare D1/,
+  'authenticated tracker uses Cloudflare D1 as canonical storage');
+assert.equal(opsDoc.getElementById('remediationImport').hidden,false,
+  'legacy browser records can be imported explicitly without replacement');
+opsDoc.getElementById('remediationCve').value='CVE-2026-12345';
+opsDoc.getElementById('remediationOwner').value='Cloud owner';
+opsDoc.getElementById('remediationForm').dispatchEvent(new opsDom.window.Event('submit',{bubbles:true,cancelable:true}));
+await new Promise(resolve=>setTimeout(resolve,15));
+assert.equal(cloudRows.length,1,'cloud write made a D1 API request');
+assert.match(cloudCalls.find(x=>x.method==='PUT'&&x.path.endsWith('CVE-2026-12345')).credentials,/include/,
+  'cloud remediation requests carry the authenticated session');
+assert.equal(opsDom.window.localStorage.getItem('cveharbor.remediation.v1'),legacySnapshot,
+  'cloud save does not overwrite existing browser records');
+opsDoc.getElementById('remediationAssign').click();
+assert.equal(opsDoc.getElementById('remediationSendAssignment').disabled,false,
+  'a configured, migrated backend enables explicit assignment');
+opsDoc.getElementById('remediationAssignEmail').value='engineer@example.org';
+opsDoc.getElementById('remediationAssignConfirm').checked=true;
+opsDoc.getElementById('remediationAssignForm').dispatchEvent(new opsDom.window.Event('submit',{bubbles:true,cancelable:true}));
+await new Promise(resolve=>setTimeout(resolve,15));
+assert.equal(cloudRows[0].assigned_to,'engineer@example.org',
+  'assignment API receives the named colleague email');
+assert.match(opsDoc.getElementById('remediationAssignMessage').textContent,/accepted by SMTP2GO/,
+  'assignment status states provider acceptance');
+assert.match(opsDoc.getElementById('remediationRows').textContent,/engineer@example.org/,
+  'tracker shows assigned recipient from D1');
+
 assert.equal(opsDoc.querySelectorAll('#firewallDownloads a').length,4,'firewall downloads available');
 const threatSection=document.getElementById('threat-intelligence');
 const firewallSection=document.getElementById('firewallCentre');
@@ -467,6 +528,8 @@ assert.ok(detailDialog.hasAttribute('open'),'vulnerability details open in on-si
 assert.match(detailBody.textContent,/Demonstration description/,'description is visible in dialog');
 assert.match(detailBody.textContent,/PHP 8\.4\.20/,'affected software is visible in dialog');
 assert.match(detailBody.textContent,/Apply the fixed vendor package/,'remediation is visible in dialog');
+assert.equal(detailBody.querySelector('.remediation-detail-assign')?.textContent,'Assign vulnerability by email',
+  'indexed CVE popup exposes assignment workflow');
 assert.match(detailBody.textContent,/Suggested next step/,'suggested action is visible in dialog');
 assert.match(detailBody.textContent,/Original advisory and source references/,'source links appear inside dialog');
 const sourceLinks=[...detailBody.querySelectorAll('.detail-source-links a')];

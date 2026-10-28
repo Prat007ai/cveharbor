@@ -20,6 +20,7 @@ function state(isAuth,address=''){
   stackTimer=null;savedCloudStack=null;linkedWatchlist=false;
  }
  showWatchlistStatus();
+ window.dispatchEvent(new CustomEvent('cveharbor:account-state',{detail:{authenticated:isAuth,email:address}}));
 }
 
 let savedCloudStack=null,linkedWatchlist=false,stackSaving=null,stackTimer=null;
@@ -185,27 +186,24 @@ $('accountUpload').addEventListener('click',async()=>{
  if(!authenticated)return;
  try{
   const selected=JSON.parse(localStorage.getItem('cveharbor.stack.v1')||'[]');
-  const remediation=JSON.parse(localStorage.getItem('cveharbor.remediation.v1')||'[]');
-  if(!Array.isArray(selected)||!Array.isArray(remediation))throw Error('Invalid locally saved data');
-  if(!confirm('Upload '+selected.length+' saved technologies and '+remediation.length+' remediation records from THIS browser? This replaces the records currently saved in your CVEHarbor account.'))return;
-  if(selected.length===0&&remediation.length===0&&!confirm('This browser has no saved records. Uploading will CLEAR any cloud technology selections and remediation records. Are you sure?'))return;
+  if(!Array.isArray(selected))throw Error('Invalid locally saved watchlist');
+  if(!confirm('Replace the '+(savedCloudStack?.length||0)+' technologies saved in your email watchlist with '+selected.length+' selections from this browser? Remediation records are managed separately in the Cloudflare tracker.'))return;
+  if(selected.length===0&&!confirm('This browser has no selected technologies. Uploading will clear the cloud watchlist. Are you sure?'))return;
   await call('/stack','PUT',{stack:selected.slice(0,100).map(technology=>({technology,product_version:''}))});
   savedCloudStack=selected.slice(0,100);linkedWatchlist=true;showWatchlistStatus();
-  await call('/remediations','PUT',{remediations:remediation.slice(0,250)});
-  note('Local technology selections and remediation records uploaded to your account.');
+  note('Browser technology selections uploaded to your email watchlist. Use the Remediation Tracker to import older browser records.');
  }catch(e){note('Upload not completed: '+e.message)}
 });
 $('accountDownload').addEventListener('click',async()=>{
  if(!authenticated)return;
- if(!confirm('Replace this browser’s technology selections and remediation records with your saved account data? Export local records first if needed.'))return;
+ if(!confirm('Replace this browser’s technology selections with your email watchlist saved in the cloud? Remediation records will remain in Cloudflare D1.'))return;
  try{
-  const [stack,remediation]=await Promise.all([call('/stack'),call('/remediations')]);
+  const stack=await call('/stack');
   const technologies=stack.stack.map(x=>x.technology);
   localStorage.setItem('cveharbor.stack.v1',JSON.stringify(technologies));
-  localStorage.setItem('cveharbor.remediation.v1',JSON.stringify(remediation.remediations));
   window.CVEHARBOR_WATCHLIST?.loadFromCloud?.(technologies);
   savedCloudStack=technologies;linkedWatchlist=true;showWatchlistStatus();
-  note('Saved account data downloaded. Technologies are visible now. Refresh to update the remediation tracker.');
+  note('Saved cloud watchlist loaded. Remediation records are available in the authenticated Cloudflare D1 tracker.');
  }catch(e){note('Download failed: '+e.message)}
 });
 $('accountAlerts').addEventListener('submit',async ev=>{

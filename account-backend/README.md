@@ -27,7 +27,7 @@ Architecture:
 - `POST /v1/auth/verify`: verifies the OTP and sets a 7-day session cookie.
 - `GET /v1/me`, `POST /v1/auth/logout`: account status and logout.
 - `GET|PUT /v1/stack`: saved technology profile. PUT replaces the full user's stack.
-- `GET|PUT /v1/remediations`: remediation records. PUT replaces the full user's dataset.
+- `GET|PUT /v1/remediations`: authenticated remediation records. Legacy PUT safely merges entries by CVE ID without deleting other cloud records or assignments. Individual PUT and DELETE operations manage one CVE.
 - `GET|PUT /v1/alerts`: preferences only. **No alert sending service is active.**
 - `DELETE /v1/account`: removes user and related data (cascading foreign keys).
 
@@ -90,3 +90,32 @@ The website now displays the technology checkbox list alongside account sign in 
 When a user signs in, the page compares this browser's list with the cloud account watchlist. If they are identical, future technology checkbox changes save automatically to D1. If the lists differ, the user must choose **Use these selections for email reports** or **Load my saved selections** before automatic synchronization starts. This prevents an empty new browser from silently erasing an existing cloud watchlist. A clear selection requires confirmation.
 
 A subscription is separate from saving technologies. Users must choose a severity, delivery frequency and explicit email consent. The sample email action checks that the current browser list has been saved before generating a report. Scheduled report delivery continues to use the independent ALERT_DELIVERY_ENABLED setting.
+
+## D1 remediation tracker and emailed Azure DevOps assignments (October 2026)
+
+CVEHarbor already has a `remediations` D1 table. Do not recreate the database or rerun the original schema. This release adds private per-CVE updates and assignment notifications. It does not access Azure DevOps or create work items automatically. The recipient creates and manages work items inside their own organization's Azure DevOps project.
+
+### Required existing-database migration and activation
+
+1. Back up the existing Cloudflare D1 `cveharbor-accounts` database.
+2. From `account-backend`, run `npx wrangler d1 execute cveharbor-accounts --remote --file=./remediation-schema.sql`, or apply the file in the D1 console. The migration adds an assignment history table, its index, and a separate rate limit table. Authentication rate limit cleanup cannot reset assignment limits. Existing account records stay in place.
+3. Deploy the Worker using `npx wrangler deploy`. No new database is created.
+4. After signing in, check `GET /v1/remediations/features`. It should report `storage: d1`, `version: 2`, and `assignments_available: true`. If migration is missing, records work but assignment emails are unavailable.
+5. Add Worker runtime variable `ASSIGNMENT_ALLOWED_DOMAINS` containing comma-separated trusted organization email domains (e.g. `example.org,example.net`). The sender and recipient domains must both be on the list. Set `ASSIGNMENT_EMAIL_ENABLED=true` only after reviewing your SMTP2GO limits, privacy and abuse controls. Until then, leave it unset or false. Existing `EMAIL_FROM` and `SMTP2GO_API_KEY` can be reused. Optional `ASSIGNMENT_SMTP2GO_API_KEY` can isolate assignment traffic. Never commit credentials.
+6. Test with a verified CVEHarbor account and approved recipient, review SMTP2GO Activity and confirm that a work item was manually opened in the correct Azure DevOps Boards project. SMTP2GO acceptance is not proof of final delivery.
+
+### Security and behaviour
+
+The assignment API requires sign in and an approved sender and recipient email domain. An explicit user confirmation is required before dispatch. Five assignments per sender per rolling hour and two messages per recipient per rolling day are allowed. Repeat assignment of the same CVE to the same recipient is suppressed for 24 hours. The fixed message avoids customer names, private notes, server details, untrusted links and claims of confirmed exposure. The assignee cannot read or modify the requester's D1 account records simply by receiving an email. No scheduled digest starts these notifications.
+
+Once the updated Worker is deployed, remediation records are saved directly in D1, keyed to the signed-in user. Browser records remain intact and may be explicitly imported through the tracker; imports upsert by CVE without deleting unrelated cloud records or assignment history. Before Worker deployment the browser tracker continues in clearly labelled legacy local mode, so no existing records silently disappear. The user may export CSV at any time. The watchlist's advanced cloud buttons now manage the technology watchlist only.
+
+### API
+
+* `GET /v1/remediations/features` reports authenticated D1 and email capability.
+* `GET /v1/remediations` returns only the authenticated user's entries and assignment state.
+* `PUT` or `DELETE /v1/remediations/CVE-YYYY-NNNN` manages one CVE.
+* `PUT /v1/remediations` merges imported browser records, never deleting other entries.
+* `POST /v1/remediations/CVE-YYYY-NNNN/assign` with an email address stores the assignment and, when enabled, sends the standard Azure DevOps triage request.
+
+The existing watchlist, vulnerability digests, malware popups and public security feed remain unchanged.
