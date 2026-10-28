@@ -507,6 +507,27 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
         self.assertIn("Boolean(prior.known_exploited||baseline.known_exploited)",js)
         self.assertIn("value=\"low\"",html)
 
+
+    def test_public_feed_health_and_snapshot_validation(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as temp:
+            with patch.object(u,'DATA',Path(temp)/'advisories.json'), \
+                 patch.object(u,'SCRIPT',Path(temp)/'data.js'), \
+                 patch.object(u,'HEALTH',Path(temp)/'feed-health.json'):
+                sample={"mode":"partial","advisories":[{"id":"CVE-2026-123456",
+                       "categories":["PHP"],"published":"2026-10-21","updated":"2026-10-26"}],
+                        "sources":{"nvd":{"ok":False,"last_attempt":"2026-10-27T15:00:00Z",
+                                         "error":"rate limited"}}}
+                u.publish(sample)
+                summary=json.loads((Path(temp)/'feed-health.json').read_text())
+                self.assertEqual('partial',summary['mode'])
+                self.assertEqual(1,summary['records_indexed'])
+                self.assertEqual(1,summary['category_counts']['PHP'])
+                self.assertFalse(summary['sources']['nvd']['ok'])
+                sample['advisories'].append(sample['advisories'][0])
+                with self.assertRaisesRegex(ValueError,'Duplicate'):
+                    u.publish(sample)
+
     def test_url_rejection(self):
         self.assertFalse(u.clean_url('javascript:alert(1)'))
         self.assertFalse(u.clean_url('http://example.org'))
