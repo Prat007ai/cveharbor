@@ -1,0 +1,195 @@
+{
+  "purpose": "Historical vendor verified advisories used to seed product-specific categories. Publication dates are original dates, not discovery dates. Recheck vendor sites for updates.",
+  "advisories": [
+    {
+      "id": "CVE-2026-13185",
+      "title": "Progress Telerik UI for ASP.NET AJAX unsafe persistence deserialization",
+      "severity": "high",
+      "cvss": "8.1",
+      "categories": [
+        "Progress Telerik",
+        ".NET / ASP.NET"
+      ],
+      "published": "2026-07-22",
+      "updated": "2026-10-01",
+      "summary": "RadPersistenceManager and RadDockLayout can deserialize attacker-controlled cookie-based state in affected configurations, potentially enabling remote code execution. Part of the vendor's critical chained RCE bulletin.",
+      "affected": "Telerik UI for ASP.NET AJAX 2026.2.519 and earlier when vulnerable cookie-based persistence configuration is enabled.",
+      "remediation": "Upgrade Telerik UI for ASP.NET AJAX to 2026.2.708 or later. Review RadPersistenceManager and RadDockLayout persistence settings and investigate exposed deployments.",
+      "exploitation": "Not confirmed exploited in this vendor bulletin.",
+      "sources": [
+        {
+          "label": "Progress Telerik official security bulletin",
+          "url": "https://www.telerik.com/products/aspnet-ajax/documentation/knowledge-base/kb-security-critical-rce-chain-bulletin-july-2026"
+        },
+        {
+          "label": "Telerik individual advisory",
+          "url": "https://www.telerik.com/products/aspnet-ajax/documentation/knowledge-base/kb-security-persistence-cookie-deserialization-cve-2026-13185"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-7198",
+      "title": "Progress Sitefinity improper access control in web services",
+      "severity": "critical",
+      "cvss": "9.8",
+      "categories": [
+        "Sitefinity"
+      ],
+      "published": "2026-06-02",
+      "updated": "2026-06-03",
+      "summary": "Progress Sitefinity web services may disclose restricted content due to improper access controls. Affected deployments may suffer serious confidentiality, integrity and availability impact.",
+      "affected": "Sitefinity 15.4.8623 up to but not including 15.4.8630, as detailed in the vendor/CVE record.",
+      "remediation": "Upgrade the affected Sitefinity 15.4 release to 15.4.8630 or later. Review vendor security updates for older supported versions.",
+      "exploitation": "No confirmed exploitation in the cited reference.",
+      "sources": [
+        {
+          "label": "Canadian Centre for Cyber Security Progress notice",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/progress-security-advisory-av26-552"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7198"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-108142",
+      "title": "Veeam Backup & Replication CDP Coordinator authorization bypass",
+      "severity": "critical",
+      "cvss": "9.1",
+      "categories": [
+        "Veeam Backup & Replication"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-27",
+      "summary": "An unauthenticated attacker can bypass authorization in the CDP Coordinator Service on affected Veeam Backup & Replication version 13 deployments.",
+      "affected": "Veeam Backup & Replication 13.1.1.18 and earlier 13.1 builds, or 13.0.2.29 and earlier 13.0 builds. Vendor states 12.x is not affected.",
+      "remediation": "Install Veeam Backup & Replication 13.1.2.57 or 13.0.3.63, respectively, or a newer fixed build. Validate backup infrastructure exposure.",
+      "exploitation": "No confirmed exploitation indicated in the cited vendor bulletin.",
+      "sources": [
+        {
+          "label": "Veeam Security KB4948",
+          "url": "https://www.veeam.com/kb4948"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-105477",
+      "title": "Managed Veeam Agent for Linux local privilege escalation",
+      "severity": "high",
+      "cvss": "7.3",
+      "categories": [
+        "Veeam Backup & Replication",
+        "Linux"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-27",
+      "summary": "Local privilege escalation in Veeam Agent for Linux, applicable only to installations managed by a Veeam Backup & Replication instance.",
+      "affected": "Veeam Agent for Linux 13.1.1.4 and earlier 13.1 builds when managed by Veeam Backup & Replication. Vendor says 13.0.x and 6.x are not affected.",
+      "remediation": "Upgrade the managed Veeam Agent for Linux to 13.1.2.11 or later and confirm rollout on protected hosts.",
+      "exploitation": "No confirmed exploitation indicated in the cited vendor bulletin.",
+      "sources": [
+        {
+          "label": "Veeam Security KB4948",
+          "url": "https://www.veeam.com/kb4948"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2025-7624",
+      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
+      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
+      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "Windows 11 OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Reported exploited in the wild; CISA KEV listing should be checked by live feed.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+        },
+        {
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-96940",
+      "title": "Microsoft Exchange Server SE weak authentication privilege escalation",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "Exchange SE"
+      ],
+      "published": "2026-09-08",
+      "updated": "2026-10-02",
+      "summary": "Weak authentication in Microsoft Exchange Server may allow an authenticated attacker to elevate privileges over the network. The vulnerability is included in Microsoft Exchange Server Subscription Edition security servicing.",
+      "affected": "Exchange Server Subscription Edition RTM builds earlier than 15.2.2562.53 are listed as affected in the published Microsoft/NVD record.",
+      "remediation": "Install an applicable current Exchange Server SE security update. Microsoft lists Oct26SU build 15.2.2562.56 for Exchange SE RTM; confirm prerequisites and supported servicing channel before patching.",
+      "exploitation": "Active exploitation is not confirmed by the cited Microsoft KB.",
+      "sources": [
+        {
+          "label": "Microsoft Exchange SE update KB5129955",
+          "url": "https://support.microsoft.com/en-us/servicing/exchange/server/update/2026/5129955"
+        },
+        {
+          "label": "Microsoft MSRC CVE",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96940"
+        },
+        {
+          "label": "Microsoft Exchange build numbers",
+          "url": "https://learn.microsoft.com/en-us/exchange/new-features/build-numbers-and-release-dates/"
+        }
+      ]
+    }
+  ]
+}
