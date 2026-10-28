@@ -1,0 +1,74 @@
+name: Verify live CVEHarbor disclosure trend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - disclosure-trend.js
+      - styles.css
+      - scripts/build_site.py
+      - .github/workflows/verify-disclosure-trend.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-disclosure-trend:
+    name: Verify published chart and real advisory feed
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for GitHub Pages and check live disclosure data
+        run: |
+          python - <<'PY'
+          import json
+          import re
+          import time
+          import urllib.error
+          import urllib.request
+          from datetime import datetime, timedelta, timezone
+
+          root = 'https://cveharbor.com'
+          last = ''
+          for attempt in range(1, 16):
+              try:
+                  pages = {}
+                  for path in ('/?disclosure_check=30day-1',
+                               '/disclosure-trend.js?v=30day-1',
+                               '/data.js?disclosure_check=30day-1'):
+                      request = urllib.request.Request(root + path, headers={
+                          'User-Agent': 'CVEHarbor-Disclosure-Live-Check/1.0',
+                          'Cache-Control': 'no-cache'
+                      })
+                      with urllib.request.urlopen(request, timeout=25) as response:
+                          pages[path] = response.read(8000000).decode('utf-8')
+                  html, script, raw = pages.values()
+                  checks = {
+                      'account panel contains chart': 'id="disclosureTrend"' in html,
+                      'versioned chart script loaded': 'disclosure-trend.js?v=30day-1' in html,
+                      'clickable daily bars present': 'disclosure-day-button' in script,
+                      '7 day average line present': 'disclosure-trend-line' in script,
+                      'AI cannot be inferred': 'not the number found or exploited using AI' in html,
+                      'published dates and unique CVEs': 'published=new Map()' in script
+                  }
+                  matched = re.search(r'window\.CVEHARBOR_DATA\s*=\s*(\{[\s\S]*\})\s*;\s*$', raw)
+                  checks['live feed has expected format'] = matched is not None
+                  if matched:
+                      feed = json.loads(matched.group(1))
+                      records = feed.get('advisories', [])
+                      checks['real CVE feed populated'] = any(re.match(r'^CVE-\d{4}-\d{4,}$',str(a.get('id',''))) for a in records)
+                      print('Live index records:',len(records),'collection:',feed.get('last_successful_update'))
+                  if all(checks.values()):
+                      print('PASS: live CVEHarbor disclosure graph and its real feed are published')
+                      for name, ok in checks.items():
+                          print(name, ok)
+                      break
+                  last = ', '.join(name for name, ok in checks.items() if not ok)
+              except (urllib.error.URLError, TimeoutError, ValueError, UnicodeError) as exc:
+                  last = type(exc).__name__ + ' ' + str(getattr(exc,'code',''))
+              print('Attempt', attempt, 'not yet verified:', last)
+              if attempt == 15:
+                  raise SystemExit('Live disclosure chart verification failed: ' + last)
+              time.sleep(12)
+          PY
