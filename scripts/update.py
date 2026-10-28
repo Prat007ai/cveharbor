@@ -199,7 +199,7 @@ def vendor_baseline_items() -> list[dict]:
             "source_updated_at": entry.get("updated") or entry.get("published") or "",
             "status": "Vendor-sourced historical baseline; not newly disclosed",
             "first_seen_at": utc_iso(),
-            "known_exploited": False,
+            "known_exploited": bool(entry.get("known_exploited", False)),
             "action": "Verify the affected version and exposure, then follow the vendor remediation.",
             "sources": sources,
         })
