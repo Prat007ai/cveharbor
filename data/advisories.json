@@ -131,18 +131,19 @@
   ],
   "advisories": [
     {
-      "id": "CVE-2026-108142",
-      "title": "Veeam Backup & Replication CDP Coordinator authorization bypass",
-      "severity": "critical",
-      "cvss": "9.1",
+      "id": "CVE-2026-105477",
+      "title": "Managed Veeam Agent for Linux local privilege escalation",
+      "severity": "high",
+      "cvss": "7.3",
       "categories": [
+        "Linux",
         "Veeam Backup & Replication"
       ],
       "published": "2026-10-27",
       "updated": "2026-10-27",
-      "summary": "An unauthenticated attacker can bypass authorization in the CDP Coordinator Service on affected Veeam Backup & Replication version 13 deployments.",
-      "affected": "Veeam Backup & Replication 13.1.1.18 and earlier 13.1 builds, or 13.0.2.29 and earlier 13.0 builds. Vendor states 12.x is not affected.",
-      "remediation": "Install Veeam Backup & Replication 13.1.2.57 or 13.0.3.63, respectively, or a newer fixed build. Validate backup infrastructure exposure.",
+      "summary": "Local privilege escalation in Veeam Agent for Linux, applicable only to installations managed by a Veeam Backup & Replication instance.",
+      "affected": "Veeam Agent for Linux 13.1.1.4 and earlier 13.1 builds when managed by Veeam Backup & Replication. Vendor says 13.0.x and 6.x are not affected.",
+      "remediation": "Upgrade the managed Veeam Agent for Linux to 13.1.2.11 or later and confirm rollout on protected hosts.",
       "exploitation": "No confirmed exploitation indicated in the cited vendor bulletin.",
       "sources": [
         {
@@ -159,19 +160,18 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
-      "id": "CVE-2026-105477",
-      "title": "Managed Veeam Agent for Linux local privilege escalation",
-      "severity": "high",
-      "cvss": "7.3",
+      "id": "CVE-2026-108142",
+      "title": "Veeam Backup & Replication CDP Coordinator authorization bypass",
+      "severity": "critical",
+      "cvss": "9.1",
       "categories": [
-        "Veeam Backup & Replication",
-        "Linux"
+        "Veeam Backup & Replication"
       ],
       "published": "2026-10-27",
       "updated": "2026-10-27",
-      "summary": "Local privilege escalation in Veeam Agent for Linux, applicable only to installations managed by a Veeam Backup & Replication instance.",
-      "affected": "Veeam Agent for Linux 13.1.1.4 and earlier 13.1 builds when managed by Veeam Backup & Replication. Vendor says 13.0.x and 6.x are not affected.",
-      "remediation": "Upgrade the managed Veeam Agent for Linux to 13.1.2.11 or later and confirm rollout on protected hosts.",
+      "summary": "An unauthenticated attacker can bypass authorization in the CDP Coordinator Service on affected Veeam Backup & Replication version 13 deployments.",
+      "affected": "Veeam Backup & Replication 13.1.1.18 and earlier 13.1 builds, or 13.0.2.29 and earlier 13.0 builds. Vendor states 12.x is not affected.",
+      "remediation": "Install Veeam Backup & Replication 13.1.2.57 or 13.0.3.63, respectively, or a newer fixed build. Validate backup infrastructure exposure.",
       "exploitation": "No confirmed exploitation indicated in the cited vendor bulletin.",
       "sources": [
         {
@@ -22180,7 +22180,8 @@
       "severity": "high",
       "cvss": "8.8",
       "categories": [
-        "Exchange SE"
+        "Exchange SE",
+        "Microsoft 365"
       ],
       "published": "2026-09-08",
       "updated": "2026-10-02",
@@ -22244,8 +22245,8 @@
       "severity": "high",
       "cvss": "8.1",
       "categories": [
-        "Progress Telerik",
-        ".NET / ASP.NET"
+        ".NET / ASP.NET",
+        "Progress Telerik"
       ],
       "published": "2026-07-22",
       "updated": "2026-10-01",
@@ -27723,26 +27724,26 @@
   "sources": {
     "github": {
       "ok": false,
-      "last_attempt": "2026-10-28T02:02:13Z",
+      "last_attempt": "2026-10-28T02:12:58Z",
       "error": "'str' object has no attribute 'get'",
       "url": "https://api.github.com/advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-28T02:02:13Z",
-      "last_attempt": "2026-10-28T02:02:13Z",
+      "last_success": "2026-10-28T02:12:58Z",
+      "last_attempt": "2026-10-28T02:12:58Z",
       "items_processed": 860,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-28T02:02:13Z",
-      "last_attempt": "2026-10-28T02:02:13Z",
+      "last_success": "2026-10-28T02:12:58Z",
+      "last_attempt": "2026-10-28T02:12:58Z",
       "items_processed": 378,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     }
   },
-  "last_checked_at": "2026-10-28T02:02:13Z",
-  "last_successful_update": "2026-10-28T02:02:13Z",
+  "last_checked_at": "2026-10-28T02:12:58Z",
+  "last_successful_update": "2026-10-28T02:12:58Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
