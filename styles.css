@@ -487,3 +487,32 @@ button.tech-chart-link b{
     box-shadow:none;
   }
 }
+
+/* Publication activity is visible directly in the technology explorer. */
+.technology-redesign .technology-panel-head{
+  width:100%;background:transparent;color:inherit;text-align:left;
+  cursor:pointer;font:inherit;border:0;border-bottom:1px solid #26465a;
+}
+.technology-redesign .technology-panel-head:hover{background:#15384c}
+.technology-redesign .technology-panel-head:focus-visible{outline:2px solid var(--tech-accent);outline-offset:-3px;background:#15384c}
+.technology-redesign .technology-row{min-height:69px}
+.technology-redesign .technology-row-main{gap:5px}
+.technology-redesign .technology-row-fresh{display:flex;flex-wrap:wrap;align-items:center;gap:4px;min-width:0}
+.technology-age-badge{
+  display:inline-flex;align-items:center;white-space:nowrap;
+  border-radius:5px;border:1px solid #42647b;
+  padding:2px 5px;font-size:9px;font-weight:850;line-height:1.4;
+  color:#c5e0f0;background:#19364e;
+}
+.technology-age-badge.today{
+  background:#a9223b;border-color:#f05b72;color:#fff;
+  animation:cveharborFreshDisclosurePulse 2.7s ease-in-out infinite;
+}
+.technology-age-badge.yesterday{background:#714328;border-color:#d39762;color:#ffe2be}
+.technology-age-badge.two-days{background:#1b4860;border-color:#3b92ac;color:#b8eafb}
+.technology-age-muted{color:#8faec0;font-size:9px;line-height:1.4}
+@media(max-width:550px){
+  .technology-redesign .technology-row{grid-template-columns:29px minmax(0,1fr) auto 13px}
+  .technology-age-badge{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){.technology-age-badge.today{animation:none}}

@@ -456,8 +456,26 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
         self.assertIn("detailMarkers.append(firstPublished)",js)
         self.assertIn("animation:cveharborFreshDisclosurePulse",css)
         self.assertIn("@media(prefers-reduced-motion:reduce)",css)
-        self.assertIn("disclosure-pulse-1",html)
+        self.assertIn("tech-date-badges-1",html)
         self.assertIn("original disclosure dates",html)
+
+    def test_category_publication_badges_group_drilldown_and_day_filters(self):
+        html=(root/'index.html').read_text(encoding='utf-8')
+        js=(root/'app.js').read_text(encoding='utf-8')
+        css=(root/'styles.css').read_text(encoding='utf-8')
+        self.assertIn("const ages={'TODAY':0,'YESTERDAY':0,'72 HOURS':0}",js)
+        self.assertIn("record.source_type!=='cisa_kev' && disclosureAgeLabel(record)===label",js)
+        self.assertIn("technology-row-fresh",js)
+        self.assertIn("technology-age-muted",js)
+        self.assertIn("openTechnologyGroup(name)",js)
+        self.assertIn("state.group==='all'",js)
+        self.assertIn("technology-age-badge.today",css)
+        self.assertIn("technology-panel-head:hover",css)
+        self.assertIn('value="today"',html)
+        self.assertIn('value="yesterday"',html)
+        self.assertIn('value="twoDays"',html)
+        subprocess.run(['node','--check',str(root/'app.js')],cwd=root,
+                       capture_output=True,text=True,check=True)
 
     def test_url_rejection(self):
         self.assertFalse(u.clean_url('javascript:alert(1)'))
