@@ -308,6 +308,24 @@ class FeedTests(unittest.TestCase):
         self.assertEqual('',result['published'])
         self.assertEqual('2026-10-27',result['updated'])
 
+    def test_redesigned_technology_browser(self):
+        html=(root/'index.html').read_text(encoding='utf-8')
+        js=(root/'app.js').read_text(encoding='utf-8')
+        self.assertIn('id="technologySearch"',html)
+        self.assertIn('id="categoryGrid"',html)
+        self.assertIn('id="additionalTech"',html)
+        self.assertIn('technology-redesign',html)
+        self.assertIn("technologySearch').addEventListener('input',renderCategories)",js)
+        self.assertIn('technology-row',js)
+        group_json=js.split('const technologyGroups = ',1)[1].split(';',1)[0]
+        groups=json.loads(group_json)
+        self.assertEqual(set(groups),{'microsoft','applications','infrastructure'})
+        names=[n for group in groups.values() for n in group]
+        self.assertEqual(len(set(names)),21)
+        self.assertTrue(all(len(group)==7 for group in groups.values()))
+        self.assertTrue(set(names).issubset({c['name'] for c in u.CATEGORIES}))
+        self.assertEqual(4,len(u.CATEGORIES)-len(names))
+
     def test_url_rejection(self):
         self.assertFalse(u.clean_url('javascript:alert(1)'))
         self.assertFalse(u.clean_url('http://example.org'))
