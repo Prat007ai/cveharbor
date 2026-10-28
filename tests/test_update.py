@@ -203,6 +203,55 @@ class FeedTests(unittest.TestCase):
         self.assertIn('Python / PyPI',result['categories'])
         self.assertEqual(result['severity'],'critical')
 
+    def test_php_critical_october_baseline_is_visible_as_new(self):
+        records={record['id']:record for record in u.vendor_baseline_items()}
+        for cve in ('CVE-2026-109618','CVE-2026-109619'):
+            self.assertIn(cve,records)
+            self.assertEqual(records[cve]['severity'],'critical')
+            self.assertEqual(records[cve]['published'],'2026-10-21')
+            self.assertIn('PHP',records[cve]['categories'])
+            self.assertTrue(records[cve]['known_exploited'])
+            self.assertTrue(records[cve]['sources'])
+        self.assertIn('CVE-2026-115560',records)
+        self.assertIn('PHP',records['CVE-2026-115560']['categories'])
+
+    def test_php_upstream_independent_security_feed(self):
+        seen=[]
+        def feed(url,source):
+            self.assertEqual(source,'php_upstream')
+            seen.append(parse_qs(urlparse(url).query)['sort'][0])
+            return [{'ghsa_id':'GHSA-w8hw-w9fx-j79w',
+                     'cve_id':'CVE-2026-109618',
+                     'summary':'RCE via OOM corruption',
+                     'description':'A PHP request can trigger out of memory corruption',
+                     'severity':'critical','type':'reviewed',
+                     'published_at':'2026-10-21T13:40:00Z',
+                     'updated_at':'2026-10-27T00:00:00Z',
+                     'vulnerabilities':[{
+                       'package':{'ecosystem':'other','name':'php-src'},
+                       'vulnerable_version_range':'< 8.4.27',
+                       'first_patched_version':'8.4.27'}],
+                     'cvss':{'score':9.2},'references':[]}]
+        with patch.object(u,'get_json',side_effect=feed):
+            results=u.php_upstream_items()
+        self.assertEqual(sorted(seen),['published','updated'])
+        self.assertEqual(len(results),1)
+        record=u.from_php_upstream(results[0])
+        self.assertEqual(record['id'],'CVE-2026-109618')
+        self.assertEqual(record['published'],'2026-10-21')
+        self.assertIn('PHP',record['categories'])
+        self.assertEqual(record['status'],'Published security advisory from PHP upstream')
+        self.assertIn('8.4.27',record['remediation'])
+
+    def test_php_source_missing_pubdate_does_not_claim_new_today(self):
+        advisory={'ghsa_id':'GHSA-ffff-gggg-aaaa',
+          'severity':'high','summary':'PHP session state flaw',
+          'vulnerabilities':[]}
+        record=u.from_php_upstream(advisory)
+        self.assertIsNotNone(record)
+        self.assertEqual(record['published'],'')
+        self.assertIn('PHP',record['categories'])
+
     def test_cisa_flag_merges(self):
         old={'id':'CVE-2026-99999','categories':['PHP'],'first_seen_at':'2026-10-26T01:00:00Z',
              'source_type':'github','known_exploited':False,'summary':'vendor report',
