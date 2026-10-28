@@ -144,7 +144,8 @@ def collect():
         except Exception as exc:
             report["sources"][key]={"ok":False,"error":str(exc)[:160],"url":url}
     report["count"]=len(report["indicators"])
-    export_templates(report)\n    # Never make source first-seen or the collection timestamp look like attacker last-seen evidence.
+    export_templates(report)
+    # Never make source first-seen or the collection timestamp look like attacker last-seen evidence.
     OUT.write_text("window.CVEHARBOR_THREATS = "+json.dumps(report,separators=(",",":")).replace("</","<\\/")+";\n",encoding="utf-8")
     print("Threat IP feeds:",{k:v.get("count",v.get("error")) for k,v in report["sources"].items()})
     return 0 if report["count"] else 1
