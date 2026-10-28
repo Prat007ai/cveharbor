@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-28",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4262,
+  "candidate_records": 4273,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -11317,6 +11317,314 @@
       "first_seen_at": "2026-10-28T21:25:30Z",
       "source_updated_at": "2026-10-28T21:05:02Z",
       "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118669",
+      "title": "OAuthLib is an implementation of the OAuth request-signing logic for Python 3.6+",
+      "severity": "high",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "OAuthLib is an implementation of the OAuth request-signing logic for Python 3.6+. Prior to 4.0.0, the client_credentials and Resource Owner Password Credentials token grant handlers can authenticate request.client as one confidential client while retaining an attacker-supplied request.client_id for validate_grant_type and validate_scopes. A lower-privilege authenticated client can therefore cause grant and scope authorization to use another client's identity when an application validator relies on the documented client_id argument, potentially issuing tokens with unauthorized grants or scopes. Validators that authorize exclusively from request.client may not be affected. This issue is fixed in version 4.0.0.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118669"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-28T22:17:12.610",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118694",
+      "title": "python-markdown2 through 2.5.5 contains a denial of service vulnerability that allows remote users to exhaust CPU by submitting Markdown with unclosed inline link destinations",
+      "severity": "high",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "python-markdown2 through 2.5.5 contains a denial of service vulnerability that allows remote users to exhaust CPU by submitting Markdown with unclosed inline link destinations. Attackers can submit repeated '[a](' or '![a](' sequences, causing _find_balanced to rescan the remaining document for each link and consume quadratic CPU time.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118694"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.7",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-28T22:17:13.700",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118754",
+      "title": "Dolibarr ERP CRM before 24.0.2 contains a missing authorization vulnerability in htdocs/public/recruitment/view.php that allows unauthenticated attackers to view unpublished d",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "Dolibarr ERP CRM before 24.0.2 contains a missing authorization vulnerability in htdocs/public/recruitment/view.php that allows unauthenticated attackers to view unpublished draft job positions. Attackers can enumerate sequential provisional references via the ref parameter to read titles, descriptions, salary budgets, and recruiter names and emails.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118754"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-28T22:17:14.220",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118757",
+      "title": "PiWeb Disable payment method / Partial payment for WooCommerce before 1.1.10.9 contains a missing authorization vulnerability in the update_fees AJAX handler that allows unaut",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "PiWeb Disable payment method / Partial payment for WooCommerce before 1.1.10.9 contains a missing authorization vulnerability in the update_fees AJAX handler that allows unauthenticated attackers to modify and read other customers' orders. Attackers can reuse a nonce from their own order-pay page and supply sequential order_id values to change payment methods, recalculate fees, and disclose order line items and totals.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118757"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-28T22:17:14.673",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61564",
+      "title": "AVideo is a video-sharing Platform",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the unauthenticated installer endpoint `install/checkConfiguration.php` assembles `videos/configuration.php` by interpolating request parameters, including `webSiteRootURL`, into single-quoted PHP string literals without escaping. An attacker can terminate a literal and inject PHP that executes as the web-server user when the generated, directly requestable file is loaded. Exploitation requires `videos/configuration.php` to be absent, as on every fresh deployment or after the file is removed or moved; an existing file blocks this endpoint. The supplied `systemRootPath` must contain index.php and a connection using `databaseHost`, `databaseUser`, and `databasePass` must succeed, but the attacker can point those parameters to their own database server and needs no target credentials. The write location is also derived from `systemRootPath` without a base-directory constraint. This permits arbitrary command execution, reading and overwriting files owned by the web-server user, persistent PHP code, and control over stored database connection settings. The endpoint additionally interpolates request values into streamer and configuration INSERT statements, creating a secondary SQL-inje",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61564"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "10.0",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-28T22:17:15.750",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61567",
+      "title": "AVideo is a video-sharing Platform",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the live-streaming endpoint `view/videosListToLive.php` accepts an attacker-named streamer in `webSiteRootURL`, calls `Login::run` in `objects/Login.php`, and trusts the returned JSON as session state. An unauthenticated remote attacker who can host an HTTP service reachable by the encoder can self-grant `isLogged` and `canStream` without legitimate credentials. The endpoint requires only nonempty `playlists_id` and `APISecret` values; `APISecret` is forwarded rather than checked against a stored secret. This path never calls `Streamer::isURLAllowed` and therefore works regardless of the operator's streamer allowlist. It fetches a second attacker-controlled video-list response and interpolates `videos[].path` without shell argument escaping into `ffprobe` and `ffmpeg` commands passed to `exec`; `isAudio` calls `isVideo` to reach the `ffprobe` command. Paths containing shell delimiters execute arbitrary operating-system commands as the web-server user. The request filter does not inspect the video-list JSON. This can disclose database and stored streamer credentials, compromise the upstream platform using those credentials, modify files owned by the web-server user, establish pers",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61567"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "10.0",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-28T22:17:15.900",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61569",
+      "title": "AVideo is a video-sharing Platform",
+      "severity": "high",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the unauthenticated streamer login at `objects/login.json.php` passes the `user` parameter to `Streamer::get` in `objects/Streamer.php`, where it is interpolated into a single-quoted MariaDB SELECT without parameterization or escaping. Although `objects/security.php` strips literal single quotes, `html_entity_decode` in `objects/Login.php` restores entity-encoded quotes before the query. The supplied `siteURL` must pass the streamer allowlist, which allows all sites when empty by default, and an attacker-hosted login response must set `canUpload` or `isAdmin` to reach `Streamer::createIfNotExists`. That function calls `Streamer::get` before its additional allowlist check. UNION results are exposed through `streamers_id`, while failures return the rendered query and MariaDB error. An attacker can read arbitrary encoder database data, including stored upstream streamer credentials, allowlist configuration, and queue records, without encoder credentials. Stacked statements are not permitted by the mysqli driver and the tested database account lacks global FILE privilege, so the demonstrated vector is bounded to reads rather than server-side file writes. Stolen streamer credentials c",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61569"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-28T22:17:16.043",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61571",
+      "title": "AVideo is a video-sharing Platform",
+      "severity": "high",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the encoder lacks a global authentication layer and exposes control and status PHP endpoints to anonymous network callers. `view/run.php` has a commented-out guard and invokes `Encoder::run()`. `view/queue.json.php` calls `Encoder::getAll(true)`, reveals streamer URLs through `getSiteURL()`, and triggers processing with `execRun()`. `view/status.php` returns `Access-Control-Allow-Origin` with a wildcard, reads the queue, triggers processing, and exposes host memory statistics through `ServerMonitor::getMemory()` when `serverStatus` is set. `view/listFiles.json.php` checks only `Login::canBulkEncode()`, which admits anonymous callers whenever `disableBulkEncode` is empty, the default. Its `path` parameter is resolved with `realpath()` and listed with `scandir()` without a base-directory restriction. An unauthenticated attacker can drive the privileged queue processor, read queue and streamer-site information, obtain memory statistics and enumerate media file names and paths in any directory readable by the web-server user. Enumeration is limited to configured media extensions and does not itself disclose arbitrary file contents. This issue is fixed in version 8.1.0.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61571"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-28T22:17:16.193",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61572",
+      "title": "AVideo is a video-sharing Platform",
+      "severity": "high",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "AVideo is a video-sharing Platform. Before the initial remediation attempt in 8.1.0, `url_get_contents` in `objects/functions.php` accepts caller-controlled destinations after only `FILTER_VALIDATE_URL` syntax validation, without rejecting private, loopback, or link-local addresses, and disables TLS peer verification. `Login::isLogged` reauthenticates using the attacker-settable `encoder_aVideoURL` cookie together with arbitrary nonempty `encoder_user` and `encoder_pass` cookies, and `Login::run` stores the raw fetched body in `result`. The unauthenticated `objects/login.json.php` endpoint returns that session object, enabling full-response exfiltration through a supplied `siteURL`; its `Streamer::isURLAllowed` gate allows all sites when the operator allowlist is empty, the default. An unauthenticated remote attacker can read internal HTTP and HTTPS responses, including cloud instance-metadata credentials, and reach internal TCP services. A further pre-authentication FTP variant in `view/youtubeDl.json.php` routes an ftp `videoURL` into `FTPDownloader`; `parseFtpUrl` in `objects/FTPDownloader.php` accepts its host and port for `ftp_connect`. This also enables requests to internal FTP services. Untrusted self-signed HTTPS certifica",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61572"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.6",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-28T22:17:16.347",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61573",
+      "title": "AVideo is a video-sharing Platform",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the anonymous login interface reflects request values into HTML and JavaScript without output encoding. In `view/index.php`, `webSiteRootURL` is returned verbatim by `Streamer::getStreamerURL()` in `objects/Streamer.php` and reaches navigation and form attributes; it also enters a single-quoted JavaScript string in `view/index.header.php`. It is not filtered by `objects/security.php`, while the `user` and `pass` fields are filtered only for single quotes, leaving double quotes and angle brackets capable of breaking out of their HTML attributes. In addition, `view/index.header.php` reflects POST fields using `json_encode` without `JSON_HEX_TAG`, allowing a closing script tag to break out, and `locale/function.php` stores the POST `lang` value in the session for unescaped reflection in `view/index.php`. An unauthenticated remote attacker who persuades a victim to open a crafted login link can execute arbitrary JavaScript in the encoder's origin. This can read the operator session identifier exposed in inline script, capture login credentials and perform actions as the operator against the encoder and its upstream platform. This issue is fixed in version 8.1.0.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61573"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-28T22:17:16.490",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61575",
+      "title": "AVideo is a video-sharing Platform",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, `view/queue.php` uses `pathinfo` on the caller-controlled `fileURI` and stores its filename through `setTitle` in `encoder_queue.title` without neutralization. `fileURI` is not in the `objects/security.php` filter lists, and the `Login::canUpload()` capability needed to submit a queue entry can be self-granted using an attacker-controlled login site without legitimate encoder credentials. `view/index.php` loads `queue.json` from `view/queue.json.php` into the `#grid` jQuery Bootgrid table; its title formatter concatenates `row.title` into raw cell HTML. An attacker can therefore store an HTML title whose event handler runs in a privileged viewer's browser. `Encoder::getAll` limits nonadministrators to their own streamer's rows, so the victim must be an administrator who sees all rows or an operator on the attacker's streamer. A second `.html()` sink in the progress panel uses the same title but additionally depends on a helper script loaded from the streamer; the Bootgrid sink is reachable from encoder code alone. The script can read session-visible data and rendered streamer credentials, act with the viewer's privileges, and execute again for each qualifying viewer until the row",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61575"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.7",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-28T22:17:16.633",
+      "source_type": "nvd",
       "known_exploited": false
     },
     {
@@ -28850,53 +29158,6 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-109618",
-      "title": "RCE via OOM corruption",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-28",
-      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "PHP upstream security advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:25Z",
-      "source_type": "php_upstream",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99998,
-      "epss_as_of": "2026-10-28"
-    },
-    {
       "id": "CVE-2026-109619",
       "title": "RCE via stale global state",
       "severity": "critical",
@@ -28941,6 +29202,53 @@
       "known_exploited": true,
       "epss": 0.99999,
       "epss_percentile": 0.99999,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-109618",
+      "title": "RCE via OOM corruption",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-28",
+      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "PHP upstream security advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:25Z",
+      "source_type": "php_upstream",
+      "known_exploited": true,
+      "epss": 0.99999,
+      "epss_percentile": 0.99998,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -45655,44 +45963,43 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-108398",
-      "title": ".NET Framework untrusted search path security feature bypass",
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
       "severity": "high",
       "cvss": "8.8",
       "categories": [
-        ".NET / ASP.NET",
         "Windows",
-        "Windows Server OS"
+        "Windows 11 OS"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
-      "summary": "Untrusted search path handling in classic Microsoft .NET Framework permits a locally authorized attacker to bypass a security feature. The patch is part of Microsoft's October 2026 .NET Framework cumulative security updates.",
-      "affected": "Multiple .NET Framework 3.5, 4.6.2 through 4.8.1 configurations across supported Windows versions, subject to Microsoft update applicability. This is a separate classic .NET Framework CVE, not the modern .NET Brotli issue.",
-      "remediation": "Install the correct October 13, 2026 .NET Framework cumulative update or a newer superseding Windows update for the installed Windows and .NET Framework versions. Consult the Microsoft patch matrix for the specific KB.",
-      "exploitation": "No confirmed active exploitation in the referenced Microsoft advisories.",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
       "sources": [
         {
-          "label": "Microsoft .NET Framework October cumulative update",
-          "url": "https://learn.microsoft.com/en-us/dotnet/framework/release-notes/2026/10-13-october-cumulative-update"
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
         },
         {
           "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-108398"
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
         },
         {
-          "label": "NVD product applicability",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108398"
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
         }
       ],
       "kind": "cve",
       "source_type": "vendor_baseline",
       "source_updated_at": "2026-10-13",
       "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00779,
-      "epss_percentile": 0.55752,
+      "epss": 0.09813,
+      "epss_percentile": 0.95532,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -45732,43 +46039,44 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "id": "CVE-2026-108398",
+      "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
       "cvss": "8.8",
       "categories": [
+        ".NET / ASP.NET",
         "Windows",
-        "Windows 11 OS"
+        "Windows Server OS"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
+      "summary": "Untrusted search path handling in classic Microsoft .NET Framework permits a locally authorized attacker to bypass a security feature. The patch is part of Microsoft's October 2026 .NET Framework cumulative security updates.",
+      "affected": "Multiple .NET Framework 3.5, 4.6.2 through 4.8.1 configurations across supported Windows versions, subject to Microsoft update applicability. This is a separate classic .NET Framework CVE, not the modern .NET Brotli issue.",
+      "remediation": "Install the correct October 13, 2026 .NET Framework cumulative update or a newer superseding Windows update for the installed Windows and .NET Framework versions. Consult the Microsoft patch matrix for the specific KB.",
+      "exploitation": "No confirmed active exploitation in the referenced Microsoft advisories.",
       "sources": [
         {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+          "label": "Microsoft .NET Framework October cumulative update",
+          "url": "https://learn.microsoft.com/en-us/dotnet/framework/release-notes/2026/10-13-october-cumulative-update"
         },
         {
           "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-108398"
         },
         {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+          "label": "NVD product applicability",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108398"
         }
       ],
       "kind": "cve",
       "source_type": "vendor_baseline",
       "source_updated_at": "2026-10-13",
       "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.09813,
-      "epss_percentile": 0.95532,
+      "epss": 0.00779,
+      "epss_percentile": 0.55752,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -74500,401 +74808,6 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-7935",
-      "title": "Inappropriate implementation in Speech in Google Chrome prior to 148.0.7778.96 allowed a remote attacker to perform UI spoofing via a crafted HTML page",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Windows"
-      ],
-      "published": "2026-05-06",
-      "updated": "2026-10-26",
-      "summary": "Inappropriate implementation in Speech in Google Chrome prior to 148.0.7778.96 allowed a remote attacker to perform UI spoofing via a crafted HTML page. (Chromium security severity: Medium)",
-      "affected": "Products identified in NVD configurations: google chrome; apple macos; linux linux_kernel; microsoft windows",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7935"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://chromereleases.googleblog.com/2026/05/stable-channel-update-for-desktop.html"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0019,
-      "epss_percentile": 0.08646,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7938",
-      "title": "Use after free in CSS in Google Chrome prior to 148.0.7778.96 allowed a remote attacker to execute arbitrary code inside a sandbox via a crafted HTML page",
-      "severity": "high",
-      "categories": [
-        "Linux",
-        "Windows"
-      ],
-      "published": "2026-05-06",
-      "updated": "2026-10-26",
-      "summary": "Use after free in CSS in Google Chrome prior to 148.0.7778.96 allowed a remote attacker to execute arbitrary code inside a sandbox via a crafted HTML page. (Chromium security severity: Medium)",
-      "affected": "Products identified in NVD configurations: google chrome; apple macos; linux linux_kernel; microsoft windows",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7938"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://chromereleases.googleblog.com/2026/05/stable-channel-update-for-desktop.html"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00267,
-      "epss_percentile": 0.18847,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7942",
-      "title": "Integer overflow in ANGLE in Google Chrome prior to 148.0.7778.96 allowed a remote attacker to leak cross-origin data via a crafted HTML page",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Windows"
-      ],
-      "published": "2026-05-06",
-      "updated": "2026-10-26",
-      "summary": "Integer overflow in ANGLE in Google Chrome prior to 148.0.7778.96 allowed a remote attacker to leak cross-origin data via a crafted HTML page. (Chromium security severity: Medium)",
-      "affected": "Products identified in NVD configurations: google chrome; apple macos; linux linux_kernel; microsoft windows",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7942"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://chromereleases.googleblog.com/2026/05/stable-channel-update-for-desktop.html"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00204,
-      "epss_percentile": 0.1035,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7946",
-      "title": "Insufficient policy enforcement in WebUI in Google Chrome on Linux, Mac, Windows, ChromeOS prior to 148.0.7778.96 allowed a remote attacker who had compromised the renderer pr",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Windows"
-      ],
-      "published": "2026-05-06",
-      "updated": "2026-10-26",
-      "summary": "Insufficient policy enforcement in WebUI in Google Chrome on Linux, Mac, Windows, ChromeOS prior to 148.0.7778.96 allowed a remote attacker who had compromised the renderer process to bypass site isolation via a crafted HTML page. (Chromium security severity: Medium)",
-      "affected": "Products identified in NVD configurations: google chrome; apple macos; google chrome_os; linux linux_kernel; microsoft windows",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7946"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://chromereleases.googleblog.com/2026/05/stable-channel-update-for-desktop.html"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00199,
-      "epss_percentile": 0.09712,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7947",
-      "title": "Insufficient validation of untrusted input in Network in Google Chrome prior to 148.0.7778.96 allowed a remote attacker who had compromised the renderer process to perform UI ",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Windows"
-      ],
-      "published": "2026-05-06",
-      "updated": "2026-10-26",
-      "summary": "Insufficient validation of untrusted input in Network in Google Chrome prior to 148.0.7778.96 allowed a remote attacker who had compromised the renderer process to perform UI spoofing via a crafted HTML page. (Chromium security severity: Medium)",
-      "affected": "Products identified in NVD configurations: google chrome; apple macos; linux linux_kernel; microsoft windows",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7947"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://chromereleases.googleblog.com/2026/05/stable-channel-update-for-desktop.html"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.2",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00186,
-      "epss_percentile": 0.08207,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7948",
-      "title": "Race in Chromoting in Google Chrome on Windows prior to 148.0.7778.96 allowed a local attacker to perform privilege escalation via a malicious file",
-      "severity": "high",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-05-06",
-      "updated": "2026-10-26",
-      "summary": "Race in Chromoting in Google Chrome on Windows prior to 148.0.7778.96 allowed a local attacker to perform privilege escalation via a malicious file. (Chromium security severity: Medium)",
-      "affected": "Products identified in NVD configurations: google chrome; microsoft windows",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7948"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://chromereleases.googleblog.com/2026/05/stable-channel-update-for-desktop.html"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00131,
-      "epss_percentile": 0.02701,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7951",
-      "title": "Out of bounds write in WebRTC in Google Chrome prior to 148.0.7778.96 allowed a remote attacker to execute arbitrary code inside a sandbox via a crafted HTML page",
-      "severity": "high",
-      "categories": [
-        "Linux",
-        "Windows"
-      ],
-      "published": "2026-05-06",
-      "updated": "2026-10-26",
-      "summary": "Out of bounds write in WebRTC in Google Chrome prior to 148.0.7778.96 allowed a remote attacker to execute arbitrary code inside a sandbox via a crafted HTML page. (Chromium security severity: Medium)",
-      "affected": "Products identified in NVD configurations: google chrome; apple macos; linux linux_kernel; microsoft windows",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7951"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://chromereleases.googleblog.com/2026/05/stable-channel-update-for-desktop.html"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00383,
-      "epss_percentile": 0.32254,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7952",
-      "title": "Insufficient policy enforcement in Extensions in Google Chrome prior to 148.0.7778.96 allowed a remote attacker who had compromised the renderer process to bypass discretionar",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Windows"
-      ],
-      "published": "2026-05-06",
-      "updated": "2026-10-26",
-      "summary": "Insufficient policy enforcement in Extensions in Google Chrome prior to 148.0.7778.96 allowed a remote attacker who had compromised the renderer process to bypass discretionary access control via a crafted HTML page. (Chromium security severity: Medium)",
-      "affected": "Products identified in NVD configurations: google chrome; apple macos; linux linux_kernel; microsoft windows",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7952"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://chromereleases.googleblog.com/2026/05/stable-channel-update-for-desktop.html"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.2",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00172,
-      "epss_percentile": 0.06598,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7953",
-      "title": "Insufficient validation of untrusted input in Omnibox in Google Chrome prior to 148.0.7778.96 allowed a remote attacker to inject arbitrary scripts or HTML (UXSS) via maliciou",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Windows"
-      ],
-      "published": "2026-05-06",
-      "updated": "2026-10-26",
-      "summary": "Insufficient validation of untrusted input in Omnibox in Google Chrome prior to 148.0.7778.96 allowed a remote attacker to inject arbitrary scripts or HTML (UXSS) via malicious network traffic. (Chromium security severity: Medium)",
-      "affected": "Products identified in NVD configurations: google chrome; apple macos; linux linux_kernel; microsoft windows",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7953"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://chromereleases.googleblog.com/2026/05/stable-channel-update-for-desktop.html"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00171,
-      "epss_percentile": 0.06526,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7955",
-      "title": "Uninitialized Use in GPU in Google Chrome prior to 148.0.7778.96 allowed a remote attacker who had compromised the renderer process to obtain potentially sensitive information",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Windows"
-      ],
-      "published": "2026-05-06",
-      "updated": "2026-10-26",
-      "summary": "Uninitialized Use in GPU in Google Chrome prior to 148.0.7778.96 allowed a remote attacker who had compromised the renderer process to obtain potentially sensitive information from process memory via a crafted HTML page. (Chromium security severity: Medium)",
-      "affected": "Products identified in NVD configurations: google chrome; apple macos; linux linux_kernel; microsoft windows",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7955"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://chromereleases.googleblog.com/2026/05/stable-channel-update-for-desktop.html"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0024,
-      "epss_percentile": 0.15084,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7956",
-      "title": "Use after free in Navigation in Google Chrome prior to 148.0.7778.96 allowed a remote attacker who had compromised the renderer process to potentially perform a sandbox escape",
-      "severity": "high",
-      "categories": [
-        "Linux",
-        "Windows"
-      ],
-      "published": "2026-05-06",
-      "updated": "2026-10-26",
-      "summary": "Use after free in Navigation in Google Chrome prior to 148.0.7778.96 allowed a remote attacker who had compromised the renderer process to potentially perform a sandbox escape via a crafted HTML page. (Chromium security severity: Medium)",
-      "affected": "Products identified in NVD configurations: google chrome; apple macos; linux linux_kernel; microsoft windows",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7956"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://chromereleases.googleblog.com/2026/05/stable-channel-update-for-desktop.html"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00222,
-      "epss_percentile": 0.12816,
-      "epss_as_of": "2026-10-28"
-    },
-    {
       "id": "CVE-2023-54345",
       "title": "Frappe Framework ERPNext 13.4.0 contains a sandbox escape vulnerability in RestrictedPython that allows authenticated users with System Manager role to execute arbitrary code ",
       "severity": "high",
@@ -82611,85 +82524,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-28T22:16:57Z",
-      "last_attempt": "2026-10-28T22:16:57Z",
+      "last_success": "2026-10-28T22:23:28Z",
+      "last_attempt": "2026-10-28T22:23:28Z",
       "items_processed": 200,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-28T22:16:57Z",
-      "last_attempt": "2026-10-28T22:16:57Z",
+      "last_success": "2026-10-28T22:23:28Z",
+      "last_attempt": "2026-10-28T22:23:28Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-28T22:16:57Z",
-      "last_attempt": "2026-10-28T22:16:57Z",
-      "items_processed": 829,
+      "last_success": "2026-10-28T22:23:28Z",
+      "last_attempt": "2026-10-28T22:23:28Z",
+      "items_processed": 840,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-28T22:16:57Z",
-      "last_attempt": "2026-10-28T22:16:57Z",
+      "last_success": "2026-10-28T22:23:28Z",
+      "last_attempt": "2026-10-28T22:23:28Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-28T22:16:57Z",
-      "last_attempt": "2026-10-28T22:16:57Z",
+      "last_success": "2026-10-28T22:23:28Z",
+      "last_attempt": "2026-10-28T22:23:28Z",
       "items_processed": 2558,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-28T22:16:57Z",
-      "last_attempt": "2026-10-28T22:16:57Z",
+      "last_success": "2026-10-28T22:23:28Z",
+      "last_attempt": "2026-10-28T22:23:28Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-28T22:16:57Z",
-      "last_attempt": "2026-10-28T22:16:57Z",
+      "last_success": "2026-10-28T22:23:28Z",
+      "last_attempt": "2026-10-28T22:23:28Z",
       "items_processed": 23,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-28T22:16:57Z",
-      "last_attempt": "2026-10-28T22:16:57Z",
+      "last_success": "2026-10-28T22:23:28Z",
+      "last_attempt": "2026-10-28T22:23:28Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-28T22:16:57Z",
-      "last_attempt": "2026-10-28T22:16:57Z",
+      "last_success": "2026-10-28T22:23:28Z",
+      "last_attempt": "2026-10-28T22:23:28Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-28T22:16:57Z",
-      "last_attempt": "2026-10-28T22:16:57Z",
+      "last_success": "2026-10-28T22:23:28Z",
+      "last_attempt": "2026-10-28T22:23:28Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-28T22:16:57Z",
-      "last_attempt": "2026-10-28T22:16:57Z",
+      "last_success": "2026-10-28T22:23:28Z",
+      "last_attempt": "2026-10-28T22:23:28Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-28T22:16:57Z",
-      "last_attempt": "2026-10-28T22:16:57Z",
+      "last_success": "2026-10-28T22:23:28Z",
+      "last_attempt": "2026-10-28T22:23:28Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -82701,7 +82614,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-28T22:16:57Z",
-  "last_successful_update": "2026-10-28T22:16:57Z",
+  "last_checked_at": "2026-10-28T22:23:28Z",
+  "last_successful_update": "2026-10-28T22:23:28Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
