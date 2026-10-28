@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-28",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4281,
+  "candidate_records": 4294,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -27311,54 +27311,6 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-109618",
-      "title": "RCE via OOM corruption",
-      "severity": "critical",
-      "categories": [
-        "Fortinet",
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-28",
-      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "PHP upstream security advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:25Z",
-      "source_type": "php_upstream",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99998,
-      "epss_as_of": "2026-10-28"
-    },
-    {
       "id": "CVE-2026-109619",
       "title": "RCE via stale global state",
       "severity": "critical",
@@ -27405,6 +27357,54 @@
       "known_exploited": true,
       "epss": 0.99999,
       "epss_percentile": 0.99999,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-109618",
+      "title": "RCE via OOM corruption",
+      "severity": "critical",
+      "categories": [
+        "Fortinet",
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-28",
+      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "PHP upstream security advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:25Z",
+      "source_type": "php_upstream",
+      "known_exploited": true,
+      "epss": 0.99999,
+      "epss_percentile": 0.99998,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -39637,6 +39637,264 @@
       "epss_as_of": "2026-10-28"
     },
     {
+      "id": "CVE-2026-87708",
+      "title": "CVE-2026-87708 Windows Installer Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Use after free in Windows Installer allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-87708"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-87708"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.0",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00252,
+      "epss_percentile": 0.1663,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-87707",
+      "title": "CVE-2026-87707 Windows Fax and Scan Service Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Heap-based buffer overflow in Windows Fax and Scan Service allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-87707"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-87707"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00245,
+      "epss_percentile": 0.15778,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-88106",
+      "title": "CVE-2026-88106 Windows Cloud Files Mini Filter Driver Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Use after free in Windows Cloud Files Mini Filter Driver allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88106"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88106"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.0",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00204,
+      "epss_percentile": 0.10394,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-88107",
+      "title": "CVE-2026-88107 Windows Cloud Files Mini Filter Driver Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Use after free in Windows Cloud Files Mini Filter Driver allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88107"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88107"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.0",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00157,
+      "epss_percentile": 0.04789,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-83789",
+      "title": "CVE-2026-83789 Windows SMB Client Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Heap-based buffer overflow in Windows SMB Client allows an unauthorized attacker to elevate privileges over a network.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83789"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83789"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00869,
+      "epss_percentile": 0.58639,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-83790",
+      "title": "CVE-2026-83790 Windows Hello Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Use after free in Windows Hello allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83790"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83790"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.0",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00286,
+      "epss_percentile": 0.21079,
+      "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-87709",
+      "title": "CVE-2026-87709 Windows Host Guardian Service Tampering Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "<p>Improper access control in Windows Host Guardian Service allows an authorized attacker to perform tampering locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-87709"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-87709"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00314,
+      "epss_percentile": 0.24276,
+      "epss_as_of": "2026-10-28"
+    },
+    {
       "id": "CVE-2026-103555",
       "title": "Heap-based buffer overflow in Virtual Hard Disk (VHD) Miniport Driver allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
@@ -43249,6 +43507,46 @@
       "epss_as_of": "2026-10-28"
     },
     {
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "Windows",
+        "Windows 11 OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+        },
+        {
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.09813,
+      "epss_percentile": 0.95532,
+      "epss_as_of": "2026-10-28"
+    },
+    {
       "id": "CVE-2026-88092",
       "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
       "severity": "critical",
@@ -43323,46 +43621,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55752,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        "Windows",
-        "Windows 11 OS"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
-        },
-        {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.09813,
-      "epss_percentile": 0.95532,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -52432,37 +52690,6 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-87708",
-      "title": "CVE-2026-87708 Windows Installer Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Use after free in Windows Installer allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-87708"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00252,
-      "epss_percentile": 0.1663,
-      "epss_as_of": "2026-10-28"
-    },
-    {
       "id": "CVE-2026-87711",
       "title": "CVE-2026-87711 Windows Installer Elevation of Privilege Vulnerability",
       "severity": "bulletin",
@@ -53487,37 +53714,6 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-87707",
-      "title": "CVE-2026-87707 Windows Fax and Scan Service Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Heap-based buffer overflow in Windows Fax and Scan Service allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-87707"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00245,
-      "epss_percentile": 0.15778,
-      "epss_as_of": "2026-10-28"
-    },
-    {
       "id": "CVE-2026-87712",
       "title": "CVE-2026-87712 Microsoft Windows QoS Scheduler Driver Elevation of Privilege Vulnerability",
       "severity": "bulletin",
@@ -53981,68 +54177,6 @@
       "known_exploited": false,
       "epss": 0.00634,
       "epss_percentile": 0.50231,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-88106",
-      "title": "CVE-2026-88106 Windows Cloud Files Mini Filter Driver Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Use after free in Windows Cloud Files Mini Filter Driver allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88106"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00204,
-      "epss_percentile": 0.10394,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-88107",
-      "title": "CVE-2026-88107 Windows Cloud Files Mini Filter Driver Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Use after free in Windows Cloud Files Mini Filter Driver allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88107"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00157,
-      "epss_percentile": 0.04789,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -59272,68 +59406,6 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-83789",
-      "title": "CVE-2026-83789 Windows SMB Client Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Heap-based buffer overflow in Windows SMB Client allows an unauthorized attacker to elevate privileges over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83789"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00869,
-      "epss_percentile": 0.58639,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-83790",
-      "title": "CVE-2026-83790 Windows Hello Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Use after free in Windows Hello allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83790"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00286,
-      "epss_percentile": 0.21079,
-      "epss_as_of": "2026-10-28"
-    },
-    {
       "id": "CVE-2026-83845",
       "title": "CVE-2026-83845 Windows Internet (wininet.dll) Spoofing Vulnerability",
       "severity": "bulletin",
@@ -60853,37 +60925,6 @@
       "known_exploited": false,
       "epss": 0.00258,
       "epss_percentile": 0.17408,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-87709",
-      "title": "CVE-2026-87709 Windows Host Guardian Service Tampering Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Improper access control in Windows Host Guardian Service allows an authorized attacker to perform tampering locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-87709"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00314,
-      "epss_percentile": 0.24276,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -67337,7 +67378,7 @@
       "cvss": "9.8",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2026-10-28T18:17:02.567",
+      "source_updated_at": "2026-10-28T20:09:29.257",
       "source_type": "nvd",
       "known_exploited": true,
       "epss": 0.04573,
@@ -68426,6 +68467,90 @@
       "epss": 0.00144,
       "epss_percentile": 0.03692,
       "epss_as_of": "2026-10-28"
+    },
+    {
+      "id": "CVE-2026-78974",
+      "title": "Chromium: CVE-2026-78974 UI misrepresentation in Linux Toolkit Theming",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-08-28",
+      "updated": "2026-10-28",
+      "summary": "This CVE was assigned by Chrome. Microsoft Edge (Chromium-based) ingests Chromium, which addresses this vulnerability. Please see [Google Chrome Releases](https://chromereleases.googleblog.com/2026) for more information.",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-78974"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-08-28",
+      "source_type": "msrc_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-62740",
+      "title": "CVE-2026-62740 Windows Imaging Component Information Disclosure Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-08-11",
+      "updated": "2026-10-28",
+      "summary": "Use of uninitialized resource in Windows Imaging Component allows an authorized attacker to disclose information locally.",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-62740"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-08-11",
+      "source_type": "msrc_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-62877",
+      "title": "CVE-2026-62877 Windows Win32k Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-08-11",
+      "updated": "2026-10-28",
+      "summary": "Stack-based buffer overflow in Windows Win32K allows an authorized attacker to elevate privileges locally.",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-62877"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-08-11",
+      "source_type": "msrc_rss",
+      "known_exploited": false
     },
     {
       "id": "CVE-2024-14040",
@@ -74290,37 +74415,6 @@
       "epss_as_of": "2026-10-28"
     },
     {
-      "id": "CVE-2026-7490",
-      "title": "CTMS and CPAS developed by Sunnet has an Arbitrary File Upload vulnerability, allowing privileged remote attackers to upload and execute web shell backdoors, thereby enabling ",
-      "severity": "high",
-      "categories": [
-        ".NET / ASP.NET"
-      ],
-      "published": "2026-05-02",
-      "updated": "2026-10-26",
-      "summary": "CTMS and CPAS developed by Sunnet has an Arbitrary File Upload vulnerability, allowing privileged remote attackers to upload and execute web shell backdoors, thereby enabling arbitrary code execution on the server.",
-      "affected": "Products identified in NVD configurations: sun.net ehrd_cpas; sun.net ehrd_ctms",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7490"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.6",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00465,
-      "epss_percentile": 0.40174,
-      "epss_as_of": "2026-10-28"
-    },
-    {
       "id": "CVE-2024-13362",
       "title": "Multiple plugins and/or themes for WordPress are vulnerable to Reflected Cross-Site Scripting via the url parameter in various versions due to insufficient input sanitization ",
       "severity": "medium",
@@ -74349,575 +74443,6 @@
       "known_exploited": false,
       "epss": 0.00276,
       "epss_percentile": 0.20039,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7545",
-      "title": "A weakness has been identified in SourceCodester Advanced School Management System 1.0",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-05-01",
-      "updated": "2026-10-26",
-      "summary": "A weakness has been identified in SourceCodester Advanced School Management System 1.0. The affected element is an unknown function of the file commonController.php of the component checkEmail Endpoint. This manipulation causes sql injection. Remote exploitation of the attack is possible. The exploit has been made available to the public and could be used for attacks.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7545"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T22:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00259,
-      "epss_percentile": 0.17615,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7555",
-      "title": "A vulnerability was identified in itsourcecode Electronic Judging System 1.0",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-05-01",
-      "updated": "2026-10-26",
-      "summary": "A vulnerability was identified in itsourcecode Electronic Judging System 1.0. This affects an unknown part of the file /intrams/login.php. Such manipulation of the argument Username leads to sql injection. The attack can be launched remotely. The exploit is publicly available and might be used.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7555"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T22:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00259,
-      "epss_percentile": 0.17614,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-43003",
-      "title": "An issue was discovered in OpenStack ironic-python-agent 1.0.0 through 11.5.0",
-      "severity": "high",
-      "categories": [
-        "Python / PyPI"
-      ],
-      "published": "2026-05-01",
-      "updated": "2026-10-26",
-      "summary": "An issue was discovered in OpenStack ironic-python-agent 1.0.0 through 11.5.0. Ironic Python Agent (IPA) sometimes executes grub-install from within a chroot of the deployed partition image, leading to code execution in the case of a malicious image.",
-      "affected": "Products identified in NVD configurations: openstack ironic_python_agent",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-43003"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T22:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00983,
-      "epss_percentile": 0.62182,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-23863",
-      "title": "An attachment spoofing issue in WhatsApp for Windows prior to v2.3000.1032164386.258709 could have allowed maliciously formatted documents with embedded NUL bytes in the filen",
-      "severity": "medium",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-05-01",
-      "updated": "2026-10-26",
-      "summary": "An attachment spoofing issue in WhatsApp for Windows prior to v2.3000.1032164386.258709 could have allowed maliciously formatted documents with embedded NUL bytes in the filename to be shown in the application as one type of file but run as an executable when opened. We have not seen evidence of exploitation in the wild.",
-      "affected": "Products identified in NVD configurations: whatsapp whatsapp",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-23863"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://www.whatsapp.com/security/advisories/2026"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T22:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00528,
-      "epss_percentile": 0.44575,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-42994",
-      "title": "Bitwarden CLI 2026.4.0 from 2026-04-22T21:57Z to 2026-04-22T23:30Z, when obtained from npm, had embedded malicious code",
-      "severity": "high",
-      "categories": [
-        "Application dependencies",
-        "Node.js / npm"
-      ],
-      "published": "2026-05-01",
-      "updated": "2026-10-26",
-      "summary": "Bitwarden CLI 2026.4.0 from 2026-04-22T21:57Z to 2026-04-22T23:30Z, when obtained from npm, had embedded malicious code. This is related to a Checkmarx supply chain incident.",
-      "affected": "Products identified in NVD configurations: bitwarden cli",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-42994"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://community.bitwarden.com/t/bitwarden-statement-on-checkmarx-supply-chain-incident/96127"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00306,
-      "epss_percentile": 0.23378,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7549",
-      "title": "A flaw has been found in SourceCodester Pharmacy Sales and Inventory System 1.0",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-05-01",
-      "updated": "2026-10-26",
-      "summary": "A flaw has been found in SourceCodester Pharmacy Sales and Inventory System 1.0. This impacts an unknown function of the file /ajax.php?action=delete_customer. Executing a manipulation of the argument ID can lead to sql injection. The attack may be performed from remote. The exploit has been published and may be used.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7549"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00274,
-      "epss_percentile": 0.19759,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7550",
-      "title": "A vulnerability has been found in SourceCodester Pharmacy Sales and Inventory System 1.0",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-05-01",
-      "updated": "2026-10-26",
-      "summary": "A vulnerability has been found in SourceCodester Pharmacy Sales and Inventory System 1.0. Affected is an unknown function of the file /ajax.php?action=save_customer. The manipulation of the argument ID leads to sql injection. It is possible to initiate the attack remotely. The exploit has been disclosed to the public and may be used.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7550"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00259,
-      "epss_percentile": 0.17609,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7584",
-      "title": "The LabOne Q serialization framework uses a class-loading mechanism (import_cls) to dynamically import and instantiate Python classes during deserialization",
-      "severity": "high",
-      "categories": [
-        "Python / PyPI"
-      ],
-      "published": "2026-05-01",
-      "updated": "2026-10-26",
-      "summary": "The LabOne Q serialization framework uses a class-loading mechanism (import_cls) to dynamically import and instantiate Python classes during deserialization. Prior to the fix, this mechanism accepted arbitrary fully-qualified class names from the serialized data without any validation of the target class or restriction on which modules could be imported. An attacker can craft a serialized experiment file that causes the deserialization engine to import and instantiate arbitrary Python classes with attacker-controlled constructor arguments, resulting in arbitrary code execution in the context of the user running the Python process. Exploitation requires the victim to load a malicious file using LabOne Q's deserialization functions, for example a compromised experiment file shared for collaboration or support purposes.",
-      "affected": "Products identified in NVD configurations: zhinst labone_q",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7584"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://www.zhinst.com/support/security/2026/zi-sa-2026-002/"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00256,
-      "epss_percentile": 0.17232,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7592",
-      "title": "A weakness has been identified in itsourcecode Courier Management System 1.0",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-05-01",
-      "updated": "2026-10-26",
-      "summary": "A weakness has been identified in itsourcecode Courier Management System 1.0. This affects an unknown function of the file /edit_staff.php. Executing a manipulation of the argument ID can lead to sql injection. The attack may be launched remotely. The exploit has been made available to the public and could be used for attacks.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7592"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00259,
-      "epss_percentile": 0.17617,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-21996",
-      "title": "An unprivileged attacker can reliably trigger a crash of the dtrace process with a malicious ELF binary due to an integer Divide-by-Zero in Pbuild_file_symtab()",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-05-01",
-      "updated": "2026-10-26",
-      "summary": "An unprivileged attacker can reliably trigger a crash of the dtrace process with a malicious ELF binary due to an integer Divide-by-Zero in Pbuild_file_symtab()",
-      "affected": "Products identified in NVD configurations: oracle linux",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-21996"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://linux.oracle.com/cve/CVE-2026-21996.html"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0011,
-      "epss_percentile": 0.01274,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-35233",
-      "title": "An unprivileged attacker can craft a user-space process with a malicious ELF binary containing an out-of-range sh_link field",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-05-01",
-      "updated": "2026-10-26",
-      "summary": "An unprivileged attacker can craft a user-space process with a malicious ELF binary containing an out-of-range sh_link field. When root-level dtrace attaches to -- or instruments -- that process (via dtrace -p , pid probes, or USDT), the ELF parser reads heap memory beyond the allocated section cache array without any bounds check. This results in an uninitialized/out-of-bounds heap read that can cause a NULL pointer dereference crash of the dtrace process (DoS), or -- depending on heap layout -- a read-then-use of a garbage pointer controlled by adjacent allocations, providing a foothold toward further exploitation in a privileged context.",
-      "affected": "Products identified in NVD configurations: oracle linux",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-35233"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://linux.oracle.com/cve/CVE-2026-35233.html"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00108,
-      "epss_percentile": 0.0119,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-32148",
-      "title": "Insufficient Verification of Data Authenticity vulnerability in hexpm hex (Hex.RemoteConverger module) allows dependency integrity bypass via unverified lockfile checksums. He",
-      "severity": "high",
-      "categories": [
-        "Application dependencies"
-      ],
-      "published": "2026-04-30",
-      "updated": "2026-10-26",
-      "summary": "Insufficient Verification of Data Authenticity vulnerability in hexpm hex (Hex.RemoteConverger module) allows dependency integrity bypass via unverified lockfile checksums. Hex stores checksums for dependencies in the mix.lock file to ensure reproducible and integrity-checked builds. However, Hex.RemoteConverger.verify_resolved/2 never executes checksum verification because the lock data returned by Hex.Utils.lock/1 uses string-based dependency names, while the verification logic compares against atom-based names. This type mismatch causes the verification code path to be silently skipped. Checksums are still validated when packages are initially downloaded from the registry, but mismatches between the lockfile and resolved dependencies are not detected. An attacker who can influence cached packages (e.g., via local cache poisoning or a compromised registry) can provide modified dependency contents that will be accepted without detection. The mix.lock file is silently rewritten with the checksum values from the registry, erasing evidence of tampering. This issue affects hex: from 0.16.0 before 2.4.2.",
-      "affected": "Products identified in NVD configurations: hex hex",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-32148"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://github.com/hexpm/hex/security/advisories/GHSA-hmv9-4mfr-m92v"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T22:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00192,
-      "epss_percentile": 0.08796,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-33451",
-      "title": "CVE-2026-33451 is an arbitrary read/write vulnerability in the Secure Access Windows client prior to 14.50",
-      "severity": "high",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-04-30",
-      "updated": "2026-10-26",
-      "summary": "CVE-2026-33451 is an arbitrary read/write vulnerability in the Secure Access Windows client prior to 14.50. Attackers with local control of the Windows client can send malformed data to an API and elevate their level of privilege to system.",
-      "affected": "Products identified in NVD configurations: absolute secure_access; microsoft windows",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-33451"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://www.absolute.com/platform/security-information/vulnerability-archive/cve-2026-33451"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T22:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00104,
-      "epss_percentile": 0.0102,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-1577",
-      "title": "IBM Db2 11.5.0 through 11.5.9, and 12.1.0 through 12.1.4 for Linux, UNIX and Windows (includes Db2 Connect Server) could allow an authenticated user to cause a denial of servi",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Windows"
-      ],
-      "published": "2026-04-30",
-      "updated": "2026-10-26",
-      "summary": "IBM Db2 11.5.0 through 11.5.9, and 12.1.0 through 12.1.4 for Linux, UNIX and Windows (includes Db2 Connect Server) could allow an authenticated user to cause a denial of service due to improper neutralization of special elements in data query logic.",
-      "affected": "Products identified in NVD configurations: ibm db2",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-1577"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://www.ibm.com/support/pages/node/7269434"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T22:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00335,
-      "epss_percentile": 0.26801,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-41016",
-      "title": "Apache Airflow's SMTP provider `SmtpHook` called Python's `smtplib.SMTP.starttls()` without an SSL context, so no certificate validation was performed on the TLS upgrade",
-      "severity": "medium",
-      "categories": [
-        "Python / PyPI"
-      ],
-      "published": "2026-04-30",
-      "updated": "2026-10-26",
-      "summary": "Apache Airflow's SMTP provider `SmtpHook` called Python's `smtplib.SMTP.starttls()` without an SSL context, so no certificate validation was performed on the TLS upgrade. A man-in-the-middle between the Airflow worker and the SMTP server could present a self-signed certificate, complete the STARTTLS upgrade, and capture the SMTP credentials sent during the subsequent `login()` call. Users are advised to upgrade to the `apache-airflow-providers-smtp` version that contains the fix.",
-      "affected": "Products identified in NVD configurations: apache airflow",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-41016"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://lists.apache.org/thread/gb202qy5r31bgdd3d51d7s5o1jh40kc4"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00268,
-      "epss_percentile": 0.18902,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-7506",
-      "title": "A vulnerability has been found in SourceCodester Hotel Management System 1.0",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-04-30",
-      "updated": "2026-10-26",
-      "summary": "A vulnerability has been found in SourceCodester Hotel Management System 1.0. This impacts an unknown function of the file /index.php/reservation/check. Such manipulation of the argument room_type leads to sql injection. The attack may be launched remotely. The exploit has been disclosed to the public and may be used.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7506"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0026,
-      "epss_percentile": 0.17642,
-      "epss_as_of": "2026-10-28"
-    },
-    {
-      "id": "CVE-2026-42800",
-      "title": "NULL pointer dereference vulnerability in ASR1903 in ASR Lapwing_Linux on Linux (ims_client modules) allows Pointer Manipulation. This vulnerability is associated with program",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-04-30",
-      "updated": "2026-10-26",
-      "summary": "NULL pointer dereference vulnerability in ASR1903 in ASR Lapwing_Linux on Linux (ims_client modules) allows Pointer Manipulation. This vulnerability is associated with program files sip/utils/src/sipuri.c.",
-      "affected": "Products identified in NVD configurations: asrmicro asr1901_firmware; asrmicro asr1901; asrmicro asr1903_firmware; asrmicro asr1903",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-42800"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://www.asrmicro.com/en/goods/psirt?cid=44"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00237,
-      "epss_percentile": 0.14738,
       "epss_as_of": "2026-10-28"
     },
     {
@@ -79061,6 +78586,426 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2023-53658",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: spi: bcm-qspi: return error if neither hif_mspi nor mspi is available If neither a \"hif_mspi\" nor \"mspi\" re",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2025-10-07",
+      "updated": "2026-10-28",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: spi: bcm-qspi: return error if neither hif_mspi nor mspi is available If neither a \"hif_mspi\" nor \"mspi\" resource is present, the driver will just early exit in probe but still return success. Apart from not doing anything meaningful, this would then also lead to a null pointer access on removal, as platform_get_drvdata() would return NULL, which it would then try to dereference when trying to unregister the spi master. Fix this by unconditionally calling devm_ioremap_resource(), as it can handle a NULL res and will then return a viable ERR_PTR() if we get one. The \"return 0;\" was previously a \"goto qspi_resource_err;\" where then ret was returned, but since ret was still initialized to 0 at this place this was a valid conversion in 63c5395bb7a9 (\"spi: bcm-qspi: Fix use-after-free on unbind\"). The issue was not introduced by this commit, only made more obvious.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-53658"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-10-28T20:10:00.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2023-53661",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: bnxt: avoid overflow in bnxt_get_nvram_directory() The value of an arithmetic expression is subject of poss",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2025-10-07",
+      "updated": "2026-10-28",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: bnxt: avoid overflow in bnxt_get_nvram_directory() The value of an arithmetic expression is subject of possible overflow due to a failure to cast operands to a larger data type before performing arithmetic. Used macro for multiplication instead operator for avoiding overflow. Found by Security Code and Linux Verification Center (linuxtesting.org) with SVACE.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-53661"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-10-28T20:10:00.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2023-53662",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: ext4: fix memory leaks in ext4_fname_{setup_filename,prepare_lookup} If the filename casefolding fails, we'",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2025-10-07",
+      "updated": "2026-10-28",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: ext4: fix memory leaks in ext4_fname_{setup_filename,prepare_lookup} If the filename casefolding fails, we'll be leaking memory from the fscrypt_name struct, namely from the 'crypto_buf.name' member. Make sure we free it in the error path on both ext4_fname_setup_filename() and ext4_fname_prepare_lookup() functions.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-53662"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-10-28T20:10:00.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2023-53664",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: OPP: Fix potential null ptr dereference in dev_pm_opp_get_required_pstate() \"opp\" pointer is dereferenced b",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2025-10-07",
+      "updated": "2026-10-28",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: OPP: Fix potential null ptr dereference in dev_pm_opp_get_required_pstate() \"opp\" pointer is dereferenced before the IS_ERR_OR_NULL() check. Fix it by removing the dereference to cache opp_table and dereference it directly where opp_table is used. This fixes the following smatch warning: drivers/opp/core.c:232 dev_pm_opp_get_required_pstate() warn: variable dereferenced before IS_ERR check 'opp' (see line 230)",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-53664"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-10-28T20:10:00.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2023-53674",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: clk: Fix memory leak in devm_clk_notifier_register() devm_clk_notifier_register() allocates a devres resour",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2025-10-07",
+      "updated": "2026-10-28",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: clk: Fix memory leak in devm_clk_notifier_register() devm_clk_notifier_register() allocates a devres resource for clk notifier but didn't register that to the device, so the notifier didn't get unregistered on device detach and the allocated resource was leaked. Fix the issue by registering the resource through devres_add(). This issue was found with kmemleak on a Chromebook.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-53674"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-10-28T20:10:00.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2023-53675",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: scsi: ses: Fix possible desc_ptr out-of-bounds accesses Sanitize possible desc_ptr out-of-bounds accesses i",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2025-10-07",
+      "updated": "2026-10-28",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: scsi: ses: Fix possible desc_ptr out-of-bounds accesses Sanitize possible desc_ptr out-of-bounds accesses in ses_enclosure_data_process().",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-53675"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-10-28T20:10:00.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2023-53676",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: scsi: target: iscsi: Fix buffer overflow in lio_target_nacl_info_show() The function lio_target_nacl_info_s",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2025-10-07",
+      "updated": "2026-10-28",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: scsi: target: iscsi: Fix buffer overflow in lio_target_nacl_info_show() The function lio_target_nacl_info_show() uses sprintf() in a loop to print details for every iSCSI connection in a session without checking for the buffer length. With enough iSCSI connections it's possible to overflow the buffer provided by configfs and corrupt the memory. This patch replaces sprintf() with sysfs_emit_at() that checks for buffer boundries.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-53676"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-10-28T20:10:00.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2023-53677",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: drm/i915: Fix memory leaks in i915 selftests This patch fixes memory leaks on error escapes in function fak",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2025-10-07",
+      "updated": "2026-10-28",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: drm/i915: Fix memory leaks in i915 selftests This patch fixes memory leaks on error escapes in function fake_get_pages (cherry picked from commit 8bfbdadce85c4c51689da10f39c805a7106d4567)",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-53677"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-10-28T20:10:00.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2023-53678",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: drm/i915: Fix system suspend without fbdev being initialized If fbdev is not initialized for some reason - ",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2025-10-07",
+      "updated": "2026-10-28",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: drm/i915: Fix system suspend without fbdev being initialized If fbdev is not initialized for some reason - in practice on platforms without display - suspending fbdev should be skipped during system suspend, fix this up. While at it add an assert that suspending fbdev only happens with the display present. This fixes the following: [ 91.227923] PM: suspend entry (s2idle) [ 91.254598] Filesystems sync: 0.025 seconds [ 91.270518] Freezing user space processes [ 91.272266] Freezing user space processes completed (elapsed 0.001 seconds) [ 91.272686] OOM killer disabled. [ 91.272872] Freezing remaining freezable tasks [ 91.274295] Freezing remaining freezable tasks completed (elapsed 0.001 seconds) [ 91.659622] BUG: kernel NULL pointer dereference, address: 00000000000001c8 [ 91.659981] #PF: supervisor write access in kernel mode [ 91.660252] #PF: error_code(0x0002) - not-present page [ 91.660511] PGD 0 P4D 0 [ 91.660647] Oops: 0002 [#1] PREEMPT SMP NOPTI [ 91.660875] CPU: 4 PID: 917 Comm: bash Not tainted 6.2.0-rc7+ #54 [ 91.661185] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS edk2-20221117gitfff6d81270b5-9.fc37 unknown [ 91.661680] RIP: 0010:mutex_lock+0x",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-53678"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-10-28T20:10:00.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2023-53679",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: wifi: mt7601u: fix an integer underflow Fix an integer underflow that leads to a null pointer dereference i",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2025-10-07",
+      "updated": "2026-10-28",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: wifi: mt7601u: fix an integer underflow Fix an integer underflow that leads to a null pointer dereference in 'mt7601u_rx_skb_from_seg()'. The variable 'dma_len' in the URB packet could be manipulated, which could trigger an integer underflow of 'seg_len' in 'mt7601u_rx_process_seg()'. This underflow subsequently causes the 'bad_frame' checks in 'mt7601u_rx_skb_from_seg()' to be bypassed, eventually leading to a dereference of the pointer 'p', which is a null pointer. Ensure that 'dma_len' is greater than 'min_seg_len'. Found by a modified version of syzkaller. KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f] CPU: 0 PID: 12 Comm: ksoftirqd/0 Tainted: G W O 5.14.0+ #139 Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014 RIP: 0010:skb_add_rx_frag+0x143/0x370 Code: e2 07 83 c2 03 38 ca 7c 08 84 c9 0f 85 86 01 00 00 4c 8d 7d 08 44 89 68 08 48 b8 00 00 00 00 00 fc ff df 4c 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 cd 01 00 00 48 8b 45 08 a8 01 0f 85 3d 01 00 00 RSP: 0018:ffffc900000cfc90 EFLAGS: 00010202 RAX: dffffc0000000000 RBX: ffff888115520dc0 RCX: 0000000000000000 RDX: 00000000000000",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-53679"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-10-28T20:10:00.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2023-53680",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: NFSD: Avoid calling OPDESC() with ops->opnum == OP_ILLEGAL OPDESC() simply indexes into nfsd4_ops[] by the ",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2025-10-07",
+      "updated": "2026-10-28",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: NFSD: Avoid calling OPDESC() with ops->opnum == OP_ILLEGAL OPDESC() simply indexes into nfsd4_ops[] by the op's operation number, without range checking that value. It assumes callers are careful to avoid calling it with an out-of-bounds opnum value. nfsd4_decode_compound() is not so careful, and can invoke OPDESC() with opnum set to OP_ILLEGAL, which is 10044 -- well beyond the end of nfsd4_ops[].",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-53680"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-10-28T20:10:00.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2023-53681",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: bcache: Fix __bch_btree_node_alloc to make the failure behavior consistent In some specific situations, the",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2025-10-07",
+      "updated": "2026-10-28",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: bcache: Fix __bch_btree_node_alloc to make the failure behavior consistent In some specific situations, the return value of __bch_btree_node_alloc may be NULL. This may lead to a potential NULL pointer dereference in caller function like a calling chain : btree_split->bch_btree_node_alloc->__bch_btree_node_alloc. Fix it by initializing the return value in __bch_btree_node_alloc.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-53681"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-10-28T20:10:00.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2023-53682",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: hwmon: (xgene) Fix ioremap and memremap leak Smatch reports: drivers/hwmon/xgene-hwmon.c:757 xgene_hwmon_pr",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2025-10-07",
+      "updated": "2026-10-28",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: hwmon: (xgene) Fix ioremap and memremap leak Smatch reports: drivers/hwmon/xgene-hwmon.c:757 xgene_hwmon_probe() warn: 'ctx->pcc_comm_addr' from ioremap() not released on line: 757. This is because in drivers/hwmon/xgene-hwmon.c:701 xgene_hwmon_probe(), ioremap and memremap is not released, which may cause a leak. To fix this, ioremap and memremap is modified to devm_ioremap and devm_memremap. [groeck: Fixed formatting and subject]",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-53682"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-10-28T20:10:00.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2023-53683",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: fs: hfsplus: remove WARN_ON() from hfsplus_cat_{read,write}_inode() syzbot is hitting WARN_ON() in hfsplus_",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2025-10-07",
+      "updated": "2026-10-28",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: fs: hfsplus: remove WARN_ON() from hfsplus_cat_{read,write}_inode() syzbot is hitting WARN_ON() in hfsplus_cat_{read,write}_inode(), for crafted filesystem image can contain bogus length. There conditions are not kernel bugs that can justify kernel to panic.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-53683"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-10-28T20:10:00.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2023-53684",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: xfrm: Zero padding when dumping algos and encap When copying data to user-space we should ensure that only ",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2025-10-07",
+      "updated": "2026-10-28",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: xfrm: Zero padding when dumping algos and encap When copying data to user-space we should ensure that only valid data is copied over. Padding in structures may be filled with random (possibly sensitve) data and should never be given directly to user-space. This patch fixes the copying of xfrm algorithms and the encap template in xfrm_user so that padding is zeroed.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-53684"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T20:16:58Z",
+      "source_updated_at": "2026-10-28T20:10:00.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2024-5200",
       "title": "The Postie WordPress plugin before 1.9.71 does not sanitise and escape some of its settings, which could allow high privilege users such as admin to perform Stored Cross-Site ",
       "severity": "medium",
@@ -81982,85 +81927,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-28T20:03:19Z",
-      "last_attempt": "2026-10-28T20:03:19Z",
+      "last_success": "2026-10-28T20:16:58Z",
+      "last_attempt": "2026-10-28T20:16:58Z",
       "items_processed": 220,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-28T20:03:19Z",
-      "last_attempt": "2026-10-28T20:03:19Z",
+      "last_success": "2026-10-28T20:16:58Z",
+      "last_attempt": "2026-10-28T20:16:58Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-28T20:03:19Z",
-      "last_attempt": "2026-10-28T20:03:19Z",
-      "items_processed": 764,
+      "last_success": "2026-10-28T20:16:58Z",
+      "last_attempt": "2026-10-28T20:16:58Z",
+      "items_processed": 786,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-28T20:03:19Z",
-      "last_attempt": "2026-10-28T20:03:19Z",
+      "last_success": "2026-10-28T20:16:58Z",
+      "last_attempt": "2026-10-28T20:16:58Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-28T20:03:19Z",
-      "last_attempt": "2026-10-28T20:03:19Z",
-      "items_processed": 2555,
+      "last_success": "2026-10-28T20:16:58Z",
+      "last_attempt": "2026-10-28T20:16:58Z",
+      "items_processed": 2558,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-28T20:03:19Z",
-      "last_attempt": "2026-10-28T20:03:19Z",
+      "last_success": "2026-10-28T20:16:58Z",
+      "last_attempt": "2026-10-28T20:16:58Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-28T20:03:19Z",
-      "last_attempt": "2026-10-28T20:03:19Z",
+      "last_success": "2026-10-28T20:16:58Z",
+      "last_attempt": "2026-10-28T20:16:58Z",
       "items_processed": 23,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-28T20:03:19Z",
-      "last_attempt": "2026-10-28T20:03:19Z",
+      "last_success": "2026-10-28T20:16:58Z",
+      "last_attempt": "2026-10-28T20:16:58Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-28T20:03:19Z",
-      "last_attempt": "2026-10-28T20:03:19Z",
+      "last_success": "2026-10-28T20:16:58Z",
+      "last_attempt": "2026-10-28T20:16:58Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-28T20:03:19Z",
-      "last_attempt": "2026-10-28T20:03:19Z",
+      "last_success": "2026-10-28T20:16:58Z",
+      "last_attempt": "2026-10-28T20:16:58Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-28T20:03:19Z",
-      "last_attempt": "2026-10-28T20:03:19Z",
+      "last_success": "2026-10-28T20:16:58Z",
+      "last_attempt": "2026-10-28T20:16:58Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-28T20:03:19Z",
-      "last_attempt": "2026-10-28T20:03:19Z",
+      "last_success": "2026-10-28T20:16:58Z",
+      "last_attempt": "2026-10-28T20:16:58Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -82072,7 +82017,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-28T20:03:19Z",
-  "last_successful_update": "2026-10-28T20:03:19Z",
+  "last_checked_at": "2026-10-28T20:16:58Z",
+  "last_successful_update": "2026-10-28T20:16:58Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
