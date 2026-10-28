@@ -44,16 +44,16 @@
       <div class="technology-intro">
         <div><p class="eyebrow">TECHNOLOGY INTELLIGENCE</p><h2 id="categoryTitle">Explore vulnerabilities by platform</h2>
           <p class="technology-description">Browse security advisories and available fixes for the platforms you use.</p></div>
-        <div class="technology-total"><strong id="technologyTotal">25</strong><span>Technologies tracked</span></div>
+        <div class="technology-total"><strong id="technologyTotal">38</strong><span>Technologies tracked</span></div>
       </div>
       <div class="technology-tools">
         <label class="technology-search"><span aria-hidden="true">⌕</span><input type="search" id="technologySearch" placeholder="Search technologies or products..." autocomplete="off" aria-label="Search technology categories"></label>
         <div class="technology-legend"><span><i class="tech-legend-dot new"></i>New in 30 days</span><span><i class="tech-legend-dot all"></i>All indexed CVEs</span></div>
       </div>
       <div class="category-grid" id="categoryGrid" aria-label="Browse technology groups"></div>
-      <details class="other-tech technology-more" id="additionalTech"><summary>More technology groups <span class="technology-more-caption">4 additional platforms</span><span aria-hidden="true">⌄</span></summary><div class="category-grid secondary-grid" id="otherCategoryGrid"></div></details>
+      <details class="other-tech technology-more" id="additionalTech"><summary>More technology groups <span class="technology-more-caption">17 additional platforms</span><span aria-hidden="true">⌄</span></summary><div class="category-grid secondary-grid" id="otherCategoryGrid"></div></details>
       <div class="technology-empty" id="technologyEmpty" hidden>No matching technologies. Try another name or product.</div>
-      <p class="technology-footnote" id="technologySearchSummary" aria-live="polite">21 featured platforms and 4 additional groups. Counts reflect indexed CVEs, not vulnerable visitor systems.</p>
+      <p class="technology-footnote" id="technologySearchSummary" aria-live="polite">21 featured platforms and 17 additional groups. Counts include published CVE and GHSA advisory records, not vulnerable visitor systems.</p>
     </section>
     <section id="dashboard" class="shell section" aria-labelledby="overviewTitle">
       <div class="section-heading"><div><p class="eyebrow">OVERVIEW</p><h2 id="overviewTitle">Vulnerability intelligence at a glance</h2><p class="section-sub">Summary totals include all indexed advisories. Use the date filter to see newly published CVEs. These counts do not represent vulnerabilities on your infrastructure.</p></div><div class="section-side">HOURLY COLLECTION <span class="small-star">✦</span> OPEN SOURCES</div></div>
@@ -64,7 +64,7 @@
         <button class="metric metric-action" type="button" data-metric="technologies" aria-label="Browse all technology categories" aria-controls="technology"><span class="metric-top"><span>Technology areas</span><span class="metric-symbol">▤</span></span><strong id="statCategories">25</strong><span class="metric-desc">Browse all technology groups ↗</span><span class="metric-line mint"></span></button>
       </div>
       <div class="analytics-grid">
-        <article class="data-panel"><div class="panel-heading"><div><h3>New disclosures by technology</h3><p>CVEs originally published in the last 30 days. Select a bar to view them.</p></div><span class="mini-label" id="chartDateLabel">INDEXED RECORDS</span></div><div id="techBars" class="tech-bars"></div><div class="chart-note">This chart shows new disclosures from the last 30 days, not older CVEs modified recently. The summary above covers the full indexed archive.</div></article>
+        <article class="data-panel"><div class="panel-heading"><div><h3>New security advisories by technology</h3><p>Distinct CVE IDs and GHSA advisories first published in the last 30 days. Select a bar to view them.</p></div><span class="mini-label" id="chartDateLabel">INDEXED RECORDS</span></div><div id="techBars" class="tech-bars"></div><div class="chart-note">CVE IDs and GHSA-only advisories are each counted once per technology. The overall unique CVE metric excludes advisories without assigned CVEs.</div></article>
         <article class="data-panel right-panel"><div class="panel-heading"><div><h3>Focus areas</h3><p>Where to start reviewing</p></div><span class="mini-label">REVIEW PRIORITIES</span></div><div id="priorityList" class="focus-list"></div><a class="quiet-link" href="#advisories">See all findings <span aria-hidden="true">↗</span></a></article>
       </div>
     </section>
@@ -107,6 +107,6 @@
     <div class="shell footer-status"><div class="notice feed-notice" role="status"><span class="notice-icon" aria-hidden="true">i</span><div class="feed-notice-content"><div class="feed-status-heading"><span class="preview-status" id="feedStatus"><span class="status-dot"></span> Starting feed...</span><strong id="feedHeadline">Feed startup required.</strong></div><p id="feedDescription">No hourly sync has completed. Counts shown here are not evidence that monitored technologies are safe.</p><div id="sourceHealth" class="source-health" aria-label="Feed source status"></div></div><span class="notice-date" id="snapshotDate">Last success: Never</span></div></div>
   </footer>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=technology-explorer-4"></script>
+  <script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=expanded-stack-38"></script>
 </body>
 </html>
