@@ -48,6 +48,7 @@ assert.equal(document.querySelectorAll('.technology-row').length,38,'all categor
 assert.equal(document.querySelectorAll('.focus-action').length,9,'focus panel populated');
 assert.match($('heroFeedPulse').textContent,/4 of 4 sources/,'feed status visible');
 assert.equal(document.querySelectorAll('.advisory-table thead th').length,6,'no Exploited column');
+assert.match(fs.readFileSync('styles.css','utf8'),/\.advisory-table tbody td::before/,'mobile table labels');
 assert.doesNotMatch(document.querySelector('.advisory-table thead').textContent,/Exploited/i);
 
 const php=[...document.querySelectorAll('.technology-row')].find(row=>row.querySelector('.technology-row-name')?.textContent==='PHP');

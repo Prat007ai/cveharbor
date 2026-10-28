@@ -358,6 +358,8 @@
         const row=document.createElement('tr');
         const cell=(value,className='')=>{
           const el=text('td',className,value);
+          const labels=['Advisory','Severity','Technology','Description','Published','Details'];
+          el.dataset.label=labels[row.children.length]||'';
           row.append(el);return el;
         };
         const idCell=cell(x.id,'table-cve');
