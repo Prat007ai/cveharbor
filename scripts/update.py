@@ -171,6 +171,29 @@ def classify(*, product: str = "", ecosystem: str = "", text: str = "", cpes: li
     return tags
 
 
+def enforce_authoritative_categories(record: dict) -> dict:
+    """Prevent unrelated security news from turning into an affected-product claim.
+
+    Multiple advisory feeds can discuss the same CVE, including security
+    vendors describing how their products protect against a third-party issue.
+    Those discussions do not imply their own products are vulnerable.
+    Source-owned PHP advisories concern the PHP runtime. The curated baseline
+    defines the known affected categories for the specific .NET Brotli issue.
+    """
+    entry = dict(record)
+    categories = list(entry.get("categories") or [])
+    affected = str(entry.get("affected") or "")
+    if (entry.get("source_type") == "php_upstream"
+        and re.search(r"\\bphp[-_: ]?src\\b", affected, re.I)):
+        categories = ["PHP"]
+    if entry.get("id") == "CVE-2026-111497" and entry.get("source_type") == "vendor_baseline":
+        # .NET Brotli plus PHP Windows builds in the source-verified baseline.
+        allowed = {".NET / ASP.NET", ".NET Core", "PHP"}
+        categories = [name for name in categories if name in allowed]
+    entry["categories"] = [name for name in dict.fromkeys(categories) if name in ALLOWED]
+    return entry
+
+
 def migrate_legacy_categories(record: dict) -> dict:
     """Replace historic combined Windows / Linux tags with accurate platform labels.
 
@@ -218,7 +241,7 @@ def recategorize_existing(record: dict) -> dict:
     if "Sitefinity" in hints and not re.search(r"\b(?:drupal|dotnetnuke|kentico|umbraco)\b", evidence, re.I):
         categories = [c for c in categories if c != "Drupal / CMS"]
     entry["categories"] = [c for c in categories if c in ALLOWED]
-    return entry
+    return enforce_authoritative_categories(entry)
 
 
 def vendor_baseline_items() -> list[dict]:
@@ -838,7 +861,7 @@ def from_redhat(item:dict) -> dict | None:
 def merge_record(old: dict, new: dict) -> dict:
     """Merge source observations without discarding first seen time or KEV flags."""
     if not old:
-        return new
+        return enforce_authoritative_categories(new)
     # GitHub generally provides better fixed package versions. Do not replace
     # an actionable package detail with NVD's generic patch instructions.
     rank = {"php_upstream": 5, "mariadb": 4.8, "wordfence":4.5, "github": 4, "osv_recent": 3.5, "vendor_baseline": 3, "nvd": 2, "msrc_rss":2, "fortinet_rss":2, "ubuntu_rss":2, "debian_rss":2, "docker_rss":2, "kubernetes":2.5, "redhat":2.5, "cisa_kev": 1}
@@ -858,7 +881,7 @@ def merge_record(old: dict, new: dict) -> dict:
     if old.get("cvss") and not merged.get("cvss"):
         merged["cvss"] = old["cvss"]
     merged["updated"] = max(old.get("updated") or "", new.get("updated") or "")
-    return merged
+    return enforce_authoritative_categories(merged)
 
 
 def choose_records(merged: dict[str,dict], baseline_ids: set[str]) -> list[dict]:
@@ -1037,7 +1060,7 @@ def run() -> int:
                 "last_checked_at": utc_iso(), "last_successful_update": prev.get("last_successful_update")}
         publish(fail)
         return 1
-    records = choose_records(merged, baseline_ids)
+    records = [enforce_authoritative_categories(item) for item in choose_records(merged, baseline_ids)]
     enrich_epss(records, prev, sources)
     result = {"siteName":"CVEHarbor", "snapshotDate": NOW.date().isoformat(),
               "mode":"live" if good == len(operations) and sources.get("epss",{}).get("ok") else "partial",
