@@ -32,6 +32,7 @@ SOURCES = {
     "cisa_kev": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
 }
 MAX_RECORDS = 900
+HEALTH = ROOT / "data" / "feed-health.json"
 ALLOWED = {x["name"] for x in CATEGORIES}
 CVERE = re.compile(r"^CVE-\d{4}-\d{4,}$", re.I)
 GHSA = re.compile(r"^GHSA-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}$", re.I)
@@ -624,7 +625,10 @@ def run() -> int:
         return 1
     records = choose_records(merged, baseline_ids)
     result = {"siteName":"CVEHarbor", "snapshotDate": NOW.date().isoformat(),
-              "mode":"live" if good == len(operations) else "partial", "categories":CATEGORIES, "advisories":records,
+              "mode":"live" if good == len(operations) else "partial",
+              "coverage_limited":len(merged)>len(records),
+              "candidate_records":len(merged),
+              "categories":CATEGORIES, "advisories":records,
               "sources":sources, "last_checked_at":utc_iso(), "last_successful_update":utc_iso(),
               "note":"Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."}
     publish(result)
@@ -633,12 +637,40 @@ def run() -> int:
 
 
 def publish(data: dict):
+    """Validate a snapshot and publish a small machine-readable health report."""
     DATA.parent.mkdir(parents=True, exist_ok=True)
+    entries = data.get("advisories") or []
+    ids = [str(x.get("id") or "") for x in entries]
+    if len(ids) != len(set(ids)):
+        raise ValueError("Duplicate advisory identifiers in public snapshot")
+    for record in entries:
+        if not (CVERE.match(str(record.get("id") or "")) or GHSA.match(str(record.get("id") or ""))):
+            raise ValueError("Unrecognized public advisory identifier")
+        if not record.get("categories") or any(x not in ALLOWED for x in record["categories"]):
+            raise ValueError("Unrecognized or missing technology category")
+        for field in ("published", "updated"):
+            value = record.get(field) or ""
+            if value and datepart(value) != value[:10]:
+                raise ValueError("Invalid advisory " + field + " date")
     text = json.dumps(data, ensure_ascii=False, indent=2)
     DATA.write_text(text + "\n", encoding="utf-8")
     # Escape closing script markup for safe embedding even if vendor text is hostile.
     embed = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     SCRIPT.write_text("/* Automatically generated. Do not edit directly. */\nwindow.CVEHARBOR_DATA = " + embed + ";\n", encoding="utf-8")
+    counts = {category["name"]:0 for category in CATEGORIES}
+    for record in entries:
+        for category in record["categories"]:
+            counts[category] += 1
+    sources = {}
+    for name, source in (data.get("sources") or {}).items():
+        sources[name] = {key:source.get(key) for key in ("ok","last_attempt","last_success","items_processed","error")}
+    health = {"mode":data.get("mode"),"last_checked_at":data.get("last_checked_at"),
+              "last_successful_update":data.get("last_successful_update"),
+              "records_indexed":len(entries),"candidate_records":data.get("candidate_records"),
+              "coverage_limited":bool(data.get("coverage_limited")),
+              "category_counts":counts,"sources":sources,
+              "note":"Snapshot status reports feed collection, not exhaustive vendor coverage or deployed-system exposure."}
+    HEALTH.write_text(json.dumps(health, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":
