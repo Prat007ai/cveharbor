@@ -9,6 +9,11 @@
       "description": "Microsoft Windows Server, server components and OS security updates"
     },
     {
+      "name": "Windows 11 OS",
+      "icon": "⊞",
+      "description": "Windows 11 releases, security updates, desktop operating system vulnerabilities"
+    },
+    {
       "name": ".NET / ASP.NET",
       "icon": "◈",
       "description": "Classic .NET Framework, ASP.NET, MVC, Web Forms and legacy libraries"
@@ -49,6 +54,11 @@
       "description": "Microsoft 365, Exchange and Entra"
     },
     {
+      "name": "Exchange SE",
+      "icon": "▦",
+      "description": "Microsoft Exchange Server Subscription Edition and applicable security updates"
+    },
+    {
       "name": "SQL Server",
       "icon": "▤",
       "description": "Microsoft SQL Server and Azure SQL"
@@ -64,9 +74,19 @@
       "description": "FortiGate, FortiOS and Fortinet products"
     },
     {
+      "name": "Sophos Firewall",
+      "icon": "⬡",
+      "description": "Sophos Firewall SFOS, XG and XGS appliances, security advisories and hotfixes"
+    },
+    {
       "name": "VMware",
       "icon": "◇",
       "description": "vSphere, ESXi and related virtualization"
+    },
+    {
+      "name": "Veeam Backup & Replication",
+      "icon": "▣",
+      "description": "Veeam backup servers, restore services, management components and managed agents"
     },
     {
       "name": "HyperV",
@@ -79,6 +99,16 @@
       "description": "Container runtime, images and Kubernetes"
     },
     {
+      "name": "Progress Telerik",
+      "icon": "◈",
+      "description": "Telerik UI for ASP.NET AJAX, Kendo UI, Telerik components and related libraries"
+    },
+    {
+      "name": "Sitefinity",
+      "icon": "✧",
+      "description": "Progress Sitefinity CMS, Sitefinity Next.js SDK and associated web components"
+    },
+    {
       "name": "Node.js / npm",
       "icon": "⬡",
       "description": "Node.js, npm and JavaScript packages"
@@ -86,7 +116,7 @@
     {
       "name": "Drupal / CMS",
       "icon": "✧",
-      "description": "Drupal, DNN, Sitefinity, Kentico and CMS platforms"
+      "description": "Drupal, DNN, Kentico and Umbraco content management systems"
     },
     {
       "name": "Application dependencies",
@@ -100,6 +130,63 @@
     }
   ],
   "advisories": [
+    {
+      "id": "CVE-2026-108142",
+      "title": "Veeam Backup & Replication CDP Coordinator authorization bypass",
+      "severity": "critical",
+      "cvss": "9.1",
+      "categories": [
+        "Veeam Backup & Replication"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-27",
+      "summary": "An unauthenticated attacker can bypass authorization in the CDP Coordinator Service on affected Veeam Backup & Replication version 13 deployments.",
+      "affected": "Veeam Backup & Replication 13.1.1.18 and earlier 13.1 builds, or 13.0.2.29 and earlier 13.0 builds. Vendor states 12.x is not affected.",
+      "remediation": "Install Veeam Backup & Replication 13.1.2.57 or 13.0.3.63, respectively, or a newer fixed build. Validate backup infrastructure exposure.",
+      "exploitation": "No confirmed exploitation indicated in the cited vendor bulletin.",
+      "sources": [
+        {
+          "label": "Veeam Security KB4948",
+          "url": "https://www.veeam.com/kb4948"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-27",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
+    },
+    {
+      "id": "CVE-2026-105477",
+      "title": "Managed Veeam Agent for Linux local privilege escalation",
+      "severity": "high",
+      "cvss": "7.3",
+      "categories": [
+        "Veeam Backup & Replication",
+        "Linux"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-27",
+      "summary": "Local privilege escalation in Veeam Agent for Linux, applicable only to installations managed by a Veeam Backup & Replication instance.",
+      "affected": "Veeam Agent for Linux 13.1.1.4 and earlier 13.1 builds when managed by Veeam Backup & Replication. Vendor says 13.0.x and 6.x are not affected.",
+      "remediation": "Upgrade the managed Veeam Agent for Linux to 13.1.2.11 or later and confirm rollout on protected hosts.",
+      "exploitation": "No confirmed exploitation indicated in the cited vendor bulletin.",
+      "sources": [
+        {
+          "label": "Veeam Security KB4948",
+          "url": "https://www.veeam.com/kb4948"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-27",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
+    },
     {
       "id": "CVE-2024-51092",
       "title": "LibreNMS before 24.10.0 allows a remote attacker to execute arbitrary code via OS command injection involving AboutController.php's index(), SettingsController.php's update(),",
@@ -1119,106 +1206,6 @@
       "source_updated_at": "2026-10-26",
       "source_type": "cisa_kev",
       "known_exploited": true
-    },
-    {
-      "id": "CVE-2026-45321",
-      "title": "On 2026-05-11, between approximately 19:20 and 19:26 UTC, 84 malicious versions across 42 @tanstack/* packages were published to the npm registry",
-      "severity": "critical",
-      "categories": [
-        "Node.js / npm"
-      ],
-      "published": "2026-05-12",
-      "updated": "2026-10-26",
-      "summary": "On 2026-05-11, between approximately 19:20 and 19:26 UTC, 84 malicious versions across 42 @tanstack/* packages were published to the npm registry. The publishes were authenticated via the legitimate GitHub Actions OIDC trusted-publisher binding for TanStack/router, but the publish workflow itself was not modified. The attacker chained three known vulnerability classes — a pull_request_target \"Pwn Request\" misconfiguration, GitHub Actions cache poisoning across the fork↔base trust boundary, and runtime memory extraction of the OIDC token from the Actions runner process — to publish credential-stealing malware under a trusted identity. Each affected package received exactly two malicious versions, published a few minutes apart.",
-      "affected": "Products identified in NVD configurations: tanstack tanstack\\/arktype-adapter; tanstack tanstack\\/eslint-plugin-router; tanstack tanstack\\/eslint-plugin-start; tanstack tanstack\\/history; tanstack tanstack\\/nitro-v2-vite-plugin; tanstack tanstack\\/react-router; tanstack tanstack\\/react-router-devtools; tanstack tanstack\\/react-router-ssr-query; tanstack tanstack\\/react-start; tanstack tanstack\\/react-start-client; tanstack tanstack\\/react-start-rsc; tanstack tanstack\\/react-start-server",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-45321"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.6",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T18:10:00.173",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-41712",
-      "title": "Spring AI's chat memory component contained a problematic default that, when not explicitly overridden, could result in unintended data exposure between users.",
-      "severity": "high",
-      "categories": [
-        "VMware"
-      ],
-      "published": "2026-05-12",
-      "updated": "2026-10-26",
-      "summary": "Spring AI's chat memory component contained a problematic default that, when not explicitly overridden, could result in unintended data exposure between users.",
-      "affected": "Products identified in NVD configurations: vmware spring_ai",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-41712"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://spring.io/security/cve-2026-41712"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T18:10:00.173",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-41713",
-      "title": "A malicious user could craft input that is stored in conversation memory and later interpreted by the model in an unintended way",
-      "severity": "high",
-      "categories": [
-        "VMware"
-      ],
-      "published": "2026-05-12",
-      "updated": "2026-10-26",
-      "summary": "A malicious user could craft input that is stored in conversation memory and later interpreted by the model in an unintended way. Applications using the affected advisor with user-controlled input may be susceptible to manipulation of model behavior across conversation turns.",
-      "affected": "Products identified in NVD configurations: vmware spring_ai",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-41713"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://spring.io/security/cve-2026-41713"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.2",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T18:10:00.173",
-      "source_type": "nvd",
-      "known_exploited": false
     },
     {
       "id": "CVE-2025-61312",
@@ -5186,6 +5173,7 @@
       "title": "The Betheme theme for WordPress is vulnerable to Arbitrary File Upload in versions up to, and including, 28.4",
       "severity": "high",
       "categories": [
+        "PHP",
         "WordPress / Plugins"
       ],
       "published": "2026-05-05",
@@ -5462,6 +5450,7 @@
       "title": "The Easy PayPal Events & Tickets plugin for WordPress before version 1.4 contains an information disclosure vulnerability in the QR code scanning endpoint that allows unauthen",
       "severity": "high",
       "categories": [
+        "PHP",
         "WordPress / Plugins"
       ],
       "published": "2026-05-04",
@@ -5481,94 +5470,6 @@
       "cvss": "8.2",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-42088",
-      "title": "OpenC3 COSMOS provides the functionality needed to send commands to and receive data from one or more embedded systems",
-      "severity": "high",
-      "categories": [
-        "Python / PyPI"
-      ],
-      "published": "2026-05-04",
-      "updated": "2026-10-26",
-      "summary": "OpenC3 COSMOS provides the functionality needed to send commands to and receive data from one or more embedded systems. Prior to version 7.0.0-rc3, the Script Runner widget allows users to execute Python and Ruby scripts directly from the openc3-COSMOS-script-runner-api container. Because all the docker containers share a network, users can execute specially crafted scripts to bypass the API permissions check and perform administrative actions, including reading and modifying data inside the Redis database, which can be used to read secrets and change COSMOS settings, as well as read and write to the buckets service, which holds configuration, log, and plugin files. These actions are normally only available from the Admin Console or with administrative privileges. Any user with permission to create and run scripts can connect to any service in the docker network. This issue has been patched in version 7.0.0-rc3.",
-      "affected": "Products identified in NVD configurations: openc3 cosmos",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-42088"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://github.com/OpenC3/cosmos/security/advisories/GHSA-2wvh-87g2-89hr"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-25863",
-      "title": "Conditional Fields for Contact Form 7 WordPress plugin through version 2.7.2 contains an uncontrolled resource consumption vulnerability in the Wpcf7cfMailParser class where t",
-      "severity": "high",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-05-04",
-      "updated": "2026-10-26",
-      "summary": "Conditional Fields for Contact Form 7 WordPress plugin through version 2.7.2 contains an uncontrolled resource consumption vulnerability in the Wpcf7cfMailParser class where the hide_hidden_mail_fields_regex_callback() method reads an iteration count directly from user-supplied POST parameters without validation or upper bound enforcement. Unauthenticated attackers can supply an arbitrarily large integer value through the REST API endpoint to cause unbounded loop execution with multiple preg_replace() operations, exhausting server memory and crashing the PHP process.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-25863"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-7791",
-      "title": "Improper privilege management in the log rotation mechanism of the Skylight Workspace Config Service in Amazon WorkSpaces for Windows before 2.6.2034.0 allows a local non-admi",
-      "severity": "high",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-05-04",
-      "updated": "2026-10-26",
-      "summary": "Improper privilege management in the log rotation mechanism of the Skylight Workspace Config Service in Amazon WorkSpaces for Windows before 2.6.2034.0 allows a local non-admin authenticated user to place arbitrary files into arbitrary locations bypassing file system permission protections, leading to local privilege escalation to SYSTEM.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7791"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
       "source_updated_at": "2026-10-26T19:10:00.163",
       "source_type": "nvd",
       "known_exploited": false
@@ -8969,7 +8870,8 @@
       "title": "In Progress® Telerik® UI for AJAX prior to 2026.1.421, RadAsyncUpload contains an uncontrolled resource consumption vulnerability that allows file uploads to exceed the config",
       "severity": "high",
       "categories": [
-        ".NET / ASP.NET"
+        ".NET / ASP.NET",
+        "Progress Telerik"
       ],
       "published": "2026-04-22",
       "updated": "2026-10-26",
@@ -9001,7 +8903,8 @@
       "title": "In Progress® Telerik® UI for AJAX versions 2024.4.1114 through 2026.1.421, the RadFilter control is vulnerable to insecure deserialization when restoring filter state if the s",
       "severity": "critical",
       "categories": [
-        ".NET / ASP.NET"
+        ".NET / ASP.NET",
+        "Progress Telerik"
       ],
       "published": "2026-04-22",
       "updated": "2026-10-26",
@@ -12008,6 +11911,7 @@
       "title": "ApostropheCMS is an open-source Node.js content management system",
       "severity": "medium",
       "categories": [
+        "Application dependencies",
         "Node.js / npm"
       ],
       "published": "2026-04-15",
@@ -12818,6 +12722,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -12851,6 +12756,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -12952,6 +12858,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13048,6 +12955,7 @@
       "title": "Concurrent execution using shared resource with improper synchronization ('race condition') in Applocker Filter Driver (applockerfltr.sys) allows an authorized attacker to ele",
       "severity": "high",
       "categories": [
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13081,6 +12989,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13114,6 +13023,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13181,6 +13091,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13214,6 +13125,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13247,6 +13159,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13312,6 +13225,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13345,6 +13259,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13411,6 +13326,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13444,6 +13360,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13477,6 +13394,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13510,6 +13428,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13543,6 +13462,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13576,6 +13496,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13609,6 +13530,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13641,6 +13563,7 @@
       "title": "Concurrent execution using shared resource with improper synchronization ('race condition') in Microsoft Brokering File System allows an unauthorized attacker to elevate privi",
       "severity": "high",
       "categories": [
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13673,6 +13596,7 @@
       "title": "Use after free in Desktop Window Manager allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13705,6 +13629,7 @@
       "title": "Use after free in Remote Desktop Client allows an unauthorized attacker to execute code over a network.",
       "severity": "high",
       "categories": [
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -13771,6 +13696,7 @@
       "title": "Double free in Microsoft Brokering File System allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -14375,7 +14301,8 @@
       "title": "Stack-based buffer overflow in Windows Kernel allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
-        "Windows"
+        "Windows",
+        "Windows 11 OS"
       ],
       "published": "2026-04-14",
       "updated": "2026-10-26",
@@ -14408,6 +14335,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -14441,6 +14369,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -14658,6 +14587,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -14691,6 +14621,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -14756,6 +14687,7 @@
       "severity": "high",
       "categories": [
         ".NET / ASP.NET",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -14789,6 +14721,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -14822,6 +14755,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -14855,6 +14789,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -14889,6 +14824,7 @@
       "categories": [
         "HyperV",
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -14922,6 +14858,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -14955,6 +14892,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -14988,6 +14926,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15021,6 +14960,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15054,6 +14994,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15087,6 +15028,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15119,6 +15061,7 @@
       "title": "Improper input validation in Microsoft PowerShell allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15152,6 +15095,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15185,6 +15129,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15217,6 +15162,7 @@
       "title": "Use after free in Microsoft Brokering File System allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15250,6 +15196,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15316,6 +15263,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15444,7 +15392,8 @@
       "title": "Improper input validation in Windows Hello allows an authorized attacker to bypass a security feature locally.",
       "severity": "medium",
       "categories": [
-        "Windows"
+        "Windows",
+        "Windows 11 OS"
       ],
       "published": "2026-04-14",
       "updated": "2026-10-26",
@@ -15477,6 +15426,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15510,6 +15460,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15543,6 +15494,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15608,6 +15560,7 @@
       "title": "Improper access control in Microsoft Management Console allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15641,6 +15594,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15674,6 +15628,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15707,6 +15662,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15740,6 +15696,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15773,6 +15730,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15806,6 +15764,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15838,6 +15797,7 @@
       "title": "Use after free in Desktop Window Manager allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15870,6 +15830,7 @@
       "title": "Use after free in Desktop Window Manager allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15903,6 +15864,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -15969,6 +15931,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16002,6 +15965,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16035,6 +15999,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16068,6 +16033,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16101,6 +16067,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16134,6 +16101,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16167,6 +16135,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16200,6 +16169,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16233,6 +16203,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16266,6 +16237,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16299,6 +16271,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16365,6 +16338,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16398,6 +16372,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16431,6 +16406,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16464,6 +16440,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16496,6 +16473,7 @@
       "title": "Heap-based buffer overflow in Function Discovery Service (fdwsd.dll) allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16529,6 +16507,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16562,6 +16541,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16595,6 +16575,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16627,6 +16608,7 @@
       "title": "Concurrent execution using shared resource with improper synchronization ('race condition') in Function Discovery Service (fdwsd.dll) allows an authorized attacker to elevate ",
       "severity": "high",
       "categories": [
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16661,6 +16643,7 @@
       "categories": [
         "HyperV",
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16693,6 +16676,7 @@
       "title": "Concurrent execution using shared resource with improper synchronization ('race condition') in Function Discovery Service (fdwsd.dll) allows an authorized attacker to elevate ",
       "severity": "high",
       "categories": [
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16726,6 +16710,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16758,6 +16743,7 @@
       "title": "Use after free in Desktop Window Manager allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16790,6 +16776,7 @@
       "title": "Use after free in Desktop Window Manager allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16823,6 +16810,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16856,6 +16844,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16889,6 +16878,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16922,6 +16912,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16955,6 +16946,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -16988,6 +16980,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -17021,6 +17014,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -17054,6 +17048,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -17087,6 +17082,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -17120,6 +17116,7 @@
       "severity": "high",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -17153,6 +17150,7 @@
       "severity": "medium",
       "categories": [
         "Windows",
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -17223,6 +17221,7 @@
       "title": "Improper link resolution before file access ('link following') in Universal Plug and Play (upnp.dll) allows an authorized attacker to disclose information locally.",
       "severity": "medium",
       "categories": [
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -17255,6 +17254,7 @@
       "title": "Improper access control in Universal Plug and Play (upnp.dll) allows an authorized attacker to disclose information locally.",
       "severity": "medium",
       "categories": [
+        "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-04-14",
@@ -17287,7 +17287,8 @@
       "title": "Null pointer dereference in Windows Redirected Drive Buffering allows an authorized attacker to deny service locally.",
       "severity": "medium",
       "categories": [
-        "Windows"
+        "Windows",
+        "Windows 11 OS"
       ],
       "published": "2026-04-14",
       "updated": "2026-10-26",
@@ -18303,7 +18304,8 @@
       "title": "A flaw was found in odh-dashboard in Red Hat Openshift AI",
       "severity": "critical",
       "categories": [
-        "Docker / Kubernetes"
+        "Docker / Kubernetes",
+        "Node.js / npm"
       ],
       "published": "2026-04-10",
       "updated": "2026-10-26",
@@ -18751,7 +18753,8 @@
       "title": "Dockyard is a Docker container management app",
       "severity": "medium",
       "categories": [
-        "Docker / Kubernetes"
+        "Docker / Kubernetes",
+        "PHP"
       ],
       "published": "2026-04-09",
       "updated": "2026-10-26",
@@ -18779,6 +18782,7 @@
       "title": "PraisonAI is a multi-agent teams system",
       "severity": "medium",
       "categories": [
+        "Application dependencies",
         "Python / PyPI"
       ],
       "published": "2026-04-09",
@@ -21165,7 +21169,8 @@
       "title": "Fleet is open source device management software",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "Windows"
       ],
       "published": "2026-03-27",
       "updated": "2026-10-26",
@@ -22105,34 +22110,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2024-0443",
-      "title": "A flaw was found in the blkgs destruction path in block/blk-cgroup.c in the Linux kernel, leading to a cgroup blkio memory leakage problem",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2024-01-12",
-      "updated": "2026-10-26",
-      "summary": "A flaw was found in the blkgs destruction path in block/blk-cgroup.c in the Linux kernel, leading to a cgroup blkio memory leakage problem. When a cgroup is being destroyed, cgroup_rstat_flush() is only called at css_release_work_fn(), which is called when the blkcg reference count reaches 0. This circular dependency will prevent blkcg and some blkgs from being freed after they are made offline. This issue may allow an attacker with a local access to cause system instability, such as an out of memory error.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel; redhat enterprise_linux; fedoraproject fedora",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-0443"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T18:17:07.163",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2025-61624",
       "title": "Fortinet Multiple Products Path Traversal Vulnerability",
       "severity": "bulletin",
@@ -22162,31 +22139,76 @@
     },
     {
       "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Command Injection Vulnerability",
-      "severity": "bulletin",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "severity": "high",
+      "cvss": "8.8",
       "categories": [
-        "Windows"
+        "Windows",
+        "Windows 11 OS"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
-      "summary": "Microsoft Windows Shell contains a command injection vulnerability that allows an unauthorized attacker to bypass a security feature over a network.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discontinue use of the product if mitigations are unavailable. Stakeholders are responsible for evaluating each asset's internet exposure and ensuring adherence to BOD 26-04 patching guidelines.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
       "sources": [
         {
           "label": "CISA Known Exploited Vulnerabilities",
           "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+        },
+        {
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
         }
       ],
-      "exploitation": "Confirmed: listed in CISA KEV",
       "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
+      "source_type": "vendor_baseline",
       "source_updated_at": "2026-10-13",
-      "source_type": "cisa_kev",
-      "known_exploited": true
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
+    },
+    {
+      "id": "CVE-2026-96940",
+      "title": "Microsoft Exchange Server SE weak authentication privilege escalation",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "Exchange SE"
+      ],
+      "published": "2026-09-08",
+      "updated": "2026-10-02",
+      "summary": "Weak authentication in Microsoft Exchange Server may allow an authenticated attacker to elevate privileges over the network. The vulnerability is included in Microsoft Exchange Server Subscription Edition security servicing.",
+      "affected": "Exchange Server Subscription Edition RTM builds earlier than 15.2.2562.53 are listed as affected in the published Microsoft/NVD record.",
+      "remediation": "Install an applicable current Exchange Server SE security update. Microsoft lists Oct26SU build 15.2.2562.56 for Exchange SE RTM; confirm prerequisites and supported servicing channel before patching.",
+      "exploitation": "Active exploitation is not confirmed by the cited Microsoft KB.",
+      "sources": [
+        {
+          "label": "Microsoft Exchange SE update KB5129955",
+          "url": "https://support.microsoft.com/en-us/servicing/exchange/server/update/2026/5129955"
+        },
+        {
+          "label": "Microsoft MSRC CVE",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96940"
+        },
+        {
+          "label": "Microsoft Exchange build numbers",
+          "url": "https://learn.microsoft.com/en-us/exchange/new-features/build-numbers-and-release-dates/"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-02",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
       "id": "CVE-2026-104286",
@@ -22215,6 +22237,39 @@
       "source_updated_at": "2026-10-01",
       "source_type": "cisa_kev",
       "known_exploited": true
+    },
+    {
+      "id": "CVE-2026-13185",
+      "title": "Progress Telerik UI for ASP.NET AJAX unsafe persistence deserialization",
+      "severity": "high",
+      "cvss": "8.1",
+      "categories": [
+        "Progress Telerik",
+        ".NET / ASP.NET"
+      ],
+      "published": "2026-07-22",
+      "updated": "2026-10-01",
+      "summary": "RadPersistenceManager and RadDockLayout can deserialize attacker-controlled cookie-based state in affected configurations, potentially enabling remote code execution. Part of the vendor's critical chained RCE bulletin.",
+      "affected": "Telerik UI for ASP.NET AJAX 2026.2.519 and earlier when vulnerable cookie-based persistence configuration is enabled.",
+      "remediation": "Upgrade Telerik UI for ASP.NET AJAX to 2026.2.708 or later. Review RadPersistenceManager and RadDockLayout persistence settings and investigate exposed deployments.",
+      "exploitation": "Not confirmed exploited in this vendor bulletin.",
+      "sources": [
+        {
+          "label": "Progress Telerik official security bulletin",
+          "url": "https://www.telerik.com/products/aspnet-ajax/documentation/knowledge-base/kb-security-critical-rce-chain-bulletin-july-2026"
+        },
+        {
+          "label": "Telerik individual advisory",
+          "url": "https://www.telerik.com/products/aspnet-ajax/documentation/knowledge-base/kb-security-persistence-cookie-deserialization-cve-2026-13185"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-01",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
       "id": "CVE-2026-65660",
@@ -22249,6 +22304,7 @@
       "title": "WordPress Core Remote File Inclusion Vulnerability",
       "severity": "bulletin",
       "categories": [
+        "PHP",
         "WordPress / Plugins"
       ],
       "published": "2026-09-25",
@@ -22861,6 +22917,38 @@
       "known_exploited": true
     },
     {
+      "id": "CVE-2026-7198",
+      "title": "Progress Sitefinity improper access control in web services",
+      "severity": "critical",
+      "cvss": "9.8",
+      "categories": [
+        "Sitefinity"
+      ],
+      "published": "2026-06-02",
+      "updated": "2026-06-03",
+      "summary": "Progress Sitefinity web services may disclose restricted content due to improper access controls. Affected deployments may suffer serious confidentiality, integrity and availability impact.",
+      "affected": "Sitefinity 15.4.8623 up to but not including 15.4.8630, as detailed in the vendor/CVE record.",
+      "remediation": "Upgrade the affected Sitefinity 15.4 release to 15.4.8630 or later. Review vendor security updates for older supported versions.",
+      "exploitation": "No confirmed exploitation in the cited reference.",
+      "sources": [
+        {
+          "label": "Canadian Centre for Cyber Security Progress notice",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/progress-security-advisory-av26-552"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7198"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-06-03",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
+    },
+    {
       "id": "CVE-2022-0492",
       "title": "Linux Kernel Improper Authentication Vulnerability",
       "severity": "bulletin",
@@ -23426,7 +23514,8 @@
       "title": "React Native Community CLI OS Command Injection Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm"
+        "Node.js / npm",
+        "Windows"
       ],
       "published": "2026-02-05",
       "updated": "2026-02-05",
@@ -24149,6 +24238,62 @@
       "source_updated_at": "2025-07-22",
       "source_type": "cisa_kev",
       "known_exploited": true
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
+    },
+    {
+      "id": "CVE-2025-7624",
+      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
+      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
+      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
       "id": "CVE-2025-53770",
@@ -24991,6 +25136,34 @@
       "known_exploited": true
     },
     {
+      "id": "CVE-2020-15069",
+      "title": "Sophos XG Firewall Buffer Overflow Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-02-06",
+      "updated": "2025-02-06",
+      "summary": "Sophos XG Firewall contains a buffer overflow vulnerability that allows for remote code execution via the \"HTTP/S bookmark\" feature.",
+      "affected": "Sophos XG Firewall. Consult vendor advisory for affected versions.",
+      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
+      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "CISA KEV listed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "source_updated_at": "2025-02-06",
+      "source_type": "cisa_kev",
+      "known_exploited": true
+    },
+    {
       "id": "CVE-2024-53104",
       "title": "Linux Kernel Out-of-Bounds Write Vulnerability",
       "severity": "bulletin",
@@ -25051,7 +25224,8 @@
       "title": "Fortinet FortiOS and FortiProxy Authentication Bypass Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Fortinet"
+        "Fortinet",
+        "Node.js / npm"
       ],
       "published": "2025-01-14",
       "updated": "2025-01-14",
@@ -25382,6 +25556,34 @@
       "status": "CISA KEV listed",
       "first_seen_at": "2026-10-28T00:50:07Z",
       "source_updated_at": "2024-10-22",
+      "source_type": "cisa_kev",
+      "known_exploited": true
+    },
+    {
+      "id": "CVE-2024-40711",
+      "title": "Veeam Backup and Replication Deserialization Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Veeam Backup & Replication"
+      ],
+      "published": "2024-10-17",
+      "updated": "2024-10-17",
+      "summary": "Veeam Backup and Replication contains a deserialization vulnerability allowing an unauthenticated user to perform remote code execution.",
+      "affected": "Veeam Backup & Replication. Consult vendor advisory for affected versions.",
+      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
+      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "CISA KEV listed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "source_updated_at": "2024-10-17",
       "source_type": "cisa_kev",
       "known_exploited": true
     },
@@ -26032,11 +26234,40 @@
       "known_exploited": true
     },
     {
+      "id": "CVE-2024-4358",
+      "title": "Progress Telerik Report Server Authentication Bypass by Spoofing Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Progress Telerik"
+      ],
+      "published": "2024-06-13",
+      "updated": "2024-06-13",
+      "summary": "Progress Telerik Report Server contains an authorization bypass by spoofing vulnerability that allows an attacker to obtain unauthorized access.",
+      "affected": "Progress Telerik Report Server. Consult vendor advisory for affected versions.",
+      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
+      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "CISA KEV listed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "source_updated_at": "2024-06-13",
+      "source_type": "cisa_kev",
+      "known_exploited": true
+    },
+    {
       "id": "CVE-2024-4577",
       "title": "PHP-CGI OS Command Injection Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "PHP"
+        "PHP",
+        "Windows"
       ],
       "published": "2024-06-12",
       "updated": "2024-06-12",
@@ -26648,6 +26879,34 @@
       "known_exploited": true
     },
     {
+      "id": "CVE-2023-27532",
+      "title": "Veeam Backup & Replication Cloud Connect Missing Authentication for Critical Function Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Veeam Backup & Replication"
+      ],
+      "published": "2023-08-22",
+      "updated": "2023-08-22",
+      "summary": "Veeam Backup & Replication Cloud Connect component contains a missing authentication for critical function vulnerability that allows an unauthenticated user operating within the backup infrastructure network perimeter to obtain encrypted credentials stored in the configuration database. This may lead to an attacker gaining access to the backup infrastructure hosts.",
+      "affected": "Veeam Backup & Replication. Consult vendor advisory for affected versions.",
+      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
+      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "CISA KEV listed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "source_updated_at": "2023-08-22",
+      "source_type": "cisa_kev",
+      "known_exploited": true
+    },
+    {
       "id": "CVE-2023-38180",
       "title": "Microsoft .NET Core and Visual Studio Denial-of-Service Vulnerability",
       "severity": "bulletin",
@@ -27156,7 +27415,8 @@
       "title": "Telerik UI for ASP.NET AJAX Insecure Direct Object Reference Vulnerability",
       "severity": "bulletin",
       "categories": [
-        ".NET / ASP.NET"
+        ".NET / ASP.NET",
+        "Progress Telerik"
       ],
       "published": "2023-01-26",
       "updated": "2023-01-26",
@@ -27259,6 +27519,62 @@
       "cvss": null,
       "status": "CISA KEV listed",
       "first_seen_at": "2026-10-28T00:50:07Z",
+      "source_updated_at": "2022-12-13",
+      "source_type": "cisa_kev",
+      "known_exploited": true
+    },
+    {
+      "id": "CVE-2022-26500",
+      "title": "Veeam Backup & Replication Remote Code Execution Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Veeam Backup & Replication"
+      ],
+      "published": "2022-12-13",
+      "updated": "2022-12-13",
+      "summary": "The Veeam Distribution Service in the Backup & Replication application allows unauthenticated users to access internal API functions. A remote attacker can send input to the internal API which may lead to uploading and executing of malicious code.",
+      "affected": "Veeam Backup & Replication. Consult vendor advisory for affected versions.",
+      "remediation": "Apply updates per vendor instructions.",
+      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "CISA KEV listed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "source_updated_at": "2022-12-13",
+      "source_type": "cisa_kev",
+      "known_exploited": true
+    },
+    {
+      "id": "CVE-2022-26501",
+      "title": "Veeam Backup & Replication Remote Code Execution Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Veeam Backup & Replication"
+      ],
+      "published": "2022-12-13",
+      "updated": "2022-12-13",
+      "summary": "The Veeam Distribution Service in the Backup & Replication application allows unauthenticated users to access internal API functions. A remote attacker can send input to the internal API which may lead to uploading and executing of malicious code.",
+      "affected": "Veeam Backup & Replication. Consult vendor advisory for affected versions.",
+      "remediation": "Apply updates per vendor instructions.",
+      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "CISA KEV listed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
       "source_updated_at": "2022-12-13",
       "source_type": "cisa_kev",
       "known_exploited": true
@@ -27402,199 +27718,31 @@
       "source_updated_at": "2022-11-08",
       "source_type": "cisa_kev",
       "known_exploited": true
-    },
-    {
-      "id": "CVE-2020-3433",
-      "title": "Cisco AnyConnect Secure Mobility Client for Windows DLL Hijacking Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2022-10-24",
-      "updated": "2022-10-24",
-      "summary": "Cisco AnyConnect Secure Mobility Client for Windows interprocess communication (IPC) channel allows for insufficient validation of resources that are loaded by the application at run time. An attacker with valid credentials on Windows could execute code on the affected machine with SYSTEM privileges.",
-      "affected": "Cisco AnyConnect Secure. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2022-10-24",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2020-3153",
-      "title": "Cisco AnyConnect Secure Mobility Client for Windows Uncontrolled Search Path Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2022-10-24",
-      "updated": "2022-10-24",
-      "summary": "Cisco AnyConnect Secure Mobility Client for Windows allows for incorrect handling of directory paths. An attacker with valid credentials on Windows would be able to copy malicious files to arbitrary locations with system level privileges. This could include DLL pre-loading, DLL hijacking, and other related attacks.",
-      "affected": "Cisco AnyConnect Secure. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2022-10-24",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2021-3493",
-      "title": "Linux Kernel Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2022-10-20",
-      "updated": "2022-10-20",
-      "summary": "The overlayfs stacking file system in Linux kernel does not properly validate the application of file capabilities against user namespaces, which could lead to privilege escalation.",
-      "affected": "Linux Kernel. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2022-10-20",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2022-40684",
-      "title": "Fortinet Multiple Products Authentication Bypass Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Fortinet"
-      ],
-      "published": "2022-10-11",
-      "updated": "2022-10-11",
-      "summary": "Fortinet FortiOS, FortiProxy, and FortiSwitchManager contain an authentication bypass vulnerability that could allow an unauthenticated attacker to perform operations on the administrative interface via specially crafted HTTP or HTTPS requests.",
-      "affected": "Fortinet Multiple Products. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2022-10-11",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2022-41033",
-      "title": "Microsoft Windows COM+ Event System Service Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2022-10-11",
-      "updated": "2022-10-11",
-      "summary": "Microsoft Windows COM+ Event System Service contains an unspecified vulnerability that allows for privilege escalation.",
-      "affected": "Microsoft Windows COM+ Event System Service. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2022-10-11",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2022-41082",
-      "title": "Microsoft Exchange Server Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365"
-      ],
-      "published": "2022-09-30",
-      "updated": "2022-09-30",
-      "summary": "Microsoft Exchange Server contains an unspecified vulnerability that allows for authenticated remote code execution. Dubbed \"ProxyNotShell,\" this vulnerability is chainable with CVE-2022-41040 which allows for the remote code execution.",
-      "affected": "Microsoft Exchange Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2022-09-30",
-      "source_type": "cisa_kev",
-      "known_exploited": true
     }
   ],
   "sources": {
     "github": {
       "ok": false,
-      "last_attempt": "2026-10-28T01:51:20Z",
+      "last_attempt": "2026-10-28T02:02:13Z",
       "error": "'str' object has no attribute 'get'",
       "url": "https://api.github.com/advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-28T01:51:20Z",
-      "last_attempt": "2026-10-28T01:51:20Z",
+      "last_success": "2026-10-28T02:02:13Z",
+      "last_attempt": "2026-10-28T02:02:13Z",
       "items_processed": 860,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-28T01:51:20Z",
-      "last_attempt": "2026-10-28T01:51:20Z",
-      "items_processed": 369,
+      "last_success": "2026-10-28T02:02:13Z",
+      "last_attempt": "2026-10-28T02:02:13Z",
+      "items_processed": 378,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     }
   },
-  "last_checked_at": "2026-10-28T01:51:20Z",
-  "last_successful_update": "2026-10-28T01:51:20Z",
+  "last_checked_at": "2026-10-28T02:02:13Z",
+  "last_successful_update": "2026-10-28T02:02:13Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
