@@ -136,9 +136,9 @@
   const responding=sourceEntries.filter(s=>s.ok).length;
   const heroSummary=$('heroFeedSummary');
   if(heroSummary){
-    const healthy=status==='live'&&lag<=2.5&&!info.coverage_limited&&responding===4;
+    const healthy=status==='live'&&lag<=2.5&&!info.coverage_limited&&responding===Object.keys(info.sources||{}).length;
     heroSummary.classList.toggle('is-degraded',!healthy);
-    $('heroFeedPulse').textContent=healthy?'4 of 4 sources responded at last collection':stateLabel+' · '+responding+' of 4 feeds responded';
+    $('heroFeedPulse').textContent=healthy?responding+' of '+sourceEntries.length+' sources responded at last collection':stateLabel+' · '+responding+' of '+sourceEntries.length+' feeds responded';
     $('heroFeedAge').textContent='Last successful collection: '+fmtEastern(lastSuccess)+'. This does not guarantee full vendor coverage.';
   }
   $('feedStatus').textContent=stateLabel;
