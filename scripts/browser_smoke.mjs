@@ -215,7 +215,7 @@ const familyToggle=malwareDoc.getElementById('malwareShowAllFamilies');
 const sampleToggle=malwareDoc.getElementById('malwareShowAllSamples');
 assert.ok(malwareDoc.getElementById('malwareDetailDialog'),'malware detail popup exists');
 // Both malware sections must use the same on-site detail popup.
-assert.ok(html.includes('malware.js?v=both-popup-2'),
+assert.ok(html.includes('malware.js?v=family-profiles-3'),
   'new browser asset version prevents reuse of the old external links');
 const firstFamilyCard=malwareDoc.querySelector('#malwareFamilyDirectory .malware-entry');
 const familyDetailsButton=firstFamilyCard.querySelector('button.malware-detail-trigger');
@@ -234,8 +234,8 @@ assert.match(commonMalwareContent.textContent,/Family reference, not a new sampl
 assert.match(commonMalwareContent.textContent,/Matching samples in current feed/,
   'family dialog shows the limited live sample count');
 const optionalFamilyLink=commonMalwareContent.querySelector('a.malware-detail-source-link');
-assert.equal(optionalFamilyLink?.href,'https://malpedia.caad.fkie.fraunhofer.de/',
-  'external malware family research appears only inside the popup');
+assert.equal(optionalFamilyLink?.href,'https://malpedia.caad.fkie.fraunhofer.de/details/win.lockbit',
+  'LockBit link leads directly to its Malpedia family profile, not the generic home page');
 assert.equal(optionalFamilyLink?.target,'_blank','research link is optional');
 malwareDoc.getElementById('closeMalwareDetail').click();
 assert.ok(!commonMalwareDialog.hasAttribute('open'),'family dialog can be closed');
@@ -278,6 +278,32 @@ assert.match(malwareDoc.getElementById('malwareFamilySummary').textContent,/Show
 assert.match(malwareDoc.getElementById('malwareSampleSummary').textContent,/Showing 6 of 11 samples/);
 familyToggle.click();
 assert.equal(familyCards(),26,'Show All reveals every reference family');
+// Verify every curated family has its own Malpedia research destination,
+// including the Gafgyt/Bashlite alias.
+const malpediaExpected={
+  'LockBit':'win.lockbit','Akira':'win.akira','Qilin':'elf.qilin','Cl0p':'win.clop',
+  'Black Basta':'win.blackbasta','RansomHub':'win.ransomhub','PLAY':'win.play',
+  'BlackCat / ALPHV':'win.blackcat','Lumma Stealer':'win.lumma',
+  'RedLine':'win.redline_stealer','Vidar':'win.vidar','Raccoon Stealer':'win.raccoon',
+  'Agent Tesla':'win.agent_tesla','Emotet':'win.emotet','TrickBot':'win.trickbot',
+  'Dridex':'win.dridex','Remcos RAT':'win.remcos','AsyncRAT':'win.asyncrat',
+  'Quasar RAT':'win.quasar_rat','DarkComet':'win.darkcomet','Mirai':'elf.mirai',
+  'Gafgyt':'elf.bashlite','QakBot':'win.qakbot','IcedID':'win.icedid',
+  'Bumblebee':'win.bumblebee','Cobalt Strike (misused)':'win.cobalt_strike'
+};
+for(const [name,profile] of Object.entries(malpediaExpected)){
+  const card=[...malwareDoc.querySelectorAll('#malwareFamilyDirectory .malware-entry')]
+    .find(node=>node.querySelector('strong')?.textContent===name);
+  assert.ok(card,'Family card exists for '+name);
+  card.querySelector('button.malware-detail-trigger').click();
+  const link=commonMalwareContent.querySelector('a.malware-detail-source-link');
+  assert.equal(link?.href,'https://malpedia.caad.fkie.fraunhofer.de/details/'+profile,
+    'Family-specific Malpedia link for '+name);
+  assert.ok(link?.rel.includes('noopener'),'Family profile uses a safe external link');
+  if(name==='Gafgyt')assert.match(commonMalwareContent.textContent,/Bashlite/,
+    'Gafgyt alias is disclosed rather than misleading the user');
+  malwareDoc.getElementById('closeMalwareDetail').click();
+}
 assert.equal(sampleCards(),6,'expanding families does not expand samples');
 assert.equal(familyToggle.getAttribute('aria-expanded'),'true');
 assert.match(familyToggle.textContent,/Show Less/);
