@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-28",
   "mode": "live",
   "coverage_limited": false,
-  "candidate_records": 1528,
+  "candidate_records": 1531,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -2175,6 +2175,7 @@
       "title": "The Contact Manager plugin for WordPress is vulnerable to Arbitrary File Upload in all versions up to, and including, 9.1.2 via the add_message function",
       "severity": "critical",
       "categories": [
+        "PHP",
         "WordPress / Plugins"
       ],
       "published": "2026-10-28",
@@ -2259,6 +2260,7 @@
       "title": "The The Innovative Form Builder – IvyForms plugin for WordPress is vulnerable to Arbitrary File Upload in all versions up to, and including, 1.5.1 via the filterFiletypeAndExt",
       "severity": "high",
       "categories": [
+        "PHP",
         "WordPress / Plugins"
       ],
       "published": "2026-10-28",
@@ -2287,6 +2289,7 @@
       "title": "The UiChemy – Convert Figma, Prompts and AI Builds to Elementor, Gutenberg and Bricks plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'actions[save_b",
       "severity": "medium",
       "categories": [
+        "JavaScript / TypeScript",
         "WordPress / Plugins"
       ],
       "published": "2026-10-28",
@@ -2343,6 +2346,7 @@
       "title": "The s2Member – Excellent for All Kinds of Memberships, Content Restriction Paywalls & Member Access Subscriptions plugin for WordPress is vulnerable to Stored Cross-Site Scrip",
       "severity": "medium",
       "categories": [
+        "PHP",
         "WordPress / Plugins"
       ],
       "published": "2026-10-28",
@@ -2567,6 +2571,7 @@
       "title": "The Bit Flows: AI Agent Automation & Integrations for Forms, CRM, eCommerce, Google Sheets, and More plugin for WordPress is vulnerable to Local File Inclusion in all versions",
       "severity": "medium",
       "categories": [
+        "PHP",
         "WordPress / Plugins"
       ],
       "published": "2026-10-28",
@@ -2595,6 +2600,8 @@
       "title": "The MxChat – AI Chatbot & Content Generation for WordPress plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'feedback' parameter in all vers",
       "severity": "high",
       "categories": [
+        "PHP",
+        "React / Next.js",
         "WordPress / Plugins"
       ],
       "published": "2026-10-28",
@@ -2679,6 +2686,7 @@
       "title": "The VikRentCar Car Rental Management System plugin for WordPress is vulnerable to Cross-Site Request Forgery in all versions up to, and including, 1.4.8",
       "severity": "high",
       "categories": [
+        "PHP",
         "WordPress / Plugins"
       ],
       "published": "2026-10-28",
@@ -2707,6 +2715,7 @@
       "title": "The Travelly – Tour & Travel Booking Manager for WooCommerce plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 2.3.6 This is due",
       "severity": "medium",
       "categories": [
+        "PHP",
         "WordPress / Plugins"
       ],
       "published": "2026-10-28",
@@ -2763,6 +2772,7 @@
       "title": "The WP Visitor Statistics (Real Time Traffic) plugin for WordPress is vulnerable to SQL Injection via the 'from' (and sibling 'to'/'first'/'second') shortcode attribute of the",
       "severity": "medium",
       "categories": [
+        "PHP",
         "WordPress / Plugins"
       ],
       "published": "2026-10-28",
@@ -3151,6 +3161,118 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-101935",
+      "title": "The Echo Knowledge Base – Documentation, FAQs, Chat & Smart Search plugin for WordPress is vulnerable to Reflected Cross-Site Scripting via the 'new_kb_config' parameter (spec",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Echo Knowledge Base – Documentation, FAQs, Chat & Smart Search plugin for WordPress is vulnerable to Reflected Cross-Site Scripting via the 'new_kb_config' parameter (specifically the article-mobile-break-point-v2 key, among other config keys interpolated into the <style> element) in versions up to, and including, 17.214.0 This is due to insufficient input sanitization and output escaping in EPKB_Frontend_Editor::fe_preview_config() and EPKB_Articles_Setup: on every knowledge base article page view, when the request supplies epkb_fe_reload_mode=on, an attacker-controlled JSON blob is merged over the stored KB configuration and several values are concatenated directly into a stylesheet emitted inside a literal <style> element without escaping (minify_css() does not strip <, > or /). This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that execute if they can successfully trick a user (with Editor-level access or above, holding the manage_categories capability, or an Administrator) into performing an action such as clicking on a specially crafted link.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-101935"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T09:01:39Z",
+      "source_updated_at": "2026-10-28T08:16:29.567",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-85655",
+      "title": "The Enable Media Replace plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 4.2.2",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The Enable Media Replace plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 4.2.2. This is due to the plugin not properly verifying that a user is authorized to perform an action. This makes it possible for authenticated attackers, with author-level access and above, to modify the post_content of any published post referencing the replaced media — including Administrator-owned posts — making changes immediately visible to unauthenticated visitors. The doReplaceQuery() method performs a database-wide search-and-replace across all posts containing the old media URL without any per-post capability check, meaning a single Author-triggered request can silently overwrite a large number of posts that WordPress's standard admin UI and REST API would otherwise forbid that user from editing.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-85655"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T09:01:39Z",
+      "source_updated_at": "2026-10-28T08:16:30.083",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-92797",
+      "title": "The MemberPress plugin for WordPress is vulnerable to Cross-Site Request Forgery in versions up to, and including, 1.14.1",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-28",
+      "summary": "The MemberPress plugin for WordPress is vulnerable to Cross-Site Request Forgery in versions up to, and including, 1.14.1. This is due to a bypassable nonce verification check in the save_profile_fields() function that uses an isset() condition at line 1119, allowing the security check to be completely bypassed by simply omitting the nonce parameter from the request. This makes it possible for unauthenticated attackers to change authenticated users' email addresses via a forged request granted they can trick an authenticated user into performing an action such as clicking on a link, leading to account takeover through password reset functionality.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-92797"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T09:01:39Z",
+      "source_updated_at": "2026-10-28T08:16:30.250",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-108142",
+      "title": "Veeam Backup & Replication CDP Coordinator authorization bypass",
+      "severity": "critical",
+      "cvss": "9.1",
+      "categories": [
+        "Veeam Backup & Replication"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-27",
+      "summary": "An unauthenticated attacker can bypass authorization in the CDP Coordinator Service on affected Veeam Backup & Replication version 13 deployments.",
+      "affected": "Veeam Backup & Replication 13.1.1.18 and earlier 13.1 builds, or 13.0.2.29 and earlier 13.0 builds. Vendor states 12.x is not affected.",
+      "remediation": "Install Veeam Backup & Replication 13.1.2.57 or 13.0.3.63, respectively, or a newer fixed build. Validate backup infrastructure exposure.",
+      "exploitation": "No confirmed exploitation indicated in the cited vendor bulletin.",
+      "sources": [
+        {
+          "label": "Veeam Security KB4948",
+          "url": "https://www.veeam.com/kb4948"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-27",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
+    },
+    {
       "id": "CVE-2026-105477",
       "title": "Managed Veeam Agent for Linux local privilege escalation",
       "severity": "high",
@@ -3173,34 +3295,6 @@
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-105477"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-27",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation."
-    },
-    {
-      "id": "CVE-2026-108142",
-      "title": "Veeam Backup & Replication CDP Coordinator authorization bypass",
-      "severity": "critical",
-      "cvss": "9.1",
-      "categories": [
-        "Veeam Backup & Replication"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "An unauthenticated attacker can bypass authorization in the CDP Coordinator Service on affected Veeam Backup & Replication version 13 deployments.",
-      "affected": "Veeam Backup & Replication 13.1.1.18 and earlier 13.1 builds, or 13.0.2.29 and earlier 13.0 builds. Vendor states 12.x is not affected.",
-      "remediation": "Install Veeam Backup & Replication 13.1.2.57 or 13.0.3.63, respectively, or a newer fixed build. Validate backup infrastructure exposure.",
-      "exploitation": "No confirmed exploitation indicated in the cited vendor bulletin.",
-      "sources": [
-        {
-          "label": "Veeam Security KB4948",
-          "url": "https://www.veeam.com/kb4948"
         }
       ],
       "kind": "cve",
@@ -14216,8 +14310,8 @@
       "title": "Malware in @factiii/runner",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-22",
       "updated": "2026-10-28",
@@ -16273,7 +16367,6 @@
       "title": "Out-of-bounds read in Windows Portable Device MTP Driver allows an authorized attacker to disclose information locally.",
       "severity": "medium",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -16307,7 +16400,6 @@
       "title": "Heap-based buffer overflow in Windows IKE Extension allows an unauthorized attacker to deny service over a network.",
       "severity": "high",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -16341,7 +16433,6 @@
       "title": "Use after free in Windows Kernel allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -16375,7 +16466,6 @@
       "title": "Out-of-bounds read in Windows Partition Management Driver allows an unauthorized attacker to execute code over a network.",
       "severity": "high",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -16409,7 +16499,6 @@
       "title": "Improper verification of cryptographic signature in Windows Update Stack allows an authorized attacker to perform spoofing locally.",
       "severity": "medium",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -16443,7 +16532,6 @@
       "title": "Untrusted pointer dereference in Windows Error Reporting allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -16477,7 +16565,6 @@
       "title": "Heap-based buffer overflow in Windows Bluetooth Port Driver allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -16511,7 +16598,6 @@
       "title": "Heap-based buffer overflow in Windows MIDI Service Module allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
-        "Windows",
         "Windows 11 OS"
       ],
       "published": "2026-10-13",
@@ -16544,7 +16630,6 @@
       "title": "Heap-based buffer overflow in Microsoft Windows Search Component allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -16578,7 +16663,6 @@
       "title": "Heap-based buffer overflow in Windows COM+ Event System Service allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -16612,7 +16696,6 @@
       "title": "Out-of-bounds read in Windows Spaceport.sys allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -16646,7 +16729,6 @@
       "title": "Heap-based buffer overflow in Windows Kernel allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -16680,7 +16762,6 @@
       "title": "Use after free in Windows Kernel-Mode Drivers allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
       "categories": [
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -17140,39 +17221,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
-      "id": "CVE-2026-102870",
-      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-25",
-      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
-      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
-      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
-      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft corrected Blazor debugger security advisory",
-          "url": "https://github.com/dotnet/announcements/issues/492"
-        },
-        {
-          "label": "ASP.NET Core GHSA vendor record",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-25",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation."
-    },
-    {
       "id": "CVE-2026-70197",
       "title": ".NET SocketAsyncEventArgs memory corruption remote code execution",
       "severity": "high",
@@ -17197,6 +17245,39 @@
         {
           "label": "Microsoft .NET out of band release",
           "url": "https://devblogs.microsoft.com/dotnet/dotnet-october-2026-oob-security-updates/"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-25",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
+    },
+    {
+      "id": "CVE-2026-102870",
+      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-25",
+      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
+      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
+      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
+      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "ASP.NET Core GHSA vendor record",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
         }
       ],
       "kind": "cve",
@@ -17241,62 +17322,24 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
-      "id": "CVE-2026-70188",
-      "title": "ASP.NET Core HTTP/2 Kestrel request desynchronization",
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
       "severity": "critical",
-      "cvss": "9.1",
+      "cvss": "9.4",
       "categories": [
         ".NET / ASP.NET",
         ".NET Core"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
-      "summary": "Kestrel accepts newline characters in HTTP/2 trailers or dynamic HPACK table values when it should reject malformed headers, allowing potential HTTP request desynchronization and a security feature bypass.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12, and .NET 11 prereleases through RC1.",
-      "remediation": "Fixed initially in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Install the newer supported October 25 releases where applicable (8.0.33, 9.0.22, 10.0.14, RC3).",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
       "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
       "sources": [
         {
-          "label": "Microsoft ASP.NET Core HTTP/2 security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-fpq8-4vhr-rcxx"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation."
-    },
-    {
-      "id": "CVE-2026-108398",
-      "title": ".NET Framework untrusted search path security feature bypass",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        ".NET / ASP.NET",
-        "Windows",
-        "Windows Server OS"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "Untrusted search path handling in classic Microsoft .NET Framework permits a locally authorized attacker to bypass a security feature. The patch is part of Microsoft's October 2026 .NET Framework cumulative security updates.",
-      "affected": "Multiple .NET Framework 3.5, 4.6.2 through 4.8.1 configurations across supported Windows versions, subject to Microsoft update applicability. This is a separate classic .NET Framework CVE, not the modern .NET Brotli issue.",
-      "remediation": "Install the correct October 13, 2026 .NET Framework cumulative update or a newer superseding Windows update for the installed Windows and .NET Framework versions. Consult the Microsoft patch matrix for the specific KB.",
-      "exploitation": "No confirmed active exploitation in the referenced Microsoft advisories.",
-      "sources": [
-        {
-          "label": "Microsoft .NET Framework October cumulative update",
-          "url": "https://learn.microsoft.com/en-us/dotnet/framework/release-notes/2026/10-13-october-cumulative-update"
-        },
-        {
-          "label": "Microsoft CVE details",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-108398"
-        },
-        {
-          "label": "NVD product applicability",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108398"
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
         }
       ],
       "kind": "cve",
@@ -17345,24 +17388,62 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "id": "CVE-2026-108398",
+      "title": ".NET Framework untrusted search path security feature bypass",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        "Windows",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "Untrusted search path handling in classic Microsoft .NET Framework permits a locally authorized attacker to bypass a security feature. The patch is part of Microsoft's October 2026 .NET Framework cumulative security updates.",
+      "affected": "Multiple .NET Framework 3.5, 4.6.2 through 4.8.1 configurations across supported Windows versions, subject to Microsoft update applicability. This is a separate classic .NET Framework CVE, not the modern .NET Brotli issue.",
+      "remediation": "Install the correct October 13, 2026 .NET Framework cumulative update or a newer superseding Windows update for the installed Windows and .NET Framework versions. Consult the Microsoft patch matrix for the specific KB.",
+      "exploitation": "No confirmed active exploitation in the referenced Microsoft advisories.",
+      "sources": [
+        {
+          "label": "Microsoft .NET Framework October cumulative update",
+          "url": "https://learn.microsoft.com/en-us/dotnet/framework/release-notes/2026/10-13-october-cumulative-update"
+        },
+        {
+          "label": "Microsoft CVE details",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-108398"
+        },
+        {
+          "label": "NVD product applicability",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108398"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
+    },
+    {
+      "id": "CVE-2026-70188",
+      "title": "ASP.NET Core HTTP/2 Kestrel request desynchronization",
       "severity": "critical",
-      "cvss": "9.4",
+      "cvss": "9.1",
       "categories": [
         ".NET / ASP.NET",
         ".NET Core"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "summary": "Kestrel accepts newline characters in HTTP/2 trailers or dynamic HPACK table values when it should reject malformed headers, allowing potential HTTP request desynchronization and a security feature bypass.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12, and .NET 11 prereleases through RC1.",
+      "remediation": "Fixed initially in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Install the newer supported October 25 releases where applicable (8.0.33, 9.0.22, 10.0.14, RC3).",
       "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
       "sources": [
         {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+          "label": "Microsoft ASP.NET Core HTTP/2 security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-fpq8-4vhr-rcxx"
         }
       ],
       "kind": "cve",
@@ -47583,34 +47664,34 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-28T08:09:31Z",
-      "last_attempt": "2026-10-28T08:09:31Z",
+      "last_success": "2026-10-28T09:01:39Z",
+      "last_attempt": "2026-10-28T09:01:39Z",
       "items_processed": 275,
       "url": "https://api.github.com/advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-28T08:09:31Z",
-      "last_attempt": "2026-10-28T08:09:31Z",
-      "items_processed": 278,
+      "last_success": "2026-10-28T09:01:39Z",
+      "last_attempt": "2026-10-28T09:01:39Z",
+      "items_processed": 265,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-28T08:09:31Z",
-      "last_attempt": "2026-10-28T08:09:31Z",
+      "last_success": "2026-10-28T09:01:39Z",
+      "last_attempt": "2026-10-28T09:01:39Z",
       "items_processed": 482,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-28T08:09:31Z",
-      "last_attempt": "2026-10-28T08:09:31Z",
+      "last_success": "2026-10-28T09:01:39Z",
+      "last_attempt": "2026-10-28T09:01:39Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     }
   },
-  "last_checked_at": "2026-10-28T08:09:31Z",
-  "last_successful_update": "2026-10-28T08:09:31Z",
+  "last_checked_at": "2026-10-28T09:01:39Z",
+  "last_successful_update": "2026-10-28T09:01:39Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
