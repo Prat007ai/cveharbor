@@ -65,7 +65,7 @@
       checkbox.checked=saved.includes(c.name);
       checkbox.addEventListener('change',()=>{
         saved=checkbox.checked?[...new Set([...saved,c.name])]:saved.filter(x=>x!==c.name);
-        persist();renderStack();
+        saveSelection();
       });
       label.append(checkbox,make('span','',c.name));stackList.append(label);
     }
@@ -97,7 +97,24 @@
     for(const record of found)output.append(itemRow(record));
     if(!found.length&&!ips.length)output.append(make('p','workspace-note','No matching records in the indexed snapshot. This does not establish that a product or address is safe.'));
   }
-  $('stackClear').addEventListener('click',()=>{saved=[];persist();renderStack();});
+  function saveSelection(){
+    persist();
+    renderStack();
+    window.dispatchEvent(new CustomEvent('cveharbor:stack-changed',{detail:{technologies:[...saved]}}));
+  }
+  window.CVEHARBOR_WATCHLIST={
+    getSelected:()=>[...saved],
+    loadFromCloud:values=>{
+      const next=Array.isArray(values)?values:[];
+      saved=[...new Set(next.filter(x=>typeof x==='string'&&cats.some(c=>c.name===x)))].slice(0,38);
+      persist();renderStack();
+    }
+  };
+  $('stackClear').addEventListener('click',()=>{
+    if(!saved.length)return;
+    if(!window.confirm('Clear all '+saved.length+' technologies? If this browser is connected to your account watchlist, the same change will be saved for email reports.'))return;
+    saved=[];saveSelection();
+  });
   lookup.addEventListener('input',renderLookup);
   renderStack();renderLookup();
 })();
