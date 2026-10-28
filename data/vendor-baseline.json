@@ -201,11 +201,11 @@
         ".NET Core"
       ],
       "published": "2026-10-25",
-      "updated": "2026-10-25",
+      "updated": "2026-10-27",
       "summary": "An out of bounds memory write in the Brotli decoder used by modern .NET and ASP.NET Core may cause memory corruption, information disclosure, denial of service or privilege elevation when the application decompresses attacker-controlled Brotli data. Automatic request/response decompression is disabled by default.",
       "affected": "Affected .NET 8 versions earlier than 8.0.33, .NET 9 earlier than 9.0.22, .NET 10 earlier than 10.0.14, and affected .NET 11 prereleases earlier than RC3. Specific NativeAOT and runtime packs vary by platform. Classic .NET Framework is not affected by this CVE.",
       "remediation": "Update affected installations to .NET 8.0.33, 9.0.22 or 10.0.14 (or .NET 11 RC3 for prerelease installations). Rebuild self-contained apps and containers with the fixed runtimes, and update affected NuGet packages where the advisory requires it.",
-      "exploitation": "No confirmed in-the-wild exploitation in the cited Microsoft .NET advisory. Verify current CISA KEV before treating exploitation as known.",
+      "exploitation": "CISA KEV added the underlying Google Brotli CVE on October 27, 2026, indicating confirmed exploitation of the vulnerable component. This does not establish exploitation of a .NET deployment or a specific CVEHarbor visitor's application.",
       "sources": [
         {
           "label": "Microsoft .NET October 25 emergency release",
@@ -214,8 +214,13 @@
         {
           "label": "Microsoft runtime security advisory",
           "url": "https://github.com/dotnet/runtime/security/advisories/GHSA-p3jp-9v83-76w9"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities entry",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog?search_api_fulltext=CVE-2026-111497"
         }
-      ]
+      ],
+      "known_exploited": true
     },
     {
       "id": "CVE-2026-114148",
