@@ -48,8 +48,9 @@
 @media(max-width:1040px){.technology-quickjump .category-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:550px){
   .technology-quickjump{padding-top:26px}
-  .technology-quickjump .category-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  .technology-quickjump .category-item{min-height:98px}
+  .technology-quickjump .category-grid{display:flex;overflow-x:auto;gap:10px;scroll-snap-type:x proximity;padding-bottom:8px;overscroll-behavior-inline:contain}
+  .technology-quickjump .category-item{flex:0 0 157px;min-width:157px;min-height:98px;scroll-snap-align:start}
+  .technology-quickjump .other-tech .category-grid{display:flex}
   .advisory-pagination{flex-direction:column;align-items:stretch}
   .pagination-actions{width:100%}
   .pagination-btn{flex:1}
