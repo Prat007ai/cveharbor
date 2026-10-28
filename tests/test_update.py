@@ -456,7 +456,7 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
         self.assertIn("detailMarkers.append(firstPublished)",js)
         self.assertIn("animation:cveharborFreshDisclosurePulse",css)
         self.assertIn("@media(prefers-reduced-motion:reduce)",css)
-        self.assertIn("tech-date-badges-1",html)
+        self.assertIn("site-audit-2",html)
         self.assertIn("original disclosure dates",html)
 
     def test_category_publication_badges_group_drilldown_and_day_filters(self):
@@ -476,6 +476,36 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
         self.assertIn('value="twoDays"',html)
         subprocess.run(['node','--check',str(root/'app.js')],cwd=root,
                        capture_output=True,text=True,check=True)
+
+
+    def test_no_false_today_for_missing_or_invalid_dates(self):
+        self.assertEqual("",u.datepart(None))
+        self.assertEqual("",u.datepart("not a date"))
+        self.assertEqual("",u.datepart("2026-02-30"))
+        self.assertEqual("2026-10-27",u.datepart("2026-10-27T12:00:00Z"))
+        fake={'ghsa_id':'GHSA-abcd-1234-efgh','severity':'high',
+              'summary':'A vulnerability in an npm package',
+              'vulnerabilities':[{'package':{'ecosystem':'npm','name':'example'}}]}
+        self.assertEqual("",u.from_ghsa(fake)['published'])
+
+    def test_low_severity_advisories_are_preserved(self):
+        item={'ghsa_id':'GHSA-abcd-1234-efgh','severity':'low',
+              'published_at':'2026-10-26','summary':'Python package issue',
+              'vulnerabilities':[{'package':{'ecosystem':'pip','name':'example'}}]}
+        self.assertEqual("low",u.from_ghsa(item)['severity'])
+
+    def test_exploited_column_removed_and_focus_is_expandable(self):
+        html=(root/'index.html').read_text(encoding='utf-8')
+        js=(root/'app.js').read_text(encoding='utf-8')
+        css=(root/'styles.css').read_text(encoding='utf-8')
+        self.assertNotIn('<th scope="col">Exploited</th>',html)
+        self.assertNotIn("cell(x.known_exploited?'CISA KEV'",js)
+        self.assertIn("function renderFocus()",js)
+        self.assertIn("row.addEventListener('click',()=>showDetail(x))",js)
+        self.assertIn("Math.max(0,9-priority.length)",js)
+        self.assertIn("focus-action",css)
+        self.assertIn("Boolean(prior.known_exploited||baseline.known_exploited)",js)
+        self.assertIn("value=\"low\"",html)
 
     def test_url_rejection(self):
         self.assertFalse(u.clean_url('javascript:alert(1)'))
