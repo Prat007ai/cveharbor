@@ -24,3 +24,33 @@
 @media (min-width:2700px) {
   .advisory-grid { grid-template-columns:repeat(6,minmax(0,1fr)); }
 }
+
+/* Top technology shortcuts and compact, expandable advisory results */
+[hidden]{display:none!important}
+.technology-quickjump{padding-top:35px}
+.technology-quickjump .category-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+.technology-quickjump .category-item{min-height:92px;padding:14px;gap:5px}
+.technology-quickjump .category-icon{font-size:20px}
+.other-tech{margin-top:14px;border:1px solid #2c4e61;border-radius:11px;background:#0b2134;padding:0 15px}
+.other-tech summary{list-style:none;cursor:pointer;padding:14px 0;color:#80e3d4;font-size:13px;font-weight:750}
+.other-tech summary::-webkit-details-marker{display:none}
+.other-tech summary span{margin-left:7px;display:inline-block;transition:transform .2s}
+.other-tech[open] summary span{transform:rotate(180deg)}
+.other-tech .secondary-grid{padding-bottom:15px}
+.advisory-pagination{display:flex;align-items:center;justify-content:space-between;gap:16px;border:1px solid #2c4e61;background:#0d2639;border-radius:12px;margin-top:18px;padding:14px 18px}
+.advisory-pagination>span{font-size:12px;color:#a9c4d6}
+.pagination-actions{display:flex;gap:10px;flex-wrap:wrap}
+.pagination-btn{border:1px solid #2c9c9c;border-radius:8px;background:#1b5f68;color:#e5fffa;font-size:12px;font-weight:750;padding:10px 16px}
+.pagination-btn:hover{background:#277f80}
+.pagination-btn.secondary{border-color:#35556c;color:#c7deea;background:#102c42}
+.pagination-btn.secondary:hover{background:#18405d}
+@media(min-width:1500px){.technology-quickjump .category-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(max-width:1040px){.technology-quickjump .category-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:550px){
+  .technology-quickjump{padding-top:26px}
+  .technology-quickjump .category-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .technology-quickjump .category-item{min-height:98px}
+  .advisory-pagination{flex-direction:column;align-items:stretch}
+  .pagination-actions{width:100%}
+  .pagination-btn{flex:1}
+}
