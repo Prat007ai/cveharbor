@@ -16,6 +16,9 @@ OUT.mkdir()
 
 for name in ('index.html', 'styles.css', 'app.js', 'data.js', 'CNAME', 'robots.txt'):
     shutil.copy2(ROOT / name, OUT / name)
+for name in ('threats.js','threat-data.js'):
+    if (ROOT / name).exists():
+        shutil.copy2(ROOT / name, OUT / name)
 # Public snapshot health report is generated on each actual feed refresh.
 if (ROOT / 'data' / 'feed-health.json').exists():
     shutil.copy2(ROOT / 'data' / 'feed-health.json', OUT / 'feed-health.json')
