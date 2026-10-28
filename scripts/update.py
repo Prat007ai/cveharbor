@@ -420,7 +420,8 @@ def from_kev(x: dict) -> dict | None:
         return None
     return {
         "id":fid, "title":crop(x.get("vulnerabilityName"),175), "severity":"bulletin", "categories":cats,
-        "published":datepart(x.get("dateAdded")), "updated":datepart(x.get("dateAdded")),
+        # CISA dateAdded is not the original CVE disclosure date.
+        "published":"", "updated":datepart(x.get("dateAdded")),
         "summary":crop(x.get("shortDescription"),1200),
         "affected":crop(p,650) + ". Consult vendor advisory for affected versions.",
         "remediation":crop(x.get("requiredAction"),700) or "Follow vendor remediation and CISA guidance.",
@@ -456,6 +457,12 @@ def merge_record(old: dict, new: dict) -> dict:
         merged["cvss"] = old["cvss"]
     merged["updated"] = max(old.get("updated") or "", new.get("updated") or "")
     return merged
+
+
+def choose_records(merged: dict[str,dict], baseline_ids: set[str]) -> list[dict]:
+    """Prioritize original disclosure dates and retain separately revised issues."""
+    records = choose_records(merged, baseline_ids)
+
 
 
 def run() -> int:
