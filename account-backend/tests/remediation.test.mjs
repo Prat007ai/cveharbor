@@ -228,3 +228,52 @@ test('missing assignment table blocks mail while leaving existing cloud record s
   const flags=await worker.fetch(request('/remediations/features'),workerEnv);
   assert.equal((await flags.json()).assignments_available,false);
 });
+
+
+test('assignment sending enforces five per sender hourly and two per recipient daily',async()=>{
+  const previous=globalThis.fetch;
+  globalThis.fetch=async()=>new Response(JSON.stringify({data:{succeeded:1,failed:0,email_id:'quota-test'}}),{
+    status:200,headers:{'Content-Type':'application/json'}
+  });
+  try{
+    const first=new MockD1();
+    for(let i=0;i<5;i++){
+      const id='CVE-2026-'+(50000+i);
+      const response=await worker.fetch(request('/remediations/'+id+'/assign','POST',{
+        email:'colleague'+i+'@example.net'
+      }),env(first));
+      assert.equal(response.status,200,'five distinct assignments are accepted');
+    }
+    const over=await worker.fetch(request('/remediations/CVE-2026-60000/assign','POST',{
+      email:'newperson@example.net'
+    }),env(first));
+    assert.equal(over.status,429,'sixth assignment in an hour is rejected');
+
+    const second=new MockD1();
+    for(const id of ['CVE-2026-70001','CVE-2026-70002']){
+      const response=await worker.fetch(request('/remediations/'+id+'/assign','POST',{
+        email:'same@example.org'
+      }),env(second));
+      assert.equal(response.status,200);
+    }
+    const third=await worker.fetch(request('/remediations/CVE-2026-70003/assign','POST',{
+      email:'same@example.org'
+    }),env(second));
+    assert.equal(third.status,429,'a third email to the same recipient in 24 hours is rejected');
+  }finally{globalThis.fetch=previous;}
+});
+
+test('provider failure is recorded without falsely reporting email delivery',async()=>{
+  const db=new MockD1(),workerEnv=env(db),original=globalThis.fetch;
+  globalThis.fetch=async()=>new Response(JSON.stringify({data:{succeeded:0,failed:1}}),{
+    status:200,headers:{'Content-Type':'application/json'}
+  });
+  try{
+    const response=await worker.fetch(request('/remediations/'+id+'/assign','POST',{
+      email:'reviewer@example.net'
+    }),workerEnv);
+    assert.equal(response.status,502);
+    const status=db.assignments.get(db.key(user.id,id));
+    assert.equal(status.state,'failed');
+  }finally{globalThis.fetch=original;}
+});
