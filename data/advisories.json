@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-28",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4145,
+  "candidate_records": 4173,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -7133,34 +7133,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-108142",
-      "title": "Veeam Backup & Replication CDP Coordinator authorization bypass",
-      "severity": "critical",
-      "cvss": "9.1",
-      "categories": [
-        "Veeam Backup & Replication"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "An unauthenticated attacker can bypass authorization in the CDP Coordinator Service on affected Veeam Backup & Replication version 13 deployments.",
-      "affected": "Veeam Backup & Replication 13.1.1.18 and earlier 13.1 builds, or 13.0.2.29 and earlier 13.0 builds. Vendor states 12.x is not affected.",
-      "remediation": "Install Veeam Backup & Replication 13.1.2.57 or 13.0.3.63, respectively, or a newer fixed build. Validate backup infrastructure exposure.",
-      "exploitation": "No confirmed exploitation indicated in the cited vendor bulletin.",
-      "sources": [
-        {
-          "label": "Veeam Security KB4948",
-          "url": "https://www.veeam.com/kb4948"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-27",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation."
-    },
-    {
       "id": "CVE-2026-105477",
       "title": "Managed Veeam Agent for Linux local privilege escalation",
       "severity": "high",
@@ -7183,6 +7155,34 @@
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-105477"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-27",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
+    },
+    {
+      "id": "CVE-2026-108142",
+      "title": "Veeam Backup & Replication CDP Coordinator authorization bypass",
+      "severity": "critical",
+      "cvss": "9.1",
+      "categories": [
+        "Veeam Backup & Replication"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-27",
+      "summary": "An unauthenticated attacker can bypass authorization in the CDP Coordinator Service on affected Veeam Backup & Replication version 13 deployments.",
+      "affected": "Veeam Backup & Replication 13.1.1.18 and earlier 13.1 builds, or 13.0.2.29 and earlier 13.0 builds. Vendor states 12.x is not affected.",
+      "remediation": "Install Veeam Backup & Replication 13.1.2.57 or 13.0.3.63, respectively, or a newer fixed build. Validate backup infrastructure exposure.",
+      "exploitation": "No confirmed exploitation indicated in the cited vendor bulletin.",
+      "sources": [
+        {
+          "label": "Veeam Security KB4948",
+          "url": "https://www.veeam.com/kb4948"
         }
       ],
       "kind": "cve",
@@ -16847,34 +16847,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-15176",
-      "title": "USN-8955-1: nginx vulnerabilities",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-26",
-      "updated": "2026-10-26",
-      "summary": "It was discovered that nginx incorrectly handled certain configurations using the alias directive together with rewrite rules. A remote attacker could possibly use this issue to cause nginx to crash, resulting in a denial of service, or execute arbitrary code. (CVE-2026-15176) It was discovered that nginx incorrectly handled map directives using regex matching under certain circumstances. A remote attacker could possibly use this issue to cause nginx to crash, resulting in a denial of service, or execute arbitrary code. (CVE-2026-93479) It was discovered that nginx incorrectly handled HTTP/3 requests when proxy_request_buffering was enabled. This issue only affected Ubuntu 26.04 LTS and Ubuntu 26.10. A remote attacker could possibly use this issue to inject data into proxied requests. (CVE-2026-95101) It was discovered that nginx incorrectly handled asynchronous file I/O in certain configurations with Server Side Includes pages. A remote attacker could possibly use this issue to cause nginx to crash, resulting in a denial of service, or execute arbitrary code. (CVE-2026-97205) It was discovered that nginx incorrectly handled SSL session ticket keys when configured with a shared ses",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Ubuntu Security Notice",
-          "url": "https://ubuntu.com/security/notices/USN-8955-1"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Ubuntu Security Notice RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-26",
-      "source_type": "ubuntu_rss",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-116803",
       "title": "dompurify: DOMPurify: Cross-site scripting via unneutralized detached elements during in-place sanitization",
       "severity": "medium",
@@ -17883,6 +17855,62 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-105483",
+      "title": "Multiple Node.js CVEs",
+      "severity": "bulletin",
+      "categories": [
+        "Fortinet"
+      ],
+      "published": "2026-10-26",
+      "updated": "2026-10-26",
+      "summary": "<p> <strong> CVSSv3 Score: </strong> 9.8 </p> <p> CVE-2026-105482 - (high)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-105483 - (high)This vulnerability affects Node.js 26.x and 24.x.CVE-2026-106069 - (high)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-111497 - (high)A flaw in Node.js can cause Node.js Brotli decoder out-of-bounds write permits remote code execution.This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-105481 - (medium)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-106072 - (medium)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-106074 - (medium)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-106070 - (low)This vulnerability affects Node.js 26.x.CVE-2026-106071 - (low)This vulnerability affects Node.js 26.x.CVE-2026-106073 - (low)This vulnerability affects Node.js 26.x, 24.x, and 22.x. </p> <p> <em> Revised on 2026-10-27 00:00:00 </em> </p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Fortinet PSIRT",
+          "url": "https://fortiguard.fortinet.com/psirt/FG-IR-26-187"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Fortinet PSIRT RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-26",
+      "source_type": "fortinet_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-106069",
+      "title": "Multiple Node.js CVEs",
+      "severity": "bulletin",
+      "categories": [
+        "Fortinet"
+      ],
+      "published": "2026-10-26",
+      "updated": "2026-10-26",
+      "summary": "<p> <strong> CVSSv3 Score: </strong> 9.8 </p> <p> CVE-2026-105482 - (high)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-105483 - (high)This vulnerability affects Node.js 26.x and 24.x.CVE-2026-106069 - (high)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-111497 - (high)A flaw in Node.js can cause Node.js Brotli decoder out-of-bounds write permits remote code execution.This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-105481 - (medium)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-106072 - (medium)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-106074 - (medium)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-106070 - (low)This vulnerability affects Node.js 26.x.CVE-2026-106071 - (low)This vulnerability affects Node.js 26.x.CVE-2026-106073 - (low)This vulnerability affects Node.js 26.x, 24.x, and 22.x. </p> <p> <em> Revised on 2026-10-27 00:00:00 </em> </p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Fortinet PSIRT",
+          "url": "https://fortiguard.fortinet.com/psirt/FG-IR-26-187"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Fortinet PSIRT RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-26",
+      "source_type": "fortinet_rss",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-111497",
       "title": ".NET Brotli decompression out of bounds write",
       "severity": "high",
@@ -17891,6 +17919,7 @@
         ".NET / ASP.NET",
         ".NET Core",
         "Application dependencies",
+        "Fortinet",
         "PHP",
         "Windows"
       ],
@@ -19754,6 +19783,62 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-34475",
+      "title": "DSA-6584-1 varnish - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-25",
+      "updated": "2026-10-25",
+      "summary": "Several vulnerabilities were discovered in Varnish Cache, an HTTP accelerator, which could result in cache poisoning, authentication bypass or denial of service. <p> CVE-2026-34475 <p> Tom Kinnaird discovered a deficiency in the parsing of HTTP/1.1 absolute-form request targets. If the request URL is passed unchecked to a backend which accepts absolute-form URIs, a remote attacker could potentially poison the cache or bypass authentication. The issue affects requests for root URLs. <p> CVE-2026-93894 <p> Tristan Madani discovered a workspace buffer overflow in the .upper() and .lower() string methods of the Varnish Configuration Language. A remote attacker with knowledge of the active configuration could craft a request which exhausts the remaining workspace during case conversion, causing the worker process to crash and restart, resulting in denial of service. Exploitation depends on the configuration using these methods on attacker-controlled strings and on the applicable request size limits. <p> <a href=\"https://security-tracker.debian.org/tracker/DSA-6584-1\">https://security-tracker.debian.org/tracker/DSA-6584-1</a>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00502.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-25",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-93894",
+      "title": "DSA-6584-1 varnish - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-25",
+      "updated": "2026-10-25",
+      "summary": "Several vulnerabilities were discovered in Varnish Cache, an HTTP accelerator, which could result in cache poisoning, authentication bypass or denial of service. <p> CVE-2026-34475 <p> Tom Kinnaird discovered a deficiency in the parsing of HTTP/1.1 absolute-form request targets. If the request URL is passed unchecked to a backend which accepts absolute-form URIs, a remote attacker could potentially poison the cache or bypass authentication. The issue affects requests for root URLs. <p> CVE-2026-93894 <p> Tristan Madani discovered a workspace buffer overflow in the .upper() and .lower() string methods of the Varnish Configuration Language. A remote attacker with knowledge of the active configuration could craft a request which exhausts the remaining workspace during case conversion, causing the worker process to crash and restart, resulting in denial of service. Exploitation depends on the configuration using these methods on attacker-controlled strings and on the applicable request size limits. <p> <a href=\"https://security-tracker.debian.org/tracker/DSA-6584-1\">https://security-tracker.debian.org/tracker/DSA-6584-1</a>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00502.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-25",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-115560",
       "title": "PHP session upload progress security advisory under unusual configuration",
       "severity": "bulletin",
@@ -19867,6 +19952,210 @@
       "first_seen_at": "2026-10-28T02:56:43Z",
       "source_updated_at": "2026-10-26T09:33:39Z",
       "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-106074",
+      "title": "nodejs: nodejs: predictable random values via snapshot entropy cache reuse",
+      "severity": "medium",
+      "categories": [
+        "Fortinet",
+        "Linux",
+        "Node.js / npm"
+      ],
+      "published": "2026-10-23",
+      "updated": "2026-10-26",
+      "summary": "nodejs: nodejs: predictable random values via snapshot entropy cache reuse",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-106074"
+        },
+        {
+          "label": "Fortinet PSIRT",
+          "url": "https://fortiguard.fortinet.com/psirt/FG-IR-26-187"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T12:42:42Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-106071",
+      "title": "nodejs: nodejs: Permission model bypass via wildcard path matching flaw",
+      "severity": "low",
+      "categories": [
+        "Fortinet",
+        "Linux",
+        "Node.js / npm"
+      ],
+      "published": "2026-10-23",
+      "updated": "2026-10-26",
+      "summary": "nodejs: nodejs: Permission model bypass via wildcard path matching flaw",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-106071"
+        },
+        {
+          "label": "Fortinet PSIRT",
+          "url": "https://fortiguard.fortinet.com/psirt/FG-IR-26-187"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T12:42:42Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-105481",
+      "title": "nodejs: nodejs: Response desynchronization via improper HTTP keep-alive connection reuse",
+      "severity": "medium",
+      "categories": [
+        "Fortinet",
+        "Linux",
+        "Node.js / npm"
+      ],
+      "published": "2026-10-23",
+      "updated": "2026-10-26",
+      "summary": "nodejs: nodejs: Response desynchronization via improper HTTP keep-alive connection reuse",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-105481"
+        },
+        {
+          "label": "Fortinet PSIRT",
+          "url": "https://fortiguard.fortinet.com/psirt/FG-IR-26-187"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T12:42:42Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-106070",
+      "title": "nodejs: Node.js: Security inspection bypass via crafted ZIP archive header mismatch",
+      "severity": "low",
+      "categories": [
+        "Fortinet",
+        "Linux",
+        "Node.js / npm"
+      ],
+      "published": "2026-10-23",
+      "updated": "2026-10-26",
+      "summary": "nodejs: Node.js: Security inspection bypass via crafted ZIP archive header mismatch",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-106070"
+        },
+        {
+          "label": "Fortinet PSIRT",
+          "url": "https://fortiguard.fortinet.com/psirt/FG-IR-26-187"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T12:42:42Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-106073",
+      "title": "nodejs: Node.js: Filesystem read permission bypass via fs.realpathSync()",
+      "severity": "low",
+      "categories": [
+        "Fortinet",
+        "Linux",
+        "Node.js / npm"
+      ],
+      "published": "2026-10-23",
+      "updated": "2026-10-26",
+      "summary": "nodejs: Node.js: Filesystem read permission bypass via fs.realpathSync()",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-106073"
+        },
+        {
+          "label": "Fortinet PSIRT",
+          "url": "https://fortiguard.fortinet.com/psirt/FG-IR-26-187"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T12:42:42Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-106072",
+      "title": "nodejs: nodejs: Authentication bypass via non-canonical IPv4 hostname verification",
+      "severity": "medium",
+      "categories": [
+        "Fortinet",
+        "Linux",
+        "Node.js / npm"
+      ],
+      "published": "2026-10-23",
+      "updated": "2026-10-26",
+      "summary": "nodejs: nodejs: Authentication bypass via non-canonical IPv4 hostname verification",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-106072"
+        },
+        {
+          "label": "Fortinet PSIRT",
+          "url": "https://fortiguard.fortinet.com/psirt/FG-IR-26-187"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T12:42:42Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
       "known_exploited": false
     },
     {
@@ -20287,6 +20576,7 @@
       "title": "serialize-javascript: serialize-javascript: Cross-Site Scripting via improper function escaping",
       "severity": "medium",
       "categories": [
+        "JavaScript / TypeScript",
         "Linux"
       ],
       "published": "2026-10-23",
@@ -20675,174 +20965,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-106074",
-      "title": "nodejs: nodejs: predictable random values via snapshot entropy cache reuse",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-23",
-      "updated": "2026-10-23",
-      "summary": "nodejs: nodejs: predictable random values via snapshot entropy cache reuse",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-106074"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T12:42:42Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-106071",
-      "title": "nodejs: nodejs: Permission model bypass via wildcard path matching flaw",
-      "severity": "low",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-23",
-      "updated": "2026-10-23",
-      "summary": "nodejs: nodejs: Permission model bypass via wildcard path matching flaw",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-106071"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T12:42:42Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-105481",
-      "title": "nodejs: nodejs: Response desynchronization via improper HTTP keep-alive connection reuse",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-23",
-      "updated": "2026-10-23",
-      "summary": "nodejs: nodejs: Response desynchronization via improper HTTP keep-alive connection reuse",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-105481"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T12:42:42Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-106070",
-      "title": "nodejs: Node.js: Security inspection bypass via crafted ZIP archive header mismatch",
-      "severity": "low",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-23",
-      "updated": "2026-10-23",
-      "summary": "nodejs: Node.js: Security inspection bypass via crafted ZIP archive header mismatch",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-106070"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T12:42:42Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-106073",
-      "title": "nodejs: Node.js: Filesystem read permission bypass via fs.realpathSync()",
-      "severity": "low",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-23",
-      "updated": "2026-10-23",
-      "summary": "nodejs: Node.js: Filesystem read permission bypass via fs.realpathSync()",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-106073"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T12:42:42Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-106072",
-      "title": "nodejs: nodejs: Authentication bypass via non-canonical IPv4 hostname verification",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-23",
-      "updated": "2026-10-23",
-      "summary": "nodejs: nodejs: Authentication bypass via non-canonical IPv4 hostname verification",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-106072"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T12:42:42Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-57845",
       "title": "datasets: datasets: Arbitrary code execution via insecure pickle deserialization",
       "severity": "high",
@@ -20903,6 +21025,7 @@
       "title": "serialize-javascript: serialize-javascript: Cross-site scripting via unescaped function serialization",
       "severity": "medium",
       "categories": [
+        "JavaScript / TypeScript",
         "Linux"
       ],
       "published": "2026-10-23",
@@ -20931,7 +21054,8 @@
       "title": "i18next-http-backend: i18next-http-backend: Cross-site scripting via protocol-relative URL injection",
       "severity": "low",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-23",
       "updated": "2026-10-23",
@@ -22303,7 +22427,8 @@
       "title": "kernel: ipv4: stop exception dump when nexthop group shrinks",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-23",
       "updated": "2026-10-23",
@@ -22695,7 +22820,8 @@
       "title": "kernel: ipv4: stop PMTU walk when nexthop group shrinks",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-23",
       "updated": "2026-10-23",
@@ -23024,6 +23150,146 @@
       "first_seen_at": "2026-10-28T12:42:42Z",
       "source_updated_at": "",
       "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-35501",
+      "title": "DSA-6581-1 unbound - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-23",
+      "updated": "2026-10-23",
+      "summary": "Multiple security vulnerabilities were discovered in Unbound, a validating, recursive, caching DNS resolver. <p> CVE-2026-35501 <p> (DNSSEC) Bypass of a configured island trust anchor underneath an insecure parent from an attacker-controlled NSEC record. <p> CVE-2026-50106 <p> (DNSSEC) Possible insecure NXDOMAIN for non-existing records under a configured island trust anchor underneath an insecure parent. <p> CVE-2026-96405 <p> Aggregate DNS name chained pointer decompression work leads to degradation of service. <p> CVE-2026-97206 <p> DNS-over-QUIC path-migration can lead to use-after-free on multi-threaded deployments, leading to potential denial of service. <p> CVE-2026-109125 <p> Possible cache poisoning vulnerability via a cache side-channel exposed by 'unwanted-reply-threshold'. <p> <a href=\"https://security-tracker.debian.org/tracker/DSA-6581-1\">https://security-tracker.debian.org/tracker/DSA-6581-1</a>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00497.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-23",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-50106",
+      "title": "DSA-6581-1 unbound - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-23",
+      "updated": "2026-10-23",
+      "summary": "Multiple security vulnerabilities were discovered in Unbound, a validating, recursive, caching DNS resolver. <p> CVE-2026-35501 <p> (DNSSEC) Bypass of a configured island trust anchor underneath an insecure parent from an attacker-controlled NSEC record. <p> CVE-2026-50106 <p> (DNSSEC) Possible insecure NXDOMAIN for non-existing records under a configured island trust anchor underneath an insecure parent. <p> CVE-2026-96405 <p> Aggregate DNS name chained pointer decompression work leads to degradation of service. <p> CVE-2026-97206 <p> DNS-over-QUIC path-migration can lead to use-after-free on multi-threaded deployments, leading to potential denial of service. <p> CVE-2026-109125 <p> Possible cache poisoning vulnerability via a cache side-channel exposed by 'unwanted-reply-threshold'. <p> <a href=\"https://security-tracker.debian.org/tracker/DSA-6581-1\">https://security-tracker.debian.org/tracker/DSA-6581-1</a>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00497.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-23",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-96405",
+      "title": "DSA-6581-1 unbound - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-23",
+      "updated": "2026-10-23",
+      "summary": "Multiple security vulnerabilities were discovered in Unbound, a validating, recursive, caching DNS resolver. <p> CVE-2026-35501 <p> (DNSSEC) Bypass of a configured island trust anchor underneath an insecure parent from an attacker-controlled NSEC record. <p> CVE-2026-50106 <p> (DNSSEC) Possible insecure NXDOMAIN for non-existing records under a configured island trust anchor underneath an insecure parent. <p> CVE-2026-96405 <p> Aggregate DNS name chained pointer decompression work leads to degradation of service. <p> CVE-2026-97206 <p> DNS-over-QUIC path-migration can lead to use-after-free on multi-threaded deployments, leading to potential denial of service. <p> CVE-2026-109125 <p> Possible cache poisoning vulnerability via a cache side-channel exposed by 'unwanted-reply-threshold'. <p> <a href=\"https://security-tracker.debian.org/tracker/DSA-6581-1\">https://security-tracker.debian.org/tracker/DSA-6581-1</a>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00497.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-23",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-97206",
+      "title": "DSA-6581-1 unbound - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-23",
+      "updated": "2026-10-23",
+      "summary": "Multiple security vulnerabilities were discovered in Unbound, a validating, recursive, caching DNS resolver. <p> CVE-2026-35501 <p> (DNSSEC) Bypass of a configured island trust anchor underneath an insecure parent from an attacker-controlled NSEC record. <p> CVE-2026-50106 <p> (DNSSEC) Possible insecure NXDOMAIN for non-existing records under a configured island trust anchor underneath an insecure parent. <p> CVE-2026-96405 <p> Aggregate DNS name chained pointer decompression work leads to degradation of service. <p> CVE-2026-97206 <p> DNS-over-QUIC path-migration can lead to use-after-free on multi-threaded deployments, leading to potential denial of service. <p> CVE-2026-109125 <p> Possible cache poisoning vulnerability via a cache side-channel exposed by 'unwanted-reply-threshold'. <p> <a href=\"https://security-tracker.debian.org/tracker/DSA-6581-1\">https://security-tracker.debian.org/tracker/DSA-6581-1</a>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00497.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-23",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109125",
+      "title": "DSA-6581-1 unbound - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-23",
+      "updated": "2026-10-23",
+      "summary": "Multiple security vulnerabilities were discovered in Unbound, a validating, recursive, caching DNS resolver. <p> CVE-2026-35501 <p> (DNSSEC) Bypass of a configured island trust anchor underneath an insecure parent from an attacker-controlled NSEC record. <p> CVE-2026-50106 <p> (DNSSEC) Possible insecure NXDOMAIN for non-existing records under a configured island trust anchor underneath an insecure parent. <p> CVE-2026-96405 <p> Aggregate DNS name chained pointer decompression work leads to degradation of service. <p> CVE-2026-97206 <p> DNS-over-QUIC path-migration can lead to use-after-free on multi-threaded deployments, leading to potential denial of service. <p> CVE-2026-109125 <p> Possible cache poisoning vulnerability via a cache side-channel exposed by 'unwanted-reply-threshold'. <p> <a href=\"https://security-tracker.debian.org/tracker/DSA-6581-1\">https://security-tracker.debian.org/tracker/DSA-6581-1</a>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00497.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-23",
+      "source_type": "debian_rss",
       "known_exploited": false
     },
     {
@@ -23610,10 +23876,151 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2024-14029",
+      "title": "USN-8952-1: Tornado vulnerabilities",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-22",
+      "updated": "2026-10-22",
+      "summary": "It was discovered that Tornado did not properly handle certain HTTP requests and network inputs. An attacker could possibly use these issues to cause a denial of service, expose sensitive information, or bypass access controls. (CVE-2023-54397, CVE-2024-14029, CVE-2026-91990, CVE-2026-91992, CVE-2026-103262, CVE-2026-103263)",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8952-1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Ubuntu Security Notice RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-22",
+      "source_type": "ubuntu_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-91990",
+      "title": "USN-8952-1: Tornado vulnerabilities",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-22",
+      "updated": "2026-10-22",
+      "summary": "It was discovered that Tornado did not properly handle certain HTTP requests and network inputs. An attacker could possibly use these issues to cause a denial of service, expose sensitive information, or bypass access controls. (CVE-2023-54397, CVE-2024-14029, CVE-2026-91990, CVE-2026-91992, CVE-2026-103262, CVE-2026-103263)",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8952-1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Ubuntu Security Notice RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-22",
+      "source_type": "ubuntu_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-91992",
+      "title": "USN-8952-1: Tornado vulnerabilities",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-22",
+      "updated": "2026-10-22",
+      "summary": "It was discovered that Tornado did not properly handle certain HTTP requests and network inputs. An attacker could possibly use these issues to cause a denial of service, expose sensitive information, or bypass access controls. (CVE-2023-54397, CVE-2024-14029, CVE-2026-91990, CVE-2026-91992, CVE-2026-103262, CVE-2026-103263)",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8952-1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Ubuntu Security Notice RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-22",
+      "source_type": "ubuntu_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-103262",
+      "title": "USN-8952-1: Tornado vulnerabilities",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-22",
+      "updated": "2026-10-22",
+      "summary": "It was discovered that Tornado did not properly handle certain HTTP requests and network inputs. An attacker could possibly use these issues to cause a denial of service, expose sensitive information, or bypass access controls. (CVE-2023-54397, CVE-2024-14029, CVE-2026-91990, CVE-2026-91992, CVE-2026-103262, CVE-2026-103263)",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8952-1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Ubuntu Security Notice RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-22",
+      "source_type": "ubuntu_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-103263",
+      "title": "USN-8952-1: Tornado vulnerabilities",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-22",
+      "updated": "2026-10-22",
+      "summary": "It was discovered that Tornado did not properly handle certain HTTP requests and network inputs. An attacker could possibly use these issues to cause a denial of service, expose sensitive information, or bypass access controls. (CVE-2023-54397, CVE-2024-14029, CVE-2026-91990, CVE-2026-91992, CVE-2026-103262, CVE-2026-103263)",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8952-1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Ubuntu Security Notice RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-22",
+      "source_type": "ubuntu_rss",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-109619",
       "title": "RCE via stale global state",
       "severity": "critical",
       "categories": [
+        "Fortinet",
         "PHP",
         "React / Next.js"
       ],
@@ -24219,6 +24626,166 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-15176",
+      "title": "DSA-6575-1 nginx - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-26",
+      "summary": "Several vulnerabilities were discovered in nginx, a high performance web and reverse proxy server. Depending on the configuration, these could result in memory corruption, denial of service, injection of requests to backend servers, or bypass of client certificate authentication. <p> CVE-2026-15176 <p> Mapping a rewritten request URI to a filesystem path in a location using the alias directive could cause a buffer overflow. <p> CVE-2026-93479 <p> Evaluation of string expressions in the HTTP and stream modules could overwrite reserved buffer space, resulting in a buffer overflow. Affected operations include evaluation of variable document roots and access log paths. <p> The affected code was introduced into the trixie package by an earlier security backport. <p> CVE-2026-95101 <p> Incorrect handling of fragmented unknown HTTP/3 frames could cause their contents to be treated as request body data. When proxying requests, this could allow injection of requests into a backend server or bypass of request body size limits. <p> CVE-2026-97205 <p> A counter tracking pending asynchronous operations could overflow, causing request memory to be freed while still in use. This use-after-free co",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8955-1"
+        },
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00490.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-21",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-93479",
+      "title": "DSA-6575-1 nginx - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-26",
+      "summary": "Several vulnerabilities were discovered in nginx, a high performance web and reverse proxy server. Depending on the configuration, these could result in memory corruption, denial of service, injection of requests to backend servers, or bypass of client certificate authentication. <p> CVE-2026-15176 <p> Mapping a rewritten request URI to a filesystem path in a location using the alias directive could cause a buffer overflow. <p> CVE-2026-93479 <p> Evaluation of string expressions in the HTTP and stream modules could overwrite reserved buffer space, resulting in a buffer overflow. Affected operations include evaluation of variable document roots and access log paths. <p> The affected code was introduced into the trixie package by an earlier security backport. <p> CVE-2026-95101 <p> Incorrect handling of fragmented unknown HTTP/3 frames could cause their contents to be treated as request body data. When proxying requests, this could allow injection of requests into a backend server or bypass of request body size limits. <p> CVE-2026-97205 <p> A counter tracking pending asynchronous operations could overflow, causing request memory to be freed while still in use. This use-after-free co",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8955-1"
+        },
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00490.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-21",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-95101",
+      "title": "DSA-6575-1 nginx - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-26",
+      "summary": "Several vulnerabilities were discovered in nginx, a high performance web and reverse proxy server. Depending on the configuration, these could result in memory corruption, denial of service, injection of requests to backend servers, or bypass of client certificate authentication. <p> CVE-2026-15176 <p> Mapping a rewritten request URI to a filesystem path in a location using the alias directive could cause a buffer overflow. <p> CVE-2026-93479 <p> Evaluation of string expressions in the HTTP and stream modules could overwrite reserved buffer space, resulting in a buffer overflow. Affected operations include evaluation of variable document roots and access log paths. <p> The affected code was introduced into the trixie package by an earlier security backport. <p> CVE-2026-95101 <p> Incorrect handling of fragmented unknown HTTP/3 frames could cause their contents to be treated as request body data. When proxying requests, this could allow injection of requests into a backend server or bypass of request body size limits. <p> CVE-2026-97205 <p> A counter tracking pending asynchronous operations could overflow, causing request memory to be freed while still in use. This use-after-free co",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8955-1"
+        },
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00490.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-21",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-97205",
+      "title": "DSA-6575-1 nginx - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-26",
+      "summary": "Several vulnerabilities were discovered in nginx, a high performance web and reverse proxy server. Depending on the configuration, these could result in memory corruption, denial of service, injection of requests to backend servers, or bypass of client certificate authentication. <p> CVE-2026-15176 <p> Mapping a rewritten request URI to a filesystem path in a location using the alias directive could cause a buffer overflow. <p> CVE-2026-93479 <p> Evaluation of string expressions in the HTTP and stream modules could overwrite reserved buffer space, resulting in a buffer overflow. Affected operations include evaluation of variable document roots and access log paths. <p> The affected code was introduced into the trixie package by an earlier security backport. <p> CVE-2026-95101 <p> Incorrect handling of fragmented unknown HTTP/3 frames could cause their contents to be treated as request body data. When proxying requests, this could allow injection of requests into a backend server or bypass of request body size limits. <p> CVE-2026-97205 <p> A counter tracking pending asynchronous operations could overflow, causing request memory to be freed while still in use. This use-after-free co",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8955-1"
+        },
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00490.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-21",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-97629",
+      "title": "DSA-6575-1 nginx - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-26",
+      "summary": "Several vulnerabilities were discovered in nginx, a high performance web and reverse proxy server. Depending on the configuration, these could result in memory corruption, denial of service, injection of requests to backend servers, or bypass of client certificate authentication. <p> CVE-2026-15176 <p> Mapping a rewritten request URI to a filesystem path in a location using the alias directive could cause a buffer overflow. <p> CVE-2026-93479 <p> Evaluation of string expressions in the HTTP and stream modules could overwrite reserved buffer space, resulting in a buffer overflow. Affected operations include evaluation of variable document roots and access log paths. <p> The affected code was introduced into the trixie package by an earlier security backport. <p> CVE-2026-95101 <p> Incorrect handling of fragmented unknown HTTP/3 frames could cause their contents to be treated as request body data. When proxying requests, this could allow injection of requests into a backend server or bypass of request body size limits. <p> CVE-2026-97205 <p> A counter tracking pending asynchronous operations could overflow, causing request memory to be freed while still in use. This use-after-free co",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8955-1"
+        },
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00490.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-21",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-4271",
       "title": "USN-8890-2: libsoup vulnerabilities",
       "severity": "bulletin",
@@ -24270,6 +24837,286 @@
       "cvss": null,
       "status": "Ubuntu Security Notice RSS notice",
       "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-21",
+      "source_type": "ubuntu_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-5119",
+      "title": "USN-8890-2: libsoup vulnerabilities",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-21",
+      "summary": "USN-8890-1 fixed vulnerabilities in libsoup. This update provides the corresponding updates for libsoup3 on Ubuntu 26.10. Original advisory details: It was discovered that libsoup incorrectly handled certain HTTP/2 requests. A remote attacker could possibly use this issue to cause a denial of service. This issue only affected Ubuntu 24.04 LTS and Ubuntu 26.04 LTS. (CVE-2026-4271) It was discovered that libsoup incorrectly handled certain HTTPS proxy connections. A remote attacker could possibly use this issue to obtain sensitive information. This issue only affected Ubuntu 22.04 LTS, Ubuntu 24.04 LTS, and Ubuntu 26.04 LTS. (CVE-2026-5119) It was discovered that libsoup incorrectly parsed certain chunked HTTP requests. A remote attacker could possibly use this issue to bypass security controls. This issue only affected Ubuntu 22.04 LTS, Ubuntu 24.04 LTS, and Ubuntu 26.04 LTS. (CVE-2026-6324) It was discovered that libsoup incorrectly handled proxy authentication credentials. A remote attacker could possibly use this issue to obtain sensitive information. (CVE-2026-66339) It was discovered that libsoup incorrectly handled certain HTTP Range headers. A remote attacker could possibly u",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8890-2"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Ubuntu Security Notice RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-21",
+      "source_type": "ubuntu_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-6324",
+      "title": "USN-8890-2: libsoup vulnerabilities",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-21",
+      "summary": "USN-8890-1 fixed vulnerabilities in libsoup. This update provides the corresponding updates for libsoup3 on Ubuntu 26.10. Original advisory details: It was discovered that libsoup incorrectly handled certain HTTP/2 requests. A remote attacker could possibly use this issue to cause a denial of service. This issue only affected Ubuntu 24.04 LTS and Ubuntu 26.04 LTS. (CVE-2026-4271) It was discovered that libsoup incorrectly handled certain HTTPS proxy connections. A remote attacker could possibly use this issue to obtain sensitive information. This issue only affected Ubuntu 22.04 LTS, Ubuntu 24.04 LTS, and Ubuntu 26.04 LTS. (CVE-2026-5119) It was discovered that libsoup incorrectly parsed certain chunked HTTP requests. A remote attacker could possibly use this issue to bypass security controls. This issue only affected Ubuntu 22.04 LTS, Ubuntu 24.04 LTS, and Ubuntu 26.04 LTS. (CVE-2026-6324) It was discovered that libsoup incorrectly handled proxy authentication credentials. A remote attacker could possibly use this issue to obtain sensitive information. (CVE-2026-66339) It was discovered that libsoup incorrectly handled certain HTTP Range headers. A remote attacker could possibly u",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8890-2"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Ubuntu Security Notice RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-21",
+      "source_type": "ubuntu_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-66339",
+      "title": "USN-8890-2: libsoup vulnerabilities",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-21",
+      "summary": "USN-8890-1 fixed vulnerabilities in libsoup. This update provides the corresponding updates for libsoup3 on Ubuntu 26.10. Original advisory details: It was discovered that libsoup incorrectly handled certain HTTP/2 requests. A remote attacker could possibly use this issue to cause a denial of service. This issue only affected Ubuntu 24.04 LTS and Ubuntu 26.04 LTS. (CVE-2026-4271) It was discovered that libsoup incorrectly handled certain HTTPS proxy connections. A remote attacker could possibly use this issue to obtain sensitive information. This issue only affected Ubuntu 22.04 LTS, Ubuntu 24.04 LTS, and Ubuntu 26.04 LTS. (CVE-2026-5119) It was discovered that libsoup incorrectly parsed certain chunked HTTP requests. A remote attacker could possibly use this issue to bypass security controls. This issue only affected Ubuntu 22.04 LTS, Ubuntu 24.04 LTS, and Ubuntu 26.04 LTS. (CVE-2026-6324) It was discovered that libsoup incorrectly handled proxy authentication credentials. A remote attacker could possibly use this issue to obtain sensitive information. (CVE-2026-66339) It was discovered that libsoup incorrectly handled certain HTTP Range headers. A remote attacker could possibly u",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8890-2"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Ubuntu Security Notice RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-21",
+      "source_type": "ubuntu_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-77014",
+      "title": "USN-8890-2: libsoup vulnerabilities",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-21",
+      "summary": "USN-8890-1 fixed vulnerabilities in libsoup. This update provides the corresponding updates for libsoup3 on Ubuntu 26.10. Original advisory details: It was discovered that libsoup incorrectly handled certain HTTP/2 requests. A remote attacker could possibly use this issue to cause a denial of service. This issue only affected Ubuntu 24.04 LTS and Ubuntu 26.04 LTS. (CVE-2026-4271) It was discovered that libsoup incorrectly handled certain HTTPS proxy connections. A remote attacker could possibly use this issue to obtain sensitive information. This issue only affected Ubuntu 22.04 LTS, Ubuntu 24.04 LTS, and Ubuntu 26.04 LTS. (CVE-2026-5119) It was discovered that libsoup incorrectly parsed certain chunked HTTP requests. A remote attacker could possibly use this issue to bypass security controls. This issue only affected Ubuntu 22.04 LTS, Ubuntu 24.04 LTS, and Ubuntu 26.04 LTS. (CVE-2026-6324) It was discovered that libsoup incorrectly handled proxy authentication credentials. A remote attacker could possibly use this issue to obtain sensitive information. (CVE-2026-66339) It was discovered that libsoup incorrectly handled certain HTTP Range headers. A remote attacker could possibly u",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8890-2"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Ubuntu Security Notice RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-21",
+      "source_type": "ubuntu_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-77680",
+      "title": "USN-8890-2: libsoup vulnerabilities",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-21",
+      "summary": "USN-8890-1 fixed vulnerabilities in libsoup. This update provides the corresponding updates for libsoup3 on Ubuntu 26.10. Original advisory details: It was discovered that libsoup incorrectly handled certain HTTP/2 requests. A remote attacker could possibly use this issue to cause a denial of service. This issue only affected Ubuntu 24.04 LTS and Ubuntu 26.04 LTS. (CVE-2026-4271) It was discovered that libsoup incorrectly handled certain HTTPS proxy connections. A remote attacker could possibly use this issue to obtain sensitive information. This issue only affected Ubuntu 22.04 LTS, Ubuntu 24.04 LTS, and Ubuntu 26.04 LTS. (CVE-2026-5119) It was discovered that libsoup incorrectly parsed certain chunked HTTP requests. A remote attacker could possibly use this issue to bypass security controls. This issue only affected Ubuntu 22.04 LTS, Ubuntu 24.04 LTS, and Ubuntu 26.04 LTS. (CVE-2026-6324) It was discovered that libsoup incorrectly handled proxy authentication credentials. A remote attacker could possibly use this issue to obtain sensitive information. (CVE-2026-66339) It was discovered that libsoup incorrectly handled certain HTTP Range headers. A remote attacker could possibly u",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8890-2"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Ubuntu Security Notice RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-21",
+      "source_type": "ubuntu_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-85197",
+      "title": "USN-8890-2: libsoup vulnerabilities",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-21",
+      "summary": "USN-8890-1 fixed vulnerabilities in libsoup. This update provides the corresponding updates for libsoup3 on Ubuntu 26.10. Original advisory details: It was discovered that libsoup incorrectly handled certain HTTP/2 requests. A remote attacker could possibly use this issue to cause a denial of service. This issue only affected Ubuntu 24.04 LTS and Ubuntu 26.04 LTS. (CVE-2026-4271) It was discovered that libsoup incorrectly handled certain HTTPS proxy connections. A remote attacker could possibly use this issue to obtain sensitive information. This issue only affected Ubuntu 22.04 LTS, Ubuntu 24.04 LTS, and Ubuntu 26.04 LTS. (CVE-2026-5119) It was discovered that libsoup incorrectly parsed certain chunked HTTP requests. A remote attacker could possibly use this issue to bypass security controls. This issue only affected Ubuntu 22.04 LTS, Ubuntu 24.04 LTS, and Ubuntu 26.04 LTS. (CVE-2026-6324) It was discovered that libsoup incorrectly handled proxy authentication credentials. A remote attacker could possibly use this issue to obtain sensitive information. (CVE-2026-66339) It was discovered that libsoup incorrectly handled certain HTTP Range headers. A remote attacker could possibly u",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8890-2"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Ubuntu Security Notice RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-21",
+      "source_type": "ubuntu_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-85534",
+      "title": "USN-8890-2: libsoup vulnerabilities",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-21",
+      "summary": "USN-8890-1 fixed vulnerabilities in libsoup. This update provides the corresponding updates for libsoup3 on Ubuntu 26.10. Original advisory details: It was discovered that libsoup incorrectly handled certain HTTP/2 requests. A remote attacker could possibly use this issue to cause a denial of service. This issue only affected Ubuntu 24.04 LTS and Ubuntu 26.04 LTS. (CVE-2026-4271) It was discovered that libsoup incorrectly handled certain HTTPS proxy connections. A remote attacker could possibly use this issue to obtain sensitive information. This issue only affected Ubuntu 22.04 LTS, Ubuntu 24.04 LTS, and Ubuntu 26.04 LTS. (CVE-2026-5119) It was discovered that libsoup incorrectly parsed certain chunked HTTP requests. A remote attacker could possibly use this issue to bypass security controls. This issue only affected Ubuntu 22.04 LTS, Ubuntu 24.04 LTS, and Ubuntu 26.04 LTS. (CVE-2026-6324) It was discovered that libsoup incorrectly handled proxy authentication credentials. A remote attacker could possibly use this issue to obtain sensitive information. (CVE-2026-66339) It was discovered that libsoup incorrectly handled certain HTTP Range headers. A remote attacker could possibly u",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8890-2"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Ubuntu Security Notice RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-21",
+      "source_type": "ubuntu_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2022-4904",
+      "title": "USN-8951-1: c-ares vulnerabilities",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-21",
+      "summary": "It was discovered that c-ares incorrectly parsed certain SOA replies. A remote attacker could possibly use this issue to cause c-ares to crash, resulting in a denial of service. This issue only affected Ubuntu 16.04 LTS and Ubuntu 18.04 LTS. (CVE-2020-22217) It was discovered that c-ares incorrectly handled certain sortlist strings. A remote attacker could possibly use this issue to cause c-ares to crash, resulting in a denial of service, or execute arbitrary code. This issue only affected Ubuntu 16.04 LTS. (CVE-2022-4904) It was discovered that c-ares did not properly limit DNS compression pointer hops or assembled name lengths when parsing DNS names. A remote attacker could possibly use this issue to cause c-ares to use excessive resources, resulting in a denial of service. (CVE-2026-69184) It was discovered that c-ares did not properly validate record count fields before allocating memory when parsing DNS responses. A remote attacker could possibly use this issue to cause c-ares to use excessive resources, resulting in a denial of service. This issue only affected Ubuntu 24.04 LTS and Ubuntu 26.04 LTS. (CVE-2026-69186)",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8951-1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Ubuntu Security Notice RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-21",
+      "source_type": "ubuntu_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-69184",
+      "title": "USN-8951-1: c-ares vulnerabilities",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-21",
+      "summary": "It was discovered that c-ares incorrectly parsed certain SOA replies. A remote attacker could possibly use this issue to cause c-ares to crash, resulting in a denial of service. This issue only affected Ubuntu 16.04 LTS and Ubuntu 18.04 LTS. (CVE-2020-22217) It was discovered that c-ares incorrectly handled certain sortlist strings. A remote attacker could possibly use this issue to cause c-ares to crash, resulting in a denial of service, or execute arbitrary code. This issue only affected Ubuntu 16.04 LTS. (CVE-2022-4904) It was discovered that c-ares did not properly limit DNS compression pointer hops or assembled name lengths when parsing DNS names. A remote attacker could possibly use this issue to cause c-ares to use excessive resources, resulting in a denial of service. (CVE-2026-69184) It was discovered that c-ares did not properly validate record count fields before allocating memory when parsing DNS responses. A remote attacker could possibly use this issue to cause c-ares to use excessive resources, resulting in a denial of service. This issue only affected Ubuntu 24.04 LTS and Ubuntu 26.04 LTS. (CVE-2026-69186)",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8951-1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Ubuntu Security Notice RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-21",
+      "source_type": "ubuntu_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-69186",
+      "title": "USN-8951-1: c-ares vulnerabilities",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-21",
+      "summary": "It was discovered that c-ares incorrectly parsed certain SOA replies. A remote attacker could possibly use this issue to cause c-ares to crash, resulting in a denial of service. This issue only affected Ubuntu 16.04 LTS and Ubuntu 18.04 LTS. (CVE-2020-22217) It was discovered that c-ares incorrectly handled certain sortlist strings. A remote attacker could possibly use this issue to cause c-ares to crash, resulting in a denial of service, or execute arbitrary code. This issue only affected Ubuntu 16.04 LTS. (CVE-2022-4904) It was discovered that c-ares did not properly limit DNS compression pointer hops or assembled name lengths when parsing DNS names. A remote attacker could possibly use this issue to cause c-ares to use excessive resources, resulting in a denial of service. (CVE-2026-69184) It was discovered that c-ares did not properly validate record count fields before allocating memory when parsing DNS responses. A remote attacker could possibly use this issue to cause c-ares to use excessive resources, resulting in a denial of service. This issue only affected Ubuntu 24.04 LTS and Ubuntu 26.04 LTS. (CVE-2026-69186)",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8951-1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Ubuntu Security Notice RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
       "source_updated_at": "2026-10-21",
       "source_type": "ubuntu_rss",
       "known_exploited": false
@@ -28995,36 +29842,40 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "severity": "high",
+      "cvss": "8.8",
       "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
+        "Windows",
+        "Windows 11 OS"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
       "sources": [
         {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
         },
         {
           "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+        },
+        {
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
         }
       ],
       "kind": "cve",
       "source_type": "vendor_baseline",
       "source_updated_at": "2026-10-13",
       "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
@@ -29066,40 +29917,36 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
-      "severity": "high",
-      "cvss": "8.8",
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
       "categories": [
-        "Windows",
-        "Windows 11 OS"
+        ".NET / ASP.NET",
+        ".NET Core"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
       "sources": [
         {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
         },
         {
           "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
-        },
-        {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
         }
       ],
       "kind": "cve",
       "source_type": "vendor_baseline",
       "source_updated_at": "2026-10-13",
       "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
@@ -74046,845 +74893,56 @@
       "source_updated_at": "2025-03-11",
       "source_type": "cisa_kev",
       "known_exploited": true
-    },
-    {
-      "id": "CVE-2025-22226",
-      "title": "VMware ESXi, Workstation, and Fusion Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2025-03-04",
-      "summary": "VMware ESXi, Workstation, and Fusion contain an information disclosure vulnerability due to an out-of-bounds read in HGFS. Successful exploitation allows an attacker with administrative privileges to a virtual machine to leak memory from the vmx process.",
-      "affected": "VMware ESXi, Workstation, and Fusion. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-03-04",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2025-22225",
-      "title": "VMware ESXi Arbitrary Write Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2025-03-04",
-      "summary": "VMware ESXi contains an arbitrary write vulnerability. Successful exploitation allows an attacker with privileges within the VMX process to trigger an arbitrary kernel write leading to an escape of the sandbox.",
-      "affected": "VMware ESXi. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-03-04",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2025-22224",
-      "title": "VMware ESXi and Workstation TOCTOU Race Condition Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2025-03-04",
-      "summary": "VMware ESXi and Workstation contain a time-of-check time-of-use (TOCTOU) race condition vulnerability that leads to an out-of-bounds write. Successful exploitation enables an attacker with local administrative privileges on a virtual machine to execute code as the virtual machine's VMX process running on the host.",
-      "affected": "VMware ESXi and Workstation. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-03-04",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2024-50302",
-      "title": "Linux Kernel Use of Uninitialized Resource Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "",
-      "updated": "2025-03-04",
-      "summary": "The Linux kernel contains a use of uninitialized resource vulnerability that allows an attacker to leak kernel memory via a specially crafted HID report.",
-      "affected": "Linux Kernel. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-03-04",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2018-8639",
-      "title": "Microsoft Windows Win32k Improper Resource Shutdown or Release Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-03-03",
-      "summary": "Microsoft Windows Win32k contains an improper resource shutdown or release vulnerability that allows for local, authenticated privilege escalation. An attacker who successfully exploited this vulnerability could run arbitrary code in kernel mode.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2025-24989",
-      "title": "Microsoft Power Pages Improper Access Control Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft Power Platform"
-      ],
-      "published": "",
-      "updated": "2025-02-21",
-      "summary": "Microsoft Power Pages contains an improper access control vulnerability that allows an unauthorized attacker to elevate privileges over a network potentially bypassing the user registration control.",
-      "affected": "Microsoft Power Pages. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-02-21",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2025-24200",
-      "title": "Apple iOS and iPadOS Incorrect Authorization Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2025-02-12",
-      "summary": "Apple iOS and iPadOS contains an incorrect authorization vulnerability that allows a physical attacker to disable USB Restricted Mode on a locked device.",
-      "affected": "Apple iOS and iPadOS. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-02-12",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2025-21418",
-      "title": "Microsoft Windows Ancillary Function Driver for WinSock Heap-Based Buffer Overflow Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-02-11",
-      "summary": "Microsoft Windows Ancillary Function Driver for WinSock contains a heap-based buffer overflow vulnerability that allows for privilege escalation, enabling a local attacker to gain SYSTEM privileges.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-02-11",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2025-21391",
-      "title": "Microsoft Windows Storage Link Following Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-02-11",
-      "summary": "Microsoft Windows Storage contains a link following vulnerability that could allow for privilege escalation. This vulnerability could allow an attacker to delete data including data that results in the service being unavailable.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-02-11",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2020-15069",
-      "title": "Sophos XG Firewall Buffer Overflow Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "",
-      "updated": "2025-02-06",
-      "summary": "Sophos XG Firewall contains a buffer overflow vulnerability that allows for remote code execution via the \"HTTP/S bookmark\" feature.",
-      "affected": "Sophos XG Firewall. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-02-06",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2024-53104",
-      "title": "Linux Kernel Out-of-Bounds Write Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "",
-      "updated": "2025-02-05",
-      "summary": "Linux kernel contains an out-of-bounds write vulnerability in the uvc_parse_streaming component of the USB Video Class (UVC) driver that could allow for physical escalation of privilege.",
-      "affected": "Linux Kernel. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-02-05",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2024-29059",
-      "title": "Microsoft .NET Framework Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        ".NET / ASP.NET"
-      ],
-      "published": "",
-      "updated": "2025-02-04",
-      "summary": "Microsoft .NET Framework contains an information disclosure vulnerability that exposes the ObjRef URI to an attacker, ultimately enabling remote code execution.",
-      "affected": "Microsoft .NET Framework. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-02-04",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2020-11023",
-      "title": "JQuery Cross-Site Scripting (XSS) Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "jQuery / Bootstrap"
-      ],
-      "published": "",
-      "updated": "2025-01-23",
-      "summary": "JQuery contains a persistent cross-site scripting (XSS) vulnerability. When passing maliciously formed, untrusted input enclosed in HTML tags, JQuery's DOM manipulators can execute untrusted code in the context of the user's browser.",
-      "affected": "JQuery JQuery. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-01-23",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2025-21335",
-      "title": "Microsoft Windows Hyper-V NT Kernel Integration VSP Use-After-Free Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "HyperV",
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-01-14",
-      "summary": "Microsoft Windows Hyper-V NT Kernel Integration VSP contains a use-after-free vulnerability that allows a local attacker to gain SYSTEM privileges.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-01-14",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2025-21334",
-      "title": "Microsoft Windows Hyper-V NT Kernel Integration VSP Use-After-Free Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "HyperV",
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-01-14",
-      "summary": "Microsoft Windows Hyper-V NT Kernel Integration VSP contains a use-after-free vulnerability that allows a local attacker to gain SYSTEM privileges.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-01-14",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2025-21333",
-      "title": "Microsoft Windows Hyper-V NT Kernel Integration VSP Heap-based Buffer Overflow Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "HyperV",
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-01-14",
-      "summary": "Microsoft Windows Hyper-V NT Kernel Integration VSP contains a heap-based buffer overflow vulnerability that allows a local attacker to gain SYSTEM privileges.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-01-14",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2024-55591",
-      "title": "Fortinet FortiOS and FortiProxy Authentication Bypass Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Fortinet",
-        "Node.js / npm"
-      ],
-      "published": "",
-      "updated": "2025-01-14",
-      "summary": "Fortinet FortiOS and FortiProxy contain an authentication bypass vulnerability that may allow an unauthenticated, remote attacker to gain super-admin privileges via crafted requests to Node.js websocket module.",
-      "affected": "Fortinet FortiOS and FortiProxy. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-01-14",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2024-35250",
-      "title": "Microsoft Windows Kernel-Mode Driver Untrusted Pointer Dereference Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2024-12-16",
-      "summary": "Microsoft Windows Kernel-Mode Driver contains an untrusted pointer dereference vulnerability that allows a local attacker to escalate privileges.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2024-12-16",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2024-49138",
-      "title": "Microsoft Windows Common Log File System (CLFS) Driver Heap-Based Buffer Overflow Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2024-12-10",
-      "summary": "Microsoft Windows Common Log File System (CLFS) driver contains a heap-based buffer overflow vulnerability that allows a local attacker to escalate privileges.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2024-12-10",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2024-38813",
-      "title": "VMware vCenter Server Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2024-11-20",
-      "summary": "VMware vCenter contains an improper check for dropped privileges vulnerability. This vulnerability could allow an attacker with network access to the vCenter Server to escalate privileges to root by sending a specially crafted packet.",
-      "affected": "VMware vCenter Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2024-11-20",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2024-38812",
-      "title": "VMware vCenter Server Heap-Based Buffer Overflow Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2024-11-20",
-      "summary": "VMware vCenter Server contains a heap-based buffer overflow vulnerability in the implementation of the DCERPC protocol. This vulnerability could allow an attacker with network access to the vCenter Server to execute remote code by sending a specially crafted packet.",
-      "affected": "VMware vCenter Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2024-11-20",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2024-43451",
-      "title": "Microsoft Windows NTLMv2 Hash Disclosure Spoofing Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2024-11-12",
-      "summary": "Microsoft Windows contains an NTLMv2 hash spoofing vulnerability that could result in disclosing a user's NTLMv2 hash to an attacker via a file open operation. The attacker could then leverage this hash to impersonate that user.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2024-11-12",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2024-49039",
-      "title": "Microsoft Windows Task Scheduler Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2024-11-12",
-      "summary": "Microsoft Windows Task Scheduler contains a privilege escalation vulnerability that can allow an attacker-provided, local application to escalate privileges outside of its AppContainer, and access privileged RPC functions.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2024-11-12",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2024-43093",
-      "title": "Android Framework Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2024-11-07",
-      "summary": "Android Framework contains an unspecified vulnerability that allows for privilege escalation.",
-      "affected": "Android Framework. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2024-11-07",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2024-47575",
-      "title": "Fortinet FortiManager Missing Authentication Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Fortinet"
-      ],
-      "published": "",
-      "updated": "2024-10-23",
-      "summary": "Fortinet FortiManager contains a missing authentication vulnerability in the fgfmd daemon that allows a remote, unauthenticated attacker to execute arbitrary code or commands via specially crafted requests.",
-      "affected": "Fortinet FortiManager. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2024-10-23",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2024-38094",
-      "title": "Microsoft SharePoint Deserialization Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365",
-        "SharePoint / SharePoint Server"
-      ],
-      "published": "",
-      "updated": "2024-10-22",
-      "summary": "Microsoft SharePoint contains a deserialization vulnerability that allows for remote code execution.",
-      "affected": "Microsoft SharePoint. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2024-10-22",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2024-40711",
-      "title": "Veeam Backup and Replication Deserialization Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Veeam Backup & Replication"
-      ],
-      "published": "",
-      "updated": "2024-10-17",
-      "summary": "Veeam Backup and Replication contains a deserialization vulnerability allowing an unauthenticated user to perform remote code execution.",
-      "affected": "Veeam Backup & Replication. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2024-10-17",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2024-30088",
-      "title": "Microsoft Windows Kernel TOCTOU Race Condition Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2024-10-15",
-      "summary": "Microsoft Windows Kernel contains a time-of-check to time-of-use (TOCTOU) race condition vulnerability that could allow for privilege escalation.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2024-10-15",
-      "source_type": "cisa_kev",
-      "known_exploited": true
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-28T12:42:42Z",
-      "last_attempt": "2026-10-28T12:42:42Z",
+      "last_success": "2026-10-28T12:44:30Z",
+      "last_attempt": "2026-10-28T12:44:30Z",
       "items_processed": 275,
       "url": "https://api.github.com/advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-28T12:42:42Z",
-      "last_attempt": "2026-10-28T12:42:42Z",
+      "last_success": "2026-10-28T12:44:30Z",
+      "last_attempt": "2026-10-28T12:44:30Z",
       "items_processed": 382,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-28T12:42:42Z",
-      "last_attempt": "2026-10-28T12:42:42Z",
+      "last_success": "2026-10-28T12:44:30Z",
+      "last_attempt": "2026-10-28T12:44:30Z",
       "items_processed": 482,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-28T12:42:42Z",
-      "last_attempt": "2026-10-28T12:42:42Z",
+      "last_success": "2026-10-28T12:44:30Z",
+      "last_attempt": "2026-10-28T12:44:30Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-28T12:42:42Z",
-      "last_attempt": "2026-10-28T12:42:42Z",
+      "last_success": "2026-10-28T12:44:30Z",
+      "last_attempt": "2026-10-28T12:44:30Z",
       "items_processed": 2553,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-28T12:42:42Z",
-      "last_attempt": "2026-10-28T12:42:42Z",
-      "items_processed": 4,
+      "last_success": "2026-10-28T12:44:30Z",
+      "last_attempt": "2026-10-28T12:44:30Z",
+      "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-28T12:42:42Z",
-      "last_attempt": "2026-10-28T12:42:42Z",
-      "items_processed": 4,
+      "last_success": "2026-10-28T12:44:30Z",
+      "last_attempt": "2026-10-28T12:44:30Z",
+      "items_processed": 23,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "osv_recent": {
@@ -74895,41 +74953,41 @@
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-28T12:42:42Z",
-      "last_attempt": "2026-10-28T12:42:42Z",
-      "items_processed": 0,
+      "last_success": "2026-10-28T12:44:30Z",
+      "last_attempt": "2026-10-28T12:44:30Z",
+      "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-28T12:42:42Z",
-      "last_attempt": "2026-10-28T12:42:42Z",
+      "last_success": "2026-10-28T12:44:30Z",
+      "last_attempt": "2026-10-28T12:44:30Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-28T12:42:42Z",
-      "last_attempt": "2026-10-28T12:42:42Z",
+      "last_success": "2026-10-28T12:44:30Z",
+      "last_attempt": "2026-10-28T12:44:30Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-28T12:42:42Z",
-      "last_attempt": "2026-10-28T12:42:42Z",
+      "last_success": "2026-10-28T12:44:30Z",
+      "last_attempt": "2026-10-28T12:44:30Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-28T12:42:42Z",
-      "last_attempt": "2026-10-28T12:42:42Z",
+      "last_success": "2026-10-28T12:44:30Z",
+      "last_attempt": "2026-10-28T12:44:30Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     }
   },
-  "last_checked_at": "2026-10-28T12:42:42Z",
-  "last_successful_update": "2026-10-28T12:42:42Z",
+  "last_checked_at": "2026-10-28T12:44:30Z",
+  "last_successful_update": "2026-10-28T12:44:30Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
