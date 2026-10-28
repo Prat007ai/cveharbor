@@ -15,7 +15,126 @@ function state(isAuth,address=''){
  authenticated=isAuth;email=address;
  $('accountSignedOut').hidden=isAuth;$('accountSignedIn').hidden=!isAuth;
  $('accountIdentity').textContent=isAuth?'Signed in: '+address:'';
+ if(!isAuth){
+  if(stackTimer)clearTimeout(stackTimer);
+  stackTimer=null;savedCloudStack=null;linkedWatchlist=false;
+ }
+ showWatchlistStatus();
 }
+
+let savedCloudStack=null,linkedWatchlist=false,stackSaving=null,stackTimer=null;
+const selectedHere=()=>window.CVEHARBOR_WATCHLIST?.getSelected?.()||[];
+const sameList=(a,b)=>Array.isArray(a)&&Array.isArray(b)&&
+  a.length===b.length&&[...a].sort().every((item,i)=>item===[...b].sort()[i]);
+function showWatchlistStatus(){
+ const headline=$('stackSyncHeadline'),message=$('stackSyncStatus');
+ const save=$('accountSaveStack'),load=$('accountLoadStack');
+ if(!headline||!message||!save||!load)return;
+ const current=selectedHere();
+ save.disabled=!authenticated||!Array.isArray(savedCloudStack);
+ load.hidden=!authenticated||!Array.isArray(savedCloudStack)||sameList(current,savedCloudStack);
+ if(!authenticated){
+  headline.textContent='Selected in this browser';
+  message.textContent=current.length+' selected technologies. Sign in on the right to save them for your email reports.';
+  return;
+ }
+ if(!Array.isArray(savedCloudStack)){
+  headline.textContent='Checking account watchlist';
+  message.textContent='Checking the technologies saved for your email reports.';
+  return;
+ }
+ const same=sameList(current,savedCloudStack);
+ if(linkedWatchlist){
+  headline.textContent=same&&(!stackSaving&&!stackTimer)?'Email watchlist is up to date':'Saving watchlist changes';
+  message.textContent=same&&!stackSaving&&!stackTimer?
+    savedCloudStack.length+' technologies saved to your account for personalized email reports. Future checkbox changes sync automatically.':
+    'Your technology changes are being saved. Email reports will use the updated selections after synchronization.';
+  save.textContent='Save selections now';
+ }else{
+  headline.textContent='Connect your browser selections';
+  message.textContent=current.length+' selected in this browser, '+savedCloudStack.length+
+    ' saved in your email watchlist. Choose which list to use before enabling automatic synchronization.';
+  save.textContent='Use these selections for email reports';
+ }
+}
+async function readCloudStack(){
+ const result=await call('/stack');
+ savedCloudStack=(result.stack||[]).map(row=>row.technology).filter(x=>typeof x==='string');
+ linkedWatchlist=sameList(selectedHere(),savedCloudStack);
+ showWatchlistStatus();
+}
+function planStackSave(){
+ if(stackTimer)clearTimeout(stackTimer);
+ if(!authenticated||!linkedWatchlist)return;
+ if(sameList(selectedHere(),savedCloudStack)){showWatchlistStatus();return;}
+ stackTimer=setTimeout(()=>{
+  stackTimer=null;
+  saveCloudStack().catch(error=>note('Automatic watchlist sync failed. Save the selections again: '+error.message));
+ },450);
+ showWatchlistStatus();
+}
+async function saveCloudStack(){
+ if(!authenticated)throw Error('Please sign in first');
+ if(stackSaving){
+  await stackSaving;
+  if(sameList(selectedHere(),savedCloudStack))return;
+ }
+ if(!sameList(selectedHere(),savedCloudStack)){
+  const list=selectedHere();
+  stackSaving=call('/stack','PUT',{stack:list.map(technology=>({technology,product_version:''}))});
+  showWatchlistStatus();
+  try{
+   await stackSaving;
+   savedCloudStack=list;
+   linkedWatchlist=true;
+  }catch(error){
+   linkedWatchlist=false;
+   throw error;
+  }finally{
+   stackSaving=null;
+   showWatchlistStatus();
+  }
+ }
+ if(linkedWatchlist&&!sameList(selectedHere(),savedCloudStack))planStackSave();
+}
+async function flushWatchlist(){
+ if(stackTimer){clearTimeout(stackTimer);stackTimer=null;}
+ if(!linkedWatchlist||!Array.isArray(savedCloudStack)){
+  throw Error('Save your selected technologies for email reports first.');
+ }
+ for(let i=0;i<5&&(!sameList(selectedHere(),savedCloudStack)||stackSaving);i++)await saveCloudStack();
+ if(!sameList(selectedHere(),savedCloudStack))throw Error('Your watchlist has unsaved changes. Try again.');
+ showWatchlistStatus();
+}
+window.addEventListener('cveharbor:stack-changed',()=>{
+ if(authenticated&&linkedWatchlist)planStackSave();
+ else showWatchlistStatus();
+});
+$('accountSaveStack').addEventListener('click',async()=>{
+ if(!authenticated||!Array.isArray(savedCloudStack))return;
+ const local=selectedHere();
+ if(!linkedWatchlist&&!sameList(local,savedCloudStack)&&savedCloudStack.length &&
+    !window.confirm('Replace '+savedCloudStack.length+' saved email watchlist technologies with '+local.length+' selections from this browser?'))return;
+ const button=$('accountSaveStack');button.disabled=true;
+ try{await saveCloudStack();linkedWatchlist=true;showWatchlistStatus();note('These technologies are now saved for your email reports. Changes you make here will sync automatically.')}
+ catch(e){note('Could not save your email watchlist: '+e.message)}
+ finally{showWatchlistStatus()}
+});
+$('accountLoadStack').addEventListener('click',async()=>{
+ if(!authenticated)return;
+ const button=$('accountLoadStack');button.disabled=true;
+ try{
+  const result=await call('/stack');
+  const incoming=(result.stack||[]).map(x=>x.technology);
+  if(selectedHere().length&&!sameList(selectedHere(),incoming)&&
+     !window.confirm('Replace this browser\'s technology selections with '+incoming.length+' technologies saved to your account?'))return;
+  window.CVEHARBOR_WATCHLIST?.loadFromCloud?.(incoming);
+  savedCloudStack=incoming;
+  linkedWatchlist=true;
+  note('Saved cloud watchlist loaded. Your email report technology selections match this browser.');
+ }catch(e){note('Unable to load your account watchlist: '+e.message)}
+ finally{showWatchlistStatus()}
+});
 async function loadPrefs(){
  const data=await call('/alerts'),prefs=data.preferences||{};
  $('alertEnabled').checked=!!data.consented&&(prefs.enabled===1||prefs.enabled===true);
@@ -37,6 +156,7 @@ async function check(){
   if(data.authenticated){
    note('Your account is connected. You can sync your local data when ready.');
    try{await loadPrefs()}catch(_){note('Signed in, but saved alert preferences could not be loaded.')}
+   try{await readCloudStack()}catch(_){note('Signed in, but the email watchlist could not be loaded. Refresh to retry.')}
   }else note('Sign in to synchronize data.');
  }catch(error){
   state(false);
@@ -57,7 +177,7 @@ $('accountVerify').addEventListener('submit',async ev=>{
  ev.preventDefault();const button=$('accountVerifyButton');button.disabled=true;
  try{
   const result=await call('/auth/verify','POST',{challenge_id:$('accountChallenge').value,salt:$('accountSalt').value,code:$('accountCode').value});
-  if(result.authenticated){state(true,result.email);service('Account service available');note('Signed in. Your existing local selections are not overwritten until you choose a sync action.');try{await loadPrefs()}catch(_){note('Signed in, but saved alert preferences could not be loaded.')}}
+  if(result.authenticated){state(true,result.email);service('Account service available');note('Signed in. Your existing local selections are not overwritten until you choose a sync action.');try{await loadPrefs()}catch(_){note('Signed in, but saved alert preferences could not be loaded.')}try{await readCloudStack()}catch(_){note('Signed in, but the watchlist could not be loaded. Refresh to retry.')}}
  }catch(e){note(e.message)}finally{button.disabled=false}
 });
 $('accountLogout').addEventListener('click',async()=>{try{await call('/auth/logout','POST');state(false);note('Signed out. Locally saved data remains on this browser.')}catch(e){note(e.message)}});
@@ -70,6 +190,7 @@ $('accountUpload').addEventListener('click',async()=>{
   if(!confirm('Upload '+selected.length+' saved technologies and '+remediation.length+' remediation records from THIS browser? This replaces the records currently saved in your CVEHarbor account.'))return;
   if(selected.length===0&&remediation.length===0&&!confirm('This browser has no saved records. Uploading will CLEAR any cloud technology selections and remediation records. Are you sure?'))return;
   await call('/stack','PUT',{stack:selected.slice(0,100).map(technology=>({technology,product_version:''}))});
+  savedCloudStack=selected.slice(0,100);linkedWatchlist=true;showWatchlistStatus();
   await call('/remediations','PUT',{remediations:remediation.slice(0,250)});
   note('Local technology selections and remediation records uploaded to your account.');
  }catch(e){note('Upload not completed: '+e.message)}
@@ -79,14 +200,21 @@ $('accountDownload').addEventListener('click',async()=>{
  if(!confirm('Replace this browser’s technology selections and remediation records with your saved account data? Export local records first if needed.'))return;
  try{
   const [stack,remediation]=await Promise.all([call('/stack'),call('/remediations')]);
-  localStorage.setItem('cveharbor.stack.v1',JSON.stringify(stack.stack.map(x=>x.technology)));
+  const technologies=stack.stack.map(x=>x.technology);
+  localStorage.setItem('cveharbor.stack.v1',JSON.stringify(technologies));
   localStorage.setItem('cveharbor.remediation.v1',JSON.stringify(remediation.remediations));
-  note('Account data downloaded. Refresh this page to display the updated records.');
+  window.CVEHARBOR_WATCHLIST?.loadFromCloud?.(technologies);
+  savedCloudStack=technologies;linkedWatchlist=true;showWatchlistStatus();
+  note('Saved account data downloaded. Technologies are visible now. Refresh to update the remediation tracker.');
  }catch(e){note('Download failed: '+e.message)}
 });
 $('accountAlerts').addEventListener('submit',async ev=>{
  ev.preventDefault();if(!authenticated)return;
  try{
+  if($('alertEnabled').checked){
+   if(!selectedHere().length)throw Error('Choose at least one technology before subscribing.');
+   await flushWatchlist();
+  }
   const data=await call('/alerts','PUT',{enabled:$('alertEnabled').checked,severity:$('alertSeverity').value,frequency:$('alertFrequency').value});
   note(data.message||'Preferences saved.');
   await loadPrefs();
@@ -97,6 +225,8 @@ $('accountSendTest').addEventListener('click',async()=>{
  const button=$('accountSendTest');button.disabled=true;
  note('Preparing a sample email using your saved cloud technology stack...');
  try{
+  if(!selectedHere().length)throw Error('Choose a technology and save it to your email watchlist before testing.');
+  await flushWatchlist();
   const data=await call('/alerts/test','POST');
   note(data.message||'Sample email accepted by SMTP2GO.');
  }catch(error){note('Sample email not sent: '+error.message)}
