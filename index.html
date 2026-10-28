@@ -8,7 +8,7 @@
   <meta property="og:title" content="CVEHarbor | Know the risk. Find the fix.">
   <meta property="og:description" content="Vulnerability advisories, severity dashboards, affected versions, vendor sources and remediation guidance.">
   <title>CVEHarbor | Vulnerability Intelligence</title>
-  <link rel="stylesheet" href="styles.css?v=mobile-layout-1">
+  <link rel="stylesheet" href="styles.css?v=chart-insights-1">
 </head>
 <body>
   <a class="skip-link" href="#advisories">Skip to advisories</a>
@@ -72,7 +72,7 @@
           </div>
           <div class="tech-chart-empty" id="chartNoRecords" hidden>No indexed advisories match this reporting period. Select All indexed for older records.</div>
           <div id="techBars" class="tech-bars"></div>
-          <button type="button" class="tech-chart-showall" id="chartShowAll">Show all 38 technologies</button><div class="chart-note">All indexed includes historical records. New in 30 days uses original publication dates. Provider data may be incomplete during a source outage; zero means no indexed match, not a confirmed absence of vulnerabilities.</div></article>
+          <button type="button" class="tech-chart-showall" id="chartShowAll">Show all 38 technologies</button><div class="chart-note">All indexed includes historical records. New in 30 days uses original publication dates. Provider data may be incomplete during a source outage; zero means no indexed match, not a confirmed absence of vulnerabilities.</div><div class="chart-insights" id="chartInsights" aria-live="polite"></div></article>
         <article class="data-panel right-panel"><div class="panel-heading"><div><h3>Focus areas</h3><p>Recent high impact disclosures, confirmed exploitation and important updates. Select an item to see its details.</p></div><span class="mini-label">UP TO 9 ITEMS</span></div><div id="priorityList" class="focus-list"></div><a class="quiet-link" href="#advisories">See all findings <span aria-hidden="true">↗</span></a></article>
       </div>
     </section>
@@ -138,6 +138,6 @@
     </div>
   </dialog>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=mobile-layout-1"></script>
+  <script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script src="data.js"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=chart-insights-1"></script>
 </body>
 </html>
