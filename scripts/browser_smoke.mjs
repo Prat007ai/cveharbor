@@ -200,10 +200,11 @@ malwareWindow.CVEHARBOR_MALWARE={
   checked_at:new Date().toISOString(),
   samples:Array.from({length:11},(_,i)=>({
     sha256:String(i+1).padStart(64,'0'),
-    family:i===10?'RedLine':'Mirai',
+    family:i===0?'Mirai <img src=x onerror=alert(1)>':i===10?'RedLine':'Mirai',
     type:i===10?'Infostealer':'Botnet',
     first_seen:'2026-10-28 12:00:00',file_type:'elf',
-    tags:[],source_url:'https://bazaar.abuse.ch/'
+    tags:i===0?['IoT botnet','<script>untrusted tag</script>']:[],
+    source_url:i===0?'javascript:alert(1)':'https://bazaar.abuse.ch/'
   })),
   advisories:[],sources:{malwarebazaar:{ok:true}}
 };
@@ -212,6 +213,37 @@ const familyCards=()=>malwareDoc.querySelectorAll('#malwareFamilyDirectory .malw
 const sampleCards=()=>malwareDoc.querySelectorAll('#malwareRows .malware-entry').length;
 const familyToggle=malwareDoc.getElementById('malwareShowAllFamilies');
 const sampleToggle=malwareDoc.getElementById('malwareShowAllSamples');
+assert.ok(malwareDoc.getElementById('malwareDetailDialog'),'malware detail popup exists');
+const firstMalwareCard=malwareDoc.querySelector('#malwareRows .malware-entry');
+const sampleDetailsButton=firstMalwareCard.querySelector('.malware-detail-trigger');
+assert.equal(sampleDetailsButton?.tagName,'BUTTON','samples open an on-site detail dialog');
+assert.equal(sampleDetailsButton?.getAttribute('aria-haspopup'),'dialog','sample trigger advertises dialog');
+assert.equal(firstMalwareCard.querySelectorAll('a[href]').length,0,'sample cards no longer navigate away');
+sampleDetailsButton.click();
+const sampleDialog=malwareDoc.getElementById('malwareDetailDialog');
+const sampleContents=malwareDoc.getElementById('malwareDetailContent');
+assert.ok(sampleDialog.hasAttribute('open'),'sample detail popup opened');
+assert.match(sampleContents.textContent,/SHA256 file hash/,'hash label is visible');
+assert.match(sampleContents.textContent,/0000000000000000000000000000000000000000000000000000000000000001/,'full SHA256 shown');
+assert.match(sampleContents.textContent,/2026-10-28 12:00:00/,'first shared UTC timestamp is shown');
+assert.match(sampleContents.textContent,/Reported classification/,'malware type is shown');
+assert.match(sampleContents.textContent,/IoT botnet/,'reported tags are shown');
+assert.match(sampleContents.textContent,/Original malware intelligence source/,'source is inside dialog');
+assert.match(sampleContents.textContent,/incomplete or inferred/,'classification limitations are visible');
+assert.match(sampleContents.textContent,/Mirai <img src=x onerror=alert\(1\)>/,'untrusted text is displayed literally');
+assert.equal(sampleContents.querySelector('img'),null,'feed text cannot inject HTML into popup');
+assert.equal(sampleContents.querySelector('script'),null,'malware metadata cannot inject script');
+const malwareSource=sampleContents.querySelector('a.malware-detail-source-link');
+assert.equal(malwareSource?.href,
+  'https://bazaar.abuse.ch/sample/0000000000000000000000000000000000000000000000000000000000000001/',
+  'source link constructed from trusted MalwareBazaar domain and verified hash');
+assert.equal(malwareSource?.target,'_blank','original source link opens separately on request');
+assert.ok(malwareSource?.rel.includes('noopener'),'original source does not inherit parent tab access');
+malwareDoc.getElementById('closeMalwareDetail').click();
+assert.ok(!sampleDialog.hasAttribute('open'),'malware popup closes and returns to the page');
+sampleDetailsButton.click();
+sampleDialog.click();
+assert.ok(!sampleDialog.hasAttribute('open'),'clicking outside the popup closes the dialog');
 assert.equal(familyCards(),6,'initial malware family preview is six cards');
 assert.equal(sampleCards(),6,'initial malware sample preview is six cards');
 assert.equal(familyToggle.hidden,false,'family expansion visible with more than six entries');
