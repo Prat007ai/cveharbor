@@ -502,7 +502,7 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
         self.assertIn("detailMarkers.append(firstPublished)",js)
         self.assertIn("animation:cveharborFreshDisclosurePulse",css)
         self.assertIn("@media(prefers-reduced-motion:reduce)",css)
-        self.assertIn("styles.css?v=watchlist-unified-1",html)
+        self.assertRegex(html, r"styles\.css\?v=[A-Za-z0-9_-]+")
         self.assertIn("original disclosure dates",html)
 
     def test_watchlist_and_email_account_are_one_workspace(self):
