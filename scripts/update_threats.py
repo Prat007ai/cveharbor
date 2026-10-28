@@ -20,100 +20,152 @@ def public_ipv4(value):
     except ValueError:
         return None
 
+HISTORY=ROOT/"data"/"threat-ip-history.json"
+GROUP_NAME="Suspicious IP Block"
+
+def object_name(address):
+    return "CVEH_"+address.replace(".","_")
+
+def ip_order(values):
+    return sorted(values,key=lambda address:int(ipaddress.ip_address(address)))
+
 def export_templates(report):
-    """Generate review-only firewall object imports from the same visible snapshot.
+    """Append-only, review-only history. Never equate collection time with last seen.
 
-    These files intentionally do NOT create deny policies or modify existing rules.
-    Failed sources are excluded and all public IPv4 values are revalidated.
+    Delta is relative to the immediately preceding successful publication, NOT
+    relative to any particular firewall configuration. Operators who skip
+    updates must use the cumulative file and reconcile local firewall state.
     """
-    verified = {}
+    previous={}
+    if HISTORY.exists():
+        previous=json.loads(HISTORY.read_text(encoding="utf-8"))
+    saved=previous.get("addresses") or {}
+    cumulative={}
+    for ip,entry in saved.items():
+        address=public_ipv4(ip)
+        if address and isinstance(entry,dict):
+            cumulative[address]={"sources":sorted(set(entry.get("sources") or [])),
+                                 "first_indexed":entry.get("first_indexed") or "",
+                                 "last_indexed":entry.get("last_indexed") or ""}
+    additions={}
+    timestamp=report.get("checked_at") or datetime.now(timezone.utc).isoformat()
     for entry in report.get("indicators") or []:
-        source = entry.get("source_id")
-        address = public_ipv4(str(entry.get("ip") or ""))
-        if address and report.get("sources", {}).get(source, {}).get("ok"):
-            verified.setdefault(source, set()).add(address)
-    for key in verified:
-        verified[key] = sorted(verified[key], key=lambda value: int(ipaddress.ip_address(value)))[:150]
-    timestamp = report.get("checked_at") or "Not available"
-    preamble = [
-        "CVEHarbor Threat IP Intelligence",
-        "Generated: " + timestamp,
-        "Review only. Never apply blindly to a production firewall.",
-        "Third party scanning and botnet C2 reports are DIFFERENT signal classes.",
-        "Validate against local security logs and trusted scanners / cloud service allowlists.",
-        "No deny policies or firewall rule modifications are included.",
-        "Source IPs have no verified last seen timestamp in this dataset.",
-        "",
-    ]
-    fortinet = [
-        "# " + line if line else "" for line in preamble
-    ]
-    fortinet += [
-        "# FortiOS: run these commands in the intended VDOM after backup and review.",
-        "# Objects are grouped by report type. Add groups to a reviewed deny policy manually.",
-        "# Existing object names are reused, and members are appended; review before rerunning.",
-    ]
-    for source, suffix in (("dshield_scanners", "SCANNING"), ("feodo_c2", "BOTNET_C2")):
-        addresses = verified.get(source, [])
-        if not addresses:
-            fortinet.append("# " + suffix + ": no successfully collected addresses")
+        source=entry.get("source_id")
+        address=public_ipv4(str(entry.get("ip") or ""))
+        if not address or not report.get("sources",{}).get(source,{}).get("ok"):
             continue
-        fortinet.append("# " + suffix + ": " + str(len(addresses)) + " source-reported IPv4 addresses")
-        fortinet.append("config firewall address")
-        for address in addresses:
-            fortinet += [
-                '    edit "CVEH_' + address.replace(".", "_") + '"',
-                "        set subnet " + address + " 255.255.255.255",
-                "    next",
-            ]
-        fortinet.append("end")
-        fortinet.extend(['config firewall addrgrp','    edit "CVEH_' + suffix + '"'])
-        for address in addresses:
-            fortinet.append('        append member "CVEH_' + address.replace(".", "_") + '"')
-        fortinet += ["    next", "end", ""]
-    fortinet.append("# No policy is created or activated. Validate objects and attach the chosen group through change control.")
-    (ROOT / "fortigate-threat-ip-objects.txt").write_text("\n".join(fortinet) + "\n", encoding="utf-8")
+        if address not in cumulative:
+            additions[address]={"sources":[source],"first_indexed":timestamp,"last_indexed":timestamp}
+            cumulative[address]=dict(additions[address])
+        else:
+            cumulative[address]["sources"]=sorted(set(cumulative[address]["sources"])|{source})
+            cumulative[address]["last_indexed"]=timestamp
+    all_ips=ip_order(cumulative)
+    new_ips=ip_order(additions)
+    HISTORY.parent.mkdir(parents=True,exist_ok=True)
+    HISTORY.write_text(json.dumps({"generated_at":timestamp,"group_name":GROUP_NAME,
+                                    "addresses":cumulative},indent=2,sort_keys=True)+"\n",encoding="utf-8")
 
-    sophos = preamble + [
-        "Sophos Firewall does not offer FortiOS-style host object CLI paste commands.",
-        "The supported bulk configuration mechanism is its XML API.",
-        "Enable API access ONLY for trusted administration hosts.",
-        "This file contains XML request templates, NOT an executable firewall CLI script.",
-        "Do not put actual credentials into a file retained on shared systems.",
-        "Save ONE XML Request block at a time as an .xml file, replace the credentials,",
-        "and submit using an authenticated POST from a trusted admin workstation:",
-        'curl -X POST "https://FIREWALL_HOST:PORT/webconsole/APIController" -F "reqxml=<request.xml"',
-        "Use your firewall's valid HTTPS certificate. Check the API response for errors.",
-        "Generated IPList host objects are NOT linked to firewall deny rules.",
-        "",
+    intro=[
+        "CVEHarbor Threat IP Intelligence | "+timestamp,
+        "Permanent logical group: "+GROUP_NAME,
+        "Cumulative indexed IPs: "+str(len(all_ips)),
+        "New since prior published snapshot: "+str(len(new_ips)),
+        "REVIEW ONLY: reported indicators are NOT approved firewall blocks.",
+        "Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.",
+        "No rules or policies are created or enabled. No old IPs are removed.",
+        "The incremental file is not a comparison against your firewall.",
+        "If you skipped an update, use the cumulative file and reconcile existing objects.",
+        "Collection timestamps are NOT verified source last-seen times.",
+        ""
     ]
-    for source, name in (("dshield_scanners", "CVEH_SCANNING"), ("feodo_c2", "CVEH_BOTNET_C2")):
-        addresses = verified.get(source, [])
-        if not addresses:
-            sophos.append("No validated " + name + " IPs were collected.")
-            continue
-        # Sophos XML IPList supports comma-separated IPv4 values.
-        sophos.extend([
-            "===== BEGIN " + name + " REQUEST (" + str(len(addresses)) + " addresses) =====",
+    def fortinet_file(addresses, incremental):
+        lines=["# "+line if line else "" for line in intro]
+        lines += ["# FortiOS. Run in the correct VDOM following change control.",
+                  "# The group must exist before the incremental update is used.",
+                  "# If an address object name already exists with a different subnet, STOP.",
+                  "# Applying group membership can affect an existing deny policy immediately.",
+                  "config firewall address"]
+        for ip in addresses:
+            lines += ['    edit "'+object_name(ip)+'"',
+                      "        set subnet "+ip+" 255.255.255.255",
+                      "    next"]
+        lines+=["end","config firewall addrgrp",'    edit "'+GROUP_NAME+'"']
+        if not incremental:
+            lines+=['        set comment "Reviewed CVEHarbor IP indicators"']
+        for ip in addresses:
+            lines+=['        append member "'+object_name(ip)+'"']
+        lines+=["    next","end",
+                "# No firewall policy has been created. Review existing policy use."]
+        return "\n".join(lines)+"\n"
+
+    (ROOT/"fortigate-suspicious-ip-initial.txt").write_text(
+        fortinet_file(all_ips,False),encoding="utf-8")
+    (ROOT/"fortigate-suspicious-ip-incremental.txt").write_text(
+        fortinet_file(new_ips,True),encoding="utf-8")
+
+    # Sophos group update semantics can REPLACE HostList. Do not claim an
+    # append operation without fetching/merging the actual firewall HostList.
+    def request_object(ip):
+        name=object_name(ip)
+        return [
+            '    <IPHost>',
+            '      <Name>'+name+'</Name>',
+            '      <IPFamily>IPv4</IPFamily>',
+            '      <HostType>IP</HostType>',
+            '      <IPAddress>'+ip+'</IPAddress>',
+            '    </IPHost>',
+        ]
+    def sophos_file(addresses, initial):
+        lines=intro+[
+            "Sophos Firewall uses an XML API, NOT FortiGate CLI syntax.",
+            "Templates below contain placeholders, not credentials.",
+            "Use a trusted management host and an authenticated POST to /webconsole/APIController.",
+            "Ensure the firewall XML API supports this request on your firmware.",
+            "Submit the XML portion as ONE request and inspect the API response.",
+            "Add / update host objects only after admin review.",
+            "Never overwrite an existing group HostList without reading its current members.",
+            "No firewall rule is created or activated.",
+            "",
+            "===== XML REQUEST START =====",
             "<Request>",
             "  <Login>",
             "    <Username>REPLACE_ADMIN_USERNAME</Username>",
             "    <Password>REPLACE_ADMIN_PASSWORD</Password>",
             "  </Login>",
-            '  <Set operation="add">',
-            "    <IPHost>",
-            "      <Name>" + name + "</Name>",
-            "      <IPFamily>IPv4</IPFamily>",
-            "      <HostType>IPList</HostType>",
-            "      <ListOfIPAddresses>" + ",".join(addresses) + "</ListOfIPAddresses>",
-            "    </IPHost>",
-            "  </Set>",
-            "</Request>",
-            "===== END " + name + " REQUEST =====",
-            "",
-        ])
-    (ROOT / "sophos-threat-ip-api.txt").write_text("\n".join(sophos) + "\n", encoding="utf-8")
+            '  <Set operation="add">'
+        ]
+        for ip in addresses:
+            lines.extend(request_object(ip))
+        if initial:
+            lines += ['    <IPHostGroup>',
+                      '      <Name>'+GROUP_NAME+'</Name>',
+                      '      <IPFamily>IPv4</IPFamily>',
+                      '      <Description>Reviewed CVEHarbor indicators</Description>',
+                      '      <HostList>']
+            for ip in addresses:
+                lines+=['        <Host>'+object_name(ip)+'</Host>']
+            lines+=['      </HostList>','    </IPHostGroup>']
+        lines+=["  </Set>","</Request>","===== XML REQUEST END =====",""]
+        if not initial:
+            lines += [
+              "IMPORTANT: Host creation above does NOT add hosts to an existing group.",
+              "Sophos group updates can REPLACE the complete HostList.",
+              "Read the existing IPHostGroup named '"+GROUP_NAME+"' using the XML API.",
+              "Merge the newly created host names with ALL existing members, deduplicate,",
+              "then submit an IPHostGroup edit with that complete merged HostList.",
+              "Do not issue a group edit containing only the new IPs.",
+              "New host names to merge:"
+            ]
+            lines += [object_name(ip) for ip in addresses]
+        return "\n".join(lines)+"\n"
+    (ROOT/"sophos-suspicious-ip-initial.txt").write_text(sophos_file(all_ips,True),encoding="utf-8")
+    (ROOT/"sophos-suspicious-ip-incremental.txt").write_text(sophos_file(new_ips,False),encoding="utf-8")
 
+    # Maintain legacy filenames for old links, now with the cumulative group.
+    (ROOT/"fortigate-threat-ip-objects.txt").write_text(
+        fortinet_file(all_ips,False),encoding="utf-8")
+    (ROOT/"sophos-threat-ip-api.txt").write_text(sophos_file(all_ips,True),encoding="utf-8")
 
 def collect():
     report={"checked_at":datetime.now(timezone.utc).isoformat(),"sources":{},"indicators":[]}
