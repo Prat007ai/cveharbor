@@ -588,6 +588,20 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
                   "url":"https://example.org/security"})
             self.assertIn(category,record["categories"])
 
+
+    def test_redhat_official_cve_metadata(self):
+        entry={"CVE":"CVE-2026-123456","public_date":"2026-10-26",
+               "severity":"important","bugzilla_description":"RHEL security issue"}
+        rec=u.from_redhat(entry)
+        self.assertEqual("high",rec["severity"])
+        self.assertEqual(["Linux"],rec["categories"])
+        self.assertIsNone(u.from_redhat({**entry,"public_date":""}))
+
+    def test_redhat_feed_rejects_unexpected_payload(self):
+        with patch.object(u,"get_json",return_value={}):
+            with self.assertRaises(ValueError):
+                u.redhat_items()
+
     def test_url_rejection(self):
         self.assertFalse(u.clean_url('javascript:alert(1)'))
         self.assertFalse(u.clean_url('http://example.org'))

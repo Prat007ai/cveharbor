@@ -43,6 +43,7 @@ SOURCES = {
     "docker_rss": "https://docs.docker.com/security/security-announcements/index.xml",
     "kubernetes": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json",
     "mariadb": "https://api.github.com/repos/MariaDB/server/security-advisories",
+    "redhat": "https://access.redhat.com/hydra/rest/securitydata/cve.json",
 }
 MAX_RECORDS = 2500
 HEALTH = ROOT / "data" / "feed-health.json"
@@ -786,13 +787,45 @@ def from_mariadb(item:dict) -> dict | None:
         record["published"]=""
     return record
 
+
+def redhat_items() -> list[dict]:
+    """Bounded Red Hat CVE metadata list; no inference of affected customer hosts."""
+    url=SOURCES["redhat"]+"?per_page=200"
+    batch=get_json(url,"redhat")
+    if not isinstance(batch,list) or not batch:
+        raise ValueError("Red Hat Security Data API returned no CVE records")
+    return batch
+
+
+def from_redhat(item:dict) -> dict | None:
+    fid=str(item.get("CVE") or item.get("cve") or "").upper()
+    if not CVERE.fullmatch(fid):
+        return None
+    published=datepart(item.get("public_date"))
+    if not published:
+        return None
+    raw_severity=str(item.get("severity") or item.get("threat_severity") or "").lower()
+    sev={"critical":"critical","important":"high","moderate":"medium","low":"low"}.get(raw_severity,"bulletin")
+    title=crop(item.get("bugzilla_description") or item.get("details") or fid,175)
+    return {"id":fid,"title":title,"severity":sev,"categories":["Linux"],
+            "published":published,"updated":datepart(item.get("modified_date") or item.get("public_date")),
+            "summary":crop(item.get("bugzilla_description") or title,1100),
+            "affected":"Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+            "remediation":"Consult Red Hat's official CVE details and applicable RHSA advisories.",
+            "action":"Check installed Red Hat products and package versions.",
+            "sources":[{"label":"Red Hat Security Data API","url":"https://access.redhat.com/security/cve/"+fid}],
+            "exploitation":"Not confirmed by this source; check CISA KEV",
+            "kind":"cve","cvss":None,"status":"Red Hat CVE catalog",
+            "first_seen_at":utc_iso(),"source_updated_at":item.get("modified_date") or "",
+            "source_type":"redhat","known_exploited":False}
+
 def merge_record(old: dict, new: dict) -> dict:
     """Merge source observations without discarding first seen time or KEV flags."""
     if not old:
         return new
     # GitHub generally provides better fixed package versions. Do not replace
     # an actionable package detail with NVD's generic patch instructions.
-    rank = {"php_upstream": 5, "mariadb": 4.8, "wordfence":4.5, "github": 4, "osv_recent": 3.5, "vendor_baseline": 3, "nvd": 2, "msrc_rss":2, "fortinet_rss":2, "ubuntu_rss":2, "debian_rss":2, "docker_rss":2, "kubernetes":2.5, "cisa_kev": 1}
+    rank = {"php_upstream": 5, "mariadb": 4.8, "wordfence":4.5, "github": 4, "osv_recent": 3.5, "vendor_baseline": 3, "nvd": 2, "msrc_rss":2, "fortinet_rss":2, "ubuntu_rss":2, "debian_rss":2, "docker_rss":2, "kubernetes":2.5, "redhat":2.5, "cisa_kev": 1}
     chosen = new if rank.get(new.get("source_type"), 0) >= rank.get(old.get("source_type"), 0) else old
     merged = dict(chosen)
     merged["categories"] = sorted(set(old.get("categories") or []) | set(new.get("categories") or []))
@@ -879,7 +912,8 @@ def run() -> int:
                   ("debian_rss",lambda:rss_vendor_items("debian_rss"),from_vendor_rss),
                   ("docker_rss",lambda:rss_vendor_items("docker_rss"),from_vendor_rss),
                   ("kubernetes",kubernetes_items,from_kubernetes),
-                  ("mariadb",mariadb_items,from_mariadb))
+                  ("mariadb",mariadb_items,from_mariadb),
+                  ("redhat",redhat_items,from_redhat))
     if os.getenv("WORDFENCE_API_KEY"):
         operations += (("wordfence",wordfence_items,from_wordfence),)
     good = 0
