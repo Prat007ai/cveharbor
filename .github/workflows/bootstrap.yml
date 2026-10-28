@@ -139,6 +139,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+          WORDFENCE_API_KEY: ${{ secrets.WORDFENCE_API_KEY }}
         run: python scripts/update.py
       - name: Save public data safely if other commits arrived
         shell: bash
