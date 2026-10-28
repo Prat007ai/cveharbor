@@ -833,3 +833,12 @@ button.tech-chart-link b{
 .watchlist-lookup .workspace-results{max-height:260px}
 @media(max-width:1050px){.watchlist-layout{grid-template-columns:1fr}.watchlist-layout>*{height:auto}}
 @media(max-width:600px){.watchlist-account{padding:17px}.watchlist-panel .workspace-technologies{max-height:285px}.watchlist-account .ops-form .ops-span{grid-column:auto}.watchlist-account-headline{display:block}.watchlist-account-headline .mini-label{display:inline-block;margin-top:7px}}
+
+
+/* Compact malware previews with explicit expansion for both collections. */
+.malware-list-actions{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-top:17px;margin-top:15px;border-top:1px solid #29485c}
+.malware-list-summary{font-size:12px;color:#a5c5d3;line-height:1.5}
+.malware-show-all{border:1px solid #3a8f90;background:#12454c;color:#b1f8e9;font-size:12px;font-weight:750;border-radius:8px;padding:11px 17px;cursor:pointer}
+.malware-show-all:hover{background:#1b5a60;border-color:#65dccc;color:#ffffff}
+.malware-show-all:focus-visible{outline:2px solid #9ceedd;outline-offset:3px}
+.malware-show-all[hidden]{display:none!important}
