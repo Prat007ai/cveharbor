@@ -31,7 +31,7 @@ SOURCES = {
     "nvd": "https://services.nvd.nist.gov/rest/json/cves/2.0",
     "cisa_kev": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
 }
-MAX_RECORDS = 900
+MAX_RECORDS = 2500
 HEALTH = ROOT / "data" / "feed-health.json"
 ALLOWED = {x["name"] for x in CATEGORIES}
 CVERE = re.compile(r"^CVE-\d{4}-\d{4,}$", re.I)

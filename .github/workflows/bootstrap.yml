@@ -37,7 +37,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: cveharbor-site
+  # Allow PR validation while production collection is running, but serialize data publishers.
+  group: cveharbor-${{ github.event_name == 'pull_request' && github.head_ref || 'site-production' }}
   cancel-in-progress: false
 
 jobs:
