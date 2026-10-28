@@ -33,6 +33,7 @@ on:
       - scripts/build_site.py
       - tests/test_update.py
       - scripts/browser_smoke.mjs
+      - scripts/update_malware.py
       - account-backend/**
       - accounts.js
   schedule:
@@ -66,7 +67,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Unit and integration tests
-        run: python -m unittest discover -s tests -v
+        run: python -m unittest discover -s tests -v && python -m py_compile scripts/update_malware.py
       - name: Validate JavaScript
         run: node --check app.js && node --check data.js && node --check accounts.js && node --check geo-map.js && node --check malware.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js
       - name: Test digest matching and email rendering
@@ -138,7 +139,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Unit tests
-        run: python -m unittest discover -s tests -v
+        run: python -m unittest discover -s tests -v && python -m py_compile scripts/update_malware.py
       - name: Validate browser JavaScript
         run: node --check app.js && node --check data.js && node --check accounts.js && node --check geo-map.js && node --check malware.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js
       - name: Test digest matching and email rendering
