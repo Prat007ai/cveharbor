@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-28",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4198,
+  "candidate_records": 4203,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -545,7 +545,7 @@
       "cvss": "8.6",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-28T03:17:12.283",
+      "source_updated_at": "2026-10-28T15:24:56.033",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -771,7 +771,7 @@
       "cvss": "5.3",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-28T05:54:32Z",
-      "source_updated_at": "2026-10-28T05:16:59.833",
+      "source_updated_at": "2026-10-28T15:21:31.673",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -3502,7 +3502,7 @@
       "cvss": "7.3",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "2026-10-28T11:17:26.707",
+      "source_updated_at": "2026-10-28T15:21:31.673",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -7116,7 +7116,7 @@
       "cvss": "9.6",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-28T13:27:06Z",
-      "source_updated_at": "2026-10-28T13:17:05.400",
+      "source_updated_at": "2026-10-28T15:24:56.033",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -7172,7 +7172,7 @@
       "cvss": "6.5",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-28T14:17:49Z",
-      "source_updated_at": "2026-10-28T14:17:03.980",
+      "source_updated_at": "2026-10-28T15:24:56.033",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -7200,7 +7200,7 @@
       "cvss": "7.1",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-28T14:17:49Z",
-      "source_updated_at": "2026-10-28T14:17:04.137",
+      "source_updated_at": "2026-10-28T15:24:56.033",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -7229,7 +7229,7 @@
       "cvss": "8.5",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-28T14:17:49Z",
-      "source_updated_at": "2026-10-28T14:17:05.070",
+      "source_updated_at": "2026-10-28T15:24:56.033",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -8098,6 +8098,344 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-116693",
+      "title": "dd-trace: ReDOS in URL query string obfuscation",
+      "severity": "high",
+      "categories": [
+        "Application dependencies",
+        "Node.js / npm"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-28",
+      "summary": "### Summary A regular expression used to obfuscate URL query strings can consume excessive CPU when processing certain attacker-controlled input. This can stall request processing and cause denial of service in applications using affected HTTP tracing integrations. ### Details The default query-string obfuscation pattern can exhibit excessive backtracking. The pattern is applied synchronously when recording HTTP URL metadata, allowing query-string processing to occupy application resources for an extended period. As a workaround, set DD_TRACE_OBFUSCATION_QUERY_STRING_REGEXP to the fixed regex below, then restart the application. ``` DD_TRACE_OBFUSCATION_QUERY_STRING_REGEXP='(?:(?:\"|%22)?)(?:(?:old[-_]?|new[-_]?)?p(?:ass)?w(?:or)?d(?:1|2)?|pass(?:[-_]?phrase)?|secret|(?:api[-_]?|private[-_]?|public[-_]?|access[-_]?|secret[-_]?|app(?:lication)?[-_]?)key(?:[-_]?id)?|token|consumer[-_]?(?:id|key|secret)|sign(?:ed|ature)?|auth(?:entication|orization)?)(?:(?:\\s|%20)*(?:=|%3D)[^&]+|(?:\"|%22)(?:\\s|%20)*(?::|%3A)(?:\\s|%20)*(?:\"|%22)(?:%2[^2]|%[^2]|[^\"%])+(?:\"|%22))|(?:bearer(?:\\s|%20)+[a-z0-9._\\-]+|token(?::|%3A)[a-z0-9]{13}|gh[opsu]_[0-9a-zA-Z]{36}|(?:(?<![\\w-])|(?<=%[0-9a-f]{2}))ey[I-L][\\w-]+(?:=|%3D)*\\.ey[I-L][\\w-]+(?:=|%3D)*(?:\\.(?:[\\w.+/=-]|%3D|%2F|%2B)+)?|-{5}BEGIN(?:[a-z\\s]|%20)+PR",
+      "affected": "npm: dd-trace (>= 2.0.0, < 5.131.1); npm: dd-trace (>= 6.0.0, < 6.20.1)",
+      "remediation": "dd-trace: 5.131.1; dd-trace: 6.20.1",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-x94g-w73q-hpcw"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/DataDog/dd-trace-js/security/advisories/GHSA-x94g-w73q-hpcw"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/DataDog/dd-trace-js/pull/10675"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/DataDog/dd-trace-js/commit/5eeee790c93036a50549056fc890028cb4c86b1b"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116693"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "2026-10-27T21:07:27Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116684",
+      "title": "Model Context Protocol Python SDK: Server bearer-token authentication accepts tokens issued for a different resource server",
+      "severity": "medium",
+      "categories": [
+        "Application dependencies",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-28",
+      "summary": "### Summary In affected versions, the SDK's server-side bearer authentication had no way to check that a token was issued for your server (its audience). Where one authorization server issues tokens for several services, a valid token for another service was also accepted by your MCP server. ### Am I affected? Yes, if your HTTP server uses the SDK's bearer authentication (`auth=AuthSettings(...)` with `token_verifier=`), its authorization server also issues tokens for other services, and your `TokenVerifier` does not check the token's audience (`aud`) itself. Affected versions: - `mcp` 1.10.0 through 1.29.1 - `mcp` 2.0.0 through 2.1.1 ### Fix Upgrade to: - 1.x: `mcp` 1.30.0 or later - 2.x: `mcp` 2.2.0 or later **Upgrading alone changes nothing.** The patched versions add a `validate_token_resource` setting that is off unless you set it. To turn the check on, make both of these changes together: 1. Set `validate_token_resource=True` in `AuthSettings`, with `resource_server_url` set to the audience your authorization server puts in tokens for your server. 2. Return the token's audience from `verify_token()` as `AccessToken.resource`. A token for another service then gets `401`. With only the first change, every request gets `401`. If your `TokenVerifier` already checks the audience",
+      "affected": "pip: mcp (>= 2.0.0, < 2.2.0); pip: mcp (>= 1.10.0, < 1.30.0)",
+      "remediation": "mcp: 2.2.0; mcp: 1.30.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-w4fh-qvv9-3v23"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/modelcontextprotocol/python-sdk/security/advisories/GHSA-w4fh-qvv9-3v23"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/modelcontextprotocol/python-sdk/pull/3447"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/modelcontextprotocol/python-sdk/pull/3451"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116684"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.8",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "2026-10-27T21:07:01Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116694",
+      "title": "OpenTelemetry Python: Unbounded memory allocation in Jaeger baggage propagation",
+      "severity": "medium",
+      "categories": [
+        "Application dependencies",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-28",
+      "summary": "## Summary `JaegerPropagator.extract()` in `opentelemetry-propagator-jaeger` did not enforce limits when extracting inbound `uberctx-*` baggage headers. Attacker-controlled baggage could cause unnecessary CPU work and short-lived heap allocations while processing more data than the propagator should accept. ## Impact Services that enable the optional Jaeger propagator and accept untrusted inbound propagation headers may experience increased per-request resource usage. This can contribute to denial-of-service risk when transport-level limits are absent or configured above the baggage limits. The practical impact for most Python web deployments is limited. The package must be installed separately, and the Jaeger propagator is not enabled by the default OpenTelemetry Python configuration. Common Python web servers also constrain request headers before they reach the propagator: - Gunicorn allows a maximum of 100 request-header fields and 8,190 bytes per field by default. - Uvicorn’s h11 implementation limits its incomplete-event buffer to 16,384 bytes by default. The risk is higher for non-HTTP transports, custom `TextMapGetter` implementations, or deployments where server and gateway limits have been increased or disabled. The impact is limited to availability. This issue does not ",
+      "affected": "pip: opentelemetry-propagator-jaeger (<= 1.44.0)",
+      "remediation": "opentelemetry-propagator-jaeger: 1.45.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-f5m9-jfrj-jjj7"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/open-telemetry/opentelemetry-python/security/advisories/GHSA-f5m9-jfrj-jjj7"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/open-telemetry/opentelemetry-python/pull/5556"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/open-telemetry/opentelemetry-python/commit/65c4eeb87cd3815dc795d3b5485e9ea0d5affcc7"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116694"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "2026-10-27T21:06:56Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116685",
+      "title": "Model Context Protocol Python SDK: HTTP client transports followed cross-origin redirects carrying custom headers and bodies",
+      "severity": "medium",
+      "categories": [
+        "Application dependencies",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-28",
+      "summary": "### Summary In affected versions, the SDK's Streamable HTTP and SSE client transports followed HTTP redirects to any host. If the configured MCP endpoint answered with a redirect to a different origin: - custom headers set on the client (for example an `X-API-Key` credential) were sent to that origin, and - on a `307` or `308` redirect the request body was re-sent there too. The SDK's OAuth client providers followed redirects on their own discovery, registration and token requests in the same way. A lone `Authorization` bearer header was not exposed; the HTTP library already drops it on cross-origin redirects. Anyone able to make an endpoint you trust redirect elsewhere (a stale redirect to a lapsed domain, a misrouted proxy rule, redirect logic an attacker can influence) could capture that material. A server that is itself malicious gains nothing this way; it already receives your requests directly. ### Am I affected? Yes, if your code uses the SDK as an MCP client over HTTP through any of: - `streamable_http_client` (on 2.x also `Client` given an `http://` or `https://` URL) - `streamablehttp_client` or `sse_client` - `ClientSessionGroup` with HTTP server parameters - the internal `create_mcp_http_client` helper This includes an HTTP client you passed in yourself with `follow_r",
+      "affected": "pip: mcp (>= 2.0.0, < 2.2.0); pip: mcp (>= 1.8.0, < 1.30.0)",
+      "remediation": "mcp: 2.2.0; mcp: 1.30.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-5h93-6whr-6q8j"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/modelcontextprotocol/python-sdk/security/advisories/GHSA-5h93-6whr-6q8j"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/modelcontextprotocol/python-sdk/pull/3397"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/modelcontextprotocol/python-sdk/pull/3448"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116685"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.9",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "2026-10-27T21:05:36Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116686",
+      "title": "Model Context Protocol Python SDK: Client fetched server-chosen $ref URLs while validating tool results against output schemas",
+      "severity": "medium",
+      "categories": [
+        "Application dependencies",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-28",
+      "summary": "### Summary In affected versions, when a connected MCP server declared an `outputSchema` for a tool, the SDK's client validated each `call_tool` result with `jsonschema`'s default resolver, which fetches any `$ref` it cannot resolve locally by opening the URL. A server could therefore put an `http://`, `https://` or `file://` reference in a tool's output schema and make the client: - request that URL, or read that local file, from the client's own network position on every call of the tool (the content was used only as a schema and never sent back to the server), and - stall: the fetch ran synchronously on the event loop with no timeout, so a target that accepted the connection and then went quiet froze every session in the process for as long as it held the connection. ### Am I affected? Yes, if your application uses the SDK as an MCP client (`ClientSession` over any transport, `ClientSessionGroup`, or the 2.x `Client`) and calls tools on servers you do not fully control. There was no setting that turned the validation off. Affected versions: 1.10.0 through 1.29.1, and 2.0.0 through 2.1.1. Not affected: applications that only build servers. If nothing in your code uses `ClientSession`, `ClientSessionGroup` or the 2.x `Client` class, you are not affected. ### Fix Upgrade to `mcp`",
+      "affected": "pip: mcp (>= 2.0.0, < 2.2.0); pip: mcp (>= 1.10.0, < 1.30.0)",
+      "remediation": "mcp: 2.2.0; mcp: 1.30.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-rwrf-2pqf-9j8j"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/modelcontextprotocol/python-sdk/security/advisories/GHSA-rwrf-2pqf-9j8j"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/modelcontextprotocol/python-sdk/pull/3394"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/modelcontextprotocol/python-sdk/pull/3396"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116686"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "2026-10-27T21:05:30Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116679",
+      "title": "Neko is a a self-hosted virtual browser that runs in Docker and uses WebRTC",
+      "severity": "medium",
+      "categories": [
+        "Docker / Kubernetes"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-28",
+      "summary": "Neko is a a self-hosted virtual browser that runs in Docker and uses WebRTC. From version 3.0.0 until 3.1.5, Neko deployments with legacy mode and session.implicit_hosting enabled incorrectly authorize legacy WebRTC data-channel input because LegacyIsHost() evaluates host status incorrectly. An authenticated room member who establishes a WebRTC connection can send mouse and keyboard events through the legacy control channel while controls are locked or the member is otherwise unauthorized by the modern control API. This issue is fixed in version 3.1.5.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116679"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "2026-10-28T15:24:56.033",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118131",
+      "title": "GnuPG (version 2.5.21) for Windows contains a vulnerability where default Discretionary Access Control List (DACL) inheritance on the C:\\ProgramData directory allows members o",
+      "severity": "bulletin",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-28",
+      "summary": "GnuPG (version 2.5.21) for Windows contains a vulnerability where default Discretionary Access Control List (DACL) inheritance on the C:\\ProgramData directory allows members of the BUILTIN\\Users group to create arbitrary subdirectories under this path. An attacker with low-privilege access can create the expected GnuPG configuration directory and inject malicious configuration files consumed by GnuPG components. This can result in code execution within the security context of the victim user.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118131"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "2026-10-28T15:21:31.673",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-112355",
+      "title": "The MembershipWorks plugin for WordPress before 6.17 contains an information disclosure vulnerability that allows unauthenticated attackers to access member-only content throu",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-28",
+      "summary": "The MembershipWorks plugin for WordPress before 6.17 contains an information disclosure vulnerability that allows unauthenticated attackers to access member-only content through the WordPress REST API. Because the filter that strips protected content for non-members is only attached during normal front-end request handling and not during REST API requests, an unauthenticated attacker can retrieve the raw member-only content in a post or page’s rendered content, bypassing the plugin’s content protection.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112355"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.7",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "2026-10-28T15:24:56.033",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116689",
+      "title": "follow-redirects is a Node.js HTTP and HTTPS client wrapper that automatically follows redirects",
+      "severity": "medium",
+      "categories": [
+        "JavaScript / TypeScript",
+        "Node.js / npm"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-28",
+      "summary": "follow-redirects is a Node.js HTTP and HTTPS client wrapper that automatically follows redirects. From 1.16.0 until 1.16.2, the documented sensitiveHeaders option is checked with value instanceof Array, so an array created in another JavaScript realm is replaced with an empty list even though Array.isArray recognizes it. When a request then follows an attacker-controlled cross-origin redirect, a custom credential header named in that discarded list can be forwarded to the redirect destination. This issue is fixed in version 1.16.2.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116689"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "2026-10-28T15:24:56.033",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-108142",
       "title": "Veeam Backup & Replication CDP Coordinator authorization bypass",
       "severity": "critical",
@@ -8250,51 +8588,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-116693",
-      "title": "dd-trace: ReDOS in URL query string obfuscation",
-      "severity": "high",
-      "categories": [
-        "Application dependencies",
-        "Node.js / npm"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "### Summary A regular expression used to obfuscate URL query strings can consume excessive CPU when processing certain attacker-controlled input. This can stall request processing and cause denial of service in applications using affected HTTP tracing integrations. ### Details The default query-string obfuscation pattern can exhibit excessive backtracking. The pattern is applied synchronously when recording HTTP URL metadata, allowing query-string processing to occupy application resources for an extended period. As a workaround, set DD_TRACE_OBFUSCATION_QUERY_STRING_REGEXP to the fixed regex below, then restart the application. ``` DD_TRACE_OBFUSCATION_QUERY_STRING_REGEXP='(?:(?:\"|%22)?)(?:(?:old[-_]?|new[-_]?)?p(?:ass)?w(?:or)?d(?:1|2)?|pass(?:[-_]?phrase)?|secret|(?:api[-_]?|private[-_]?|public[-_]?|access[-_]?|secret[-_]?|app(?:lication)?[-_]?)key(?:[-_]?id)?|token|consumer[-_]?(?:id|key|secret)|sign(?:ed|ature)?|auth(?:entication|orization)?)(?:(?:\\s|%20)*(?:=|%3D)[^&]+|(?:\"|%22)(?:\\s|%20)*(?::|%3A)(?:\\s|%20)*(?:\"|%22)(?:%2[^2]|%[^2]|[^\"%])+(?:\"|%22))|(?:bearer(?:\\s|%20)+[a-z0-9._\\-]+|token(?::|%3A)[a-z0-9]{13}|gh[opsu]_[0-9a-zA-Z]{36}|(?:(?<![\\w-])|(?<=%[0-9a-f]{2}))ey[I-L][\\w-]+(?:=|%3D)*\\.ey[I-L][\\w-]+(?:=|%3D)*(?:\\.(?:[\\w.+/=-]|%3D|%2F|%2B)+)?|-{5}BEGIN(?:[a-z\\s]|%20)+PR",
-      "affected": "npm: dd-trace (>= 2.0.0, < 5.131.1); npm: dd-trace (>= 6.0.0, < 6.20.1)",
-      "remediation": "dd-trace: 5.131.1; dd-trace: 6.20.1",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-x94g-w73q-hpcw"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/DataDog/dd-trace-js/security/advisories/GHSA-x94g-w73q-hpcw"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/DataDog/dd-trace-js/pull/10675"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/DataDog/dd-trace-js/commit/5eeee790c93036a50549056fc890028cb4c86b1b"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116693"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T21:07:27Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-116675",
       "title": "TinyMCE Cross-Site Scripting (XSS) vulnerability using media plugin `data-mce-object` serialization",
       "severity": "high",
@@ -8334,186 +8627,6 @@
       "status": "GitHub reviewed advisory",
       "first_seen_at": "2026-10-28T02:56:43Z",
       "source_updated_at": "2026-10-27T21:07:13Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-116684",
-      "title": "Model Context Protocol Python SDK: Server bearer-token authentication accepts tokens issued for a different resource server",
-      "severity": "medium",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "### Summary In affected versions, the SDK's server-side bearer authentication had no way to check that a token was issued for your server (its audience). Where one authorization server issues tokens for several services, a valid token for another service was also accepted by your MCP server. ### Am I affected? Yes, if your HTTP server uses the SDK's bearer authentication (`auth=AuthSettings(...)` with `token_verifier=`), its authorization server also issues tokens for other services, and your `TokenVerifier` does not check the token's audience (`aud`) itself. Affected versions: - `mcp` 1.10.0 through 1.29.1 - `mcp` 2.0.0 through 2.1.1 ### Fix Upgrade to: - 1.x: `mcp` 1.30.0 or later - 2.x: `mcp` 2.2.0 or later **Upgrading alone changes nothing.** The patched versions add a `validate_token_resource` setting that is off unless you set it. To turn the check on, make both of these changes together: 1. Set `validate_token_resource=True` in `AuthSettings`, with `resource_server_url` set to the audience your authorization server puts in tokens for your server. 2. Return the token's audience from `verify_token()` as `AccessToken.resource`. A token for another service then gets `401`. With only the first change, every request gets `401`. If your `TokenVerifier` already checks the audience",
-      "affected": "pip: mcp (>= 2.0.0, < 2.2.0); pip: mcp (>= 1.10.0, < 1.30.0)",
-      "remediation": "mcp: 2.2.0; mcp: 1.30.0",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-w4fh-qvv9-3v23"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/modelcontextprotocol/python-sdk/security/advisories/GHSA-w4fh-qvv9-3v23"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/modelcontextprotocol/python-sdk/pull/3447"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/modelcontextprotocol/python-sdk/pull/3451"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116684"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.8",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T21:07:01Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-116694",
-      "title": "OpenTelemetry Python: Unbounded memory allocation in Jaeger baggage propagation",
-      "severity": "medium",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "## Summary `JaegerPropagator.extract()` in `opentelemetry-propagator-jaeger` did not enforce limits when extracting inbound `uberctx-*` baggage headers. Attacker-controlled baggage could cause unnecessary CPU work and short-lived heap allocations while processing more data than the propagator should accept. ## Impact Services that enable the optional Jaeger propagator and accept untrusted inbound propagation headers may experience increased per-request resource usage. This can contribute to denial-of-service risk when transport-level limits are absent or configured above the baggage limits. The practical impact for most Python web deployments is limited. The package must be installed separately, and the Jaeger propagator is not enabled by the default OpenTelemetry Python configuration. Common Python web servers also constrain request headers before they reach the propagator: - Gunicorn allows a maximum of 100 request-header fields and 8,190 bytes per field by default. - Uvicorn’s h11 implementation limits its incomplete-event buffer to 16,384 bytes by default. The risk is higher for non-HTTP transports, custom `TextMapGetter` implementations, or deployments where server and gateway limits have been increased or disabled. The impact is limited to availability. This issue does not ",
-      "affected": "pip: opentelemetry-propagator-jaeger (<= 1.44.0)",
-      "remediation": "opentelemetry-propagator-jaeger: 1.45.0",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-f5m9-jfrj-jjj7"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/open-telemetry/opentelemetry-python/security/advisories/GHSA-f5m9-jfrj-jjj7"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/open-telemetry/opentelemetry-python/pull/5556"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/open-telemetry/opentelemetry-python/commit/65c4eeb87cd3815dc795d3b5485e9ea0d5affcc7"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116694"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T21:06:56Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-116685",
-      "title": "Model Context Protocol Python SDK: HTTP client transports followed cross-origin redirects carrying custom headers and bodies",
-      "severity": "medium",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "### Summary In affected versions, the SDK's Streamable HTTP and SSE client transports followed HTTP redirects to any host. If the configured MCP endpoint answered with a redirect to a different origin: - custom headers set on the client (for example an `X-API-Key` credential) were sent to that origin, and - on a `307` or `308` redirect the request body was re-sent there too. The SDK's OAuth client providers followed redirects on their own discovery, registration and token requests in the same way. A lone `Authorization` bearer header was not exposed; the HTTP library already drops it on cross-origin redirects. Anyone able to make an endpoint you trust redirect elsewhere (a stale redirect to a lapsed domain, a misrouted proxy rule, redirect logic an attacker can influence) could capture that material. A server that is itself malicious gains nothing this way; it already receives your requests directly. ### Am I affected? Yes, if your code uses the SDK as an MCP client over HTTP through any of: - `streamable_http_client` (on 2.x also `Client` given an `http://` or `https://` URL) - `streamablehttp_client` or `sse_client` - `ClientSessionGroup` with HTTP server parameters - the internal `create_mcp_http_client` helper This includes an HTTP client you passed in yourself with `follow_r",
-      "affected": "pip: mcp (>= 2.0.0, < 2.2.0); pip: mcp (>= 1.8.0, < 1.30.0)",
-      "remediation": "mcp: 2.2.0; mcp: 1.30.0",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-5h93-6whr-6q8j"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/modelcontextprotocol/python-sdk/security/advisories/GHSA-5h93-6whr-6q8j"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/modelcontextprotocol/python-sdk/pull/3397"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/modelcontextprotocol/python-sdk/pull/3448"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116685"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.9",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T21:05:36Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-116686",
-      "title": "Model Context Protocol Python SDK: Client fetched server-chosen $ref URLs while validating tool results against output schemas",
-      "severity": "medium",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "### Summary In affected versions, when a connected MCP server declared an `outputSchema` for a tool, the SDK's client validated each `call_tool` result with `jsonschema`'s default resolver, which fetches any `$ref` it cannot resolve locally by opening the URL. A server could therefore put an `http://`, `https://` or `file://` reference in a tool's output schema and make the client: - request that URL, or read that local file, from the client's own network position on every call of the tool (the content was used only as a schema and never sent back to the server), and - stall: the fetch ran synchronously on the event loop with no timeout, so a target that accepted the connection and then went quiet froze every session in the process for as long as it held the connection. ### Am I affected? Yes, if your application uses the SDK as an MCP client (`ClientSession` over any transport, `ClientSessionGroup`, or the 2.x `Client`) and calls tools on servers you do not fully control. There was no setting that turned the validation off. Affected versions: 1.10.0 through 1.29.1, and 2.0.0 through 2.1.1. Not affected: applications that only build servers. If nothing in your code uses `ClientSession`, `ClientSessionGroup` or the 2.x `Client` class, you are not affected. ### Fix Upgrade to `mcp`",
-      "affected": "pip: mcp (>= 2.0.0, < 2.2.0); pip: mcp (>= 1.10.0, < 1.30.0)",
-      "remediation": "mcp: 2.2.0; mcp: 1.30.0",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-rwrf-2pqf-9j8j"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/modelcontextprotocol/python-sdk/security/advisories/GHSA-rwrf-2pqf-9j8j"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/modelcontextprotocol/python-sdk/pull/3394"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/modelcontextprotocol/python-sdk/pull/3396"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116686"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.5",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T21:05:30Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -12482,119 +12595,6 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-28T02:56:43Z",
       "source_updated_at": "2026-10-27T17:16:59.583",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-116679",
-      "title": "Neko is a a self-hosted virtual browser that runs in Docker and uses WebRTC",
-      "severity": "medium",
-      "categories": [
-        "Docker / Kubernetes"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "Neko is a a self-hosted virtual browser that runs in Docker and uses WebRTC. From version 3.0.0 until 3.1.5, Neko deployments with legacy mode and session.implicit_hosting enabled incorrectly authorize legacy WebRTC data-channel input because LegacyIsHost() evaluates host status incorrectly. An authenticated room member who establishes a WebRTC connection can send mouse and keyboard events through the legacy control channel while controls are locked or the member is otherwise unauthorized by the modern control API. This issue is fixed in version 3.1.5.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116679"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T18:17:35.697",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-118131",
-      "title": "GnuPG (version 2.5.21) for Windows contains a vulnerability where default Discretionary Access Control List (DACL) inheritance on the C:\\ProgramData directory allows members o",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "GnuPG (version 2.5.21) for Windows contains a vulnerability where default Discretionary Access Control List (DACL) inheritance on the C:\\ProgramData directory allows members of the BUILTIN\\Users group to create arbitrary subdirectories under this path. An attacker with low-privilege access can create the expected GnuPG configuration directory and inject malicious configuration files consumed by GnuPG components. This can result in code execution within the security context of the victim user.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118131"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T18:17:36.700",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-112355",
-      "title": "The MembershipWorks plugin for WordPress before 6.17 contains an information disclosure vulnerability that allows unauthenticated attackers to access member-only content throu",
-      "severity": "high",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "The MembershipWorks plugin for WordPress before 6.17 contains an information disclosure vulnerability that allows unauthenticated attackers to access member-only content through the WordPress REST API. Because the filter that strips protected content for non-members is only attached during normal front-end request handling and not during REST API requests, an unauthenticated attacker can retrieve the raw member-only content in a post or page’s rendered content, bypassing the plugin’s content protection.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112355"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T20:17:13.147",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-116689",
-      "title": "follow-redirects is a Node.js HTTP and HTTPS client wrapper that automatically follows redirects",
-      "severity": "medium",
-      "categories": [
-        "JavaScript / TypeScript",
-        "Node.js / npm"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "follow-redirects is a Node.js HTTP and HTTPS client wrapper that automatically follows redirects. From 1.16.0 until 1.16.2, the documented sensitiveHeaders option is checked with value instanceof Array, so an array created in another JavaScript realm is replaced with an empty list even though Array.isArray recognizes it. When a request then follows an attacker-controlled cross-origin redirect, a custom credential header named in that discarded list can be forwarded to the redirect destination. This issue is fixed in version 1.16.2.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116689"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T20:17:14.177",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -24305,6 +24305,51 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-109618",
+      "title": "RCE via OOM corruption",
+      "severity": "critical",
+      "categories": [
+        "Fortinet",
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-28",
+      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:25Z",
+      "source_type": "php_upstream",
+      "known_exploited": true
+    },
+    {
       "id": "CVE-2026-109619",
       "title": "RCE via stale global state",
       "severity": "critical",
@@ -24347,51 +24392,6 @@
       "status": "Published security advisory from PHP upstream",
       "first_seen_at": "2026-10-28T03:56:02Z",
       "source_updated_at": "2026-10-21T13:34:13Z",
-      "source_type": "php_upstream",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2026-109618",
-      "title": "RCE via OOM corruption",
-      "severity": "critical",
-      "categories": [
-        "Fortinet",
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-28",
-      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:25Z",
       "source_type": "php_upstream",
       "known_exploited": true
     },
@@ -25662,6 +25662,126 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-28T14:17:49Z",
       "source_updated_at": "2026-10-28T14:17:08.593",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-112935",
+      "title": "filelock is a platform-independent file lock for Python",
+      "severity": "medium",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-10-20",
+      "updated": "2026-10-28",
+      "summary": "filelock is a platform-independent file lock for Python. From 3.22.0 until 4.2.1, SoftFileLock can break a stale marker after an attacker frees its own marker following the stale read, an honest contender creates a live successor on the reused inode, and the successor's modification time is not newer than the saved observation, causing the live marker to be removed and two holders to be admitted. This issue is fixed in version 4.2.1.",
+      "affected": "Products identified in NVD configurations: tox-dev filelock",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112935"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/tox-dev/filelock/security/advisories/GHSA-fq56-3cx3-fjxp"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.7",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T15:41:30Z",
+      "source_updated_at": "2026-10-28T15:17:02.940",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-112941",
+      "title": "filelock is a platform-independent file lock for Python",
+      "severity": "low",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-10-20",
+      "updated": "2026-10-28",
+      "summary": "filelock is a platform-independent file lock for Python. From 4.1.0 until 4.2.1, SoftReadWriteLock and AsyncSoftReadWriteLock cache a successful check of the <path>.rw lock tree and resolve its names again during later record operations, allowing another local user who can replace that tree after the first acquisition to redirect lock-record writes into directories writable by the lock user. This issue is fixed in version 4.2.1.",
+      "affected": "Products identified in NVD configurations: tox-dev filelock",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112941"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/tox-dev/filelock/security/advisories/GHSA-wfhq-q4j2-c37m"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "3.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T15:41:30Z",
+      "source_updated_at": "2026-10-28T15:17:03.070",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-113672",
+      "title": "Argo CD is a declarative, GitOps continuous delivery tool for Kubernetes",
+      "severity": "critical",
+      "categories": [
+        "Docker / Kubernetes"
+      ],
+      "published": "2026-10-20",
+      "updated": "2026-10-28",
+      "summary": "Argo CD is a declarative, GitOps continuous delivery tool for Kubernetes. From 0.9.0 until 3.3.15, 3.4.10, 3.5.4, and 3.6.0-rc2, the repo-server evaluates .jsonnet files with an importer that does not confine import, importstr, or importbin to the repository root. Absolute paths, parent-directory traversal, and repository symlinks can open any file readable by the repo-server, including /proc/self/environ, projected service-account tokens, mounted private keys, and repository credentials. Although generated Secrets are redacted, placing imported contents in a ConfigMap returns the data to the caller. Using importstr on a non-terminating device such as /dev/zero can exhaust repo-server memory. An attacker can commit a .jsonnet file to a Git repository used by an Application or upload the file through POST /api/v1/applications/manifestsWithFiles, also exposed by argocd app diff --local --server-side-generate. Directory applications evaluate every .jsonnet file in the application directory. The upload path requires only Application get permission on an existing directory Application, without Application update or sync permission or repository write access. This issue is fixed in versions 3.3.15, 3.4.10, 3.5.4, and 3.6.0-rc2.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-113672"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T15:41:30Z",
+      "source_updated_at": "2026-10-28T15:17:03.380",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-113776",
+      "title": "virtualenv is a tool for creating isolated virtual python environments",
+      "severity": "high",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-10-20",
+      "updated": "2026-10-28",
+      "summary": "virtualenv is a tool for creating isolated virtual python environments. From 20.26.6 until 21.14.2, ViaTemplateActivator.instantiate_template() replaces placeholders one key at a time across the complete activation template, so trigger names such as __VIRTUAL_NAME__, __VIRTUAL_ENV__, or __VIRTUAL_PROMPT__ inside an already substituted and quoted environment path or prompt can be replaced during a later pass. The later value's quoting can close the earlier literal and execute the remaining path when a user activates the environment through bash, fish, xonsh, or activate_this.py. The distinct csh prompt-display token __VIRTUAL_PROMPT_DISPLAY_TCSH__ can instead break the generated script without establishing command execution. The attacker must influence the destination path or --prompt, and a value without a relevant placeholder name does not trigger this mechanism. This issue is fixed in version 21.14.2.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-113776"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T15:41:30Z",
+      "source_updated_at": "2026-10-28T15:17:04.007",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -27526,6 +27646,38 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-96521",
+      "title": "Photoshop Desktop is affected by an out-of-bounds write vulnerability that could result in arbitrary code execution in the context of the current user",
+      "severity": "high",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-28",
+      "summary": "Photoshop Desktop is affected by an out-of-bounds write vulnerability that could result in arbitrary code execution in the context of the current user. Exploitation of this issue requires user interaction in that a victim must open a malicious file.",
+      "affected": "Products identified in NVD configurations: adobe photoshop; apple macos; microsoft windows",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96521"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://www.adobe.com/trust/security/products/photoshop/apsb26-158.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T15:41:30Z",
+      "source_updated_at": "2026-10-28T15:32:51.700",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-103555",
       "title": "Heap-based buffer overflow in Virtual Hard Disk (VHD) Miniport Driver allows an authorized attacker to elevate privileges locally.",
       "severity": "high",
@@ -29191,6 +29343,43 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-102870",
+      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-25",
+      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
+      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
+      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
+      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "ASP.NET Core GHSA vendor record",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-25",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
+    },
+    {
       "id": "CVE-2026-70197",
       "title": ".NET SocketAsyncEventArgs memory corruption remote code execution",
       "severity": "high",
@@ -29219,43 +29408,6 @@
         {
           "label": "Microsoft Security Update Guide",
           "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-70197"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-25",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation."
-    },
-    {
-      "id": "CVE-2026-102870",
-      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-25",
-      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
-      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
-      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
-      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft corrected Blazor debugger security advisory",
-          "url": "https://github.com/dotnet/announcements/issues/492"
-        },
-        {
-          "label": "ASP.NET Core GHSA vendor record",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
         }
       ],
       "kind": "cve",
@@ -30929,6 +31081,43 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "Windows",
+        "Windows 11 OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+        },
+        {
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation."
+    },
+    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -30997,43 +31186,6 @@
       "status": "Vendor-sourced historical baseline; not newly disclosed",
       "first_seen_at": "2026-10-28T02:30:57Z",
       "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation."
-    },
-    {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        "Windows",
-        "Windows 11 OS"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
-        },
-        {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
@@ -58231,8 +58383,8 @@
       "title": "ApostropheCMS: 2nd-order prototype pollution via PATCH leading to single-request persistent DoS",
       "severity": "high",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-09-02",
       "updated": "2026-10-28",
@@ -58648,9 +58800,9 @@
       "title": "mcp-server-kubernetes argument injection can expose Kubernetes cluster credentials",
       "severity": "critical",
       "categories": [
-        "Node.js / npm",
+        "Application dependencies",
         "Docker / Kubernetes",
-        "Application dependencies"
+        "Node.js / npm"
       ],
       "published": "2026-07-10",
       "updated": "2026-10-28",
@@ -71225,8 +71377,8 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2025-7624",
-      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
       "severity": "critical",
       "cvss": null,
       "categories": [
@@ -71234,9 +71386,9 @@
       ],
       "published": "2025-07-21",
       "updated": "2025-07-21",
-      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
-      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
-      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
       "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
       "sources": [
         {
@@ -71253,8 +71405,8 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "id": "CVE-2025-7624",
+      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
       "cvss": null,
       "categories": [
@@ -71262,9 +71414,9 @@
       ],
       "published": "2025-07-21",
       "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
+      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
+      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
       "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
       "sources": [
         {
@@ -74918,235 +75070,95 @@
       "source_updated_at": "2025-10-06",
       "source_type": "cisa_kev",
       "known_exploited": true
-    },
-    {
-      "id": "CVE-2011-3402",
-      "title": "Microsoft Windows Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-10-06",
-      "summary": "Microsoft Windows Kernel contains an unspecified vulnerability in the TrueType font parsing engine in win32k.sys in the kernel-mode drivers that allows remote attackers to execute arbitrary code via crafted font data in a Word document or web page.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-10-06",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2025-20352",
-      "title": "Cisco IOS and IOS XE Software SNMP Denial of Service and Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2025-09-29",
-      "summary": "Cisco IOS and IOS XE contains a stack-based buffer overflow vulnerability in the Simple Network Management Protocol (SNMP) subsystem that could allow for denial of service or remote code execution. A successful exploit could allow a low-privileged attacker to cause the affected system to reload, resulting in a DoS condition, or allow a high-privileged attacker to execute arbitrary code as the root user and obtain full control of the affected system.",
-      "affected": "Cisco IOS and IOS XE. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-09-29",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2025-38352",
-      "title": "Linux Kernel Time-of-Check Time-of-Use (TOCTOU) Race Condition Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "",
-      "updated": "2025-09-04",
-      "summary": "Linux kernel contains a time-of-check time-of-use (TOCTOU) race condition vulnerability that has a high impact on confidentiality, integrity, and availability.",
-      "affected": "Linux Kernel. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-09-04",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2025-48543",
-      "title": "Android Runtime Use-After-Free Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2025-09-04",
-      "summary": "Android Runtime contains a use-after-free vulnerability potentially allowing a chrome sandbox escape leading to local privilege escalation.",
-      "affected": "Android Runtime. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-09-04",
-      "source_type": "cisa_kev",
-      "known_exploited": true
-    },
-    {
-      "id": "CVE-2025-43300",
-      "title": "Apple iOS, iPadOS, and macOS Out-of-Bounds Write Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2025-08-21",
-      "summary": "Apple iOS, iPadOS, and macOS contain an out-of-bounds write vulnerability in the Image I/O framework.",
-      "affected": "Apple iOS, iPadOS, and macOS. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-28T04:04:23Z",
-      "source_updated_at": "2025-08-21",
-      "source_type": "cisa_kev",
-      "known_exploited": true
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-28T15:13:33Z",
-      "last_attempt": "2026-10-28T15:13:33Z",
-      "items_processed": 275,
+      "last_success": "2026-10-28T15:41:30Z",
+      "last_attempt": "2026-10-28T15:41:30Z",
+      "items_processed": 260,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-28T15:13:33Z",
-      "last_attempt": "2026-10-28T15:13:33Z",
+      "last_success": "2026-10-28T15:41:30Z",
+      "last_attempt": "2026-10-28T15:41:30Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-28T15:13:33Z",
-      "last_attempt": "2026-10-28T15:13:33Z",
-      "items_processed": 395,
+      "last_success": "2026-10-28T15:41:30Z",
+      "last_attempt": "2026-10-28T15:41:30Z",
+      "items_processed": 382,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-28T15:13:33Z",
-      "last_attempt": "2026-10-28T15:13:33Z",
+      "last_success": "2026-10-28T15:41:30Z",
+      "last_attempt": "2026-10-28T15:41:30Z",
       "items_processed": 482,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-28T15:13:33Z",
-      "last_attempt": "2026-10-28T15:13:33Z",
+      "last_success": "2026-10-28T15:41:30Z",
+      "last_attempt": "2026-10-28T15:41:30Z",
       "items_processed": 2553,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-28T15:13:33Z",
-      "last_attempt": "2026-10-28T15:13:33Z",
+      "last_success": "2026-10-28T15:41:30Z",
+      "last_attempt": "2026-10-28T15:41:30Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-28T15:13:33Z",
-      "last_attempt": "2026-10-28T15:13:33Z",
+      "last_success": "2026-10-28T15:41:30Z",
+      "last_attempt": "2026-10-28T15:41:30Z",
       "items_processed": 23,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-28T15:13:33Z",
-      "last_attempt": "2026-10-28T15:13:33Z",
+      "last_success": "2026-10-28T15:41:30Z",
+      "last_attempt": "2026-10-28T15:41:30Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-28T15:13:33Z",
-      "last_attempt": "2026-10-28T15:13:33Z",
+      "last_success": "2026-10-28T15:41:30Z",
+      "last_attempt": "2026-10-28T15:41:30Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-28T15:13:33Z",
-      "last_attempt": "2026-10-28T15:13:33Z",
+      "last_success": "2026-10-28T15:41:30Z",
+      "last_attempt": "2026-10-28T15:41:30Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-28T15:13:33Z",
-      "last_attempt": "2026-10-28T15:13:33Z",
+      "last_success": "2026-10-28T15:41:30Z",
+      "last_attempt": "2026-10-28T15:41:30Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-28T15:13:33Z",
-      "last_attempt": "2026-10-28T15:13:33Z",
+      "last_success": "2026-10-28T15:41:30Z",
+      "last_attempt": "2026-10-28T15:41:30Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     }
   },
-  "last_checked_at": "2026-10-28T15:13:33Z",
-  "last_successful_update": "2026-10-28T15:13:33Z",
+  "last_checked_at": "2026-10-28T15:41:30Z",
+  "last_successful_update": "2026-10-28T15:41:30Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
