@@ -556,6 +556,8 @@ def from_vendor_rss(entry: dict) -> dict | None:
     published = datepart(entry.get("published"))
     url = clean_url(entry.get("url"))
     matches = list(dict.fromkeys(re.findall(r"\bCVE-\d{4}-\d{4,}\b", title + " " + description, re.I)))
+    if entry.get("cve"):
+        matches=[str(entry["cve"]).upper()]
     if not matches or not url or not published:
         return None
     fid = matches[0].upper()
@@ -598,17 +600,24 @@ def rss_vendor_items(vendor: str) -> list[dict]:
             if key=="link" and not value:
                 value=child.attrib.get("href","")
             fields.setdefault(key,value)
-        date = fields.get("pubDate") or fields.get("published") or fields.get("updated") or ""
+        date = fields.get("pubDate") or fields.get("published") or fields.get("updated") or fields.get("date") or ""
         if date and not datepart(date):
             try:
                 date=parsedate_to_datetime(date).date().isoformat()
             except (TypeError, ValueError, IndexError):
                 date=""
-        records.append({"vendor":vendor,"title":fields.get("title"),
-                        "summary":fields.get("description") or fields.get("summary") or fields.get("content"),
-                        "published":date,"url":fields.get("link") or fields.get("id")})
+        item_title=fields.get("title") or ""
+        item_summary=fields.get("description") or fields.get("summary") or fields.get("content") or ""
+        item_link=urllib.parse.urljoin(SOURCES[vendor],fields.get("link") or fields.get("id") or "")
+        cves=list(dict.fromkeys(x.upper() for x in re.findall(r"\bCVE-\d{4}-\d{4,}\b",item_title+" "+item_summary,re.I)))
+        for fid in cves:
+            records.append({"vendor":vendor,"title":item_title,
+                            "summary":item_summary,"cve":fid,
+                            "published":date,"url":item_link})
     if not records:
-        raise RuntimeError(f"{vendor} returned no RSS or Atom entries")
+        # A source can legitimately have notices without CVEs, but this is
+        # not verified CVE coverage; record an explicit error instead.
+        raise RuntimeError(f"{vendor} yielded no CVE-bearing RSS entries")
     return records
 
 
