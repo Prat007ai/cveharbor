@@ -48,6 +48,7 @@
   }).sort((a,b)=>String(b.published||'').localeCompare(String(a.published||'')) || String(b.updated||'').localeCompare(String(a.updated||'')));
   const $ = id => document.getElementById(id);
   const cveIDs = rows => [...new Set(rows.filter(x => /^CVE-\d{4}-\d+$/i.test(x.id)).map(x => x.id))];
+  const advisoryIDs = rows => [...new Set(rows.filter(x=>x&&x.id).map(x=>x.id))];
   // Publication date means original disclosure. A routine vendor/NVD metadata
   // update should not make a months-old vulnerability look newly published.
   const recentDate = (dateString,days) => {
@@ -106,7 +107,7 @@
     sourceHealth.append(n);
   });
   let frag=document.createDocumentFragment();categories.forEach(t=>{const el=document.createElement('option');el.value=t.name;el.textContent=t.name;frag.append(el);});$('technologyFilter').append(frag);
-  function catCount(cat){return cveIDs(items.filter(x=>(x.categories||[]).includes(cat) && newlyPublished(x,30))).length;}
+  function catCount(cat){return advisoryIDs(items.filter(x=>(x.categories||[]).includes(cat) && newlyPublished(x,30))).length;}
   function openTechnologyAdvisories(technology, cveOnly=false){
     // Synchronize all controls so an old search or severity filter cannot hide results.
     const recentAvailable=items.some(x=>(x.categories||[]).includes(technology)&&newlyPublished(x,30));
@@ -127,14 +128,14 @@
       const row=document.createElement('button');
       row.type='button';
       row.className='bar-item tech-chart-link';
-      row.setAttribute('aria-label',`View ${x.count} CVEs newly disclosed within 30 days for ${x.name}`);
-      row.title=`View ${x.name} CVEs newly disclosed in the last 30 days`;
+      row.setAttribute('aria-label',`View ${x.count} security advisories newly disclosed within 30 days for ${x.name}`);
+      row.title=`View ${x.name} advisories newly disclosed in the last 30 days`;
       const track=text('div','bar-track','');
       const fill=text('div','bar-fill','');
       fill.style.width=x.count?Math.max(3,x.count/max*100)+'%':'0%';
       track.append(fill);
       row.append(text('span','',x.name),track,text('b','',String(x.count)));
-      row.addEventListener('click',()=>openTechnologyAdvisories(x.name,true));
+      row.addEventListener('click',()=>openTechnologyAdvisories(x.name,false));
       $('techBars').append(row);
     });
   }
@@ -145,11 +146,11 @@
     const matches=x=>!q||(x.name+' '+(x.description||'')).toLowerCase().includes(q);
     let visible=0,extraVisible=0;
     function row(x){
-      const total=cveIDs(items.filter(a=>(a.categories||[]).includes(x.name))).length;
-      const recent=cveIDs(items.filter(a=>(a.categories||[]).includes(x.name)&&newlyPublished(a,30))).length;
+      const total=advisoryIDs(items.filter(a=>(a.categories||[]).includes(x.name))).length;
+      const recent=advisoryIDs(items.filter(a=>(a.categories||[]).includes(x.name)&&newlyPublished(a,30))).length;
       const b=document.createElement('button');
       b.type='button';b.className='technology-row';
-      b.setAttribute('aria-label',`View ${x.name}: ${recent} new CVEs and ${total} total indexed`);
+      b.setAttribute('aria-label',`View ${x.name}: ${recent} recent security advisories and ${total} total indexed`);
       const glyph=text('span','technology-glyph',x.icon||'◇');glyph.setAttribute('aria-hidden','true');
       const label=text('span','technology-row-main','');
       label.append(text('span','technology-row-name',x.name),text('span','technology-row-sub',x.description||'Security advisories'));
@@ -182,6 +183,8 @@
       if(featured.has(x.name)||!matches(x))continue;
       extra.append(row(x));visible++;extraVisible++;
     }
+    const caption=document.querySelector('.technology-more-caption');
+    if(caption) caption.textContent=(categories.length-featured.size)+' additional platforms';
     const more=$('additionalTech');
     more.hidden=Boolean(q)&&extraVisible===0;
     if(q&&extraVisible)more.open=true;
@@ -189,7 +192,7 @@
     $('technologyTotal').textContent=String(categories.length);
     $('technologySearchSummary').textContent=q
       ? `${visible} of ${categories.length} technology groups match your search`
-      : `${featured.size} featured platforms and ${categories.length-featured.size} additional groups. Counts describe indexed CVEs, not visitor exposure.`;
+      : `${featured.size} featured platforms and ${categories.length-featured.size} additional groups. Counts describe indexed security advisories, not visitor exposure.`;
   }
   function renderFocus(){
     const priorities=items.filter(x=>x.known_exploited||x.severity==='critical'||x.severity==='high').sort((a,b)=>Number(!!b.known_exploited)-Number(!!a.known_exploited)||({critical:0,high:1}[a.severity]??2)-({critical:0,high:1}[b.severity]??2)).slice(0,3);
