@@ -8,7 +8,7 @@
   let tablePage = 0;
   let listMode = 'cards';
   let metricScope = 'all';
-  const featured = new Set(["Windows Server OS",".NET / ASP.NET",".NET Core","WordPress / Plugins","Linux","PHP","Python / PyPI","Azure","Microsoft 365","SQL Server","MySQL / MariaDB","Fortinet","VMware","HyperV","Docker / Kubernetes"]);
+  const featured = new Set(["Windows Server OS","Windows 11 OS",".NET / ASP.NET",".NET Core","WordPress / Plugins","Linux","PHP","Python / PyPI","Azure","Microsoft 365","Exchange SE","SQL Server","MySQL / MariaDB","Fortinet","Sophos Firewall","VMware","Veeam Backup & Replication","HyperV","Docker / Kubernetes","Progress Telerik","Sitefinity"]);
   const info = window.CVEHARBOR_DATA || {categories:[],advisories:[],mode:'awaiting_first_sync'};
   const items = info.advisories || [];
   const categories = info.categories || [];
