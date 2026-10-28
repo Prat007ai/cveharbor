@@ -151,3 +151,10 @@
   .advisory-table .table-severity[data-level="critical"] { color:#ff9daf; }
   .advisory-table .table-severity[data-level="high"] { color:#ffe29b; }
 }
+
+/* Keep detailed source health at the very bottom without hiding collection failures. */
+.footer-status{margin-top:26px}
+.footer-status .notice{margin:0;background:#0b2437;border:1px solid #285267;align-items:flex-start}
+.footer-status .preview-status{margin-right:9px;display:inline-block;vertical-align:baseline}
+.footer-status .notice-date{color:#91c9d8}
+@media(max-width:780px){.footer-status .notice{flex-wrap:wrap}.footer-status .notice-date{display:block;margin-left:38px}}
