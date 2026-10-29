@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS plugin_source_mappings (
 );
 CREATE INDEX IF NOT EXISTS idx_plugin_source_mappings_user ON plugin_source_mappings(user_id);
 
-CREATE TABLE IF NOT EXISTS plugin_installation_status (user_id TEXT NOT NULL, asset_id TEXT NOT NULL, status TEXT NOT NULL, PRIMARY KEY(user_id,asset_id));
+CREATE TABLE IF NOT EXISTS plugin_installation_status (user_id TEXT NOT NULL, asset_id TEXT NOT NULL, status TEXT NOT NULL CHECK(status IN ('Active','Inactive','Network active','Inactive, listing closed')), PRIMARY KEY(user_id,asset_id));
