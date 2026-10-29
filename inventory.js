@@ -140,7 +140,17 @@ function setupSourceEditor(){
  }
  button.addEventListener('click',()=>void saveSources());
  verify.addEventListener('click',async()=>{
-  if(await saveSources())info.textContent+='; the next monitoring check will independently verify release data.';
+  if(!await saveSources())return;
+  verify.disabled=true;info.textContent='Checking the official release source…';
+  try{
+   const r=await fetch('https://api.cveharbor.com/v1/plugin-sources/'+select.value+'/verify',{method:'POST',credentials:'include'});
+   const value=await r.json().catch(()=>({}));
+   if(!r.ok)throw Error(value.error||'Verification unavailable');
+   info.textContent=value.verification==='Release Verified'?
+    'Verified '+value.slug+' · Latest published '+value.latest_version+' · '+value.update_status:
+    'Needs Review · '+(value.reason||'Official release could not be verified');
+  }catch(e){info.textContent='Could not verify source: '+e.message}
+  finally{verify.disabled=false}
  });
  box.prepend(select);box.append(button,verify,info);host.after(box);
  window.addEventListener('cveharbor:inventory-loaded',redraw);redraw();
