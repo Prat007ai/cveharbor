@@ -163,7 +163,7 @@ function setupPluginImport(){
     saved++;
     result.textContent='Processed '+saved+' of '+plugins.length+' plugins';
    }
-   await load();result.textContent=saved+' WordPress plugin entries processed and saved in private D1 inventory.';
+   await load();result.textContent=saved+' WordPress plugin entries processed and inventory updated successfully.';
   }catch(error){await load();result.textContent='Imported '+saved+' entries. '+error.message+' Review and retry to continue.'}
   finally{button.disabled=false}
  });
