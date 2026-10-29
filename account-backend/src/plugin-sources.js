@@ -39,7 +39,7 @@ export async function sourceRoute(req,env,user,path,data={}){
   advisory=safeSourceUrl(data.advisory_url);
  }catch(e){return reply({error:e.message},400)}
  const slug=wordpressSlug(vendor)||wordpressSlug(release);
- const verification=slug?'WordPress.org Verified Source':'Needs Review';
+ const verification=slug?'WordPress.org Slug Identified':'Needs Review';
  await env.DB.prepare('INSERT INTO plugin_source_mappings(user_id,asset_id,vendor_url,release_url,advisory_url,plugin_slug,verification,updated_at) VALUES(?,?,?,?,?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(user_id,asset_id) DO UPDATE SET vendor_url=excluded.vendor_url,release_url=excluded.release_url,advisory_url=excluded.advisory_url,plugin_slug=excluded.plugin_slug,verification=excluded.verification,updated_at=CURRENT_TIMESTAMP').bind(user.id,asset.id,vendor,release,advisory,slug,verification).run();
  return reply({saved:true,asset_id:asset.id,plugin_slug:slug,verification});
 }
