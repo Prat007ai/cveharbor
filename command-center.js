@@ -1,6 +1,6 @@
 (()=>{'use strict';
 const body=document.body;
-if(!body||(!body.classList.contains('account-page')&&(!body.dataset.page||body.dataset.page==='home')))return;
+if(!body||(!body.classList.contains('account-page')&&!body.dataset.page))return;
 body.classList.add('command-center-app');
 const groups=[
  {label:'Intelligence',items:[['Overview','/','layout-dashboard'],['Vulnerabilities','/vulnerabilities/','shield-alert'],['Threat IPs','/threats/','radar'],['Malware','/malware/','bug'],['Lifecycle','/lifecycle/','calendar-clock']]},
