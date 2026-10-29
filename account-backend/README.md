@@ -133,3 +133,19 @@ The fields are customer name, environment name and type, asset name and type, te
 ## Multiple installed technologies per customer asset
 
 The My Environments page supports multiple technology versions for the same named asset. Enter the first technology and version in the existing fields, then provide additional lines formatted as Technology | Version. The browser creates an individual existing D1 inventory asset row for each technology while retaining the same environment, asset name and type. The page visually groups rows by that asset name and type, and vulnerability matching evaluates every technology row separately. Edit and Remove operate on individual technology entries. No destructive schema migration or new database tables are required for this extension. Do not use the same asset name for physically different assets within one environment, because the UI groups by name and type.
+
+## End of Support and Patch Availability Watch
+
+The website publishes a source-limited lifecycle calendar and allows signed-in users to save product watches in their existing private Cloudflare D1 account. The collector uses endoflife.date product feeds, with links to the original page and a timestamp. Covered choices include Windows Server, Windows client, Microsoft SQL Server, SharePoint, .NET, Microsoft server tools, Sitefinity when sourced, WordPress, PHP and several Linux distributions. Products unavailable in the source are shown as unavailable rather than assigned fabricated dates. Users can add another product by entering their own verified end of support date and source.
+
+### Database migration
+
+Back up the current D1 database before applying `account-backend/lifecycle-schema.sql` to the existing `cveharbor-accounts` D1 database. The schema creates `lifecycle_watches`, `lifecycle_preferences`, and `lifecycle_delivery`, all scoped to the authenticated CVEHarbor user. Existing user, watchlist, customer and remediation records are not replaced. The manual, approval-gated `.github/workflows/deploy-account-worker.yml` includes the additive migration. Do not deploy this Worker as part of public GitHub Pages publication.
+
+### Emails and consent
+
+Lifecycle notifications are off by default in D1. The user must explicitly check the lifecycle email opt-in box and save. Even then, no lifecycle emails send until the Cloudflare Worker runtime variable `LIFECYCLE_DELIVERY_ENABLED` is set to `true` by the administrator. Leave it unset during initial migration and testing. It does not turn on the independently gated vulnerability digest or remediation assignment sender. The scheduled handler evaluates lifecycle watches each hour, with up to 8 successful outgoing messages per invocation. Emails are deduplicated by watch, release/date event, and actual SMTP2GO provider acceptance. A newer release notice indicates release availability, not a verified security fix or installed asset exposure. Only confirmed vendor bulletins should be described as security patches.
+
+### Scope and limitations
+
+Use `GET /v1/lifecycle/status` to check if the new D1 tables are present (authenticated). `GET /v1/lifecycle`, `POST /v1/lifecycle/watches`, `DELETE /v1/lifecycle/watches/{id}`, and `PUT /v1/lifecycle/preferences` manage watches and settings in the current account. A watch contains product, tracked source slug and exact cycle, optional installed build, and optional user-supplied support date and source URL. There is no automatic installation scan, license/extended support detection, automatic patch installation, or vendor patch bulletin verification. Source dates can differ by edition, release channel and paid extended security support.
