@@ -406,7 +406,7 @@ function drawReport(){
   root.append(text('p','Plugin monitoring: '+checked+' checked, '+unavailable+' unavailable or unverified, '+(pluginAssets.length-checked-unavailable)+' pending. Saved results refresh on a schedule. Unknown coverage does not establish safety.','ops-note'));
  }
  if(pluginAssets.length){
-  const monitor=table(['Plugin','Installed version','Latest available','Update status','Last check','Coverage','Potential CVEs'],
+  const monitor=table(['Plugin','Installed version','Latest available','Update status','Last check','Coverage','Potential CVEs','Vendor URL'],
    pluginAssets.map(a=>{
     const check=pluginMonitorRows[a.id];
     const release=check?.release;
@@ -415,8 +415,36 @@ function drawReport(){
      validRelease?release.latest_version:'Not verified',validRelease?release.update_status:(release?.reason?'Unknown: '+release.reason.slice(0,90):'Unknown'),
      check?.checked_at?new Date(check.checked_at*1000).toISOString().replace('T',' ').slice(0,16)+' UTC':'Not checked',
      pluginChecks[a.id]==='checked'?'Checked':pluginChecks[a.id]==='pending'?'Pending':((check?.status||'Unavailable')+': '+(check?.reason||'Source lookup not confirmed').slice(0,110)),
-     check?.status==='checked'?String(check.findings?.length||0):'Unknown'];
+     check?.status==='checked'?String(check.findings?.length||0):'Unknown',''];
    }));
+  for(const [index,asset] of pluginAssets.entries()){
+   const check=pluginMonitorRows[asset.id],release=check?.release;
+   const updateCell=monitor.tBodies[0].rows[index].cells[3];
+   if(release?.release_status==='verified'&&release.update_status==='Update Available'){
+    const marker=text('span','● Update Available','customer-update-indicator');
+    marker.setAttribute('role','status');
+    updateCell.replaceChildren(marker);
+   }
+   const cell=monitor.tBodies[0].rows[index].cells[7];
+   const wrap=text('div','','customer-source-editor');
+   const input=document.createElement('input');
+   input.type='url';input.placeholder='https://vendor.example/plugin';
+   input.setAttribute('aria-label','Official plugin URL for '+asset.technology);
+   const saved=pluginSources.get(asset.id);
+   input.value=saved?.vendor_url||'';
+   input.disabled=!pluginSourceReady;
+   const save=text('button','Save URL','customer-ticket-save');save.type='button';save.disabled=!pluginSourceReady;
+   const info=text('small',pluginSourceReady?'':'Activate source storage to edit URLs','ops-note');
+   save.addEventListener('click',()=>void saveReportPluginSource(asset,input,info));
+   const url=saved?.release_url||saved?.vendor_url||release?.release_source||'';
+   wrap.append(input,save);
+   if(url.startsWith('https://')){
+    const external=link(url,'Plugin page / releases');
+    wrap.append(external);
+   }
+   wrap.append(info);
+   cell.append(wrap);
+  }
   monitor.classList.add('customer-plugin-monitor-table');
   const heading=reportSection('WordPress Plugin Monitoring');
   root.append(heading);
