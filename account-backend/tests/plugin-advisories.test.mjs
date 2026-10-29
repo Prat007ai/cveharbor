@@ -35,6 +35,25 @@ test('recognizes endpoint scoped responses without a redundant slug',()=>{
 });
 test('explicit wrong slug and unrecognized payload remain unverified',()=>{
  assert.equal(normalizePluginLookup(slug,'8.0.1',{error:0,data:{slug:'unrelated',vulnerabilities:[]}}).status,'unverified');
- assert.equal(normalizePluginLookup(slug,'8.0.1',{error:0,data:{}}).status,'unverified');
+ assert.equal(normalizePluginLookup(slug,'8.0.1',{error:0,data:{}}).status,'checked');
  assert.equal(normalizePluginLookup(slug,'8.0.1',{error:1,data:null}).status,'unverified');
+});
+
+test('empty successful API data does not become a parsing failure',()=>{
+ for(const data of [[],null,{}]){
+  const result=normalizePluginLookup(slug,'8.0.1',{error:0,data});
+  assert.equal(result.status,'checked');
+  assert.deepEqual(result.findings,[]);
+ }
+});
+test('direct vulnerability arrays and CVE arrays are parsed',()=>{
+ const result=normalizePluginLookup(slug,'8.0.1',{error:0,data:[
+  {cve:['CVE-2026-99991'],operator:'lt',version:'8.0.2',title:'Example'}
+ ]});
+ assert.equal(result.status,'checked');
+ assert.equal(result.findings[0].id,'CVE-2026-99991');
+});
+test('other plugin identity is not accepted',()=>{
+ const result=normalizePluginLookup(slug,'8.0.1',{error:0,data:[{slug:'other-plugin',vulnerabilities:[]}]});
+ assert.equal(result.status,'unverified');
 });
