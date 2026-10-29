@@ -40,3 +40,4 @@ jobs:
           test -n "$CLOUDFLARE_API_TOKEN" && test -n "$CLOUDFLARE_ACCOUNT_ID"
           npx --yes wrangler@4 d1 execute cveharbor-accounts --remote --file=./plugin-monitor-schema.sql --yes
           npx --yes wrangler@4 d1 execute cveharbor-accounts --remote --file=./plugin-release-schema.sql --yes
+          npx --yes wrangler@4 d1 execute cveharbor-accounts --remote --file=./plugin-source-schema.sql --yes
