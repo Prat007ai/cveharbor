@@ -26,7 +26,22 @@ async function refreshPluginFindings(){
     source_url:v.sources?.[0]?.url||''});
   }
  }else{
-  for(const a of assets)pluginChecks[a.id]='unavailable';
+  // Preserve existing on-demand checks until the additive D1 migration is activated.
+  for(let i=0;i<assets.length;i+=4){
+   await Promise.all(assets.slice(i,i+4).map(async asset=>{
+    const slug=pluginSlug(asset.technology.slice('WordPress Plugin: '.length));
+    try{
+     const result=await api('plugin-advisories?asset_id='+encodeURIComponent(asset.id)+'&slug='+encodeURIComponent(slug));
+     pluginChecks[asset.id]=result.status||'unavailable';
+     if(result.status==='checked')for(const v of result.findings||[]){
+      pluginFindings.push({...v,asset_id:asset.id,technology:asset.technology,version:asset.version,
+       evidence:v.level==='version_review'?'Version range candidate; confirm applicability.':'Plugin advisory requires verification.',
+       comparison_detail:v.affected||'',source_label:v.sources?.[0]?.label||'WPVulnerability',
+       source_url:v.sources?.[0]?.url||''});
+     }
+    }catch(_){pluginChecks[asset.id]='unavailable'}
+   }));
+  }
  }
  if(reporting)drawReport();else drawDashboard();
 }
