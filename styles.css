@@ -988,3 +988,32 @@ button.tech-chart-link b{
 
 /* Source-backed lifecycle detail modal and extended search results */
 .lifecycle-detail-dialog{max-width:810px;width:min(810px,calc(100vw - 20px));max-height:90vh;overflow:auto}.lifecycle-detail-dialog .dialog-layout{padding:29px}.lifecycle-detail-dialog h2{font-size:22px;margin:6px 0 13px}.lifecycle-detail-dialog .eyebrow{color:#7de5d8;font-size:11px}.lifecycle-detail-cycles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px;max-height:56vh;overflow:auto}.lifecycle-detail-cycle{border:1px solid #315568;border-radius:9px;background:#103147;padding:14px;min-width:0}.lifecycle-detail-cycle h3{font-size:14px;margin:0 0 14px;color:#effbff}.lifecycle-detail-field{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid #284a5d;line-height:1.5;font-size:11px}.lifecycle-detail-field strong{color:#a7c7d6;max-width:50%}.lifecycle-detail-field span{color:#ecf9ff;text-align:right;overflow-wrap:anywhere}.lifecycle-detail-references{margin-top:18px;padding-top:14px;border-top:1px solid #36576e;display:flex;flex-direction:column;align-items:flex-start;gap:9px;font-size:12px}.lifecycle-view-details{margin-top:8px}.lifecycle-source-interactive{padding:13px}.lifecycle-source-interactive .ops-note{margin:5px 0}.lifecycle-detail-dialog .ops-note{font-size:12px;line-height:1.7}@media(max-width:650px){.lifecycle-detail-cycles{grid-template-columns:minmax(0,1fr);max-height:none}.lifecycle-detail-dialog .dialog-layout{padding:22px 15px}}
+
+/* Dedicated account entry and workspace navigation */
+.header-account-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap;flex-shrink:0}
+.header-account-actions a{font-size:11px;font-weight:800;white-space:nowrap;text-decoration:none;border-radius:8px;padding:10px 13px}
+.header-account-login{color:#ddf8fa;border:1px solid #446b78;background:#0c2535}
+.header-account-primary{color:#06282f;background:#77e9d9;border:1px solid #77e9d9}
+.header-account-user{max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#a8cad5;font-size:11px}
+.account-page{min-height:100vh}
+.account-landing{padding-top:65px;padding-bottom:100px;min-height:68vh}
+.account-landing h1{font-size:clamp(28px,4vw,43px);margin:10px 0}
+.account-landing h2{font-size:20px;margin:0 0 14px}
+.account-landing-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:30px}
+.account-entry-panel,.account-benefits{padding:28px;min-width:0}
+.account-entry-form{display:flex;flex-direction:column;align-items:flex-start;gap:13px;margin-top:22px}
+.account-entry-form label{color:#c1e1ec;font-size:13px;font-weight:700}
+.account-entry-form input{width:100%;background:#071c2d;border:1px solid #3f6b80;padding:13px;border-radius:9px;color:#ecfaff;font-size:15px}
+.account-entry-form[hidden],#accountPageSignedIn[hidden],#accountPageSignedOut[hidden],#workspaceAccess[hidden],#workspaceSignIn[hidden]{display:none!important}
+.account-benefits p{font-size:13px;color:#bbd1db;line-height:1.75;margin:0 0 17px}
+.account-landing-footer{padding-bottom:35px;color:#abc6d5;font-size:12px;display:flex;gap:20px;justify-content:space-between}
+.account-landing-footer a{color:#80e9d8}
+#accountPageSignedIn{display:flex;flex-direction:column;gap:15px;align-items:flex-start}
+.workspace-landing-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin:24px 0}
+.workspace-entry{border:1px solid #365a70;border-radius:12px;background:#112e42;padding:24px;text-decoration:none;display:flex;flex-direction:column;gap:8px}
+.workspace-entry strong{font-size:17px;color:#eafbff}.workspace-entry span{font-size:12px;color:#b8d1dd;line-height:1.65}
+.workspace-entry:hover{border-color:#68dbce;background:#164159}
+#workspaceSignIn{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+#workspaceSignIn p{width:100%}
+@media(max-width:1050px){.topbar{flex-wrap:wrap}.header-account-actions{margin-left:auto}}
+@media(max-width:680px){.account-landing-grid,.workspace-landing-grid{grid-template-columns:1fr}.account-entry-panel,.account-benefits{padding:20px}.account-landing{padding-top:32px}.header-account-actions a{padding:9px 11px}.header-account-user{max-width:120px}}
