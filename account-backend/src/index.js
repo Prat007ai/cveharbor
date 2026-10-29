@@ -5,7 +5,7 @@ import { handler as lifecycleHandler, LifecycleError, dispatchLifecycle } from '
 import { inventoryRoute, InventoryError } from './inventory.js';
 import { pluginAdvisoryRoute } from './plugin-advisories.js';
 import { monitorRoute,scanDue } from './plugin-monitor.js';
-import { findingStatusRoute, FindingStatusError } from './finding-status.js';
+import { findingStatusRoute, FindingStatusError, findingTicketRoute } from './finding-status.js';
 import { RemediationError, capabilities, listRemediations, upsertRemediation, removeRemediation, importLegacy, assignRemediation } from './remediation.js';
 // The sender address must be verified in SMTP2GO. Never place credentials in GitHub.
 const ALLOWED_ORIGIN='https://cveharbor.com';
@@ -67,6 +67,7 @@ export default {async fetch(req,env,ctx){
   if(!user)return response({error:'Sign in required'},401);
   if(path==='/v1/auth/logout'&&req.method==='POST'){await env.DB.prepare('DELETE FROM sessions WHERE id=?').bind(user.sid).run();return response({authenticated:false},200,{'Set-Cookie':setCookie('',0)})}
   if(path.startsWith('/v1/lifecycle'))return await lifecycleHandler(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
+  if(path.startsWith('/v1/finding-tickets'))return await findingTicketRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/finding-statuses'))return await findingStatusRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/plugin-monitor'))return await monitorRoute(req,env,user,path,req.method==='POST'?await body(req):{});
   if(path==='/v1/plugin-advisories'&&req.method==='GET')return await pluginAdvisoryRoute(req,env,user);
