@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-29",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4264,
+  "candidate_records": 4267,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -2610,6 +2610,122 @@
       "first_seen_at": "2026-10-29T14:30:14Z",
       "source_updated_at": "2026-10-29T14:17:39.170",
       "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-vh6h-8m24-j9mj",
+      "title": "Malware in tailwind-keyframes",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: tailwind-keyframes (>= 0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-vh6h-8m24-j9mj"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T14:55:40Z",
+      "source_updated_at": "2026-10-29T14:53:02Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-7cm4-74gj-gfp2",
+      "title": "Malware in tailwind-animationlab",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: tailwind-animationlab (>= 0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-7cm4-74gj-gfp2"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T14:55:40Z",
+      "source_updated_at": "2026-10-29T14:53:01Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-4mf5-57pc-vj85",
+      "title": "Malware in tailwindcss-animate-catalog",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: tailwindcss-animate-catalog (>= 0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-4mf5-57pc-vj85"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T14:55:40Z",
+      "source_updated_at": "2026-10-29T14:49:35Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-282x-w96h-wv7f",
+      "title": "Malware in tailwindcss-keyframe-kit",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: tailwindcss-keyframe-kit (>= 0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-282x-w96h-wv7f"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T14:55:40Z",
+      "source_updated_at": "2026-10-29T14:49:35Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -14900,7 +15016,7 @@
           "url": "https://github.com/advisories/GHSA-q686-2qmg-hqc7"
         },
         {
-          "label": "Additional advisory",
+          "label": "Vendor advisory",
           "url": "https://github.com/authlib/authlib/security/advisories/GHSA-q686-2qmg-hqc7"
         },
         {
@@ -14949,7 +15065,7 @@
           "url": "https://github.com/advisories/GHSA-7vr2-2fgp-9w7p"
         },
         {
-          "label": "Additional advisory",
+          "label": "Vendor advisory",
           "url": "https://github.com/authlib/authlib/security/advisories/GHSA-7vr2-2fgp-9w7p"
         },
         {
@@ -15263,7 +15379,7 @@
           "url": "https://github.com/advisories/GHSA-fch4-3c6x-j4gc"
         },
         {
-          "label": "Additional advisory",
+          "label": "Vendor advisory",
           "url": "https://github.com/authlib/authlib/security/advisories/GHSA-fch4-3c6x-j4gc"
         },
         {
@@ -15312,7 +15428,7 @@
           "url": "https://github.com/advisories/GHSA-jj7h-c3hg-m23x"
         },
         {
-          "label": "Additional advisory",
+          "label": "Vendor advisory",
           "url": "https://github.com/authlib/authlib/security/advisories/GHSA-jj7h-c3hg-m23x"
         },
         {
@@ -15387,6 +15503,105 @@
       "known_exploited": false,
       "epss": 0.0029,
       "epss_percentile": 0.21536,
+      "epss_as_of": "2026-10-29"
+    },
+    {
+      "id": "CVE-2026-114616",
+      "title": "Authlib accepts an empty HMAC key, allowing JWS/JWT signature forgery (HS256/HS384/HS512)",
+      "severity": "high",
+      "categories": [
+        "Application dependencies",
+        "Linux",
+        "Node.js / npm",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-29",
+      "summary": "Reporter: Cavan Loughran, Celvex Group Inc. Summary Authlib's symmetric (oct) key handling accepts an empty key (empty bytes b'' / empty string '') as a valid HMAC signing and verification key. An empty HMAC key produces a deterministic digest that any party can reproduce, so an attacker who knows (or can cause) the application to verify a token with an empty key can forge arbitrary tokens that pass HS256/HS384/HS512 signature verification. This is the Authlib member of the cross-language empty-HMAC-key family already assigned CVE-2026-44351 (fast-jwt, npm) and CVE-2026-45363 (ruby-jwt, RubyGems). This is DISTINCT from Authlib's existing recent JWT-verification advisories. It is not closed by CVE-2026-27962 / GHSA-wvwj-cvrp-7pv5 (JWS JWK header injection, the key=None case), nor by CVE-2026-28802 / GHSA-7wc2-qxgw-g8gg (alg:none blank-signature bypass), nor by GHSA-5357-c2jx-v7qh (algorithm confusion with asymmetric public keys). Those address header-driven key injection, the none algorithm, and asymmetric-vs-symmetric confusion respectively; none of them rejects a zero-length oct key. Affected versions Authlib <= 1.7.2 (latest release 1.7.2, 2026-05-06). Confirmed present at the v1.7.2 release tag and on the current main HEAD. The affected code is in authlib/jose/rfc7518/oct_key.",
+      "affected": "pip: Authlib (< 1.9.1)",
+      "remediation": "Authlib: 1.9.1",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-8m4g-j4wp-wgcg"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/authlib/authlib/security/advisories/GHSA-8m4g-j4wp-wgcg"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-114616"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/authlib/authlib/commit/4ff30db442c70e29486e1982cb0ad37c037f5f4b"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-114616"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.4",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "2026-10-27T16:09:23Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00212,
+      "epss_percentile": 0.11476,
+      "epss_as_of": "2026-10-29"
+    },
+    {
+      "id": "CVE-2026-114617",
+      "title": "Authlib: ID token can disable its own nonce validation via the nonce_supported claim",
+      "severity": "medium",
+      "categories": [
+        "Application dependencies",
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-29",
+      "summary": "### Summary `OpenIDMixin.parse_id_token()` reads the `nonce_supported` claim from the ID token it is validating. When that claim is boolean `false`, the expected nonce is set to `None` and nonce validation is skipped for that token. An ID token that carries this claim is therefore accepted in a session whose nonce does not match. A captured, validly signed ID token belonging to a victim can be replayed into an attacker-controlled session, authenticating the attacker as the victim at the relying party. The code is identical in `authlib/integrations/base_client/sync_openid.py:82-83` and `authlib/integrations/base_client/async_openid.py:84-85`, so all framework integrations are affected. Fixed versions: none; reproduced on 1.8.0 (commit c529a61a). Preconditions: the ID token must carry a valid signature and pass `iss` and `aud` validation, and the attacker must be able to supply it to `parse_id_token()`. Authorization code flow is not affected. Implicit and hybrid relying parties, and applications calling `parse_id_token()` directly, are affected. ### Details ## Affected code `authlib/integrations/base_client/sync_openid.py:80-85`, in `parse_id_token()`: ```python claims = claims_cls(token.claims, token.header, claims_options, claims_params) # https://github.com/authlib/authlib/issu",
+      "affected": "pip: authlib (<= 1.8.0)",
+      "remediation": "authlib: 1.9.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-c5mf-xmp2-59rc"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/authlib/authlib/security/advisories/GHSA-c5mf-xmp2-59rc"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-114617"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/authlib/authlib/pull/949"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-114617"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.2",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "2026-10-27T15:39:15Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00232,
+      "epss_percentile": 0.14092,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -17343,105 +17558,6 @@
       "known_exploited": false,
       "epss": 0.00279,
       "epss_percentile": 0.20294,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-114616",
-      "title": "Authlib accepts an empty HMAC key, allowing JWS/JWT signature forgery (HS256/HS384/HS512)",
-      "severity": "high",
-      "categories": [
-        "Application dependencies",
-        "Linux",
-        "Node.js / npm",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "Reporter: Cavan Loughran, Celvex Group Inc. Summary Authlib's symmetric (oct) key handling accepts an empty key (empty bytes b'' / empty string '') as a valid HMAC signing and verification key. An empty HMAC key produces a deterministic digest that any party can reproduce, so an attacker who knows (or can cause) the application to verify a token with an empty key can forge arbitrary tokens that pass HS256/HS384/HS512 signature verification. This is the Authlib member of the cross-language empty-HMAC-key family already assigned CVE-2026-44351 (fast-jwt, npm) and CVE-2026-45363 (ruby-jwt, RubyGems). This is DISTINCT from Authlib's existing recent JWT-verification advisories. It is not closed by CVE-2026-27962 / GHSA-wvwj-cvrp-7pv5 (JWS JWK header injection, the key=None case), nor by CVE-2026-28802 / GHSA-7wc2-qxgw-g8gg (alg:none blank-signature bypass), nor by GHSA-5357-c2jx-v7qh (algorithm confusion with asymmetric public keys). Those address header-driven key injection, the none algorithm, and asymmetric-vs-symmetric confusion respectively; none of them rejects a zero-length oct key. Affected versions Authlib <= 1.7.2 (latest release 1.7.2, 2026-05-06). Confirmed present at the v1.7.2 release tag and on the current main HEAD. The affected code is in authlib/jose/rfc7518/oct_key.",
-      "affected": "pip: Authlib (< 1.9.1)",
-      "remediation": "Authlib: 1.9.1",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-8m4g-j4wp-wgcg"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/authlib/authlib/security/advisories/GHSA-8m4g-j4wp-wgcg"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-114616"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/authlib/authlib/commit/4ff30db442c70e29486e1982cb0ad37c037f5f4b"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-114616"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.4",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T16:09:23Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00212,
-      "epss_percentile": 0.11476,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-114617",
-      "title": "Authlib: ID token can disable its own nonce validation via the nonce_supported claim",
-      "severity": "medium",
-      "categories": [
-        "Application dependencies",
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "### Summary `OpenIDMixin.parse_id_token()` reads the `nonce_supported` claim from the ID token it is validating. When that claim is boolean `false`, the expected nonce is set to `None` and nonce validation is skipped for that token. An ID token that carries this claim is therefore accepted in a session whose nonce does not match. A captured, validly signed ID token belonging to a victim can be replayed into an attacker-controlled session, authenticating the attacker as the victim at the relying party. The code is identical in `authlib/integrations/base_client/sync_openid.py:82-83` and `authlib/integrations/base_client/async_openid.py:84-85`, so all framework integrations are affected. Fixed versions: none; reproduced on 1.8.0 (commit c529a61a). Preconditions: the ID token must carry a valid signature and pass `iss` and `aud` validation, and the attacker must be able to supply it to `parse_id_token()`. Authorization code flow is not affected. Implicit and hybrid relying parties, and applications calling `parse_id_token()` directly, are affected. ### Details ## Affected code `authlib/integrations/base_client/sync_openid.py:80-85`, in `parse_id_token()`: ```python claims = claims_cls(token.claims, token.header, claims_options, claims_params) # https://github.com/authlib/authlib/issu",
-      "affected": "pip: authlib (<= 1.8.0)",
-      "remediation": "authlib: 1.9.0",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-c5mf-xmp2-59rc"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/authlib/authlib/security/advisories/GHSA-c5mf-xmp2-59rc"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-114617"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/authlib/authlib/pull/949"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-114617"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.2",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T15:39:15Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00232,
-      "epss_percentile": 0.14092,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -38505,6 +38621,43 @@
       "epss_as_of": "2026-10-29"
     },
     {
+      "id": "CVE-2026-83852",
+      "title": "CVE-2026-83852 Windows Bind Filter Driver Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "<p>Use after free in Windows Bind Filter Driver allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83852"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83852"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.0",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00258,
+      "epss_percentile": 0.17408,
+      "epss_as_of": "2026-10-29"
+    },
+    {
       "id": "CVE-2024-34324",
       "title": "An issue in ProPhoenix Law RMS v2022.2403.3.101 allows attackers to execute a session hijacking attack via injecting a crafted 24-character string into the ASP.NET_SessionId c",
       "severity": "critical",
@@ -49315,6 +49468,46 @@
       "epss_as_of": "2026-10-29"
     },
     {
+      "id": "CVE-2026-102870",
+      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-25",
+      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
+      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
+      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
+      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "ASP.NET Core GHSA vendor record",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-25",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00906,
+      "epss_percentile": 0.59726,
+      "epss_as_of": "2026-10-29"
+    },
+    {
       "id": "CVE-2026-70197",
       "title": ".NET SocketAsyncEventArgs memory corruption remote code execution",
       "severity": "high",
@@ -49354,46 +49547,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00788,
       "epss_percentile": 0.56072,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-102870",
-      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-25",
-      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
-      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
-      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
-      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft corrected Blazor debugger security advisory",
-          "url": "https://github.com/dotnet/announcements/issues/492"
-        },
-        {
-          "label": "ASP.NET Core GHSA vendor record",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-25",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00906,
-      "epss_percentile": 0.59726,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -51171,6 +51324,46 @@
       "epss_as_of": "2026-10-29"
     },
     {
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "Windows",
+        "Windows 11 OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+        },
+        {
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.09813,
+      "epss_percentile": 0.95532,
+      "epss_as_of": "2026-10-29"
+    },
+    {
       "id": "CVE-2026-88092",
       "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
       "severity": "critical",
@@ -51245,46 +51438,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55752,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        "Windows",
-        "Windows 11 OS"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
-        },
-        {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.09813,
-      "epss_percentile": 0.95532,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -56321,37 +56474,6 @@
       "known_exploited": false,
       "epss": 0.00785,
       "epss_percentile": 0.55933,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-83852",
-      "title": "CVE-2026-83852 Windows Bind Filter Driver Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Use after free in Windows Bind Filter Driver allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83852"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00258,
-      "epss_percentile": 0.17408,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -75759,72 +75881,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2024-3773",
-      "title": "The LiveJournal Shortcode WordPress plugin through 1.1.1 does not validate and escape some of its shortcode attributes before outputting them back in a page/post where the sho",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-09-02",
-      "updated": "2026-10-27",
-      "summary": "The LiveJournal Shortcode WordPress plugin through 1.1.1 does not validate and escape some of its shortcode attributes before outputting them back in a page/post where the shortcode is embed, which could allow users with the contributor role and above to perform Stored Cross-Site Scripting attacks",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-3773"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T18:10:00.130",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00245,
-      "epss_percentile": 0.15665,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2024-14047",
-      "title": "A local vulnerability in the Winlogbeat Windows installer caused runtime files to be placed in a directory writable by unprivileged users",
-      "severity": "high",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-01",
-      "updated": "2026-10-27",
-      "summary": "A local vulnerability in the Winlogbeat Windows installer caused runtime files to be placed in a directory writable by unprivileged users. A low-privileged attacker with existing access to the system could pre-position malicious filesystem links, causing a subsequent elevated Winlogbeat operation to write to or delete arbitrary files. Successful exploitation could result in a denial of service.",
-      "affected": "Products identified in NVD configurations: elastic winlogbeat",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-14047"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://discuss.elastic.co/t/winlogbeat-8-13-0-security-update-esa-2024-49/390044"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T18:10:00.130",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00144,
-      "epss_percentile": 0.03692,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2026-78974",
       "title": "Chromium: CVE-2026-78974 UI misrepresentation in Linux Toolkit Theming",
       "severity": "bulletin",
@@ -76495,42 +76551,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2024-14040",
-      "title": "CVE-2024-14040 net: nexthop: Increase weight to u16",
-      "severity": "bulletin",
-      "categories": [
-        "Linux",
-        "React / Next.js"
-      ],
-      "published": "2026-08-11",
-      "updated": "2026-10-27",
-      "summary": "Information published.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-14040"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-14040"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.8",
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-08-11",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00165,
-      "epss_percentile": 0.05687,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2026-47303",
       "title": "CVE-2026-47303 ASP.NET Core Elevation of Privilege Vulnerability",
       "severity": "bulletin",
@@ -76640,37 +76660,6 @@
       "known_exploited": true,
       "epss": 0.00297,
       "epss_percentile": 0.22291,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-64236",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: i2c: davinci: fix division by zero on missing clock-frequency When the 'clock-frequency' property is missin",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-07-24",
-      "updated": "2026-10-27",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: i2c: davinci: fix division by zero on missing clock-frequency When the 'clock-frequency' property is missing from the device tree, the driver falls back to DAVINCI_I2C_DEFAULT_BUS_FREQ. However, this macro was defined in kHz (100), whereas the device tree property is expected in Hz. The probe function divided the fallback value by 1000, causing integer truncation that resulted in dev->bus_freq = 0. This triggered a deterministic division-by-zero kernel panic when calculating clock dividers later in the probe sequence. Fix this by redefining DAVINCI_I2C_DEFAULT_BUS_FREQ in Hz (100000) to match the expected device tree property unit, allowing the existing division logic to work correctly for both cases.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-64236"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T18:10:00.130",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0016,
-      "epss_percentile": 0.05145,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -77574,8 +77563,10 @@
       "title": "WWBN AVideo: Unauthenticated Stored DOM Cross-Site Scripting via Per-Client Metadata Broadcast in YPTSocket Plugin",
       "severity": "critical",
       "categories": [
+        "Application dependencies",
+        "JavaScript / TypeScript",
         "PHP",
-        "Application dependencies"
+        "jQuery / Bootstrap"
       ],
       "published": "2026-06-04",
       "updated": "2026-10-29",
@@ -81398,37 +81389,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2025-7624",
-      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
-      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
-      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.10514,
-      "epss_percentile": 0.95747,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2025-6704",
       "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
       "severity": "critical",
@@ -81457,6 +81417,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.11772,
       "epss_percentile": 0.96062,
+      "epss_as_of": "2026-10-29"
+    },
+    {
+      "id": "CVE-2025-7624",
+      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
+      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
+      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.10514,
+      "epss_percentile": 0.95747,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -82212,85 +82203,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-29T14:46:18Z",
-      "last_attempt": "2026-10-29T14:46:18Z",
-      "items_processed": 199,
+      "last_success": "2026-10-29T14:55:40Z",
+      "last_attempt": "2026-10-29T14:55:40Z",
+      "items_processed": 196,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-29T14:46:18Z",
-      "last_attempt": "2026-10-29T14:46:18Z",
+      "last_success": "2026-10-29T14:55:40Z",
+      "last_attempt": "2026-10-29T14:55:40Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-29T14:46:18Z",
-      "last_attempt": "2026-10-29T14:46:18Z",
-      "items_processed": 426,
+      "last_success": "2026-10-29T14:55:40Z",
+      "last_attempt": "2026-10-29T14:55:40Z",
+      "items_processed": 429,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-29T14:46:18Z",
-      "last_attempt": "2026-10-29T14:46:18Z",
+      "last_success": "2026-10-29T14:55:40Z",
+      "last_attempt": "2026-10-29T14:55:40Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-29T14:46:18Z",
-      "last_attempt": "2026-10-29T14:46:18Z",
+      "last_success": "2026-10-29T14:55:40Z",
+      "last_attempt": "2026-10-29T14:55:40Z",
       "items_processed": 2558,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-29T14:46:18Z",
-      "last_attempt": "2026-10-29T14:46:18Z",
+      "last_success": "2026-10-29T14:55:40Z",
+      "last_attempt": "2026-10-29T14:55:40Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-29T14:46:18Z",
-      "last_attempt": "2026-10-29T14:46:18Z",
+      "last_success": "2026-10-29T14:55:40Z",
+      "last_attempt": "2026-10-29T14:55:40Z",
       "items_processed": 23,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-29T14:46:18Z",
-      "last_attempt": "2026-10-29T14:46:18Z",
+      "last_success": "2026-10-29T14:55:40Z",
+      "last_attempt": "2026-10-29T14:55:40Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-29T14:46:18Z",
-      "last_attempt": "2026-10-29T14:46:18Z",
+      "last_success": "2026-10-29T14:55:40Z",
+      "last_attempt": "2026-10-29T14:55:40Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-29T14:46:18Z",
-      "last_attempt": "2026-10-29T14:46:18Z",
+      "last_success": "2026-10-29T14:55:40Z",
+      "last_attempt": "2026-10-29T14:55:40Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-29T14:46:18Z",
-      "last_attempt": "2026-10-29T14:46:18Z",
+      "last_success": "2026-10-29T14:55:40Z",
+      "last_attempt": "2026-10-29T14:55:40Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-29T14:46:18Z",
-      "last_attempt": "2026-10-29T14:46:18Z",
+      "last_success": "2026-10-29T14:55:40Z",
+      "last_attempt": "2026-10-29T14:55:40Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -82302,7 +82293,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-29T14:46:18Z",
-  "last_successful_update": "2026-10-29T14:46:18Z",
+  "last_checked_at": "2026-10-29T14:55:40Z",
+  "last_successful_update": "2026-10-29T14:55:40Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
