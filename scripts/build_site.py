@@ -82,6 +82,11 @@ for section, heading in SECTION_PAGES.items():
     folder = OUT / section
     folder.mkdir(exist_ok=True)
     page = source_html.replace('<body>', f'<body data-page="{section}">', 1)
+    # All locally hosted scripts and images use root-relative paths on nested
+    # routes so they do not resolve to /malware/data.js, etc.
+    import re
+    page = re.sub(r'(src=")(?!https?://|/)([^"]+)"',
+                  lambda match: match.group(1) + '/' + match.group(2) + '"', page)
     page = page.replace('<title>CVEHarbor | Vulnerability Intelligence</title>',
                         f'<title>{heading} | CVEHarbor</title>', 1)
     page = page.replace('<meta name="description" content="CVEHarbor: Independent, source-backed vulnerability intelligence across application frameworks, CMS, cloud, databases and IT infrastructure.">',
