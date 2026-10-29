@@ -67,9 +67,16 @@ export async function handler(req,env,user,path,data={}){
  return response({error:'Not found'},404);
 }
 function newer(installed,latest){
- const valid=x=>/^\d+(?:\.\d+){1,4}$/.test(String(x||''));
- if(!valid(installed)||!valid(latest))return false;
- const a=installed.split('.').map(Number),b=latest.split('.').map(Number);
+ // A source can append a release label such as "16.0.4305.5 CU27+GDR".
+ // Compare the numeric build prefix only. Complex or incomparable builds
+ // do not trigger release notices.
+ const version=x=>{
+  const match=/^(\d+(?:\.\d+){1,4})(?:\s|$)/.exec(String(x||'').trim());
+  return match?.[1]||null;
+ };
+ const left=version(installed),right=version(latest);
+ if(!left||!right)return false;
+ const a=left.split('.').map(Number),b=right.split('.').map(Number);
  for(let i=0;i<Math.max(a.length,b.length);i++){
   if((a[i]||0)!==(b[i]||0))return (b[i]||0)>(a[i]||0);
  }
