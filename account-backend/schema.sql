@@ -101,6 +101,7 @@ CREATE TABLE IF NOT EXISTS lifecycle_watches (
  product TEXT NOT NULL,
  slug TEXT NOT NULL DEFAULT '',
  cycle TEXT NOT NULL DEFAULT '',
+ installed_version TEXT NOT NULL DEFAULT '',
  custom_eol_date TEXT NOT NULL DEFAULT '',
  custom_source_url TEXT NOT NULL DEFAULT '',
  created_at INTEGER NOT NULL,
