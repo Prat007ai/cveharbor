@@ -98,9 +98,9 @@ function newer(installed,latest){
 export function newerReleases(watches,cycles){
  const found=[];
  for(const w of watches){
-  if(!w.slug||!w.cycle||!w.installed_version)continue;
+  if(!w.slug||!w.cycle)continue;
   const c=cycles.find(c=>c.slug===w.slug&&String(c.cycle).toLowerCase()===w.cycle.toLowerCase());
-  if(!c||!newer(w.installed_version,String(c.latest||'')))continue;
+  if(!c||!String(c.latest||'').trim()||(w.installed_version&&!newer(w.installed_version,String(c.latest||''))))continue;
   found.push({watch_id:w.id,product:w.product,cycle:w.cycle,installed:w.installed_version,
    latest:c.latest,source_url:c.url,event_key:'release:'+w.id+':'+c.latest});
  }
@@ -130,12 +130,12 @@ export function evaluate(watches,cycles,leadDays=90,current=new Date()){
 export function vendorReleaseNotices(watches,releases){
  const found=[];
  for(const w of watches){
-  if(!w.slug||!w.installed_version||!w.cycle)continue;
+  if(!w.slug||!w.cycle)continue;
   for(const release of releases){
    if(release.slug!==w.slug||typeof release.version!=='string')continue;
    const v=release.version.replace(/^v/i,'');
    if(!v.startsWith(w.cycle+'.')&&v!==w.cycle)continue;
-   if(!newer(w.installed_version,v))continue;
+   if(w.installed_version&&!newer(w.installed_version,v))continue;
    if(!/^https:\/\/github\.com\//.test(String(release.url||'')))continue;
    found.push({watch_id:w.id,product:w.product,cycle:w.cycle,installed:w.installed_version,
     latest:v,source_url:release.url,notes:String(release.notes||'').slice(0,650),
@@ -201,7 +201,7 @@ export async function dispatchLifecycle(env,day=new Date()){
    }
    if(!fresh.length)continue;
    const text=['CVEHarbor End of Support Notice','','Review these lifecycle dates and verify vendor licensing, extended support and product editions:','',
-    ...fresh.map(m=>m.release_notice?m.product+' '+m.cycle+': newer release '+m.latest+' (installed '+m.installed+'). '
+    ...fresh.map(m=>m.release_notice?m.product+' '+m.cycle+': newer release '+m.latest+' (installed '+(m.installed||'not specified')+'). '
        +(m.verified_notes?'Publisher notes: '+(m.notes||'No summary provided.')+' Published '+m.published+'. ':'')
        +(m.security_mentioned?'Source mentions security. Validate exact security impact. ':'Release availability is not proof of a security patch. ')
        +m.source_url:m.product+' '+m.cycle+': '+m.eol_date+' ('+(m.days<0?'past end of support':m.days+' days remaining')+') '+(m.origin==='user'?'User supplied date':'Public lifecycle source')+' '+m.source_url),
