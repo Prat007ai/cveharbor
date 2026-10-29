@@ -249,6 +249,9 @@ jobs:
       - name: Collect public lifecycle dates
         continue-on-error: true
         run: python scripts/update_lifecycle.py
+      - name: Collect publisher release and SQL CU notes
+        continue-on-error: true
+        run: python scripts/update_patch_notes.py
       - name: Build public site files
         run: python scripts/build_site.py && test -f public/disclosure-trend.js
       - name: Configure GitHub Pages
