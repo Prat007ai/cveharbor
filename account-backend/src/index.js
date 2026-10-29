@@ -70,6 +70,7 @@ export default {async fetch(req,env,ctx){
   if(path.startsWith('/v1/lifecycle'))return await lifecycleHandler(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/finding-tickets'))return await findingTicketRoute(req,env,user,path,req.method==='POST'?await body(req):{});
   if(path.startsWith('/v1/finding-statuses'))return await findingStatusRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
+  if(path.startsWith('/v1/plugin-installation-status'))return await sourceRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/plugin-sources'))return await sourceRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/plugin-monitor'))return await monitorRoute(req,env,user,path,req.method==='POST'?await body(req):{});
   if(path==='/v1/plugin-advisories'&&req.method==='GET')return await pluginAdvisoryRoute(req,env,user);
