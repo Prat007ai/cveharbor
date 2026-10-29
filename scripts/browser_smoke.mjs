@@ -4,6 +4,12 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { JSDOM } from 'jsdom';
 
+const reportHtml=fs.readFileSync('customer-reports/index.html','utf8');
+const dashboardHtml=fs.readFileSync('customer-dashboard/index.html','utf8');
+assert.ok(reportHtml.includes('customerReportPrint')&&reportHtml.includes('customerReportCsv'),'customer report supports print and CSV');
+assert.ok(dashboardHtml.includes('customerDashMetrics')&&dashboardHtml.includes('customerDashFindings'),'multi-customer dashboard has security metrics and candidate findings');
+assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('href="/customer-dashboard/"'),'customer dashboard accessible from workspace');
+assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('href="/customer-reports/"'),'customer reports accessible from workspace');
 const html=fs.readFileSync('index.html','utf8');
 // Validate every canonical page is actually emitted by the Pages build.
 const routes={

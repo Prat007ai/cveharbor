@@ -1,0 +1,13 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#061523"><title>Customer Security Dashboard | CVEHarbor</title><meta name="description" content="Private multi-customer security dashboard and customer security reports for CVEHarbor accounts."><link rel="stylesheet" href="/styles.css?v=customer-dashboard-1"></head>
+<body class="account-page"><a class="skip-link" href="#customerDashboard">Skip to dashboard</a><header class="site-header"><div class="shell topbar"><a class="brand" href="/"><span class="brand-mark">◇</span><span class="brand-type">CVE<span>Harbor</span><small>VULNERABILITY INTELLIGENCE</small></span></a><nav class="topnav"><a href="/">Home</a><a href="/workspace/">My Workspace</a><a href="/environments/">Asset Inventory</a><a href="/remediation/">Remediation</a></nav></div></header>
+<main class="shell account-landing" id="customerDashboard"><p class="eyebrow">PRIVATE MULTI-CUSTOMER SECURITY</p><h1>Customer Security Dashboard</h1><p class="section-sub">Review each customer's recorded environments and potential vulnerability matches. Results depend on your inventory and CVEHarbor's limited public index, and do not establish confirmed exposure.</p>
+<p id="customerDashStatus" class="ops-note" role="status">Checking your CVEHarbor session…</p>
+<div id="customerDashAccess" hidden>
+<div class="customer-dash-toolbar"><label>Customer<select id="customerDashFilter"><option value="">All customers</option></select></label><label>Environment<select id="customerDashEnvironment"><option value="">All environments</option></select></label><a href="/customer-reports/" class="ops-download">Customer Security Reports</a></div>
+<div id="customerDashMetrics" class="customer-dash-metrics"></div>
+<div class="data-panel ops-panel"><h2>Customer Security Overview</h2><p class="ops-note">Potential CVEs are technology category matches or preliminary version matches, not independently confirmed vulnerabilities.</p><div id="customerDashRows" class="ops-results"></div></div>
+<div class="data-panel ops-panel"><h2>Potential Vulnerabilities for Review</h2><p id="customerDashCoverage" class="ops-note"></p><div id="customerDashFindings" class="ops-results"></div></div>
+</div>
+<div id="customerDashLogin" hidden><p>Please sign in to access your private customer records.</p><a href="/account/?mode=login" class="ops-download">Log In</a></div>
+</main>
+<script src="/data.js"></script><script src="/catalog.js"></script><script src="/inventory-matching.js?v=1"></script><script src="/customer-security.js?v=1"></script></body></html>
