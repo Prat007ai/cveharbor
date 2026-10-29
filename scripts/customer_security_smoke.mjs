@@ -37,4 +37,11 @@ assert.doesNotMatch(doc.querySelector('#customerReportBody').textContent,/Custom
 assert.equal(doc.querySelector('#customerReportPrint').disabled,false);
 assert.ok(seen.every(x=>x.startsWith('https://api.cveharbor.com/v1/')),'only authenticated account API used for private reads');
 window.close();
+const unauth=new JSDOM(html,{url:'https://cveharbor.com/customer-reports/',runScripts:'outside-only'});
+unauth.window.fetch=async()=>({ok:false,status:401,json:async()=>({error:'Sign in required'})});
+unauth.window.eval(fs.readFileSync('customer-security.js','utf8'));
+await new Promise(resolve=>setTimeout(resolve,20));
+assert.equal(unauth.window.document.getElementById('customerDashLogin').hidden,false,'signed out users see login action');
+assert.match(unauth.window.document.getElementById('customerDashStatus').textContent,/Sign in required/);
+unauth.window.close();
 console.log('Customer reports remain scoped to selected customer and include candidate evidence');
