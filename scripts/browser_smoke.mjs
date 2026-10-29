@@ -114,7 +114,7 @@ assert.ok(workspaceDocument.querySelectorAll('#securityLookupResults .workspace-
 assert.ok(html.includes('id="lifecycleMonitor"'),'full lifecycle monitoring section exists');
 assert.ok(html.includes('id="lifecycleSearchStatus"'),'expanded product search status exists');
 assert.ok(html.includes('id="lifecycleEmailOptin"')&&html.includes('id="lifecycleInstalled"'),'lifecycle opt-in and installed version controls exist');
-assert.ok(html.includes('lifecycle-monitor.js?v=lifecycle-watch-1'),'versioned lifecycle monitor script loads');
+assert.ok(html.includes('lifecycle-monitor.js?v=details-search-2'),'versioned lifecycle monitor script loads');
 const lifecycleDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 lifecycleDom.window.CVEHARBOR_LIFECYCLE={checked_at:new Date().toISOString(),cycles:[{slug:'php',product:'PHP',cycle:'8.4',eol_date:'2027-12-31',latest:'8.4.27',url:'https://endoflife.date/php'}],errors:[]};
 lifecycleDom.window.eval(fs.readFileSync('lifecycle-monitor.js','utf8'));
