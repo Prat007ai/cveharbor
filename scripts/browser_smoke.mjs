@@ -111,6 +111,16 @@ assert.match(workspaceDocument.getElementById('stackSummary').textContent,/index
 workspaceDocument.getElementById('securityLookup').value='CVE-2026';
 workspaceDocument.getElementById('securityLookup').dispatchEvent(new workspaceWindow.Event('input'));
 assert.ok(workspaceDocument.querySelectorAll('#securityLookupResults .workspace-result').length>0,'lookup results visible');
+assert.ok(html.includes('id="lifecycleMonitor"'),'full lifecycle monitoring section exists');
+assert.ok(html.includes('id="lifecycleEmailOptin"')&&html.includes('id="lifecycleInstalled"'),'lifecycle opt-in and installed version controls exist');
+assert.ok(html.includes('lifecycle-monitor.js?v=lifecycle-watch-1'),'versioned lifecycle monitor script loads');
+const lifecycleDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
+lifecycleDom.window.CVEHARBOR_LIFECYCLE={checked_at:new Date().toISOString(),cycles:[{slug:'php',product:'PHP',cycle:'8.4',eol_date:'2027-12-31',latest:'8.4.27',url:'https://endoflife.date/php'}],errors:[]};
+lifecycleDom.window.eval(fs.readFileSync('lifecycle-monitor.js','utf8'));
+assert.match(lifecycleDom.window.document.getElementById('lifecycleUserStatus').textContent,/Sign in/);
+assert.match(lifecycleDom.window.document.getElementById('lifecyclePublished').textContent,/PHP 8.4/);
+assert.equal(lifecycleDom.window.document.getElementById('lifecycleWatchSave').disabled,false,'public page can show form until login state event arrives');
+lifecycleDom.window.close();
 assert.ok(html.includes('id="inventoryWorkspace"'),'customer inventory workspace exists');
 assert.ok(html.includes('id="inventoryMatching"'),'customer vulnerability matching section exists');
 const matcherDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});

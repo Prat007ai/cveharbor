@@ -271,6 +271,42 @@
       </article>
       <p class="technology-footnote">Private inventory is scoped to your signed in account. CVEHarbor does not scan these assets. Verify actual affected versions and vendor advisories before assigning remediation. Do not store credentials or confidential customer infrastructure details here.</p>
     </section>
+    <section id="lifecycleMonitor" class="shell section" aria-labelledby="lifecycleMonitorTitle">
+      <div class="section-heading"><div><p class="eyebrow">LIFECYCLE AND PATCH INTELLIGENCE</p><h2 id="lifecycleMonitorTitle">End of Support and Patch Availability Watch</h2><p class="section-sub">Monitor Microsoft server and client operating systems, SQL Server, SharePoint, .NET, CMS products, PHP and Linux. Add other products with a verified lifecycle date. Data reflects public source coverage and may differ by edition or extended support agreement.</p></div><span class="result-pill">Lifecycle monitoring</span></div>
+      <div class="lifecycle-grid">
+        <article class="data-panel ops-panel">
+          <h3>Published support dates and release information</h3>
+          <p class="ops-note">Search the currently available product lifecycle snapshot. Security support date and latest recorded release are distinct from a confirmed security patch for your installed version.</p>
+          <label class="lifecycle-field">Search product or release<input id="lifecyclePublicSearch" type="search" placeholder="Windows Server, SQL Server, PHP, WordPress..."></label>
+          <p id="lifecycleFreshness" class="ops-note" role="status"></p>
+          <div id="lifecyclePublished" class="ops-results lifecycle-public-results"></div>
+          <p class="ops-note">Sources: <a href="https://endoflife.date/" target="_blank" rel="noopener noreferrer">endoflife.date</a>, which aggregates vendor lifecycle information. Verify Microsoft products using <a href="https://learn.microsoft.com/lifecycle/" target="_blank" rel="noopener noreferrer">Microsoft Lifecycle</a> and patches using <a href="https://msrc.microsoft.com/update-guide" target="_blank" rel="noopener noreferrer">MSRC</a>. Custom products require a user verified date. For Sitefinity versions and updates, review the <a href="https://www.progress.com/sitefinity-cms/release-timeline" target="_blank" rel="noopener noreferrer">official Progress release timeline</a>. A published release timeline is not a confirmed end of support date.</p>
+        </article>
+        <article class="data-panel ops-panel">
+          <h3>My product monitoring preferences</h3>
+          <p id="lifecycleUserStatus" class="ops-note" role="status">Sign in to manage lifecycle watches.</p>
+          <form id="lifecycleWatchForm" class="ops-form">
+            <label>Monitored product<select id="lifecycleProduct" class="lifecycle-auth-control"><option value="">Choose a product</option></select></label>
+            <label>Release / edition cycle<select id="lifecycleCycle" class="lifecycle-auth-control"><option value="">Choose release</option></select></label><label>Installed version / build<input id="lifecycleInstalled" class="lifecycle-auth-control" maxlength="80" placeholder="Example: 8.0.31"></label>
+            <p class="ops-note ops-span">For another product not covered by the public feed, enter its name and a verified end of support date below. Leave the monitored product blank.</p>
+            <label>Custom product name<input id="lifecycleCustomName" class="lifecycle-auth-control" maxlength="120" placeholder="Additional software or appliance"></label>
+            <label>Custom release<input id="lifecycleCustomCycle" class="lifecycle-auth-control" maxlength="80" placeholder="Version or release"></label>
+            <label>Verified support end date<input id="lifecycleCustomDate" type="date" class="lifecycle-auth-control"></label>
+            <label>Official lifecycle source URL<input id="lifecycleCustomSource" type="url" class="lifecycle-auth-control" maxlength="500" placeholder="https://vendor.example/support"></label>
+            <button id="lifecycleWatchSave" type="submit" class="ops-download lifecycle-auth-control">Monitor product</button>
+          </form>
+          <span id="lifecycleWatchCount" class="ops-tag">0 monitored</span>
+          <div id="lifecycleWatches" class="ops-results"></div>
+          <form id="lifecyclePreferencesForm" class="ops-form lifecycle-prefs-form">
+            <label class="ops-span"><span><input id="lifecycleEmailOptin" class="lifecycle-auth-control" type="checkbox"> Email me when a monitored release is approaching or has reached its published end of support date</span></label>
+            <label>Advance warning<select id="lifecycleLead" class="lifecycle-auth-control"><option value="30">30 days</option><option value="60">60 days</option><option value="90" selected>90 days</option><option value="180">180 days</option></select></label>
+            <button id="lifecyclePrefsSave" type="submit" class="ops-download lifecycle-auth-control">Save lifecycle alert settings</button>
+          </form>
+          <p id="lifecycleDeliveryState" class="ops-note">Scheduled lifecycle notifications must be activated separately.</p>
+          <p class="ops-note">Lifecycle notifications are separate from urgent CVE notifications. A missing support date is unknown rather than supported. No automatic patch deployment is performed.</p>
+        </article>
+      </div>
+    </section>
     <section id="operationsCentre" class="shell section" aria-labelledby="opsTitle">
       <div class="section-heading"><div><p class="eyebrow">IT ADMINISTRATOR TOOLKIT</p><h2 id="opsTitle">Security Operations Centre</h2><p class="section-sub">Software lifecycle tracking, verified package vulnerability lookups, private Cloudflare D1 remediation records and firewall configuration exports.</p></div><span class="result-pill">Public tools</span></div>
       <div class="ops-grid">
@@ -315,6 +351,6 @@
     </div>
   </dialog>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="malware-data.js"></script><script src="malware.js?v=family-profiles-3"></script><script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script defer src="geo-map.js?v=1"></script><script src="data.js"></script><script src="disclosure-trend.js?v=30day-1"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=d1-assignments-1"></script><script src="workspace.js?v=d1-assignments-1"></script><script src="lifecycle.js"></script><script src="operations.js?v=d1-assignments-1"></script><script src="inventory-matching.js?v=1"></script><script src="inventory.js?v=multi-stack-3"></script><script src="accounts.js?v=d1-assignments-1"></script>
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="malware-data.js"></script><script src="malware.js?v=family-profiles-3"></script><script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script defer src="geo-map.js?v=1"></script><script src="data.js"></script><script src="disclosure-trend.js?v=30day-1"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=d1-assignments-1"></script><script src="workspace.js?v=d1-assignments-1"></script><script src="lifecycle.js"></script><script src="lifecycle-monitor.js?v=lifecycle-watch-1"></script><script src="operations.js?v=d1-assignments-1"></script><script src="inventory-matching.js?v=1"></script><script src="inventory.js?v=multi-stack-3"></script><script src="accounts.js?v=d1-assignments-1"></script>
 </body>
 </html>
