@@ -1247,3 +1247,12 @@ body[data-page="home"] .page-section-intro{display:none!important}
 .customer-score-trend{max-width:850px;width:100%;min-height:80px}
 .customer-score-trend svg{display:block;width:100%;height:auto;max-height:240px;color:#99bbc9}
 @media print{.customer-security-score-panel{background:#fff;border-color:#aaa}.customer-score-number{color:#222}.customer-score-trend svg{color:#555}}
+
+/* Explain scoring without making the customer report long by default */
+.customer-score-methodology{margin:14px 0 6px;border:1px solid #3e6579;border-radius:8px;background:#0b2639}
+.customer-score-methodology>summary{cursor:pointer;padding:12px 14px;font-weight:700;color:#b5f1e5}
+.customer-score-methodology>summary:hover,.customer-score-methodology>summary:focus-visible{background:#12384b}
+.customer-score-methodology-body{padding:0 15px 14px;font-size:12px;line-height:1.65}
+.customer-score-methodology-body ul{margin:8px 0;padding-left:22px}
+.customer-score-methodology-body li{margin:7px 0}
+@media print{.customer-score-methodology{background:#fff;border-color:#aaa}.customer-score-methodology-body{color:#111}}
