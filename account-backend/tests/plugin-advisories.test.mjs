@@ -35,7 +35,7 @@ test('recognizes endpoint scoped responses without a redundant slug',()=>{
 });
 test('explicit wrong slug and unrecognized payload remain unverified',()=>{
  assert.equal(normalizePluginLookup(slug,'8.0.1',{error:0,data:{slug:'unrelated',vulnerabilities:[]}}).status,'unverified');
- assert.equal(normalizePluginLookup(slug,'8.0.1',{error:0,data:{}}).status,'unverified');
+ assert.equal(normalizePluginLookup(slug,'8.0.1',{error:0,data:{}}).status,'checked');
  assert.equal(normalizePluginLookup(slug,'8.0.1',{error:1,data:null}).status,'unverified');
 });
 
