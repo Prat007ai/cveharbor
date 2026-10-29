@@ -69,6 +69,40 @@ function renderMatches(){
  }
  if(matches.limited)panel.append(make('p','ops-note','Showing the first 150 prioritized matches. Narrow to a customer to review additional entries.'));
 }
+// Check just-saved WordPress plugin entries as soon as their D1 writes finish.
+const pluginSlugOverrides={'yoast seo':'wordpress-seo','wp file manager':'wp-file-manager','wps hide login':'wps-hide-login','autoptimize':'autoptimize','wp mail smtp':'wp-mail-smtp','advanced editor tools':'tinymce-advanced','addtoany share buttons':'add-to-any','events manager':'events-manager','wp store locator':'wp-store-locator','wpbakery page builder':'js_composer'};
+async function checkSavedPlugin(asset){
+ if(!asset?.technology?.startsWith('WordPress Plugin: '))return;
+ const name=asset.technology.slice('WordPress Plugin: '.length);
+ const slug=pluginSlugOverrides[name.toLowerCase()]||name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+ const panel=$('inventoryMatchResults');if(!panel)return;
+ const row=make('article','ops-result','');
+ row.append(make('strong','',name+' · '+(asset.version||'Version unknown')));
+ const note=make('p','ops-note','Checking plugin vulnerability advisory source…');row.append(note);panel.prepend(row);
+ try{
+  const url='https://api.cveharbor.com/v1/plugin-advisories?asset_id='+encodeURIComponent(asset.id)+'&slug='+encodeURIComponent(slug);
+  const response=await fetch(url,{credentials:'include',headers:{Accept:'application/json'}});
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok||payload.status!=='checked'){
+   note.textContent='Plugin vulnerability coverage unverified: '+(payload.reason||payload.error||'Source unavailable');return;
+  }
+  const findings=payload.findings||[];
+  note.textContent=findings.length+' potential CVE '+(findings.length===1?'match':'matches')+' from WPVulnerability for installed version '+asset.version+'. Validate affected versions before remediation.';
+  for(const finding of findings.slice(0,15)){
+   const item=make('p','ops-note',finding.id+' · '+finding.title);
+   if(finding.sources?.[0]?.url){
+    const link=make('a','ops-link',' · Source');link.href=finding.sources[0].url;link.target='_blank';link.rel='noopener noreferrer';item.append(link);
+   }
+   row.append(item);
+  }
+  if(!findings.length)row.append(make('p','ops-note','No matching CVEs returned by this source. This does not establish that the plugin is secure.'));
+ }catch(_){note.textContent='Plugin advisory lookup unavailable. Inventory was saved successfully.'}
+}
+function checkSavedPlugins(assets){
+ let index=0;
+ async function worker(){while(index<assets.length){const asset=assets[index++];await checkSavedPlugin(asset)}}
+ void Promise.all(Array.from({length:Math.min(3,assets.length)},worker));
+}
 function refreshMatchCustomers(){
  const selector=$('inventoryMatchCustomer'),current=selector.value;
  selector.replaceChildren();option(selector,'','All customers');
@@ -144,6 +178,7 @@ function setupPluginImport(){
   }
   button.disabled=true;
   let saved=0;
+  const checkEntries=[];
   try{
    // Refresh before importing to avoid duplicate entries after another session.
    data=await call();
@@ -155,8 +190,10 @@ function setupPluginImport(){
      technology,version:plugin.version,notes:'WordPress plugin inventory'};
     if(matches.length===1){
      if(matches[0].version!==plugin.version)await call('/assets/'+matches[0].id,'PUT',payload);
+     checkEntries.push({...payload,id:matches[0].id});
     }else if(matches.length===0){
-     await call('/assets','POST',payload);
+     const response=await call('/assets','POST',payload);
+     checkEntries.push({...payload,id:response.id});
      // Re-read before subsequent requests so retrying never overwrites.
      data=await call();
     }else throw Error('Duplicate existing inventory entries for '+plugin.name+'. Resolve before continuing.');
@@ -164,6 +201,7 @@ function setupPluginImport(){
     result.textContent='Processed '+saved+' of '+plugins.length+' plugins';
    }
    await load();result.textContent=saved+' WordPress plugin entries processed and inventory updated successfully.';
+   checkSavedPlugins(checkEntries);
   }catch(error){await load();result.textContent='Imported '+saved+' entries. '+error.message+' Review and retry to continue.'}
   finally{button.disabled=false}
  });
@@ -299,12 +337,15 @@ $('inventoryAssetForm').addEventListener('submit',async event=>{
   const unique=new Set(all.map(x=>x.technology.toLowerCase()));
   if(unique.size!==all.length)throw Error('The same technology cannot appear twice in one submission.');
   let saved=0;
+  const checkEntries=[];
   for(const entry of all){
-   await call(editId?'/assets/'+editId:'/assets',editId?'PUT':'POST',entry);
+   const response=await call(editId?'/assets/'+editId:'/assets',editId?'PUT':'POST',entry);
+   if(entry.technology.startsWith('WordPress Plugin: '))checkEntries.push({...entry,id:editId||response.id});
    saved++;
   }
   form.reset();$('inventoryAssetEditId').value='';button.textContent='Add asset';
   await load();status(editId?'Technology updated in D1.':saved+' technology entries saved for '+payload.name+'.');
+  checkSavedPlugins(checkEntries);
  }catch(e){status(e.message)}
  finally{button.disabled=false}
 });
