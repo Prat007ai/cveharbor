@@ -17,7 +17,7 @@ const path=window.location.pathname.replace(/\/index\.html$/,'/');
 const page=pages.has(path)?path:'/';
 document.body.dataset.page=page==='/'?'home':page.slice(1,-1);
 const section=window.location.hash.slice(1);
-if(path==='/'&&section&&map[section]&&map[section]!=='/'){
+if(section&&map[section]&&map[section]!==path){
  window.location.replace(map[section]+'#'+encodeURIComponent(section));
  return;
 }
