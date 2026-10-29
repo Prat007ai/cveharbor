@@ -33,21 +33,21 @@ function preciseProductMatch(asset,cve){
    !(!affected.includes(name)&&/wordpress core|wordpress itself/i.test(detail));
  }
  if(product==='wordpress'){
-  if(/\\b(plugin|extension|theme|woocommerce|wpbakery)\\b/i.test(detail)&&
+  if(/\b(plugin|extension|theme|woocommerce|wpbakery)\b/i.test(detail)&&
     !/wordpress core|wordpress itself|wordpress versions/i.test(detail))return false;
-  return /\\bwordpress\\b/i.test(detail)||!detail;
+  return /\bwordpress\b/i.test(detail)||!detail;
  }
  if(product==='php'){
   // Broad PHP categories can include unrelated applications written in PHP.
-  if(/\\b(linux kernel|\\.net|asp\\.net|brotli|python|debian kernel|windows kernel)\\b/i.test(detail))return false;
-  if(/\\b(plugin|wordpress|joomla|drupal|dedecms|satellite tracker|woocommerce)\\b/i.test(detail)&&
-    !/\\bphp (core|runtime|interpreter|versions?|before|through|8\\.|7\\.)\\b/i.test(detail))return false;
+  if(/\b(linux kernel|\.net|asp\.net|brotli|python|debian kernel|windows kernel)\b/i.test(detail))return false;
+  if(/\b(plugin|wordpress|joomla|drupal|dedecms|satellite tracker|woocommerce)\b/i.test(detail)&&
+    !/\bphp (core|runtime|interpreter|versions?|before|through|8\.|7\.)\b/i.test(detail))return false;
   // A PHP mention in "PHP code injection" does not identify PHP runtime.
-  if(/\\bphp code injection\\b/i.test(detail)&&!/\\bphp (runtime|interpreter|versions?|before|through)\\b/i.test(detail))return false;
-  return /\\bphp\\b/i.test(detail)||!detail;
+  if(/\bphp code injection\b/i.test(detail)&&!/\bphp (runtime|interpreter|versions?|before|through)\b/i.test(detail))return false;
+  return /\bphp\b/i.test(detail)||!detail;
  }
  if(product==='debian'||product==='ubuntu'){
-  if(/\\b(linux kernel)\\b/i.test(detail))return true;
+  if(/\b(linux kernel)\b/i.test(detail))return true;
  }
  return true;
 }
