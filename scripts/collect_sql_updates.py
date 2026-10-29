@@ -82,12 +82,12 @@ def official_fix_summary(kb):
     with urllib.request.urlopen(req,timeout=10) as response:
         text=response.read(900_000).decode("utf-8","replace")
     from html import unescape
-    plain=unescape(re.sub(r"<[^>]+>"," ",re.sub(r"<(script|style)\\b[^>]*>[\\s\\S]*?</\\1>"," ",text,flags=re.I)))
+    plain=unescape(re.sub(r"<[^>]+>"," ",re.sub(r"<(script|style)\b[^>]*>[\s\S]*?</\1>"," ",text,flags=re.I)))
     plain=" ".join(plain.split())
     patterns=[
-        r"This update contains \\d+ fixes[^.]{0,240}\\.",
-        r"This article describes Cumulative Update[^.]{0,240}\\.",
-        r"This article describes (?:the )?security update[^.]{0,240}\\."
+        r"This update contains \d+ fixes[^.]{0,240}\.",
+        r"This article describes Cumulative Update[^.]{0,240}\.",
+        r"This article describes (?:the )?security update[^.]{0,240}\."
     ]
     for pattern in patterns:
         match=re.search(pattern,plain,re.I)
