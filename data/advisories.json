@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-29",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4371,
+  "candidate_records": 4373,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -6702,6 +6702,80 @@
       "first_seen_at": "2026-10-29T21:19:09Z",
       "source_updated_at": "2026-10-29T21:17:21.870",
       "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-9r7r-h4fq-xj8p",
+      "title": "Malicious code in bq-helix-recon-6ade983e (PyPI)",
+      "severity": "bulletin",
+      "categories": [
+        "Python / PyPI",
+        "Application dependencies"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "## Source: kam193 (9663aaa7e713f47d83da712da5653aa7d3e1919fd70419d9fc5749145f575b17) Package places PTH/sitecustomize files triggering execution of malicious code on every Python startup. The code then collects information from the environment, including credential files, environment variables, data from cloud metadata endpoints, and finally exfiltrates them. --- Category: MALICIOUS - The campaign has clearly malicious intent, like infostealers. Campaign: 2026-10-bq-helix-recon Reasons (based on the campaign): - abuses-pth - exfiltration-cloud-tokens - exfiltration-generic - exfiltration-env-variables - exfiltration-credentials --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/4300499fccc12939735b249cfa9708302ff3b002/osv/malicious/pypi/bq-helix-recon-6ade983e/MAL-2026-18396.json))",
+      "affected": "pip: bq-helix-recon-6ade983e (= 0.1.0); pip: bq-helix-recon-6ade983e (= 0.1.2)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-9r7r-h4fq-xj8p"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://bad-packages.kam193.eu/pypi/package/bq-helix-recon-6ade983e"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/4300499fccc12939735b249cfa9708302ff3b002/osv/malicious/pypi/bq-helix-recon-6ade983e/MAL-2026-18396.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T21:33:27Z",
+      "source_updated_at": "2026-10-29T21:30:33Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-526r-6j5j-v9pv",
+      "title": "Malicious code in bq-helix-build-hook-6ade983e (PyPI)",
+      "severity": "bulletin",
+      "categories": [
+        "Python / PyPI",
+        "Application dependencies"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "## Source: kam193 (ee26602dfa25f574d440b2c1e8ef0a9516fdfb5db4b59f995b88784332476413) During installation the code collects information from the environment, including credential files, environment variables, data from cloud metadata endpoints, and finally exfiltrates them. --- Category: MALICIOUS - The campaign has clearly malicious intent, like infostealers. Campaign: 2026-10-bq-helix-recon Reasons (based on the campaign): - abuses-pth - exfiltration-cloud-tokens - exfiltration-generic - exfiltration-env-variables - exfiltration-credentials --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/4300499fccc12939735b249cfa9708302ff3b002/osv/malicious/pypi/bq-helix-build-hook-6ade983e/MAL-2026-18395.json))",
+      "affected": "pip: bq-helix-build-hook-6ade983e (= 0.1.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-526r-6j5j-v9pv"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://bad-packages.kam193.eu/pypi/package/bq-helix-build-hook-6ade983e"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/4300499fccc12939735b249cfa9708302ff3b002/osv/malicious/pypi/bq-helix-build-hook-6ade983e/MAL-2026-18395.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T21:33:27Z",
+      "source_updated_at": "2026-10-29T21:30:26Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -46143,51 +46217,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2026-102870",
-      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core",
-        "Linux"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
-      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
-      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
-      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft corrected Blazor debugger security advisory",
-          "url": "https://github.com/dotnet/announcements/issues/492"
-        },
-        {
-          "label": "ASP.NET Core GHSA vendor record",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
-        },
-        {
-          "label": "Ubuntu Security Notice",
-          "url": "https://ubuntu.com/security/notices/USN-8958-1"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-25",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00906,
-      "epss_percentile": 0.59726,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2026-96951",
       "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
       "severity": "high",
@@ -46230,6 +46259,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.09813,
       "epss_percentile": 0.95532,
+      "epss_as_of": "2026-10-29"
+    },
+    {
+      "id": "CVE-2026-102870",
+      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core",
+        "Linux"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
+      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
+      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
+      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "ASP.NET Core GHSA vendor record",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
+        },
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8958-1"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-25",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00906,
+      "epss_percentile": 0.59726,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -66685,6 +66759,42 @@
       "epss_as_of": "2026-10-29"
     },
     {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60635,
+      "epss_as_of": "2026-10-29"
+    },
+    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -66723,42 +66833,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55752,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60635,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -83112,68 +83186,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2026-103567",
-      "title": "CVE-2026-103567 Windows Broadcast DVR User Service Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Buffer over-read in Windows Broadcast DVR User Service allows an authorized attacker to disclose information locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-103567"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.0044,
-      "epss_percentile": 0.38108,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-103568",
-      "title": "CVE-2026-103568 Windows Credential Providers Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Concurrent execution using shared resource with improper synchronization ('race condition') in Windows Credential Providers allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-103568"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00214,
-      "epss_percentile": 0.11755,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2026-96940",
       "title": "Microsoft Exchange Server SE weak authentication privilege escalation",
       "severity": "high",
@@ -83476,85 +83488,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-29T21:25:19Z",
-      "last_attempt": "2026-10-29T21:25:19Z",
-      "items_processed": 261,
+      "last_success": "2026-10-29T21:33:27Z",
+      "last_attempt": "2026-10-29T21:33:27Z",
+      "items_processed": 259,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-29T21:25:19Z",
-      "last_attempt": "2026-10-29T21:25:19Z",
+      "last_success": "2026-10-29T21:33:27Z",
+      "last_attempt": "2026-10-29T21:33:27Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-29T21:25:19Z",
-      "last_attempt": "2026-10-29T21:25:19Z",
+      "last_success": "2026-10-29T21:33:27Z",
+      "last_attempt": "2026-10-29T21:33:27Z",
       "items_processed": 763,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-29T21:25:19Z",
-      "last_attempt": "2026-10-29T21:25:19Z",
+      "last_success": "2026-10-29T21:33:27Z",
+      "last_attempt": "2026-10-29T21:33:27Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-29T21:25:19Z",
-      "last_attempt": "2026-10-29T21:25:19Z",
+      "last_success": "2026-10-29T21:33:27Z",
+      "last_attempt": "2026-10-29T21:33:27Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-29T21:25:19Z",
-      "last_attempt": "2026-10-29T21:25:19Z",
+      "last_success": "2026-10-29T21:33:27Z",
+      "last_attempt": "2026-10-29T21:33:27Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-29T21:25:19Z",
-      "last_attempt": "2026-10-29T21:25:19Z",
+      "last_success": "2026-10-29T21:33:27Z",
+      "last_attempt": "2026-10-29T21:33:27Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-29T21:25:19Z",
-      "last_attempt": "2026-10-29T21:25:19Z",
+      "last_success": "2026-10-29T21:33:27Z",
+      "last_attempt": "2026-10-29T21:33:27Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-29T21:25:19Z",
-      "last_attempt": "2026-10-29T21:25:19Z",
+      "last_success": "2026-10-29T21:33:27Z",
+      "last_attempt": "2026-10-29T21:33:27Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-29T21:25:19Z",
-      "last_attempt": "2026-10-29T21:25:19Z",
+      "last_success": "2026-10-29T21:33:27Z",
+      "last_attempt": "2026-10-29T21:33:27Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-29T21:25:19Z",
-      "last_attempt": "2026-10-29T21:25:19Z",
+      "last_success": "2026-10-29T21:33:27Z",
+      "last_attempt": "2026-10-29T21:33:27Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-29T21:25:19Z",
-      "last_attempt": "2026-10-29T21:25:19Z",
+      "last_success": "2026-10-29T21:33:27Z",
+      "last_attempt": "2026-10-29T21:33:27Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -83566,7 +83578,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-29T21:25:19Z",
-  "last_successful_update": "2026-10-29T21:25:19Z",
+  "last_checked_at": "2026-10-29T21:33:27Z",
+  "last_successful_update": "2026-10-29T21:33:27Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
