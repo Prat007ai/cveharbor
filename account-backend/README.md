@@ -119,3 +119,13 @@ Once the updated Worker is deployed, remediation records are saved directly in D
 * `POST /v1/remediations/CVE-YYYY-NNNN/assign` with an email address stores the assignment and, when enabled, sends the standard Azure DevOps triage request.
 
 The existing watchlist, vulnerability digests, malware popups and public security feed remain unchanged.
+
+## My Environments and customer inventory
+
+The public page includes a signed-in, private inventory with customer names, multiple environments per customer and installed asset technology versions. Each row belongs to the authenticated CVEHarbor user. Customer records are not visible to other accounts or public website visitors. This does not yet include shared organization accounts or automatic inventory scanning.
+
+Production migration: back up the existing D1 database first and apply `account-backend/inventory-schema.sql` to the existing `cveharbor-accounts` database. Do not recreate the database. The three additive tables are `inventory_customers`, `inventory_environments` and `inventory_assets`. Deploy the updated Worker after applying the migration. The website will display a migration-required status until the Worker can access the tables.
+
+The authenticated API provides `GET /v1/inventory/status`, `GET /v1/inventory`, `POST /v1/inventory/customers`, `POST /v1/inventory/environments`, `POST /v1/inventory/assets`, per-resource DELETE, and individual asset PUT updates. Each environment must reference a customer owned by the user, and each asset must reference an environment owned by the user. The limits are 100 customers, 500 environments and 3,000 asset entries per account. Deleting a customer permanently deletes its environments and assets.
+
+The fields are customer name, environment name and type, asset name and type, technology, installed version and optional non-sensitive notes. This is a manually maintained inventory, not a verification of affected versions. The next phase can provide advisory matching after verified version range coverage is available. Do not put customer secrets, credentials, access tokens or private IP addresses into the inventory.
