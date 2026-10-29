@@ -4,16 +4,17 @@ const $=id=>document.getElementById(id);
 if(!$('customerDashStatus'))return;
 const reporting=!!$('customerReportBody');
 let inventory={customers:[],environments:[],assets:[]},records=[];
-let pluginFindings=[],pluginChecks={};
+let pluginFindings=[],pluginChecks={},pluginMonitorRows={};
 const pluginSlugOverrides={'yoast seo':'wordpress-seo','wp file manager':'wp-file-manager','wps hide login':'wps-hide-login','autoptimize':'autoptimize','wp mail smtp':'wp-mail-smtp','advanced editor tools':'tinymce-advanced','addtoany share buttons':'add-to-any','events manager':'events-manager','wp store locator':'wp-store-locator','wpbakery page builder':'js_composer'};
 const pluginSlug=name=>pluginSlugOverrides[name.toLowerCase()]||name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 async function refreshPluginFindings(){
  const assets=inventory.assets.filter(a=>a.technology.startsWith('WordPress Plugin: '));
- pluginChecks={};pluginFindings=[];
+ pluginChecks={};pluginFindings=[];pluginMonitorRows={};
  let stored=null;
  try{stored=await api('plugin-monitor')}catch(_){}
  if(stored?.ready){
   const rows=new Map((stored.checks||[]).map(r=>[r.asset_id,r]));
+  pluginMonitorRows=Object.fromEntries(rows);
   for(const asset of assets){
    const check=rows.get(asset.id);
    if(!check||check.installed_version!==asset.version){pluginChecks[asset.id]='pending';continue}
@@ -290,6 +291,17 @@ function drawReport(){
   const checked=pluginAssets.filter(a=>pluginChecks[a.id]==='checked').length;
   const unavailable=pluginAssets.filter(a=>pluginChecks[a.id]==='unavailable'||pluginChecks[a.id]==='unverified').length;
   root.append(text('p','Plugin monitoring: '+checked+' checked, '+unavailable+' unavailable or unverified, '+(pluginAssets.length-checked-unavailable)+' pending. Saved results refresh on a schedule. Unknown coverage does not establish safety.','ops-note'));
+ }
+ if(pluginAssets.length){
+  const monitor=table(['Plugin','Installed version','Last check','Coverage','Potential CVEs'],
+   pluginAssets.map(a=>{
+    const check=pluginMonitorRows[a.id];
+    return [a.technology.slice('WordPress Plugin: '.length),a.version||'Unknown',
+     check?.checked_at?new Date(check.checked_at*1000).toISOString().replace('T',' ').slice(0,16)+' UTC':'Not checked',
+     pluginChecks[a.id]==='checked'?'Checked':pluginChecks[a.id]==='pending'?'Pending':'Unverified or unavailable',
+     check?.status==='checked'?String(check.findings?.length||0):'Unknown'];
+   }));
+  monitor.classList.add('customer-plugin-monitor-table');root.append(reportSection('WordPress Plugin Monitoring'),monitor);
  }
  root.append(findingStatusControls(stats.issues));
  const filtered=stats.issues.filter(i=>findingStatusFilter==='All'||findingStatusFilter==='Unresolved'&&!closedStatus(statusFor(i))||statusFor(i)===findingStatusFilter);
