@@ -32,6 +32,7 @@ async function refreshPluginFindings(){
 }
 
 let findingStatusReady=false,findingStatuses=new Map(),findingStatusFilter='Unresolved';
+let findingSort={key:'',direction:'asc'};
 const statusOptions=['Needs Review','Fix in Progress','Fixed/Patched','Not Applicable','Accepted Risk'];
 const statusKey=i=>i.asset_id+'|'+i.id;
 const statusFor=i=>findingStatuses.get(statusKey(i))||'Needs Review';
@@ -265,6 +266,37 @@ function findingStatusControls(issues){
  }
  return wrap;
 }
+function sortFindings(items){
+ if(!findingSort.key)return items;
+ const severity={critical:0,high:1,medium:2,low:3,unknown:4};
+ const key=i=>{
+  if(findingSort.key==='Published')return /^\\d{4}-\\d{2}-\\d{2}/.test(i.published||'')?i.published:'';
+  if(findingSort.key==='Severity')return severity[String(i.severity||'').toLowerCase()]??5;
+  if(findingSort.key==='Software / Asset')return i.technology+' '+(i.asset?.name||'');
+  return statusFor(i);
+ };
+ return [...items].sort((a,b)=>{
+  const x=key(a),y=key(b);
+  if(findingSort.key==='Published'&&(!x||!y))return !x&&!y?0:!x?1:-1;
+  const n=typeof x==='number'?x-y:String(x).localeCompare(String(y),undefined,{numeric:true,sensitivity:'base'});
+  return (findingSort.direction==='asc'?1:-1)*n||a.id.localeCompare(b.id);
+ });
+}
+function enableFindingSort(tableElement){
+ const columns={'Published':1,'Severity':2,'Software / Asset':3,'Vulnerability Fix Status':5};
+ for(const [key,index] of Object.entries(columns)){
+  const th=tableElement.tHead.rows[0].cells[index];
+  const button=text('button',key,'customer-report-sort');button.type='button';
+  const selected=findingSort.key===key;
+  button.append(text('span',selected?(findingSort.direction==='asc'?' ▲':' ▼'):' ⇅','customer-report-sort-indicator'));
+  th.replaceChildren(button);
+  th.setAttribute('aria-sort',selected?(findingSort.direction==='asc'?'ascending':'descending'):'none');
+  button.addEventListener('click',()=>{
+   findingSort=selected?{key,direction:findingSort.direction==='asc'?'desc':'asc'}:{key,direction:'asc'};
+   drawReport();
+  });
+ }
+}
 function drawReport(){
  const id=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const root=$('customerReportBody');root.replaceChildren();
@@ -305,16 +337,17 @@ function drawReport(){
  }
  root.append(findingStatusControls(stats.issues));
  const filtered=stats.issues.filter(i=>findingStatusFilter==='All'||findingStatusFilter==='Unresolved'&&!closedStatus(statusFor(i))||statusFor(i)===findingStatusFilter);
- const compact=filtered.slice(0,250);
- const findingsTable=table(['CVE','Published','Severity','Software / Asset','Vulnerability summary','Assessment','Vulnerability Fix Status'],
+ const compact=sortFindings(filtered).slice(0,250);
+ const findingsTable=table(['CVE','Published','Severity','Software / Asset','Vulnerability summary','Vulnerability Fix Status'],
   compact.map(i=>[
    i.id,i.published||'Not available',i.severity,
    i.technology+' '+(i.version||'Unknown')+' · '+(i.asset?.name||'Asset'),
-   shortSummary(i),i.level==='version_review'?'Version range candidate':'Category match · Unverified',''
+   shortSummary(i),''
   ]));
  findingsTable.classList.add('customer-vulnerability-table');
+ enableFindingSort(findingsTable);
  for(const [index,i] of compact.entries()){
-  const cell=findingsTable.tBodies[0].rows[index].cells[6];
+  const cell=findingsTable.tBodies[0].rows[index].cells[5];
   const select=text('select','','customer-finding-status-select');
   select.setAttribute('aria-label','Fix status for '+i.id+' on '+(i.asset?.name||'asset'));
   for(const optionValue of statusOptions)option(select,optionValue,optionValue);
