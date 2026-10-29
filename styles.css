@@ -1117,3 +1117,12 @@ body[data-page="home"] .page-section-intro{display:none!important}
 .customer-report-table.customer-vulnerability-table:has(th:nth-child(7)) th:nth-child(7){width:15%}
 @media(max-width:1100px){.customer-vulnerability-table{display:block;overflow-x:auto;table-layout:auto}.customer-vulnerability-table td:nth-child(5){min-width:280px}.customer-vulnerability-table td:nth-child(7){min-width:155px}}
 @media print{.customer-finding-filters{display:none!important}.customer-finding-status-select{background:#fff;color:#111;border:0;padding:0;appearance:none}}
+
+/* WordPress plugin file importer */
+.inventory-plugin-import{display:flex;flex-direction:column;align-items:stretch;gap:12px;margin-top:20px;padding:18px;border:1px solid #34586a;border-radius:10px;background:#102a3b;min-width:0}
+.inventory-plugin-import h3{margin:0;font-size:18px}
+.inventory-plugin-import label{display:flex;flex-direction:column;align-items:flex-start;gap:9px}
+.inventory-plugin-import input[type=file]{display:block;max-width:100%;color:#d5eef4;font:inherit;font-size:13px}
+.inventory-plugin-import textarea{display:block;width:100%;min-height:165px;padding:12px;box-sizing:border-box;resize:vertical;background:#091f30;color:#e8f7fa;border:1px solid #40667a;border-radius:8px;font:inherit;font-size:13px;line-height:1.6}
+.inventory-plugin-import button{align-self:flex-start}
+.inventory-plugin-import [role=status]{white-space:normal;overflow-wrap:anywhere;margin:0}
