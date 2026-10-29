@@ -1256,3 +1256,28 @@ body[data-page="home"] .page-section-intro{display:none!important}
 .customer-score-methodology-body ul{margin:8px 0;padding-left:22px}
 .customer-score-methodology-body li{margin:7px 0}
 @media print{.customer-score-methodology{background:#fff;border-color:#aaa}.customer-score-methodology-body{color:#111}}
+
+/* Compact score stamp summary with collapsible details */
+.customer-security-score-panel{padding:0;overflow:hidden}
+.customer-score-header{display:block;cursor:pointer;padding:18px 20px;list-style:none}
+.customer-score-header::-webkit-details-marker{display:none}
+.customer-score-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:11px}
+.customer-score-title{font-size:18px;font-weight:750;color:#ecf8fb}
+.customer-score-version{font-size:11px;color:#a7c6d3}
+.customer-score-header:focus-visible{outline:2px solid #8addca;outline-offset:-4px}
+.customer-score-overview{display:flex;align-items:center;gap:19px}
+.customer-score-seal{--seal:#d8aa52;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:0 0 104px;width:104px;height:104px;box-sizing:border-box;border:7px solid var(--seal);outline:1px solid color-mix(in srgb,var(--seal) 45%,transparent);outline-offset:4px;border-radius:50%;box-shadow:inset 0 0 0 3px #102c40;color:#f5f7fa;background:#112e3e}
+.customer-score-seal-number{font-size:33px;font-weight:800;line-height:1.05}
+.customer-score-seal small{font-size:9px;letter-spacing:.7px;margin-top:5px}
+.customer-security-score-panel[data-tier="good"] .customer-score-seal{--seal:#69d8a7}
+.customer-security-score-panel[data-tier="risk"] .customer-score-seal{--seal:#ee8686}
+.customer-security-score-panel[data-tier="unknown"] .customer-score-seal{--seal:#87a8b8}
+.customer-score-summary{display:flex;flex-direction:column;gap:5px}
+.customer-score-rating{font-size:18px;color:#f3f8fa}
+.customer-score-meta{font-size:12px;color:#afcad6}
+.customer-score-hint{font-size:11px;color:#85dfce;margin-top:4px}
+.customer-security-score-panel[open] .customer-score-hint{display:none}
+.customer-score-expanded{padding:5px 20px 18px;border-top:1px solid #315469}
+.customer-score-expanded h3{margin:14px 0 8px;font-size:16px}
+@media(max-width:520px){.customer-score-header{padding:14px}.customer-score-overview{gap:14px}.customer-score-seal{flex-basis:84px;width:84px;height:84px;border-width:5px}.customer-score-seal-number{font-size:27px}.customer-score-title{font-size:15px}.customer-score-rating{font-size:15px}.customer-score-expanded{padding:5px 14px 15px}}
+@media print{.customer-security-score-panel{overflow:visible}.customer-score-header{padding:8px 0}.customer-score-seal{box-shadow:none;background:#fff;color:#111;outline:none}.customer-score-expanded{padding:0;border-color:#aaa}.customer-score-hint{display:none}}
