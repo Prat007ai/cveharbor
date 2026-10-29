@@ -1,0 +1,41 @@
+name: Activate plugin monitoring D1 schema
+on:
+  workflow_dispatch:
+    inputs:
+      backup_confirmed:
+        description: 'I have a current independent production D1 backup'
+        type: boolean
+        required: true
+        default: false
+      apply_confirmed:
+        description: 'I approve additive plugin monitoring migration to production D1'
+        type: boolean
+        required: true
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: cveharbor-worker-production
+  cancel-in-progress: false
+jobs:
+  migrate:
+    if: inputs.backup_confirmed == true && inputs.apply_confirmed == true
+    name: Apply plugin monitoring tables only
+    runs-on: ubuntu-latest
+    environment: cloudflare-worker-production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify plugin monitor backend
+        working-directory: account-backend
+        run: npm test
+      - name: Apply additive plugin monitoring tables to existing production D1
+        working-directory: account-backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" && test -n "$CLOUDFLARE_ACCOUNT_ID"
+          npx --yes wrangler@4 d1 execute cveharbor-accounts --remote --file=./plugin-monitor-schema.sql --yes
