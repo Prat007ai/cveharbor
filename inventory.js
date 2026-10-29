@@ -84,9 +84,22 @@ function setupPluginImport(){
  if(!form)return;
  const panel=make('section','inventory-plugin-import');
  panel.append(make('h3','','Import WordPress plugins'),
-  make('p','ops-note','Select a customer environment above, then paste one plugin per line as Plugin Name | Version. Each plugin is recorded separately. Existing entries with the same name are updated rather than duplicated.'));
+  make('p','ops-note','Select a customer environment above, then select a local .txt file or paste one plugin per line as Plugin Name | Version. Each plugin is recorded separately. Existing entries with the same name are updated rather than duplicated.'));
  const area=make('textarea','','');area.placeholder='Gravity Forms | 2.9.5\\nYoast SEO | 24.7';
  area.rows=7;area.setAttribute('aria-label','WordPress plugin names and versions');
+ const fileLabel=make('label','ops-note','Choose a plugin list (.txt)');
+ const fileInput=document.createElement('input');
+ fileInput.type='file';fileInput.accept='.txt,text/plain';fileInput.setAttribute('aria-label','Choose a WordPress plugin TXT file');
+ fileLabel.append(fileInput);
+ fileInput.addEventListener('change',async()=>{
+  const file=fileInput.files?.[0];if(!file)return;
+  if(file.size>65536){result.textContent='File too large. Select a TXT file smaller than 64 KB.';fileInput.value='';return}
+  if(!/\\.txt$/i.test(file.name)){result.textContent='Please choose a .txt file.';fileInput.value='';return}
+  try{
+   area.value=await file.text();
+   result.textContent='Loaded '+file.name+'. Review the entries, then click Import plugins to save them.';
+  }catch(_){result.textContent='Could not read the selected TXT file.'}
+ });
  const button=make('button','ops-download','Import plugins');button.type='button';
  const result=make('p','ops-note','');result.setAttribute('role','status');
  button.addEventListener('click',async()=>{
@@ -136,7 +149,7 @@ function setupPluginImport(){
   }catch(error){await load();result.textContent='Imported '+saved+' entries. '+error.message+' Review and retry to continue.'}
   finally{button.disabled=false}
  });
- panel.append(area,button,result);
+ panel.append(fileLabel,area,button,result);
  form.after(panel);
 }
 setupPluginImport();
