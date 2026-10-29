@@ -162,7 +162,15 @@ assert.ok(lifecycleDom.window.document.querySelector('#lifecycleDetailBody a[hre
 lifecycleDom.window.document.getElementById('lifecycleDetailClose').click();
 assert.ok(!popup.hasAttribute('open'),'popup closes');
 
-assert.equal(lifecycleDom.window.document.getElementById('lifecycleWatchSave').disabled,false,'public page can show form until login state event arrives');
+assert.equal(lifecycleDom.window.document.getElementById('lifecycleWatchSave').disabled,true,'saving watches requires a live account and D1');
+const signedOutEvent=new lifecycleDom.window.CustomEvent('cveharbor:account-state',{detail:{authenticated:false}});
+lifecycleDom.window.dispatchEvent(signedOutEvent);
+assert.equal(lifecycleDom.window.document.getElementById('lifecycleProduct').disabled,false,'signed-out visitors can choose a product');
+assert.equal(lifecycleDom.window.document.getElementById('lifecycleCycle').disabled,false,'signed-out visitors can choose a release');
+assert.equal(lifecycleDom.window.document.getElementById('lifecycleCustomName').disabled,false,'signed-out visitors can enter custom products');
+assert.equal(lifecycleDom.window.document.getElementById('lifecycleLead').disabled,false,'signed-out visitors can explore advance warnings');
+assert.equal(lifecycleDom.window.document.getElementById('lifecycleWatchSave').disabled,true,'signed-out visitors cannot save watches');
+assert.equal(lifecycleDom.window.document.getElementById('lifecyclePrefsSave').disabled,true,'signed-out visitors cannot save email settings');
 lifecycleDom.window.close();
 assert.ok(html.includes('id="inventoryWorkspace"'),'customer inventory workspace exists');
 assert.ok(html.includes('id="inventoryMatching"'),'customer vulnerability matching section exists');
