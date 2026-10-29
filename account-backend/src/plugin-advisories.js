@@ -26,6 +26,19 @@ function affected(v,installed){
  if(!target)return null;
  return checkBound(installed,target,op);
 }
+function severityLabel(value){
+ const s=String(value??'').trim().toLowerCase();
+ const aliases={c:'critical',critical:'critical',h:'high',high:'high',m:'medium',medium:'medium',moderate:'medium',l:'low',low:'low',i:'informational',info:'informational'};
+ return aliases[s]||'unknown';
+}
+function sourceDate(v,source){
+ const candidates=[v.published,v.published_at,v.date,source?.published,source?.published_at,source?.date];
+ for(const value of candidates){
+  const s=String(value||'').trim();
+  if(/^\d{4}-\d{2}-\d{2}(?:T|$)/.test(s)&&!Number.isNaN(Date.parse(s.slice(0,10))))return s.slice(0,10);
+ }
+ return '';
+}
 const sourceIds=v=>Array.isArray(v.source)?v.source:[v.source].filter(Boolean);
 const validId=value=>typeof value==='string'&&CVE.test(value.toUpperCase());
 export function normalizePluginLookup(slug,installed,json){
@@ -73,9 +86,9 @@ export function normalizePluginLookup(slug,installed,json){
    if(seen.has(id))continue;seen.add(id);
    findings.push({id,title:clean(v.name||v.title||id),
     summary:clean(v.description||source.description||v.title||v.name||id),
-    severity:clean(v.impact?.cvss?.severity||v.impact?.cvss3?.severity||v.severity||'unknown').toLowerCase(),
+    severity:severityLabel(v.impact?.cvss?.severity||v.impact?.cvss3?.severity||v.severity),
     affected:clean('Installed '+installed+'; source affected range: '+(rule||'not specified')),
-    published:clean(v.date||v.published||''),updated:clean(v.updated||''),
+    published:sourceDate(v,source),updated:clean(v.updated||''),
     remediation:clean(range?.max_version?'Review fixed release after '+range.max_version:'Verify vendor fix'),
     sources:url.startsWith('https://')?[{label:'Vulnerability source',url}]:[],
     level:applies===true?'version_review':'category',known_exploited:false});
