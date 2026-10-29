@@ -1408,3 +1408,28 @@ body.command-center-app{padding-left:74px}
  .command-nav-link{transition:none!important;transform:none!important}
 }
 @media print{.hero-signal-art{display:none}}
+
+/* One navigational system on every page, including the public homepage. */
+.command-center-app .topnav{display:none!important}
+.command-center-app .hero{min-width:0}
+.command-center-app .hero-grid{min-width:0}
+.command-center-app .hero-copy,.command-center-app .hero-visual{min-width:0}
+/* Enlarged hover/focus target stays within the sidebar and remains keyboard accessible. */
+@media(min-width:821px){
+ .command-nav-link:hover svg,
+ .command-nav-link:focus-visible svg{transform:scale(1.36)}
+ .command-nav-link svg{transition:transform .18s ease;transform-origin:center}
+ .command-nav-link:hover,.command-nav-link:focus-visible{
+  background:#264356;border-color:#5d8e91;color:#d9fff2;
+  box-shadow:0 3px 14px rgba(69,175,159,.17);
+ }
+ .command-sidebar-expanded .command-nav-link:hover svg,
+ .command-sidebar-expanded .command-nav-link:focus-visible svg{transform:scale(1.22)}
+}
+@media(max-width:820px){
+ .command-center-app .hero-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media(prefers-reduced-motion:reduce){
+ .command-nav-link svg{transition:none!important;transform:none!important}
+ .command-nav-link:hover svg,.command-nav-link:focus-visible svg{transform:none!important}
+}
