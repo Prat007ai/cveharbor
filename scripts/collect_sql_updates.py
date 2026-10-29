@@ -69,7 +69,8 @@ def parse_microsoft_sql_updates(html):
     chosen=[]
     for year in SUPPORTED_YEARS:
         for kind in ("CU","GDR"):
-            rows=[r for r in results if r["cycle"]==year and (\n                ("CU" in r["update_type"]) if kind=="CU" else r["update_type"].startswith("GDR"))]
+            rows=[r for r in results if r["cycle"]==year and (
+                ("CU" in r["update_type"]) if kind=="CU" else r["update_type"].startswith("GDR"))]
             if rows:
                 rows.sort(key=lambda r:tuple(map(int,r["version"].split("."))),reverse=True)
                 chosen.append(rows[0])
