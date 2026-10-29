@@ -1145,3 +1145,16 @@ body[data-page="home"] .page-section-intro{display:none!important}
 .customer-ticket-save{background:#164449;color:#c4fff0;border:1px solid #398079;border-radius:6px;padding:7px 10px;cursor:pointer;font-size:12px}
 .customer-ticket-save:disabled,.customer-ticket-input:disabled{opacity:.55}
 @media print{.customer-ticket-save{display:none}.customer-ticket-input{border:0;padding:0;color:#111;background:transparent}}
+
+/* Keep plugin monitoring columns readable regardless of shared report table widths */
+.customer-report-table.customer-plugin-monitor-table{display:block;width:100%;max-width:100%;overflow-x:auto;table-layout:auto}
+.customer-plugin-monitor-table thead,.customer-plugin-monitor-table tbody{display:table-row-group}
+.customer-plugin-monitor-table tr{display:table-row}
+.customer-plugin-monitor-table th,.customer-plugin-monitor-table td{min-width:125px;width:auto!important;word-break:normal;overflow-wrap:break-word;white-space:normal}
+.customer-plugin-monitor-table th:first-child,.customer-plugin-monitor-table td:first-child{min-width:210px}
+.customer-plugin-monitor-table th:nth-child(3),.customer-plugin-monitor-table td:nth-child(3){min-width:140px}
+.customer-plugin-monitor-table th:nth-child(4),.customer-plugin-monitor-table td:nth-child(4){min-width:135px}
+.customer-plugin-monitor-table th:nth-child(5),.customer-plugin-monitor-table td:nth-child(5){min-width:155px}
+.customer-plugin-monitor-table th:nth-child(6),.customer-plugin-monitor-table td:nth-child(6){min-width:155px}
+.customer-plugin-monitor-table th:last-child,.customer-plugin-monitor-table td:last-child{min-width:110px}
+.customer-ticket-input:disabled{opacity:1;color:#b7d4db}
