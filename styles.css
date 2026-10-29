@@ -1239,3 +1239,11 @@ body[data-page="home"] .page-section-intro{display:none!important}
  }
  .footer .footer-status .feed-chip{white-space:normal}
 }
+
+/* Customer inventory assessment with actual historical score trend */
+.customer-security-score-panel{border:1px solid #39697c;border-radius:12px;background:#102c40;padding:20px;margin:20px 0}
+.customer-security-score-panel h2{margin:0 0 10px}
+.customer-score-number{font-size:32px;color:#a8ecda;display:block;margin:8px 0}
+.customer-score-trend{max-width:850px;width:100%;min-height:80px}
+.customer-score-trend svg{display:block;width:100%;height:auto;max-height:240px;color:#99bbc9}
+@media print{.customer-security-score-panel{background:#fff;border-color:#aaa}.customer-score-number{color:#222}.customer-score-trend svg{color:#555}}
