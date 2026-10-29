@@ -970,3 +970,18 @@ button.tech-chart-link b{
 .inventory-matching{margin-top:18px}.inventory-match-filter{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px;color:#bddde8;margin:12px 0}.inventory-match-filter select{background:#0a2235;color:#f2fbff;padding:9px;border:1px solid #3b6475;border-radius:7px}.inventory-match-card{margin:7px 0}.inventory-match-card p{line-height:1.65}.inventory-matching .inventory-actions{margin-top:10px;flex-wrap:wrap}
 /* Group several installed technologies under one named customer asset. */
 .inventory-asset-group{border:1px solid #335a6a;border-radius:9px;background:#0e2b3d;padding:12px;margin:11px 0}.inventory-asset-group-title{display:block;font-size:13px;color:#d9f6ee}.inventory-asset-group .inventory-asset{border-top:1px solid #2e5062}.inventory-asset-group .inventory-asset:first-of-type{border-top:none}#inventoryTechHelp{display:block;font-size:11px;color:#a8c4d4;line-height:1.6;margin-top:4px}#inventoryAdditionalTechnologies{font-family:inherit;min-height:100px}
+
+/* Lifecycle watch and public support calendar */
+.lifecycle-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:17px;align-items:start}
+.lifecycle-field{display:grid;gap:7px;margin:15px 0;font-size:12px;color:#bddce8}
+.lifecycle-field input,.lifecycle-grid input,.lifecycle-grid select{background:#091f31;color:#eaf8ff;border:1px solid #38586f;border-radius:8px;padding:10px;max-width:100%;width:100%;font:inherit;font-size:12px}
+.lifecycle-source-row{padding:11px;border:1px solid #2b4b5e;border-radius:8px;margin-bottom:8px;background:#112b3d}
+.lifecycle-source-row strong{display:block;font-size:12px;color:#f1fbff;margin-bottom:7px}
+.lifecycle-source-row .ops-tag{margin-bottom:6px}
+.lifecycle-source-row p{margin:6px 0}
+.lifecycle-public-results{max-height:560px}
+.lifecycle-grid .ops-form .ops-span{grid-column:1/-1}
+.lifecycle-prefs-form{border-top:1px solid #345066;margin-top:18px;padding-top:15px}
+.lifecycle-prefs-form input[type=checkbox]{width:auto;accent-color:#67dccf;vertical-align:middle}
+.lifecycle-grid .ops-note{line-height:1.65}
+@media(max-width:1000px){.lifecycle-grid{grid-template-columns:minmax(0,1fr)}}
