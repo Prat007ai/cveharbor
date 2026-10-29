@@ -7,7 +7,7 @@ let inventory={customers:[],environments:[],assets:[]},records=[];
 const text=(tag,value,cls)=>{const el=document.createElement(tag);el.textContent=String(value??'');if(cls)el.className=cls;return el};
 const api=async path=>{
  const r=await fetch('https://api.cveharbor.com/v1/'+path,{credentials:'include',headers:{Accept:'application/json'}});
- const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'Account service unavailable');return d;
+ const d=await r.json().catch(()=>({}));if(r.status===401)return {authenticated:false};if(!r.ok){const error=new Error(d.error||'Account service unavailable');error.status=r.status;throw error}return d;
 };
 function option(select,label,id){const el=text('option',label);el.value=id;select.append(el)}
 const advisories=()=>{
@@ -157,7 +157,7 @@ async function init(){
    $('customerReportCsv').addEventListener('click',csvReport);
   }
   $('customerDashStatus').textContent=inventory.customers.length+' customer records loaded privately. Advisory matching is preliminary.';
- }catch(e){$('customerDashStatus').textContent='Unable to load customer security data: '+e.message}
+ }catch(e){$('customerDashLogin').hidden=false;$('customerDashStatus').textContent=(e.status===404||e.status===503)?'Customer inventory backend is not active. The D1 migration and updated Cloudflare Worker must be deployed.':'Could not reach account data. Please sign in or check the service. '+e.message}
 }
 void init();
 })();
