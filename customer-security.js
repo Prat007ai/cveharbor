@@ -48,6 +48,19 @@ async function refreshPluginFindings(){
 
 let findingStatusReady=false,findingStatuses=new Map(),findingStatusFilter='Unresolved';
 let findingSort={key:'',direction:'asc'};
+let ticketReady=false,findingTickets=new Map();
+const ticketFor=i=>findingTickets.get(statusKey(i))||'';
+async function saveFindingTicket(i,input,button){
+ const ticket=input.value.trim();button.disabled=true;
+ try{
+  const r=await fetch('https://api.cveharbor.com/v1/finding-tickets/'+encodeURIComponent(i.asset_id)+'/'+encodeURIComponent(i.id),{method:'PUT',credentials:'include',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({ticket_number:ticket})});
+  const payload=await r.json().catch(()=>({}));
+  if(!r.ok)throw Error(payload.error||'Unable to save DevOps ticket');
+  findingTickets.set(statusKey(i),ticket);button.textContent='Update';
+  input.setAttribute('data-saved',ticket);
+ }catch(error){window.alert('Could not save DevOps ticket: '+error.message)}finally{button.disabled=false}
+}
+
 const statusOptions=['Needs Review','Fix in Progress','Fixed/Patched','Not Applicable','Accepted Risk'];
 const statusKey=i=>i.asset_id+'|'+i.id;
 const statusFor=i=>findingStatuses.get(statusKey(i))||'Needs Review';
@@ -356,11 +369,11 @@ function drawReport(){
  root.append(findingStatusControls(stats.issues));
  const filtered=stats.issues.filter(i=>findingStatusFilter==='All'||findingStatusFilter==='Unresolved'&&!closedStatus(statusFor(i))||statusFor(i)===findingStatusFilter);
  const compact=sortFindings(filtered).slice(0,250);
- const findingsTable=table(['CVE','Published','Severity','Software / Asset','Vulnerability summary','Vulnerability Fix Status'],
+ const findingsTable=table(['CVE','Published','Severity','Software / Asset','Vulnerability summary','Vulnerability Fix Status','DevOps Ticket #'],
   compact.map(i=>[
    i.id,i.published||'Not available',i.severity,
    i.technology+' '+(i.version||'Unknown')+' · '+(i.asset?.name||'Asset'),
-   shortSummary(i),''
+   shortSummary(i),'',''
   ]));
  findingsTable.classList.add('customer-vulnerability-table');
  enableFindingSort(findingsTable);
@@ -372,6 +385,17 @@ function drawReport(){
   select.value=statusFor(i);select.disabled=!findingStatusReady;
   select.addEventListener('change',()=>void saveFindingStatus(i,select.value,select));
   cell.append(select);
+  const ticketCell=findingsTable.tBodies[0].rows[index].cells[6];
+  const ticketWrap=text('div','','customer-ticket-controls');
+  const input=document.createElement('input');
+  input.type='text';input.maxLength=64;input.placeholder='Ticket number';
+  input.className='customer-ticket-input';
+  input.setAttribute('aria-label','DevOps ticket number for '+i.id+' on '+(i.asset?.name||'asset'));
+  input.value=ticketFor(i);input.disabled=!ticketReady;
+  const save=text('button',input.value?'Update':'Save','customer-ticket-save');
+  save.type='button';save.disabled=!ticketReady;
+  save.addEventListener('click',()=>void saveFindingTicket(i,input,save));
+  ticketWrap.append(input,save);ticketCell.append(ticketWrap);
  }
  root.append(findingsTable);
  root.append(reportSection('Advisory Evidence and References'));
@@ -395,9 +419,9 @@ function drawReport(){
 function csvReport(){
  const id=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const customer=inventory.customers.find(c=>c.id===id);if(!customer)return;
- const rows=[['Customer','Environment','Asset','Technology','Installed version','CVE','Severity','CISA KEV','Match classification','Published','Summary','Vulnerability Fix Status','Affected versions','Version comparison','Remediation','Source']];
+ const rows=[['Customer','Environment','Asset','Technology','Installed version','CVE','Severity','CISA KEV','Match classification','Published','Summary','Vulnerability Fix Status','DevOps Ticket #','Affected versions','Version comparison','Remediation','Source']];
  for(const f of compute(id,env).issues)
-  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.published||'Not available',shortSummary(f),statusFor(f),f.affected||'',f.comparison_detail||'',f.remediation||'',f.source_url]);
+  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.published||'Not available',shortSummary(f),statusFor(f),ticketFor(f),f.affected||'',f.comparison_detail||'',f.remediation||'',f.source_url]);
  const csv=rows.map(r=>r.map(v=>{
   let value=String(v??'');
   if(/^[=+\-@\t\r]/.test(value))value="'"+value;
@@ -416,6 +440,9 @@ async function init(){
   inventory=await api('inventory');
   records=advisories();
   if(reporting){
+   const tickets=await api('finding-tickets').catch(()=>({ready:false,tickets:[]}));
+   ticketReady=!!tickets.ready;
+   findingTickets=new Map((tickets.tickets||[]).map(t=>[t.asset_id+'|'+t.cve_id,t.ticket_number]));
    const saved=await api('finding-statuses').catch(()=>({ready:false,statuses:[]}));
    findingStatusReady=!!saved.ready;
    findingStatuses=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.status]));

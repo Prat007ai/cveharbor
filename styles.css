@@ -1139,3 +1139,9 @@ body[data-page="home"] .page-section-intro{display:none!important}
 .customer-report-sort{background:transparent;border:0;color:inherit;font:inherit;font-weight:bold;cursor:pointer;text-align:left;padding:0}
 .customer-report-sort:hover{color:#8debdc}
 .customer-report-sort-indicator{margin-left:4px;font-size:11px}
+
+.customer-ticket-controls{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+.customer-ticket-input{min-width:115px;max-width:180px;width:100%;flex:1;background:#102f43;color:#effaff;border:1px solid #4f8690;border-radius:6px;padding:8px;font:inherit;font-size:12px}
+.customer-ticket-save{background:#164449;color:#c4fff0;border:1px solid #398079;border-radius:6px;padding:7px 10px;cursor:pointer;font-size:12px}
+.customer-ticket-save:disabled,.customer-ticket-input:disabled{opacity:.55}
+@media print{.customer-ticket-save{display:none}.customer-ticket-input{border:0;padding:0;color:#111;background:transparent}}

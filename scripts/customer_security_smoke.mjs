@@ -46,6 +46,8 @@ window.fetch=async (url,options={})=>{
  if(String(url).endsWith('/me'))return {ok:true,json:async()=>({authenticated:true,email:'admin@example.com'})};
  if(String(url).endsWith('/inventory/status'))return {ok:true,json:async()=>({ready:true})};
  if(String(url).endsWith('/inventory'))return {ok:true,json:async()=>sample};
+ if(String(url).endsWith('/finding-tickets'))return {ok:true,json:async()=>({ready:true,tickets:[]})};
+ if(String(url).includes('/finding-tickets/')&&options.method==='PUT'){statusWrites.push({ticket:JSON.parse(options.body).ticket_number});return {ok:true,json:async()=>({saved:true})}}
  if(String(url).endsWith('/finding-statuses'))return {ok:true,json:async()=>({ready:true,statuses:[]})};
  if(String(url).includes('/finding-statuses/')&&options.method==='PUT'){
   const body=JSON.parse(options.body);statusWrites.push({url:String(url),...body});savedStatus=body.status;
@@ -63,7 +65,7 @@ assert.match(doc.querySelector('#customerReportBody').textContent,/2026-10-24/);
 assert.match(doc.querySelector('.customer-report-table:nth-of-type(3)')?.textContent||doc.querySelector('#customerReportBody').textContent,/Test PHP vulnerability with irregular spacing/,'summary whitespace is normalized');
 assert.ok(!doc.querySelector('#customerReportBody').textContent.includes('Test  PHP'),'report does not expose repeated whitespace');
 assert.match(fs.readFileSync('customer-security.js','utf8'),/f\.published\|\|'Not available',shortSummary\(f\)/,'CSV has explicit missing publication date fallback');
-assert.deepEqual([...doc.querySelectorAll('.customer-vulnerability-table thead th')].map(x=>x.textContent.replace(/[▲▼⇅]/g,'').trim()),['CVE','Published','Severity','Software / Asset','Vulnerability summary','Vulnerability Fix Status']);
+assert.deepEqual([...doc.querySelectorAll('.customer-vulnerability-table thead th')].map(x=>x.textContent.replace(/[▲▼⇅]/g,'').trim()),['CVE','Published','Severity','Software / Asset','Vulnerability summary','Vulnerability Fix Status','DevOps Ticket #']);
 for(const key of ['Published','Severity','Software / Asset','Vulnerability Fix Status']){
  const header=[...doc.querySelectorAll('.customer-report-sort')].find(b=>b.textContent.startsWith(key));
  assert.ok(header,'sortable report header exists: '+key);
@@ -71,15 +73,21 @@ for(const key of ['Published','Severity','Software / Asset','Vulnerability Fix S
  assert.equal(doc.querySelector('.customer-vulnerability-table th[aria-sort="ascending"]')?.textContent.includes(key),true);
 }
 assert.equal(doc.querySelectorAll('#customerReportBody .customer-report-finding').length,1);
+const ticketInput=doc.querySelector('.customer-ticket-input');
+assert.ok(ticketInput&&!ticketInput.disabled,'DevOps ticket field is editable');
+ticketInput.value='WOODBINE-123';
+doc.querySelector('.customer-ticket-save').click();
+await new Promise(resolve=>setTimeout(resolve,20));
+assert.ok(statusWrites.some(x=>x.ticket==='WOODBINE-123'),'ticket reference saved');
 const statusSelect=doc.querySelector('.customer-finding-status-select');
 assert.ok(statusSelect&&!statusSelect.disabled,'status is editable when D1 tracking is ready');
 assert.deepEqual([...statusSelect.options].map(o=>o.value),['Needs Review','Fix in Progress','Fixed/Patched','Not Applicable','Accepted Risk']);
 statusSelect.value='Fixed/Patched';
 statusSelect.dispatchEvent(new window.Event('change'));
 await new Promise(resolve=>setTimeout(resolve,20));
-assert.equal(statusWrites.length,1,'status saved with an authenticated PUT');
-assert.match(statusWrites[0].url,/\/finding-statuses\/a1\/CVE-2026-32101$/);
-assert.equal(statusWrites[0].status,'Fixed/Patched');
+assert.equal(statusWrites.filter(x=>x.status).length,1,'status saved with an authenticated PUT');
+assert.match(statusWrites.find(x=>x.status).url,/\/finding-statuses\/a1\/CVE-2026-32101$/);
+assert.equal(statusWrites.find(x=>x.status).status,'Fixed/Patched');
 assert.equal(doc.querySelectorAll('.customer-vulnerability-table tbody tr').length,0,'patched finding is filtered from unresolved view');
 doc.querySelectorAll('.customer-finding-filter')[0].click();
 assert.equal(doc.querySelector('.customer-finding-status-select').value,'Fixed/Patched','status persists in browser after redraw');
