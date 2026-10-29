@@ -398,6 +398,23 @@ function renderScorePanel(root,customer,scope,stats){
   ['Remediation effectiveness',15,b.remediation],['Monitoring coverage',10,b.monitoring]
  ]));
  card.append(text('p','Scoring methodology v'+assessment.version+'. Inventory findings are candidates, not authenticated proof of exposure.','ops-note'));
+ const details=document.createElement('details');details.className='customer-score-methodology';
+ const summary=text('summary','How is this score calculated?');
+ details.append(summary);
+ const content=text('div','','customer-score-methodology-body');
+ content.append(text('p','CVEHarbor starts with 100 points and subtracts deductions based on the customer inventory and available advisory checks. The result is a provisional inventory based rating, not a confirmed security assessment.'));
+ const rules=text('ul');
+ for(const explanation of [
+  'Vulnerability exposure (up to 50 points): Unresolved version range candidate CVEs deduct 12 points for Critical, 7 for High, 4 for Medium and 2 for Low. Unknown severity deducts 3. A CISA known exploited flag multiplies that finding’s deduction by 1.5. The total is capped at 50.',
+  'Software updates (up to 25 points): Each inventoried WordPress plugin with a verified Update Available result deducts 2 points. The total is capped at 25. Other software update types are not included in this v1 calculation.',
+  'Remediation (up to 15 points): The share of version range candidate findings still open determines this deduction. Fixed/Patched and Not Applicable are excluded from open findings. These are recorded review statuses, not independently verified fixes.',
+  'Monitoring coverage (up to 10 points): Coverage is the percentage of software entries with a recorded version, including WordPress plugins only when their vulnerability check succeeds for the installed version. The deduction is the rounded percentage of missing coverage divided by 10.'
+ ])rules.append(text('li',explanation));
+ content.append(rules);
+ content.append(text('p','A numeric score is displayed only when at least one inventory asset exists, monitoring coverage is 70% or higher, and at least one version range candidate CVE is available. Otherwise the report says Insufficient Data.'));
+ content.append(text('p','Confidence reflects monitoring coverage: High at 90% or more, Medium from 70% to 89%, and Low below 70%. Confidence does not confirm the accuracy of every advisory match.'));
+ content.append(text('p','Example: deductions of 18 for exposure, 8 for software updates, 3 for remediation and 1 for monitoring produce 70 out of 100. The historical trend uses saved assessment snapshots, not invented past scores.'));
+ details.append(content);card.append(details);
  const heading=text('h3','Security Score Trend');
  const chart=document.createElement('div');chart.className='customer-score-trend';
  const message=text('p','Historical scores will appear here as assessments are recorded.','ops-note');
