@@ -21,7 +21,7 @@ assert.equal(match.candidate(pluginAsset,finding('CVE-2026-11118','WordPress / P
 matchingDom.window.close();
 
 const html=fs.readFileSync('customer-reports/index.html','utf8');
-assert.ok(html.includes('customer-security.js?v=score-methodology-85'),'report loads fresh plugin monitoring script');
+assert.ok(html.includes('customer-security.js?v=score-seal-86'),'report loads fresh plugin monitoring script');
 const dom=new JSDOM(html,{url:'https://cveharbor.com/customer-reports/?customer=c1',runScripts:'outside-only'});
 const {window}=dom,doc=window.document;
 const sample={
@@ -63,6 +63,8 @@ await new Promise(resolve=>setTimeout(resolve,20));
 assert.equal(doc.querySelector('#customerDashFilter').value,'c1','customer selected using a valid scoped query');
 assert.match(doc.querySelector('#customerReportBody').textContent,/Customer A/);
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes('How is this score calculated?'),'report explains security scoring methodology');
+assert.ok(fs.readFileSync('customer-security.js','utf8').includes("card.className='customer-security-score-panel'"),'scorecard is collapsible');
+assert.ok(fs.readFileSync('customer-security.js','utf8').includes('customer-score-seal-number'),'scorecard has professional seal');
 assert.match(doc.querySelector('#customerReportBody').textContent,/CVE-2026-32101/);
 assert.match(doc.querySelector('#customerReportBody').textContent,/PHP before 8.4.27/);
 assert.match(doc.querySelector('#customerReportBody').textContent,/2026-10-24/);
