@@ -1087,3 +1087,16 @@ body[data-page="home"] .page-section-intro{display:none!important}
 .customer-evidence-detail summary{cursor:pointer;font-weight:700;color:#8be8df}
 .customer-evidence-detail p{overflow-wrap:anywhere;margin:.6rem 0}
 .customer-report-table td{overflow-wrap:anywhere;white-space:normal}
+
+.customer-report-table{table-layout:fixed;line-height:1.5}
+.customer-report-table th,.customer-report-table td{word-break:normal;overflow-wrap:break-word}
+.customer-report-table:has(th:nth-child(6)) th:nth-child(1){width:12%}
+.customer-report-table:has(th:nth-child(6)) th:nth-child(2){width:12%}
+.customer-report-table:has(th:nth-child(6)) th:nth-child(3){width:10%}
+.customer-report-table:has(th:nth-child(6)) th:nth-child(4){width:21%}
+.customer-report-table:has(th:nth-child(6)) th:nth-child(5){width:31%}
+.customer-report-table:has(th:nth-child(6)) th:nth-child(6){width:14%}
+.customer-report-finding{padding:15px 0;border-bottom:1px solid #345468;break-inside:avoid}
+.customer-report-finding h3{font-size:15px;margin:0 0 9px}
+.customer-report-finding p{margin:7px 0;line-height:1.6;overflow-wrap:anywhere}
+@media(max-width:850px){.customer-report-table:has(th:nth-child(6)){display:block;overflow-x:auto;table-layout:auto}.customer-report-table:has(th:nth-child(6)) td:nth-child(5){min-width:260px}}
