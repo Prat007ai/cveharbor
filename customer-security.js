@@ -199,6 +199,16 @@ function table(headers,rows){
  for(const values of rows){const row=text('tr');for(const v of values)row.append(text('td',v));body.append(row)}
  t.append(body);return t;
 }
+function shortSummary(i){
+ const source=String(i.summary||i.title||'').replace(/\\s+/g,' ').trim();
+ if(!source||source===i.id)return 'Description not available in the indexed advisory.';
+ if(source.length<=205)return source;
+ const lead=source.slice(0,205);
+ const sentence=lead.lastIndexOf('. ');
+ if(sentence>70)return lead.slice(0,sentence+1);
+ const space=lead.lastIndexOf(' ');
+ return lead.slice(0,space>90?space:205)+'…';
+}
 function drawReport(){
  const id=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const root=$('customerReportBody');root.replaceChildren();
@@ -217,10 +227,27 @@ function drawReport(){
  root.append(reportSection('Recorded Technology Inventory'),
  table(['Environment','Asset','Technology','Installed version'],
  stats.assets.map(a=>[stats.environments.find(e=>e.id===a.environment_id)?.name||'',a.name,a.technology,a.version||'Unknown'])));
- root.append(reportSection('Vulnerabilities Requiring Verification'),
- table(['CVE','Severity','Environment and asset','Technology','Matching evidence'],
- stats.issues.slice(0,250).map(i=>[i.id,i.severity,i.environment?.name+' / '+i.asset?.name,i.technology+' '+(i.version||''),
-  i.evidence+' | '+(i.comparison_detail||'')+' | Affected: '+(i.affected||'Not provided')+' | Guidance: '+(i.remediation||'Not provided')+' | Source: '+(i.source_url||'Not provided')])));
+ root.append(reportSection('Vulnerabilities Requiring Verification'));
+ root.append(text('p','Publication dates and descriptions are shown only when supplied by the indexed advisory. Matches are candidates requiring product-specific verification.','ops-note'));
+ const compact=stats.issues.slice(0,250);
+ root.append(table(['CVE','Published','Severity','Software / Asset','Vulnerability summary','Assessment'],
+  compact.map(i=>[
+   i.id,i.published||'Not available',i.severity,
+   i.technology+' '+(i.version||'Unknown')+' · '+(i.asset?.name||'Asset'),
+   shortSummary(i),i.level==='version_review'?'Version range candidate':'Category match · Unverified'
+  ])));
+ root.append(reportSection('Advisory Evidence and References'));
+ for(const i of compact){
+  const block=text('section','','customer-report-finding');
+  block.append(text('h3',i.id+' · '+i.technology+' '+(i.version||'Unknown')),
+   text('p',shortSummary(i),'customer-finding-summary'),
+   text('p','Published: '+(i.published||'Not available')+' · Severity: '+i.severity,'ops-note'),
+   text('p','Match assessment: '+(i.evidence||'Requires verification'),'ops-note'));
+  if(i.affected)block.append(text('p','Affected software: '+i.affected,'ops-note'));
+  if(i.remediation)block.append(text('p','Vendor guidance: '+i.remediation,'ops-note'));
+  if(i.source_url)block.append(link(i.source_url,i.source_label||'Original advisory'));
+  root.append(block);
+ }
  if(stats.total>250||stats.limited)root.append(text('p','The findings list is limited. Narrow the report by environment for a more complete review.','ops-note'));
  if(!stats.total)root.append(text('p','No matches in the available index. This does not establish absence of vulnerabilities.','ops-note'));
  root.append(reportSection('Recommended Follow-up'),
@@ -230,9 +257,9 @@ function drawReport(){
 function csvReport(){
  const id=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const customer=inventory.customers.find(c=>c.id===id);if(!customer)return;
- const rows=[['Customer','Environment','Asset','Technology','Installed version','CVE','Severity','CISA KEV','Match classification','Affected versions','Version comparison','Remediation','Source']];
+ const rows=[['Customer','Environment','Asset','Technology','Installed version','CVE','Severity','CISA KEV','Match classification','Published','Summary','Affected versions','Version comparison','Remediation','Source']];
  for(const f of compute(id,env).issues)
-  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.affected||'',f.comparison_detail||'',f.remediation||'',f.source_url]);
+  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.published||'',shortSummary(f),f.affected||'',f.comparison_detail||'',f.remediation||'',f.source_url]);
  const csv=rows.map(r=>r.map(v=>{
   let value=String(v??'');
   if(/^[=+\-@\t\r]/.test(value))value="'"+value;
