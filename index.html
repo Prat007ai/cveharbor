@@ -8,7 +8,7 @@
   <meta property="og:title" content="CVEHarbor | Know the risk. Find the fix.">
   <meta property="og:description" content="Vulnerability advisories, severity dashboards, affected versions, vendor sources and remediation guidance.">
   <title>CVEHarbor | Vulnerability Intelligence</title>
-  <link rel="stylesheet" href="/styles.css?v=home-sidebar-89">
+  <link rel="stylesheet" href="/styles.css?v=hero-network-90">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
@@ -39,35 +39,49 @@
           <div class="hero-actions"><a href="#advisories" class="primary-btn">Explore advisories <span aria-hidden="true">↗</span></a><a href="#technology" class="ghost-btn">Browse technologies <span aria-hidden="true">→</span></a></div>
         </div>
         <div class="hero-visual" aria-label="Security intelligence site status">
-          <div class="hero-signal-art" aria-hidden="true">
-            <svg viewBox="0 0 580 340" preserveAspectRatio="xMidYMid meet" focusable="false">
+          <div class="hero-intelligence-network" aria-hidden="true">
+            <div class="hero-network-grid"></div>
+            <svg class="hero-network-svg" viewBox="0 0 1000 400" preserveAspectRatio="xMidYMid meet" focusable="false">
               <defs>
-                <linearGradient id="signalTrace" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#447f9b" stop-opacity="0"/><stop offset="55%" stop-color="#56c9be" stop-opacity=".75"/><stop offset="100%" stop-color="#7ddcc7" stop-opacity=".12"/></linearGradient>
-                <radialGradient id="signalGlow"><stop stop-color="#55d3c1" stop-opacity=".22"/><stop offset="100%" stop-color="#55d3c1" stop-opacity="0"/></radialGradient>
+                <radialGradient id="heroNetworkGlow"><stop offset="0%" stop-color="#57cfb9" stop-opacity=".23"/><stop offset="100%" stop-color="#57cfb9" stop-opacity="0"/></radialGradient>
               </defs>
-              <circle cx="273" cy="171" r="137" fill="url(#signalGlow)"/>
-              <circle class="hero-signal-ring ring-one" cx="273" cy="171" r="106"/>
-              <circle class="hero-signal-ring ring-two" cx="273" cy="171" r="76"/>
-              <circle class="hero-signal-ring ring-three" cx="273" cy="171" r="43"/>
-              <path class="hero-signal-path" id="heroSignalPathA" d="M18 93H110L166 148H245L273 171L352 171L402 119H550"/>
-              <path class="hero-signal-path" id="heroSignalPathB" d="M15 254H123L175 211H242L273 171L356 210H550"/>
-              <path class="hero-signal-path" d="M273 22V87M273 253V320"/>
-              <g class="hero-signal-nodes">
-                <circle cx="110" cy="93" r="4"/><circle cx="166" cy="148" r="4"/><circle cx="123" cy="254" r="4"/><circle cx="175" cy="211" r="4"/>
-                <circle cx="402" cy="119" r="4"/><circle cx="356" cy="210" r="4"/><circle cx="273" cy="87" r="3"/><circle cx="273" cy="253" r="3"/>
+              <ellipse cx="400" cy="200" rx="220" ry="180" fill="url(#heroNetworkGlow)"/>
+              <g class="hero-network-rings">
+                <circle cx="400" cy="200" r="58"/><circle cx="400" cy="200" r="105"/><circle cx="400" cy="200" r="150"/>
               </g>
-              <circle class="hero-signal-core-glow" cx="273" cy="171" r="25"/>
-              <circle class="hero-signal-core" cx="273" cy="171" r="13"/>
-              <circle class="hero-signal-core-inner" cx="273" cy="171" r="4"/>
-              <circle class="hero-signal-traveller" r="3.5"><animateMotion dur="9s" repeatCount="indefinite" path="M18 93H110L166 148H245L273 171L352 171L402 119H550"/></circle>
-              <circle class="hero-signal-traveller secondary" r="3"><animateMotion dur="11s" begin="-4s" repeatCount="indefinite" path="M15 254H123L175 211H242L273 171L356 210H550"/></circle>
-              <text x="38" y="81" class="hero-signal-caption">ADVISORY SOURCES</text>
-              <text x="355" y="234" class="hero-signal-caption">VERSION INTELLIGENCE</text>
-              <text x="277" y="29" class="hero-signal-caption">ANALYSIS</text>
+              <g class="hero-network-connections">
+                <path d="M45 92L190 92L310 155L400 200L550 135L724 135L950 75"/>
+                <path d="M40 322L215 322L310 248L400 200L555 270L743 270L958 346"/>
+                <path d="M125 200L278 200L400 200L596 200L850 200"/>
+                <path d="M400 20V200V381"/>
+              </g>
+              <g class="hero-network-points">
+                <circle cx="45" cy="92" r="4"/><circle cx="190" cy="92" r="4"/><circle cx="310" cy="155" r="5"/>
+                <circle cx="550" cy="135" r="5"/><circle cx="724" cy="135" r="4"/><circle cx="950" cy="75" r="4"/>
+                <circle cx="40" cy="322" r="4"/><circle cx="215" cy="322" r="4"/><circle cx="310" cy="248" r="5"/>
+                <circle cx="555" cy="270" r="5"/><circle cx="743" cy="270" r="4"/><circle cx="958" cy="346" r="4"/>
+                <circle cx="125" cy="200" r="4"/><circle cx="596" cy="200" r="4"/><circle cx="850" cy="200" r="4"/>
+                <circle cx="400" cy="20" r="4"/><circle cx="400" cy="381" r="4"/>
+              </g>
+              <g class="hero-network-center">
+                <circle cx="400" cy="200" r="38"/><circle cx="400" cy="200" r="26"/>
+                <path d="M400 182L413 188V200C413 211 408 216 400 221C392 216 387 211 387 200V188Z"/>
+                <path d="M395 200L399 204L406 195"/>
+              </g>
+              <g class="hero-network-movement">
+                <circle r="5"><animateMotion dur="7s" repeatCount="indefinite" path="M45 92L190 92L310 155L400 200L550 135L724 135L950 75"/></circle>
+                <circle r="4"><animateMotion dur="10s" begin="-5s" repeatCount="indefinite" path="M40 322L215 322L310 248L400 200L555 270L743 270L958 346"/></circle>
+                <circle r="3.5"><animateMotion dur="8s" begin="-3s" repeatCount="indefinite" path="M125 200L278 200L400 200L596 200L850 200"/></circle>
+              </g>
+              <g class="hero-network-labels">
+                <text x="60" y="77">DISCOVER</text><text x="225" y="309">CORRELATE</text>
+                <text x="625" y="185">VALIDATE</text><text x="775" y="260">REMEDIATE</text>
+              </g>
             </svg>
+            <div class="hero-network-status"><span class="hero-network-led"></span> SECURITY INTELLIGENCE FLOW <span class="hero-network-status-tail">SOURCE → ANALYSIS → ACTION</span></div>
           </div>
           <div class="orb orb-one"></div><div class="orb orb-two"></div>
-          <div class="hero-panel"><div class="hp-head"><span class="hp-signal"><i></i> PUBLIC ADVISORY FEEDS</span><span class="hp-gridicon">▦</span></div><div class="pulse-graphic"><div class="pulse-line"></div><div class="pulse-ring ring-a"></div><div class="pulse-ring ring-b"></div><div class="pulse-center">CVE</div></div><div class="hp-foot"><strong>Security intelligence</strong><span>Across applications, cloud & infrastructure</span></div></div>
+          <div class="hero-panel"><div class="hp-head"><span class="hp-signal" aria-hidden="true"><i></i></span><span class="hp-gridicon">▦</span></div><div class="pulse-graphic"><div class="pulse-line"></div><div class="pulse-ring ring-a"></div><div class="pulse-ring ring-b"></div><div class="pulse-center">CVE</div></div><div class="hp-foot"><strong>Security intelligence</strong><span>Across applications, cloud & infrastructure</span></div></div>
           <div class="floating-tag tag-a">Vulnerability tracking <b>✓</b></div><div class="floating-tag tag-b">38 technology groups</div>
         </div>
       </div>
