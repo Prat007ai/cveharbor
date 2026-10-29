@@ -50,18 +50,36 @@ let findingStatusReady=false,findingStatuses=new Map(),findingStatusFilter='Unre
 let findingSort={key:'',direction:'asc'};
 const reportSectionStates=new Map();
 let printSectionStates=null;
-let ticketReady=false,findingTickets=new Map();
-const ticketFor=i=>findingTickets.get(statusKey(i))||'';
+let ticketReady=false,ticketAppendReady=false,findingTickets=new Map();
+let pluginSourceReady=false,pluginSources=new Map();
+const ticketFor=i=>findingTickets.get(statusKey(i))||[];
 async function saveFindingTicket(i,input,button){
- const ticket=input.value.trim();button.disabled=true;
+ const ticket=input.value.trim();
+ if(!ticket){window.alert('Enter a DevOps ticket number');return}
+ button.disabled=true;
  try{
-  const r=await fetch('https://api.cveharbor.com/v1/finding-tickets/'+encodeURIComponent(i.asset_id)+'/'+encodeURIComponent(i.id),{method:'PUT',credentials:'include',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({ticket_number:ticket})});
+  const r=await fetch('https://api.cveharbor.com/v1/finding-tickets/'+encodeURIComponent(i.asset_id)+'/'+encodeURIComponent(i.id),{
+   method:'POST',credentials:'include',headers:{'Content-Type':'application/json',Accept:'application/json'},
+   body:JSON.stringify({ticket_number:ticket})});
   const payload=await r.json().catch(()=>({}));
-  if(!r.ok)throw Error(payload.error||'Unable to save DevOps ticket');
-  findingTickets.set(statusKey(i),ticket);button.textContent='Update';
-  input.setAttribute('data-saved',ticket);
-  if(statusFor(i)==='Fixed/Patched')drawReport();
- }catch(error){window.alert('Could not save DevOps ticket: '+error.message)}finally{button.disabled=false}
+  if(!r.ok)throw Error(payload.error||'Unable to append ticket');
+  const key=statusKey(i);
+  findingTickets.set(key,[...ticketFor(i),ticket]);
+  drawReport();
+ }catch(error){window.alert('Could not add DevOps ticket: '+error.message);button.disabled=false}
+}
+async function saveReportPluginSource(asset,input,message){
+ const source=pluginSources.get(asset.id)||{};
+ const value=input.value.trim();
+ try{
+  const r=await fetch('https://api.cveharbor.com/v1/plugin-sources/'+encodeURIComponent(asset.id),{
+   method:'PUT',credentials:'include',headers:{'Content-Type':'application/json',Accept:'application/json'},
+   body:JSON.stringify({vendor_url:value,release_url:source.release_url||'',advisory_url:source.advisory_url||''})});
+  const body=await r.json().catch(()=>({}));
+  if(!r.ok)throw Error(body.error||'Unable to save plugin source');
+  pluginSources.set(asset.id,{...source,vendor_url:value,verification:body.verification});
+  message.textContent='Source saved. '+body.verification;
+ }catch(e){message.textContent='Could not save source: '+e.message}
 }
 
 const statusOptions=['Needs Review','Fix in Progress','Fixed/Patched','Not Applicable','Accepted Risk'];
@@ -512,7 +530,12 @@ async function init(){
   if(reporting){
    const tickets=await api('finding-tickets').catch(()=>({ready:false,tickets:[]}));
    ticketReady=!!tickets.ready;
-   findingTickets=new Map((tickets.tickets||[]).map(t=>[t.asset_id+'|'+t.cve_id,t.ticket_number]));
+   ticketAppendReady=!!tickets.append_ready;
+   findingTickets=new Map();
+   for(const t of tickets.tickets||[]){const k=t.asset_id+'|'+t.cve_id;findingTickets.set(k,[...(findingTickets.get(k)||[]),t.ticket_number])}
+   const sources=await api('plugin-sources').catch(()=>({ready:false,sources:[]}));
+   pluginSourceReady=!!sources.ready;
+   pluginSources=new Map((sources.sources||[]).map(s=>[s.asset_id,s]));
    const saved=await api('finding-statuses').catch(()=>({ready:false,statuses:[]}));
    findingStatusReady=!!saved.ready;
    findingStatuses=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.status]));
