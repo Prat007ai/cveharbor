@@ -123,6 +123,23 @@ function visualize(groups,all){
  }
  if(!bySoftware.size)software.append(text('p','No software inventory recorded yet.','ops-note'));
 }
+function evidenceDetail(i){
+ const panel=text('details','','customer-evidence-detail');
+ const summary=text('summary',(i.level==='version_review'?'Numeric range candidate':i.level==='outside_range'?'Outside one stated range':'Category match only')+' · View advisory evidence');
+ panel.append(summary);
+ const add=(name,value)=>{if(value)panel.append(text('p',name+': '+value,'ops-note'))};
+ add('Installed software',i.technology+' '+(i.version||'(version unknown)'));
+ add('Assessment',i.evidence);
+ add('Version comparison',i.comparison_detail);
+ add('Advisory description',i.summary||i.title);
+ add('Published affected products and versions',i.affected||'Not supplied by this feed');
+ add('Vendor remediation guidance',i.remediation||'Not supplied by this feed');
+ add('Published',i.published||'Unknown');
+ add('Last updated',i.updated||'Unknown');
+ if(i.source_url)panel.append(link(i.source_url,i.source_label||'Original advisory'));
+ panel.append(text('p','This is advisory evidence, not a scan or confirmed exposure. Check vendor applicability, OS backports, exact packages and enabled features.','ops-note'));
+ return panel;
+}
 function showFindings(customerId,assetId){
  const box=$('customerDashFindings');if(!box)return;
  box.replaceChildren();
@@ -131,8 +148,7 @@ function showFindings(customerId,assetId){
   const row=text('article','','ops-result');
   row.append(text('strong',i.id+' · '+i.severity.toUpperCase()),
    text('p',(customer?.name||'Customer')+' / '+(i.environment?.name||'')+' / '+(i.asset?.name||'')),
-   text('p',i.evidence,'ops-note'));
-  if(i.source_url)row.append(link(i.source_url,'Original advisory'));
+   text('p',i.evidence,'ops-note'),evidenceDetail(i));
   box.append(row);
  }
  if(!box.children.length)box.append(text('p','No candidate advisories for this entry in the current index.','ops-note'));
@@ -169,8 +185,7 @@ function drawDashboard(){
   const row=text('article','','ops-result');
   row.append(text('strong',i.id+' · '+i.severity.toUpperCase()+(i.known_exploited?' · CISA KEV':'')),
    text('p',i.customer.name+' / '+i.environment?.name+' / '+i.asset?.name+' / '+i.technology+' '+(i.version||'Version unknown')),
-   text('p',i.evidence,'ops-note'));
-  if(i.source_url)row.append(link(i.source_url,'Original advisory'));
+   text('p',i.evidence,'ops-note'),evidenceDetail(i));
   findings.append(row);
  }
  if(!list.length)findings.append(text('p','No matching findings within the available index. This does not prove the assets are secure.','ops-note'));
@@ -204,7 +219,8 @@ function drawReport(){
  stats.assets.map(a=>[stats.environments.find(e=>e.id===a.environment_id)?.name||'',a.name,a.technology,a.version||'Unknown'])));
  root.append(reportSection('Vulnerabilities Requiring Verification'),
  table(['CVE','Severity','Environment and asset','Technology','Matching evidence'],
- stats.issues.slice(0,250).map(i=>[i.id,i.severity,i.environment?.name+' / '+i.asset?.name,i.technology+' '+(i.version||''),i.evidence])));
+ stats.issues.slice(0,250).map(i=>[i.id,i.severity,i.environment?.name+' / '+i.asset?.name,i.technology+' '+(i.version||''),
+  i.evidence+' | '+(i.comparison_detail||'')+' | Affected: '+(i.affected||'Not provided')+' | Guidance: '+(i.remediation||'Not provided')+' | Source: '+(i.source_url||'Not provided')])));
  if(stats.total>250||stats.limited)root.append(text('p','The findings list is limited. Narrow the report by environment for a more complete review.','ops-note'));
  if(!stats.total)root.append(text('p','No matches in the available index. This does not establish absence of vulnerabilities.','ops-note'));
  root.append(reportSection('Recommended Follow-up'),
@@ -214,9 +230,9 @@ function drawReport(){
 function csvReport(){
  const id=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const customer=inventory.customers.find(c=>c.id===id);if(!customer)return;
- const rows=[['Customer','Environment','Asset','Technology','Installed version','CVE','Severity','CISA KEV','Match classification','Source']];
+ const rows=[['Customer','Environment','Asset','Technology','Installed version','CVE','Severity','CISA KEV','Match classification','Affected versions','Version comparison','Remediation','Source']];
  for(const f of compute(id,env).issues)
-  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.source_url]);
+  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.affected||'',f.comparison_detail||'',f.remediation||'',f.source_url]);
  const csv=rows.map(r=>r.map(v=>{
   let value=String(v??'');
   if(/^[=+\-@\t\r]/.test(value))value="'"+value;
