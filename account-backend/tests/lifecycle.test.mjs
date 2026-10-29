@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeWatch,evaluate,dateValid } from '../src/lifecycle.js';
+import { normalizeWatch,evaluate,dateValid,newerReleases } from '../src/lifecycle.js';
 
 test('custom lifecycle watches require an explicit valid date and https evidence link',()=>{
  assert.throws(()=>normalizeWatch({product:'Custom database'}),/verified custom support date/);
@@ -25,4 +25,13 @@ test('support dates produce lead window notice without inventing unknown dates',
  assert.equal(items[1].days,74);
  assert.equal(items[0].origin,'user');
  assert.equal(evaluate(watches,cycles,30,now).length,1);
+});
+
+test('newer release notification distinguishes release availability from security patch claims',()=>{
+ const watch={id:'watch1',product:'PHP',slug:'php',cycle:'8.4',installed_version:'8.4.26'};
+ const releases=[{slug:'php',cycle:'8.4',latest:'8.4.27',url:'https://endoflife.date/php'}];
+ assert.equal(newerReleases([watch],releases).length,1);
+ assert.equal(newerReleases([{...watch,installed_version:'8.4.28'}],releases).length,0);
+ assert.equal(newerReleases([{...watch,installed_version:'unknown'}],releases).length,0);
+ assert.equal(newerReleases([watch],[{...releases[0],latest:''}]).length,0);
 });
