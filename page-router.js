@@ -22,6 +22,15 @@ if(path==='/'&&section&&map[section]&&map[section]!=='/'){
  return;
 }
 document.addEventListener('click',event=>{
+ // The homepage overview cards previously scrolled to a list that is now
+ // located on a dedicated page. Keep the action meaningful after migration.
+ if(path==='/'&&event.target.closest?.('button.metric-action,button.tech-chart-link,.chart-insight')){
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  window.location.assign('/vulnerabilities/#advisories');
+  return;
+ }
+
  const link=event.target.closest?.('a[href^="#"]');
  if(!link)return;
  const target=decodeURIComponent(link.getAttribute('href').slice(1));
