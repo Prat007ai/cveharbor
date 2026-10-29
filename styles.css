@@ -1108,12 +1108,12 @@ body[data-page="home"] .page-section-intro{display:none!important}
 .customer-finding-status-select{width:100%;min-width:135px;max-width:200px;background:#102f43;color:#e8f9fd;border:1px solid #4f8690;padding:9px;border-radius:7px;font-size:12px}
 .customer-finding-status-select:disabled{opacity:.55}
 .customer-vulnerability-table{table-layout:fixed}
-.customer-vulnerability-table th:nth-child(1){width:12%}
-.customer-vulnerability-table th:nth-child(2){width:10%}
-.customer-vulnerability-table th:nth-child(3){width:8%}
-.customer-vulnerability-table th:nth-child(4){width:17%}
-.customer-vulnerability-table th:nth-child(5){width:26%}
-.customer-vulnerability-table th:nth-child(6){width:12%}
-.customer-vulnerability-table th:nth-child(7){width:15%}
+.customer-report-table.customer-vulnerability-table:has(th:nth-child(7)) th:nth-child(1){width:12%}
+.customer-report-table.customer-vulnerability-table:has(th:nth-child(7)) th:nth-child(2){width:10%}
+.customer-report-table.customer-vulnerability-table:has(th:nth-child(7)) th:nth-child(3){width:8%}
+.customer-report-table.customer-vulnerability-table:has(th:nth-child(7)) th:nth-child(4){width:17%}
+.customer-report-table.customer-vulnerability-table:has(th:nth-child(7)) th:nth-child(5){width:26%}
+.customer-report-table.customer-vulnerability-table:has(th:nth-child(7)) th:nth-child(6){width:12%}
+.customer-report-table.customer-vulnerability-table:has(th:nth-child(7)) th:nth-child(7){width:15%}
 @media(max-width:1100px){.customer-vulnerability-table{display:block;overflow-x:auto;table-layout:auto}.customer-vulnerability-table td:nth-child(5){min-width:280px}.customer-vulnerability-table td:nth-child(7){min-width:155px}}
 @media print{.customer-finding-filters{display:none!important}.customer-finding-status-select{background:#fff;color:#111;border:0;padding:0;appearance:none}}
