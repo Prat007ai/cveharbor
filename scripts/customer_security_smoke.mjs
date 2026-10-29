@@ -21,7 +21,7 @@ assert.equal(match.candidate(pluginAsset,finding('CVE-2026-11118','WordPress / P
 matchingDom.window.close();
 
 const html=fs.readFileSync('customer-reports/index.html','utf8');
-assert.ok(html.includes('customer-security.js?v=plugin-ticket-links-76'),'report loads fresh plugin monitoring script');
+assert.ok(html.includes('customer-security.js?v=plugin-status-77'),'report loads fresh plugin monitoring script');
 const dom=new JSDOM(html,{url:'https://cveharbor.com/customer-reports/?customer=c1',runScripts:'outside-only'});
 const {window}=dom,doc=window.document;
 const sample={
@@ -49,6 +49,7 @@ window.fetch=async (url,options={})=>{
  if(String(url).endsWith('/inventory'))return {ok:true,json:async()=>sample};
  if(String(url).endsWith('/finding-tickets'))return {ok:true,json:async()=>({ready:true,append_ready:true,tickets:[]})};
  if(String(url).includes('/finding-tickets/')&&options.method==='POST'){statusWrites.push({ticket:JSON.parse(options.body).ticket_number});return {ok:true,json:async()=>({saved:true})}}
+ if(String(url).endsWith('/plugin-installation-status'))return {ok:true,json:async()=>({ready:true,statuses:[]})};
  if(String(url).endsWith('/plugin-sources'))return {ok:true,json:async()=>({ready:true,sources:[]})};
  if(String(url).endsWith('/finding-statuses'))return {ok:true,json:async()=>({ready:true,statuses:[]})};
  if(String(url).includes('/finding-statuses/')&&options.method==='PUT'){
