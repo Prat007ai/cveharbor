@@ -79,3 +79,23 @@ test('successful zero vulnerability source list is a completed check',()=>{
  const x=normalizePluginLookup('autoptimize','3.1.13',{error:0,data:{plugin:'autoptimize',vulnerability:[]}});
  assert.equal(x.status,'checked');assert.equal(x.findings.length,0);
 });
+
+test('normalizes WPVulnerability abbreviated severities and preserves absent publication dates',()=>{
+ const entries=['h','m','l','c'].map((severity,i)=>({
+  name:'Example plugin CVE',operator:{max_version:'9.0.0',max_operator:'lt'},
+  impact:{cvss:{severity}},
+  source:[{id:'CVE-2026-'+String(12345+i),link:'https://www.cve.org/example'}]
+ }));
+ const result=normalizePluginLookup('autoptimize','3.1.13',{error:0,data:{plugin:'autoptimize',vulnerability:entries}});
+ assert.deepEqual(result.findings.map(x=>x.severity),['high','medium','low','critical']);
+ assert.ok(result.findings.every(x=>x.published===''),'no publication date is invented');
+});
+test('uses explicit source publication date only when present and valid',()=>{
+ const body={error:0,data:{plugin:'autoptimize',vulnerability:[{
+  operator:{max_version:'9.0.0',max_operator:'lt'},
+  source:[{id:'CVE-2026-66777',date:'2026-10-21',link:'https://example.org'}],
+  impact:{cvss:{severity:'h'}}
+ }]}};
+ const result=normalizePluginLookup('autoptimize','3.1.13',body);
+ assert.equal(result.findings[0].published,'2026-10-21');
+});
