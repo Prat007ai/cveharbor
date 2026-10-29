@@ -63,6 +63,13 @@ assert.match(doc.querySelector('#customerReportBody').textContent,/2026-10-24/);
 assert.match(doc.querySelector('.customer-report-table:nth-of-type(3)')?.textContent||doc.querySelector('#customerReportBody').textContent,/Test PHP vulnerability with irregular spacing/,'summary whitespace is normalized');
 assert.ok(!doc.querySelector('#customerReportBody').textContent.includes('Test  PHP'),'report does not expose repeated whitespace');
 assert.match(fs.readFileSync('customer-security.js','utf8'),/f\.published\|\|'Not available',shortSummary\(f\)/,'CSV has explicit missing publication date fallback');
+assert.deepEqual([...doc.querySelectorAll('.customer-vulnerability-table thead th')].map(x=>x.textContent.replace(/[▲▼⇅]/g,'').trim()),['CVE','Published','Severity','Software / Asset','Vulnerability summary','Vulnerability Fix Status']);
+for(const key of ['Published','Severity','Software / Asset','Vulnerability Fix Status']){
+ const header=[...doc.querySelectorAll('.customer-report-sort')].find(b=>b.textContent.startsWith(key));
+ assert.ok(header,'sortable report header exists: '+key);
+ header.click();
+ assert.equal(doc.querySelector('.customer-vulnerability-table th[aria-sort="ascending"]')?.textContent.includes(key),true);
+}
 assert.equal(doc.querySelectorAll('#customerReportBody .customer-report-finding').length,1);
 const statusSelect=doc.querySelector('.customer-finding-status-select');
 assert.ok(statusSelect&&!statusSelect.disabled,'status is editable when D1 tracking is ready');
