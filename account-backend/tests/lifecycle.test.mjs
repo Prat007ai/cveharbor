@@ -34,4 +34,7 @@ test('newer release notification distinguishes release availability from securit
  assert.equal(newerReleases([{...watch,installed_version:'8.4.28'}],releases).length,0);
  assert.equal(newerReleases([{...watch,installed_version:'unknown'}],releases).length,0);
  assert.equal(newerReleases([watch],[{...releases[0],latest:''}]).length,0);
+ assert.equal(newerReleases([{...watch,slug:'mssqlserver',cycle:'2022',installed_version:'16.0.4000.1'}],
+ [{slug:'mssqlserver',cycle:'2022',latest:'16.0.4305.5 CU27+GDR',url:'https://endoflife.date/mssqlserver'}]).length,1);
+
 });
