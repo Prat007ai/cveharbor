@@ -415,7 +415,7 @@ function drawReport(){
     return [a.technology.slice('WordPress Plugin: '.length),a.version||'Unknown',pluginInstallationStatuses.get(a.id)||'Not recorded',
      validRelease?release.latest_version:'Not verified',validRelease?release.update_status:(release?.reason?'Unknown: '+release.reason.slice(0,90):'Unknown'),
      check?.checked_at?new Date(check.checked_at*1000).toISOString().replace('T',' ').slice(0,16)+' UTC':'Not checked',
-     pluginChecks[a.id]==='checked'?'Checked':pluginChecks[a.id]==='pending'?'Pending':((check?.status||'Unavailable')+': '+(check?.reason||'Source lookup not confirmed').slice(0,110)),
+     pluginChecks[a.id]==='checked'?'Checked':pluginChecks[a.id]==='pending'?'Pending':'Vendor support status unknown',
      check?.status==='checked'?String(check.findings?.length||0):'Unknown',''];
    }));
   for(const [index,asset] of pluginAssets.entries()){
