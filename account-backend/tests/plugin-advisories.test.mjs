@@ -24,3 +24,17 @@ test('authenticated request verifies ownership and fetches fixed public origin o
  assert.match(fetched,/^https:\/\/www\.wpvulnerability\.net\/plugin\/wp-file-manager\/$/);
  assert.equal((await response.json()).status,'checked');
 });
+
+test('recognizes endpoint scoped responses without a redundant slug',()=>{
+ const body={error:0,updated:123,data:{vulnerabilities:[
+  {cve:'CVE-2026-98765',title:'Test plugin flaw',operator:'lt',version:'8.0.2'}]}};
+ const result=normalizePluginLookup(slug,'8.0.1',body);
+ assert.equal(result.status,'checked');
+ assert.equal(result.findings[0].id,'CVE-2026-98765');
+ assert.equal(normalizePluginLookup(slug,'8.0.1',{error:0,data:{vulnerabilities:[]}}).status,'checked');
+});
+test('explicit wrong slug and unrecognized payload remain unverified',()=>{
+ assert.equal(normalizePluginLookup(slug,'8.0.1',{error:0,data:{slug:'unrelated',vulnerabilities:[]}}).status,'unverified');
+ assert.equal(normalizePluginLookup(slug,'8.0.1',{error:0,data:{}}).status,'unverified');
+ assert.equal(normalizePluginLookup(slug,'8.0.1',{error:1,data:null}).status,'unverified');
+});
