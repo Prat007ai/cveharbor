@@ -18,7 +18,7 @@ window.CVEHARBOR_CATALOG={advisories:[]};
 window.CVEHARBOR_INVENTORY_MATCH={evaluate(assets){
  return {items:assets.filter(x=>x.technology==='PHP').map(x=>({id:'CVE-2026-32101',title:'Test PHP vulnerability',
  asset_id:x.id,technology:'PHP',version:x.version,severity:'critical',known_exploited:false,
- level:'version_review',evidence:'Requires verification',source_url:'https://example.com/cve'})),total:assets.filter(x=>x.technology==='PHP').length,limited:false};
+ level:'version_review',evidence:'Version review required',affected:'PHP before 8.4.27',comparison_detail:'Installed 8.4.26 before 8.4.27',summary:'Test PHP vulnerability',remediation:'Upgrade to 8.4.27',source_label:'Test advisory',source_url:'https://example.com/cve'})),total:assets.filter(x=>x.technology==='PHP').length,limited:false};
 }};
 const seen=[];
 window.fetch=async url=>{
@@ -33,6 +33,7 @@ await new Promise(resolve=>setTimeout(resolve,20));
 assert.equal(doc.querySelector('#customerDashFilter').value,'c1','customer selected using a valid scoped query');
 assert.match(doc.querySelector('#customerReportBody').textContent,/Customer A/);
 assert.match(doc.querySelector('#customerReportBody').textContent,/CVE-2026-32101/);
+assert.match(doc.querySelector('#customerReportBody').textContent,/PHP before 8.4.27/);
 assert.doesNotMatch(doc.querySelector('#customerReportBody').textContent,/Customer B|WEB02/,'other customer inventory never appears in report');
 assert.equal(doc.querySelector('#customerReportPrint').disabled,false);
 const overviewHtml=fs.readFileSync('customer-dashboard/index.html','utf8');
@@ -53,6 +54,8 @@ assert.match(od.getElementById('customerSeverityVisual').textContent,/Critical c
 assert.equal(od.querySelectorAll('.customer-software-card').length,1,'chosen customer only renders its own software');
 od.querySelector('.customer-software-card').click();
 assert.match(od.getElementById('customerDashFindings').textContent,/CVE-2026-32101/);
+assert.equal(od.querySelectorAll('#customerDashFindings details').length,1);
+assert.ok(od.querySelector('#customerDashFindings a[href="https://example.com/cve"]'));
 overviewDom.window.close();
 
 assert.ok(seen.every(x=>x.startsWith('https://api.cveharbor.com/v1/')),'only authenticated account API used for private reads');
