@@ -11,7 +11,7 @@ assert.ok(dashboardHtml.includes('customerDashMetrics')&&dashboardHtml.includes(
 assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('href="/customer-dashboard/"'),'customer dashboard accessible from workspace');
 assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('href="/customer-reports/"'),'customer reports accessible from workspace');
 const html=fs.readFileSync('index.html','utf8');
-assert.ok(html.includes('styles.css?v=signal-sidebar-88'),'shared footer stylesheet cache version updated');
+assert.ok(html.includes('styles.css?v=home-sidebar-89'),'shared footer stylesheet cache version updated');
 assert.ok(fs.readFileSync('styles.css','utf8').includes('width:min(1500px,calc(100% - 32px))'),'compact feed banner width is shared globally');
 // Validate every canonical page is actually emitted by the Pages build.
 const routes={
@@ -734,10 +734,13 @@ assert.ok(html.includes('href="/vulnerabilities/"'),'advisories have a distinct 
 assert.ok(html.includes('href="/lifecycle/"'),'lifecycle has a distinct navigation URL');
 
 assert.ok(fs.readFileSync('public/command-center.js','utf8').includes('command-sidebar'),'command center navigation published');
-for(const route of ['index.html','account/index.html','workspace/index.html','customer-dashboard/index.html','customer-reports/index.html'])assert.ok(fs.readFileSync(route,'utf8').includes('/command-center.js?v=signal-sidebar-88'),'shared navigation loaded on '+route);
+for(const route of ['index.html','account/index.html','workspace/index.html','customer-dashboard/index.html','customer-reports/index.html'])assert.ok(fs.readFileSync(route,'utf8').includes('/command-center.js?v=home-sidebar-89'),'shared navigation loaded on '+route);
 assert.ok(fs.readFileSync('styles.css','utf8').includes('body.command-center-app'),'command center responsive design available');
 
 assert.ok(html.includes('hero-signal-art'),'hero contains animated security signal artwork');
 assert.ok(html.includes('hero-signal-traveller'),'signal animation has moving nodes');
 assert.ok(fs.readFileSync('command-center.js','utf8').includes('command-sidebar-toggle'),'sidebar can expand and collapse');
 assert.ok(fs.readFileSync('styles.css','utf8').includes('prefers-reduced-motion:reduce'),'animation respects reduced motion');
+
+assert.ok(fs.readFileSync('command-center.js','utf8').includes("!body.dataset.page"),'home page receives command center sidebar');
+assert.ok(fs.readFileSync('styles.css','utf8').includes('transform:scale(1.36)'),'sidebar icons enlarge on hover');
