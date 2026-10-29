@@ -2,6 +2,24 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {JSDOM} from 'jsdom';
 
+// Product-specific matching must not inflate a PHP inventory with unrelated software.
+const matchingDom=new JSDOM('<!doctype html><html></html>',{runScripts:'outside-only'});
+matchingDom.window.eval(fs.readFileSync('inventory-matching.js','utf8'));
+const match=matchingDom.window.CVEHARBOR_INVENTORY_MATCH;
+const phpAsset={id:'php',technology:'PHP',version:'8.3.36'};
+const coreAsset={id:'wp',technology:'WordPress',version:'6.6.2'};
+const pluginAsset={id:'plugin',technology:'WordPress Plugin: WP File Manager',version:'8.0.1'};
+const finding=(id,category,description)=>({id,categories:[category],title:description,summary:description,severity:'high'});
+assert.equal(match.candidate(phpAsset,finding('CVE-2026-11111','PHP','Linux kernel skb vulnerability')),null);
+assert.equal(match.candidate(phpAsset,finding('CVE-2026-11112','PHP','ASP.NET Core Brotli decoder vulnerability')),null);
+assert.equal(match.candidate(phpAsset,finding('CVE-2026-11113','PHP','DedeCMS PHP code injection')),null);
+assert.equal(match.candidate(phpAsset,finding('CVE-2026-11114','PHP','WordPress plugin WP File Manager vulnerability')),null);
+assert.ok(match.candidate(phpAsset,{...finding('CVE-2026-11115','PHP','PHP runtime overflow'),affected:'PHP before 8.3.37'}));
+assert.equal(match.candidate(coreAsset,finding('CVE-2026-11116','WordPress / Plugins','WP File Manager plugin vulnerability')),null);
+assert.ok(match.candidate(pluginAsset,finding('CVE-2026-11117','WordPress / Plugins','WP File Manager plugin vulnerability')));
+assert.equal(match.candidate(pluginAsset,finding('CVE-2026-11118','WordPress / Plugins','Gravity Forms plugin vulnerability')),null);
+matchingDom.window.close();
+
 const html=fs.readFileSync('customer-reports/index.html','utf8');
 const dom=new JSDOM(html,{url:'https://cveharbor.com/customer-reports/?customer=c1',runScripts:'outside-only'});
 const {window}=dom,doc=window.document;
