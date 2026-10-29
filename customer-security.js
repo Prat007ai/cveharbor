@@ -4,6 +4,22 @@ const $=id=>document.getElementById(id);
 if(!$('customerDashStatus'))return;
 const reporting=!!$('customerReportBody');
 let inventory={customers:[],environments:[],assets:[]},records=[];
+let findingStatusReady=false,findingStatuses=new Map(),findingStatusFilter='Unresolved';
+const statusOptions=['Needs Review','Fix in Progress','Fixed/Patched','Not Applicable','Accepted Risk'];
+const statusKey=i=>i.asset_id+'|'+i.id;
+const statusFor=i=>findingStatuses.get(statusKey(i))||'Needs Review';
+const closedStatus=s=>['Fixed/Patched','Not Applicable','Accepted Risk'].includes(s);
+async function saveFindingStatus(i,status,select){
+ select.disabled=true;
+ try{
+  const r=await fetch('https://api.cveharbor.com/v1/finding-statuses/'+encodeURIComponent(i.asset_id)+'/'+encodeURIComponent(i.id),{
+   method:'PUT',credentials:'include',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({status})});
+  if(!r.ok)throw Error((await r.json().catch(()=>({}))).error||'Unable to save status');
+  findingStatuses.set(statusKey(i),status);
+  drawReport();
+ }catch(error){select.value=statusFor(i);window.alert('Could not save vulnerability status: '+error.message)}finally{select.disabled=false}
+}
+
 const text=(tag,value,cls)=>{const el=document.createElement(tag);el.textContent=String(value??'');if(cls)el.className=cls;return el};
 const api=async path=>{
  const r=await fetch('https://api.cveharbor.com/v1/'+path,{credentials:'include',headers:{Accept:'application/json'}});
@@ -209,6 +225,19 @@ function shortSummary(i){
  const space=lead.lastIndexOf(' ');
  return lead.slice(0,space>90?space:205)+'…';
 }
+function findingStatusControls(issues){
+ const wrap=text('div','','customer-finding-filters');
+ const counts={All:issues.length,Unresolved:issues.filter(i=>!closedStatus(statusFor(i))).length,
+  'Fixed/Patched':issues.filter(i=>statusFor(i)==='Fixed/Patched').length,
+  'Not Applicable':issues.filter(i=>statusFor(i)==='Not Applicable').length,
+  'Accepted Risk':issues.filter(i=>statusFor(i)==='Accepted Risk').length};
+ for(const [label,count] of Object.entries(counts)){
+  const b=text('button',label+' ('+count+')','customer-finding-filter');b.type='button';
+  b.setAttribute('aria-pressed',String(findingStatusFilter===label));
+  b.addEventListener('click',()=>{findingStatusFilter=label;drawReport()});wrap.append(b);
+ }
+ return wrap;
+}
 function drawReport(){
  const id=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const root=$('customerReportBody');root.replaceChildren();
@@ -229,13 +258,27 @@ function drawReport(){
  stats.assets.map(a=>[stats.environments.find(e=>e.id===a.environment_id)?.name||'',a.name,a.technology,a.version||'Unknown'])));
  root.append(reportSection('Vulnerabilities Requiring Verification'));
  root.append(text('p','Publication dates and descriptions are shown only when supplied by the indexed advisory. Matches are candidates requiring product-specific verification.','ops-note'));
- const compact=stats.issues.slice(0,250);
- root.append(table(['CVE','Published','Severity','Software / Asset','Vulnerability summary','Assessment'],
+ root.append(text('p',findingStatusReady?'Status changes are saved privately to your account for each asset and CVE.':'Vulnerability status tracking is unavailable until its D1 migration is applied. Existing findings remain visible.','ops-note'));
+ root.append(findingStatusControls(stats.issues));
+ const filtered=stats.issues.filter(i=>findingStatusFilter==='All'||findingStatusFilter==='Unresolved'&&!closedStatus(statusFor(i))||statusFor(i)===findingStatusFilter);
+ const compact=filtered.slice(0,250);
+ const findingsTable=table(['CVE','Published','Severity','Software / Asset','Vulnerability summary','Assessment','Vulnerability Fix Status'],
   compact.map(i=>[
    i.id,i.published||'Not available',i.severity,
    i.technology+' '+(i.version||'Unknown')+' · '+(i.asset?.name||'Asset'),
-   shortSummary(i),i.level==='version_review'?'Version range candidate':'Category match · Unverified'
-  ])));
+   shortSummary(i),i.level==='version_review'?'Version range candidate':'Category match · Unverified',''
+  ]));
+ findingsTable.classList.add('customer-vulnerability-table');
+ for(const [index,i] of compact.entries()){
+  const cell=findingsTable.tBodies[0].rows[index].cells[6];
+  const select=text('select','','customer-finding-status-select');
+  select.setAttribute('aria-label','Fix status for '+i.id+' on '+(i.asset?.name||'asset'));
+  for(const optionValue of statusOptions)option(select,optionValue,optionValue);
+  select.value=statusFor(i);select.disabled=!findingStatusReady;
+  select.addEventListener('change',()=>void saveFindingStatus(i,select.value,select));
+  cell.append(select);
+ }
+ root.append(findingsTable);
  root.append(reportSection('Advisory Evidence and References'));
  for(const i of compact){
   const block=text('section','','customer-report-finding');
@@ -248,7 +291,7 @@ function drawReport(){
   if(i.source_url)block.append(link(i.source_url,i.source_label||'Original advisory'));
   root.append(block);
  }
- if(stats.total>250||stats.limited)root.append(text('p','The findings list is limited. Narrow the report by environment for a more complete review.','ops-note'));
+ if(filtered.length>250||stats.limited)root.append(text('p','The findings list is limited. Narrow the report by environment for a more complete review.','ops-note'));
  if(!stats.total)root.append(text('p','No matches in the available index. This does not establish absence of vulnerabilities.','ops-note'));
  root.append(reportSection('Recommended Follow-up'),
  text('p','Validate product identity, installed build, affected configurations and the original vendor advisory. Assign verified findings for remediation and retain evidence of patch verification.','ops-note'),
@@ -257,9 +300,9 @@ function drawReport(){
 function csvReport(){
  const id=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const customer=inventory.customers.find(c=>c.id===id);if(!customer)return;
- const rows=[['Customer','Environment','Asset','Technology','Installed version','CVE','Severity','CISA KEV','Match classification','Published','Summary','Affected versions','Version comparison','Remediation','Source']];
+ const rows=[['Customer','Environment','Asset','Technology','Installed version','CVE','Severity','CISA KEV','Match classification','Published','Summary','Vulnerability Fix Status','Affected versions','Version comparison','Remediation','Source']];
  for(const f of compute(id,env).issues)
-  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.published||'Not available',shortSummary(f),f.affected||'',f.comparison_detail||'',f.remediation||'',f.source_url]);
+  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.published||'Not available',shortSummary(f),statusFor(f),f.affected||'',f.comparison_detail||'',f.remediation||'',f.source_url]);
  const csv=rows.map(r=>r.map(v=>{
   let value=String(v??'');
   if(/^[=+\-@\t\r]/.test(value))value="'"+value;
@@ -277,6 +320,11 @@ async function init(){
   if(!flags.ready){$('customerDashStatus').textContent='Customer inventory database migration is pending. No private records can be loaded yet.';return}
   inventory=await api('inventory');
   records=advisories();
+  if(reporting){
+   const saved=await api('finding-statuses').catch(()=>({ready:false,statuses:[]}));
+   findingStatusReady=!!saved.ready;
+   findingStatuses=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.status]));
+  }
   $('customerDashAccess').hidden=false;
   filters();
   const requested=new URLSearchParams(location.search).get('customer');

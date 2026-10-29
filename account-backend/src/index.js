@@ -3,6 +3,7 @@ import { saveOptin, loadAlertSubscription, sendUserSample, dispatchDueDigests, u
 import { handlePublicCveLookup } from './cve-lookup.js';
 import { handler as lifecycleHandler, LifecycleError, dispatchLifecycle } from './lifecycle.js';
 import { inventoryRoute, InventoryError } from './inventory.js';
+import { findingStatusRoute, FindingStatusError } from './finding-status.js';
 import { RemediationError, capabilities, listRemediations, upsertRemediation, removeRemediation, importLegacy, assignRemediation } from './remediation.js';
 // The sender address must be verified in SMTP2GO. Never place credentials in GitHub.
 const ALLOWED_ORIGIN='https://cveharbor.com';
@@ -64,6 +65,7 @@ export default {async fetch(req,env,ctx){
   if(!user)return response({error:'Sign in required'},401);
   if(path==='/v1/auth/logout'&&req.method==='POST'){await env.DB.prepare('DELETE FROM sessions WHERE id=?').bind(user.sid).run();return response({authenticated:false},200,{'Set-Cookie':setCookie('',0)})}
   if(path.startsWith('/v1/lifecycle'))return await lifecycleHandler(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
+  if(path.startsWith('/v1/finding-statuses'))return await findingStatusRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/inventory'))return await inventoryRoute(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
   if(path==='/v1/stack'&&req.method==='GET'){const rows=await env.DB.prepare('SELECT technology,product_version FROM user_stack WHERE user_id=? ORDER BY technology').bind(user.id).all();return response({stack:rows.results})}
   if(path==='/v1/stack'&&req.method==='PUT'){
@@ -113,7 +115,7 @@ export default {async fetch(req,env,ctx){
    await env.DB.prepare('DELETE FROM users WHERE id=?').bind(user.id).run();return response({deleted:true},200,{'Set-Cookie':setCookie('',0)});
   }
   return response({error:'Not found'},404);
- }catch(error){if(error instanceof RemediationError||error instanceof InventoryError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
+ }catch(error){if(error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
   if(env.ALERT_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchDueDigests(env));
