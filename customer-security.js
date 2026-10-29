@@ -475,14 +475,15 @@ function drawReport(){
   input.type='text';input.maxLength=64;input.placeholder='Ticket number';
   input.className='customer-ticket-input';
   input.setAttribute('aria-label','DevOps ticket number for '+i.id+' on '+(i.asset?.name||'asset'));
-  input.value=ticketFor(i);
-  const locked=statusFor(i)==='Fixed/Patched'&&!!input.value;
-  input.disabled=!ticketReady||locked;
-  if(locked)input.title='Ticket reference locked after the vulnerability was fixed';
-  const save=text('button',locked?'Locked':input.value?'Update':'Save','customer-ticket-save');
-  save.type='button';save.disabled=!ticketReady||locked;
+  const existing=ticketFor(i);
+  const history=text('div','','customer-ticket-history');
+  for(const value of existing)history.append(text('span',value,'customer-ticket-reference'));
+  input.value='';
+  input.disabled=!ticketAppendReady;
+  const save=text('button','Add ticket','customer-ticket-save');
+  save.type='button';save.disabled=!ticketAppendReady;
   save.addEventListener('click',()=>void saveFindingTicket(i,input,save));
-  ticketWrap.append(input,save);ticketCell.append(ticketWrap);
+  ticketWrap.append(history,input,save);ticketCell.append(ticketWrap);
  }
  root.append(findingsTable);
  root.append(reportSection('Advisory Evidence and References'));
@@ -509,7 +510,7 @@ function csvReport(){
  const customer=inventory.customers.find(c=>c.id===id);if(!customer)return;
  const rows=[['Customer','Environment','Asset','Technology','Installed version','CVE','Severity','CISA KEV','Match classification','Published','Summary','Vulnerability Fix Status','DevOps Ticket #','Affected versions','Version comparison','Remediation','Source']];
  for(const f of compute(id,env).issues)
-  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.published||'Not available',shortSummary(f),statusFor(f),ticketFor(f),f.affected||'',f.comparison_detail||'',f.remediation||'',f.source_url]);
+  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.published||'Not available',shortSummary(f),statusFor(f),ticketFor(f).join(' | '),f.affected||'',f.comparison_detail||'',f.remediation||'',f.source_url]);
  const csv=rows.map(r=>r.map(v=>{
   let value=String(v??'');
   if(/^[=+\-@\t\r]/.test(value))value="'"+value;
