@@ -112,8 +112,28 @@ workspaceDocument.getElementById('securityLookup').value='CVE-2026';
 workspaceDocument.getElementById('securityLookup').dispatchEvent(new workspaceWindow.Event('input'));
 assert.ok(workspaceDocument.querySelectorAll('#securityLookupResults .workspace-result').length>0,'lookup results visible');
 assert.ok(html.includes('id="inventoryWorkspace"'),'customer inventory workspace exists');
+assert.ok(html.includes('id="inventoryMatching"'),'customer vulnerability matching section exists');
+const matcherDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
+matcherDom.window.eval(fs.readFileSync('inventory-matching.js','utf8'));
+const engine=matcherDom.window.CVEHARBOR_INVENTORY_MATCH;
+const asset={id:'asset-1',technology:'PHP',version:'8.4.26'};
+const advisory={id:'CVE-2026-98765',title:'PHP affected version test',categories:['PHP'],
+ severity:'critical',affected:'PHP before 8.4.27',sources:[{url:'https://example.com/security'}]};
+assert.equal(engine.candidate(asset,advisory).level,'version_review',
+ 'numeric version within explicit PHP range is flagged for confirmation');
+assert.equal(engine.candidate({...asset,version:'8.4.27'},advisory),null,
+ 'exactly patched version is excluded only for a clear numeric before range');
+assert.equal(engine.candidate({...asset,version:'8.4.26'}, {...advisory,categories:['Fortinet']}),null,
+ 'unrelated technology category does not become a customer match');
+assert.equal(engine.candidate({...asset,version:'unknown'},advisory).level,'category',
+ 'unknown installed version remains an investigation lead');
+assert.equal(engine.candidate(asset,{...advisory,affected:'PHP before 8.4.27 only when optional module enabled'}).level,'category',
+ 'configuration-dependent advisories never claim verified version exposure');
+assert.equal(engine.evaluate([asset],[advisory,advisory]).total,1,
+ 'duplicate CVE items are not counted twice for the same asset');
+matcherDom.window.close();
 assert.ok(html.includes('id="inventoryCustomerName"')&&html.includes('id="inventoryEnvironmentName"')&&html.includes('id="inventoryVersion"'),'customer environment and software version input fields exist');
-assert.ok(html.includes('inventory.js?v=customer-inventory-1'),'public build references account inventory client');
+assert.ok(html.includes('inventory.js?v=customer-matching-2'),'public build references account inventory client');
 const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
 assert.match(inventoryDom.window.document.getElementById('inventoryMessage').textContent,/Sign in/,'anonymous inventory is not displayed');

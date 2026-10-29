@@ -31,6 +31,51 @@ function selects(){
  if(data.customers.some(x=>x.id===previousCustomer))customers.value=previousCustomer;
  if(data.environments.some(x=>x.id===previousEnv))envs.value=previousEnv;
 }
+function renderMatches(){
+ const panel=$('inventoryMatchResults');if(!panel)return;
+ panel.replaceChildren();
+ const engine=window.CVEHARBOR_INVENTORY_MATCH;
+ const feed=window.CVEHARBOR_DATA||{},catalog=window.CVEHARBOR_CATALOG||{};
+ if(!signedIn||!ready){panel.append(make('p','ops-note','Sign in and connect D1 to review customer-specific advisory matches.'));return;}
+ if(!engine){panel.append(make('p','ops-note','Matching module unavailable.'));return;}
+ const chosen=$('inventoryMatchCustomer').value;
+ const environments=new Set(data.environments.filter(e=>!chosen||e.customer_id===chosen).map(e=>e.id));
+ const assets=data.assets.filter(a=>environments.has(a.environment_id));
+ const advisories=[...(feed.advisories||[]),...(catalog.advisories||[])];
+ const matches=engine.evaluate(assets,advisories,150);
+ $('inventoryMatchCount').textContent=matches.total+' potential matches';
+ if(!matches.total){panel.append(make('p','ops-note','No category matches found in the current limited index. This does not establish that customer assets are secure.'));return;}
+ for(const item of matches.items){
+  const asset=assets.find(a=>a.id===item.asset_id);
+  const environment=data.environments.find(e=>e.id===asset?.environment_id);
+  const customer=data.customers.find(c=>c.id===environment?.customer_id);
+  const card=make('article','ops-result inventory-match-card');
+  const top=make('div','ops-result-top');
+  top.append(make('strong','',item.id+' · '+item.severity.toUpperCase()));
+  if(item.known_exploited)top.append(make('span','ops-tag','CISA KEV'));
+  card.append(top,make('p','',item.title));
+  card.append(make('p','', (customer?.name||'Customer')+' / '+(environment?.name||'Environment')+' / '+(asset?.name||'Asset')+
+   ' · '+item.technology+' '+(item.version||'Version unknown')));
+  card.append(make('p','ops-note',item.evidence));
+  const actions=make('div','inventory-actions');
+  const assign=make('button','ops-download','Assign for review');assign.type='button';
+  assign.addEventListener('click',()=>window.dispatchEvent(new CustomEvent('cveharbor:assign-remediation',{detail:{id:item.id}})));
+  actions.append(assign);
+  if(item.source_url){
+   const a=make('a','ops-download','Original advisory');a.href=item.source_url;
+   a.target='_blank';a.rel='noopener noreferrer';actions.append(a);
+  }
+  card.append(actions);panel.append(card);
+ }
+ if(matches.limited)panel.append(make('p','ops-note','Showing the first 150 prioritized matches. Narrow to a customer to review additional entries.'));
+}
+function refreshMatchCustomers(){
+ const selector=$('inventoryMatchCustomer'),current=selector.value;
+ selector.replaceChildren();option(selector,'','All customers');
+ for(const customer of data.customers)option(selector,customer.id,customer.name);
+ if(data.customers.some(c=>c.id===current))selector.value=current;
+}
+$('inventoryMatchCustomer').addEventListener('change',renderMatches);
 function render(){
  selects();
  $('inventoryCustomerCount').textContent=data.customers.length;
@@ -80,6 +125,7 @@ function render(){
   root.append(card);
  }
  if(!data.customers.length)root.append(make('p','ops-note','Start by adding a customer, then create an environment and register its installed technologies.'));
+ refreshMatchCustomers();renderMatches();
 }
 async function load(){
  data=await call();render();
