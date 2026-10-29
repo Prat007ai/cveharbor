@@ -394,9 +394,9 @@ function drawReport(){
     const release=check?.release;
     const validRelease=release?.installed_version===a.version&&release.release_status==='verified';
     return [a.technology.slice('WordPress Plugin: '.length),a.version||'Unknown',
-     validRelease?release.latest_version:'Not verified',validRelease?release.update_status:'Unknown',
+     validRelease?release.latest_version:'Not verified',validRelease?release.update_status:(release?.reason?'Unknown: '+release.reason.slice(0,90):'Unknown'),
      check?.checked_at?new Date(check.checked_at*1000).toISOString().replace('T',' ').slice(0,16)+' UTC':'Not checked',
-     pluginChecks[a.id]==='checked'?'Checked':pluginChecks[a.id]==='pending'?'Pending':'Unverified or unavailable',
+     pluginChecks[a.id]==='checked'?'Checked':pluginChecks[a.id]==='pending'?'Pending':((check?.status||'Unavailable')+': '+(check?.reason||'Source lookup not confirmed').slice(0,110)),
      check?.status==='checked'?String(check.findings?.length||0):'Unknown'];
    }));
   monitor.classList.add('customer-plugin-monitor-table');
