@@ -50,6 +50,94 @@ function environments(){
 }
 function metric(label,value){const box=text('div','','customer-dash-metric');box.append(text('strong',value),text('span',label));return box}
 function link(url,label){const a=text('a',label,'ops-link');a.href=url;a.target='_blank';a.rel='noopener noreferrer';return a}
+const normalize=x=>String(x||'').trim().toLowerCase();
+function lifecycleFor(tech,version){
+ const aliases={'sql server':'mssqlserver','microsoft sql server':'mssqlserver',
+ 'windows server':'windows-server','windows':'windows','php':'php','wordpress':'wordpress',
+ '.net':'dotnet','mariadb':'mariadb','mysql':'mysql','ubuntu':'ubuntu','debian':'debian','sitefinity':'sitefinity'};
+ const slug=aliases[normalize(tech)]||normalize(tech).replace(/\s+/g,'-');
+ const rows=(window.CVEHARBOR_LIFECYCLE?.cycles||[]).filter(x=>x.slug===slug);
+ if(!rows.length)return {text:'Support status unknown',state:'unknown'};
+ const cycle=rows.find(x=>version&&String(version).startsWith(String(x.cycle)))||null;
+ if(!cycle)return {text:'Release cycle unverified',state:'unknown'};
+ const date=cycle.eol_date;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date||'')))return {text:'Support deadline not published',state:'unknown'};
+ const remaining=Math.floor((Date.parse(date+'T00:00:00Z')-Date.now())/86400000);
+ return {text:remaining<0?'Published support deadline passed':remaining<=90?'Support ends within 90 days':'Published support date '+date,
+  state:remaining<0?'expired':remaining<=90?'warning':'supported'};
+}
+function visualize(groups,all){
+ const attention=$('customerAttentionVisual'),severity=$('customerSeverityVisual'),software=$('customerSoftwareVisual');
+ if(!attention||!severity||!software)return;
+ attention.replaceChildren();severity.replaceChildren();software.replaceChildren();
+ const items=groups.flatMap(x=>x.stats.issues.map(i=>({...i,customer:x.customer})));
+ const critical=items.filter(i=>normalize(i.severity)==='critical').length;
+ const high=items.filter(i=>normalize(i.severity)==='high').length;
+ const other=items.length-critical-high;
+ const sev=[['Critical candidates',critical,'critical'],['High candidates',high,'high'],['Other candidates',other,'other']];
+ const total=items.length;
+ const center=text('div','','customer-donut-center');
+ center.append(text('strong',total),text('span','Potential matches'));
+ const circle=text('div','','customer-donut');
+ const angle=total?Math.round(100*critical/total):0;
+ const highPercent=total?Math.round(100*high/total):0;
+ circle.style.background='conic-gradient(#ed6b78 0% '+angle+'%, #eebc66 '+angle+'% '+(angle+highPercent)+'%, #5d9baf '+(angle+highPercent)+'% 100%)';
+ circle.append(center);severity.append(circle);
+ for(const [label,count,kind] of sev){
+  const legend=text('div','','customer-chart-legend');
+  legend.append(text('span',label),text('strong',count));legend.dataset.kind=kind;severity.append(legend);
+ }
+ let customerCount=groups.filter(g=>g.stats.total>0).length;
+ const note=total?customerCount+' customer'+(customerCount===1?'':'s')+' with potential matches.':'No matches in this limited advisory index.';
+ attention.append(text('strong',String(customerCount)+' / '+all.length,'customer-attention-number'),
+  text('p',note,'ops-note'));
+ const scale=text('div','','customer-attention-track');
+ const fill=text('div','','customer-attention-fill');
+ fill.style.width=(all.length?Math.round(100*customerCount/all.length):0)+'%';
+ scale.append(fill);attention.append(scale);
+ attention.append(text('p','Unmatched or unknown product versions are not evidence of safety.','ops-note'));
+ const bySoftware=new Map();
+ for(const g of groups)for(const asset of g.stats.assets){
+  const key=g.customer.id+'|'+asset.environment_id+'|'+asset.name+'|'+asset.technology;
+  const findings=g.stats.issues.filter(i=>i.asset_id===asset.id);
+  bySoftware.set(key,{customer:g.customer,asset,findings,environment:g.stats.environments.find(e=>e.id===asset.environment_id)});
+ }
+ for(const item of [...bySoftware.values()].slice(0,100)){
+  const {customer,asset,findings,environment}=item;
+  const card=text('button','','customer-software-card');
+  card.type='button';
+  card.append(text('strong',asset.technology),text('span',customer.name+' · '+(environment?.name||'Environment')+' · '+asset.name),
+   text('span','Installed '+(asset.version||'version unknown')),
+   text('span',findings.length+' potential CVE '+(findings.length===1?'match':'matches'),'customer-software-count'));
+  const support=lifecycleFor(asset.technology,asset.version);
+  const badge=text('span',support.text,'customer-support-indicator');badge.dataset.state=support.state;card.append(badge);
+  const last=(window.CVEHARBOR_PATCH_NOTES?.releases||[]).find(r=>normalize(r.slug)===normalize(asset.technology).replace(/\s+/g,'-'));
+  if(last)card.append(text('span','Publisher release: '+last.version+' · Review notes'));
+  card.addEventListener('click',()=>{
+   $('customerDashFilter').value=customer.id;environments();
+   $('customerDashEnvironment').value=environment?.id||'';
+   drawDashboard();
+   showFindings(customer.id,asset.id);
+  });
+  software.append(card);
+ }
+ if(!bySoftware.size)software.append(text('p','No software inventory recorded yet.','ops-note'));
+}
+function showFindings(customerId,assetId){
+ const box=$('customerDashFindings');if(!box)return;
+ box.replaceChildren();
+ const customer=inventory.customers.find(c=>c.id===customerId);
+ for(const i of compute(customerId,$('customerDashEnvironment').value).issues.filter(x=>x.asset_id===assetId)){
+  const row=text('article','','ops-result');
+  row.append(text('strong',i.id+' · '+i.severity.toUpperCase()),
+   text('p',(customer?.name||'Customer')+' / '+(i.environment?.name||'')+' / '+(i.asset?.name||'')),
+   text('p',i.evidence,'ops-note'));
+  if(i.source_url)row.append(link(i.source_url,'Original advisory'));
+  box.append(row);
+ }
+ if(!box.children.length)box.append(text('p','No candidate advisories for this entry in the current index.','ops-note'));
+ box.scrollIntoView?.({behavior:'smooth',block:'start'});
+}
 function drawDashboard(){
  const chosen=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const customers=inventory.customers.filter(c=>!chosen||c.id===chosen);
@@ -62,6 +150,7 @@ function drawDashboard(){
   metric('Customers',all.length),metric('Environments',totals.environments),
   metric('Technology entries',totals.assets),metric('Potential matches',totals.issues),
   metric('Critical candidates',totals.critical),metric('KEV candidates',totals.kev));
+ visualize(all,customers);
  const root=$('customerDashRows');root.replaceChildren();
  for(const {customer,stats} of all){
   const item=text('article','','ops-result');const row=text('div','','ops-result-top');
@@ -69,7 +158,9 @@ function drawDashboard(){
   item.append(row);
   const a=text('a','Generate customer report','ops-link');
   a.href='/customer-reports/?customer='+encodeURIComponent(customer.id);
-  item.append(a);root.append(item);
+  const overview=text('button','Open customer dashboard','ops-download');overview.type='button';
+  overview.addEventListener('click',()=>{$('customerDashFilter').value=customer.id;environments();drawDashboard()});
+  item.append(overview,a);root.append(item);
  }
  if(!all.length)root.append(text('p','No customer records yet. Create customers in My Environments.','ops-note'));
  const findings=$('customerDashFindings');findings.replaceChildren();
@@ -146,7 +237,7 @@ async function init(){
   $('customerDashAccess').hidden=false;
   filters();
   const requested=new URLSearchParams(location.search).get('customer');
-  if(reporting&&inventory.customers.some(c=>c.id===requested)){
+  if(inventory.customers.some(c=>c.id===requested)){
    $('customerDashFilter').value=requested;environments();
   }
   const draw=reporting?drawReport:drawDashboard;draw();

@@ -5,9 +5,14 @@
 <div id="customerDashAccess" hidden>
 <div class="customer-dash-toolbar"><label>Customer<select id="customerDashFilter"><option value="">All customers</option></select></label><label>Environment<select id="customerDashEnvironment"><option value="">All environments</option></select></label><a href="/customer-reports/" class="ops-download">Customer Security Reports</a></div>
 <div id="customerDashMetrics" class="customer-dash-metrics"></div>
+<div class="customer-visual-layout">
+ <article class="data-panel customer-visual-panel"><h2>Customer attention overview</h2><p class="ops-note">Prioritization of potential findings, not a confirmed security risk rating.</p><div id="customerAttentionVisual" class="customer-attention-visual"></div></article>
+ <article class="data-panel customer-visual-panel"><h2>Findings by severity</h2><div id="customerSeverityVisual" class="customer-severity-visual"></div><p class="ops-note">Counts represent matching asset and CVE pairs and may include the same CVE on multiple assets.</p></article>
+</div>
+<article class="data-panel customer-visual-panel"><div class="ops-result-top"><h2>Installed software and security attention</h2><a href="/environments/" class="ops-link">Edit inventory</a></div><p class="ops-note">Select a technology to show its matching advisories below. Product support or patch status is only shown when the public source provides relevant release data.</p><div id="customerSoftwareVisual" class="customer-software-grid"></div></article>
 <div class="data-panel ops-panel"><h2>Customer Security Overview</h2><p class="ops-note">Potential CVEs are technology category matches or preliminary version matches, not independently confirmed vulnerabilities.</p><div id="customerDashRows" class="ops-results"></div></div>
 <div class="data-panel ops-panel"><h2>Potential Vulnerabilities for Review</h2><p id="customerDashCoverage" class="ops-note"></p><div id="customerDashFindings" class="ops-results"></div></div>
 </div>
 <div id="customerDashLogin" hidden><p>Please sign in to access your private customer records.</p><a href="/account/?mode=login" class="ops-download">Log In</a></div>
 </main>
-<script src="/data.js"></script><script src="/catalog.js"></script><script src="/inventory-matching.js?v=1"></script><script src="/customer-security.js?v=1"></script></body></html>
+<script src="/data.js"></script><script src="/catalog.js"></script><script src="/inventory-matching.js?v=1"></script><script src="/lifecycle.js"></script><script src="/patch-notes.js"></script><script src="/customer-security.js?v=visual-2"></script></body></html>
