@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-29",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4263,
+  "candidate_records": 4291,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -540,8 +540,8 @@
       "title": "Malware in dsh-redteam-mode",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-29",
       "updated": "2026-10-29",
@@ -562,6 +562,819 @@
       "first_seen_at": "2026-10-29T05:55:47Z",
       "source_updated_at": "2026-10-29T05:23:36Z",
       "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2024-3586",
+      "title": "The LetterPress WordPress plugin before 2.4.0 does not sanitise and escape some of its settings, which could allow high privilege users such as admin to perform Stored Cross-S",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The LetterPress WordPress plugin before 2.4.0 does not sanitise and escape some of its settings, which could allow high privilege users such as admin to perform Stored Cross-Site Scripting attacks even when the unfiltered_html capability is disallowed (for example in multisite setup)",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-3586"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:16.020",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-103693",
+      "title": "The Frontend Dashboard WordPress plugin before 3.0.5, ProfileGrid WordPress plugin before 6.0.0.5 do not prevent an unauthenticated user from storing a serialized PHP object i",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins",
+        "PHP"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Frontend Dashboard WordPress plugin before 3.0.5, ProfileGrid WordPress plugin before 6.0.0.5 do not prevent an unauthenticated user from storing a serialized PHP object in user metadata that is deserialized when a public profile is viewed, allowing PHP object injection that can lead to arbitrary file write and potential remote code execution.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-103693"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:17.197",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-105258",
+      "title": "The Appointment Booking Plugin WordPress plugin before 5.7.6 does not escape several booking-form step content settings before rendering them on the public booking form, allow",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Appointment Booking Plugin WordPress plugin before 5.7.6 does not escape several booking-form step content settings before rendering them on the public booking form, allowing high-privilege users such as administrators to inject JavaScript that executes in the browser of any visitor who loads the form; on multisite, where administrators do not hold the unfiltered_html capability, this crosses a privilege boundary to unauthenticated visitors.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-105258"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:17.317",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-108685",
+      "title": "The WP Post Author WordPress plugin before 4.2.0 does not check that the account was created before updating its profile during front-end registration, allowing unauthenticate",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The WP Post Author WordPress plugin before 4.2.0 does not check that the account was created before updating its profile during front-end registration, allowing unauthenticated users to overwrite the display name, nickname and website of the first user account, which is normally the administrator, when a registration form declares one of those fields.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108685"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:17.443",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-108686",
+      "title": "The WP Post Author WordPress plugin before 4.2.0 does not restrict the integration settings it returns to visitors, allowing unauthenticated users to read the reCAPTCHA secret",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The WP Post Author WordPress plugin before 4.2.0 does not restrict the integration settings it returns to visitors, allowing unauthenticated users to read the reCAPTCHA secret key when one has been saved.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108686"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:17.583",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-108763",
+      "title": "The Wallet System for WooCommerce WordPress plugin before 2.8.2 does not restrict its KYC document submission handler to the current user's own account, taking the target user",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Wallet System for WooCommerce WordPress plugin before 2.8.2 does not restrict its KYC document submission handler to the current user's own account, taking the target user ID from a client-supplied request field with no ownership or capability check, allowing authenticated users with minimal privileges such as Subscriber or Customer to overwrite the KYC documents and verification status of any other user, including an administrator.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108763"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:17.697",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-110030",
+      "title": "The Hide Price Until Login WordPress plugin before 1.1.2 does not restrict a guest-registration handler and does not honour the site's user-registration setting, allowing anyo",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Hide Price Until Login WordPress plugin before 1.1.2 does not restrict a guest-registration handler and does not honour the site's user-registration setting, allowing anyone to create a WordPress account and obtain a logged-in session even when registration is disabled.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110030"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:18.167",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-110504",
+      "title": "The Enable SVG, WebP, and ICO Upload WordPress plugin before 1.1.6 does not sanitize uploaded SVG files whose content is not detected as SVG, while still storing and serving t",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Enable SVG, WebP, and ICO Upload WordPress plugin before 1.1.6 does not sanitize uploaded SVG files whose content is not detected as SVG, while still storing and serving them as SVG images, which could allow users with the author role and above to perform Stored Cross-Site Scripting attacks.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110504"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:18.283",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-110505",
+      "title": "The Enable SVG, WebP, and ICO Upload WordPress plugin before 1.1.6 does not prevent animation elements in uploaded SVG files from changing a link's target to a javascript: URI",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Enable SVG, WebP, and ICO Upload WordPress plugin before 1.1.6 does not prevent animation elements in uploaded SVG files from changing a link's target to a javascript: URI, which could allow users with the author role and above to bypass its SVG sanitization and perform Stored Cross-Site Scripting attacks that execute in WebKit-based browsers such as Safari.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110505"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:18.397",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-110983",
+      "title": "The WP Photo Album Plus WordPress plugin before 9.3.04.004 does not verify the origin or a security token for one of its comment-management requests, allowing attackers to del",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The WP Photo Album Plus WordPress plugin before 9.3.04.004 does not verify the origin or a security token for one of its comment-management requests, allowing attackers to delete photo comments by tricking a logged-in user who holds comment-moderation rights into loading a crafted page.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110983"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:18.513",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-111739",
+      "title": "The Two Factor Authentication WordPress plugin before 1.17.0, All-In-One Security (AIOS) WordPress plugin before 5.5.0 do not bind the account whose two-factor code is verifie",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Two Factor Authentication WordPress plugin before 1.17.0, All-In-One Security (AIOS) WordPress plugin before 5.5.0 do not bind the account whose two-factor code is verified to the account being authenticated, allowing an attacker who knows a victim's password and holds their own two-factor-enabled account to satisfy the victim's second-factor check with their own code and obtain the victim's session.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111739"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:18.627",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-113616",
+      "title": "The LogixFast Auth WordPress plugin before 1.0.4 does not deliver its password-reset one-time code to the resolved account's own email address, mailing it to the address suppl",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The LogixFast Auth WordPress plugin before 1.0.4 does not deliver its password-reset one-time code to the resolved account's own email address, mailing it to the address supplied in the request instead, allowing unauthenticated attackers to reset any user's password, including an administrator's, and take over the account.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-113616"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:18.740",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-113617",
+      "title": "The Automated Import Products to Cart WordPress plugin before 1.0.4 does not sanitize a user-supplied file path before using it to read and delete files, allowing users with m",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Automated Import Products to Cart WordPress plugin before 1.0.4 does not sanitize a user-supplied file path before using it to read and delete files, allowing users with minimal permissions, such as subscribers, to read arbitrary files (including ones containing the database credentials) and delete arbitrary files on the server.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-113617"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:18.857",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-114270",
+      "title": "The GeoDirectory WordPress plugin before 2.8.197 does not honour post password protection when rendering a listing, allowing unauthenticated users to disclose the content and ",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The GeoDirectory WordPress plugin before 2.8.197 does not honour post password protection when rendering a listing, allowing unauthenticated users to disclose the content and custom fields of published listings that are protected by a post password.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-114270"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:18.980",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-115245",
+      "title": "The Chat AI with Dispatcher WordPress plugin before 2.4 does not properly validate uploaded files, relying only on a spoofable client-supplied content type, allowing unauthent",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Chat AI with Dispatcher WordPress plugin before 2.4 does not properly validate uploaded files, relying only on a spoofable client-supplied content type, allowing unauthenticated attackers to upload arbitrary files, including PHP, which can lead to remote code execution.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115245"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:19.407",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-115259",
+      "title": "The Photo Engine (Media Organizer & Lightroom) WordPress plugin before 6.6.0 does not have proper authorization checks when updating post data through one of its REST API rout",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Photo Engine (Media Organizer & Lightroom) WordPress plugin before 6.6.0 does not have proper authorization checks when updating post data through one of its REST API routes in all versions up to, and including, 6.5.8. This makes it possible for authenticated attackers, with Author-level access and above, to modify the title, content, excerpt and other fields of arbitrary posts, pages and attachments, including those belonging to other users.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115259"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:19.557",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-115282",
+      "title": "The Recipe Card Blocks Lite WordPress plugin before 3.6.4 does not perform an authorization check before rendering posts through its recipe print feature, allowing unauthentic",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Recipe Card Blocks Lite WordPress plugin before 3.6.4 does not perform an authorization check before rendering posts through its recipe print feature, allowing unauthenticated users to disclose the title, ID and recipe content of unpublished posts, including drafts, pending, private and password-protected posts, that contain a recipe card block. Its optional \"print only published posts\" protection does not prevent this, because the status check is applied to a different post than the one ultimately rendered.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115282"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:19.680",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-115299",
+      "title": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not verify a CSRF nonce before saving its mail settings, allowing an attacker to overwrite the site's outboun",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not verify a CSRF nonce before saving its mail settings, allowing an attacker to overwrite the site's outbound mail configuration, including the SMTP server, its credentials and the notification recipient, by tricking a logged-in administrator into visiting a crafted page, which can route the Contact Form by Supsystic WordPress plugin before 1.11.1's contact-form notifications through infrastructure the attacker controls.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115299"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:19.810",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-115300",
+      "title": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not validate a CSRF token or request origin on two administrator-only actions that bulk-delete captured form ",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not validate a CSRF token or request origin on two administrator-only actions that bulk-delete captured form submissions and wipe a form's statistics, allowing attackers to permanently destroy a site's stored contact leads and analytics by tricking a logged-in administrator into sending a forged request.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115300"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:19.947",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-115301",
+      "title": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not sandbox the template engine used to render its forms and allows stored form-editor content to reach that ",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not sandbox the template engine used to render its forms and allows stored form-editor content to reach that engine as executable template code, enabling an administrator to perform server-side template injection and execute arbitrary code on the server. The injected template is compiled and executed whenever any visitor loads a page containing the form, so the stored payload also lets an unauthenticated visitor read server-side secrets such as authentication salts and database credentials.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115301"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:20.080",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-115302",
+      "title": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not restrict access to an AJAX action that deletes stored form statistics records, allowing unauthenticated a",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not restrict access to an AJAX action that deletes stored form statistics records, allowing unauthenticated attackers to delete arbitrary statistics entries.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115302"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:20.217",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118905",
+      "title": "Node Version Manager (nvm) is a POSIX-compliant shell function for managing multiple node.js versions",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "Node Version Manager (nvm) is a POSIX-compliant shell function for managing multiple node.js versions. In versions 0.31.2 through 0.40.5, `nvm_ls` filters installed versions with a sed program that embeds the requested version pattern in a `\\#...#` address, escaping `.` (and, since 0.40.4, `#`) but not backslash. A version string containing `#` (or `\\#`) therefore closes the address early, and the rest of it is parsed as sed commands: with GNU sed, the `e` command runs a shell command as the user; with BSD sed, the `w` and `r` commands write and read files. This is reachable whenever an attacker-influenced version string is passed to `nvm use`, `nvm which`, `nvm ls`, `nvm version`, `nvm run`, or `nvm exec`, or to `nvm-exec` via `NODE_VERSION`, and at least one version is installed. nvm's own `.nvmrc` parser strips comments, so a bare `nvm use` is not affected; however, the bash `cdnvm` and zsh `load-nvmrc` auto-switch hooks documented in the README read `.nvmrc` as-is and pass it to `nvm ls` and `nvm version`, so a user with one of those hooks installed runs the attacker's command just by changing into a directory under a malicious `.nvmrc`; scripts that run `nvm use \"$(cat .nvmrc)\"` are affected the same way. Version 0.40.6 passe",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118905"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:20.343",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-78395",
+      "title": "The Link Library WordPress plugin before 7.10.0 does not re-check the selected library's own login requirement when processing its front-end link submission, allowing unauthen",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Link Library WordPress plugin before 7.10.0 does not re-check the selected library's own login requirement when processing its front-end link submission, allowing unauthenticated users to submit links to a library configured to require login by reusing a form token obtained from another library that does not.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-78395"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:24.000",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-78396",
+      "title": "The Link Library WordPress plugin before 7.10.0 does not verify that a requested link belongs to the settings set whose display template is used to render it, allowing unauthe",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Link Library WordPress plugin before 7.10.0 does not verify that a requested link belongs to the settings set whose display template is used to render it, allowing unauthenticated users to disclose the telephone number, e-mail address and submitter name stored with links that the settings set is configured not to display.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-78396"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:24.123",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-85007",
+      "title": "The Video Player for YouTube WordPress plugin before 2.1.4 does not perform a capability check on its player-preset AJAX handler, allowing users with the Contributor role and ",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Video Player for YouTube WordPress plugin before 2.1.4 does not perform a capability check on its player-preset AJAX handler, allowing users with the Contributor role and above to read the site-wide player-preset configuration, and in versions before 2.1.1 to modify and delete it as well.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-85007"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:24.230",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-86794",
+      "title": "The Community Events WordPress plugin before 1.6.0 does not have authorisation or nonce checks when processing public event submissions, and does not escape several of the sub",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Community Events WordPress plugin before 1.6.0 does not have authorisation or nonce checks when processing public event submissions, and does not escape several of the submitted values before outputting them in the administration dashboard and on the public calendar, allowing unauthenticated users to inject arbitrary web scripts that will execute in the browser of an administrator reviewing the submission.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-86794"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:24.350",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-88928",
+      "title": "The PAYCOMET for WooCommerce WordPress plugin before 5.46 does not verify the cryptographic signature on its payment notification endpoint when the request references a tokeni",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The PAYCOMET for WooCommerce WordPress plugin before 5.46 does not verify the cryptographic signature on its payment notification endpoint when the request references a tokenisation operation, allowing unauthenticated attackers to overwrite the stored payment token associated with existing orders and delete saved card records.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88928"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:24.647",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-89216",
+      "title": "The vTables WordPress plugin before 0.3 does not properly sanitise and escape a parameter before using it in a SQL statement, which allows unauthenticated attackers to perform",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The vTables WordPress plugin before 0.3 does not properly sanitise and escape a parameter before using it in a SQL statement, which allows unauthenticated attackers to perform SQL injection attacks and extract data from the database.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-89216"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:24.800",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-93293",
+      "title": "The Password Protected plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the bundled Freemius SDK's purchase-completion handler in all versions up to, and ",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "The Password Protected plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the bundled Freemius SDK's purchase-completion handler in all versions up to, and including, 2.8.4 due to insufficient input sanitization and output escaping. Once the site's Freemius opt-in is complete (the normal state after an administrator clicks \"Allow & Continue\"), the handler processes the 'purchased_plan' request parameter on any wp-admin request from an authenticated user without any capability, nonce, or purchase validation, and stores it in a persistent, site-wide administrative notice. This makes it possible for authenticated attackers, with subscriber-level access and above, to inject arbitrary web scripts that execute automatically when an administrator views a standard admin page such as their Profile page.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-93293"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T07:11:06Z",
+      "source_updated_at": "2026-10-29T06:17:24.940",
+      "source_type": "nvd",
       "known_exploited": false
     },
     {
@@ -30133,7 +30946,7 @@
         "PHP"
       ],
       "published": "2026-10-21",
-      "updated": "2026-10-28",
+      "updated": "2026-10-29",
       "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
       "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
       "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
@@ -30144,7 +30957,7 @@
           "url": "https://www.php.net/archive/2026.php"
         },
         {
-          "label": "PHP upstream security advisory",
+          "label": "Vendor advisory",
           "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
         },
         {
@@ -73997,133 +74810,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2025-61312",
-      "title": "A reflected cross-site scripted (XSS) vulnerability in the acc-menu_pricess.php component of GmbH Mecury Managed Print Services (docuForm) v11.11c allows attackers to execute ",
-      "severity": "high",
-      "categories": [
-        "PHP",
-        "JavaScript / TypeScript"
-      ],
-      "published": "2026-05-11",
-      "updated": "2026-10-26",
-      "summary": "A reflected cross-site scripted (XSS) vulnerability in the acc-menu_pricess.php component of GmbH Mecury Managed Print Services (docuForm) v11.11c allows attackers to execute arbitrary Javascript in the context of a user's browser via injecting a crafted payload into an unfiltered variable value.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-61312"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T22:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00292,
-      "epss_percentile": 0.21712,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2025-61313",
-      "title": "A reflected cross-site scripted (XSS) vulnerability in the dfm-menu_markeralerts.php component of GmbH Mecury Managed Print Services (docuForm) v11.11c allows attackers to exe",
-      "severity": "high",
-      "categories": [
-        "PHP",
-        "JavaScript / TypeScript"
-      ],
-      "published": "2026-05-11",
-      "updated": "2026-10-26",
-      "summary": "A reflected cross-site scripted (XSS) vulnerability in the dfm-menu_markeralerts.php component of GmbH Mecury Managed Print Services (docuForm) v11.11c allows attackers to execute arbitrary Javascript in the context of a user's browser via injecting a crafted payload into an unfiltered variable value.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-61313"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00292,
-      "epss_percentile": 0.21713,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2025-61314",
-      "title": "A reflected cross-site scripted (XSS) vulnerability in the dfm-menu_orderopt.php component of GmbH Mecury Managed Print Services (docuForm) v11.11c allows attackers to execute",
-      "severity": "high",
-      "categories": [
-        "PHP",
-        "JavaScript / TypeScript"
-      ],
-      "published": "2026-05-11",
-      "updated": "2026-10-26",
-      "summary": "A reflected cross-site scripted (XSS) vulnerability in the dfm-menu_orderopt.php component of GmbH Mecury Managed Print Services (docuForm) v11.11c allows attackers to execute arbitrary Javascript in the context of a user's browser via injecting a crafted payload into an unfiltered variable value.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-61314"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00292,
-      "epss_percentile": 0.21712,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2025-65416",
-      "title": "docuFORM Managed Print Service Client 11.11c is vulnerable to arbitrary file upload via pmupdate.php.",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-05-11",
-      "updated": "2026-10-26",
-      "summary": "docuFORM Managed Print Service Client 11.11c is vulnerable to arbitrary file upload via pmupdate.php.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-65416"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00266,
-      "epss_percentile": 0.18451,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2024-33288",
       "title": "Prison Management System Using PHP v1.0 was discovered to contain a SQL injection vulnerability via the username on the Admin login page.",
       "severity": "high",
@@ -74249,838 +74935,6 @@
       "known_exploited": false,
       "epss": 0.07176,
       "epss_percentile": 0.94271,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-8126",
-      "title": "A flaw has been found in SourceCodester Comment System 1.0",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-05-08",
-      "updated": "2026-10-26",
-      "summary": "A flaw has been found in SourceCodester Comment System 1.0. This issue affects some unknown processing of the file post_comment.php. This manipulation of the argument Name causes sql injection. Remote exploitation of the attack is possible. The exploit has been published and may be used.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-8126"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00254,
-      "epss_percentile": 0.16916,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-8129",
-      "title": "A vulnerability was determined in SourceCodester SUP Online Shopping 1.0",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-05-08",
-      "updated": "2026-10-26",
-      "summary": "A vulnerability was determined in SourceCodester SUP Online Shopping 1.0. The impacted element is an unknown function of the file wishlist.php. Executing a manipulation of the argument delwlistid can lead to sql injection. The attack may be performed from remote. The exploit has been publicly disclosed and may be utilized.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-8129"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00254,
-      "epss_percentile": 0.16908,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-8131",
-      "title": "A security flaw has been discovered in SourceCodester SUP Online Shopping 1.0",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-05-08",
-      "updated": "2026-10-26",
-      "summary": "A security flaw has been discovered in SourceCodester SUP Online Shopping 1.0. This impacts an unknown function of the file /admin/replymsg.php. The manipulation of the argument msgid results in sql injection. It is possible to launch the attack remotely. The exploit has been released to the public and may be used for attacks.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-8131"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00318,
-      "epss_percentile": 0.24668,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-8133",
-      "title": "A security vulnerability has been detected in zyx0814 FilePress up to 2.2.0",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-05-08",
-      "updated": "2026-10-26",
-      "summary": "A security vulnerability has been detected in zyx0814 FilePress up to 2.2.0. Affected by this vulnerability is an unknown functionality of the file dzz/shares/admin.php of the component Shares Filelist API. Such manipulation of the argument order leads to sql injection. The attack can be launched remotely. The exploit has been disclosed publicly and may be used. The name of the patch is e20ec58414103f781858f2951d178e19b1736664. A patch should be applied to remediate this issue.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-8133"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00272,
-      "epss_percentile": 0.19513,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-8148",
-      "title": "NAVER MYBOX Explorer for Windows before 3.0.11.160 allows a local attacker to escalate privileges to NT AUTHORITY\\SYSTEM via registry manipulation due to improper privilege ch",
-      "severity": "high",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-05-08",
-      "updated": "2026-10-26",
-      "summary": "NAVER MYBOX Explorer for Windows before 3.0.11.160 allows a local attacker to escalate privileges to NT AUTHORITY\\SYSTEM via registry manipulation due to improper privilege checks.",
-      "affected": "Products identified in NVD configurations: navercorp mybox",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-8148"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://cve.naver.com/detail/cve-2026-8148.html"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00094,
-      "epss_percentile": 0.00563,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-8069",
-      "title": "PredatorSense version 3.00.3136 to 3.00.3196 contain Local Privilege Escalation (LPE) vulnerability.The program exposes a Windows Named Pipe that uses a custom protocol to inv",
-      "severity": "high",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-05-08",
-      "updated": "2026-10-26",
-      "summary": "PredatorSense version 3.00.3136 to 3.00.3196 contain Local Privilege Escalation (LPE) vulnerability.The program exposes a Windows Named Pipe that uses a custom protocol to invoke internal functions. However, this Named Pipe is misconfigured, allowing any authenticated local user to execute arbitrary code with NT AUTHORITY\\SYSTEM privileges and to delete arbitrary files with SYSTEM privileges. By leveraging this, an attacker can execute arbitrary code on the target system with elevated privileges.",
-      "affected": "Products identified in NVD configurations: acer nitrosense; acer predatorsense",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-8069"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://community.acer.com/en/kb/articles/19652"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0012,
-      "epss_percentile": 0.01856,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-8149",
-      "title": "A vulnerability in Legion of the Bouncy Castle Inc",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-05-08",
-      "updated": "2026-10-26",
-      "summary": "A vulnerability in Legion of the Bouncy Castle Inc. BC-LTS bcprov-lts8on on X86_64, AVX, AVX-512f, Linux, Legion of the Bouncy Castle Inc. BC-FJA bc-fips on Linux, X86_64, AVX, AVX-512f. This vulnerability is associated with program files gcm128w, gcm512w, gcm128w.C, gcm512w.C. This issue affects BC-LTS: from 2.73.0 before 2.73.11; BC-FJA: from 2.1.0 before 2.1.3.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-8149"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00158,
-      "epss_percentile": 0.04883,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-25077",
-      "title": "Account users are allowed by default to register templates to be downloaded directly to the primary storage for deploying instances using the KVM hypervisor",
-      "severity": "high",
-      "categories": [
-        "HyperV"
-      ],
-      "published": "2026-05-08",
-      "updated": "2026-10-26",
-      "summary": "Account users are allowed by default to register templates to be downloaded directly to the primary storage for deploying instances using the KVM hypervisor. Due to missing file name sanitization, an attacker can register malicious templates to execute arbitrary code on the KVM hosts. This can result in the compromise of resource integrity and confidentiality, data loss, denial of service, and availability of the KVM-based infrastructure managed by CloudStack. Users are recommended to upgrade to Apache CloudStack versions 4.20.3.0 or 4.22.0.1, or later, which fixes this issue.",
-      "affected": "Products identified in NVD configurations: apache cloudstack",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-25077"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://lists.apache.org/thread/n8mt5b7wkpysstb8w7rr9f02kc5cq2xm"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00726,
-      "epss_percentile": 0.5397,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2025-63706",
-      "title": "NPM package next-npm-version1.0.1 is vulnerable to Command injection.",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Node.js / npm",
-        "React / Next.js"
-      ],
-      "published": "2026-05-07",
-      "updated": "2026-10-26",
-      "summary": "NPM package next-npm-version1.0.1 is vulnerable to Command injection.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-63706"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T22:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.01523,
-      "epss_percentile": 0.74541,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-41139",
-      "title": "Math.js is an extensive math library for JavaScript and Node.js",
-      "severity": "high",
-      "categories": [
-        "Node.js / npm",
-        "JavaScript / TypeScript"
-      ],
-      "published": "2026-05-07",
-      "updated": "2026-10-26",
-      "summary": "Math.js is an extensive math library for JavaScript and Node.js. From version 13.1.0 to before version 15.2.0, arbitrary JavaScript can be executed via the expression parser of mathjs. This issue has been patched in version 15.2.0.",
-      "affected": "Products identified in NVD configurations: mathjs mathjs",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-41139"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://github.com/josdejong/mathjs/security/advisories/GHSA-5v89-rwgr-qj6g"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00577,
-      "epss_percentile": 0.47411,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-27329",
-      "title": "Authorization Bypass Through User-Controlled Key vulnerability in YITH YITH WooCommerce Wishlist allows Exploiting Incorrectly Configured Access Control Security Levels. This ",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-05-07",
-      "updated": "2026-10-26",
-      "summary": "Authorization Bypass Through User-Controlled Key vulnerability in YITH YITH WooCommerce Wishlist allows Exploiting Incorrectly Configured Access Control Security Levels. This issue affects YITH WooCommerce Wishlist: from n/a through 4.12.0.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-27329"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00315,
-      "epss_percentile": 0.24387,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-27415",
-      "title": "Cross-Site Request Forgery (CSRF) vulnerability in PluginUs.Net BEAR allows Cross Site Request Forgery. This issue affects BEAR: from n/a through 1.1.5.",
-      "severity": "medium",
-      "categories": [
-        ".NET / ASP.NET"
-      ],
-      "published": "2026-05-07",
-      "updated": "2026-10-26",
-      "summary": "Cross-Site Request Forgery (CSRF) vulnerability in PluginUs.Net BEAR allows Cross Site Request Forgery. This issue affects BEAR: from n/a through 1.1.5.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-27415"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T21:10:00.170",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00095,
-      "epss_percentile": 0.00646,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-41687",
-      "title": "Wallos is an open-source, self-hostable personal subscription tracker",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-05-07",
-      "updated": "2026-10-26",
-      "summary": "Wallos is an open-source, self-hostable personal subscription tracker. Prior to version 4.8.1, the SSRF protection in endpoints/subscription/add.php (line 42) and endpoints/payments/add.php (line 40) uses an inline IP validation check (FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) that does not block CGNAT addresses (100.64.0.0/10, RFC 6598). The includes/ssrf_helper.php file explicitly defines is_cgnat_ip() to cover this gap (used by notification endpoints), but the logo/icon URL fetching in subscription and payment endpoints performs its own inline validation that misses this range. This allows authenticated users to perform Blind SSRF to internal services in Tailscale, Carrier-Grade NAT, and other environments using 100.64.0.0/10 addresses. This issue has been patched in version 4.8.1.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-41687"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00204,
-      "epss_percentile": 0.10339,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-8083",
-      "title": "A vulnerability was found in SourceCodester Pharmacy Sales and Inventory System 1.0",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-05-07",
-      "updated": "2026-10-26",
-      "summary": "A vulnerability was found in SourceCodester Pharmacy Sales and Inventory System 1.0. This affects an unknown part of the file /ajax.php?action=save_user. The manipulation of the argument ID results in sql injection. The attack can be executed remotely. The exploit has been made public and could be used.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-8083"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00254,
-      "epss_percentile": 0.16911,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-8098",
-      "title": "A security vulnerability has been detected in code-projects Feedback System 1.0",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-05-07",
-      "updated": "2026-10-26",
-      "summary": "A security vulnerability has been detected in code-projects Feedback System 1.0. Impacted is an unknown function of the file /admin/checklogin.php. Such manipulation of the argument email leads to sql injection. It is possible to launch the attack remotely. The exploit has been disclosed publicly and may be used.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-8098"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00254,
-      "epss_percentile": 0.16911,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-35428",
-      "title": "Improper neutralization of special elements used in a command ('command injection') in Azure Cloud Shell allows an unauthorized attacker to perform spoofing over a network.",
-      "severity": "critical",
-      "categories": [
-        "Azure"
-      ],
-      "published": "2026-05-07",
-      "updated": "2026-10-26",
-      "summary": "Improper neutralization of special elements used in a command ('command injection') in Azure Cloud Shell allows an unauthorized attacker to perform spoofing over a network.",
-      "affected": "Products identified in NVD configurations: microsoft azure_cloud_shell",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-35428"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-35428"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.6",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00933,
-      "epss_percentile": 0.60586,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-42826",
-      "title": "Exposure of sensitive information to an unauthorized actor in Azure DevOps allows an unauthorized attacker to disclose information over a network.",
-      "severity": "high",
-      "categories": [
-        "Azure"
-      ],
-      "published": "2026-05-07",
-      "updated": "2026-10-26",
-      "summary": "Exposure of sensitive information to an unauthorized actor in Azure DevOps allows an unauthorized attacker to disclose information over a network.",
-      "affected": "Products identified in NVD configurations: microsoft azure_devops",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-42826"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-42826"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0084,
-      "epss_percentile": 0.57722,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-42880",
-      "title": "Argo CD is a declarative, GitOps continuous delivery tool for Kubernetes",
-      "severity": "critical",
-      "categories": [
-        "Docker / Kubernetes"
-      ],
-      "published": "2026-05-07",
-      "updated": "2026-10-26",
-      "summary": "Argo CD is a declarative, GitOps continuous delivery tool for Kubernetes. From versions 3.2.0 to before 3.2.11 and 3.3.0 to before 3.3.9, there is a missing authorization and data-masking gap in Argo CD's ServerSideDiff endpoint that allows an attacker with read-only access to extract plaintext Kubernetes Secret data from etcd via the Kubernetes API server's Server-Side Apply dry-run mechanism. This issue has been patched in versions 3.2.11 and 3.3.9.",
-      "affected": "Products identified in NVD configurations: argoproj argo_cd",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-42880"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://github.com/argoproj/argo-cd/security/advisories/GHSA-3v3m-wc6v-x4x3"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.6",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00645,
-      "epss_percentile": 0.50789,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-39836",
-      "title": "The Dial and LookupPort functions panic on Windows when provided with an input containing a NUL (0).",
-      "severity": "high",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-05-07",
-      "updated": "2026-10-26",
-      "summary": "The Dial and LookupPort functions panic on Windows when provided with an input containing a NUL (0).",
-      "affected": "Products identified in NVD configurations: golang go",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-39836"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://pkg.go.dev/vuln/GO-2026-4971"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00633,
-      "epss_percentile": 0.50184,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-42241",
-      "title": "ParquetSharp is a .NET library for reading and writing Apache Parquet files",
-      "severity": "medium",
-      "categories": [
-        ".NET / ASP.NET"
-      ],
-      "published": "2026-05-07",
-      "updated": "2026-10-26",
-      "summary": "ParquetSharp is a .NET library for reading and writing Apache Parquet files. From version 18.1.0 to before version 23.0.0.1, DecimalConverter.ReadDecimal makes a stackalloc using what might be an attacker-supplied value. If an attacker declares a decimal column with some unreasonable width, this could lead to a stack overflow. In a service environment, this would potentially take down a service. This affects applications using ParquetSharp to read untrusted Parquet files in a network service. This issue has been patched in version 23.0.0.1.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-42241"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "source_updated_at": "2026-10-26T20:10:00.160",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00273,
-      "epss_percentile": 0.19589,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-40981",
-      "title": "When using Google Secrets Manager as a backend for the Spring Cloud Config server a client can craft a request to the config server potentially exposing secrets from unintende",
-      "severity": "high",
-      "categories": [
-        "VMware"
-      ],
-      "published": "2026-05-07",
-      "updated": "2026-10-26",
-      "summary": "When using Google Secrets Manager as a backend for the Spring Cloud Config server a client can craft a request to the config server potentially exposing secrets from unintended GCP projects. Spring Cloud Config 3.1.x: affected from 3.1.0 through 3.1.13 (inclusive); upgrade to 3.1.14 or greater (Enterprise Support Only). Spring Cloud Config 4.1.x: affected from 4.1.0 through 4.1.9 (inclusive); upgrade to 4.1.10 or greater (Enterprise Support Only). Spring Cloud Config 4.2.x: affected from 4.2.0 through 4.2.6 (inclusive); upgrade to 4.2.7 or greater (Enterprise Support Only). Spring Cloud Config 4.3.x: affected from 4.3.0 through 4.3.2 (inclusive); upgrade to 4.3.3 or greater. Spring Cloud Config 5.0.x: affected from 5.0.0 through 5.0.2 (inclusive); upgrade to 5.0.3 or greater.",
-      "affected": "Products identified in NVD configurations: vmware spring_cloud_config",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-40981"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://spring.io/security/cve-2026-40981"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00435,
-      "epss_percentile": 0.37713,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-40982",
-      "title": "Spring Cloud Config allows applications to serve arbitrary text and binary files through the spring-cloud-config-server module",
-      "severity": "critical",
-      "categories": [
-        "VMware"
-      ],
-      "published": "2026-05-07",
-      "updated": "2026-10-26",
-      "summary": "Spring Cloud Config allows applications to serve arbitrary text and binary files through the spring-cloud-config-server module. A malicious user, or attacker, can send a request using a specially crafted URL that can lead to a directory traversal attack. Spring Cloud Config 3.1.x: affected from 3.1.0 through 3.1.13 (inclusive); upgrade to 3.1.14 or greater (Enterprise Support Only). Spring Cloud Config 4.1.x: affected from 4.1.0 through 4.1.9 (inclusive); upgrade to 4.1.10 or greater (Enterprise Support Only). Spring Cloud Config 4.2.x: affected from 4.2.0 through 4.2.6 (inclusive); upgrade to 4.2.7 or greater (Enterprise Support Only). Spring Cloud Config 4.3.x: affected from 4.3.0 through 4.3.2 (inclusive); upgrade to 4.3.3 or greater. Spring Cloud Config 5.0.x: affected from 5.0.0 through 5.0.2 (inclusive); upgrade to 5.0.3 or greater.",
-      "affected": "Products identified in NVD configurations: vmware spring_cloud_config",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-40982"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://spring.io/security/cve-2026-40982"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00727,
-      "epss_percentile": 0.54001,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-41002",
-      "title": "The base directory (`spring.cloud.config.server.git.basedir`) used by the Spring Cloud Config Server to clone Git repositories to is susceptible to time-of-check-time-of-use (",
-      "severity": "high",
-      "categories": [
-        "VMware"
-      ],
-      "published": "2026-05-07",
-      "updated": "2026-10-26",
-      "summary": "The base directory (`spring.cloud.config.server.git.basedir`) used by the Spring Cloud Config Server to clone Git repositories to is susceptible to time-of-check-time-of-use (TOCTOU) attacks. Spring Cloud Config 3.1.x: affected from 3.1.0 through 3.1.13 (inclusive); upgrade to 3.1.14 or greater (Enterprise Support Only). Spring Cloud Config 4.1.x: affected from 4.1.0 through 4.1.9 (inclusive); upgrade to 4.1.10 or greater (Enterprise Support Only). Spring Cloud Config 4.2.x: affected from 4.2.0 through 4.2.6 (inclusive); upgrade to 4.2.7 or greater (Enterprise Support Only). Spring Cloud Config 4.3.x: affected from 4.3.0 through 4.3.2 (inclusive); upgrade to 4.3.3 or greater. Spring Cloud Config 5.0.x: affected from 5.0.0 through 5.0.2 (inclusive); upgrade to 5.0.3 or greater.",
-      "affected": "Products identified in NVD configurations: vmware spring_cloud_config",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-41002"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://spring.io/security/cve-2026-41002"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0022,
-      "epss_percentile": 0.12559,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-41004",
-      "title": "When enabling trace logging in Spring Cloud Config Server sensitive information was placed in plain text in the logs. Spring Cloud Config 3.1.x: affected from 3.1.0 through 3.",
-      "severity": "medium",
-      "categories": [
-        "VMware"
-      ],
-      "published": "2026-05-07",
-      "updated": "2026-10-26",
-      "summary": "When enabling trace logging in Spring Cloud Config Server sensitive information was placed in plain text in the logs. Spring Cloud Config 3.1.x: affected from 3.1.0 through 3.1.13 (inclusive); upgrade to 3.1.14 or greater (Enterprise Support Only). Spring Cloud Config 4.1.x: affected from 4.1.0 through 4.1.9 (inclusive); upgrade to 4.1.10 or greater (Enterprise Support Only). Spring Cloud Config 4.2.x: affected from 4.2.0 through 4.2.6 (inclusive); upgrade to 4.2.7 or greater (Enterprise Support Only). Spring Cloud Config 4.3.x: affected from 4.3.0 through 4.3.2 (inclusive); upgrade to 4.3.3 or greater. Spring Cloud Config 5.0.x: affected from 5.0.0 through 5.0.2 (inclusive); upgrade to 5.0.3 or greater.",
-      "affected": "Products identified in NVD configurations: vmware spring_cloud_config",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-41004"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://spring.io/security/cve-2026-41004"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00168,
-      "epss_percentile": 0.06017,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-23870",
-      "title": "A denial of service vulnerability could be triggered by sending specially crafted HTTP requests to server function endpoints, this could lead to server crashes, out-of-memory ",
-      "severity": "high",
-      "categories": [
-        "Node.js / npm",
-        "React / Next.js",
-        "JavaScript / TypeScript"
-      ],
-      "published": "2026-05-06",
-      "updated": "2026-10-26",
-      "summary": "A denial of service vulnerability could be triggered by sending specially crafted HTTP requests to server function endpoints, this could lead to server crashes, out-of-memory exceptions or excessive CPU usage; affecting the following packages: react-server-dom-webpack, react-server-dom-parcel, react-server-dom-turbopack (versions 19.0.0 through 19.0.5, 19.1.0 through 19.1.6, and 19.2.0 through 19.2.5).",
-      "affected": "Products identified in NVD configurations: facebook react-server-dom-parcel; facebook react-server-dom-turbopack; facebook react-server-dom-webpack",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-23870"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://github.com/facebook/react/security/advisories/GHSA-rv78-f8rc-xrxh"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-26T19:10:00.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.01533,
-      "epss_percentile": 0.74709,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -83187,85 +83041,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-29T05:55:47Z",
-      "last_attempt": "2026-10-29T05:55:47Z",
+      "last_success": "2026-10-29T07:11:06Z",
+      "last_attempt": "2026-10-29T07:11:06Z",
       "items_processed": 203,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-29T05:55:47Z",
-      "last_attempt": "2026-10-29T05:55:47Z",
+      "last_success": "2026-10-29T07:11:06Z",
+      "last_attempt": "2026-10-29T07:11:06Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-29T05:55:47Z",
-      "last_attempt": "2026-10-29T05:55:47Z",
-      "items_processed": 651,
+      "last_success": "2026-10-29T07:11:06Z",
+      "last_attempt": "2026-10-29T07:11:06Z",
+      "items_processed": 521,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-29T05:55:47Z",
-      "last_attempt": "2026-10-29T05:55:47Z",
+      "last_success": "2026-10-29T07:11:06Z",
+      "last_attempt": "2026-10-29T07:11:06Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-29T05:55:47Z",
-      "last_attempt": "2026-10-29T05:55:47Z",
+      "last_success": "2026-10-29T07:11:06Z",
+      "last_attempt": "2026-10-29T07:11:06Z",
       "items_processed": 2558,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-29T05:55:47Z",
-      "last_attempt": "2026-10-29T05:55:47Z",
+      "last_success": "2026-10-29T07:11:06Z",
+      "last_attempt": "2026-10-29T07:11:06Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-29T05:55:47Z",
-      "last_attempt": "2026-10-29T05:55:47Z",
+      "last_success": "2026-10-29T07:11:06Z",
+      "last_attempt": "2026-10-29T07:11:06Z",
       "items_processed": 23,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-29T05:55:47Z",
-      "last_attempt": "2026-10-29T05:55:47Z",
+      "last_success": "2026-10-29T07:11:06Z",
+      "last_attempt": "2026-10-29T07:11:06Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-29T05:55:47Z",
-      "last_attempt": "2026-10-29T05:55:47Z",
+      "last_success": "2026-10-29T07:11:06Z",
+      "last_attempt": "2026-10-29T07:11:06Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-29T05:55:47Z",
-      "last_attempt": "2026-10-29T05:55:47Z",
+      "last_success": "2026-10-29T07:11:06Z",
+      "last_attempt": "2026-10-29T07:11:06Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-29T05:55:47Z",
-      "last_attempt": "2026-10-29T05:55:47Z",
+      "last_success": "2026-10-29T07:11:06Z",
+      "last_attempt": "2026-10-29T07:11:06Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-29T05:55:47Z",
-      "last_attempt": "2026-10-29T05:55:47Z",
+      "last_success": "2026-10-29T07:11:06Z",
+      "last_attempt": "2026-10-29T07:11:06Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -83277,7 +83131,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-29T05:55:47Z",
-  "last_successful_update": "2026-10-29T05:55:47Z",
+  "last_checked_at": "2026-10-29T07:11:06Z",
+  "last_successful_update": "2026-10-29T07:11:06Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
