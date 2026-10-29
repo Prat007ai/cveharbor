@@ -1039,3 +1039,22 @@ body[data-page="home"] .page-section-intro{display:none!important}
 .page-section-intro h1{font-size:clamp(27px,3.5vw,44px);margin:4px 0 9px}
 .page-section-intro p:not(.eyebrow){color:#b6d0de;font-size:13px}
 .topnav a[aria-current="page"]{color:#75e6d5;text-decoration:underline;text-underline-offset:7px}
+
+/* Private customer security dashboards and customer-ready print reports */
+.customer-dash-toolbar{display:flex;flex-wrap:wrap;gap:13px;align-items:end;margin:18px 0 25px}
+.customer-dash-toolbar label{display:flex;flex-direction:column;gap:7px;font-size:12px;color:#b5d4df;min-width:210px;flex:1}
+.customer-dash-toolbar select{width:100%;background:#0a2537;color:#effbff;border:1px solid #3a5f73;border-radius:8px;padding:12px}
+.customer-dash-toolbar a,.customer-dash-toolbar button{white-space:nowrap}
+.customer-dash-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:18px 0}
+.customer-dash-metric{background:#102d42;border:1px solid #31556c;border-radius:10px;padding:19px}
+.customer-dash-metric strong{display:block;color:#78e4d3;font-size:28px}
+.customer-dash-metric span{font-size:12px;color:#b7d2dd}
+#customerDashAccess>.data-panel{margin:18px 0}
+.customer-report{padding:27px;margin:20px 0}
+.customer-report h2{margin:17px 0;font-size:21px}
+.customer-report-table{width:100%;border-collapse:collapse;margin:13px 0 25px;font-size:12px}
+.customer-report-table th,.customer-report-table td{border:1px solid #36586a;padding:10px;text-align:left;vertical-align:top;overflow-wrap:anywhere}
+.customer-report-table th{background:#16374b;color:#d9f2f7}
+.customer-report-table td{color:#bad1dc}
+@media(max-width:690px){.customer-dash-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.customer-report{overflow-x:auto;padding:14px}}
+@media print{body.account-page{background:#fff;color:#111}header.site-header,.customer-dash-toolbar,#customerDashStatus,.account-landing>.eyebrow,.account-landing>h1,.account-landing>.section-sub{display:none!important}.customer-report{box-shadow:none;border:none;padding:0}.customer-report *{color:#111!important;background:#fff!important}.customer-report-table td,.customer-report-table th{border-color:#aaa!important}.customer-report-table{font-size:10px}.customer-report h2{break-after:avoid}.customer-report tr{break-inside:avoid}main.account-landing{padding:0;max-width:none}#customerDashAccess{display:block!important}}
