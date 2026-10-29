@@ -1,3 +1,4 @@
+import {lookupRelease} from './plugin-releases.js';
 // Stores source metadata only. Never fetch arbitrary customer-provided URLs.
 const reply=(obj,status=200)=>new Response(JSON.stringify(obj),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','Access-Control-Allow-Origin':'https://cveharbor.com','Access-Control-Allow-Credentials':'true','Vary':'Origin'}});
 const uuid=x=>typeof x==='string'&&/^[0-9a-f-]{36}$/i.test(x);
@@ -26,6 +27,17 @@ export async function sourceRoute(req,env,user,path,data={}){
   if(!await available(env))return reply({ready:false,sources:[]});
   const records=await env.DB.prepare('SELECT s.asset_id,s.vendor_url,s.release_url,s.advisory_url,s.plugin_slug,s.verification,s.updated_at FROM plugin_source_mappings s JOIN inventory_assets a ON a.id=s.asset_id AND a.user_id=s.user_id WHERE s.user_id=? LIMIT 3000').bind(user.id).all();
   return reply({ready:true,sources:records.results||[]});
+ }
+ if(path.match(/^\/v1\/plugin-sources\/([0-9a-f-]{36})\/verify$/)&&req.method==='POST'){
+  if(!await available(env))return reply({ready:false,error:'Plugin source migration required'},503);
+  const assetId=path.split('/')[3];
+  const asset=await env.DB.prepare('SELECT id,version,technology FROM inventory_assets WHERE id=? AND user_id=?').bind(assetId,user.id).first();
+  if(!asset||!String(asset.technology).startsWith('WordPress Plugin: '))return reply({error:'Plugin not found'},404);
+  const mapping=await env.DB.prepare('SELECT vendor_url,release_url FROM plugin_source_mappings WHERE user_id=? AND asset_id=?').bind(user.id,assetId).first();
+  const slug=wordpressSlug(mapping?.vendor_url||'')||wordpressSlug(mapping?.release_url||'');
+  if(!slug)return reply({verification:'Needs Review',reason:'No verified WordPress.org plugin source. Commercial or custom vendors require a specific supported release integration.'});
+  const latest=await lookupRelease(slug,asset.version);
+  return reply({verification:latest.release_status==='verified'?'Release Verified':'Needs Review',slug,...latest});
  }
  if(!await available(env))return reply({ready:false,error:'Plugin source migration required'},503);
  const match=/^\/v1\/plugin-sources\/([0-9a-f-]{36})$/.exec(path);
