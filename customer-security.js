@@ -50,18 +50,36 @@ let findingStatusReady=false,findingStatuses=new Map(),findingStatusFilter='Unre
 let findingSort={key:'',direction:'asc'};
 const reportSectionStates=new Map();
 let printSectionStates=null;
-let ticketReady=false,findingTickets=new Map();
-const ticketFor=i=>findingTickets.get(statusKey(i))||'';
+let ticketReady=false,ticketAppendReady=false,findingTickets=new Map();
+let pluginSourceReady=false,pluginSources=new Map();
+const ticketFor=i=>findingTickets.get(statusKey(i))||[];
 async function saveFindingTicket(i,input,button){
- const ticket=input.value.trim();button.disabled=true;
+ const ticket=input.value.trim();
+ if(!ticket){window.alert('Enter a DevOps ticket number');return}
+ button.disabled=true;
  try{
-  const r=await fetch('https://api.cveharbor.com/v1/finding-tickets/'+encodeURIComponent(i.asset_id)+'/'+encodeURIComponent(i.id),{method:'PUT',credentials:'include',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({ticket_number:ticket})});
+  const r=await fetch('https://api.cveharbor.com/v1/finding-tickets/'+encodeURIComponent(i.asset_id)+'/'+encodeURIComponent(i.id),{
+   method:'POST',credentials:'include',headers:{'Content-Type':'application/json',Accept:'application/json'},
+   body:JSON.stringify({ticket_number:ticket})});
   const payload=await r.json().catch(()=>({}));
-  if(!r.ok)throw Error(payload.error||'Unable to save DevOps ticket');
-  findingTickets.set(statusKey(i),ticket);button.textContent='Update';
-  input.setAttribute('data-saved',ticket);
-  if(statusFor(i)==='Fixed/Patched')drawReport();
- }catch(error){window.alert('Could not save DevOps ticket: '+error.message)}finally{button.disabled=false}
+  if(!r.ok)throw Error(payload.error||'Unable to append ticket');
+  const key=statusKey(i);
+  findingTickets.set(key,[...ticketFor(i),ticket]);
+  drawReport();
+ }catch(error){window.alert('Could not add DevOps ticket: '+error.message);button.disabled=false}
+}
+async function saveReportPluginSource(asset,input,message){
+ const source=pluginSources.get(asset.id)||{};
+ const value=input.value.trim();
+ try{
+  const r=await fetch('https://api.cveharbor.com/v1/plugin-sources/'+encodeURIComponent(asset.id),{
+   method:'PUT',credentials:'include',headers:{'Content-Type':'application/json',Accept:'application/json'},
+   body:JSON.stringify({vendor_url:value,release_url:source.release_url||'',advisory_url:source.advisory_url||''})});
+  const body=await r.json().catch(()=>({}));
+  if(!r.ok)throw Error(body.error||'Unable to save plugin source');
+  pluginSources.set(asset.id,{...source,vendor_url:value,verification:body.verification});
+  message.textContent='Source saved. '+body.verification;
+ }catch(e){message.textContent='Could not save source: '+e.message}
 }
 
 const statusOptions=['Needs Review','Fix in Progress','Fixed/Patched','Not Applicable','Accepted Risk'];
@@ -388,7 +406,7 @@ function drawReport(){
   root.append(text('p','Plugin monitoring: '+checked+' checked, '+unavailable+' unavailable or unverified, '+(pluginAssets.length-checked-unavailable)+' pending. Saved results refresh on a schedule. Unknown coverage does not establish safety.','ops-note'));
  }
  if(pluginAssets.length){
-  const monitor=table(['Plugin','Installed version','Latest available','Update status','Last check','Coverage','Potential CVEs'],
+  const monitor=table(['Plugin','Installed version','Latest available','Update status','Last check','Coverage','Potential CVEs','Vendor URL'],
    pluginAssets.map(a=>{
     const check=pluginMonitorRows[a.id];
     const release=check?.release;
@@ -397,8 +415,36 @@ function drawReport(){
      validRelease?release.latest_version:'Not verified',validRelease?release.update_status:(release?.reason?'Unknown: '+release.reason.slice(0,90):'Unknown'),
      check?.checked_at?new Date(check.checked_at*1000).toISOString().replace('T',' ').slice(0,16)+' UTC':'Not checked',
      pluginChecks[a.id]==='checked'?'Checked':pluginChecks[a.id]==='pending'?'Pending':((check?.status||'Unavailable')+': '+(check?.reason||'Source lookup not confirmed').slice(0,110)),
-     check?.status==='checked'?String(check.findings?.length||0):'Unknown'];
+     check?.status==='checked'?String(check.findings?.length||0):'Unknown',''];
    }));
+  for(const [index,asset] of pluginAssets.entries()){
+   const check=pluginMonitorRows[asset.id],release=check?.release;
+   const updateCell=monitor.tBodies[0].rows[index].cells[3];
+   if(release?.release_status==='verified'&&release.update_status==='Update Available'){
+    const marker=text('span','● Update Available','customer-update-indicator');
+    marker.setAttribute('role','status');
+    updateCell.replaceChildren(marker);
+   }
+   const cell=monitor.tBodies[0].rows[index].cells[7];
+   const wrap=text('div','','customer-source-editor');
+   const input=document.createElement('input');
+   input.type='url';input.placeholder='https://vendor.example/plugin';
+   input.setAttribute('aria-label','Official plugin URL for '+asset.technology);
+   const saved=pluginSources.get(asset.id);
+   input.value=saved?.vendor_url||'';
+   input.disabled=!pluginSourceReady;
+   const save=text('button','Save URL','customer-ticket-save');save.type='button';save.disabled=!pluginSourceReady;
+   const info=text('small',pluginSourceReady?'':'Activate source storage to edit URLs','ops-note');
+   save.addEventListener('click',()=>void saveReportPluginSource(asset,input,info));
+   const url=saved?.release_url||saved?.vendor_url||release?.release_source||'';
+   wrap.append(input,save);
+   if(url.startsWith('https://')){
+    const external=link(url,'Plugin page / releases');
+    wrap.append(external);
+   }
+   wrap.append(info);
+   cell.append(wrap);
+  }
   monitor.classList.add('customer-plugin-monitor-table');
   const heading=reportSection('WordPress Plugin Monitoring');
   root.append(heading);
@@ -457,14 +503,15 @@ function drawReport(){
   input.type='text';input.maxLength=64;input.placeholder='Ticket number';
   input.className='customer-ticket-input';
   input.setAttribute('aria-label','DevOps ticket number for '+i.id+' on '+(i.asset?.name||'asset'));
-  input.value=ticketFor(i);
-  const locked=statusFor(i)==='Fixed/Patched'&&!!input.value;
-  input.disabled=!ticketReady||locked;
-  if(locked)input.title='Ticket reference locked after the vulnerability was fixed';
-  const save=text('button',locked?'Locked':input.value?'Update':'Save','customer-ticket-save');
-  save.type='button';save.disabled=!ticketReady||locked;
+  const existing=ticketFor(i);
+  const history=text('div','','customer-ticket-history');
+  for(const value of existing)history.append(text('span',value,'customer-ticket-reference'));
+  input.value='';
+  input.disabled=!ticketAppendReady;
+  const save=text('button','Add ticket','customer-ticket-save');
+  save.type='button';save.disabled=!ticketAppendReady;
   save.addEventListener('click',()=>void saveFindingTicket(i,input,save));
-  ticketWrap.append(input,save);ticketCell.append(ticketWrap);
+  ticketWrap.append(history,input,save);ticketCell.append(ticketWrap);
  }
  root.append(findingsTable);
  root.append(reportSection('Advisory Evidence and References'));
@@ -491,7 +538,7 @@ function csvReport(){
  const customer=inventory.customers.find(c=>c.id===id);if(!customer)return;
  const rows=[['Customer','Environment','Asset','Technology','Installed version','CVE','Severity','CISA KEV','Match classification','Published','Summary','Vulnerability Fix Status','DevOps Ticket #','Affected versions','Version comparison','Remediation','Source']];
  for(const f of compute(id,env).issues)
-  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.published||'Not available',shortSummary(f),statusFor(f),ticketFor(f),f.affected||'',f.comparison_detail||'',f.remediation||'',f.source_url]);
+  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.published||'Not available',shortSummary(f),statusFor(f),ticketFor(f).join(' | '),f.affected||'',f.comparison_detail||'',f.remediation||'',f.source_url]);
  const csv=rows.map(r=>r.map(v=>{
   let value=String(v??'');
   if(/^[=+\-@\t\r]/.test(value))value="'"+value;
@@ -512,7 +559,12 @@ async function init(){
   if(reporting){
    const tickets=await api('finding-tickets').catch(()=>({ready:false,tickets:[]}));
    ticketReady=!!tickets.ready;
-   findingTickets=new Map((tickets.tickets||[]).map(t=>[t.asset_id+'|'+t.cve_id,t.ticket_number]));
+   ticketAppendReady=!!tickets.append_ready;
+   findingTickets=new Map();
+   for(const t of tickets.tickets||[]){const k=t.asset_id+'|'+t.cve_id;findingTickets.set(k,[...(findingTickets.get(k)||[]),t.ticket_number])}
+   const sources=await api('plugin-sources').catch(()=>({ready:false,sources:[]}));
+   pluginSourceReady=!!sources.ready;
+   pluginSources=new Map((sources.sources||[]).map(s=>[s.asset_id,s]));
    const saved=await api('finding-statuses').catch(()=>({ready:false,statuses:[]}));
    findingStatusReady=!!saved.ready;
    findingStatuses=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.status]));

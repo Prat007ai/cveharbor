@@ -1,0 +1,40 @@
+name: Activate immutable DevOps ticket history
+on:
+  workflow_dispatch:
+    inputs:
+      backup_confirmed:
+        description: 'I have exported a fresh production D1 backup'
+        required: true
+        type: boolean
+        default: false
+      apply_confirmed:
+        description: 'I approve creating immutable ticket history and preserving existing tickets'
+        required: true
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: cveharbor-worker-production
+  cancel-in-progress: false
+jobs:
+  migrate:
+    if: inputs.backup_confirmed == true && inputs.apply_confirmed == true
+    runs-on: ubuntu-latest
+    environment: cloudflare-worker-production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify account backend
+        working-directory: account-backend
+        run: npm test
+      - name: Create append only ticket history and copy existing values
+        working-directory: account-backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" && test -n "$CLOUDFLARE_ACCOUNT_ID"
+          npx --yes wrangler@4 d1 execute cveharbor-accounts --remote --file=./finding-ticket-history-schema.sql --yes
