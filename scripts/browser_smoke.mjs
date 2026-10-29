@@ -112,13 +112,32 @@ workspaceDocument.getElementById('securityLookup').value='CVE-2026';
 workspaceDocument.getElementById('securityLookup').dispatchEvent(new workspaceWindow.Event('input'));
 assert.ok(workspaceDocument.querySelectorAll('#securityLookupResults .workspace-result').length>0,'lookup results visible');
 assert.ok(html.includes('id="lifecycleMonitor"'),'full lifecycle monitoring section exists');
+assert.ok(html.includes('id="lifecycleSearchStatus"'),'expanded product search status exists');
 assert.ok(html.includes('id="lifecycleEmailOptin"')&&html.includes('id="lifecycleInstalled"'),'lifecycle opt-in and installed version controls exist');
 assert.ok(html.includes('lifecycle-monitor.js?v=lifecycle-watch-1'),'versioned lifecycle monitor script loads');
 const lifecycleDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 lifecycleDom.window.CVEHARBOR_LIFECYCLE={checked_at:new Date().toISOString(),cycles:[{slug:'php',product:'PHP',cycle:'8.4',eol_date:'2027-12-31',latest:'8.4.27',url:'https://endoflife.date/php'}],errors:[]};
 lifecycleDom.window.eval(fs.readFileSync('lifecycle-monitor.js','utf8'));
 assert.match(lifecycleDom.window.document.getElementById('lifecycleUserStatus').textContent,/Sign in/);
-assert.match(lifecycleDom.window.document.getElementById('lifecyclePublished').textContent,/PHP 8.4/);
+assert.match(lifecycleDom.window.document.getElementById('lifecyclePublished').textContent,/PHP/);
+assert.ok(html.includes('id="lifecycleDetailDialog"'),'on-site product support modal exists');
+assert.ok(html.includes('lifecycle-monitor.js?v=details-search-2'),'lifecycle popup script cache-busted');
+const popup=lifecycleDom.window.document.getElementById('lifecycleDetailDialog');
+const first=lifecycleDom.window.document.querySelector('#lifecyclePublished .lifecycle-view-details');
+assert.ok(first,'each lifecycle result offers a popup');
+lifecycleDom.window.fetch=async()=>({
+ ok:true,json:async()=>[{cycle:'8.4',eol:'2027-12-31',support:'2027-01-01',latest:'8.4.27',releaseDate:'2024-11-21'}]
+});
+first.click();
+await new Promise(resolve=>setTimeout(resolve,10));
+assert.ok(popup.hasAttribute('open'),'product support details open within CVEHarbor');
+assert.match(lifecycleDom.window.document.getElementById('lifecycleDetailBody').textContent,/8.4.27/);
+assert.match(lifecycleDom.window.document.getElementById('lifecycleDetailBody').textContent,/2027-12-31/);
+assert.ok(lifecycleDom.window.document.querySelector('#lifecycleDetailBody a[href="https://endoflife.date/php"]'),
+ 'external product source appears at the bottom');
+lifecycleDom.window.document.getElementById('lifecycleDetailClose').click();
+assert.ok(!popup.hasAttribute('open'),'popup closes');
+
 assert.equal(lifecycleDom.window.document.getElementById('lifecycleWatchSave').disabled,false,'public page can show form until login state event arrives');
 lifecycleDom.window.close();
 assert.ok(html.includes('id="inventoryWorkspace"'),'customer inventory workspace exists');
