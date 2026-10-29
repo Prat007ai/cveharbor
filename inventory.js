@@ -4,6 +4,7 @@ const $=id=>document.getElementById(id);
 if(!$('inventoryWorkspace'))return;
 const api='https://api.cveharbor.com/v1/inventory';
 let signedIn=false,ready=false,data={customers:[],environments:[],assets:[]};
+let pluginSources=new Map(),pluginSourceReady=false;
 const make=(tag,className='',value='')=>{
  const el=document.createElement(tag);if(className)el.className=className;el.textContent=String(value);return el;
 };
@@ -103,6 +104,48 @@ function checkSavedPlugins(assets){
  async function worker(){while(index<assets.length){const asset=assets[index++];await checkSavedPlugin(asset)}}
  void Promise.all(Array.from({length:Math.min(3,assets.length)},worker));
 }
+function setupSourceEditor(){
+ const host=$('inventoryAssetForm');if(!host)return;
+ const box=make('section','inventory-plugin-import');
+ box.append(make('h3','','Edit WordPress plugin sources'),make('p','ops-note','Choose an existing WordPress plugin, then save its vendor, release and security advisory URLs. Only verified WordPress.org plugin URLs are used for automatic version lookups.'));
+ const select=document.createElement('select');select.setAttribute('aria-label','Select existing plugin');
+ const fields=['vendor_url','release_url','advisory_url'].map(key=>{
+  const label=make('label','ops-note',key.replace('_',' '));
+  const input=document.createElement('input');input.type='url';input.placeholder='https://';input.setAttribute('aria-label',key);
+  label.append(input);box.append(label);return {key,input};
+ });
+ const info=make('p','ops-note','');
+ const button=make('button','ops-download','Save plugin sources');button.type='button';
+ const verify=make('button','ops-download','Verify source');verify.type='button';
+ function redraw(){
+  const previous=select.value;select.replaceChildren();option(select,'','Select plugin');
+  const envId=$('inventoryEnvironmentSelect').value;
+  for(const a of data.assets.filter(x=>x.environment_id===envId&&x.technology.startsWith('WordPress Plugin: ')))option(select,a.id,a.technology.slice(18));
+  if([...select.options].some(o=>o.value===previous))select.value=previous;
+  const source=pluginSources.get(select.value)||{};
+  for(const {key,input} of fields)input.value=source[key]||'';
+  info.textContent=source.verification||'No source verification yet';
+ }
+ select.addEventListener('change',redraw);
+ $('inventoryEnvironmentSelect').addEventListener('change',redraw);
+ async function saveSources(){
+  if(!pluginSourceReady){info.textContent='Plugin source database migration is required';return false}
+  if(!select.value){info.textContent='Select an existing plugin';return false}
+  const payload=Object.fromEntries(fields.map(f=>[f.key,f.input.value.trim()]));
+  const res=await fetch('https://api.cveharbor.com/v1/plugin-sources/'+select.value,{method:'PUT',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const value=await res.json().catch(()=>({}));
+  if(!res.ok){info.textContent=value.error||'Could not save source';return false}
+  pluginSources.set(select.value,{...payload,verification:value.verification});
+  info.textContent='Saved. '+value.verification;return true;
+ }
+ button.addEventListener('click',()=>void saveSources());
+ verify.addEventListener('click',async()=>{
+  if(await saveSources())info.textContent+='; automatic release checks use only a verified official plugin slug.';
+ });
+ box.prepend(select);box.append(button,verify,info);host.after(box);
+ const original=render; // editor options are rebuilt following inventory load.
+ window.addEventListener('cveharbor:inventory-loaded',redraw);redraw();
+}
 function refreshMatchCustomers(){
  const selector=$('inventoryMatchCustomer'),current=selector.value;
  selector.replaceChildren();option(selector,'','All customers');
@@ -118,7 +161,7 @@ function setupPluginImport(){
  if(!form)return;
  const panel=make('section','inventory-plugin-import');
  panel.append(make('h3','','Import WordPress plugins'),
-  make('p','ops-note','Select a customer environment above, then select a local .txt file or paste one plugin per line as Plugin Name | Version. Each plugin is recorded separately. Existing entries with the same name are updated rather than duplicated.'));
+  make('p','ops-note','Select a customer environment above, then select a local .txt file or paste one plugin per line as Plugin Name | Version | Vendor URL (optional). Each plugin is recorded separately. Existing entries with the same name are updated rather than duplicated.'));
  const area=make('textarea','','');area.placeholder='Gravity Forms | 2.9.5\nYoast SEO | 24.7';
  area.rows=7;area.setAttribute('aria-label','WordPress plugin names and versions');
  const fileLabel=make('label','inventory-plugin-file-label','Select a TXT file from your computer');
@@ -164,14 +207,16 @@ function setupPluginImport(){
   const plugins=[];
   for(const line of lines){
    const parts=line.split('|');
-   if(parts.length!==2||!parts[0].trim()||!parts[1].trim()){
-    result.textContent='Each line must contain Plugin Name | Version.';return;
+   if((parts.length!==2&&parts.length!==3)||!parts[0].trim()||!parts[1].trim()){
+    result.textContent='Use Plugin Name | Version | optional Vendor URL.';return;
    }
    const name=parts[0].trim(),version=parts[1].trim();
    if(name.length>100||version.length>80||!/^\d[\w.+-]*$/.test(version)){
     result.textContent='Check plugin name or version: '+line;return;
    }
-   plugins.push({name,version});
+   const vendor_url=(parts[2]||'').trim();
+   if(vendor_url&&!/^https:\/\/[^\s]+$/i.test(vendor_url)){result.textContent='Vendor URL must start with https:// for '+name;return}
+   plugins.push({name,version,vendor_url});
   }
   if(new Set(plugins.map(p=>p.name.toLowerCase())).size!==plugins.length){
    result.textContent='Duplicate plugin names in paste. Remove duplicates and retry.';return;
@@ -197,6 +242,11 @@ function setupPluginImport(){
      // Re-read before subsequent requests so retrying never overwrites.
      data=await call();
     }else throw Error('Duplicate existing inventory entries for '+plugin.name+'. Resolve before continuing.');
+    const assetId=matches.length===1?matches[0].id:checkEntries[checkEntries.length-1]?.id;
+    if(plugin.vendor_url&&assetId){
+     const res=await fetch('https://api.cveharbor.com/v1/plugin-sources/'+assetId,{method:'PUT',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({vendor_url:plugin.vendor_url,release_url:pluginSources.get(assetId)?.release_url||'',advisory_url:pluginSources.get(assetId)?.advisory_url||''})});
+     if(!res.ok)throw Error('Source URL could not be saved for '+plugin.name+': '+(await res.json()).error);
+    }
     saved++;
     result.textContent='Processed '+saved+' of '+plugins.length+' plugins';
    }
@@ -209,6 +259,7 @@ function setupPluginImport(){
  form.after(panel);
 }
 setupPluginImport();
+setupSourceEditor();
 
 function render(){
  selects();
@@ -275,10 +326,12 @@ function render(){
   root.append(card);
  }
  if(!data.customers.length)root.append(make('p','ops-note','Start by adding a customer, then create an environment and register its installed technologies.'));
- refreshMatchCustomers();renderMatches();
+ refreshMatchCustomers();renderMatches();window.dispatchEvent(new Event('cveharbor:inventory-loaded'));
 }
 async function load(){
- data=await call();render();
+ data=await call();
+ try{const r=await fetch('https://api.cveharbor.com/v1/plugin-sources',{credentials:'include'});const s=await r.json();pluginSourceReady=!!s.ready;pluginSources=new Map((s.sources||[]).map(x=>[x.asset_id,x]));}catch(_){pluginSourceReady=false;pluginSources=new Map()}
+ render();
 }
 async function remove(type,id,name){
  if(!window.confirm('Remove '+name+' and any records it contains?'))return;
