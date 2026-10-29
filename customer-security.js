@@ -200,7 +200,7 @@ function table(headers,rows){
  t.append(body);return t;
 }
 function shortSummary(i){
- const source=String(i.summary||i.title||'').replace(/\\s+/g,' ').trim();
+ const source=String(i.summary||i.title||'').replace(/\s+/g,' ').trim();
  if(!source||source===i.id)return 'Description not available in the indexed advisory.';
  if(source.length<=205)return source;
  const lead=source.slice(0,205);
@@ -259,7 +259,7 @@ function csvReport(){
  const customer=inventory.customers.find(c=>c.id===id);if(!customer)return;
  const rows=[['Customer','Environment','Asset','Technology','Installed version','CVE','Severity','CISA KEV','Match classification','Published','Summary','Affected versions','Version comparison','Remediation','Source']];
  for(const f of compute(id,env).issues)
-  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.published||'',shortSummary(f),f.affected||'',f.comparison_detail||'',f.remediation||'',f.source_url]);
+  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.published||'Not available',shortSummary(f),f.affected||'',f.comparison_detail||'',f.remediation||'',f.source_url]);
  const csv=rows.map(r=>r.map(v=>{
   let value=String(v??'');
   if(/^[=+\-@\t\r]/.test(value))value="'"+value;
