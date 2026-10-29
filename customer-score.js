@@ -7,7 +7,8 @@ function assessCustomer({assets=[],issues=[],checks={},statuses={}}={}){
  const withVersion=assets.filter(a=>String(a.version||'').trim()&&!/^(unknown|n\/a)$/i.test(a.version)).length;
  const pluginAssets=assets.filter(a=>String(a.technology||'').startsWith('WordPress Plugin: '));
  const monitored=pluginAssets.filter(a=>checks[a.id]?.status==='checked'&&checks[a.id]?.installed_version===a.version);
- const coverage=total?Math.round(100*(withVersion-pluginAssets.length+monitored.length+pluginAssets.filter(a=>!String(a.version||'').trim()).length)/total):0;
+ const knownNonPlugin=assets.filter(a=>!String(a.technology||'').startsWith('WordPress Plugin: ')&&String(a.version||'').trim()&&!/^(unknown|n\/a)$/i.test(a.version)).length;
+ const coverage=total?Math.round(100*(knownNonPlugin+monitored.length)/total):0;
  const coverageBound=clamp(coverage);
  const versionCandidates=issues.filter(i=>i.level==='version_review');
  // A reviewer must document applicability before candidate advisories can determine a risk score.
