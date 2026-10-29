@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-29",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4285,
+  "candidate_records": 4306,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -2879,7 +2879,7 @@
       "cvss": "5.3",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-29T15:28:40Z",
-      "source_updated_at": "2026-10-29T15:18:54.943",
+      "source_updated_at": "2026-10-29T17:18:01.197",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -2935,7 +2935,7 @@
       "cvss": "5.3",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-29T15:28:40Z",
-      "source_updated_at": "2026-10-29T15:18:54.943",
+      "source_updated_at": "2026-10-29T17:18:06.103",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -2991,7 +2991,7 @@
       "cvss": "5.3",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-29T15:28:40Z",
-      "source_updated_at": "2026-10-29T15:18:54.943",
+      "source_updated_at": "2026-10-29T17:18:09.823",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -3019,7 +3019,7 @@
       "cvss": "5.3",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-29T15:28:40Z",
-      "source_updated_at": "2026-10-29T16:21:34.310",
+      "source_updated_at": "2026-10-29T17:18:10.653",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -3048,7 +3048,7 @@
       "cvss": "5.3",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-29T15:28:40Z",
-      "source_updated_at": "2026-10-29T16:21:34.310",
+      "source_updated_at": "2026-10-29T17:18:10.780",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -5767,6 +5767,90 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-29T17:03:29Z",
       "source_updated_at": "2026-10-29T16:24:53.840",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-115805",
+      "title": "Improper handling of local filesystem paths in Rapid7 Insight Agent on Linux and macOS may allow authenticated local users to gain elevated privileges",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "Improper handling of local filesystem paths in Rapid7 Insight Agent on Linux and macOS may allow authenticated local users to gain elevated privileges. Exploitation requires existing local access and depends on the Agent's inventory collection processing the crafted path.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115805"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:18:01.840",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118763",
+      "title": "sigstore-js provides JavaScript libraries for interacting with Sigstore services",
+      "severity": "high",
+      "categories": [
+        "Docker / Kubernetes"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "sigstore-js provides JavaScript libraries for interacting with Sigstore services. Prior to 0.7.2, packages/oci/src/registry.ts contains a RegistryClient.signIn() method that stores registry Authorization and Docker configuration headers as defaults on a shared HTTP client, while RegistryClient.uploadBlob() sends a fresh PUT to an absolute blob-upload Location supplied by the registry without checking that its origin or scheme matches the registry. A malicious or compromised registry can therefore direct a user pushing an artifact through attachArtifactToImage() to an attacker-controlled host and receive the registry bearer token, Basic credentials, or custom authentication headers. Redirect-time header stripping does not prevent the leak because the cross-host PUT is a new explicit request rather than a followed redirect. This is a residual of CVE-2026-59891, whose fix changed credential selection in credentials.ts but did not constrain where credentials are sent from registry.ts. Version 0.7.2 fixes the issue by separating registry credentials from client-wide defaults and sending them only to the registry origin.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118763"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:18:07.230",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119115",
+      "title": "Incorrect authorization in the issuer resolution logic in AWS Private CA Connector for Kubernetes (aws-privateca-issuer) before v1.10.1 might allow an authenticated remote use",
+      "severity": "high",
+      "categories": [
+        "Docker / Kubernetes"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "Incorrect authorization in the issuer resolution logic in AWS Private CA Connector for Kubernetes (aws-privateca-issuer) before v1.10.1 might allow an authenticated remote user to obtain certificates, including subordinate CA certificates, signed by a cluster-scoped AWS Private CA issuer that their approval policy does not authorize. To remediate this issue, users should upgrade aws-privateca-issuer to version v1.10.1 or the AWS Private CA Connector for Kubernetes EKS add-on to version v1.10.1-eksbuild.1, and update any certificate requests, Certificate resources, or Ingress annotations whose issuerRef.kind is missing, incorrect, or does not match the referenced issuer, since v1.10.1 requires issuerRef.kind to be exactly AWSPCAIssuer or AWSPCAClusterIssuer and to match the issuer it references.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119115"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:18:07.667",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -15564,7 +15648,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116673"
         },
         {
@@ -15614,7 +15698,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116674"
         },
         {
@@ -18853,6 +18937,38 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-29T16:05:37Z",
       "source_updated_at": "2026-10-29T16:00:02.527",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118321",
+      "title": "Improper input validation in Core in Google Chrome on on Android prior to 156.0.8078.73 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via",
+      "severity": "critical",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-29",
+      "summary": "Improper input validation in Core in Google Chrome on on Android prior to 156.0.8078.73 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High)",
+      "affected": "Products identified in NVD configurations: google chrome; google android",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118321"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://chromereleases.googleblog.com/2026/10/stable-channel-update-for-desktop_0562499947.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.6",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:41:27.030",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -29745,6 +29861,62 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-116055",
+      "title": "A vulnerability was detected in SourceCodester Performance Indicator System 1.0",
+      "severity": "low",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-25",
+      "updated": "2026-10-29",
+      "summary": "A vulnerability was detected in SourceCodester Performance Indicator System 1.0. This impacts an unknown function of the file /opils/admin/deleteproduct.php. The manipulation of the argument ID results in sql injection. The attack may be performed from remote. The exploit is now public and may be used.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116055"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "2.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:18:02.137",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116062",
+      "title": "A security flaw has been discovered in SourceCodester Performance Indicator System 1.0",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-25",
+      "updated": "2026-10-29",
+      "summary": "A security flaw has been discovered in SourceCodester Performance Indicator System 1.0. This issue affects some unknown processing of the file /opils/staff/save_profile.php. The manipulation of the argument Contact results in sql injection. The attack may be launched remotely. The exploit has been released to the public and may be used for attacks.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116062"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:18:02.430",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-116171",
       "title": "SiYuan 3.5.4 before 3.8.7 on Windows contains a sensitive-path denylist bypass in IsSensitivePath because the Windows extended-length prefix (\\\\?\\) survives filepath.Clean and",
       "severity": "medium",
@@ -37869,6 +38041,64 @@
       "known_exploited": false
     },
     {
+      "id": "GHSA-9855-prwc-mfp2",
+      "title": "Malware in opencode-skills-collection",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-22",
+      "updated": "2026-10-29",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: opencode-skills-collection (= 4.1.18); npm: opencode-skills-collection (= 4.1.9); npm: opencode-skills-collection (= 4.0.77); npm: opencode-skills-collection (= 4.1.0); npm: opencode-skills-collection (= 4.0.56); npm: opencode-skills-collection (= 4.1.12); npm: opencode-skills-collection (= 4.1.19); npm: opencode-skills-collection (= 4.1.14); npm: opencode-skills-collection (= 4.1.17); npm: opencode-skills-collection (= 4.1.7); npm: opencode-skills-collection (= 4.1.8); npm: opencode-skills-collection (= 4.1.1); npm: opencode-skills-collection (= 4.1.4); npm: opencode-skills-collection (= 4.1.3); npm: opencode-skills-collection (= 4.1.6); npm: opencode-skills-collection (= 4.1.13); npm: opencode-skills-collection (= 4.1.16); npm: opencode-skills-collection (= 4.1.11); npm: opencode-skills-collection (= 4.0.57); npm: opencode-skills-collection (= 4.1.10); npm: opencode-skills-collection (= 4.1.20); npm: opencode-skills-collection (= 4.1.5); npm: opencode-skills-collection (= 4.1.2)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-9855-prwc-mfp2"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:28:43Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-rgwm-3jj9-h563",
+      "title": "Malware in agentic-awesome-skills",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-22",
+      "updated": "2026-10-29",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: agentic-awesome-skills (= 19.5.0); npm: agentic-awesome-skills (= 19.3.0); npm: agentic-awesome-skills (= 19.1.0); npm: agentic-awesome-skills (= 19.7.0); npm: agentic-awesome-skills (= 19.2.0); npm: agentic-awesome-skills (= 18.10.0); npm: agentic-awesome-skills (= 19.0.1); npm: agentic-awesome-skills (= 18.13.0); npm: agentic-awesome-skills (= 18.14.0); npm: agentic-awesome-skills (= 19.10.1); npm: agentic-awesome-skills (= 19.4.0); npm: agentic-awesome-skills (= 18.11.0); npm: agentic-awesome-skills (= 18.9.0); npm: agentic-awesome-skills (= 18.12.0); npm: agentic-awesome-skills (= 19.6.0); npm: agentic-awesome-skills (= 19.9.0); npm: agentic-awesome-skills (= 19.0.0); npm: agentic-awesome-skills (= 19.12.0); npm: agentic-awesome-skills (= 19.13.0); npm: agentic-awesome-skills (= 19.12.1); npm: agentic-awesome-skills (= 18.15.0); npm: agentic-awesome-skills (= 19.11.0); npm: agentic-awesome-skills (= 19.8.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-rgwm-3jj9-h563"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:25:43Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-114577",
       "title": "A vulnerability was found in oretnom23 php-travel-agency-system",
       "severity": "medium",
@@ -41531,6 +41761,34 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-29T17:03:29Z",
       "source_updated_at": "2026-10-29T16:26:16.600",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-91213",
+      "title": "Vulnerability in the Oracle Business Process Management Suite product of Oracle Fusion Middleware (component: BPM Composer)",
+      "severity": "high",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-20",
+      "updated": "2026-10-29",
+      "summary": "Vulnerability in the Oracle Business Process Management Suite product of Oracle Fusion Middleware (component: BPM Composer). Supported versions that are affected are 12.2.1.4.0 and 14.1.2.0.0. Easily exploitable vulnerability allows low privileged attacker with network access via HTTP to compromise Oracle Business Process Management Suite. Successful attacks of this vulnerability can result in takeover of Oracle Business Process Management Suite. CVSS 3.1 Base Score 8.8 (Confidentiality, Integrity and Availability impacts). CVSS Vector: (CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H).",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-91213"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:18:11.300",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -45540,6 +45798,145 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-29T17:03:29Z",
       "source_updated_at": "2026-10-29T16:18:08.740",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-83784",
+      "title": "CVE-2026-83784 Windows Encrypting File System (EFS) Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "<p>Absolute path traversal in Windows Encrypting File System (EFS) allows an authorized attacker to elevate privileges over a network.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83784"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83784"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.0108,
+      "epss_percentile": 0.64989,
+      "epss_as_of": "2026-10-29"
+    },
+    {
+      "id": "CVE-2026-83769",
+      "title": "CVE-2026-83769 Microsoft OpenSSH for Windows Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "<p>Use after free in OpenSSH for Windows allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83769"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83769"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00417,
+      "epss_percentile": 0.35849,
+      "epss_as_of": "2026-10-29"
+    },
+    {
+      "id": "CVE-2026-83767",
+      "title": "CVE-2026-83767 Windows Installer Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "<p>Stack-based buffer overflow in Windows Installer allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83767"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83767"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.0031,
+      "epss_percentile": 0.23782,
+      "epss_as_of": "2026-10-29"
+    },
+    {
+      "id": "CVE-2026-106175",
+      "title": "A Double Free vulnerability [CWE-415] vulnerability in Fortinet FortiOS 7.6.0 through 7.6.8, FortiOS 7.4 all versions, FortiOS 7.2 all versions, FortiOS 7.0 all versions, Fort",
+      "severity": "low",
+      "categories": [
+        "Fortinet"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "A Double Free vulnerability [CWE-415] vulnerability in Fortinet FortiOS 7.6.0 through 7.6.8, FortiOS 7.4 all versions, FortiOS 7.2 all versions, FortiOS 7.0 all versions, FortiProxy 7.6.0 through 7.6.6, FortiProxy 7.4 all versions, FortiProxy 7.2 all versions, FortiProxy 7.0 all versions, FortiSwitch 7.6.0 through 7.6.6, FortiSwitch 7.4 all versions, FortiSwitch 7.2 all versions may allow a local authenticated attacker to crash the newcli daemon via crafted CLI commands.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-106175"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "2.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:17:56.157",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -56354,6 +56751,46 @@
       "epss_as_of": "2026-10-29"
     },
     {
+      "id": "CVE-2026-102870",
+      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-25",
+      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
+      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
+      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
+      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "ASP.NET Core GHSA vendor record",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-25",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00906,
+      "epss_percentile": 0.59726,
+      "epss_as_of": "2026-10-29"
+    },
+    {
       "id": "CVE-2026-70197",
       "title": ".NET SocketAsyncEventArgs memory corruption remote code execution",
       "severity": "high",
@@ -56393,46 +56830,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00788,
       "epss_percentile": 0.56072,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-102870",
-      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-25",
-      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
-      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
-      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
-      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft corrected Blazor debugger security advisory",
-          "url": "https://github.com/dotnet/announcements/issues/492"
-        },
-        {
-          "label": "ASP.NET Core GHSA vendor record",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-25",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00906,
-      "epss_percentile": 0.59726,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -63044,37 +63441,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2026-83784",
-      "title": "CVE-2026-83784 Windows Encrypting File System (EFS) Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Absolute path traversal in Windows Encrypting File System (EFS) allows an authorized attacker to elevate privileges over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83784"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.0108,
-      "epss_percentile": 0.64989,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2026-83844",
       "title": "CVE-2026-83844 Windows Paint Remote Code Execution Vulnerability",
       "severity": "bulletin",
@@ -63785,37 +64151,6 @@
       "known_exploited": false,
       "epss": 0.00323,
       "epss_percentile": 0.25184,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-83769",
-      "title": "CVE-2026-83769 Microsoft OpenSSH for Windows Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Use after free in OpenSSH for Windows allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83769"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00417,
-      "epss_percentile": 0.35849,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -73108,37 +73443,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2026-83767",
-      "title": "CVE-2026-83767 Windows Installer Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Stack-based buffer overflow in Windows Installer allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83767"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.0031,
-      "epss_percentile": 0.23782,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2026-83770",
       "title": "CVE-2026-83770 Windows Text Shaping Remote Code Execution Vulnerability",
       "severity": "bulletin",
@@ -80554,6 +80858,34 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-75888",
+      "title": "A flaw was found in the OpenShift console",
+      "severity": "high",
+      "categories": [
+        "Docker / Kubernetes"
+      ],
+      "published": "2026-10-12",
+      "updated": "2026-10-29",
+      "summary": "A flaw was found in the OpenShift console. An authenticated console user can exploit a Server-Side Request Forgery (SSRF) vulnerability by providing a specially crafted Helm chart URL without proper validation. This allows the user to make the console pod fetch arbitrary URLs, potentially leading to the disclosure of sensitive information through error messages or enabling blind port scanning within the cluster.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-75888"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.7",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:18:10.473",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-83526",
       "title": "The FV Player 8 plugin for WordPress is vulnerable to Arbitrary File Upload in all versions up to, and including, 8.1.7 via the check_mimetype function",
       "severity": "high",
@@ -81619,380 +81951,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-98118",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: netfs: Fix readahead synchronisation issues by loading all folios upfront There are some synchronisation is",
-      "severity": "high",
-      "categories": [
-        "Linux",
-        "React / Next.js"
-      ],
-      "published": "2026-09-25",
-      "updated": "2026-10-28",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: netfs: Fix readahead synchronisation issues by loading all folios upfront There are some synchronisation issues that derive from the app thread adding more folios to the rolling buffer whilst the collector thread is looking at them or trying to clear them, such as determining the setting of front_folio_order when the next folio hasn't been added yet, The reason for the rolling buffer approach is that loading the buffer upfront and then dropping all the refs just acquired is quite a slow operation, and loading progressively allows some of the cost to be deferred until after at least some of the I/O is started. Instead, a better way is to load all the folios into the rolling buffer upfront - and then drop the refs later, once the I/O is in progress. (Even better would be for the refs not to be there at all.) Fix this by changing the rolling buffer loader to load all the folios selected by the VM for readahead upfront into the folio queue. The folio queue is allocated a batch worth at a time as we don't know how many folios are involved (the readahead_control struct, alas, has a page count, not a folio count). The folio refs acquired from readahead are then dropped i",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-98118"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T16:01:45Z",
-      "source_updated_at": "2026-10-28T16:00:38.963",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00156,
-      "epss_percentile": 0.04682,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-98117",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: cachefiles: Fix potential UAF/KASAN warning Currently, trace_cachefiles_coherency() is being passed a point",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-09-25",
-      "updated": "2026-10-28",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: cachefiles: Fix potential UAF/KASAN warning Currently, trace_cachefiles_coherency() is being passed a pointer to a __be64 lain over the coherency data in struct cachefiles_xattr so that it can display the first 8 bytes. However, the data is of variable length and could even be 0 bytes. This could lead to a UAF or KASAN warning. Fix this by making sure the buffer has room for at least 8 bytes and that those 8 bytes are pre-cleared. Further, those bytes are not 8-byte aligned, so fix the tracepoint to extract the data as four 2-byte words (they are 2-byte aligned) and reassemble the __be64. The compiler will convert this into a single 8-byte load where the CPU supports it.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-98117"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T16:03:25Z",
-      "source_updated_at": "2026-10-28T16:02:20.483",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00167,
-      "epss_percentile": 0.05883,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-98116",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: ALSA: pcm: Serialize PCM mmap with buffer reallocation to fix page UAF snd_pcm_hw_params() and snd_pcm_hw_f",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-09-25",
-      "updated": "2026-10-28",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: ALSA: pcm: Serialize PCM mmap with buffer reallocation to fix page UAF snd_pcm_hw_params() and snd_pcm_hw_free() guard buffer reallocation with an mmap_count check performed under the PCM stream lock, but the lock is released long before the buffer is actually freed: snd_pcm_sync_stop(), constraint refinement and do_free_pages() all happen in between. snd_pcm_mmap_data(), on the other hand, takes no lock at all: it validates against the old buffer's state and dma_bytes, remaps its pages into the VMA, and only then increments mmap_count. A concurrent mmap() can therefore slip in between the check and the free. remap_pfn_range() installs writable PTEs for the old buffer's pages without taking page references, and the subsequent do_free_pages() returns those pages to the page allocator while the VMA still maps them. This leaves a stale, writable mapping of freed pages: a page-level use-after-free that can be leveraged for local privilege escalation. Make snd_pcm_mmap_data() participate in the buffer-access scheme introduced for hw_params/hw_free: acquire runtime->buffer_accessing before validating and remapping, and release it afterwards. Buffer reallocation already ",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-98116"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T16:13:02Z",
-      "source_updated_at": "2026-10-28T16:10:22.600",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00126,
-      "epss_percentile": 0.02279,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-98114",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: ksmbd: propagate DACL parsing errors parse_dacl() silently accepts truncated ACEs and allocation failures, ",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-09-25",
-      "updated": "2026-10-28",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: ksmbd: propagate DACL parsing errors parse_dacl() silently accepts truncated ACEs and allocation failures, allowing set_info_sec() to continue with an incomplete ACL conversion. Return parsing and allocation errors to parse_sec_desc() so malformed security descriptors are rejected before inode attributes or ACL xattrs are updated.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-98114"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T17:01:48Z",
-      "source_updated_at": "2026-10-28T16:13:19.390",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00168,
-      "epss_percentile": 0.0601,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-98096",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: ipv6: sr: restore network header before routing and forwarding ipv6_srh_rcv() runs with skb->data at the Se",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-09-25",
-      "updated": "2026-10-28",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: ipv6: sr: restore network header before routing and forwarding ipv6_srh_rcv() runs with skb->data at the Segment Routing Header (SRH) while skb_network_header() points at the IPv6 header. When segments_left > 0, ipv6_srh_rcv() previously restored the skb->data position by pushing sizeof(struct ipv6hdr), assuming the SRH immediately followed the fixed IPv6 header. If another extension header (such as a Hop-by-Hop options header) precedes the SRH, skb_network_offset() remained negative. This led to two problems: 1. During ip6_route_input(), fib6_rules_early_flow_dissect() invokes __skb_flow_dissect() which passes the negative skb_network_offset() to flow dissection, breaking BPF and C flow dissector logic. 2. If forwarded via ip6_forward() or redirected via act_mirred, downstream handlers (like sch_fragment() or neighbour output) pass the negative offset as an unsigned length, triggering OOB memcpy or buffer overflows. Fix this by pushing -skb_network_offset(skb) before routing, ensuring skb_network_offset(skb) is 0 for route lookup / flow dissection as well as downstream forwarding. On the loopback path, pull skb_transport_offset(skb) to restore skb->data to the SR",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-98096"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T19:01:39Z",
-      "source_updated_at": "2026-10-28T18:58:29.167",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00505,
-      "epss_percentile": 0.43005,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-98110",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: Bluetooth: btintel: bound firmware ID by TLV length The firmware ID is treated as a NUL-terminated string e",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-09-25",
-      "updated": "2026-10-28",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: Bluetooth: btintel: bound firmware ID by TLV length The firmware ID is treated as a NUL-terminated string even though the TLV length is its only boundary. If the value does not contain a NUL terminator, snprintf() can read beyond the received response. Limit the conversion to the advertised TLV value length.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-98110"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T19:01:39Z",
-      "source_updated_at": "2026-10-28T18:41:29.217",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00168,
-      "epss_percentile": 0.06059,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-98111",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: Bluetooth: btintel: validate version TLV value lengths btintel_parse_version_tlv() verifies that a complete",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-09-25",
-      "updated": "2026-10-28",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: Bluetooth: btintel: validate version TLV value lengths btintel_parse_version_tlv() verifies that a complete TLV is present in the response, but it does not ensure that the value is long enough for the specific TLV type. A short value can therefore cause an out-of-bounds read through get_unaligned_le16(), get_unaligned_le32(), or memcpy(). Reject values shorter than the minimum required by each known TLV type. Also reject responses that do not contain the Command Complete Status field.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-98111"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T19:01:39Z",
-      "source_updated_at": "2026-10-28T18:45:26.260",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00168,
-      "epss_percentile": 0.06059,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-98112",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: ksmbd: fix listener task lifetime on netdev events The listener thread exits when its listening socket is s",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-09-25",
-      "updated": "2026-10-28",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: ksmbd: fix listener task lifetime on netdev events The listener thread exits when its listening socket is shutdown. The netdevice notifier shuts down the socket before calling kthread_stop(), so the task_struct can be freed before kthread_stop() gets its reference. Create the listener in a stopped state and hold an extra task_struct reference until kthread_stop_put() completes. Also stop and release listeners before freeing their interface records during TCP teardown.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-98112"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T19:01:39Z",
-      "source_updated_at": "2026-10-28T18:49:41.733",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0012,
-      "epss_percentile": 0.01841,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-98113",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: ksmbd: rate limit unmapped SID errors A client can include many structurally valid but unmapped SIDs in a D",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-09-25",
-      "updated": "2026-10-28",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: ksmbd: rate limit unmapped SID errors A client can include many structurally valid but unmapped SIDs in a DACL. Logging every mapping failure lets one request generate hundreds of kernel error messages. Rate limit the message to prevent an authenticated client from flooding the kernel log.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-98113"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T19:01:39Z",
-      "source_updated_at": "2026-10-28T18:52:59.003",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00205,
-      "epss_percentile": 0.10518,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-98097",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: tipc: Dont send random pad bytes in RESET/ACTIVATE messages The interface name is passed in a fixed length ",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-09-25",
-      "updated": "2026-10-28",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: tipc: Dont send random pad bytes in RESET/ACTIVATE messages The interface name is passed in a fixed length (TIPC_MAX_IF_NAME) buffer. Replace the strcpy(data, l->if_name) with memcpy() so that the pad bytes are actually written (l->if_name[] is zero padded) rather than sending random bytes from the skb to the remote system. Replace two other strcpy() with strscpy().",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-98097"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T19:09:19Z",
-      "source_updated_at": "2026-10-28T19:06:51.223",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00183,
-      "epss_percentile": 0.07888,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-98098",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: tipc: fix NULL deref in tipc_named_node_up() on empty publication list User-space applications can bind a l",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-09-25",
-      "updated": "2026-10-28",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: tipc: fix NULL deref in tipc_named_node_up() on empty publication list User-space applications can bind a large number of service addresses to one or more sockets. Each binding of a local-scope service address inserts one entry (publication) into the TIPC name table. If the number of these publications exceeds TIPC_MAX_PUBL (65535), protocol service types (such as node state and link state) are no longer inserted into the name table. This causes two issues: 1. User-space applications subscribing to node or link up/down events stop receiving notifications. 2. A NULL pointer dereference can occur: BUG: kernel NULL pointer dereference, address: 00000000000000d0 ... CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 7.2.0-rc4-default+ #5 PREEMPT(full) ... RIP: 0010:tipc_named_node_up (./include/linux/skbuff.h:2251 net/tipc/name_distr.c:195 net/tipc/name_distr.c:221) ... Call Trace: <IRQ> tipc_node_write_unlock (net/tipc/node.c:428) tipc_rcv (net/tipc/node.c:934 net/tipc/node.c:2189) tipc_udp_recv (net/tipc/udp_media.c:389) Thread 1 (tipc_net_finalize) | Thread 2 (named_distribute) -----------------------------|----------------------------- | ... | list_for_each_entry(pu",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-98098"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T19:35:42Z",
-      "source_updated_at": "2026-10-28T19:09:49.213",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0018,
-      "epss_percentile": 0.07541,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-98099",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: ipv6: mcast: use rcu_assign_pointer() for __rcu list updates Several places in net/ipv6/mcast.c update RCU-",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "React / Next.js"
-      ],
-      "published": "2026-09-25",
-      "updated": "2026-10-28",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: ipv6: mcast: use rcu_assign_pointer() for __rcu list updates Several places in net/ipv6/mcast.c update RCU-protected lists (np->ipv6_mc_list, idev->mc_list, idev->mc_tomb) using direct pointer assignments instead of rcu_assign_pointer(): 1. In __ipv6_dev_mc_dec(), unlinking a group from idev->mc_list did: *map = ma->next; without rcu_assign_pointer() while concurrent readers traverse idev->mc_list locklessly under rcu_read_lock(). 2. In ipv6_sock_mc_drop() and __ipv6_sock_mc_close(), unlinking a group from np->ipv6_mc_list directly assigned *lnk = mc_lst->next and np->ipv6_mc_list = mc_lst->next without rcu_assign_pointer(), racing with lockless readers in inet6_mc_check(). 3. In __ipv6_sock_mc_join(), mc_lst->next was initialized to np->ipv6_mc_list via raw assignment before publishing mc_lst. 4. In mld_del_delrec() and __ipv6_dev_mc_inc(), __rcu source pointers passed into rcu_assign_pointer() lacked explicit dereference helpers. Fix these by consistently using rcu_assign_pointer() along with mc_dereference() / sock_dereference().",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-98099"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T19:35:42Z",
-      "source_updated_at": "2026-10-28T19:12:29.760",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00183,
-      "epss_percentile": 0.07872,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2026-97320",
       "title": "A flaw has been found in YunaiV/zhijiantianya ruoyi-vue-pro up to 2026.08",
       "severity": "low",
@@ -82017,6 +81975,134 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-29T08:12:13Z",
       "source_updated_at": "2026-10-29T07:16:45.180",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-91788",
+      "title": "When implementing the JavaScript interface, Foxit PDF Editor/Reader did not perform the attribute authorization checks required by the specification",
+      "severity": "medium",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-09-23",
+      "updated": "2026-10-29",
+      "summary": "When implementing the JavaScript interface, Foxit PDF Editor/Reader did not perform the attribute authorization checks required by the specification. As a result, a trusted malicious PDF could potentially access sensitive content from other documents within the same process and transmit it externally.",
+      "affected": "Products identified in NVD configurations: foxit pdf_editor; foxit pdf_reader; microsoft windows; apple macos",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-91788"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://www.foxit.com/support/security-bulletins.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:11:18.827",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-91794",
+      "title": "An out-of-bounds write vulnerability exists in the PDF rendering process of Foxit PDF Editor/Reader due to insufficient consistency and boundary validation when processing mal",
+      "severity": "high",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-09-23",
+      "updated": "2026-10-29",
+      "summary": "An out-of-bounds write vulnerability exists in the PDF rendering process of Foxit PDF Editor/Reader due to insufficient consistency and boundary validation when processing malformed color space data, which may cause the program to crash and potentially lead to remote code execution.",
+      "affected": "Products identified in NVD configurations: foxit pdf_editor; foxit pdf_reader; microsoft windows; apple macos",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-91794"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://www.foxit.com/support/security-bulletins.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:13:18.373",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-91798",
+      "title": "A local privilege escalation vulnerability exists in the update daemon of Foxit PDF Editor/Reader due to an insecure permission configuration that allows the configuration fil",
+      "severity": "high",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-09-23",
+      "updated": "2026-10-29",
+      "summary": "A local privilege escalation vulnerability exists in the update daemon of Foxit PDF Editor/Reader due to an insecure permission configuration that allows the configuration file to be modified by regular users, which may lead to arbitrary script execution with higher privileges.",
+      "affected": "Products identified in NVD configurations: foxit pdf_editor; foxit pdf_reader; microsoft windows; apple macos",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-91798"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://www.foxit.com/support/security-bulletins.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:14:40.510",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-91814",
+      "title": "A signature validation vulnerability exists in Foxit PDF Editor/Reader’s handling of incrementally updated PDF documents",
+      "severity": "medium",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-09-23",
+      "updated": "2026-10-29",
+      "summary": "A signature validation vulnerability exists in Foxit PDF Editor/Reader’s handling of incrementally updated PDF documents. Changes to visible document content may not invalidate the existing signature, allowing attackers to alter signed content and potentially carry out content spoofing while the document continues to appear validly signed.",
+      "affected": "Products identified in NVD configurations: foxit pdf_editor; foxit pdf_reader; microsoft windows; apple macos",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-91814"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://www.foxit.com/support/security-bulletins.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:15:42.253",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -82064,72 +82150,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2025-56563",
-      "title": "A Server-Side Request Forgery vulnerability exists in sat_proxy.php in Zenith Satellite Tracker 1.0",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-09-16",
-      "updated": "2026-10-28",
-      "summary": "A Server-Side Request Forgery vulnerability exists in sat_proxy.php in Zenith Satellite Tracker 1.0. The script accepts an attacker-controlled address URL parameter and passes it to curl_setopt(CURLOPT_URL) without host or scheme validation. An unauthenticated remote attacker can leverage this to make arbitrary HTTP and HTTPS requests from the server to internal networks or cloud metadata services, potentially obtaining sensitive information or pivoting to further attacks.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-56563"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T14:17:49Z",
-      "source_updated_at": "2026-10-28T14:10:00.220",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00577,
-      "epss_percentile": 0.4743,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-70341",
-      "title": "Use after free in Microsoft Edge (Chromium-based) allows an authorized attacker to execute code over a network.",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-09-11",
-      "updated": "2026-10-28",
-      "summary": "Use after free in Microsoft Edge (Chromium-based) allows an authorized attacker to execute code over a network.",
-      "affected": "Products identified in NVD configurations: microsoft edge; apple macos; linux linux_kernel; microsoft edge_chromium",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-70341"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-70341"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T21:25:30Z",
-      "source_updated_at": "2026-10-28T21:17:16.087",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00637,
-      "epss_percentile": 0.50413,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2026-74860",
       "title": "A flaw was found in libxml2 with Python bindings enabled",
       "severity": "high",
@@ -82154,6 +82174,62 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-29T14:30:14Z",
       "source_updated_at": "2026-10-29T14:17:59.247",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-84387",
+      "title": "An Improper Neutralization of Special Elements used in a Command ('Command Injection') vulnerability [CWE-77] vulnerability in Fortinet FortiSandbox 5.2.0, FortiSandbox 5.0.0 ",
+      "severity": "high",
+      "categories": [
+        "Fortinet"
+      ],
+      "published": "2026-09-08",
+      "updated": "2026-10-29",
+      "summary": "An Improper Neutralization of Special Elements used in a Command ('Command Injection') vulnerability [CWE-77] vulnerability in Fortinet FortiSandbox 5.2.0, FortiSandbox 5.0.0 through 5.0.6, FortiSandbox 4.4.0 through 4.4.9, FortiSandbox 4.2 all versions may allow a privileged attacker to execute unauthorized code or commands via crafted HTTP requests.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-84387"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:18:10.893",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-84392",
+      "title": "A NULL Pointer Dereference vulnerability [CWE-476] vulnerability in Fortinet FortiOS 7.4 all versions, FortiOS 7.2 all versions, FortiOS 7.0 all versions, FortiOS 6.4 all vers",
+      "severity": "low",
+      "categories": [
+        "Fortinet"
+      ],
+      "published": "2026-09-08",
+      "updated": "2026-10-29",
+      "summary": "A NULL Pointer Dereference vulnerability [CWE-476] vulnerability in Fortinet FortiOS 7.4 all versions, FortiOS 7.2 all versions, FortiOS 7.0 all versions, FortiOS 6.4 all versions, FortiPAM 1.9.0, FortiPAM 1.8 all versions, FortiPAM 1.7 all versions, FortiPAM 1.6 all versions, FortiPAM 1.5 all versions, FortiPAM 1.4 all versions, FortiPAM 1.3 all versions, FortiPAM 1.2 all versions, FortiPAM 1.1 all versions, FortiPAM 1.0 all versions, FortiProxy 7.6.0 through 7.6.6, FortiProxy 7.4 all versions, FortiProxy 7.2 all versions may allow an authenticated attacker to crash the httpsd daemon via crafted HTTP requests.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-84392"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "2.7",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:18:11.017",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -82229,6 +82305,38 @@
       "epss_as_of": "2026-10-29"
     },
     {
+      "id": "CVE-2026-71408",
+      "title": "A allocation of resources without limits or throttling vulnerability in Fortinet FortiOS 7.6.0 through 7.6.6, FortiOS 7.4 all versions, FortiOS 7.2 all versions, FortiOS 7.0 a",
+      "severity": "medium",
+      "categories": [
+        "Fortinet"
+      ],
+      "published": "2026-08-12",
+      "updated": "2026-10-29",
+      "summary": "A allocation of resources without limits or throttling vulnerability in Fortinet FortiOS 7.6.0 through 7.6.6, FortiOS 7.4 all versions, FortiOS 7.2 all versions, FortiOS 7.0 all versions, FortiOS 6.4 all versions may allow an unauthenticated attacker to perform a slow HTTP DoS attack on the web interface via crafted HTTP requests.",
+      "affected": "Products identified in NVD configurations: fortinet fortios",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-71408"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://fortiguard.fortinet.com/psirt/FG-IR-26-162"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-29T17:18:10.297",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-41709",
       "title": "VMware ESX contains an insufficient logging vulnerability. A malicious administrator could exploit this issue to perform certain operations without them being logged.",
       "severity": "low",
@@ -82238,7 +82346,7 @@
       "published": "2026-07-30",
       "updated": "2026-10-29",
       "summary": "VMware ESX contains an insufficient logging vulnerability. A malicious administrator could exploit this issue to perform certain operations without them being logged.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "affected": "Products identified in NVD configurations: vmware esxi; vmware cloud_foundation; vmware telco_cloud_platform; vmware vsphere_foundation",
       "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
       "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
       "sources": [
@@ -82249,6 +82357,10 @@
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-41709"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://support.broadcom.com/web/ecx/support-content-notification/-/external/content/SecurityAdvisories/0/38017"
         }
       ],
       "exploitation": "Confirmed: listed in CISA KEV",
@@ -82256,7 +82368,7 @@
       "cvss": "2.7",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-28T19:56:25Z",
-      "source_updated_at": "2026-10-29T04:18:36.507",
+      "source_updated_at": "2026-10-29T17:29:11.590",
       "source_type": "nvd",
       "known_exploited": true,
       "epss": 0.00297,
@@ -82370,49 +82482,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-54458",
-      "title": "WWBN AVideo: Unauthenticated Stored DOM Cross-Site Scripting via Per-Client Metadata Broadcast in YPTSocket Plugin",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "JavaScript / TypeScript",
-        "PHP",
-        "jQuery / Bootstrap"
-      ],
-      "published": "2026-06-04",
-      "updated": "2026-10-29",
-      "summary": "## Summary A stored DOM Cross-Site Scripting vulnerability (CWE-79) in the AVideo YPTSocket plugin lets any unauthenticated remote attacker execute arbitrary JavaScript in the authenticated origin of every administrator currently viewing a page that renders the YPTSocket online-users debug panel. `plugin/YPTSocket/getWebSocket.json.php` issues a signed WebSocket token to any anonymous caller, and `MessageSQLiteV2::onOpen` at `plugin/YPTSocket/MessageSQLiteV2.php` lines 91 and 110 reads the attacker-controlled `webSocketSelfURI` and `page_title` query parameters from the WebSocket connection URL with no validation. Both values persist into the in-memory SQLite `connections` table and broadcast inside the `users_id_online` array sent to every connected client; on the client, `plugin/YPTSocket/script.js::updateSocketUserCard` interpolates the broadcast `page_title` into an HTML template literal that is passed to jQuery `$.append(html)`, which parses attacker bytes into live DOM nodes including `<img>` with inline event handlers. ## Details `plugin/YPTSocket/getWebSocket.json.php` issues a WebSocket token to any caller; the only gate is `AVideoPlugin::isEnabledByName(\"YPTSocket\")`. The token-issuance helper `getEncryptedInfo()` at `plugin/YPTSocket/functions.php:21-24` writes `$_REQU",
-      "affected": "composer: WWBN/AVideo (< 29.1.0)",
-      "remediation": "WWBN/AVideo: 29.1.0",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-8whc-2wmv-ww35"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/WWBN/AVideo/security/advisories/GHSA-8whc-2wmv-ww35"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/WWBN/AVideo/commit/8be71e53ccbe9b84b30870db386fb4d2b11e1c16"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-54458"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.6",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-29T14:46:18Z",
-      "source_updated_at": "2026-10-29T14:42:21Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-7198",
       "title": "Progress Sitefinity improper access control in web services",
       "severity": "critical",
@@ -82445,42 +82514,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00443,
       "epss_percentile": 0.38457,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-46300",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: net: skbuff: preserve shared-frag marker during coalescing skb_try_coalesce() can attach paged frags from @",
-      "severity": "high",
-      "categories": [
-        "Linux",
-        "PHP"
-      ],
-      "published": "2026-05-23",
-      "updated": "2026-10-29",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: net: skbuff: preserve shared-frag marker during coalescing skb_try_coalesce() can attach paged frags from @from to @to. If @from has SKBFL_SHARED_FRAG set, the resulting @to skb can contain the same externally-owned or page-cache-backed frags, but the shared-frag marker is currently lost. That breaks the invariant relied on by later in-place writers. In particular, ESP input checks skb_has_shared_frag() before deciding whether an uncloned nonlinear skb can skip skb_cow_data(). If TCP receive coalescing has moved shared frags into an unmarked skb, ESP can see skb_has_shared_frag() as false and decrypt in place over page-cache backed frags. Propagate SKBFL_SHARED_FRAG when skb_try_coalesce() transfers paged frags. The tailroom copy path does not need the marker because it copies bytes into @to's linear data rather than transferring frag descriptors.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-46300"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "7.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T19:56:25Z",
-      "source_updated_at": "2026-10-29T04:18:37.173",
-      "source_type": "nvd",
-      "known_exploited": true,
-      "epss": 0.10192,
-      "epss_percentile": 0.95651,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -82670,150 +82703,90 @@
       "epss": 0.00266,
       "epss_percentile": 0.18476,
       "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2024-3056",
-      "title": "A flaw was found in Podman",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2024-08-02",
-      "updated": "2026-10-29",
-      "summary": "A flaw was found in Podman. This issue may allow an attacker to create a specially crafted container that, when configured to share the same IPC with at least one other container, can create a large number of IPC resources in /dev/shm. The malicious container will continue to exhaust resources until it is out-of-memory (OOM) killed. While the malicious container's cgroup will be removed, the IPC resources it created are not. Those resources are tied to the IPC namespace that will not be removed until all containers using it are stopped, and one non-malicious container is holding the namespace open. The malicious container is restarted, either automatically or by attacker control, repeating the process and increasing the amount of memory consumed. With a container configured to restart always, such as `podman run --restart=always`, this can result in a memory-based denial of service of the system.",
-      "affected": "Products identified in NVD configurations: podman_project podman; redhat openshift_container_platform; redhat enterprise_linux; fedoraproject fedora",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-3056"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://access.redhat.com/security/cve/CVE-2024-3056"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T08:12:13Z",
-      "source_updated_at": "2026-10-29T07:16:42.900",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2024-0340",
-      "title": "A vulnerability was found in vhost_new_msg in drivers/vhost/vhost.c in the Linux kernel, which does not properly initialize memory in messages passed between virtual guests an",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2024-01-09",
-      "updated": "2026-10-29",
-      "summary": "A vulnerability was found in vhost_new_msg in drivers/vhost/vhost.c in the Linux kernel, which does not properly initialize memory in messages passed between virtual guests and the host operating system in the vhost/vhost.c:vhost_new_msg() function. This issue can allow local privileged users to read some kernel memory contents when reading from the /dev/vhost-net device file.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-0340"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T09:03:53Z",
-      "source_updated_at": "2026-10-29T08:16:58.827",
-      "source_type": "nvd",
-      "known_exploited": false
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-29T17:05:01Z",
-      "last_attempt": "2026-10-29T17:05:01Z",
-      "items_processed": 257,
+      "last_success": "2026-10-29T17:46:45Z",
+      "last_attempt": "2026-10-29T17:46:45Z",
+      "items_processed": 259,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-29T17:05:01Z",
-      "last_attempt": "2026-10-29T17:05:01Z",
+      "last_success": "2026-10-29T17:46:45Z",
+      "last_attempt": "2026-10-29T17:46:45Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-29T17:05:01Z",
-      "last_attempt": "2026-10-29T17:05:01Z",
-      "items_processed": 515,
+      "last_success": "2026-10-29T17:46:45Z",
+      "last_attempt": "2026-10-29T17:46:45Z",
+      "items_processed": 527,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-29T17:05:01Z",
-      "last_attempt": "2026-10-29T17:05:01Z",
+      "last_success": "2026-10-29T17:46:45Z",
+      "last_attempt": "2026-10-29T17:46:45Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-29T17:05:01Z",
-      "last_attempt": "2026-10-29T17:05:01Z",
+      "last_success": "2026-10-29T17:46:45Z",
+      "last_attempt": "2026-10-29T17:46:45Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-29T17:05:01Z",
-      "last_attempt": "2026-10-29T17:05:01Z",
+      "last_success": "2026-10-29T17:46:45Z",
+      "last_attempt": "2026-10-29T17:46:45Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-29T17:05:01Z",
-      "last_attempt": "2026-10-29T17:05:01Z",
+      "last_success": "2026-10-29T17:46:45Z",
+      "last_attempt": "2026-10-29T17:46:45Z",
       "items_processed": 23,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-29T17:05:01Z",
-      "last_attempt": "2026-10-29T17:05:01Z",
+      "last_success": "2026-10-29T17:46:45Z",
+      "last_attempt": "2026-10-29T17:46:45Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-29T17:05:01Z",
-      "last_attempt": "2026-10-29T17:05:01Z",
+      "last_success": "2026-10-29T17:46:45Z",
+      "last_attempt": "2026-10-29T17:46:45Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-29T17:05:01Z",
-      "last_attempt": "2026-10-29T17:05:01Z",
+      "last_success": "2026-10-29T17:46:45Z",
+      "last_attempt": "2026-10-29T17:46:45Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-29T17:05:01Z",
-      "last_attempt": "2026-10-29T17:05:01Z",
+      "last_success": "2026-10-29T17:46:45Z",
+      "last_attempt": "2026-10-29T17:46:45Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-29T17:05:01Z",
-      "last_attempt": "2026-10-29T17:05:01Z",
+      "last_success": "2026-10-29T17:46:45Z",
+      "last_attempt": "2026-10-29T17:46:45Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -82825,7 +82798,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-29T17:05:01Z",
-  "last_successful_update": "2026-10-29T17:05:01Z",
+  "last_checked_at": "2026-10-29T17:46:45Z",
+  "last_successful_update": "2026-10-29T17:46:45Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
