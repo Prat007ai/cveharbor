@@ -98,6 +98,7 @@ function renderUser(){
   });
   top.append(del);div.append(top);
   const info=summary(watch),day=daysTo(info?.date);
+  if(watch.installed_version&&info?.latest)div.append(make('p','ops-note','Installed: '+watch.installed_version+' · Latest recorded release: '+info.latest+'. Verify vendor updates before assuming the release is a security fix.'));
   div.append(make('p','ops-note',info?.date?
    (day===null?'Verify support date':day<0?'Ended '+Math.abs(day)+' days ago':day+' days remaining')+
     ' · '+info.date+' · '+info.origin:
@@ -135,7 +136,7 @@ $('lifecycleWatchForm').addEventListener('submit',async event=>{
  if(slug&&!cycle){message('Choose the exact release or cycle to monitor.');return;}
  const button=$('lifecycleWatchSave');button.disabled=true;
  try{
-  await call('/watches','POST',{product,slug,cycle,custom_eol_date:customDate,custom_source_url:customSource});
+  await call('/watches','POST',{product,slug,cycle,installed_version:$('lifecycleInstalled').value.trim(),custom_eol_date:customDate,custom_source_url:customSource});
   await load();message('Lifecycle watch saved to your D1 account.');
  }catch(e){message('Cannot save lifecycle watch: '+e.message)}
  finally{button.disabled=false}
