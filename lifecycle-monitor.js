@@ -203,7 +203,7 @@ function getCandidate(){
  const installed=$('lifecycleInstalled').value.trim();
  if(!product)throw Error('Choose a product or enter a custom product name.');
  if(slug&&!cycle)throw Error('Choose a specific release cycle.');
- if(!slug&&!/^\\d{4}-\\d{2}-\\d{2}$/.test(customDate))
+ if(!slug&&!/^\d{4}-\d{2}-\d{2}$/.test(customDate))
   throw Error('Custom products need a verified end of support date.');
  if(!slug&&(!/^https:\/\//.test(customSource)))
   throw Error('Custom products need an official HTTPS source URL.');
