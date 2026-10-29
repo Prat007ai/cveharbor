@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-29",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4263,
+  "candidate_records": 4273,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -2522,7 +2522,93 @@
       "cvss": "5.3",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-29T14:11:39Z",
-      "source_updated_at": "2026-10-29T13:17:08.727",
+      "source_updated_at": "2026-10-29T14:17:51.123",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-pr23-gvcv-c422",
+      "title": "Malware in cjlowuxbnexkhgpzq",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: cjlowuxbnexkhgpzq (>= 0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-pr23-gvcv-c422"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T14:30:14Z",
+      "source_updated_at": "2026-10-29T14:23:52Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-v78q-7787-v9rq",
+      "title": "Malware in bcxhdh1kjlopsde",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: bcxhdh1kjlopsde (>= 0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-v78q-7787-v9rq"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-29T14:30:14Z",
+      "source_updated_at": "2026-10-29T14:23:52Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2019-25781",
+      "title": "Python-Markdown 3.0 through 3.11.2 contains an algorithmic complexity vulnerability in inline link parsing that allows remote attackers to exhaust CPU through unmatched bracke",
+      "severity": "high",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-29",
+      "summary": "Python-Markdown 3.0 through 3.11.2 contains an algorithmic complexity vulnerability in inline link parsing that allows remote attackers to exhaust CPU through unmatched brackets. Attackers can submit short Markdown containing repeated [ or ![ characters, forcing LinkInlineProcessor.getText() and getLink() into quadratic scans that keep workers busy for minutes.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-25781"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.7",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T14:30:14Z",
+      "source_updated_at": "2026-10-29T14:17:39.170",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -4035,7 +4121,7 @@
       "cvss": "4.4",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-28T19:35:42Z",
-      "source_updated_at": "2026-10-29T02:16:46.267",
+      "source_updated_at": "2026-10-29T14:17:41.240",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -4250,6 +4336,34 @@
       "first_seen_at": "2026-10-28T09:59:26Z",
       "source_updated_at": "2026-10-29T09:32:35Z",
       "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116390",
+      "title": "Deserialization of Untrusted Data vulnerability in stepasyuk Filter Everything&nbsp;— WordPress &amp; WooCommerce Filters filter-everything allows Object Injection.This issue ",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-29",
+      "summary": "Deserialization of Untrusted Data vulnerability in stepasyuk Filter Everything&nbsp;— WordPress &amp; WooCommerce Filters filter-everything allows Object Injection.This issue affects Filter Everything&nbsp;— WordPress &amp; WooCommerce Filters: from n/a through 1.9.7.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116390"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T14:17:49Z",
+      "source_updated_at": "2026-10-29T14:17:49.920",
+      "source_type": "nvd",
       "known_exploited": false
     },
     {
@@ -10057,34 +10171,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-116390",
-      "title": "Deserialization of Untrusted Data vulnerability in stepasyuk Filter Everything&nbsp;— WordPress &amp; WooCommerce Filters filter-everything allows Object Injection.This issue ",
-      "severity": "high",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "Deserialization of Untrusted Data vulnerability in stepasyuk Filter Everything&nbsp;— WordPress &amp; WooCommerce Filters filter-everything allows Object Injection.This issue affects Filter Everything&nbsp;— WordPress &amp; WooCommerce Filters: from n/a through 1.9.7.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116390"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.2",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T14:17:49Z",
-      "source_updated_at": "2026-10-28T14:43:13.110",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-50541",
       "title": "Xibo is an open source digital signage platform with a web content management system and Windows display player software",
       "severity": "medium",
@@ -14733,13 +14819,17 @@
       "published": "2026-10-27",
       "updated": "2026-10-29",
       "summary": "Use after free in Browser in Google Chrome on on Windows prior to 156.0.8078.73 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: High)",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "affected": "Products identified in NVD configurations: google chrome; microsoft windows",
       "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
       "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118330"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://chromereleases.googleblog.com/2026/10/stable-channel-update-for-desktop_0562499947.html"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
@@ -14747,7 +14837,7 @@
       "cvss": "8.8",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-29T04:18:31.183",
+      "source_updated_at": "2026-10-29T14:27:14.703",
       "source_type": "nvd",
       "known_exploited": false,
       "epss": 0.00207,
@@ -15199,6 +15289,55 @@
       "known_exploited": false,
       "epss": 0.00225,
       "epss_percentile": 0.13171,
+      "epss_as_of": "2026-10-29"
+    },
+    {
+      "id": "CVE-2026-114614",
+      "title": "Authlib: is_secure_transport() loopback exemption can be bypassed with a userinfo component, allowing cleartext-HTTP URLs to non-loopback hosts",
+      "severity": "low",
+      "categories": [
+        "Application dependencies",
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-29",
+      "summary": "### Summary `authlib.common.security.is_secure_transport()` is used throughout Authlib to enforce the OAuth 2.0 / OIDC requirement that endpoint and redirect URIs use TLS, with an RFC 8252 §7.3 exemption for loopback `http://` URIs. The check is implemented as a textual `str.startswith` prefix match, so a URL such as `http://localhost:80@evil.example/cb` — whose actual host is `evil.example` and whose scheme is plain `http` — is accepted as \"secure\". An attacker who can supply a URL to any of the sinks that rely on this check (OIDC RP-Initiated Logout dynamic client registration, RFC 8414 authorization-server metadata validation, error-redirect rendering) can smuggle a cleartext non-loopback URL past the TLS-required guard. This is a defense-in-depth / spec-conformance failure; severity is low. ### Details **Affected versions:** `authlib >= 0.13, <= 1.7.2` (all releases containing the loopback prefix exemption; verified against 1.7.2, the current latest) The vulnerable function, from `authlib/common/security.py` at v1.7.2: ```python 13 def is_secure_transport(uri): 14 \"\"\"Check if the uri is over ssl.\"\"\" 15 if os.getenv(\"AUTHLIB_INSECURE_TRANSPORT\"): 16 return True 17 18 uri = uri.lower() 19 return uri.startswith( 20 (\"https://\", \"http://localhost:\", \"http://127.0.0.1:\", \"http://[",
+      "affected": "pip: authlib (<= 1.7.2)",
+      "remediation": "authlib: 1.8.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-jj7h-c3hg-m23x"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/authlib/authlib/security/advisories/GHSA-jj7h-c3hg-m23x"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-114614"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/authlib/authlib/commit/95ad1f90acf0c7b9cf2a8f25e6eb3f1135b8dc70"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-114614"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "2.6",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T04:00:40Z",
+      "source_updated_at": "2026-10-27T15:37:50Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00177,
+      "epss_percentile": 0.07224,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -20149,55 +20288,6 @@
       "known_exploited": false,
       "epss": 0.00252,
       "epss_percentile": 0.16718,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-114614",
-      "title": "Authlib: is_secure_transport() loopback exemption can be bypassed with a userinfo component, allowing cleartext-HTTP URLs to non-loopback hosts",
-      "severity": "low",
-      "categories": [
-        "Application dependencies",
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "### Summary `authlib.common.security.is_secure_transport()` is used throughout Authlib to enforce the OAuth 2.0 / OIDC requirement that endpoint and redirect URIs use TLS, with an RFC 8252 §7.3 exemption for loopback `http://` URIs. The check is implemented as a textual `str.startswith` prefix match, so a URL such as `http://localhost:80@evil.example/cb` — whose actual host is `evil.example` and whose scheme is plain `http` — is accepted as \"secure\". An attacker who can supply a URL to any of the sinks that rely on this check (OIDC RP-Initiated Logout dynamic client registration, RFC 8414 authorization-server metadata validation, error-redirect rendering) can smuggle a cleartext non-loopback URL past the TLS-required guard. This is a defense-in-depth / spec-conformance failure; severity is low. ### Details **Affected versions:** `authlib >= 0.13, <= 1.7.2` (all releases containing the loopback prefix exemption; verified against 1.7.2, the current latest) The vulnerable function, from `authlib/common/security.py` at v1.7.2: ```python 13 def is_secure_transport(uri): 14 \"\"\"Check if the uri is over ssl.\"\"\" 15 if os.getenv(\"AUTHLIB_INSECURE_TRANSPORT\"): 16 return True 17 18 uri = uri.lower() 19 return uri.startswith( 20 (\"https://\", \"http://localhost:\", \"http://127.0.0.1:\", \"http://[",
-      "affected": "pip: authlib (<= 1.7.2)",
-      "remediation": "authlib: 1.8.0",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-jj7h-c3hg-m23x"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/authlib/authlib/security/advisories/GHSA-jj7h-c3hg-m23x"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-114614"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/authlib/authlib/commit/95ad1f90acf0c7b9cf2a8f25e6eb3f1135b8dc70"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-114614"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "2.6",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T04:00:40Z",
-      "source_updated_at": "2026-10-27T15:37:50Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00177,
-      "epss_percentile": 0.07224,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -28610,6 +28700,62 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-115752",
+      "title": "Signal K Server from 2.28.0-beta.2 before 2.34.0 contains a server-side request forgery vulnerability in the App Store icon fetcher that trusts absolute signalk.appIcon URLs",
+      "severity": "low",
+      "categories": [
+        "Node.js / npm"
+      ],
+      "published": "2026-10-23",
+      "updated": "2026-10-29",
+      "summary": "Signal K Server from 2.28.0-beta.2 before 2.34.0 contains a server-side request forgery vulnerability in the App Store icon fetcher that trusts absolute signalk.appIcon URLs. Attackers publishing npm packages with Signal K keywords can make servers request loopback, vessel network, or cloud metadata endpoints, storing image-typed responses served back via the admin UI.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115752"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "2.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T14:30:14Z",
+      "source_updated_at": "2026-10-29T14:17:49.553",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-55826",
+      "title": "The GTM Server Side plugin by stape.io implements server-side tracking on WordPress websites",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-23",
+      "updated": "2026-10-29",
+      "summary": "The GTM Server Side plugin by stape.io implements server-side tracking on WordPress websites. From version 2.0.0 to before version 2.1.48, the WooCommerce purchase event tracking mechanism allows an unauthenticated attacker to trigger the rendering of another customer's full order data — including personally identifiable information (PII) — into the page's JavaScript dataLayer. This issue has been patched in version 2.1.48.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-55826"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.7",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T14:30:14Z",
+      "source_updated_at": "2026-10-29T14:17:57.137",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-115560",
       "title": "PHP session upload progress security advisory under unusual configuration",
       "severity": "bulletin",
@@ -35793,6 +35939,70 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-113170",
+      "title": "Use after free in Autofill in Google Chrome on on Android prior to 156.0.8078.47 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page",
+      "severity": "high",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-10-20",
+      "updated": "2026-10-29",
+      "summary": "Use after free in Autofill in Google Chrome on on Android prior to 156.0.8078.47 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: Medium)",
+      "affected": "Products identified in NVD configurations: google chrome; google android",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-113170"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://chromereleases.googleblog.com/2026/10/stable-channel-update-for-desktop_02018666648.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T14:30:14Z",
+      "source_updated_at": "2026-10-29T14:25:52.380",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-113180",
+      "title": "Memory corruption in ContentCapture in Google Chrome on on Android prior to 156.0.8078.47 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted ",
+      "severity": "high",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-10-20",
+      "updated": "2026-10-29",
+      "summary": "Memory corruption in ContentCapture in Google Chrome on on Android prior to 156.0.8078.47 allowed a remote attacker to execute arbitrary code inside the sandbox via a crafted HTML page. (Chromium security severity: Low)",
+      "affected": "Products identified in NVD configurations: google chrome; google android",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-113180"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://chromereleases.googleblog.com/2026/10/stable-channel-update-for-desktop_02018666648.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T14:30:14Z",
+      "source_updated_at": "2026-10-29T14:26:28.887",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-112950",
       "title": "Vitest is a Vite-native testing framework for JavaScript and TypeScript projects",
       "severity": "medium",
@@ -38086,6 +38296,62 @@
       "epss": 0.00804,
       "epss_percentile": 0.56587,
       "epss_as_of": "2026-10-29"
+    },
+    {
+      "id": "CVE-2026-100413",
+      "title": "SeaweedFS is a distributed storage system for files and blobs",
+      "severity": "high",
+      "categories": [
+        "Docker / Kubernetes"
+      ],
+      "published": "2026-10-14",
+      "updated": "2026-10-29",
+      "summary": "SeaweedFS is a distributed storage system for files and blobs. From 4.0.388 until 4.41, the SFTP Helm chart embedded one unencrypted Ed25519 private host key in k8s/charts/seaweedfs/templates/sftp/sftp-secret.yaml as stringData.seaweedfs_sftp_ssh_private_key. A standalone deployment presented that public key when sftp.enabled and sftp.enableAuth were true, sftp.existingConfigSecret was not supplied, the legacy sftp.sshPrivateKey path remained selected, a valid config-ssh Secret allowed startup, and hostKeysFolder did not provide a later Ed25519 signer. An attacker able to redirect or intercept client traffic could impersonate that SFTP endpoint to clients that trusted the published host identity, exposing password credentials or data sent to the rogue endpoint. Default all-in-one and non-authenticated standalone paths did not load the key. This issue is fixed in version 4.41.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-100413"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.0",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T14:30:14Z",
+      "source_updated_at": "2026-10-29T14:17:40.810",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-102682",
+      "title": "Pipecat is an open-source Python framework for building real-time voice and multimodal conversational agents",
+      "severity": "medium",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-10-14",
+      "updated": "2026-10-29",
+      "summary": "Pipecat is an open-source Python framework for building real-time voice and multimodal conversational agents. From 0.0.98 until 1.6.0, the pipecat-ai package's built-in development runner exposes unauthenticated endpoints including /start, /daily, and /daily-dialin-webhook that can create bot sessions and Daily rooms. The runner binds to localhost by default and is intended only for local development, so exploitation requires an operator to expose it to untrusted traffic through --host 0.0.0.0, a published port, or a tunnel without access controls. An unauthenticated caller can consume local resources and third-party quotas and, depending on configuration, receive a room URL and join token. Version 1.6.0 adds a prominent development-runner banner and documentation that clarifies the unauthenticated boundary and directs production deployments to an authenticated dispatcher or managed runtime, while the endpoint behavior remains by design. This issue is fixed in version 1.6.0.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-102682"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.6",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T14:30:14Z",
+      "source_updated_at": "2026-10-29T14:17:40.987",
+      "source_type": "nvd",
+      "known_exploited": false
     },
     {
       "id": "CVE-2026-110644",
@@ -50904,43 +51170,44 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "id": "CVE-2026-108398",
+      "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
       "cvss": "8.8",
       "categories": [
+        ".NET / ASP.NET",
         "Windows",
-        "Windows 11 OS"
+        "Windows Server OS"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
+      "summary": "Untrusted search path handling in classic Microsoft .NET Framework permits a locally authorized attacker to bypass a security feature. The patch is part of Microsoft's October 2026 .NET Framework cumulative security updates.",
+      "affected": "Multiple .NET Framework 3.5, 4.6.2 through 4.8.1 configurations across supported Windows versions, subject to Microsoft update applicability. This is a separate classic .NET Framework CVE, not the modern .NET Brotli issue.",
+      "remediation": "Install the correct October 13, 2026 .NET Framework cumulative update or a newer superseding Windows update for the installed Windows and .NET Framework versions. Consult the Microsoft patch matrix for the specific KB.",
+      "exploitation": "No confirmed active exploitation in the referenced Microsoft advisories.",
       "sources": [
         {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+          "label": "Microsoft .NET Framework October cumulative update",
+          "url": "https://learn.microsoft.com/en-us/dotnet/framework/release-notes/2026/10-13-october-cumulative-update"
         },
         {
           "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-108398"
         },
         {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+          "label": "NVD product applicability",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108398"
         }
       ],
       "kind": "cve",
       "source_type": "vendor_baseline",
       "source_updated_at": "2026-10-13",
       "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.09813,
-      "epss_percentile": 0.95532,
+      "epss": 0.00779,
+      "epss_percentile": 0.55752,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -50980,44 +51247,43 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2026-108398",
-      "title": ".NET Framework untrusted search path security feature bypass",
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
       "severity": "high",
       "cvss": "8.8",
       "categories": [
-        ".NET / ASP.NET",
         "Windows",
-        "Windows Server OS"
+        "Windows 11 OS"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
-      "summary": "Untrusted search path handling in classic Microsoft .NET Framework permits a locally authorized attacker to bypass a security feature. The patch is part of Microsoft's October 2026 .NET Framework cumulative security updates.",
-      "affected": "Multiple .NET Framework 3.5, 4.6.2 through 4.8.1 configurations across supported Windows versions, subject to Microsoft update applicability. This is a separate classic .NET Framework CVE, not the modern .NET Brotli issue.",
-      "remediation": "Install the correct October 13, 2026 .NET Framework cumulative update or a newer superseding Windows update for the installed Windows and .NET Framework versions. Consult the Microsoft patch matrix for the specific KB.",
-      "exploitation": "No confirmed active exploitation in the referenced Microsoft advisories.",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
       "sources": [
         {
-          "label": "Microsoft .NET Framework October cumulative update",
-          "url": "https://learn.microsoft.com/en-us/dotnet/framework/release-notes/2026/10-13-october-cumulative-update"
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
         },
         {
           "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-108398"
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
         },
         {
-          "label": "NVD product applicability",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108398"
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
         }
       ],
       "kind": "cve",
       "source_type": "vendor_baseline",
       "source_updated_at": "2026-10-13",
       "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00779,
-      "epss_percentile": 0.55752,
+      "epss": 0.09813,
+      "epss_percentile": 0.95532,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -75286,6 +75552,34 @@
       "epss_as_of": "2026-10-29"
     },
     {
+      "id": "CVE-2026-74860",
+      "title": "A flaw was found in libxml2 with Python bindings enabled",
+      "severity": "high",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-09-08",
+      "updated": "2026-10-29",
+      "summary": "A flaw was found in libxml2 with Python bindings enabled. A remote attacker could exploit this vulnerability by providing a specially crafted XML document containing a Document Type Definition (DTD) with enumerated attribute values. This triggers a double-free error in the SAX attributeDecl callback handler, where a string is freed twice. This flaw can lead to a denial of service (DoS) due to a reproducible crash in Python applications using the libxml2 SAX bindings.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-74860"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T14:30:14Z",
+      "source_updated_at": "2026-10-29T14:17:59.247",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-69473",
       "title": "CVE-2026-69473 Windows Kernel Elevation of Privilege Vulnerability",
       "severity": "bulletin",
@@ -77306,51 +77600,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2026-48797",
-      "title": "Backpropagate: backprop ui --auth and backprop ui --share do not enforce authentication",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Node.js / npm",
-        "Python / PyPI"
-      ],
-      "published": "2026-06-26",
-      "updated": "2026-10-27",
-      "summary": "## Summary In `backpropagate >= 1.1.0`, the optional Reflex web UI (`pip install backpropagate[ui]`, launched via `backprop ui`) exposes a training control plane: dataset upload, model load, training start/stop, multi-run orchestration, GGUF export, and HuggingFace Hub push. The CLI accepts two operator-facing flags intended as security controls: - `--auth user:pass` — documented as \"require HTTP Basic authentication on every request to the UI.\" - `--share` — documented as \"expose the UI on a public address; requires `--auth`.\" When `--auth user:pass` is passed, the CLI prints `Auth: enabled (user: <username>)` to confirm to the operator that authentication is active, then exports `BACKPROPAGATE_UI_AUTH=user:pass` to the subprocess that launches the Reflex backend. **The Reflex backend (`backpropagate/ui_app/**`) never reads `BACKPROPAGATE_UI_AUTH`.** No authentication middleware is registered. No request-level guard runs. No WebSocket upgrade guard runs. Any client that reaches the bound port — local or remote, depending on whether `--share` is used — has full UI access. An inline comment at `backpropagate/cli.py:1217-1218` in the v1.1.0 source documents the gap: *\"For Phase 1 the variable is exported but Reflex doesn't read it yet.\"* This comment was internal-facing; the user-f",
-      "affected": "pip: backpropagate (>= 1.1.0, < 1.2.0); npm: @mcptoolshop/backpropagate (>= 1.1.0, < 1.2.0)",
-      "remediation": "backpropagate: 1.2.0; @mcptoolshop/backpropagate: 1.2.0",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-f65r-h4g3-3h9h"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/mcp-tool-shop-org/backpropagate/security/advisories/GHSA-f65r-h4g3-3h9h"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-48797"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/mcp-tool-shop-org/backpropagate/releases/tag/v1.2.0"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T16:16:12Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00324,
-      "epss_percentile": 0.25405,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2026-7198",
       "title": "Progress Sitefinity improper access control in web services",
       "severity": "critical",
@@ -77497,183 +77746,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2025-65719",
-      "title": "Open Source Kubectl MCP Server vulnerable to arbitrary code execution via user interaction with crafted HTML page",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Node.js / npm",
-        "Python / PyPI"
-      ],
-      "published": "2026-05-12",
-      "updated": "2026-10-27",
-      "summary": "An issue in Open Source Kubectl MCP Server v1.1.1 allows attackers to execute arbitrary code on a victim system via user interaction with a crafted HTML page.",
-      "affected": "npm: kubectl-mcp-server (< 1.2.0); pip: kubectl-mcp-server (< 1.2.0)",
-      "remediation": "kubectl-mcp-server: 1.2.0; kubectl-mcp-server: 1.2.0",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-94gr-w3q5-rfqr"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-65719"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.ox.security/blog/cve-2025-65719-critical-rce-in-kubectl-mcp-server"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.ox.security/blog/kubectl-mcp-server-remote-code-execution"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T17:27:45Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00578,
-      "epss_percentile": 0.47475,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-31235",
-      "title": "imgaug contains an insecure deserialization vulnerability in BackgroundAugmenter class within multicore.py module",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2026-05-12",
-      "updated": "2026-10-27",
-      "summary": "The imgaug library thru 0.4.0 contains an insecure deserialization vulnerability in its BackgroundAugmenter class within the multicore.py module. The class uses Python's pickle module to deserialize data received via a multiprocessing queue in the _augment_images_worker() method without any safety checks. An attacker who can influence the data placed into this queue (e.g., through social engineering, malicious input scripts, or a compromised shared queue) can provide a malicious pickle payload. When deserialized, this payload can execute arbitrary code in the context of the worker process, leading to remote or local code execution depending on the deployment scenario.",
-      "affected": "pip: imgaug (<= 0.4.0)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-g82g-j283-hj97"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-31235"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.notion.so/CVE-2026-31235-35d1e139318881efb701d814228424a9"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/pypa/advisory-database/tree/main/vulns/imgaug/PYSEC-2026-356.yaml"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T17:17:36Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00473,
-      "epss_percentile": 0.40769,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-31233",
-      "title": "Guardrails AI contains a code injection vulnerability in its Hub package installation mechanism",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2026-05-12",
-      "updated": "2026-10-27",
-      "summary": "Guardrails AI thru 0.6.7 contains a code injection vulnerability (CWE-94) in its Hub package installation mechanism. When installing validator packages via guardrails hub install, the system retrieves a manifest from the Guardrails Hub and dynamically executes a script specified in the post_install field. The script path is constructed from untrusted manifest data and executed without proper validation or sanitization, allowing remote code execution. An attacker who can publish malicious packages to the Hub can inject arbitrary code that will be executed on any system where a victim installs the malicious package.",
-      "affected": "pip: guardrails-ai (<= 0.6.7)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-r6hf-g5x6-7pv9"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-31233"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.notion.so/CVE-2026-31233-35d1e13931888142a954fb3f50ee0c94"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/pypa/advisory-database/tree/main/vulns/guardrails-ai/PYSEC-2026-347.yaml"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T16:47:45Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00635,
-      "epss_percentile": 0.50281,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-31234",
-      "title": "Horovod contains an insecure deserialization vulnerability in its KVStore HTTP server component",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2026-05-12",
-      "updated": "2026-10-27",
-      "summary": "Horovod thru 0.28.1 contains an insecure deserialization vulnerability (CWE-502) in its KVStore HTTP server component. The KVStore server, used for distributed task coordination, lacks authentication and authorization controls, allowing any remote attacker to write arbitrary data via HTTP PUT requests. When a Horovod worker reads data from the KVStore (via HTTP GET), it deserializes the data using cloudpickle.loads() without verifying its source or integrity. An attacker can exploit this by sending a malicious pickle payload to the server before the legitimate data is written, causing the victim worker to deserialize and execute arbitrary code, leading to remote code execution.",
-      "affected": "pip: horovod (<= 0.28.1)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-mf8f-x4r3-jm8c"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-31234"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.notion.so/CVE-2026-31234-35d1e139318881d585cde508b9d2453c"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/pypa/advisory-database/tree/main/vulns/horovod/PYSEC-2026-354.yaml"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T16:28:27Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00687,
-      "epss_percentile": 0.52557,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2024-33288",
       "title": "Prison Management System Using PHP v1.0 was discovered to contain a SQL injection vulnerability via the username on the Admin login page.",
       "severity": "high",
@@ -77767,41 +77839,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2024-51092",
-      "title": "LibreNMS before 24.10.0 allows a remote attacker to execute arbitrary code via OS command injection involving AboutController.php's index(), SettingsController.php's update(),",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-05-08",
-      "updated": "2026-10-27",
-      "summary": "LibreNMS before 24.10.0 allows a remote attacker to execute arbitrary code via OS command injection involving AboutController.php's index(), SettingsController.php's update(), and PollDevice.php's initRrdDirectory().",
-      "affected": "Products identified in NVD configurations: librenms librenms",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-51092"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://github.com/librenms/librenms/security/advisories/GHSA-x645-6pf9-xwxw"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-27T23:10:00.153",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.07176,
-      "epss_percentile": 0.94271,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2023-54345",
       "title": "Frappe Framework ERPNext 13.4.0 contains a sandbox escape vulnerability in RestrictedPython that allows authenticated users with System Manager role to execute arbitrary code ",
       "severity": "high",
@@ -77861,170 +77898,6 @@
       "known_exploited": false,
       "epss": 0.0031,
       "epss_percentile": 0.23818,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-42864",
-      "title": "FireFighter has unauthenticated SSRF in its Raid jira_bot endpoint that allows IAM credential theft",
-      "severity": "critical",
-      "categories": [
-        "AWS",
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2026-05-05",
-      "updated": "2026-10-27",
-      "summary": "### Impact The `POST /api/v2/firefighter/raid/jira_bot` endpoint (`CreateJiraBotView`) is reachable without authentication (`permission_classes = [permissions.AllowAny]`). Its `attachments` payload is fetched server-side via `httpx.get()` with no URL validation, then uploaded as an attachment on the Jira ticket that gets created. An unauthenticated caller able to reach the ingress can coerce the pod into fetching arbitrary URLs — including the cloud metadata endpoint at `http://169.254.169.254/` — and exfiltrate the response as a Jira attachment. On EC2/EKS deployments that do not enforce IMDSv2, this allows theft of the temporary AWS credentials attached to the pod's IAM role. The docstring on the view claims a Bearer token is required, but the code does not enforce it. Affected code paths: - `src/firefighter/raid/views/__init__.py` — `CreateJiraBotView` - `src/firefighter/raid/serializers.py` — `LandbotIssueRequestSerializer.attachments` - `src/firefighter/raid/client.py` — `RaidJiraClient.add_attachments_to_issue` ### Patches Fixed in `firefighter-incident` `0.0.54`: - `CreateJiraBotView` now enforces `BearerTokenAuthentication` + `IsAuthenticated`. - `attachments` URLs are validated: http(s) scheme only, max 10 URLs, rejection of any host resolving to a private, loopback, lin",
-      "affected": "pip: firefighter-incident (< 0.0.54)",
-      "remediation": "firefighter-incident: 0.0.54",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-fqvv-jvhr-g5jc"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ManoManoTech/firefighter-incident/security/advisories/GHSA-fqvv-jvhr-g5jc"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ManoManoTech/firefighter-incident/commit/2586679e6f32c12d223668b73e98f4c4de7b771f"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-42864"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.9",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T16:41:08Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00272,
-      "epss_percentile": 0.19514,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-25660",
-      "title": "Codechecker has an authentication bypass for certain API calls",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2026-05-05",
-      "updated": "2026-10-27",
-      "summary": "### Summary Authentication bypass occurs when the URL ends with Authentication with certain function calls. This bypass allows assigning arbitrary permissions to any existing user in CodeChecker. ### Details The following functions are affected under the Authentication endpoint: `getAuthorisedNames`, `getPermissionsForUser`, `hasPermission`, `addPermission`, and `removePermission`. The vulnerability allows unauthenticated users to execute these function calls with arbitrary arguments. In the logs, the exploit shows as follows: ``` [INFO 2026-04-23 21:23] - 127.0.0.1:42654 -- [Anonymous] POST /v6.67/Authentication@getAuthorisedNames [INFO 2026-04-23 21:23] - 127.0.0.1:42654 -- [Anonymous] POST /v6.67/Authentication@addPermission ``` ### Impact An attacker with a CodeChecker user can effectively acquire superuser permissions by calling these endpoints. ### Patch A patch is available at https://github.com/Ericsson/codechecker/releases/tag/v6.27.4.",
-      "affected": "pip: codechecker (<= 6.27.3)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-4v9x-cqc5-j645"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/Ericsson/codechecker/security/advisories/GHSA-4v9x-cqc5-j645"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-25660"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/pypa/advisory-database/tree/main/vulns/codechecker/PYSEC-2026-317.yaml"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T16:27:41Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00447,
-      "epss_percentile": 0.38767,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-42196",
-      "title": "django-s3file is vulnerable to relative path traversal",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2026-05-05",
-      "updated": "2026-10-27",
-      "summary": "### Impact `S3FileMiddleware` is vulnerable to relative path traversal attacks, where an attacker can use a modified request to escape pre-signed upload locations and have the Django application load files from random locations into `request.FILES` Depending on how files are handled, this may lead to confidentiality and integrity issues. ### Patches Django-S3File urges all users to update to a patched version >=7.0.2.",
-      "affected": "pip: django-s3file (<= 7.0.1)",
-      "remediation": "django-s3file: 7.0.2",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-67qg-7284-2277"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/codingjoe/django-s3file/security/advisories/GHSA-67qg-7284-2277"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-42196"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/pypa/advisory-database/tree/main/vulns/django-s3file/PYSEC-2026-328.yaml"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T16:22:35Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00565,
-      "epss_percentile": 0.468,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-7710",
-      "title": "A security flaw has been discovered in YunaiV yudao-cloud up to 3.8.0",
-      "severity": "medium",
-      "categories": [
-        "Node.js / npm"
-      ],
-      "published": "2026-05-04",
-      "updated": "2026-10-27",
-      "summary": "A security flaw has been discovered in YunaiV yudao-cloud up to 3.8.0. This affects the function doFilterInternal of the file JwtAuthenticationTokenFilter.java of the component Ruoyi-Vue-Pro. Performing a manipulation of the argument mock-token results in improper authentication. Remote exploitation of the attack is possible. The exploit has been released to the public and may be used for attacks. It is suggested to update the configuration settings. The vendor explains: \"[I]t remains an explicit development feature. Production deployments must disable mock-enable; changing the mock secret alone does not disable it. We added deployment guidance, not an authentication-code patch.\"",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7710"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T00:50:07Z",
-      "source_updated_at": "2026-10-27T08:16:54.943",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00405,
-      "epss_percentile": 0.3466,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -82328,85 +82201,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-29T14:14:07Z",
-      "last_attempt": "2026-10-29T14:14:07Z",
-      "items_processed": 198,
+      "last_success": "2026-10-29T14:30:14Z",
+      "last_attempt": "2026-10-29T14:30:14Z",
+      "items_processed": 197,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-29T14:14:07Z",
-      "last_attempt": "2026-10-29T14:14:07Z",
+      "last_success": "2026-10-29T14:30:14Z",
+      "last_attempt": "2026-10-29T14:30:14Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-29T14:14:07Z",
-      "last_attempt": "2026-10-29T14:14:07Z",
-      "items_processed": 430,
+      "last_success": "2026-10-29T14:30:14Z",
+      "last_attempt": "2026-10-29T14:30:14Z",
+      "items_processed": 425,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-29T14:14:07Z",
-      "last_attempt": "2026-10-29T14:14:07Z",
+      "last_success": "2026-10-29T14:30:14Z",
+      "last_attempt": "2026-10-29T14:30:14Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-29T14:14:07Z",
-      "last_attempt": "2026-10-29T14:14:07Z",
+      "last_success": "2026-10-29T14:30:14Z",
+      "last_attempt": "2026-10-29T14:30:14Z",
       "items_processed": 2558,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-29T14:14:07Z",
-      "last_attempt": "2026-10-29T14:14:07Z",
+      "last_success": "2026-10-29T14:30:14Z",
+      "last_attempt": "2026-10-29T14:30:14Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-29T14:14:07Z",
-      "last_attempt": "2026-10-29T14:14:07Z",
+      "last_success": "2026-10-29T14:30:14Z",
+      "last_attempt": "2026-10-29T14:30:14Z",
       "items_processed": 23,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-29T14:14:07Z",
-      "last_attempt": "2026-10-29T14:14:07Z",
+      "last_success": "2026-10-29T14:30:14Z",
+      "last_attempt": "2026-10-29T14:30:14Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-29T14:14:07Z",
-      "last_attempt": "2026-10-29T14:14:07Z",
+      "last_success": "2026-10-29T14:30:14Z",
+      "last_attempt": "2026-10-29T14:30:14Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-29T14:14:07Z",
-      "last_attempt": "2026-10-29T14:14:07Z",
+      "last_success": "2026-10-29T14:30:14Z",
+      "last_attempt": "2026-10-29T14:30:14Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-29T14:14:07Z",
-      "last_attempt": "2026-10-29T14:14:07Z",
+      "last_success": "2026-10-29T14:30:14Z",
+      "last_attempt": "2026-10-29T14:30:14Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-29T14:14:07Z",
-      "last_attempt": "2026-10-29T14:14:07Z",
+      "last_success": "2026-10-29T14:30:14Z",
+      "last_attempt": "2026-10-29T14:30:14Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -82418,7 +82291,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-29T14:14:07Z",
-  "last_successful_update": "2026-10-29T14:14:07Z",
+  "last_checked_at": "2026-10-29T14:30:14Z",
+  "last_successful_update": "2026-10-29T14:30:14Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
