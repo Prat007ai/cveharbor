@@ -47,8 +47,9 @@ window.fetch=async (url,options={})=>{
  if(String(url).endsWith('/me'))return {ok:true,json:async()=>({authenticated:true,email:'admin@example.com'})};
  if(String(url).endsWith('/inventory/status'))return {ok:true,json:async()=>({ready:true})};
  if(String(url).endsWith('/inventory'))return {ok:true,json:async()=>sample};
- if(String(url).endsWith('/finding-tickets'))return {ok:true,json:async()=>({ready:true,tickets:[]})};
- if(String(url).includes('/finding-tickets/')&&options.method==='PUT'){statusWrites.push({ticket:JSON.parse(options.body).ticket_number});return {ok:true,json:async()=>({saved:true})}}
+ if(String(url).endsWith('/finding-tickets'))return {ok:true,json:async()=>({ready:true,append_ready:true,tickets:[]})};
+ if(String(url).includes('/finding-tickets/')&&options.method==='POST'){statusWrites.push({ticket:JSON.parse(options.body).ticket_number});return {ok:true,json:async()=>({saved:true})}}
+ if(String(url).endsWith('/plugin-sources'))return {ok:true,json:async()=>({ready:true,sources:[]})};
  if(String(url).endsWith('/finding-statuses'))return {ok:true,json:async()=>({ready:true,statuses:[]})};
  if(String(url).includes('/finding-statuses/')&&options.method==='PUT'){
   const body=JSON.parse(options.body);statusWrites.push({url:String(url),...body});savedStatus=body.status;
@@ -99,6 +100,11 @@ ticketInput.value='WOODBINE-123';
 doc.querySelector('.customer-ticket-save').click();
 await new Promise(resolve=>setTimeout(resolve,20));
 assert.ok(statusWrites.some(x=>x.ticket==='WOODBINE-123'),'ticket reference saved');
+assert.match(doc.querySelector('.customer-ticket-history').textContent,/WOODBINE-123/,'previous ticket preserved as read only');
+const second=doc.querySelector('.customer-ticket-input');second.value='WOODBINE-124';doc.querySelector('.customer-ticket-save').click();
+await new Promise(resolve=>setTimeout(resolve,20));
+assert.deepEqual(statusWrites.filter(x=>x.ticket).map(x=>x.ticket),['WOODBINE-123','WOODBINE-124']);
+assert.match(doc.querySelector('.customer-ticket-history').textContent,/WOODBINE-123.*WOODBINE-124/,'multiple immutable tickets displayed');
 assert.ok(doc.querySelector('.customer-ticket-save'),'ticket reference action present');
 const statusSelect=doc.querySelector('.customer-finding-status-select');
 assert.ok(statusSelect&&!statusSelect.disabled,'status is editable when D1 tracking is ready');
