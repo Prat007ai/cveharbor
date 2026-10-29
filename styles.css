@@ -1466,3 +1466,11 @@ body.command-center-app{padding-left:74px}
 @media(max-width:600px){.hero-intelligence-network{opacity:.68}.hero-network-status-tail{display:none}.hero-network-labels{display:none}.hero-visual{min-height:310px}}
 @media(prefers-reduced-motion:reduce){.hero-network-rings circle,.hero-network-led{animation:none!important}.hero-network-movement{display:none!important}}
 @media print{.hero-intelligence-network{display:none}}
+
+/* Keep intelligence labels clear of floating badges and bottom caption. */
+.hero-network-labels text{font-size:10px;letter-spacing:1.5px}
+.hero-network-status{left:8%;bottom:18px;z-index:5;max-width:78%;padding:8px 12px;border:1px solid #36636a;background:rgba(10,29,41,.88);border-radius:7px;font-size:11px;letter-spacing:.15px;line-height:1.5;white-space:normal;box-shadow:0 5px 18px #03131b55}
+.hero-network-led{flex:0 0 7px}
+@media(min-width:1200px){.hero-network-status{left:27%;bottom:14px;max-width:58%}}
+@media(max-width:820px){.hero-network-status{left:5%;bottom:12px;max-width:90%}}
+@media(max-width:600px){.hero-network-status{font-size:10px;bottom:7px;max-width:94%;padding:6px 9px}}
