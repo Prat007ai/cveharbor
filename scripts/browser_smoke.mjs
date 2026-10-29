@@ -228,7 +228,7 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes("fileInput.type='file'
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('file.size>65536'),'plugin upload has a file size limit');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("Technology | Version"),'technology version entry format is validated');
 
-assert.ok(html.includes('inventory.js?v=wp-plugin-upload-4'),'public build references account inventory client');
+assert.ok(html.includes('inventory.js?v=wp-plugin-upload-5'),'public build references account inventory client');
 const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
 const picker=inventoryDom.window.document.querySelector('.inventory-plugin-import input[type=file]');
