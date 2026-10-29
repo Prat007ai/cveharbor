@@ -5,6 +5,30 @@ import fs from 'node:fs';
 import { JSDOM } from 'jsdom';
 
 const html=fs.readFileSync('index.html','utf8');
+// Validate every canonical page is actually emitted by the Pages build.
+const routes={
+ 'vulnerabilities':['technology','advisories'],
+ 'alerts':['securityWorkspace'],
+ 'threats':['threat-intelligence'],
+ 'malware':['malware-intelligence'],
+ 'lifecycle':['lifecycleMonitor'],
+ 'environments':['inventoryWorkspace'],
+ 'admin-tools':['operationsCentre'],
+ 'remediation':['remediationTracker']
+};
+for(const [route,ids] of Object.entries(routes)){
+ const output='public/'+route+'/index.html';
+ assert.ok(fs.existsSync(output),'dedicated page exists: '+route);
+ const page=fs.readFileSync(output,'utf8');
+ assert.ok(page.includes('data-page="'+route+'"'),'page renders its own route: '+route);
+ assert.ok(page.includes('src="/app.js?'),'nested page loads the root-level CVE popup application');
+ assert.ok(page.includes('src="/data.js"'),'nested page loads public data from site root');
+ assert.ok(page.includes('src="/page-router.js'),'route compatibility module loads');
+ for(const id of ids)assert.ok(page.includes('id="'+id+'"'),'preserve section/deep-link target '+id);
+}
+assert.ok(fs.readFileSync('public/index.html','utf8').includes('data-page="home"'),
+ 'homepage uses compact overview layout');
+
 const script=fs.readFileSync('app.js','utf8');
 const catalog=JSON.parse(fs.readFileSync('data/demo-advisories.json','utf8'));
 const dom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only',pretendToBeVisual:true});
@@ -268,7 +292,7 @@ const workspaceHtml=fs.readFileSync('workspace/index.html','utf8');
 assert.match(accountHtml,/accountPageRequest/);
 assert.match(accountHtml,/accountPageVerify/);
 assert.match(accountHtml,/accountPageLogout/);
-assert.ok(workspaceHtml.includes('href="/#inventoryWorkspace"')&&workspaceHtml.includes('href="/#lifecycleMonitor"'),
+assert.ok(workspaceHtml.includes('href="/environments/#inventoryWorkspace"')&&workspaceHtml.includes('href="/lifecycle/#lifecycleMonitor"'),
  'workspace links keep existing feature anchors operational');
 const accountPageDom=new JSDOM(accountHtml,{url:'https://cveharbor.com/account/?mode=register',runScripts:'outside-only'});
 const aw=accountPageDom.window,ad=aw.document;
@@ -651,3 +675,9 @@ assert.ok(detailDialog.hasAttribute('open'),'watchlist item opens same popup');
 detailWindow.close();
 
 console.log('CVEHarbor browser smoke passed: 38 categories, publication badges, list, details, focus, search and feed status.');
+
+// The public build will supply separate canonical URLs while preserving
+// the existing element IDs for all legacy popup / dashboard scripts.
+assert.ok(html.includes('page-router.js?v=multipage-1'),'shared page navigation is loaded');
+assert.ok(html.includes('href="/vulnerabilities/"'),'advisories have a distinct navigation URL');
+assert.ok(html.includes('href="/lifecycle/"'),'lifecycle has a distinct navigation URL');

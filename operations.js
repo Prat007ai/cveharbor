@@ -234,6 +234,6 @@ for(const entry of cycles){
 }
 $('firewallObservedCount').textContent=(threats.indicators||[]).length+' reported IP indicators in the current snapshot';
 for(const item of [['FortiGate initial','fortigate-suspicious-ip-initial.txt'],['FortiGate incremental','fortigate-suspicious-ip-incremental.txt'],['Sophos initial','sophos-suspicious-ip-initial.txt'],['Sophos incremental','sophos-suspicious-ip-incremental.txt']]){
- const a=elem('a','ops-download',item[0]);a.href=item[1];a.download=item[1];$('firewallDownloads').append(a);
+ const a=elem('a','ops-download',item[0]);a.href='/'+item[1];a.download=item[1];$('firewallDownloads').append(a);
 }
 })();

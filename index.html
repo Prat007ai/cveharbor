@@ -8,7 +8,7 @@
   <meta property="og:title" content="CVEHarbor | Know the risk. Find the fix.">
   <meta property="og:description" content="Vulnerability advisories, severity dashboards, affected versions, vendor sources and remediation guidance.">
   <title>CVEHarbor | Vulnerability Intelligence</title>
-  <link rel="stylesheet" href="styles.css?v=account-navigation-1">
+  <link rel="stylesheet" href="/styles.css?v=multipage-1">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
@@ -20,7 +20,7 @@
         <span class="brand-type">CVE<span>Harbor</span><small>VULNERABILITY INTELLIGENCE</small></span>
       </a>
       <nav class="topnav" aria-label="Main navigation">
-        <a href="#dashboard">Overview</a><a href="#advisories">Advisories</a><a href="#technology">Technologies</a><a href="#securityWorkspace">My Watchlist &amp; Alerts</a><a href="#operationsCentre">Admin Toolkit</a><a href="#threat-intelligence">Threat IPs</a><a href="#malware-intelligence">Malware</a><a href="#methodology">Methodology</a>
+        <a href="/">Home</a><a href="/vulnerabilities/">Vulnerabilities</a><a href="/threats/">Threat IPs</a><a href="/malware/">Malware</a><a href="/lifecycle/">Lifecycle</a><a href="/admin-tools/">Admin Tools</a><a href="/workspace/">My Workspace</a>
       </nav>
       <div class="header-account-actions" id="headerAccountActions">
         <a href="/account/?mode=login" class="header-account-login">Log In</a>
@@ -29,6 +29,7 @@
     </div>
   </div>
   <main>
+    <div id="pageSectionIntro" class="shell section page-section-intro" hidden><p class="eyebrow">CVEHARBOR SECURITY INTELLIGENCE</p><h1>Vulnerability Intelligence</h1><p>Explore source-backed security intelligence and practical tools.</p></div>
     <section class="hero" aria-labelledby="heroTitle">
       <div class="shell hero-grid">
         <div class="hero-copy">
@@ -366,6 +367,7 @@
   </dialog>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="malware-data.js"></script><script src="malware.js?v=family-profiles-3"></script><script src="threat-data.js"></script><script src="threats.js?v=detail-popup-2"></script><script defer src="geo-map.js?v=1"></script><script src="data.js"></script><script src="disclosure-trend.js?v=30day-1"></script><script src="catalog.js?v=20261028a"></script><script src="app.js?v=d1-assignments-1"></script><script src="workspace.js?v=d1-assignments-1"></script><script src="lifecycle.js"></script><script src="lifecycle-monitor.js?v=details-search-2"></script><script src="operations.js?v=d1-assignments-1"></script><script src="inventory-matching.js?v=1"></script><script src="inventory.js?v=multi-stack-3"></script><script src="accounts.js?v=d1-assignments-1"></script>
+  <script src="/page-router.js?v=multipage-1"></script>
   <script src="/header-auth.js?v=account-navigation-1"></script>
 </body>
 </html>

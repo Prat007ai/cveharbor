@@ -1017,3 +1017,25 @@ button.tech-chart-link b{
 #workspaceSignIn p{width:100%}
 @media(max-width:1050px){.topbar{flex-wrap:wrap}.header-account-actions{margin-left:auto}}
 @media(max-width:680px){.account-landing-grid,.workspace-landing-grid{grid-template-columns:1fr}.account-entry-panel,.account-benefits{padding:20px}.account-landing{padding-top:32px}.header-account-actions a{padding:9px 11px}.header-account-user{max-width:120px}}
+
+/* Dedicated CVEHarbor pages: keep shared nodes for current popup and feed handlers. */
+body[data-page] .hero,body[data-page] main>section{display:none}
+body[data-page="home"] .hero,body[data-page="home"] #dashboard,body[data-page="home"] #methodology{display:block}
+body[data-page="vulnerabilities"] #technology,body[data-page="vulnerabilities"] #advisories{display:block}
+body[data-page="alerts"] #securityWorkspace{display:block}
+body[data-page="threats"] #threat-intelligence{display:block}
+body[data-page="malware"] #malware-intelligence{display:block}
+body[data-page="lifecycle"] #lifecycleMonitor{display:block}
+body[data-page="environments"] #inventoryWorkspace{display:block}
+body[data-page="admin-tools"] #operationsCentre{display:block}
+body[data-page="remediation"] #operationsCentre{display:block}
+body[data-page="remediation"] #patchTracker,
+body[data-page="remediation"] #versionChecker,
+body[data-page="remediation"] #firewallCentre{display:none}
+body[data-page="remediation"] #operationsCentre .ops-grid{grid-template-columns:minmax(0,1fr)}
+body[data-page="remediation"] #remediationTracker{max-width:900px;width:100%;margin:auto}
+body[data-page="home"] .page-section-intro{display:none!important}
+.page-section-intro{padding-top:36px;padding-bottom:5px}
+.page-section-intro h1{font-size:clamp(27px,3.5vw,44px);margin:4px 0 9px}
+.page-section-intro p:not(.eyebrow){color:#b6d0de;font-size:13px}
+.topnav a[aria-current="page"]{color:#75e6d5;text-decoration:underline;text-underline-offset:7px}

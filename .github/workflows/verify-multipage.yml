@@ -1,0 +1,68 @@
+name: Verify live CVEHarbor section pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - page-router.js
+      - styles.css
+      - scripts/build_site.py
+      - workspace/index.html
+      - account/index.html
+      - .github/workflows/verify-multipage.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-pages:
+    name: Verify all canonical page URLs and shared modal scripts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check production GitHub Pages routes
+        run: |
+          python - <<'PY'
+          import time
+          import urllib.request
+
+          host = 'https://cveharbor.com'
+          paths = {
+              '/': 'data-page="home"',
+              '/vulnerabilities/': 'data-page="vulnerabilities"',
+              '/alerts/': 'data-page="alerts"',
+              '/threats/': 'data-page="threats"',
+              '/malware/': 'data-page="malware"',
+              '/lifecycle/': 'data-page="lifecycle"',
+              '/environments/': 'data-page="environments"',
+              '/admin-tools/': 'data-page="admin-tools"',
+              '/remediation/': 'data-page="remediation"',
+              '/account/': 'accountPageRequest',
+              '/workspace/': 'workspaceAccess',
+          }
+          for attempt in range(1, 16):
+              failed = []
+              for route, expected in paths.items():
+                  try:
+                      req = urllib.request.Request(host + route, headers={
+                          'User-Agent': 'CVEHarbor-Multipage-Live-Verification/1.0',
+                          'Cache-Control': 'no-cache'
+                      })
+                      with urllib.request.urlopen(req, timeout=20) as response:
+                          html = response.read(200000).decode('utf-8')
+                      if expected not in html:
+                          failed.append(route + ': expected section marker absent')
+                      if route not in ('/account/', '/workspace/'):
+                          if 'src="/app.js?' not in html or 'src="/page-router.js?' not in html:
+                              failed.append(route + ': root-level assets unavailable')
+                  except Exception as exc:
+                      failed.append(route + ': ' + type(exc).__name__)
+              if not failed:
+                  print('PASS: all 11 CVEHarbor pages and root-level scripts are live')
+                  break
+              print('Attempt',attempt,'not yet ready:',', '.join(failed))
+              if attempt == 15:
+                  raise SystemExit('Multipage deployment verification failed')
+              time.sleep(12)
+          PY
