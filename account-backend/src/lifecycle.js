@@ -43,6 +43,19 @@ export async function handler(req,env,user,path,data={}){
   return response({watches:watches.results||[],preferences:prefs||{email_enabled:0,lead_days:90},
     email_delivery_active:env.LIFECYCLE_DELIVERY_ENABLED==='true'});
  }
+ if(path==='/v1/lifecycle/watches/bulk'&&req.method==='POST'){
+  if(!Array.isArray(data.watches)||!data.watches.length||data.watches.length>30)
+   throw new LifecycleError('Choose between 1 and 30 products per batch');
+  const watches=data.watches.map(normalizeWatch);
+  const keys=new Set(watches.map(w=>[w.slug,w.cycle,w.product.toLowerCase(),w.custom_eol_date].join('|')));
+  if(keys.size!==watches.length)throw new LifecycleError('Remove duplicate products from this batch');
+  const current=await env.DB.prepare('SELECT COUNT(*) AS total FROM lifecycle_watches WHERE user_id=?').bind(user.id).first();
+  if(Number(current?.total||0)+watches.length>100)throw new LifecycleError('Limit of 100 monitored products per account',409);
+  const statements=watches.map(w=>env.DB.prepare('INSERT INTO lifecycle_watches(user_id,id,product,slug,cycle,installed_version,custom_eol_date,custom_source_url,created_at) VALUES(?,?,?,?,?,?,?,?,?)')
+   .bind(user.id,w.id,w.product,w.slug,w.cycle,w.installed_version,w.custom_eol_date,w.custom_source_url,now()));
+  await env.DB.batch(statements);
+  return response({saved:true,count:watches.length},201);
+ }
  if(path==='/v1/lifecycle/watches'&&req.method==='POST'){
   const watch=normalizeWatch(data);
   const count=await env.DB.prepare('SELECT COUNT(*) AS total FROM lifecycle_watches WHERE user_id=?').bind(user.id).first();
