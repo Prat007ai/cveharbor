@@ -40,7 +40,17 @@ PRODUCTS={
 }
 
 def build():
-    result={"checked_at":datetime.now(timezone.utc).isoformat(),"cycles":[],"errors":[]}
+    result={"checked_at":datetime.now(timezone.utc).isoformat(),"cycles":[],"errors":[],"available_products":[]}
+    try:
+        req=urllib.request.Request("https://endoflife.date/api/all.json",
+            headers={"User-Agent":"CVEHarbor-Lifecycle/1.0","Accept":"application/json"})
+        with urllib.request.urlopen(req,timeout=20) as resp:
+            entries=json.loads(resp.read(100_000))
+        if not isinstance(entries,list):raise ValueError("Unexpected product directory")
+        result["available_products"]=[x for x in entries if isinstance(x,str)
+            and 1<=len(x)<=70 and all(c.islower() or c.isdigit() or c=="-" for c in x)][:1000]
+    except Exception as exc:
+        result["errors"].append({"product":"product-directory","reason":str(exc)[:120]})
     for slug,title in PRODUCTS.items():
         url="https://endoflife.date/api/"+slug+".json"
         try:
