@@ -340,10 +340,13 @@ function drawReport(){
   root.append(text('p','Plugin monitoring: '+checked+' checked, '+unavailable+' unavailable or unverified, '+(pluginAssets.length-checked-unavailable)+' pending. Saved results refresh on a schedule. Unknown coverage does not establish safety.','ops-note'));
  }
  if(pluginAssets.length){
-  const monitor=table(['Plugin','Installed version','Last check','Coverage','Potential CVEs'],
+  const monitor=table(['Plugin','Installed version','Latest available','Update status','Last check','Coverage','Potential CVEs'],
    pluginAssets.map(a=>{
     const check=pluginMonitorRows[a.id];
+    const release=check?.release;
+    const validRelease=release?.installed_version===a.version&&release.release_status==='verified';
     return [a.technology.slice('WordPress Plugin: '.length),a.version||'Unknown',
+     validRelease?release.latest_version:'Not verified',validRelease?release.update_status:'Unknown',
      check?.checked_at?new Date(check.checked_at*1000).toISOString().replace('T',' ').slice(0,16)+' UTC':'Not checked',
      pluginChecks[a.id]==='checked'?'Checked':pluginChecks[a.id]==='pending'?'Pending':'Unverified or unavailable',
      check?.status==='checked'?String(check.findings?.length||0):'Unknown'];
