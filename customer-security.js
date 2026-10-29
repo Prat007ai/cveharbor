@@ -4,31 +4,50 @@ const $=id=>document.getElementById(id);
 if(!$('customerDashStatus'))return;
 const reporting=!!$('customerReportBody');
 let inventory={customers:[],environments:[],assets:[]},records=[];
-let pluginFindings=[],pluginChecks={};
+let pluginFindings=[],pluginChecks={},pluginMonitorRows={};
 const pluginSlugOverrides={'yoast seo':'wordpress-seo','wp file manager':'wp-file-manager','wps hide login':'wps-hide-login','autoptimize':'autoptimize','wp mail smtp':'wp-mail-smtp','advanced editor tools':'tinymce-advanced','addtoany share buttons':'add-to-any','events manager':'events-manager','wp store locator':'wp-store-locator','wpbakery page builder':'js_composer'};
 const pluginSlug=name=>pluginSlugOverrides[name.toLowerCase()]||name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 async function refreshPluginFindings(){
  const assets=inventory.assets.filter(a=>a.technology.startsWith('WordPress Plugin: '));
- pluginChecks={};pluginFindings=[];
- // Bound concurrency so a customer with many plugins does not flood the public service.
- for(let i=0;i<assets.length;i+=4){
-  await Promise.all(assets.slice(i,i+4).map(async a=>{
-   const slug=pluginSlug(a.technology.slice(18).trim());
-   try{
-    const result=await api('plugin-advisories?asset_id='+encodeURIComponent(a.id)+'&slug='+encodeURIComponent(slug));
-    pluginChecks[a.id]=result.status||'unavailable';
-    if(result.status==='checked')for(const v of result.findings||[]){
-     pluginFindings.push({...v,asset_id:a.id,technology:a.technology,version:a.version,
-      evidence:v.level==='version_review'?'Source version rule indicates affected version; confirm vendor applicability.':'Potential plugin advisory match; affected version needs verification.',
-      comparison_detail:v.affected||'',source_label:v.sources?.[0]?.label||'WPVulnerability',source_url:v.sources?.[0]?.url||''});
-    }
-   }catch(_){pluginChecks[a.id]='unavailable'}
-  }));
+ pluginChecks={};pluginFindings=[];pluginMonitorRows={};
+ let stored=null;
+ try{stored=await api('plugin-monitor')}catch(_){}
+ if(stored?.ready){
+  const rows=new Map((stored.checks||[]).map(r=>[r.asset_id,r]));
+  pluginMonitorRows=Object.fromEntries(rows);
+  for(const asset of assets){
+   const check=rows.get(asset.id);
+   if(!check||check.installed_version!==asset.version){pluginChecks[asset.id]='pending';continue}
+   pluginChecks[asset.id]=check.status||'unavailable';
+   if(check.status!=='checked')continue;
+   for(const v of check.findings||[])pluginFindings.push({...v,asset_id:asset.id,technology:asset.technology,version:asset.version,
+    evidence:v.level==='version_review'?'Version range candidate; confirm vendor applicability.':'Plugin advisory requires version verification.',
+    comparison_detail:v.affected||'',source_label:v.sources?.[0]?.label||'WPVulnerability',
+    source_url:v.sources?.[0]?.url||''});
+  }
+ }else{
+  // Preserve existing on-demand checks until the additive D1 migration is activated.
+  for(let i=0;i<assets.length;i+=4){
+   await Promise.all(assets.slice(i,i+4).map(async asset=>{
+    const slug=pluginSlug(asset.technology.slice('WordPress Plugin: '.length));
+    try{
+     const result=await api('plugin-advisories?asset_id='+encodeURIComponent(asset.id)+'&slug='+encodeURIComponent(slug));
+     pluginChecks[asset.id]=result.status||'unavailable';
+     if(result.status==='checked')for(const v of result.findings||[]){
+      pluginFindings.push({...v,asset_id:asset.id,technology:asset.technology,version:asset.version,
+       evidence:v.level==='version_review'?'Version range candidate; confirm applicability.':'Plugin advisory requires verification.',
+       comparison_detail:v.affected||'',source_label:v.sources?.[0]?.label||'WPVulnerability',
+       source_url:v.sources?.[0]?.url||''});
+     }
+    }catch(_){pluginChecks[asset.id]='unavailable'}
+   }));
+  }
  }
  if(reporting)drawReport();else drawDashboard();
 }
 
 let findingStatusReady=false,findingStatuses=new Map(),findingStatusFilter='Unresolved';
+let findingSort={key:'',direction:'asc'};
 const statusOptions=['Needs Review','Fix in Progress','Fixed/Patched','Not Applicable','Accepted Risk'];
 const statusKey=i=>i.asset_id+'|'+i.id;
 const statusFor=i=>findingStatuses.get(statusKey(i))||'Needs Review';
@@ -262,6 +281,37 @@ function findingStatusControls(issues){
  }
  return wrap;
 }
+function sortFindings(items){
+ if(!findingSort.key)return items;
+ const severity={critical:0,high:1,medium:2,low:3,unknown:4};
+ const key=i=>{
+  if(findingSort.key==='Published')return /^\\d{4}-\\d{2}-\\d{2}/.test(i.published||'')?i.published:'';
+  if(findingSort.key==='Severity')return severity[String(i.severity||'').toLowerCase()]??5;
+  if(findingSort.key==='Software / Asset')return i.technology+' '+(i.asset?.name||'');
+  return statusFor(i);
+ };
+ return [...items].sort((a,b)=>{
+  const x=key(a),y=key(b);
+  if(findingSort.key==='Published'&&(!x||!y))return !x&&!y?0:!x?1:-1;
+  const n=typeof x==='number'?x-y:String(x).localeCompare(String(y),undefined,{numeric:true,sensitivity:'base'});
+  return (findingSort.direction==='asc'?1:-1)*n||a.id.localeCompare(b.id);
+ });
+}
+function enableFindingSort(tableElement){
+ const columns={'Published':1,'Severity':2,'Software / Asset':3,'Vulnerability Fix Status':5};
+ for(const [key,index] of Object.entries(columns)){
+  const th=tableElement.tHead.rows[0].cells[index];
+  const button=text('button',key,'customer-report-sort');button.type='button';
+  const selected=findingSort.key===key;
+  button.append(text('span',selected?(findingSort.direction==='asc'?' ▲':' ▼'):' ⇅','customer-report-sort-indicator'));
+  th.replaceChildren(button);
+  th.setAttribute('aria-sort',selected?(findingSort.direction==='asc'?'ascending':'descending'):'none');
+  button.addEventListener('click',()=>{
+   findingSort=selected?{key,direction:findingSort.direction==='asc'?'desc':'asc'}:{key,direction:'asc'};
+   drawReport();
+  });
+ }
+}
 function drawReport(){
  const id=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const root=$('customerReportBody');root.replaceChildren();
@@ -287,20 +337,32 @@ function drawReport(){
  if(pluginAssets.length){
   const checked=pluginAssets.filter(a=>pluginChecks[a.id]==='checked').length;
   const unavailable=pluginAssets.filter(a=>pluginChecks[a.id]==='unavailable'||pluginChecks[a.id]==='unverified').length;
-  root.append(text('p','Plugin advisory source checks: '+checked+' checked, '+unavailable+' unavailable or unverified, '+(pluginAssets.length-checked-unavailable)+' pending. Unknown coverage does not establish safety.','ops-note'));
+  root.append(text('p','Plugin monitoring: '+checked+' checked, '+unavailable+' unavailable or unverified, '+(pluginAssets.length-checked-unavailable)+' pending. Saved results refresh on a schedule. Unknown coverage does not establish safety.','ops-note'));
+ }
+ if(pluginAssets.length){
+  const monitor=table(['Plugin','Installed version','Last check','Coverage','Potential CVEs'],
+   pluginAssets.map(a=>{
+    const check=pluginMonitorRows[a.id];
+    return [a.technology.slice('WordPress Plugin: '.length),a.version||'Unknown',
+     check?.checked_at?new Date(check.checked_at*1000).toISOString().replace('T',' ').slice(0,16)+' UTC':'Not checked',
+     pluginChecks[a.id]==='checked'?'Checked':pluginChecks[a.id]==='pending'?'Pending':'Unverified or unavailable',
+     check?.status==='checked'?String(check.findings?.length||0):'Unknown'];
+   }));
+  monitor.classList.add('customer-plugin-monitor-table');root.append(reportSection('WordPress Plugin Monitoring'),monitor);
  }
  root.append(findingStatusControls(stats.issues));
  const filtered=stats.issues.filter(i=>findingStatusFilter==='All'||findingStatusFilter==='Unresolved'&&!closedStatus(statusFor(i))||statusFor(i)===findingStatusFilter);
- const compact=filtered.slice(0,250);
- const findingsTable=table(['CVE','Published','Severity','Software / Asset','Vulnerability summary','Assessment','Vulnerability Fix Status'],
+ const compact=sortFindings(filtered).slice(0,250);
+ const findingsTable=table(['CVE','Published','Severity','Software / Asset','Vulnerability summary','Vulnerability Fix Status'],
   compact.map(i=>[
    i.id,i.published||'Not available',i.severity,
    i.technology+' '+(i.version||'Unknown')+' · '+(i.asset?.name||'Asset'),
-   shortSummary(i),i.level==='version_review'?'Version range candidate':'Category match · Unverified',''
+   shortSummary(i),''
   ]));
  findingsTable.classList.add('customer-vulnerability-table');
+ enableFindingSort(findingsTable);
  for(const [index,i] of compact.entries()){
-  const cell=findingsTable.tBodies[0].rows[index].cells[6];
+  const cell=findingsTable.tBodies[0].rows[index].cells[5];
   const select=text('select','','customer-finding-status-select');
   select.setAttribute('aria-label','Fix status for '+i.id+' on '+(i.asset?.name||'asset'));
   for(const optionValue of statusOptions)option(select,optionValue,optionValue);
