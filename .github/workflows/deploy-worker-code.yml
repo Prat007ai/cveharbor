@@ -1,0 +1,43 @@
+name: Deploy Cloudflare Worker code after backend changes
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'account-backend/src/**'
+      - 'account-backend/tests/**'
+      - '.github/workflows/deploy-worker-code.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cveharbor-worker-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Validate and deploy Worker without database migrations
+    runs-on: ubuntu-latest
+    environment: cloudflare-worker-production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify account backend
+        working-directory: account-backend
+        run: npm test && node --check src/index.js && node --check src/plugin-advisories.js
+      - name: Confirm deployment credentials
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "Cloudflare API token missing"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "Cloudflare account ID missing"; exit 1; }
+      - name: Deploy Worker source only
+        working-directory: account-backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx --yes wrangler@4 deploy
