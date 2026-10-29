@@ -233,7 +233,7 @@ const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outs
 inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
 const picker=inventoryDom.window.document.querySelector('.inventory-plugin-import input[type=file]');
 assert.ok(picker,'plugin importer renders the Browse file input');
-const pluginFile=new inventoryDom.window.File(['Gravity Forms | 2.9.5\\nYoast SEO | 24.7'], 'Woodbine_WordPress_Plugins_Import.txt',{type:'text/plain'});
+const pluginFile=new inventoryDom.window.File(['Gravity Forms | 2.9.5\nYoast SEO | 24.7'], 'Woodbine_WordPress_Plugins_Import.txt',{type:'text/plain'});
 Object.defineProperty(picker,'files',{configurable:true,value:[pluginFile]});
 picker.dispatchEvent(new inventoryDom.window.Event('change'));
 await new Promise(resolve=>setTimeout(resolve,35));
