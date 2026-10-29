@@ -87,21 +87,39 @@ function setupPluginImport(){
   make('p','ops-note','Select a customer environment above, then select a local .txt file or paste one plugin per line as Plugin Name | Version. Each plugin is recorded separately. Existing entries with the same name are updated rather than duplicated.'));
  const area=make('textarea','','');area.placeholder='Gravity Forms | 2.9.5\nYoast SEO | 24.7';
  area.rows=7;area.setAttribute('aria-label','WordPress plugin names and versions');
- const fileLabel=make('label','ops-note','Choose a plugin list (.txt)');
+ const fileLabel=make('label','inventory-plugin-file-label','Select a TXT file from your computer');
  const fileInput=document.createElement('input');
- fileInput.type='file';fileInput.accept='.txt,text/plain';fileInput.setAttribute('aria-label','Choose a WordPress plugin TXT file');
+ fileInput.type='file';
+ fileInput.accept='.txt,text/plain';
+ fileInput.setAttribute('aria-label','Choose a WordPress plugin TXT file');
+ const result=make('p','ops-note inventory-plugin-status','');
+ result.setAttribute('role','status');
+ const readText=file=>new Promise((resolve,reject)=>{
+  if(typeof file.text==='function'){file.text().then(resolve,reject);return}
+  const reader=new FileReader();
+  reader.onload=()=>resolve(String(reader.result||''));
+  reader.onerror=()=>reject(Error('File could not be read'));
+  reader.readAsText(file);
+ });
  fileLabel.append(fileInput);
  fileInput.addEventListener('change',async()=>{
-  const file=fileInput.files?.[0];if(!file)return;
-  if(file.size>65536){result.textContent='File too large. Select a TXT file smaller than 64 KB.';fileInput.value='';return}
-  if(!/\.txt$/i.test(file.name)){result.textContent='Please choose a .txt file.';fileInput.value='';return}
+  const file=fileInput.files?.[0];
+  if(!file){result.textContent='No file selected. Choose a TXT file.';return}
+  if(file.size>65536){result.textContent='File too large. Choose a TXT file smaller than 64 KB.';return}
+  // Some Windows downloads hide the extension or report text/plain without it.
+  const name=String(file.name||'');
+  if(!/\.txt$/i.test(name)&&file.type!=='text/plain'){
+   result.textContent='Choose a plain text (.txt) file. Selected: '+name;return;
+  }
   try{
-   area.value=await file.text();
-   result.textContent='Loaded '+file.name+'. Review the entries, then click Import plugins to save them.';
-  }catch(_){result.textContent='Could not read the selected TXT file.'}
+   const content=(await readText(file)).replace(/^\uFEFF/,'');
+   if(!content.trim()){result.textContent='The selected file is empty.';return}
+   area.value=content;
+   const count=content.split(/\r?\n/).filter(line=>line.trim()).length;
+   result.textContent='Loaded '+name+' ('+count+' lines). Review the list, then click Import plugins.';
+  }catch(_){result.textContent='Could not read the selected file. Please select it again.'}
  });
  const button=make('button','ops-download','Import plugins');button.type='button';
- const result=make('p','ops-note','');result.setAttribute('role','status');
  button.addEventListener('click',async()=>{
   const environmentId=$('inventoryEnvironmentSelect').value;
   const assetName=$('inventoryAssetName').value.trim();

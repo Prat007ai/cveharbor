@@ -228,9 +228,19 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes("fileInput.type='file'
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('file.size>65536'),'plugin upload has a file size limit');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("Technology | Version"),'technology version entry format is validated');
 
-assert.ok(html.includes('inventory.js?v=wp-plugin-upload-3'),'public build references account inventory client');
+assert.ok(html.includes('inventory.js?v=wp-plugin-upload-4'),'public build references account inventory client');
 const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
+const picker=inventoryDom.window.document.querySelector('.inventory-plugin-import input[type=file]');
+assert.ok(picker,'plugin importer renders the Browse file input');
+const pluginFile=new inventoryDom.window.File(['Gravity Forms | 2.9.5\nYoast SEO | 24.7'], 'Woodbine_WordPress_Plugins_Import.txt',{type:'text/plain'});
+Object.defineProperty(picker,'files',{configurable:true,value:[pluginFile]});
+picker.dispatchEvent(new inventoryDom.window.Event('change'));
+await new Promise(resolve=>setTimeout(resolve,35));
+const pluginPreview=inventoryDom.window.document.querySelector('.inventory-plugin-import textarea');
+assert.ok(pluginPreview.value.includes('Gravity Forms | 2.9.5'),'local TXT content loads into preview');
+assert.ok(pluginPreview.value.includes('Yoast SEO | 24.7'),'multiple plugin lines remain distinct');
+assert.match(inventoryDom.window.document.querySelector('.inventory-plugin-status').textContent,/Loaded .*2 lines/,'upload acknowledges the selected filename and line count');
 assert.match(inventoryDom.window.document.getElementById('inventoryMessage').textContent,/Sign in/,'anonymous inventory is not displayed');
 assert.equal(inventoryDom.window.document.getElementById('inventoryCustomerCount').textContent,'0');
 inventoryDom.window.close();
