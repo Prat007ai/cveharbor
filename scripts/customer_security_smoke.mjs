@@ -72,6 +72,24 @@ for(const key of ['Published','Severity','Software / Asset','Vulnerability Fix S
  header.click();
  assert.equal(doc.querySelector('.customer-vulnerability-table th[aria-sort="ascending"]')?.textContent.includes(key),true);
 }
+const expectedSections=['Recorded Technology Inventory','Vulnerabilities Requiring Verification','CVE Findings','Advisory Evidence and References'];
+for(const label of expectedSections){
+ const section=[...doc.querySelectorAll('#customerReportBody details.customer-report-section')].find(el=>el.dataset.section===label);
+ assert.ok(section,'report has collapsible section: '+label);
+ assert.equal(section.open,false,'section collapsed by default: '+label);
+}
+assert.ok([...doc.querySelectorAll('#customerReportBody h2')].some(el=>el.textContent==='Executive Summary'),'executive summary stays visible');
+let findingsPanel=[...doc.querySelectorAll('#customerReportBody details.customer-report-section')].find(el=>el.dataset.section==='CVE Findings');
+findingsPanel.open=true;
+findingsPanel.dispatchEvent(new window.Event('toggle'));
+await new Promise(resolve=>setTimeout(resolve,5));
+doc.querySelector('.customer-report-sort').click();
+findingsPanel=[...doc.querySelectorAll('#customerReportBody details.customer-report-section')].find(el=>el.dataset.section==='CVE Findings');
+assert.equal(findingsPanel.open,true,'expanded state survives report redraw');
+window.dispatchEvent(new window.Event('beforeprint'));
+assert.ok([...doc.querySelectorAll('#customerReportBody details.customer-report-section')].every(el=>el.open),'all sections expand for printing');
+window.dispatchEvent(new window.Event('afterprint'));
+assert.equal([...doc.querySelectorAll('#customerReportBody details.customer-report-section')].find(el=>el.dataset.section==='Recorded Technology Inventory').open,false,'previous collapsed state restored after printing');
 assert.equal(doc.querySelectorAll('#customerReportBody .customer-report-finding').length,1);
 const ticketInput=doc.querySelector('.customer-ticket-input');
 assert.ok(ticketInput&&!ticketInput.disabled,'DevOps ticket field is editable');

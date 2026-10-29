@@ -48,6 +48,8 @@ async function refreshPluginFindings(){
 
 let findingStatusReady=false,findingStatuses=new Map(),findingStatusFilter='Unresolved';
 let findingSort={key:'',direction:'asc'};
+const reportSectionStates=new Map();
+let printSectionStates=null;
 let ticketReady=false,findingTickets=new Map();
 const ticketFor=i=>findingTickets.get(statusKey(i))||'';
 async function saveFindingTicket(i,input,button){
@@ -272,6 +274,38 @@ function table(headers,rows){
  for(const values of rows){const row=text('tr');for(const v of values)row.append(text('td',v));body.append(row)}
  t.append(body);return t;
 }
+function collapseReportSections(root){
+ const names=new Set(['Recorded Technology Inventory','Vulnerabilities Requiring Verification','WordPress Plugin Monitoring','CVE Findings','Advisory Evidence and References']);
+ const headings=[...root.children].filter(el=>el.tagName==='H2'&&names.has(el.textContent));
+ for(const heading of headings){
+  const name=heading.textContent;
+  const panel=text('details','','customer-report-section');
+  panel.dataset.section=name;
+  panel.open=reportSectionStates.get(name)===true;
+  const header=text('summary',name,'customer-report-section-toggle');
+  panel.append(header);
+  const contents=text('div','','customer-report-section-content');
+  let next=heading.nextSibling;
+  while(next&&!(next.nodeType===1&&next.tagName==='H2')){
+   const current=next;next=next.nextSibling;contents.append(current);
+  }
+  panel.append(contents);
+  heading.replaceWith(panel);
+  panel.addEventListener('toggle',()=>{
+   if(printSectionStates===null)reportSectionStates.set(name,panel.open);
+  });
+ }
+}
+function setReportPrintMode(printing){
+ const sections=[...document.querySelectorAll('#customerReportBody details.customer-report-section')];
+ if(printing){
+  printSectionStates=sections.map(section=>[section,section.open]);
+  for(const [section] of printSectionStates)section.open=true;
+ }else if(printSectionStates){
+  const previous=printSectionStates;printSectionStates=null;
+  for(const [section,opened] of previous)section.open=opened;
+ }
+}
 function shortSummary(i){
  const source=String(i.summary||i.title||'').replace(/\s+/g,' ').trim();
  if(!source||source===i.id)return 'Description not available in the indexed advisory.';
@@ -367,6 +401,7 @@ function drawReport(){
    }));
   monitor.classList.add('customer-plugin-monitor-table');root.append(reportSection('WordPress Plugin Monitoring'),monitor);
  }
+ root.append(reportSection('CVE Findings'));
  root.append(findingStatusControls(stats.issues));
  const filtered=stats.issues.filter(i=>findingStatusFilter==='All'||findingStatusFilter==='Unresolved'&&!closedStatus(statusFor(i))||statusFor(i)===findingStatusFilter);
  const compact=sortFindings(filtered).slice(0,250);
@@ -419,6 +454,7 @@ function drawReport(){
  root.append(reportSection('Recommended Follow-up'),
  text('p','Validate product identity, installed build, affected configurations and the original vendor advisory. Assign verified findings for remediation and retain evidence of patch verification.','ops-note'),
  text('p','Data classification: Customer confidential. Review before sharing. Report generated locally in your browser; CVEHarbor does not publish your inventory.','ops-note'));
+ collapseReportSections(root);
 }
 function csvReport(){
  const id=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
@@ -461,6 +497,8 @@ async function init(){
   $('customerDashFilter').addEventListener('change',()=>{environments();draw()});
   $('customerDashEnvironment').addEventListener('change',draw);
   if(reporting){
+   window.addEventListener('beforeprint',()=>setReportPrintMode(true));
+   window.addEventListener('afterprint',()=>setReportPrintMode(false));
    $('customerReportPrint').addEventListener('click',()=>window.print());
    $('customerReportCsv').addEventListener('click',csvReport);
   }
