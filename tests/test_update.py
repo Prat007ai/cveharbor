@@ -462,7 +462,7 @@ class FeedTests(unittest.TestCase):
         self.assertIn("text('p','card-summary',x.summary)",js)
         self.assertIn('Show 10 more',html)
         self.assertIn('id="advisoryCards"',html)
-        self.assertIn('src="app.js?v=',html)
+        self.assertIn('src="/app.js?v=',html)
         self.assertIn('grid-template-columns:repeat(5,minmax(0,1fr))',css)
         self.assertIn('-webkit-line-clamp:6',css)
         self.assertIn('block(\'Description\',x.summary)',js)
