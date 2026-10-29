@@ -77,11 +77,20 @@ SECTION_PAGES = {
 }
 source_html = (ROOT / 'index.html').read_text(encoding='utf-8')
 home_html = source_html.replace('<body>', '<body data-page="home">', 1)
+home_html = home_html.replace('href="#advisories">Skip to advisories', 'href="#dashboard">Skip to overview', 1)
 (OUT / 'index.html').write_text(home_html, encoding='utf-8')
 for section, heading in SECTION_PAGES.items():
     folder = OUT / section
     folder.mkdir(exist_ok=True)
     page = source_html.replace('<body>', f'<body data-page="{section}">', 1)
+    first_section = {
+        'vulnerabilities': 'technology', 'alerts': 'securityWorkspace',
+        'threats': 'threat-intelligence', 'malware': 'malware-intelligence',
+        'lifecycle': 'lifecycleMonitor', 'environments': 'inventoryWorkspace',
+        'admin-tools': 'operationsCentre', 'remediation': 'remediationTracker',
+    }[section]
+    page = page.replace('href="#advisories">Skip to advisories',
+                        f'href="#{first_section}">Skip to main section', 1)
     # All locally hosted scripts and images use root-relative paths on nested
     # routes so they do not resolve to /malware/data.js, etc.
     import re
