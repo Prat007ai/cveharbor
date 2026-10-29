@@ -14,7 +14,7 @@ if OUT.exists():
     shutil.rmtree(OUT)
 OUT.mkdir()
 
-for name in ('index.html', 'styles.css', 'app.js', 'workspace.js', 'operations.js', 'accounts.js', 'disclosure-trend.js', 'page-router.js', 'header-auth.js', 'account-page.js', 'workspace-page.js', 'lifecycle-monitor.js', 'inventory.js', 'inventory-matching.js', 'malware.js', 'geo-map.js', 'malware-data.js', 'data.js', 'CNAME', 'robots.txt'):
+for name in ('index.html', 'styles.css', 'app.js', 'workspace.js', 'operations.js', 'accounts.js', 'disclosure-trend.js', 'page-router.js', 'header-auth.js', 'account-page.js', 'workspace-page.js', 'lifecycle-monitor.js', 'inventory.js', 'inventory-matching.js', 'customer-security.js', 'malware.js', 'geo-map.js', 'malware-data.js', 'data.js', 'CNAME', 'robots.txt'):
     shutil.copy2(ROOT / name, OUT / name)
 for name in ('lifecycle.js','patch-notes.js','threats.js','threat-data.js','fortigate-threat-ip-objects.txt','sophos-threat-ip-api.txt','fortigate-suspicious-ip-initial.txt','fortigate-suspicious-ip-incremental.txt','sophos-suspicious-ip-initial.txt','sophos-suspicious-ip-incremental.txt'):
     if (ROOT / name).exists():
@@ -57,7 +57,7 @@ print('Built public site:', [x.name for x in OUT.iterdir()])
 print(f"Categories: {len(categories)}; official historical vendor advisories: {len(advisories)}")
 
 # Dedicated account and workspace pages retain the same domain and API session.
-for section in ('account','workspace'):
+for section in ('account','workspace','customer-dashboard','customer-reports'):
     page=OUT / section
     page.mkdir(exist_ok=True)
     shutil.copy2(ROOT / section / 'index.html',page / 'index.html')
