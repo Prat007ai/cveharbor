@@ -16,6 +16,7 @@ const staticProducts=[
  ['kubernetes','Kubernetes'],['fortios','FortiOS']
 ];
 let signed=false,ready=false,logged=[],prefs={email_enabled:0,lead_days:90},delivery=false;
+const queued=[];
 const make=(tag,cls,value)=>{
  const node=document.createElement(tag);if(cls)node.className=cls;if(value!==undefined)node.textContent=String(value);return node;
 };
@@ -193,9 +194,59 @@ function syncCycles(){
  }
  if([...select.options].some(x=>x.value===was))select.value=was;
 }
+function getCandidate(){
+ const slug=$('lifecycleProduct').value;
+ const product=slug?staticProducts.find(([name])=>name===slug)?.[1]:$('lifecycleCustomName').value.trim();
+ const cycle=slug?$('lifecycleCycle').value:$('lifecycleCustomCycle').value.trim();
+ const customDate=slug?'':$('lifecycleCustomDate').value.trim();
+ const customSource=slug?'':$('lifecycleCustomSource').value.trim();
+ const installed=$('lifecycleInstalled').value.trim();
+ if(!product)throw Error('Choose a product or enter a custom product name.');
+ if(slug&&!cycle)throw Error('Choose a specific release cycle.');
+ if(!slug&&!/^\d{4}-\d{2}-\d{2}$/.test(customDate))
+  throw Error('Custom products need a verified end of support date.');
+ if(!slug&&(!/^https:\/\//.test(customSource)))
+  throw Error('Custom products need an official HTTPS source URL.');
+ return {product,slug,cycle,installed_version:installed,custom_eol_date:customDate,custom_source_url:customSource};
+}
+function queueKey(w){
+ return [w.slug,w.cycle,w.product.toLowerCase(),w.custom_eol_date].join('|');
+}
+function renderQueue(){
+ const root=$('lifecycleQueueItems');root.replaceChildren();
+ $('lifecycleQueueCount').textContent=queued.length+' selected';
+ for(const [index,watch] of queued.entries()){
+  const row=make('div','ops-result ops-result-top');
+  row.append(make('span','',watch.product+' '+watch.cycle+(watch.installed_version?' · Installed '+watch.installed_version:'')));
+  const remove=make('button','ops-remove','Remove');remove.type='button';
+  remove.addEventListener('click',()=>{queued.splice(index,1);renderQueue()});
+  row.append(remove);root.append(row);
+ }
+ $('lifecycleSaveAll').disabled=!signed||!ready||!queued.length;
+}
+$('lifecycleWatchQueue').addEventListener('click',()=>{
+ try{
+  const candidate=getCandidate();
+  if(queued.length>=30)throw Error('You can add 30 products in one batch.');
+  if(queued.some(x=>queueKey(x)===queueKey(candidate)))throw Error('This product and release are already selected.');
+  queued.push(candidate);renderQueue();
+  message(candidate.product+' added to your list. Add more products, then save all when signed in.');
+ }catch(e){message(e.message)}
+});
+$('lifecycleSaveAll').addEventListener('click',async()=>{
+ if(!signed||!ready){message('Sign in and activate the Cloudflare D1 lifecycle tables before saving.');return;}
+ const button=$('lifecycleSaveAll');button.disabled=true;
+ try{
+  const result=await call('/watches/bulk','POST',{watches:queued});
+  queued.splice(0);renderQueue();await load();
+  message(result.count+' monitored products saved. Automatic email delivery requires Cloudflare activation and your email opt-in.');
+ }catch(e){message(e.message)}
+ finally{renderQueue()}
+});
 function updateActions(){
  $('lifecycleWatchSave').disabled=!signed||!ready;
  $('lifecyclePrefsSave').disabled=!signed||!ready;
+ if($('lifecycleSaveAll'))$('lifecycleSaveAll').disabled=!signed||!ready||!queued.length;
  // Preferences can be explored without sign in; saving requires an account.
 }
 function renderUser(){
@@ -222,6 +273,16 @@ function renderUser(){
   top.append(del);div.append(top);
   const info=summary(watch),day=daysTo(info?.date);
   if(watch.installed_version&&info?.latest)div.append(make('p','ops-note','Installed: '+watch.installed_version+' · Latest recorded release: '+info.latest+'. Verify vendor updates before assuming the release is a security fix.'));
+  const releases=(window.CVEHARBOR_PATCH_NOTES?.releases||[]).filter(x=>x.slug===watch.slug &&
+    x.version?.startsWith(watch.cycle+'.')).sort((a,b)=>String(b.published).localeCompare(String(a.published)));
+  if(releases.length){
+   const release=releases[0];
+   div.append(make('p','ops-note','Publisher release notes · '+release.version+' · '+release.published+
+    (release.security_mentioned?' · Source mentions security':' · Security status not confirmed')));
+   if(release.notes)div.append(make('p','ops-note',release.notes.slice(0,450)));
+   const link=make('a','ops-link','Read full original release notes');
+   link.href=release.url;link.target='_blank';link.rel='noopener noreferrer';div.append(link);
+  }
   div.append(make('p','ops-note',info?.date?
    (day===null?'Verify support date':day<0?'Ended '+Math.abs(day)+' days ago':day+' days remaining')+
     ' · '+info.date+' · '+info.origin:
@@ -253,15 +314,10 @@ $('lifecyclePublicSearch').addEventListener('input',renderFeed);
 $('lifecycleWatchForm').addEventListener('submit',async event=>{
  event.preventDefault();
  if(!signed||!ready){message('Sign in and deploy the lifecycle D1 migration before saving watches.');return;}
- const slug=$('lifecycleProduct').value;
- const product=slug?staticProducts.find(([name])=>name===slug)?.[1]:$('lifecycleCustomName').value.trim();
- const cycle=slug?$('lifecycleCycle').value:$('lifecycleCustomCycle').value.trim();
- const customDate=slug?'':$('lifecycleCustomDate').value;
- const customSource=slug?'':$('lifecycleCustomSource').value.trim();
- if(slug&&!cycle){message('Choose the exact release or cycle to monitor.');return;}
  const button=$('lifecycleWatchSave');button.disabled=true;
  try{
-  await call('/watches','POST',{product,slug,cycle,installed_version:$('lifecycleInstalled').value.trim(),custom_eol_date:customDate,custom_source_url:customSource});
+  const watch=getCandidate();
+  await call('/watches','POST',watch);
   await load();message('Lifecycle watch saved to your D1 account.');
  }catch(e){message('Cannot save lifecycle watch: '+e.message)}
  finally{button.disabled=false}
@@ -278,5 +334,5 @@ $('lifecyclePreferencesForm').addEventListener('submit',async event=>{
  }catch(e){message(e.message)}
  finally{button.disabled=false}
 });
-renderFeed();renderUser();
+renderFeed();renderQueue();renderUser();
 })();

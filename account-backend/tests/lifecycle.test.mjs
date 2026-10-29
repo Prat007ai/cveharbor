@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeWatch,evaluate,dateValid,newerReleases } from '../src/lifecycle.js';
+import { normalizeWatch,evaluate,dateValid,newerReleases,vendorReleaseNotices } from '../src/lifecycle.js';
 
 test('custom lifecycle watches require an explicit valid date and https evidence link',()=>{
  assert.throws(()=>normalizeWatch({product:'Custom database'}),/verified custom support date/);
@@ -37,4 +37,16 @@ test('newer release notification distinguishes release availability from securit
  assert.equal(newerReleases([{...watch,slug:'mssqlserver',cycle:'2022',installed_version:'16.0.4000.1'}],
  [{slug:'mssqlserver',cycle:'2022',latest:'16.0.4305.5 CU27+GDR',url:'https://endoflife.date/mssqlserver'}]).length,1);
 
+});
+
+test('vendor releases include source-authored fixes and only newer watched versions',()=>{
+ const watches=[{id:'w1',product:'PHP',slug:'php',cycle:'8.4',installed_version:'8.4.26'}];
+ const releases=[{slug:'php',version:'8.4.27',notes:'Fixes CVE-2026-10000 and a stability regression',
+  published:'2026-10-20',url:'https://github.com/php/php-src/releases/tag/php-8.4.27',
+  security_mentioned:true},{slug:'mariadb',version:'10.11.9',url:'https://github.com/MariaDB/server/releases/tag/v10.11.9'}];
+ const hits=vendorReleaseNotices(watches,releases);
+ assert.equal(hits.length,1);
+ assert.match(hits[0].notes,/CVE-2026/);
+ assert.equal(hits[0].security_mentioned,true);
+ assert.equal(vendorReleaseNotices([{...watches[0],installed_version:'8.4.28'}],releases).length,0);
 });

@@ -138,14 +138,17 @@ assert.ok(workspaceDocument.querySelectorAll('#securityLookupResults .workspace-
 assert.ok(html.includes('id="lifecycleMonitor"'),'full lifecycle monitoring section exists');
 assert.ok(html.includes('id="lifecycleSearchStatus"'),'expanded product search status exists');
 assert.ok(html.includes('id="lifecycleEmailOptin"')&&html.includes('id="lifecycleInstalled"'),'lifecycle opt-in and installed version controls exist');
-assert.ok(html.includes('lifecycle-monitor.js?v=details-search-2'),'versioned lifecycle monitor script loads');
+assert.ok(html.includes('id="lifecycleWatchQueue"')&&html.includes('id="lifecycleSaveAll"'),'multiple lifecycle watch queue is available');
+assert.ok(html.includes('src="/patch-notes.js"'),'vendor release evidence is loaded on lifecycle pages');
+
+assert.ok(html.includes('lifecycle-monitor.js?v=multiwatch-3'),'versioned lifecycle monitor script loads');
 const lifecycleDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 lifecycleDom.window.CVEHARBOR_LIFECYCLE={checked_at:new Date().toISOString(),cycles:[{slug:'php',product:'PHP',cycle:'8.4',eol_date:'2027-12-31',latest:'8.4.27',url:'https://endoflife.date/php'}],errors:[]};
 lifecycleDom.window.eval(fs.readFileSync('lifecycle-monitor.js','utf8'));
 assert.match(lifecycleDom.window.document.getElementById('lifecycleUserStatus').textContent,/Sign in/);
 assert.match(lifecycleDom.window.document.getElementById('lifecyclePublished').textContent,/PHP/);
 assert.ok(html.includes('id="lifecycleDetailDialog"'),'on-site product support modal exists');
-assert.ok(html.includes('lifecycle-monitor.js?v=details-search-2'),'lifecycle popup script cache-busted');
+assert.ok(html.includes('lifecycle-monitor.js?v=multiwatch-3'),'lifecycle popup script cache-busted');
 const popup=lifecycleDom.window.document.getElementById('lifecycleDetailDialog');
 const first=lifecycleDom.window.document.querySelector('#lifecyclePublished .lifecycle-view-details');
 assert.ok(first,'each lifecycle result offers a popup');
@@ -166,6 +169,23 @@ assert.equal(lifecycleDom.window.document.getElementById('lifecycleWatchSave').d
 const signedOutEvent=new lifecycleDom.window.CustomEvent('cveharbor:account-state',{detail:{authenticated:false}});
 lifecycleDom.window.dispatchEvent(signedOutEvent);
 assert.equal(lifecycleDom.window.document.getElementById('lifecycleProduct').disabled,false,'signed-out visitors can choose a product');
+const queueDom=lifecycleDom.window.document;
+queueDom.getElementById('lifecycleProduct').value='php';
+queueDom.getElementById('lifecycleProduct').dispatchEvent(new lifecycleDom.window.Event('change',{bubbles:true}));
+queueDom.getElementById('lifecycleCycle').value='8.4';
+queueDom.getElementById('lifecycleInstalled').value='8.4.26';
+queueDom.getElementById('lifecycleWatchQueue').click();
+assert.equal(queueDom.getElementById('lifecycleQueueCount').textContent,'1 selected','first technology is queued without account');
+queueDom.getElementById('lifecycleWatchQueue').click();
+assert.equal(queueDom.getElementById('lifecycleQueueCount').textContent,'1 selected','duplicate product is rejected');
+queueDom.getElementById('lifecycleProduct').value='';
+queueDom.getElementById('lifecycleCustomName').value='Vendor CMS';
+queueDom.getElementById('lifecycleCustomDate').value='2027-10-31';
+queueDom.getElementById('lifecycleCustomSource').value='https://example.org/support';
+queueDom.getElementById('lifecycleWatchQueue').click();
+assert.equal(queueDom.getElementById('lifecycleQueueCount').textContent,'2 selected','custom vendor product joins the list');
+assert.equal(queueDom.getElementById('lifecycleSaveAll').disabled,true,'saving queued products requires account and D1');
+
 assert.equal(lifecycleDom.window.document.getElementById('lifecycleCycle').disabled,false,'signed-out visitors can choose a release');
 assert.equal(lifecycleDom.window.document.getElementById('lifecycleCustomName').disabled,false,'signed-out visitors can enter custom products');
 assert.equal(lifecycleDom.window.document.getElementById('lifecycleLead').disabled,false,'signed-out visitors can explore advance warnings');

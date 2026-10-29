@@ -43,6 +43,19 @@ export async function handler(req,env,user,path,data={}){
   return response({watches:watches.results||[],preferences:prefs||{email_enabled:0,lead_days:90},
     email_delivery_active:env.LIFECYCLE_DELIVERY_ENABLED==='true'});
  }
+ if(path==='/v1/lifecycle/watches/bulk'&&req.method==='POST'){
+  if(!Array.isArray(data.watches)||!data.watches.length||data.watches.length>30)
+   throw new LifecycleError('Choose between 1 and 30 products per batch');
+  const watches=data.watches.map(normalizeWatch);
+  const keys=new Set(watches.map(w=>[w.slug,w.cycle,w.product.toLowerCase(),w.custom_eol_date].join('|')));
+  if(keys.size!==watches.length)throw new LifecycleError('Remove duplicate products from this batch');
+  const current=await env.DB.prepare('SELECT COUNT(*) AS total FROM lifecycle_watches WHERE user_id=?').bind(user.id).first();
+  if(Number(current?.total||0)+watches.length>100)throw new LifecycleError('Limit of 100 monitored products per account',409);
+  const statements=watches.map(w=>env.DB.prepare('INSERT INTO lifecycle_watches(user_id,id,product,slug,cycle,installed_version,custom_eol_date,custom_source_url,created_at) VALUES(?,?,?,?,?,?,?,?,?)')
+   .bind(user.id,w.id,w.product,w.slug,w.cycle,w.installed_version,w.custom_eol_date,w.custom_source_url,now()));
+  await env.DB.batch(statements);
+  return response({saved:true,count:watches.length},201);
+ }
  if(path==='/v1/lifecycle/watches'&&req.method==='POST'){
   const watch=normalizeWatch(data);
   const count=await env.DB.prepare('SELECT COUNT(*) AS total FROM lifecycle_watches WHERE user_id=?').bind(user.id).first();
@@ -85,9 +98,9 @@ function newer(installed,latest){
 export function newerReleases(watches,cycles){
  const found=[];
  for(const w of watches){
-  if(!w.slug||!w.cycle||!w.installed_version)continue;
+  if(!w.slug||!w.cycle)continue;
   const c=cycles.find(c=>c.slug===w.slug&&String(c.cycle).toLowerCase()===w.cycle.toLowerCase());
-  if(!c||!newer(w.installed_version,String(c.latest||'')))continue;
+  if(!c||!String(c.latest||'').trim()||(w.installed_version&&!newer(w.installed_version,String(c.latest||''))))continue;
   found.push({watch_id:w.id,product:w.product,cycle:w.cycle,installed:w.installed_version,
    latest:c.latest,source_url:c.url,event_key:'release:'+w.id+':'+c.latest});
  }
@@ -114,6 +127,38 @@ export function evaluate(watches,cycles,leadDays=90,current=new Date()){
  results.sort((a,b)=>a.days-b.days||a.product.localeCompare(b.product));
  return results;
 }
+export function vendorReleaseNotices(watches,releases){
+ const found=[];
+ for(const w of watches){
+  if(!w.slug||!w.cycle)continue;
+  for(const release of releases){
+   if(release.slug!==w.slug||typeof release.version!=='string')continue;
+   const v=release.version.replace(/^v/i,'');
+   if(!v.startsWith(w.cycle+'.')&&v!==w.cycle)continue;
+   if(w.installed_version&&!newer(w.installed_version,v))continue;
+   if(!/^https:\/\/github\.com\//.test(String(release.url||'')))continue;
+   found.push({watch_id:w.id,product:w.product,cycle:w.cycle,installed:w.installed_version,
+    latest:v,source_url:release.url,notes:String(release.notes||'').slice(0,650),
+    published:String(release.published||'').slice(0,10),
+    security_mentioned:release.security_mentioned===true,
+    event_key:'vendor-release:'+w.id+':'+v,release_notice:true,verified_notes:true});
+  }
+ }
+ return found;
+}
+async function loadVendorNotes(){
+ try{
+  const response=await fetch(SITE+'/patch-notes.js',{headers:{Accept:'text/javascript'}});
+  if(!response.ok)return [];
+  const raw=await response.text();
+  const found=/^window\.CVEHARBOR_PATCH_NOTES\s*=\s*(\{[\s\S]*\})\s*;\s*$/.exec(raw.trim());
+  if(!found)return [];
+  const data=JSON.parse(found[1]);
+  if(!Array.isArray(data.releases)||!Number.isFinite(Date.parse(data.checked_at))||
+    Date.now()-Date.parse(data.checked_at)>3*86400000)return [];
+  return data.releases;
+ }catch(_){return []}
+}
 export async function loadLifecycleFeed(){
  const response=await fetch(DATA,{headers:{Accept:'text/javascript'}});
  if(!response.ok)throw Error('Lifecycle source unavailable');
@@ -133,26 +178,33 @@ export async function dispatchLifecycle(env,day=new Date()){
  const config=await env.DB.prepare('SELECT u.id,u.email,p.lead_days FROM users u JOIN lifecycle_preferences p ON p.user_id=u.id WHERE p.email_enabled=1 ORDER BY p.updated_at LIMIT 500').all();
  const people=config.results||[];if(!people.length)return {status:'none'};
  const feed=await loadLifecycleFeed();
+ const vendorNotes=await loadVendorNotes();
  let sent=0,failed=0;
  for(const person of people){
   try{
    const rows=await env.DB.prepare('SELECT id,product,slug,cycle,installed_version,custom_eol_date,custom_source_url FROM lifecycle_watches WHERE user_id=?').bind(person.id).all();
    const watches=rows.results||[];
    const matches=evaluate(watches,feed.cycles,person.lead_days,day).slice(0,15);
-   const patches=newerReleases(watches,feed.cycles).slice(0,15);
+   const vendorMatches=vendorReleaseNotices(watches,vendorNotes).slice(0,15);
+   const patches=newerReleases(watches,feed.cycles).slice(0,15)
+    .filter(p=>!vendorMatches.some(v=>v.watch_id===p.watch_id&&v.latest===p.latest));
+   const allUpdates=[...vendorMatches,...patches].slice(0,20);
    const fresh=[];
    for(const m of matches){
     const key=[m.watch_id,m.cycle,m.eol_date].join(':');
     const previous=await env.DB.prepare('SELECT sent_at FROM lifecycle_delivery WHERE user_id=? AND event_key=?').bind(person.id,key).first();
     if(!previous)fresh.push({...m,key});
    }
-   for(const p of patches){
+   for(const p of allUpdates){
     const prior=await env.DB.prepare('SELECT sent_at FROM lifecycle_delivery WHERE user_id=? AND event_key=?').bind(person.id,p.event_key).first();
     if(!prior)fresh.push({...p,key:p.event_key,release_notice:true});
    }
    if(!fresh.length)continue;
    const text=['CVEHarbor End of Support Notice','','Review these lifecycle dates and verify vendor licensing, extended support and product editions:','',
-    ...fresh.map(m=>m.release_notice?m.product+' '+m.cycle+': newer release '+m.latest+' (installed '+m.installed+'). Verify vendor security bulletins. Release availability is not proof of a security patch. '+m.source_url:m.product+' '+m.cycle+': '+m.eol_date+' ('+(m.days<0?'past end of support':m.days+' days remaining')+') '+(m.origin==='user'?'User supplied date':'Public lifecycle source')+' '+m.source_url),
+    ...fresh.map(m=>m.release_notice?m.product+' '+m.cycle+': newer release '+m.latest+' (installed '+(m.installed||'not specified')+'). '
+       +(m.verified_notes?'Publisher notes: '+(m.notes||'No summary provided.')+' Published '+m.published+'. ':'')
+       +(m.security_mentioned?'Source mentions security. Validate exact security impact. ':'Release availability is not proof of a security patch. ')
+       +m.source_url:m.product+' '+m.cycle+': '+m.eol_date+' ('+(m.days<0?'past end of support':m.days+' days remaining')+') '+(m.origin==='user'?'User supplied date':'Public lifecycle source')+' '+m.source_url),
     '','Check vendor advisories for current patches. A lifecycle date is not proof that a specific installed system is insecure.',
     'Manage your preferences: '+SITE+'/#lifecycleMonitor','CVEHarbor | '+SITE].join('\n');
    const html='<html><body style="font-family:Arial,sans-serif;max-width:640px;margin:auto;padding:25px"><h2>CVEHarbor lifecycle notice</h2><p>Products on your watchlist may require an upgrade or a support review. Check vendor lifecycle terms and current patches.</p><pre style="white-space:pre-wrap">'+text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre></body></html>';
