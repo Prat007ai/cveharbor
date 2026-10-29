@@ -53,7 +53,7 @@ def collect():
                     "slug": slug, "version": version, "title": clean(row.get("name") or version)[:160],
                     "published": str(row.get("published_at") or "")[:10],
                     "notes": notes, "url": url,
-                    "security_mentioned": bool(re.search(r"\b(CVE-\d{4}-\d+|security fix|security update|vulnerabilit)\b",
+                    "security_mentioned": bool(re.search(r"\b(CVE-\d{4}-\d+|security fix|security update|vulnerabilit(?:y|ies))\b",
                                                       notes, flags=re.I)),
                     "source": "Official project GitHub release"
                 })
