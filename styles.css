@@ -1158,3 +1158,12 @@ body[data-page="home"] .page-section-intro{display:none!important}
 .customer-plugin-monitor-table th:nth-child(6),.customer-plugin-monitor-table td:nth-child(6){min-width:155px}
 .customer-plugin-monitor-table th:last-child,.customer-plugin-monitor-table td:last-child{min-width:110px}
 .customer-ticket-input:disabled{opacity:1;color:#b7d4db}
+
+/* Expandable customer security report sections */
+.customer-report-section{border:1px solid #375d72;border-radius:10px;margin:15px 0;background:#0d283b;min-width:0;overflow:hidden}
+.customer-report-section-toggle{display:list-item;cursor:pointer;padding:15px 18px;font-size:17px;font-weight:700;color:#e9f7fa;list-style-position:inside}
+.customer-report-section-toggle:hover,.customer-report-section-toggle:focus-visible{background:#15394d;color:#8cebdc}
+.customer-report-section-toggle::marker{color:#74dbc9}
+.customer-report-section-content{padding:0 17px 18px;min-width:0;overflow-x:auto}
+.customer-report-section[open]>.customer-report-section-toggle{border-bottom:1px solid #375d72;margin-bottom:12px}
+@media print{.customer-report-section{border:0;overflow:visible;background:#fff}.customer-report-section-toggle{padding:0;list-style:none;color:#111!important;break-after:avoid}.customer-report-section-toggle::marker{content:""}.customer-report-section-content{padding:0;overflow:visible}}
