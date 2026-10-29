@@ -68,7 +68,7 @@ export default {async fetch(req,env,ctx){
   if(!user)return response({error:'Sign in required'},401);
   if(path==='/v1/auth/logout'&&req.method==='POST'){await env.DB.prepare('DELETE FROM sessions WHERE id=?').bind(user.sid).run();return response({authenticated:false},200,{'Set-Cookie':setCookie('',0)})}
   if(path.startsWith('/v1/lifecycle'))return await lifecycleHandler(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
-  if(path.startsWith('/v1/finding-tickets'))return await findingTicketRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
+  if(path.startsWith('/v1/finding-tickets'))return await findingTicketRoute(req,env,user,path,req.method==='POST'?await body(req):{});
   if(path.startsWith('/v1/finding-statuses'))return await findingStatusRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/plugin-sources'))return await sourceRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/plugin-monitor'))return await monitorRoute(req,env,user,path,req.method==='POST'?await body(req):{});
