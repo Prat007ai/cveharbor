@@ -143,3 +143,7 @@ The blank portion of **Email alerts and cloud sync** now shows a public, read-on
 * Browser tests cover duplicate IDs, rejected or non-CVE advisories, updates to old CVEs, UTC date edges, weekly comparisons and feed failures. A separate workflow confirms the public chart and actual advisory source after GitHub Pages deployment.
 
 This chart uses only advisory metadata already published on CVEHarbor. It does not enable email delivery or change Cloudflare D1, SMTP2GO, account access or the malware directory.
+
+## Dedicated security pages and preserved original links
+
+GitHub Pages publishes /vulnerabilities/, /alerts/, /threats/, /malware/, /lifecycle/, /environments/, /admin-tools/ and /remediation/, in addition to /account/ and /workspace/. The homepage shows overview and key intelligence metrics. Legacy deep links like /#advisories, /#securityWorkspace and /#lifecycleMonitor route to the corresponding dedicated pages. Browser scripts, source data and dialogs remain on the same origin and continue to support the existing selectors. This is a safe transitional architecture: all shared HTML and scripts are presently available across pages, with CSS presenting only that page's section. Future work can extract independent scripts and DOM per route to reduce payload. Back end API, Cloudflare D1 migrations, opt-in alerts and authentication remain unchanged.
