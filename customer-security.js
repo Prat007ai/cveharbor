@@ -51,6 +51,8 @@ let findingStatusReady=false,findingStatuses=new Map(),findingStatusFilter='Unre
 let findingSort={key:'',direction:'asc'};
 const reportSectionStates=new Map();
 let printSectionStates=null;
+const scorePanelStates=new Map();
+let printScoreState=null;
 let ticketReady=false,ticketAppendReady=false,findingTickets=new Map();
 let pluginSourceReady=false,pluginSources=new Map();
 const ticketFor=i=>findingTickets.get(statusKey(i))||[];
@@ -316,6 +318,9 @@ function collapseReportSections(root){
  }
 }
 function setReportPrintMode(printing){
+ const score=document.querySelector('#customerReportBody details.customer-security-score-panel');
+ if(printing&&score){printScoreState=[score,score.open];score.open=true;const method=score.querySelector('details.customer-score-methodology');if(method){score.dataset.methodWasOpen=String(method.open);method.open=true}}
+ if(!printing&&printScoreState){const [panel,opened]=printScoreState;printScoreState=null;panel.open=opened;const method=panel.querySelector('details.customer-score-methodology');if(method){method.open=panel.dataset.methodWasOpen==='true';delete panel.dataset.methodWasOpen}}
  const sections=[...document.querySelectorAll('#customerReportBody details.customer-report-section')];
  if(printing){
   printSectionStates=sections.map(section=>[section,section.open]);
@@ -386,18 +391,43 @@ function renderScorePanel(root,customer,scope,stats){
  const statuses=Object.fromEntries(findingStatuses.entries());
  const checks=Object.fromEntries(stats.assets.map(a=>[a.id,pluginMonitorRows[a.id]||null]));
  const assessment=engine.assessCustomer({assets:stats.assets,issues:stats.issues,checks,statuses});
- const card=text('section','','customer-security-score-panel');
- const title=text('h2','Inventory Based Security Assessment Score');
- const score=text('strong',assessment.score===null?'Insufficient Data':assessment.score+' / 100','customer-score-number');
- const confidence=text('p','Assessment confidence: '+assessment.confidence+' · Monitoring coverage: '+assessment.coverage+'%','ops-note');
- const context=text('p',assessment.explanation,'ops-note');
- card.append(title,score,confidence,context);
+ const key=customer.id+'|'+scope;
+ const rating=assessment.score===null?'Insufficient Data':assessment.score>=90?'Excellent':assessment.score>=80?'Good':assessment.score>=70?'Needs Improvement':assessment.score>=50?'High Risk':'Critical Risk';
+ const tier=assessment.score===null?'unknown':assessment.score>=80?'good':assessment.score>=70?'caution':'risk';
+ const card=document.createElement('details');
+ card.className='customer-security-score-panel';
+ card.dataset.tier=tier;
+ card.dataset.customerScope=key;
+ card.open=scorePanelStates.get(key)===true;
+ const header=document.createElement('summary');
+ header.className='customer-score-header';
+ const headingWrap=text('div','','customer-score-heading');
+ headingWrap.append(text('strong','Inventory Based Security Assessment','customer-score-title'),
+  text('span','Methodology v'+assessment.version,'customer-score-version'));
+ const overview=text('div','','customer-score-overview');
+ const seal=text('div','','customer-score-seal');
+ seal.setAttribute('role','img');
+ seal.setAttribute('aria-label',assessment.score===null?'Security score unavailable':assessment.score+' out of 100, '+rating);
+ const circle=document.createElement('span');circle.className='customer-score-seal-number';
+ circle.textContent=assessment.score===null?'—':String(assessment.score);
+ seal.append(circle,text('small',assessment.score===null?'NO SCORE':'OUT OF 100'));
+ const summaryDetails=text('div','','customer-score-summary');
+ summaryDetails.append(text('strong',rating,'customer-score-rating'),
+  text('span','Assessment confidence: '+assessment.confidence,'customer-score-meta'),
+  text('span','Monitoring coverage: '+assessment.coverage+'%','customer-score-meta'),
+  text('span','View score breakdown and history','customer-score-hint'));
+ overview.append(seal,summaryDetails);
+ header.append(headingWrap,overview);
+ card.append(header);
+ const contentBox=text('div','','customer-score-expanded');
+ contentBox.append(text('p',assessment.explanation,'ops-note'));
  const b=assessment.parts;
- card.append(table(['Score component','Maximum points','Provisional deduction'],[
+ contentBox.append(text('h3','Score Breakdown'));
+ contentBox.append(table(['Score component','Maximum points','Provisional deduction'],[
   ['Verified vulnerability exposure',50,b.exposure],['Software and patch currency',25,b.currency],
   ['Remediation effectiveness',15,b.remediation],['Monitoring coverage',10,b.monitoring]
  ]));
- card.append(text('p','Scoring methodology v'+assessment.version+'. Inventory findings are candidates, not authenticated proof of exposure.','ops-note'));
+ contentBox.append(text('p','Scoring methodology v'+assessment.version+'. Inventory findings are candidates, not authenticated proof of exposure.','ops-note'));
  const details=document.createElement('details');details.className='customer-score-methodology';
  const summary=text('summary','How is this score calculated?');
  details.append(summary);
@@ -414,7 +444,7 @@ function renderScorePanel(root,customer,scope,stats){
  content.append(text('p','A numeric score is displayed only when at least one inventory asset exists, monitoring coverage is 70% or higher, and at least one version range candidate CVE is available. Otherwise the report says Insufficient Data.'));
  content.append(text('p','Confidence reflects monitoring coverage: High at 90% or more, Medium from 70% to 89%, and Low below 70%. Confidence does not confirm the accuracy of every advisory match.'));
  content.append(text('p','Example: deductions of 18 for exposure, 8 for software updates, 3 for remediation and 1 for monitoring produce 70 out of 100. The historical trend uses saved assessment snapshots, not invented past scores.'));
- details.append(content);card.append(details);
+ details.append(content);contentBox.append(details);
  const heading=text('h3','Security Score Trend');
  const chart=document.createElement('div');chart.className='customer-score-trend';
  const message=text('p','Historical scores will appear here as assessments are recorded.','ops-note');
@@ -436,9 +466,10 @@ function renderScorePanel(root,customer,scope,stats){
   });
   chart.append(svg);
  };
- card.append(heading,chart,message);
+ contentBox.append(heading,chart,message);
+ card.append(contentBox);
+ card.addEventListener('toggle',()=>{if(printScoreState===null)scorePanelStates.set(key,card.open)});
  root.append(card);
- const key=customer.id+'|'+scope;
  if(scoreSeries.has(key))renderHistory(scoreSeries.get(key));
  void (async()=>{
   const query='customer_id='+encodeURIComponent(customer.id)+(scope?'&environment_id='+encodeURIComponent(scope):'');
