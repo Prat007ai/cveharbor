@@ -123,7 +123,7 @@ export async function loadLifecycleFeed(){
 export async function dispatchLifecycle(env,day=new Date()){
  if(env.LIFECYCLE_DELIVERY_ENABLED!=='true')return {status:'disabled'};
  if(!await ready(env))return {status:'migration_required'};
- const config=await env.DB.prepare('SELECT u.id,u.email,p.lead_days FROM users u JOIN lifecycle_preferences p ON p.user_id=u.id WHERE p.email_enabled=1 ORDER BY p.updated_at LIMIT 8').all();
+ const config=await env.DB.prepare('SELECT u.id,u.email,p.lead_days FROM users u JOIN lifecycle_preferences p ON p.user_id=u.id WHERE p.email_enabled=1 ORDER BY p.updated_at LIMIT 500').all();
  const people=config.results||[];if(!people.length)return {status:'none'};
  const feed=await loadLifecycleFeed();
  let sent=0,failed=0;
