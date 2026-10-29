@@ -57,3 +57,25 @@ test('other plugin identity is not accepted',()=>{
  const result=normalizePluginLookup(slug,'8.0.1',{error:0,data:[{slug:'other-plugin',vulnerabilities:[]}]});
  assert.equal(result.status,'unverified');
 });
+
+test('live WPVulnerability schema identifies CVEs from source and filters patched versions',()=>{
+ const payload={error:0,data:{name:'Autoptimize',plugin:'autoptimize',vulnerability:[
+  {uuid:'public-uuid',name:'Autoptimize [autoptimize] < 2.7.8',
+   description:'Older versions affected',
+   operator:{min_version:null,min_operator:null,max_version:'2.7.8',max_operator:'lt'},
+   source:[{id:'CVE-2021-24378',name:'CVE-2021-24378',link:'https://www.cve.org/CVERecord?id=CVE-2021-24378'}],
+   impact:{cvss:{severity:'high'}}}
+ ]}};
+ const alreadyPatched=normalizePluginLookup('autoptimize','3.1.13',payload);
+ assert.equal(alreadyPatched.status,'checked');
+ assert.equal(alreadyPatched.findings.length,0);
+ const vulnerable=normalizePluginLookup('autoptimize','2.7.7',payload);
+ assert.equal(vulnerable.findings[0].id,'CVE-2021-24378');
+ assert.equal(vulnerable.findings[0].level,'version_review');
+ assert.match(vulnerable.findings[0].source_url||vulnerable.findings[0].sources[0].url,/cve.org/);
+ assert.equal(normalizePluginLookup('wrong','2.7.7',payload).status,'unverified');
+});
+test('successful zero vulnerability source list is a completed check',()=>{
+ const x=normalizePluginLookup('autoptimize','3.1.13',{error:0,data:{plugin:'autoptimize',vulnerability:[]}});
+ assert.equal(x.status,'checked');assert.equal(x.findings.length,0);
+});
