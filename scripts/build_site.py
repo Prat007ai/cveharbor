@@ -14,7 +14,7 @@ if OUT.exists():
     shutil.rmtree(OUT)
 OUT.mkdir()
 
-for name in ('index.html', 'styles.css', 'app.js', 'workspace.js', 'operations.js', 'accounts.js', 'disclosure-trend.js', 'header-auth.js', 'account-page.js', 'workspace-page.js', 'lifecycle-monitor.js', 'inventory.js', 'inventory-matching.js', 'malware.js', 'geo-map.js', 'malware-data.js', 'data.js', 'CNAME', 'robots.txt'):
+for name in ('index.html', 'styles.css', 'app.js', 'workspace.js', 'operations.js', 'accounts.js', 'disclosure-trend.js', 'page-router.js', 'header-auth.js', 'account-page.js', 'workspace-page.js', 'lifecycle-monitor.js', 'inventory.js', 'inventory-matching.js', 'malware.js', 'geo-map.js', 'malware-data.js', 'data.js', 'CNAME', 'robots.txt'):
     shutil.copy2(ROOT / name, OUT / name)
 for name in ('lifecycle.js','threats.js','threat-data.js','fortigate-threat-ip-objects.txt','sophos-threat-ip-api.txt','fortigate-suspicious-ip-initial.txt','fortigate-suspicious-ip-incremental.txt','sophos-suspicious-ip-initial.txt','sophos-suspicious-ip-incremental.txt'):
     if (ROOT / name).exists():
@@ -61,3 +61,30 @@ for section in ('account','workspace'):
     page=OUT / section
     page.mkdir(exist_ok=True)
     shutil.copy2(ROOT / section / 'index.html',page / 'index.html')
+
+# Publish canonical GitHub Pages section URLs. The shared DOM temporarily
+# remains available to existing scripts and modal handlers; CSS scopes each
+# route's visible content. Remove the shared DOM only after script modularization.
+SECTION_PAGES = {
+    'vulnerabilities': 'Vulnerability Search and Advisories',
+    'alerts': 'My Technology Watchlist and Security Alerts',
+    'threats': 'Threat IP Intelligence',
+    'malware': 'Malware and Ransomware Intelligence',
+    'lifecycle': 'End of Support and Patch Watch',
+    'environments': 'My Customer Environments',
+    'admin-tools': 'Security Administration Toolkit',
+    'remediation': 'Vulnerability Remediation Tracker',
+}
+source_html = (ROOT / 'index.html').read_text(encoding='utf-8')
+home_html = source_html.replace('<body>', '<body data-page="home">', 1)
+(OUT / 'index.html').write_text(home_html, encoding='utf-8')
+for section, heading in SECTION_PAGES.items():
+    folder = OUT / section
+    folder.mkdir(exist_ok=True)
+    page = source_html.replace('<body>', f'<body data-page="{section}">', 1)
+    page = page.replace('<title>CVEHarbor | Vulnerability Intelligence</title>',
+                        f'<title>{heading} | CVEHarbor</title>', 1)
+    page = page.replace('<meta name="description" content="CVEHarbor: Independent, source-backed vulnerability intelligence across application frameworks, CMS, cloud, databases and IT infrastructure.">',
+                        f'<meta name="description" content="CVEHarbor {heading}. Source-backed security intelligence and tools.">', 1)
+    (folder / 'index.html').write_text(page, encoding='utf-8')
+print('Dedicated public section pages:', ', '.join(SECTION_PAGES))
