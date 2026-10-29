@@ -10,20 +10,22 @@ const pluginSlug=name=>pluginSlugOverrides[name.toLowerCase()]||name.toLowerCase
 async function refreshPluginFindings(){
  const assets=inventory.assets.filter(a=>a.technology.startsWith('WordPress Plugin: '));
  pluginChecks={};pluginFindings=[];
- // Bound concurrency so a customer with many plugins does not flood the public service.
- for(let i=0;i<assets.length;i+=4){
-  await Promise.all(assets.slice(i,i+4).map(async a=>{
-   const slug=pluginSlug(a.technology.slice(18).trim());
-   try{
-    const result=await api('plugin-advisories?asset_id='+encodeURIComponent(a.id)+'&slug='+encodeURIComponent(slug));
-    pluginChecks[a.id]=result.status||'unavailable';
-    if(result.status==='checked')for(const v of result.findings||[]){
-     pluginFindings.push({...v,asset_id:a.id,technology:a.technology,version:a.version,
-      evidence:v.level==='version_review'?'Source version rule indicates affected version; confirm vendor applicability.':'Potential plugin advisory match; affected version needs verification.',
-      comparison_detail:v.affected||'',source_label:v.sources?.[0]?.label||'WPVulnerability',source_url:v.sources?.[0]?.url||''});
-    }
-   }catch(_){pluginChecks[a.id]='unavailable'}
-  }));
+ let stored=null;
+ try{stored=await api('plugin-monitor')}catch(_){}
+ if(stored?.ready){
+  const rows=new Map((stored.checks||[]).map(r=>[r.asset_id,r]));
+  for(const asset of assets){
+   const check=rows.get(asset.id);
+   if(!check||check.installed_version!==asset.version){pluginChecks[asset.id]='pending';continue}
+   pluginChecks[asset.id]=check.status||'unavailable';
+   if(check.status!=='checked')continue;
+   for(const v of check.findings||[])pluginFindings.push({...v,asset_id:asset.id,technology:asset.technology,version:asset.version,
+    evidence:v.level==='version_review'?'Version range candidate; confirm vendor applicability.':'Plugin advisory requires version verification.',
+    comparison_detail:v.affected||'',source_label:v.sources?.[0]?.label||'WPVulnerability',
+    source_url:v.sources?.[0]?.url||''});
+  }
+ }else{
+  for(const a of assets)pluginChecks[a.id]='unavailable';
  }
  if(reporting)drawReport();else drawDashboard();
 }
@@ -287,7 +289,7 @@ function drawReport(){
  if(pluginAssets.length){
   const checked=pluginAssets.filter(a=>pluginChecks[a.id]==='checked').length;
   const unavailable=pluginAssets.filter(a=>pluginChecks[a.id]==='unavailable'||pluginChecks[a.id]==='unverified').length;
-  root.append(text('p','Plugin advisory source checks: '+checked+' checked, '+unavailable+' unavailable or unverified, '+(pluginAssets.length-checked-unavailable)+' pending. Unknown coverage does not establish safety.','ops-note'));
+  root.append(text('p','Plugin monitoring: '+checked+' checked, '+unavailable+' unavailable or unverified, '+(pluginAssets.length-checked-unavailable)+' pending. Saved results refresh on a schedule. Unknown coverage does not establish safety.','ops-note'));
  }
  root.append(findingStatusControls(stats.issues));
  const filtered=stats.issues.filter(i=>findingStatusFilter==='All'||findingStatusFilter==='Unresolved'&&!closedStatus(statusFor(i))||statusFor(i)===findingStatusFilter);
