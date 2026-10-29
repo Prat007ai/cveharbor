@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-29",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4264,
+  "candidate_records": 4265,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -46191,6 +46191,46 @@
       "epss_as_of": "2026-10-29"
     },
     {
+      "id": "CVE-2026-102870",
+      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-25",
+      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
+      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
+      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
+      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "ASP.NET Core GHSA vendor record",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-25",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00906,
+      "epss_percentile": 0.59726,
+      "epss_as_of": "2026-10-29"
+    },
+    {
       "id": "CVE-2026-70197",
       "title": ".NET SocketAsyncEventArgs memory corruption remote code execution",
       "severity": "high",
@@ -46230,46 +46270,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00788,
       "epss_percentile": 0.56072,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-102870",
-      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-25",
-      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
-      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
-      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
-      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft corrected Blazor debugger security advisory",
-          "url": "https://github.com/dotnet/announcements/issues/492"
-        },
-        {
-          "label": "ASP.NET Core GHSA vendor record",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-25",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00906,
-      "epss_percentile": 0.59726,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -48087,6 +48087,42 @@
       "epss_as_of": "2026-10-29"
     },
     {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60635,
+      "epss_as_of": "2026-10-29"
+    },
+    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -48125,42 +48161,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55752,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60635,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -71424,6 +71424,34 @@
       "epss_as_of": "2026-10-29"
     },
     {
+      "id": "CVE-2026-32557",
+      "title": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection') vulnerability in BookingWP WooCommerce Appointments woocommerce-appointments allows Blind ",
+      "severity": "critical",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-06",
+      "updated": "2026-10-29",
+      "summary": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection') vulnerability in BookingWP WooCommerce Appointments woocommerce-appointments allows Blind SQL Injection.This issue affects WooCommerce Appointments: from n/a through 5.3.2.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-32557"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T09:03:53Z",
+      "source_updated_at": "2026-10-29T08:17:00.313",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-104286",
       "title": "An improper limitation of a pathname to a restricted directory ('path traversal') vulnerability in Fortinet FortiMail 8.0.0 through 8.0.1, FortiMail 7.6.0 through 7.6.6, Forti",
       "severity": "critical",
@@ -73836,7 +73864,6 @@
       "categories": [
         ".NET / ASP.NET",
         "Linux",
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -73875,7 +73902,6 @@
       "categories": [
         ".NET / ASP.NET",
         "Linux",
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -73951,7 +73977,6 @@
       "categories": [
         ".NET / ASP.NET",
         "Linux",
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -74027,7 +74052,6 @@
       "categories": [
         ".NET / ASP.NET",
         "Linux",
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -74102,7 +74126,6 @@
       "severity": "high",
       "categories": [
         ".NET / ASP.NET",
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -74141,7 +74164,6 @@
       "categories": [
         ".NET / ASP.NET",
         "Linux",
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -74179,7 +74201,6 @@
       "severity": "high",
       "categories": [
         ".NET / ASP.NET",
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -74217,7 +74238,6 @@
       "severity": "high",
       "categories": [
         ".NET / ASP.NET",
-        "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
@@ -80543,37 +80563,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2025-7624",
-      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
-      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
-      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.10514,
-      "epss_percentile": 0.95747,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2025-6704",
       "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
       "severity": "critical",
@@ -80602,6 +80591,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.11772,
       "epss_percentile": 0.96062,
+      "epss_as_of": "2026-10-29"
+    },
+    {
+      "id": "CVE-2025-7624",
+      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
+      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
+      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.10514,
+      "epss_percentile": 0.95747,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -81843,6 +81863,34 @@
       "epss_as_of": "2026-10-29"
     },
     {
+      "id": "CVE-2024-0340",
+      "title": "A vulnerability was found in vhost_new_msg in drivers/vhost/vhost.c in the Linux kernel, which does not properly initialize memory in messages passed between virtual guests an",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2024-01-09",
+      "updated": "2026-10-29",
+      "summary": "A vulnerability was found in vhost_new_msg in drivers/vhost/vhost.c in the Linux kernel, which does not properly initialize memory in messages passed between virtual guests and the host operating system in the vhost/vhost.c:vhost_new_msg() function. This issue can allow local privileged users to read some kernel memory contents when reading from the /dev/vhost-net device file.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-0340"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T09:03:53Z",
+      "source_updated_at": "2026-10-29T08:16:58.827",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2023-6569",
       "title": "External Control of File Name or Path in h2oai/h2o-3",
       "severity": "critical",
@@ -82927,178 +82975,90 @@
       "epss": 0.12584,
       "epss_percentile": 0.96223,
       "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2022-0767",
-      "title": "Server-Side Request Forgery in calibreweb",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2022-03-08",
-      "updated": "2026-10-27",
-      "summary": "calibreweb prior to version 0.6.17 is vulnerable to server-side request forgery (SSRF). This is a result of incomplete SSRF protection that can be bypassed via an HTTP redirect. An HTTP server set up to respond with a 302 redirect may redirect a request to `localhost`.",
-      "affected": "pip: calibreweb (< 0.6.17)",
-      "remediation": "calibreweb: 0.6.17",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-h65g-jfqg-2w6m"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-0767"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/janeczku/calibre-web/commit/965352c8d96c9eae7a6867ff76b0db137d04b0b8"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://huntr.dev/bounties/b26fc127-9b6a-4be7-a455-58aefbb62d9e"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.9",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T16:16:54Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00985,
-      "epss_percentile": 0.62249,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2021-4171",
-      "title": "calibre-web is vulnerable to Business Logic Errors",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2022-01-21",
-      "updated": "2026-10-27",
-      "summary": "calibre-web is vulnerable to Business Logic Errors",
-      "affected": "pip: calibreweb (< 0.6.15)",
-      "remediation": "calibreweb: 0.6.15",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-xp7p-3gx7-j6wx"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-4171"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/janeczku/calibre-web/commit/3e0d8763c377d2146462811e3e4ccf13f0d312ce"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://huntr.dev/bounties/1117f439-133c-4563-afb2-6cd80607bd5c"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T16:16:33Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.01387,
-      "epss_percentile": 0.72146,
-      "epss_as_of": "2026-10-29"
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-29T08:12:13Z",
-      "last_attempt": "2026-10-29T08:12:13Z",
+      "last_success": "2026-10-29T09:03:53Z",
+      "last_attempt": "2026-10-29T09:03:53Z",
       "items_processed": 203,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-29T08:12:13Z",
-      "last_attempt": "2026-10-29T08:12:13Z",
+      "last_success": "2026-10-29T09:03:53Z",
+      "last_attempt": "2026-10-29T09:03:53Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-29T08:12:13Z",
-      "last_attempt": "2026-10-29T08:12:13Z",
-      "items_processed": 441,
+      "last_success": "2026-10-29T09:03:53Z",
+      "last_attempt": "2026-10-29T09:03:53Z",
+      "items_processed": 399,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-29T08:12:13Z",
-      "last_attempt": "2026-10-29T08:12:13Z",
+      "last_success": "2026-10-29T09:03:53Z",
+      "last_attempt": "2026-10-29T09:03:53Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-29T08:12:13Z",
-      "last_attempt": "2026-10-29T08:12:13Z",
+      "last_success": "2026-10-29T09:03:53Z",
+      "last_attempt": "2026-10-29T09:03:53Z",
       "items_processed": 2558,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-29T08:12:13Z",
-      "last_attempt": "2026-10-29T08:12:13Z",
+      "last_success": "2026-10-29T09:03:53Z",
+      "last_attempt": "2026-10-29T09:03:53Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-29T08:12:13Z",
-      "last_attempt": "2026-10-29T08:12:13Z",
+      "last_success": "2026-10-29T09:03:53Z",
+      "last_attempt": "2026-10-29T09:03:53Z",
       "items_processed": 23,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-29T08:12:13Z",
-      "last_attempt": "2026-10-29T08:12:13Z",
+      "last_success": "2026-10-29T09:03:53Z",
+      "last_attempt": "2026-10-29T09:03:53Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-29T08:12:13Z",
-      "last_attempt": "2026-10-29T08:12:13Z",
+      "last_success": "2026-10-29T09:03:53Z",
+      "last_attempt": "2026-10-29T09:03:53Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-29T08:12:13Z",
-      "last_attempt": "2026-10-29T08:12:13Z",
+      "last_success": "2026-10-29T09:03:53Z",
+      "last_attempt": "2026-10-29T09:03:53Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-29T08:12:13Z",
-      "last_attempt": "2026-10-29T08:12:13Z",
+      "last_success": "2026-10-29T09:03:53Z",
+      "last_attempt": "2026-10-29T09:03:53Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-29T08:12:13Z",
-      "last_attempt": "2026-10-29T08:12:13Z",
+      "last_success": "2026-10-29T09:03:53Z",
+      "last_attempt": "2026-10-29T09:03:53Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -83110,7 +83070,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-29T08:12:13Z",
-  "last_successful_update": "2026-10-29T08:12:13Z",
+  "last_checked_at": "2026-10-29T09:03:53Z",
+  "last_successful_update": "2026-10-29T09:03:53Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
