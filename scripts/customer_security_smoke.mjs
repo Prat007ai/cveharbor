@@ -18,7 +18,7 @@ window.CVEHARBOR_CATALOG={advisories:[]};
 window.CVEHARBOR_INVENTORY_MATCH={evaluate(assets){
  return {items:assets.filter(x=>x.technology==='PHP').map(x=>({id:'CVE-2026-32101',title:'Test PHP vulnerability',
  asset_id:x.id,technology:'PHP',version:x.version,severity:'critical',known_exploited:false,
- level:'version_review',evidence:'Version review required',affected:'PHP before 8.4.27',comparison_detail:'Installed 8.4.26 before 8.4.27',summary:'Test PHP vulnerability',remediation:'Upgrade to 8.4.27',source_label:'Test advisory',published:'2026-10-24',source_url:'https://example.com/cve'})),total:assets.filter(x=>x.technology==='PHP').length,limited:false};
+ level:'version_review',evidence:'Version review required',affected:'PHP before 8.4.27',comparison_detail:'Installed 8.4.26 before 8.4.27',summary:'Test  PHP\n vulnerability with   irregular spacing',remediation:'Upgrade to 8.4.27',source_label:'Test advisory',published:'2026-10-24',source_url:'https://example.com/cve'})),total:assets.filter(x=>x.technology==='PHP').length,limited:false};
 }};
 const seen=[];
 window.fetch=async url=>{
@@ -35,6 +35,9 @@ assert.match(doc.querySelector('#customerReportBody').textContent,/Customer A/);
 assert.match(doc.querySelector('#customerReportBody').textContent,/CVE-2026-32101/);
 assert.match(doc.querySelector('#customerReportBody').textContent,/PHP before 8.4.27/);
 assert.match(doc.querySelector('#customerReportBody').textContent,/2026-10-24/);
+assert.match(doc.querySelector('.customer-report-table:nth-of-type(3)')?.textContent||doc.querySelector('#customerReportBody').textContent,/Test PHP vulnerability with irregular spacing/,'summary whitespace is normalized');
+assert.ok(!doc.querySelector('#customerReportBody').textContent.includes('Test  PHP'),'report does not expose repeated whitespace');
+assert.match(fs.readFileSync('customer-security.js','utf8'),/f\.published\|\|'Not available',shortSummary\(f\)/,'CSV has explicit missing publication date fallback');
 assert.equal(doc.querySelectorAll('#customerReportBody .customer-report-finding').length,1);
 assert.doesNotMatch(doc.querySelector('#customerReportBody').textContent,/Customer B|WEB02/,'other customer inventory never appears in report');
 assert.equal(doc.querySelector('#customerReportPrint').disabled,false);
