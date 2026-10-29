@@ -97,7 +97,20 @@ function render(){
    del.addEventListener('click',()=>remove('environments',env.id,env.name));h.append(del);group.append(h);
    const assets=data.assets.filter(x=>x.environment_id===env.id);
    if(!assets.length)group.append(make('p','ops-note','No servers, applications or software versions recorded.'));
+   // One asset can carry many technologies. Keep legacy D1 rows intact and
+   // present entries with the same environment, asset name and type together.
+   const groups=new Map();
    for(const asset of assets){
+    const key=asset.name.trim().toLowerCase()+'|'+asset.asset_type;
+    if(!groups.has(key))groups.set(key,[]);
+    groups.get(key).push(asset);
+   }
+   for(const entries of groups.values()){
+    const groupCard=make('div','inventory-asset-group');
+    const first=entries[0];
+    groupCard.append(make('strong','inventory-asset-group-title',first.name+' · '+first.asset_type));
+    groupCard.append(make('p','ops-note',entries.length+' technology '+(entries.length===1?'entry':'entries')));
+    for(const asset of entries){
     const row=make('div','inventory-asset ops-result-top');
     const info=make('div','');
     info.append(make('strong','',asset.name+' · '+asset.technology),
@@ -112,13 +125,16 @@ function render(){
       $('inventoryTechnology').value=asset.technology;
       $('inventoryVersion').value=asset.version;
       $('inventoryNotes').value=asset.notes;
+      $('inventoryAdditionalTechnologies').value='';
       $('inventoryAssetEditId').value=asset.id;
       $('inventoryAssetSave').textContent='Update asset';
       $('inventoryAssetName').focus();
     });
     const removeAsset=make('button','ops-remove','Remove');removeAsset.type='button';
     removeAsset.addEventListener('click',()=>remove('assets',asset.id,asset.name));
-    actions.append(edit,removeAsset);row.append(info,actions);group.append(row);
+    actions.append(edit,removeAsset);row.append(info,actions);groupCard.append(row);
+    }
+    group.append(groupCard);
    }
    card.append(group);
   }
@@ -173,9 +189,26 @@ $('inventoryAssetForm').addEventListener('submit',async event=>{
  notes:$('inventoryNotes').value.trim()};
  const button=$('inventoryAssetSave');button.disabled=true;
  try{
-  await call(editId?'/assets/'+editId:'/assets',editId?'PUT':'POST',payload);
+  const extra=$('inventoryAdditionalTechnologies').value.trim();
+  const parsed=extra?extra.split(/\r?\n/).map(line=>{
+   const chunks=line.split('|');
+   if(chunks.length!==2)throw Error('Use Technology | Version for each additional line.');
+   const technology=chunks[0].trim(),version=chunks[1].trim();
+   if(!technology||technology.length>120||version.length>80)
+    throw Error('Each additional technology needs a valid name and optional version.');
+   return {technology,version};
+  }):[];
+  if(editId&&parsed.length)throw Error('Additional technologies can only be added with a new asset entry. Use Add asset for more software on the same server.');
+  const all=[payload,...parsed.map(x=>({...payload,technology:x.technology,version:x.version}))];
+  const unique=new Set(all.map(x=>x.technology.toLowerCase()));
+  if(unique.size!==all.length)throw Error('The same technology cannot appear twice in one submission.');
+  let saved=0;
+  for(const entry of all){
+   await call(editId?'/assets/'+editId:'/assets',editId?'PUT':'POST',entry);
+   saved++;
+  }
   form.reset();$('inventoryAssetEditId').value='';button.textContent='Add asset';
-  await load();status(editId?'Asset updated in D1.':'Asset saved in D1.');
+  await load();status(editId?'Technology updated in D1.':saved+' technology entries saved for '+payload.name+'.');
  }catch(e){status(e.message)}
  finally{button.disabled=false}
 });
