@@ -35,5 +35,22 @@ for(const group of groups){
   nav.append(link);
  }
 }
-bar.append(nav);body.insertBefore(bar,body.firstChild);
+bar.append(nav);
+const footer=document.createElement('div');footer.className='command-sidebar-footer';
+const toggle=document.createElement('button');toggle.type='button';toggle.className='command-sidebar-toggle';toggle.setAttribute('aria-label','Expand navigation');toggle.setAttribute('aria-expanded','false');toggle.title='Expand navigation';
+toggle.innerHTML='<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16M4 12h16M4 19h16"/></svg><span>Expand menu</span>';
+footer.append(toggle);bar.append(footer);
+const key='cveharbor-command-menu-v1';
+let expanded=false;try{expanded=localStorage.getItem(key)==='expanded'}catch(_){}
+function setExpanded(value){
+ expanded=Boolean(value);body.classList.toggle('command-sidebar-expanded',expanded);
+ toggle.setAttribute('aria-expanded',String(expanded));
+ toggle.setAttribute('aria-label',expanded?'Collapse navigation':'Expand navigation');
+ toggle.title=expanded?'Collapse navigation':'Expand navigation';
+ toggle.querySelector('span').textContent=expanded?'Collapse menu':'Expand menu';
+ try{localStorage.setItem(key,expanded?'expanded':'collapsed')}catch(_){}
+}
+toggle.addEventListener('click',()=>setExpanded(!expanded));
+setExpanded(expanded);
+body.insertBefore(bar,body.firstChild);
 })();
