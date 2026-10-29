@@ -4,6 +4,30 @@ const $=id=>document.getElementById(id);
 if(!$('customerDashStatus'))return;
 const reporting=!!$('customerReportBody');
 let inventory={customers:[],environments:[],assets:[]},records=[];
+let pluginFindings=[],pluginChecks={};
+const pluginSlugOverrides={'yoast seo':'wordpress-seo','wp file manager':'wp-file-manager','wps hide login':'wps-hide-login','autoptimize':'autoptimize','wp mail smtp':'wp-mail-smtp','advanced editor tools':'tinymce-advanced','addtoany share buttons':'add-to-any','events manager':'events-manager','wp store locator':'wp-store-locator','wpbakery page builder':'js_composer'};
+const pluginSlug=name=>pluginSlugOverrides[name.toLowerCase()]||name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+async function refreshPluginFindings(){
+ const assets=inventory.assets.filter(a=>a.technology.startsWith('WordPress Plugin: '));
+ pluginChecks={};pluginFindings=[];
+ // Bound concurrency so a customer with many plugins does not flood the public service.
+ for(let i=0;i<assets.length;i+=4){
+  await Promise.all(assets.slice(i,i+4).map(async a=>{
+   const slug=pluginSlug(a.technology.slice(18).trim());
+   try{
+    const result=await api('plugin-advisories?asset_id='+encodeURIComponent(a.id)+'&slug='+encodeURIComponent(slug));
+    pluginChecks[a.id]=result.status||'unavailable';
+    if(result.status==='checked')for(const v of result.findings||[]){
+     pluginFindings.push({...v,asset_id:a.id,technology:a.technology,version:a.version,
+      evidence:v.level==='version_review'?'Source version rule indicates affected version; confirm vendor applicability.':'Potential plugin advisory match; affected version needs verification.',
+      comparison_detail:v.affected||'',source_label:v.sources?.[0]?.label||'WPVulnerability',source_url:v.sources?.[0]?.url||''});
+    }
+   }catch(_){pluginChecks[a.id]='unavailable'}
+  }));
+ }
+ if(reporting)drawReport();else drawDashboard();
+}
+
 let findingStatusReady=false,findingStatuses=new Map(),findingStatusFilter='Unresolved';
 const statusOptions=['Needs Review','Fix in Progress','Fixed/Patched','Not Applicable','Accepted Risk'];
 const statusKey=i=>i.asset_id+'|'+i.id;
@@ -37,12 +61,12 @@ function compute(customerId,environmentId=''){
  const ids=new Set(environments.map(e=>e.id));
  const assets=inventory.assets.filter(a=>ids.has(a.environment_id));
  const matched=window.CVEHARBOR_INVENTORY_MATCH.evaluate(assets,records,5000);
- const issues=matched.items.map(m=>({
+ const issues=[...matched.items,...pluginFindings.filter(m=>assets.some(a=>a.id===m.asset_id))].map(m=>({
   ...m,asset:assets.find(a=>a.id===m.asset_id),
   environment:environments.find(e=>e.id===assets.find(a=>a.id===m.asset_id)?.environment_id)
  }));
  const unique=new Set(issues.map(i=>i.id));
- return {environments,assets,issues,total:matched.total,limited:matched.limited,
+ return {environments,assets,issues,total:issues.length,limited:matched.limited,
   unique:unique.size,critical:issues.filter(i=>i.severity.toLowerCase()==='critical').length,
   kev:issues.filter(i=>i.known_exploited).length,
   reviewed:issues.filter(i=>i.level==='version_review').length};
@@ -259,6 +283,12 @@ function drawReport(){
  root.append(reportSection('Vulnerabilities Requiring Verification'));
  root.append(text('p','Publication dates and descriptions are shown only when supplied by the indexed advisory. Matches are candidates requiring product-specific verification.','ops-note'));
  root.append(text('p',findingStatusReady?'Status changes are saved privately to your account for each asset and CVE.':'Vulnerability status tracking is unavailable until its D1 migration is applied. Existing findings remain visible.','ops-note'));
+ const pluginAssets=stats.assets.filter(a=>a.technology.startsWith('WordPress Plugin: '));
+ if(pluginAssets.length){
+  const checked=pluginAssets.filter(a=>pluginChecks[a.id]==='checked').length;
+  const unavailable=pluginAssets.filter(a=>pluginChecks[a.id]==='unavailable'||pluginChecks[a.id]==='unverified').length;
+  root.append(text('p','Plugin advisory source checks: '+checked+' checked, '+unavailable+' unavailable or unverified, '+(pluginAssets.length-checked-unavailable)+' pending. Unknown coverage does not establish safety.','ops-note'));
+ }
  root.append(findingStatusControls(stats.issues));
  const filtered=stats.issues.filter(i=>findingStatusFilter==='All'||findingStatusFilter==='Unresolved'&&!closedStatus(statusFor(i))||statusFor(i)===findingStatusFilter);
  const compact=filtered.slice(0,250);
@@ -339,6 +369,7 @@ async function init(){
    $('customerReportCsv').addEventListener('click',csvReport);
   }
   $('customerDashStatus').textContent=inventory.customers.length+' customer records loaded privately. Advisory matching is preliminary.';
+  void refreshPluginFindings();
  }catch(e){$('customerDashLogin').hidden=false;$('customerDashStatus').textContent=(e.status===404||e.status===503)?'Customer inventory backend is not active. The D1 migration and updated Cloudflare Worker must be deployed.':'Could not reach account data. Please sign in or check the service. '+e.message}
 }
 void init();
