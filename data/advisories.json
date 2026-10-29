@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-29",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4276,
+  "candidate_records": 4266,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -2310,7 +2310,7 @@
       "cvss": "8.4",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-29T13:11:16Z",
-      "source_updated_at": "2026-10-29T15:17:14.820",
+      "source_updated_at": "2026-10-29T15:45:15.310",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -2534,7 +2534,7 @@
       "cvss": "8.4",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-29T13:11:16Z",
-      "source_updated_at": "2026-10-29T15:17:25.707",
+      "source_updated_at": "2026-10-29T15:45:15.310",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -3256,8 +3256,8 @@
       "title": "Malware in 789bet-vip-login",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-29",
       "updated": "2026-10-29",
@@ -3285,8 +3285,8 @@
       "title": "Malware in 789bet-vip-online-login",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-29",
       "updated": "2026-10-29",
@@ -3314,8 +3314,8 @@
       "title": "Malware in 789bet-login-th",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-29",
       "updated": "2026-10-29",
@@ -3343,8 +3343,8 @@
       "title": "Malware in 789bet-entrance",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-29",
       "updated": "2026-10-29",
@@ -3372,8 +3372,8 @@
       "title": "Malware in 789bet-vip",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-29",
       "updated": "2026-10-29",
@@ -3401,8 +3401,8 @@
       "title": "Malware in 789bet-slot",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-29",
       "updated": "2026-10-29",
@@ -3430,8 +3430,8 @@
       "title": "Malware in m98vip",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-29",
       "updated": "2026-10-29",
@@ -3459,8 +3459,8 @@
       "title": "Malware in 789bet",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-29",
       "updated": "2026-10-29",
@@ -3488,8 +3488,8 @@
       "title": "Malware in m98bet",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-29",
       "updated": "2026-10-29",
@@ -3517,8 +3517,8 @@
       "title": "Malware in m98th",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-29",
       "updated": "2026-10-29",
@@ -5591,6 +5591,205 @@
       "first_seen_at": "2026-10-28T19:01:39Z",
       "source_updated_at": "2026-10-29T15:32:42Z",
       "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61564",
+      "title": "AVideo is a video-sharing Platform",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-29",
+      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the unauthenticated installer endpoint `install/checkConfiguration.php` assembles `videos/configuration.php` by interpolating request parameters, including `webSiteRootURL`, into single-quoted PHP string literals without escaping. An attacker can terminate a literal and inject PHP that executes as the web-server user when the generated, directly requestable file is loaded. Exploitation requires `videos/configuration.php` to be absent, as on every fresh deployment or after the file is removed or moved; an existing file blocks this endpoint. The supplied `systemRootPath` must contain index.php and a connection using `databaseHost`, `databaseUser`, and `databasePass` must succeed, but the attacker can point those parameters to their own database server and needs no target credentials. The write location is also derived from `systemRootPath` without a base-directory constraint. This permits arbitrary command execution, reading and overwriting files owned by the web-server user, persistent PHP code, and control over stored database connection settings. The endpoint additionally interpolates request values into streamer and configuration INSERT statements, creating a secondary SQL-inje",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61564"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "10.0",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-29T15:45:15.310",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61567",
+      "title": "AVideo is a video-sharing Platform",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-29",
+      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the live-streaming endpoint `view/videosListToLive.php` accepts an attacker-named streamer in `webSiteRootURL`, calls `Login::run` in `objects/Login.php`, and trusts the returned JSON as session state. An unauthenticated remote attacker who can host an HTTP service reachable by the encoder can self-grant `isLogged` and `canStream` without legitimate credentials. The endpoint requires only nonempty `playlists_id` and `APISecret` values; `APISecret` is forwarded rather than checked against a stored secret. This path never calls `Streamer::isURLAllowed` and therefore works regardless of the operator's streamer allowlist. It fetches a second attacker-controlled video-list response and interpolates `videos[].path` without shell argument escaping into `ffprobe` and `ffmpeg` commands passed to `exec`; `isAudio` calls `isVideo` to reach the `ffprobe` command. Paths containing shell delimiters execute arbitrary operating-system commands as the web-server user. The request filter does not inspect the video-list JSON. This can disclose database and stored streamer credentials, compromise the upstream platform using those credentials, modify files owned by the web-server user, establish pers",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61567"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "10.0",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-29T15:45:15.310",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61569",
+      "title": "AVideo is a video-sharing Platform",
+      "severity": "high",
+      "categories": [
+        "MySQL / MariaDB",
+        "PHP"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-29",
+      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the unauthenticated streamer login at `objects/login.json.php` passes the `user` parameter to `Streamer::get` in `objects/Streamer.php`, where it is interpolated into a single-quoted MariaDB SELECT without parameterization or escaping. Although `objects/security.php` strips literal single quotes, `html_entity_decode` in `objects/Login.php` restores entity-encoded quotes before the query. The supplied `siteURL` must pass the streamer allowlist, which allows all sites when empty by default, and an attacker-hosted login response must set `canUpload` or `isAdmin` to reach `Streamer::createIfNotExists`. That function calls `Streamer::get` before its additional allowlist check. UNION results are exposed through `streamers_id`, while failures return the rendered query and MariaDB error. An attacker can read arbitrary encoder database data, including stored upstream streamer credentials, allowlist configuration, and queue records, without encoder credentials. Stacked statements are not permitted by the mysqli driver and the tested database account lacks global FILE privilege, so the demonstrated vector is bounded to reads rather than server-side file writes. Stolen streamer credentials c",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61569"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-29T15:45:15.310",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61571",
+      "title": "AVideo is a video-sharing Platform",
+      "severity": "high",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-29",
+      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the encoder lacks a global authentication layer and exposes control and status PHP endpoints to anonymous network callers. `view/run.php` has a commented-out guard and invokes `Encoder::run()`. `view/queue.json.php` calls `Encoder::getAll(true)`, reveals streamer URLs through `getSiteURL()`, and triggers processing with `execRun()`. `view/status.php` returns `Access-Control-Allow-Origin` with a wildcard, reads the queue, triggers processing, and exposes host memory statistics through `ServerMonitor::getMemory()` when `serverStatus` is set. `view/listFiles.json.php` checks only `Login::canBulkEncode()`, which admits anonymous callers whenever `disableBulkEncode` is empty, the default. Its `path` parameter is resolved with `realpath()` and listed with `scandir()` without a base-directory restriction. An unauthenticated attacker can drive the privileged queue processor, read queue and streamer-site information, obtain memory statistics and enumerate media file names and paths in any directory readable by the web-server user. Enumeration is limited to configured media extensions and does not itself disclose arbitrary file contents. This issue is fixed in version 8.1.0.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61571"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-29T15:45:15.310",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61572",
+      "title": "AVideo is a video-sharing Platform",
+      "severity": "high",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-29",
+      "summary": "AVideo is a video-sharing Platform. Before the initial remediation attempt in 8.1.0, `url_get_contents` in `objects/functions.php` accepts caller-controlled destinations after only `FILTER_VALIDATE_URL` syntax validation, without rejecting private, loopback, or link-local addresses, and disables TLS peer verification. `Login::isLogged` reauthenticates using the attacker-settable `encoder_aVideoURL` cookie together with arbitrary nonempty `encoder_user` and `encoder_pass` cookies, and `Login::run` stores the raw fetched body in `result`. The unauthenticated `objects/login.json.php` endpoint returns that session object, enabling full-response exfiltration through a supplied `siteURL`; its `Streamer::isURLAllowed` gate allows all sites when the operator allowlist is empty, the default. An unauthenticated remote attacker can read internal HTTP and HTTPS responses, including cloud instance-metadata credentials, and reach internal TCP services. A further pre-authentication FTP variant in `view/youtubeDl.json.php` routes an ftp `videoURL` into `FTPDownloader`; `parseFtpUrl` in `objects/FTPDownloader.php` accepts its host and port for `ftp_connect`. This also enables requests to internal FTP services. Untrusted self-signed HTTPS certifica",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61572"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.6",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-29T15:45:15.310",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61573",
+      "title": "AVideo is a video-sharing Platform",
+      "severity": "medium",
+      "categories": [
+        "JavaScript / TypeScript",
+        "PHP"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-29",
+      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the anonymous login interface reflects request values into HTML and JavaScript without output encoding. In `view/index.php`, `webSiteRootURL` is returned verbatim by `Streamer::getStreamerURL()` in `objects/Streamer.php` and reaches navigation and form attributes; it also enters a single-quoted JavaScript string in `view/index.header.php`. It is not filtered by `objects/security.php`, while the `user` and `pass` fields are filtered only for single quotes, leaving double quotes and angle brackets capable of breaking out of their HTML attributes. In addition, `view/index.header.php` reflects POST fields using `json_encode` without `JSON_HEX_TAG`, allowing a closing script tag to break out, and `locale/function.php` stores the POST `lang` value in the session for unescaped reflection in `view/index.php`. An unauthenticated remote attacker who persuades a victim to open a crafted login link can execute arbitrary JavaScript in the encoder's origin. This can read the operator session identifier exposed in inline script, capture login credentials and perform actions as the operator against the encoder and its upstream platform. This issue is fixed in version 8.1.0.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61573"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-29T15:45:15.310",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61575",
+      "title": "AVideo is a video-sharing Platform",
+      "severity": "medium",
+      "categories": [
+        "PHP",
+        "jQuery / Bootstrap"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-29",
+      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, `view/queue.php` uses `pathinfo` on the caller-controlled `fileURI` and stores its filename through `setTitle` in `encoder_queue.title` without neutralization. `fileURI` is not in the `objects/security.php` filter lists, and the `Login::canUpload()` capability needed to submit a queue entry can be self-granted using an attacker-controlled login site without legitimate encoder credentials. `view/index.php` loads `queue.json` from `view/queue.json.php` into the `#grid` jQuery Bootgrid table; its title formatter concatenates `row.title` into raw cell HTML. An attacker can therefore store an HTML title whose event handler runs in a privileged viewer's browser. `Encoder::getAll` limits nonadministrators to their own streamer's rows, so the victim must be an administrator who sees all rows or an operator on the attacker's streamer. A second `.html()` sink in the progress panel uses the same title but additionally depends on a helper script loaded from the streamer; the Bootgrid sink is reachable from encoder code alone. The script can read session-visible data and rendered streamer credentials, act with the viewer's privileges, and execute again for each qualifying viewer until the row",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61575"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.7",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-29T15:45:15.310",
+      "source_type": "nvd",
       "known_exploited": false
     },
     {
@@ -15057,205 +15256,6 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-28T22:23:28Z",
       "source_updated_at": "2026-10-28T22:17:14.673",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-61564",
-      "title": "AVideo is a video-sharing Platform",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the unauthenticated installer endpoint `install/checkConfiguration.php` assembles `videos/configuration.php` by interpolating request parameters, including `webSiteRootURL`, into single-quoted PHP string literals without escaping. An attacker can terminate a literal and inject PHP that executes as the web-server user when the generated, directly requestable file is loaded. Exploitation requires `videos/configuration.php` to be absent, as on every fresh deployment or after the file is removed or moved; an existing file blocks this endpoint. The supplied `systemRootPath` must contain index.php and a connection using `databaseHost`, `databaseUser`, and `databasePass` must succeed, but the attacker can point those parameters to their own database server and needs no target credentials. The write location is also derived from `systemRootPath` without a base-directory constraint. This permits arbitrary command execution, reading and overwriting files owned by the web-server user, persistent PHP code, and control over stored database connection settings. The endpoint additionally interpolates request values into streamer and configuration INSERT statements, creating a secondary SQL-inje",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61564"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "10.0",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T22:23:28Z",
-      "source_updated_at": "2026-10-28T22:17:15.750",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-61567",
-      "title": "AVideo is a video-sharing Platform",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the live-streaming endpoint `view/videosListToLive.php` accepts an attacker-named streamer in `webSiteRootURL`, calls `Login::run` in `objects/Login.php`, and trusts the returned JSON as session state. An unauthenticated remote attacker who can host an HTTP service reachable by the encoder can self-grant `isLogged` and `canStream` without legitimate credentials. The endpoint requires only nonempty `playlists_id` and `APISecret` values; `APISecret` is forwarded rather than checked against a stored secret. This path never calls `Streamer::isURLAllowed` and therefore works regardless of the operator's streamer allowlist. It fetches a second attacker-controlled video-list response and interpolates `videos[].path` without shell argument escaping into `ffprobe` and `ffmpeg` commands passed to `exec`; `isAudio` calls `isVideo` to reach the `ffprobe` command. Paths containing shell delimiters execute arbitrary operating-system commands as the web-server user. The request filter does not inspect the video-list JSON. This can disclose database and stored streamer credentials, compromise the upstream platform using those credentials, modify files owned by the web-server user, establish pers",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61567"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "10.0",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T22:23:28Z",
-      "source_updated_at": "2026-10-28T22:17:15.900",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-61569",
-      "title": "AVideo is a video-sharing Platform",
-      "severity": "high",
-      "categories": [
-        "MySQL / MariaDB",
-        "PHP"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the unauthenticated streamer login at `objects/login.json.php` passes the `user` parameter to `Streamer::get` in `objects/Streamer.php`, where it is interpolated into a single-quoted MariaDB SELECT without parameterization or escaping. Although `objects/security.php` strips literal single quotes, `html_entity_decode` in `objects/Login.php` restores entity-encoded quotes before the query. The supplied `siteURL` must pass the streamer allowlist, which allows all sites when empty by default, and an attacker-hosted login response must set `canUpload` or `isAdmin` to reach `Streamer::createIfNotExists`. That function calls `Streamer::get` before its additional allowlist check. UNION results are exposed through `streamers_id`, while failures return the rendered query and MariaDB error. An attacker can read arbitrary encoder database data, including stored upstream streamer credentials, allowlist configuration, and queue records, without encoder credentials. Stacked statements are not permitted by the mysqli driver and the tested database account lacks global FILE privilege, so the demonstrated vector is bounded to reads rather than server-side file writes. Stolen streamer credentials c",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61569"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T22:23:28Z",
-      "source_updated_at": "2026-10-28T22:17:16.043",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-61571",
-      "title": "AVideo is a video-sharing Platform",
-      "severity": "high",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the encoder lacks a global authentication layer and exposes control and status PHP endpoints to anonymous network callers. `view/run.php` has a commented-out guard and invokes `Encoder::run()`. `view/queue.json.php` calls `Encoder::getAll(true)`, reveals streamer URLs through `getSiteURL()`, and triggers processing with `execRun()`. `view/status.php` returns `Access-Control-Allow-Origin` with a wildcard, reads the queue, triggers processing, and exposes host memory statistics through `ServerMonitor::getMemory()` when `serverStatus` is set. `view/listFiles.json.php` checks only `Login::canBulkEncode()`, which admits anonymous callers whenever `disableBulkEncode` is empty, the default. Its `path` parameter is resolved with `realpath()` and listed with `scandir()` without a base-directory restriction. An unauthenticated attacker can drive the privileged queue processor, read queue and streamer-site information, obtain memory statistics and enumerate media file names and paths in any directory readable by the web-server user. Enumeration is limited to configured media extensions and does not itself disclose arbitrary file contents. This issue is fixed in version 8.1.0.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61571"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T22:23:28Z",
-      "source_updated_at": "2026-10-28T22:17:16.193",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-61572",
-      "title": "AVideo is a video-sharing Platform",
-      "severity": "high",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "AVideo is a video-sharing Platform. Before the initial remediation attempt in 8.1.0, `url_get_contents` in `objects/functions.php` accepts caller-controlled destinations after only `FILTER_VALIDATE_URL` syntax validation, without rejecting private, loopback, or link-local addresses, and disables TLS peer verification. `Login::isLogged` reauthenticates using the attacker-settable `encoder_aVideoURL` cookie together with arbitrary nonempty `encoder_user` and `encoder_pass` cookies, and `Login::run` stores the raw fetched body in `result`. The unauthenticated `objects/login.json.php` endpoint returns that session object, enabling full-response exfiltration through a supplied `siteURL`; its `Streamer::isURLAllowed` gate allows all sites when the operator allowlist is empty, the default. An unauthenticated remote attacker can read internal HTTP and HTTPS responses, including cloud instance-metadata credentials, and reach internal TCP services. A further pre-authentication FTP variant in `view/youtubeDl.json.php` routes an ftp `videoURL` into `FTPDownloader`; `parseFtpUrl` in `objects/FTPDownloader.php` accepts its host and port for `ftp_connect`. This also enables requests to internal FTP services. Untrusted self-signed HTTPS certifica",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61572"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.6",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T22:23:28Z",
-      "source_updated_at": "2026-10-28T22:17:16.347",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-61573",
-      "title": "AVideo is a video-sharing Platform",
-      "severity": "medium",
-      "categories": [
-        "JavaScript / TypeScript",
-        "PHP"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the anonymous login interface reflects request values into HTML and JavaScript without output encoding. In `view/index.php`, `webSiteRootURL` is returned verbatim by `Streamer::getStreamerURL()` in `objects/Streamer.php` and reaches navigation and form attributes; it also enters a single-quoted JavaScript string in `view/index.header.php`. It is not filtered by `objects/security.php`, while the `user` and `pass` fields are filtered only for single quotes, leaving double quotes and angle brackets capable of breaking out of their HTML attributes. In addition, `view/index.header.php` reflects POST fields using `json_encode` without `JSON_HEX_TAG`, allowing a closing script tag to break out, and `locale/function.php` stores the POST `lang` value in the session for unescaped reflection in `view/index.php`. An unauthenticated remote attacker who persuades a victim to open a crafted login link can execute arbitrary JavaScript in the encoder's origin. This can read the operator session identifier exposed in inline script, capture login credentials and perform actions as the operator against the encoder and its upstream platform. This issue is fixed in version 8.1.0.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61573"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T22:23:28Z",
-      "source_updated_at": "2026-10-28T22:17:16.490",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-61575",
-      "title": "AVideo is a video-sharing Platform",
-      "severity": "medium",
-      "categories": [
-        "PHP",
-        "jQuery / Bootstrap"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, `view/queue.php` uses `pathinfo` on the caller-controlled `fileURI` and stores its filename through `setTitle` in `encoder_queue.title` without neutralization. `fileURI` is not in the `objects/security.php` filter lists, and the `Login::canUpload()` capability needed to submit a queue entry can be self-granted using an attacker-controlled login site without legitimate encoder credentials. `view/index.php` loads `queue.json` from `view/queue.json.php` into the `#grid` jQuery Bootgrid table; its title formatter concatenates `row.title` into raw cell HTML. An attacker can therefore store an HTML title whose event handler runs in a privileged viewer's browser. `Encoder::getAll` limits nonadministrators to their own streamer's rows, so the victim must be an administrator who sees all rows or an operator on the attacker's streamer. A second `.html()` sink in the progress panel uses the same title but additionally depends on a helper script loaded from the streamer; the Bootgrid sink is reachable from encoder code alone. The script can read session-visible data and rendered streamer credentials, act with the viewer's privileges, and execute again for each qualifying viewer until the row",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61575"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T22:23:28Z",
-      "source_updated_at": "2026-10-28T22:17:16.633",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -55471,6 +55471,46 @@
       "epss_as_of": "2026-10-29"
     },
     {
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "Windows",
+        "Windows 11 OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+        },
+        {
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.09813,
+      "epss_percentile": 0.95532,
+      "epss_as_of": "2026-10-29"
+    },
+    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -55509,46 +55549,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55752,
-      "epss_as_of": "2026-10-29"
-    },
-    {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        "Windows",
-        "Windows 11 OS"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
-        },
-        {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.09813,
-      "epss_percentile": 0.95532,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -82895,37 +82895,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2025-7624",
-      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
-      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
-      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.10514,
-      "epss_percentile": 0.95747,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2025-6704",
       "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
       "severity": "critical",
@@ -82954,6 +82923,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.11772,
       "epss_percentile": 0.96062,
+      "epss_as_of": "2026-10-29"
+    },
+    {
+      "id": "CVE-2025-7624",
+      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
+      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
+      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.10514,
+      "epss_percentile": 0.95747,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -83061,85 +83061,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-29T15:42:08Z",
-      "last_attempt": "2026-10-29T15:42:08Z",
+      "last_success": "2026-10-29T15:48:42Z",
+      "last_attempt": "2026-10-29T15:48:42Z",
       "items_processed": 267,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-29T15:42:08Z",
-      "last_attempt": "2026-10-29T15:42:08Z",
+      "last_success": "2026-10-29T15:48:42Z",
+      "last_attempt": "2026-10-29T15:48:42Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-29T15:42:08Z",
-      "last_attempt": "2026-10-29T15:42:08Z",
+      "last_success": "2026-10-29T15:48:42Z",
+      "last_attempt": "2026-10-29T15:48:42Z",
       "items_processed": 458,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-29T15:42:08Z",
-      "last_attempt": "2026-10-29T15:42:08Z",
+      "last_success": "2026-10-29T15:48:42Z",
+      "last_attempt": "2026-10-29T15:48:42Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-29T15:42:08Z",
-      "last_attempt": "2026-10-29T15:42:08Z",
+      "last_success": "2026-10-29T15:48:42Z",
+      "last_attempt": "2026-10-29T15:48:42Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-29T15:42:08Z",
-      "last_attempt": "2026-10-29T15:42:08Z",
+      "last_success": "2026-10-29T15:48:42Z",
+      "last_attempt": "2026-10-29T15:48:42Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-29T15:42:08Z",
-      "last_attempt": "2026-10-29T15:42:08Z",
+      "last_success": "2026-10-29T15:48:42Z",
+      "last_attempt": "2026-10-29T15:48:42Z",
       "items_processed": 23,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-29T15:42:08Z",
-      "last_attempt": "2026-10-29T15:42:08Z",
+      "last_success": "2026-10-29T15:48:42Z",
+      "last_attempt": "2026-10-29T15:48:42Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-29T15:42:08Z",
-      "last_attempt": "2026-10-29T15:42:08Z",
+      "last_success": "2026-10-29T15:48:42Z",
+      "last_attempt": "2026-10-29T15:48:42Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-29T15:42:08Z",
-      "last_attempt": "2026-10-29T15:42:08Z",
+      "last_success": "2026-10-29T15:48:42Z",
+      "last_attempt": "2026-10-29T15:48:42Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-29T15:42:08Z",
-      "last_attempt": "2026-10-29T15:42:08Z",
+      "last_success": "2026-10-29T15:48:42Z",
+      "last_attempt": "2026-10-29T15:48:42Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-29T15:42:08Z",
-      "last_attempt": "2026-10-29T15:42:08Z",
+      "last_success": "2026-10-29T15:48:42Z",
+      "last_attempt": "2026-10-29T15:48:42Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -83151,7 +83151,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-29T15:42:08Z",
-  "last_successful_update": "2026-10-29T15:42:08Z",
+  "last_checked_at": "2026-10-29T15:48:42Z",
+  "last_successful_update": "2026-10-29T15:48:42Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
