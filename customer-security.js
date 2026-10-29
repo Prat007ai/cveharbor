@@ -58,6 +58,7 @@ async function saveFindingTicket(i,input,button){
   if(!r.ok)throw Error(payload.error||'Unable to save DevOps ticket');
   findingTickets.set(statusKey(i),ticket);button.textContent='Update';
   input.setAttribute('data-saved',ticket);
+  if(statusFor(i)==='Fixed/Patched')drawReport();
  }catch(error){window.alert('Could not save DevOps ticket: '+error.message)}finally{button.disabled=false}
 }
 
@@ -391,9 +392,12 @@ function drawReport(){
   input.type='text';input.maxLength=64;input.placeholder='Ticket number';
   input.className='customer-ticket-input';
   input.setAttribute('aria-label','DevOps ticket number for '+i.id+' on '+(i.asset?.name||'asset'));
-  input.value=ticketFor(i);input.disabled=!ticketReady;
-  const save=text('button',input.value?'Update':'Save','customer-ticket-save');
-  save.type='button';save.disabled=!ticketReady;
+  input.value=ticketFor(i);
+  const locked=statusFor(i)==='Fixed/Patched'&&!!input.value;
+  input.disabled=!ticketReady||locked;
+  if(locked)input.title='Ticket reference locked after the vulnerability was fixed';
+  const save=text('button',locked?'Locked':input.value?'Update':'Save','customer-ticket-save');
+  save.type='button';save.disabled=!ticketReady||locked;
   save.addEventListener('click',()=>void saveFindingTicket(i,input,save));
   ticketWrap.append(input,save);ticketCell.append(ticketWrap);
  }

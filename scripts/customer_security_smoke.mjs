@@ -79,6 +79,7 @@ ticketInput.value='WOODBINE-123';
 doc.querySelector('.customer-ticket-save').click();
 await new Promise(resolve=>setTimeout(resolve,20));
 assert.ok(statusWrites.some(x=>x.ticket==='WOODBINE-123'),'ticket reference saved');
+assert.ok(doc.querySelector('.customer-ticket-save'),'ticket reference action present');
 const statusSelect=doc.querySelector('.customer-finding-status-select');
 assert.ok(statusSelect&&!statusSelect.disabled,'status is editable when D1 tracking is ready');
 assert.deepEqual([...statusSelect.options].map(o=>o.value),['Needs Review','Fix in Progress','Fixed/Patched','Not Applicable','Accepted Risk']);

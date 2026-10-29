@@ -30,6 +30,9 @@ export async function findingTicketRoute(req,env,user,path,data={}){
  if(!/^[A-Za-z0-9][A-Za-z0-9._#/-]{0,63}$/.test(ticket))throw new FindingStatusError('Ticket number must be 1 to 64 characters and contain only letters, numbers, dots, underscores, slashes or #');
  const asset=await env.DB.prepare('SELECT id FROM inventory_assets WHERE id=? AND user_id=?').bind(assetId,user.id).first();
  if(!asset)throw new FindingStatusError('Asset not found in your account',404);
+ const existing=await env.DB.prepare('SELECT ticket_number FROM customer_finding_tickets WHERE user_id=? AND asset_id=? AND cve_id=?').bind(user.id,assetId,cveId).first();
+ const finding=await env.DB.prepare('SELECT status FROM customer_finding_statuses WHERE user_id=? AND asset_id=? AND cve_id=?').bind(user.id,assetId,cveId).first();
+ if(existing&&finding?.status==='Fixed/Patched')throw new FindingStatusError('DevOps ticket is locked after the finding is fixed',409);
  await env.DB.prepare('INSERT INTO customer_finding_tickets(user_id,asset_id,cve_id,ticket_number,updated_at) VALUES(?,?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(user_id,asset_id,cve_id) DO UPDATE SET ticket_number=excluded.ticket_number,updated_at=CURRENT_TIMESTAMP').bind(user.id,assetId,cveId,ticket).run();
  return response({saved:true,asset_id:assetId,cve_id:cveId,ticket_number:ticket});
 }
