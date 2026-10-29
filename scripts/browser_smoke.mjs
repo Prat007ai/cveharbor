@@ -222,9 +222,11 @@ matcherDom.window.close();
 assert.ok(html.includes('id="inventoryCustomerName"')&&html.includes('id="inventoryEnvironmentName"')&&html.includes('id="inventoryVersion"'),'customer environment and software version input fields exist');
 assert.ok(html.includes('id="inventoryAdditionalTechnologies"'),'multiple technology version input exists');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("groupCard.append"),'asset technologies are grouped under the same asset name');
+assert.ok(fs.readFileSync('inventory.js','utf8').includes("fileInput.type='file'"),'plugin importer has local file browse control');
+assert.ok(fs.readFileSync('inventory.js','utf8').includes('file.size>65536'),'plugin upload has a file size limit');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("Technology | Version"),'technology version entry format is validated');
 
-assert.ok(html.includes('inventory.js?v=wp-plugin-import-1'),'public build references account inventory client');
+assert.ok(html.includes('inventory.js?v=wp-plugin-upload-2'),'public build references account inventory client');
 const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
 assert.match(inventoryDom.window.document.getElementById('inventoryMessage').textContent,/Sign in/,'anonymous inventory is not displayed');
