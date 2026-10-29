@@ -35,7 +35,12 @@ export function normalizePluginLookup(slug,installed,json){
   return {status:'checked',slug,findings:[],reason:'Source returned no vulnerabilities, not a security assurance'};
  if(!data||typeof data!=='object')return {status:'unverified',slug,findings:[],reason:'Unexpected source payload'};
  let entries=null;
- if(Array.isArray(data))entries=data;
+ if(Array.isArray(data)){
+  const identified=data.filter(x=>x&&typeof x==='object'&&(x.plugin||x.slug));
+  if(identified.length&&identified.some(x=>String(x.plugin||x.slug).toLowerCase()!==slug))
+   return {status:'unverified',slug,findings:[],reason:'Source explicitly identifies a different plugin'};
+  entries=data.flatMap(x=>Array.isArray(x?.vulnerability)?x.vulnerability:Array.isArray(x?.vulnerabilities)?x.vulnerabilities:[x]);
+ }
  else{
   const item=data[slug]&&typeof data[slug]==='object'?data[slug]:data;
   const explicit=item.plugin||item.slug;
