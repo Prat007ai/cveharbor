@@ -108,14 +108,14 @@ function setupPluginImport(){
   if(file.size>65536){result.textContent='File too large. Choose a TXT file smaller than 64 KB.';return}
   // Some Windows downloads hide the extension or report text/plain without it.
   const name=String(file.name||'');
-  if(!/\\.txt$/i.test(name)&&file.type!=='text/plain'){
+  if(!/\.txt$/i.test(name)&&file.type!=='text/plain'){
    result.textContent='Choose a plain text (.txt) file. Selected: '+name;return;
   }
   try{
-   const content=(await readText(file)).replace(/^\\uFEFF/,'');
+   const content=(await readText(file)).replace(/^\uFEFF/,'');
    if(!content.trim()){result.textContent='The selected file is empty.';return}
    area.value=content;
-   const count=content.split(/\\r?\\n/).filter(line=>line.trim()).length;
+   const count=content.split(/\r?\n/).filter(line=>line.trim()).length;
    result.textContent='Loaded '+name+' ('+count+' lines). Review the list, then click Import plugins.';
   }catch(_){result.textContent='Could not read the selected file. Please select it again.'}
  });
