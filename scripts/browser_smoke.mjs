@@ -133,7 +133,7 @@ assert.equal(engine.evaluate([asset],[advisory,advisory]).total,1,
  'duplicate CVE items are not counted twice for the same asset');
 matcherDom.window.close();
 assert.ok(html.includes('id="inventoryCustomerName"')&&html.includes('id="inventoryEnvironmentName"')&&html.includes('id="inventoryVersion"'),'customer environment and software version input fields exist');
-assert.ok(html.includes('inventory.js?v=customer-inventory-1'),'public build references account inventory client');
+assert.ok(html.includes('inventory.js?v=customer-matching-2'),'public build references account inventory client');
 const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
 assert.match(inventoryDom.window.document.getElementById('inventoryMessage').textContent,/Sign in/,'anonymous inventory is not displayed');
