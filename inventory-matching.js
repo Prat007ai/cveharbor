@@ -20,12 +20,44 @@ function compare(a,b){
  }
  return 0;
 }
+function preciseProductMatch(asset,cve){
+ const product=norm(asset.technology);
+ const detail=norm([cve.title,cve.summary,cve.affected].filter(Boolean).join(' '));
+ const affected=norm(cve.affected);
+ const plugin=product.startsWith('wordpress plugin:');
+ // Plugin advisories require the actual product name and cannot be assigned
+ // to WordPress core, PHP, or a different installed plugin.
+ if(plugin){
+  const name=product.slice('wordpress plugin:'.length).trim();
+  return name.length>=3&&(affected.includes(name)||detail.includes(name))&&
+   !(!affected.includes(name)&&/wordpress core|wordpress itself/i.test(detail));
+ }
+ if(product==='wordpress'){
+  if(/\b(plugin|extension|theme|woocommerce|wpbakery)\b/i.test(detail)&&
+    !/wordpress core|wordpress itself|wordpress versions/i.test(detail))return false;
+  return /\bwordpress\b/i.test(detail)||!detail;
+ }
+ if(product==='php'){
+  // Broad PHP categories can include unrelated applications written in PHP.
+  if(/\b(linux kernel|\.net|asp\.net|brotli|python|debian kernel|windows kernel)\b/i.test(detail))return false;
+  if(/\b(plugin|wordpress|joomla|drupal|dedecms|satellite tracker|woocommerce)\b/i.test(detail)&&
+    !/\bphp (core|runtime|interpreter|versions?|before|through|8\.|7\.)\b/i.test(detail))return false;
+  // A PHP mention in "PHP code injection" does not identify PHP runtime.
+  if(/\bphp code injection\b/i.test(detail)&&!/\bphp (runtime|interpreter|versions?|before|through)\b/i.test(detail))return false;
+  return /\bphp\b/i.test(detail)||!detail;
+ }
+ if(product==='debian'||product==='ubuntu'){
+  if(/\b(linux kernel)\b/i.test(detail))return true;
+ }
+ return true;
+}
 function candidate(asset,cve){
  const product=norm(asset.technology);
  if(!product||!/^(CVE-\d{4}-\d{4,}|GHSA-[a-z0-9-]+)$/i.test(String(cve.id||'')))return null;
  if(/rejected|withdrawn/i.test(String(cve.status||'')))return null;
  const tags=(cve.categories||[]).map(norm);
- if(!(categories[product]||[product]).some(t=>tags.includes(norm(t))))return null;
+ if(!(product.startsWith('wordpress plugin:')?tags.includes('wordpress / plugins'):(categories[product]||[product]).some(t=>tags.includes(norm(t)))))return null;
+ if(!preciseProductMatch(asset,cve))return null;
  const affected=String(cve.affected||''),version=String(asset.version||'').trim();
  let level='category',evidence='Category match only. Product identity and affected versions have not been verified.';
  let comparisonDetail='No reliable version comparison available from this advisory text.';

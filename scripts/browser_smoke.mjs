@@ -224,7 +224,7 @@ assert.ok(html.includes('id="inventoryAdditionalTechnologies"'),'multiple techno
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("groupCard.append"),'asset technologies are grouped under the same asset name');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("Technology | Version"),'technology version entry format is validated');
 
-assert.ok(html.includes('inventory.js?v=multi-stack-3'),'public build references account inventory client');
+assert.ok(html.includes('inventory.js?v=wp-plugin-import-1'),'public build references account inventory client');
 const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
 assert.match(inventoryDom.window.document.getElementById('inventoryMessage').textContent,/Sign in/,'anonymous inventory is not displayed');

@@ -76,6 +76,71 @@ function refreshMatchCustomers(){
  if(data.customers.some(c=>c.id===current))selector.value=current;
 }
 $('inventoryMatchCustomer').addEventListener('change',renderMatches);
+
+// Import WordPress plugin name and version pairs into the selected environment.
+// Uses the existing authenticated inventory API; no new D1 schema is required.
+function setupPluginImport(){
+ const form=$('inventoryAssetForm');
+ if(!form)return;
+ const panel=make('section','inventory-plugin-import');
+ panel.append(make('h3','','Import WordPress plugins'),
+  make('p','ops-note','Select a customer environment above, then paste one plugin per line as Plugin Name | Version. Each plugin is recorded separately. Existing entries with the same name are updated rather than duplicated.'));
+ const area=make('textarea','','');area.placeholder='Gravity Forms | 2.9.5\\nYoast SEO | 24.7';
+ area.rows=7;area.setAttribute('aria-label','WordPress plugin names and versions');
+ const button=make('button','ops-download','Import plugins');button.type='button';
+ const result=make('p','ops-note','');result.setAttribute('role','status');
+ button.addEventListener('click',async()=>{
+  const environmentId=$('inventoryEnvironmentSelect').value;
+  const assetName=$('inventoryAssetName').value.trim();
+  if(!signedIn||!ready){result.textContent='Sign in to manage private inventory.';return}
+  if(!environmentId||!assetName){result.textContent='Choose an environment and enter the WordPress site asset name first.';return}
+  const lines=area.value.split(/\\r?\\n/).map(x=>x.trim()).filter(Boolean);
+  if(!lines.length||lines.length>150){result.textContent='Paste between 1 and 150 plugin entries.';return}
+  const plugins=[];
+  for(const line of lines){
+   const parts=line.split('|');
+   if(parts.length!==2||!parts[0].trim()||!parts[1].trim()){
+    result.textContent='Each line must contain Plugin Name | Version.';return;
+   }
+   const name=parts[0].trim(),version=parts[1].trim();
+   if(name.length>100||version.length>80||!/^\\d[\\w.+-]*$/.test(version)){
+    result.textContent='Check plugin name or version: '+line;return;
+   }
+   plugins.push({name,version});
+  }
+  if(new Set(plugins.map(p=>p.name.toLowerCase())).size!==plugins.length){
+   result.textContent='Duplicate plugin names in paste. Remove duplicates and retry.';return;
+  }
+  button.disabled=true;
+  let saved=0;
+  try{
+   // Refresh before importing to avoid duplicate entries after another session.
+   data=await call();
+   for(const plugin of plugins){
+    const technology='WordPress Plugin: '+plugin.name;
+    const matches=data.assets.filter(a=>a.environment_id===environmentId&&
+      a.name.toLowerCase()===assetName.toLowerCase()&&a.technology.toLowerCase()===technology.toLowerCase());
+    const payload={environment_id:environmentId,name:assetName,asset_type:'Software',
+     technology,version:plugin.version,notes:'WordPress plugin inventory'};
+    if(matches.length===1){
+     if(matches[0].version!==plugin.version)await call('/assets/'+matches[0].id,'PUT',payload);
+    }else if(matches.length===0){
+     await call('/assets','POST',payload);
+     // Re-read before subsequent requests so retrying never overwrites.
+     data=await call();
+    }else throw Error('Duplicate existing inventory entries for '+plugin.name+'. Resolve before continuing.');
+    saved++;
+    result.textContent='Processed '+saved+' of '+plugins.length+' plugins';
+   }
+   await load();result.textContent=saved+' WordPress plugin entries processed and saved in private D1 inventory.';
+  }catch(error){await load();result.textContent='Imported '+saved+' entries. '+error.message+' Review and retry to continue.'}
+  finally{button.disabled=false}
+ });
+ panel.append(area,button,result);
+ form.after(panel);
+}
+setupPluginImport();
+
 function render(){
  selects();
  $('inventoryCustomerCount').textContent=data.customers.length;
