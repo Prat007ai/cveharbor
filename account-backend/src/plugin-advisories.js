@@ -7,48 +7,77 @@ const clean=s=>String(s??'').trim().slice(0,1200);
 const CVE=/^CVE-\d{4}-\d{4,10}$/i;
 const version=x=>/^\d+(?:\.\d+){1,5}$/.test(String(x||''))?String(x):null;
 function compare(a,b){const left=a.split('.').map(Number),right=b.split('.').map(Number);for(let i=0;i<Math.max(left.length,right.length);i++){let d=(left[i]||0)-(right[i]||0);if(d)return Math.sign(d)}return 0}
-function affected(v,installed){
- const target=version(v.version||v.fixed_in||v.fixed_version||v.patched_version);
- const operator=String(v.operator||v.version_operator||'').toLowerCase();
- if(!target||!version(installed)||!['lt','le','eq','ne','gt','ge'].includes(operator))return null;
- const n=compare(installed,target);
- return {lt:n<0,le:n<=0,eq:n===0,ne:n!==0,gt:n>0,ge:n>=0}[operator];
+function checkBound(value,limit,operator){
+ const n=compare(value,limit);
+ return {lt:n<0,le:n<=0,eq:n===0,ne:n!==0,gt:n>0,ge:n>=0}[operator]??null;
 }
+function affected(v,installed){
+ if(!version(installed))return null;
+ const range=v.operator;
+ if(range&&typeof range==='object'&&!Array.isArray(range)){
+  const lo=range.min_version,hi=range.max_version;
+  let low=true,high=true;
+  if(lo){if(!version(lo))return null;low=checkBound(installed,lo,range.min_operator)}
+  if(hi){if(!version(hi))return null;high=checkBound(installed,hi,range.max_operator)}
+  return low===null||high===null?null:low&&high;
+ }
+ const target=version(v.version||v.fixed_in||v.fixed_version||v.patched_version);
+ const op=String(range||v.version_operator||'').toLowerCase();
+ if(!target)return null;
+ return checkBound(installed,target,op);
+}
+const sourceIds=v=>Array.isArray(v.source)?v.source:[v.source].filter(Boolean);
+const validId=value=>typeof value==='string'&&CVE.test(value.toUpperCase());
 export function normalizePluginLookup(slug,installed,json){
- if(json?.error!==0)return {status:'unverified',slug,findings:[],reason:'Source did not provide a confirmed plugin record'};
+ if(json?.error!==0)return {status:'unverified',slug,findings:[],reason:'Source did not confirm successful retrieval'};
  const data=json.data;
- const empty={status:'checked',slug,findings:[],reason:'No vulnerability records returned by this source; this does not establish that the plugin is secure'};
- // The endpoint is scoped to a plugin slug. An empty collection is a valid
- // successful lookup, not an identity mismatch.
- if(data===null||Array.isArray(data)&&data.length===0)return empty;
+ if(data===null||Array.isArray(data)&&data.length===0)
+  return {status:'checked',slug,findings:[],reason:'Source returned no vulnerabilities, not a security assurance'};
  if(!data||typeof data!=='object')return {status:'unverified',slug,findings:[],reason:'Unexpected source payload'};
  let entries=null;
- if(Array.isArray(data)){
-  if(data.every(v=>v&&typeof v==='object'&&('vulnerabilities'in v||'slug'in v))){
-   const explicit=data.find(v=>v.slug===slug);
-   if(data.some(v=>v.slug&&v.slug!==slug)&&!explicit)return {status:'unverified',slug,findings:[],reason:'Source identified another plugin'};
-   entries=explicit?.vulnerabilities||[];
-  }else entries=data;
- }else{
+ if(Array.isArray(data))entries=data;
+ else{
   const item=data[slug]&&typeof data[slug]==='object'?data[slug]:data;
-  if(item.slug&&String(item.slug).toLowerCase()!==slug)return {status:'unverified',slug,findings:[],reason:'Source identified another plugin'};
-  if(Array.isArray(item.vulnerabilities))entries=item.vulnerabilities;
+  const explicit=item.plugin||item.slug;
+  if(explicit&&String(explicit).toLowerCase()!==slug)
+   return {status:'unverified',slug,findings:[],reason:'Source explicitly identifies a different plugin'};
+  if(Array.isArray(item.vulnerability))entries=item.vulnerability;
+  else if(Array.isArray(item.vulnerabilities))entries=item.vulnerabilities;
   else if(Array.isArray(item.data))entries=item.data;
-  else if(Object.keys(item).length===0)return empty;
+  else if(Object.keys(item).length===0)return {status:'checked',slug,findings:[],reason:'No source findings; not proof of safety'};
  }
  if(!Array.isArray(entries))return {status:'unverified',slug,findings:[],reason:'Source returned unsupported vulnerability data format'};
- const findings=[];
+ const findings=[],seen=new Set();
  for(const v of entries.slice(0,300)){
-  const identifiers=[...(Array.isArray(v.cve)?v.cve:[v.cve]),v.cve_id,v.id,...(Array.isArray(v.cves)?v.cves:[])].filter(Boolean).map(x=>String(x).toUpperCase());
-  const id=identifiers.find(x=>CVE.test(x));
-  if(!id)continue;
+  if(!v||typeof v!=='object')continue;
+  const sources=sourceIds(v);
+  const ids=[...(Array.isArray(v.cve)?v.cve:[v.cve]),v.cve_id,v.id,
+    ...(Array.isArray(v.cves)?v.cves:[]),
+    ...sources.flatMap(x=>x&&typeof x==='object'?[x.id,x.name]:[])].filter(validId).map(x=>x.toUpperCase());
+  if(!ids.length)continue;
   const applies=affected(v,installed);
   if(applies===false)continue;
-  const source=Array.isArray(v.source)?v.source[0]:v.source;
-  const url=String(v.url||v.link||source?.link||source?.url||'');
-  findings.push({id,title:clean(v.title||v.name||id),summary:clean(v.description||v.title||id),severity:clean(v.impact?.cvss?.severity||v.severity||'unknown').toLowerCase(),affected:clean('Installed '+installed+'; upstream affected version rule: '+(v.operator||v.version_operator||'unknown')+' '+(v.version||'unknown')),published:clean(v.date||v.published||''),updated:clean(v.updated||''),remediation:clean(v.fixed_in||v.fixed_version?'Patched version '+(v.fixed_in||v.fixed_version):''),sources:url.startsWith('https://')?[{label:'WPVulnerability source',url}]:[],level:applies===true?'version_review':'category',known_exploited:false});
+  const source=sources.find(x=>x&&typeof x==='object'&&validId(x.id))||sources.find(x=>x&&typeof x==='object'&&x.link)||{};
+  const url=String(source.link||source.url||v.url||v.link||'');
+  const range=v.operator&&typeof v.operator==='object'?v.operator:null;
+  const rule=range?
+   [range.min_operator&&range.min_version?range.min_operator+' '+range.min_version:'',
+    range.max_operator&&range.max_version?range.max_operator+' '+range.max_version:''].filter(Boolean).join(' and '):
+   String(v.operator||v.version_operator||'unknown')+' '+String(v.version||'unknown');
+  for(const id of ids){
+   if(seen.has(id))continue;seen.add(id);
+   findings.push({id,title:clean(v.name||v.title||id),
+    summary:clean(v.description||source.description||v.title||v.name||id),
+    severity:clean(v.impact?.cvss?.severity||v.impact?.cvss3?.severity||v.severity||'unknown').toLowerCase(),
+    affected:clean('Installed '+installed+'; source affected range: '+(rule||'not specified')),
+    published:clean(v.date||v.published||''),updated:clean(v.updated||''),
+    remediation:clean(range?.max_version?'Review fixed release after '+range.max_version:'Verify vendor fix'),
+    sources:url.startsWith('https://')?[{label:'Vulnerability source',url}]:[],
+    level:applies===true?'version_review':'category',known_exploited:false});
+  }
  }
- return {status:'checked',slug,findings,source_updated:json.updated||null,checked_version:installed};
+ return {status:'checked',slug,findings,source_updated:json.updated||null,checked_version:installed,
+  reason:findings.length?'':'No applicable CVE records identified by this source; not a guarantee of safety'};
 }
 export async function pluginAdvisoryRoute(req,env,user,fetcher=fetch){
  const url=new URL(req.url),assetId=url.searchParams.get('asset_id');
