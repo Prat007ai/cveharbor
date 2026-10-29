@@ -237,7 +237,7 @@ async function init(){
   $('customerDashAccess').hidden=false;
   filters();
   const requested=new URLSearchParams(location.search).get('customer');
-  if(reporting&&inventory.customers.some(c=>c.id===requested)){
+  if(inventory.customers.some(c=>c.id===requested)){
    $('customerDashFilter').value=requested;environments();
   }
   const draw=reporting?drawReport:drawDashboard;draw();
