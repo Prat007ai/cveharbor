@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-29",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 4292,
+  "candidate_records": 4293,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -81965,6 +81965,34 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-98059",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: bpf: Mark sched_process_wait argument as nullable do_wait() passes wo->wo_pid to the sched_process_wait tra",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-09-25",
+      "updated": "2026-10-29",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: bpf: Mark sched_process_wait argument as nullable do_wait() passes wo->wo_pid to the sched_process_wait tracepoint. kernel_wait4() leaves wo_pid NULL for wait4(-1), and kernel_waitid_prepare() does likewise for waitid(P_ALL). btf_ctx_access() currently types argument 0 as PTR_TO_BTF_ID | PTR_TRUSTED. Without PTR_MAYBE_NULL, the verifier accepts an unchecked dereference. Trusted pointer loads have no fault protection, so a wait for any child can then cause a NULL pointer dereference in JITed BPF code. Add sched_process_wait to raw_tp_null_args[] with argument 0 marked nullable. The verifier rejects an unchecked dereference while preserving access after the program checks the pointer for NULL.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-98059"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:58:23Z",
+      "source_updated_at": "2026-10-29T17:56:57.930",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-97320",
       "title": "A flaw has been found in YunaiV/zhijiantianya ruoyi-vue-pro up to 2026.08",
       "severity": "low",
@@ -82468,35 +82496,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-64024",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: tcp: fix stale per-CPU tcp_tw_isn leak enabling ISN prediction Blamed commit moved the TIME_WAIT-derived IS",
-      "severity": "critical",
-      "categories": [
-        "Linux",
-        "React / Next.js"
-      ],
-      "published": "2026-07-19",
-      "updated": "2026-10-29",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: tcp: fix stale per-CPU tcp_tw_isn leak enabling ISN prediction Blamed commit moved the TIME_WAIT-derived ISN from the skb control block to a per-CPU variable, assuming the value would always be consumed by tcp_conn_request() for the same packet that wrote it. That assumption is violated by multiple drop paths between the producer (__this_cpu_write(tcp_tw_isn, isn) in tcp_v{4,6}_rcv()) and the consumer (tcp_conn_request()): - min_ttl / min_hopcount check - xfrm policy check - tcp_inbound_hash() MD5/AO mismatch - tcp_filter() eBPF/SO_ATTACH_FILTER drop - th->syn && th->fin discard in tcp_rcv_state_process() TCP_LISTEN - psp_sk_rx_policy_check() in tcp_v{4,6}_do_rcv() - tcp_checksum_complete() in tcp_v{4,6}_do_rcv() - tcp_v{4,6}_cookie_check() returning NULL When a packet is dropped on any of these paths, tcp_tw_isn is left set. The next SYN processed on the same CPU then consumes the non zero value in tcp_conn_request(), receiving a potentially predictable ISN. This patch moves back tcp_tw_isn to skb->cb[], getting rid of the per-cpu variable. Note that tcp_v{4,6}_fill_cb() do not set it. Very litle impact on overall code size/complexity: $ scripts/bloat-o-meter -t ",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-64024"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T15:59:37Z",
-      "source_updated_at": "2026-10-29T15:55:29.880",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-7198",
       "title": "Progress Sitefinity improper access control in web services",
       "severity": "critical",
@@ -82617,37 +82616,6 @@
       "epss_as_of": "2026-10-29"
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.11772,
-      "epss_percentile": 0.96062,
-      "epss_as_of": "2026-10-29"
-    },
-    {
       "id": "CVE-2025-7624",
       "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
@@ -82676,6 +82644,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.10514,
       "epss_percentile": 0.95747,
+      "epss_as_of": "2026-10-29"
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.11772,
+      "epss_percentile": 0.96062,
       "epss_as_of": "2026-10-29"
     },
     {
@@ -82723,85 +82722,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-29T17:54:45Z",
-      "last_attempt": "2026-10-29T17:54:45Z",
+      "last_success": "2026-10-29T17:58:23Z",
+      "last_attempt": "2026-10-29T17:58:23Z",
       "items_processed": 259,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-29T17:54:45Z",
-      "last_attempt": "2026-10-29T17:54:45Z",
+      "last_success": "2026-10-29T17:58:23Z",
+      "last_attempt": "2026-10-29T17:58:23Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-29T17:54:45Z",
-      "last_attempt": "2026-10-29T17:54:45Z",
-      "items_processed": 529,
+      "last_success": "2026-10-29T17:58:23Z",
+      "last_attempt": "2026-10-29T17:58:23Z",
+      "items_processed": 530,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-29T17:54:45Z",
-      "last_attempt": "2026-10-29T17:54:45Z",
+      "last_success": "2026-10-29T17:58:23Z",
+      "last_attempt": "2026-10-29T17:58:23Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-29T17:54:45Z",
-      "last_attempt": "2026-10-29T17:54:45Z",
+      "last_success": "2026-10-29T17:58:23Z",
+      "last_attempt": "2026-10-29T17:58:23Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-29T17:54:45Z",
-      "last_attempt": "2026-10-29T17:54:45Z",
+      "last_success": "2026-10-29T17:58:23Z",
+      "last_attempt": "2026-10-29T17:58:23Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-29T17:54:45Z",
-      "last_attempt": "2026-10-29T17:54:45Z",
+      "last_success": "2026-10-29T17:58:23Z",
+      "last_attempt": "2026-10-29T17:58:23Z",
       "items_processed": 23,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-29T17:54:45Z",
-      "last_attempt": "2026-10-29T17:54:45Z",
+      "last_success": "2026-10-29T17:58:23Z",
+      "last_attempt": "2026-10-29T17:58:23Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-29T17:54:45Z",
-      "last_attempt": "2026-10-29T17:54:45Z",
+      "last_success": "2026-10-29T17:58:23Z",
+      "last_attempt": "2026-10-29T17:58:23Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-29T17:54:45Z",
-      "last_attempt": "2026-10-29T17:54:45Z",
+      "last_success": "2026-10-29T17:58:23Z",
+      "last_attempt": "2026-10-29T17:58:23Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-29T17:54:45Z",
-      "last_attempt": "2026-10-29T17:54:45Z",
+      "last_success": "2026-10-29T17:58:23Z",
+      "last_attempt": "2026-10-29T17:58:23Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-29T17:54:45Z",
-      "last_attempt": "2026-10-29T17:54:45Z",
+      "last_success": "2026-10-29T17:58:23Z",
+      "last_attempt": "2026-10-29T17:58:23Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -82813,7 +82812,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-29T17:54:45Z",
-  "last_successful_update": "2026-10-29T17:54:45Z",
+  "last_checked_at": "2026-10-29T17:58:23Z",
+  "last_successful_update": "2026-10-29T17:58:23Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
