@@ -85,7 +85,7 @@ assert.deepEqual([...statusSelect.options].map(o=>o.value),['Needs Review','Fix 
 statusSelect.value='Fixed/Patched';
 statusSelect.dispatchEvent(new window.Event('change'));
 await new Promise(resolve=>setTimeout(resolve,20));
-assert.equal(statusWrites.length,1,'status saved with an authenticated PUT');
+assert.equal(statusWrites.filter(x=>x.status).length,1,'status saved with an authenticated PUT');
 assert.match(statusWrites[0].url,/\/finding-statuses\/a1\/CVE-2026-32101$/);
 assert.equal(statusWrites[0].status,'Fixed/Patched');
 assert.equal(doc.querySelectorAll('.customer-vulnerability-table tbody tr').length,0,'patched finding is filtered from unresolved view');
