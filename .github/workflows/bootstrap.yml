@@ -16,6 +16,7 @@ on:
       - account-backend/**
       - accounts.js
       - disclosure-trend.js
+      - inventory.js
       - scripts/browser_smoke.mjs
       - scripts/update_threats.py
       - threats.js
@@ -40,6 +41,7 @@ on:
       - account-backend/**
       - accounts.js
       - disclosure-trend.js
+      - inventory.js
   schedule:
     - cron: '17 * * * *'
   workflow_dispatch:
@@ -73,7 +75,7 @@ jobs:
       - name: Unit and integration tests
         run: python -m unittest discover -s tests -v && python -m py_compile scripts/update_malware.py
       - name: Validate JavaScript
-        run: node --check app.js && node --check data.js && node --check accounts.js && node --check operations.js && node --check disclosure-trend.js && node --check geo-map.js && node --check malware.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js && node --check account-backend/src/remediation.js
+        run: node --check app.js && node --check data.js && node --check accounts.js && node --check operations.js && node --check disclosure-trend.js && node --check inventory.js && node --check geo-map.js && node --check malware.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js && node --check account-backend/src/remediation.js && node --check account-backend/src/inventory.js
       - name: Test digest matching and email rendering
         run: cd account-backend && npm test
       - name: Verify public build
@@ -145,7 +147,7 @@ jobs:
       - name: Unit tests
         run: python -m unittest discover -s tests -v && python -m py_compile scripts/update_malware.py
       - name: Validate browser JavaScript
-        run: node --check app.js && node --check data.js && node --check accounts.js && node --check operations.js && node --check disclosure-trend.js && node --check geo-map.js && node --check malware.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js && node --check account-backend/src/remediation.js
+        run: node --check app.js && node --check data.js && node --check accounts.js && node --check operations.js && node --check disclosure-trend.js && node --check inventory.js && node --check geo-map.js && node --check malware.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js && node --check account-backend/src/remediation.js && node --check account-backend/src/inventory.js
       - name: Test digest matching and email rendering
         run: cd account-backend && npm test
       - name: Install smoke test dependency

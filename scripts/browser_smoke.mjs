@@ -111,6 +111,14 @@ assert.match(workspaceDocument.getElementById('stackSummary').textContent,/index
 workspaceDocument.getElementById('securityLookup').value='CVE-2026';
 workspaceDocument.getElementById('securityLookup').dispatchEvent(new workspaceWindow.Event('input'));
 assert.ok(workspaceDocument.querySelectorAll('#securityLookupResults .workspace-result').length>0,'lookup results visible');
+assert.ok(html.includes('id="inventoryWorkspace"'),'customer inventory workspace exists');
+assert.ok(html.includes('id="inventoryCustomerName"')&&html.includes('id="inventoryEnvironmentName"')&&html.includes('id="inventoryVersion"'),'customer environment and software version input fields exist');
+assert.ok(html.includes('inventory.js?v=customer-inventory-1'),'public build references account inventory client');
+const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
+inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
+assert.match(inventoryDom.window.document.getElementById('inventoryMessage').textContent,/Sign in/,'anonymous inventory is not displayed');
+assert.equal(inventoryDom.window.document.getElementById('inventoryCustomerCount').textContent,'0');
+inventoryDom.window.close();
 assert.ok(html.includes('id="operationsCentre"'),'operations centre exists');
 assert.ok(fs.readFileSync('operations.js','utf8').includes('https://api.osv.dev/v1/query'),'version checker uses OSV');
 const opsDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
