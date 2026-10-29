@@ -23,6 +23,23 @@ export function safeSourceUrl(value){
 }
 async function available(env){try{await env.DB.prepare('SELECT asset_id FROM plugin_source_mappings LIMIT 1').first();return true}catch(_){return false}}
 export async function sourceRoute(req,env,user,path,data={}){
+ if(path==='/v1/plugin-installation-status'&&req.method==='GET'){
+  try{
+   const rows=await env.DB.prepare('SELECT s.asset_id,s.status FROM plugin_installation_status s JOIN inventory_assets a ON a.id=s.asset_id AND a.user_id=s.user_id WHERE s.user_id=? LIMIT 3000').bind(user.id).all();
+   return reply({ready:true,statuses:rows.results||[]});
+  }catch(_){return reply({ready:false,statuses:[]})}
+ }
+ const statusMatch=/^\/v1\/plugin-installation-status\/([0-9a-f-]{36})$/.exec(path);
+ if(statusMatch&&req.method==='PUT'){
+  const status=String(data.status||'');
+  if(!['Active','Inactive','Network active','Inactive, listing closed'].includes(status))return reply({error:'Invalid plugin status'},400);
+  const asset=await env.DB.prepare('SELECT id,technology FROM inventory_assets WHERE id=? AND user_id=?').bind(statusMatch[1],user.id).first();
+  if(!asset||!String(asset.technology).startsWith('WordPress Plugin: '))return reply({error:'Plugin asset not found'},404);
+  try{
+   await env.DB.prepare('INSERT INTO plugin_installation_status(user_id,asset_id,status) VALUES(?,?,?) ON CONFLICT(user_id,asset_id) DO UPDATE SET status=excluded.status').bind(user.id,asset.id,status).run();
+   return reply({saved:true,asset_id:asset.id,status});
+  }catch(_){return reply({error:'Plugin status table migration is required'},503)}
+ }
  if(path==='/v1/plugin-sources'&&req.method==='GET'){
   if(!await available(env))return reply({ready:false,sources:[]});
   const records=await env.DB.prepare('SELECT s.asset_id,s.vendor_url,s.release_url,s.advisory_url,s.plugin_slug,s.verification,s.updated_at FROM plugin_source_mappings s JOIN inventory_assets a ON a.id=s.asset_id AND a.user_id=s.user_id WHERE s.user_id=? LIMIT 3000').bind(user.id).all();
