@@ -399,7 +399,37 @@ function drawReport(){
      pluginChecks[a.id]==='checked'?'Checked':pluginChecks[a.id]==='pending'?'Pending':'Unverified or unavailable',
      check?.status==='checked'?String(check.findings?.length||0):'Unknown'];
    }));
-  monitor.classList.add('customer-plugin-monitor-table');root.append(reportSection('WordPress Plugin Monitoring'),monitor);
+  monitor.classList.add('customer-plugin-monitor-table');
+  const heading=reportSection('WordPress Plugin Monitoring');
+  root.append(heading);
+  const controls=text('div','','customer-plugin-monitor-actions');
+  const run=text('button','Check plugins now','ops-download');run.type='button';
+  const feedback=text('span','','ops-note');
+  run.addEventListener('click',async()=>{
+   run.disabled=true;
+   let completed=0,failed=0;
+   feedback.textContent='Starting plugin checks…';
+   for(let k=0;k<pluginAssets.length;k+=3){
+    const batch=pluginAssets.slice(k,k+3);
+    try{
+     const r=await fetch('https://api.cveharbor.com/v1/plugin-monitor/refresh-batch',{
+      method:'POST',credentials:'include',headers:{'Content-Type':'application/json',Accept:'application/json'},
+      body:JSON.stringify({asset_ids:batch.map(a=>a.id)})});
+     const result=await r.json().catch(()=>({}));
+     if(!r.ok)throw Error(result.error||'Monitoring service unavailable');
+     completed+=(result.results||[]).filter(x=>x.status==='checked'||x.status==='recent').length;
+     failed+=(result.results||[]).filter(x=>x.status!=='checked'&&x.status!=='recent').length;
+    }catch(_){failed+=batch.length}
+    feedback.textContent='Processed '+Math.min(k+batch.length,pluginAssets.length)+' of '+pluginAssets.length+' plugins';
+   }
+   await refreshPluginFindings();
+   // The report has been redrawn; surface a durable status in the new section.
+   const message=document.querySelector('.customer-plugin-monitor-message');
+   if(message)message.textContent='Checks completed: '+completed+' checked or recently checked; '+failed+' unavailable or unverified. Review individual coverage results.';
+  });
+  controls.append(run,feedback);
+  const message=text('p','','ops-note customer-plugin-monitor-message');
+  root.append(controls,message,monitor);
  }
  root.append(reportSection('CVE Findings'));
  root.append(findingStatusControls(stats.issues));

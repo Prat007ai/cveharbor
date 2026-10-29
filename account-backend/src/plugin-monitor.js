@@ -40,6 +40,23 @@ export async function monitorRoute(req,env,user,path,data={}){
   const byAsset=new Map(releases.map(r=>[r.asset_id,r]));
   return response({ready:true,checks:(rows.results||[]).map(r=>({...r,findings:JSON.parse(r.findings_json||'[]'),findings_json:undefined,release:byAsset.get(r.asset_id)||null}))});
  }
+ if(path==='/v1/plugin-monitor/refresh-batch'&&req.method==='POST'){
+  const ids=data.asset_ids;
+  if(!Array.isArray(ids)||!ids.length||ids.length>3||new Set(ids).size!==ids.length||ids.some(id=>!validAsset(id)))
+   return response({error:'Choose up to three valid, distinct plugin assets'},400);
+  const output=[];
+  for(const id of ids){
+   const asset=await env.DB.prepare('SELECT id,user_id,technology,version FROM inventory_assets WHERE id=? AND user_id=?').bind(id,user.id).first();
+   if(!asset||!plugin(asset)){output.push({asset_id:id,status:'unverified',reason:'Plugin is not in your inventory'});continue}
+   const previous=await env.DB.prepare('SELECT checked_at,installed_version FROM plugin_monitor_checks WHERE user_id=? AND asset_id=?').bind(user.id,id).first();
+   if(previous?.installed_version===asset.version&&seconds()-Number(previous.checked_at)<300){
+    output.push({asset_id:id,status:'recent',reason:'Recently checked'});continue;
+   }
+   try{output.push(await scanOne(env,asset))}
+   catch(_){output.push({asset_id:id,status:'unavailable',reason:'Check could not be saved'})}
+  }
+  return response({results:output});
+ }
  if(path==='/v1/plugin-monitor/refresh'&&req.method==='POST'){
   if(!validAsset(data.asset_id))return response({error:'Valid asset ID required'},400);
   const asset=await env.DB.prepare('SELECT id,user_id,technology,version FROM inventory_assets WHERE id=? AND user_id=?').bind(data.asset_id,user.id).first();

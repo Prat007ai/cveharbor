@@ -91,6 +91,7 @@ assert.ok([...doc.querySelectorAll('#customerReportBody details.customer-report-
 window.dispatchEvent(new window.Event('afterprint'));
 assert.equal([...doc.querySelectorAll('#customerReportBody details.customer-report-section')].find(el=>el.dataset.section==='Recorded Technology Inventory').open,false,'previous collapsed state restored after printing');
 assert.equal(doc.querySelectorAll('#customerReportBody .customer-report-finding').length,1);
+assert.ok(fs.readFileSync('customer-security.js','utf8').includes('plugin-monitor/refresh-batch'),'report includes authenticated plugin recheck action');
 const ticketInput=doc.querySelector('.customer-ticket-input');
 assert.ok(ticketInput&&!ticketInput.disabled,'DevOps ticket field is editable');
 ticketInput.value='WOODBINE-123';
