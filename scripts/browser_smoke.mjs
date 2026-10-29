@@ -260,6 +260,45 @@ assert.equal(opsDoc.querySelectorAll('#firewallDownloads a[download]').length,4,
 
 assert.ok(html.includes('id="remediationForm"')&&html.includes('id="firewallCentre"'),'tracker and firewall centre present');
 assert.ok(html.includes('id="accountWorkspace"')&&html.includes('id="accountVerify"'),'account section and verification UI present');
+assert.ok(html.includes('href="/account/?mode=login"')&&html.includes('href="/account/?mode=register"'),
+ 'login and registration actions are visible in the global site header');
+assert.ok(html.includes('header-auth.js?v=account-navigation-1'),'header auth status is loaded');
+const accountHtml=fs.readFileSync('account/index.html','utf8');
+const workspaceHtml=fs.readFileSync('workspace/index.html','utf8');
+assert.match(accountHtml,/accountPageRequest/);
+assert.match(accountHtml,/accountPageVerify/);
+assert.match(accountHtml,/accountPageLogout/);
+assert.ok(workspaceHtml.includes('href="/#inventoryWorkspace"')&&workspaceHtml.includes('href="/#lifecycleMonitor"'),
+ 'workspace links keep existing feature anchors operational');
+const accountPageDom=new JSDOM(accountHtml,{url:'https://cveharbor.com/account/?mode=register',runScripts:'outside-only'});
+const aw=accountPageDom.window,ad=aw.document;
+const authCalls=[];
+aw.fetch=async(url,options={})=>{
+ authCalls.push({url,options});
+ const path=new URL(url).pathname;
+ if(path==='/v1/me')return {ok:false,status:401,json:async()=>({error:'Sign in required'})};
+ if(path==='/v1/auth/request')return {ok:true,json:async()=>({challenge_id:'challenge-1',salt:'a'.repeat(64)})};
+ if(path==='/v1/auth/verify')return {ok:true,json:async()=>({authenticated:true,email:'member@example.org'})};
+ if(path==='/v1/auth/logout')return {ok:true,json:async()=>({authenticated:false})};
+ return {ok:false,status:404,json:async()=>({error:'Not found'})};
+};
+aw.eval(fs.readFileSync('account-page.js','utf8'));
+assert.match(ad.getElementById('accountFormTitle').textContent,/Create your free/);
+await new Promise(resolve=>setTimeout(resolve,0));
+ad.getElementById('accountPageEmail').value='member@example.org';
+ad.getElementById('accountPageRequest').dispatchEvent(new aw.Event('submit',{bubbles:true,cancelable:true}));
+await new Promise(resolve=>setTimeout(resolve,0));
+assert.equal(ad.getElementById('accountPageVerify').hidden,false,'requesting a code shows verification form');
+ad.getElementById('accountPageCode').value='123456';
+ad.getElementById('accountPageVerify').dispatchEvent(new aw.Event('submit',{bubbles:true,cancelable:true}));
+await new Promise(resolve=>setTimeout(resolve,0));
+assert.equal(ad.getElementById('accountPageSignedIn').hidden,false,'valid email code signs in');
+assert.ok(authCalls.every(c=>c.options.credentials==='include'),'account code sends existing secure session cookies');
+ad.getElementById('accountPageLogout').click();
+await new Promise(resolve=>setTimeout(resolve,0));
+assert.equal(ad.getElementById('accountPageSignedIn').hidden,true,'sign out returns to email form');
+aw.close();
+
 // The email/account panel contains a source-limited publication chart even before login.
 assert.ok(document.getElementById('accountWorkspace').contains(document.getElementById('disclosureTrend')),
   'publication trend fills the account panel without requiring sign in');
