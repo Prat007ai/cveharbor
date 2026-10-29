@@ -17,12 +17,19 @@ function affected(v,installed){
 export function normalizePluginLookup(slug,installed,json){
  if(json?.error!==0)return {status:'unverified',slug,findings:[],reason:'Source did not provide a confirmed plugin record'};
  const data=json.data;
- if(!data||typeof data!=='object')return {status:'unverified',slug,findings:[],reason:'Plugin identity not confirmed by source'};
- const item=Array.isArray(data)?data.find(x=>x?.slug===slug):data;
+ if(!data||typeof data!=='object')return {status:'unverified',slug,findings:[],reason:'Source did not return structured plugin information'};
+ // The public plugin endpoint is already scoped by the requested slug. Its
+ // envelope does not always repeat the slug in data, so absence is not a mismatch.
+ // Still reject any explicitly different identity.
+ let item=Array.isArray(data)?data.find(x=>x&&typeof x==='object'&&String(x.slug||'').toLowerCase()===slug):data;
+ if(!Array.isArray(data)&&Object.hasOwn(data,slug)&&data[slug]&&typeof data[slug]==='object')item=data[slug];
  if(!item||typeof item!=='object')return {status:'unverified',slug,findings:[],reason:'Plugin identity not confirmed by source'};
- // A missing slug in the upstream response is not sufficient proof of identity.
- if(String(item.slug||'').toLowerCase()!==slug)return {status:'unverified',slug,findings:[],reason:'Source plugin slug does not match requested product'};
- const entries=Array.isArray(item.vulnerabilities)?item.vulnerabilities:[];
+ if(item.slug&&String(item.slug).toLowerCase()!==slug)
+  return {status:'unverified',slug,findings:[],reason:'Source returned a different plugin slug'};
+ const hasList=Array.isArray(item.vulnerabilities);
+ const entries=hasList?item.vulnerabilities:[];
+ if(!item.slug&&!hasList)
+  return {status:'unverified',slug,findings:[],reason:'Source returned no recognizable plugin vulnerability data'};
  const findings=[];
  for(const v of entries.slice(0,300)){
   const identifiers=[v.cve,v.cve_id,v.id,...(Array.isArray(v.cves)?v.cves:[])].filter(Boolean).map(x=>String(x).toUpperCase());
