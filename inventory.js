@@ -80,7 +80,7 @@ async function checkSavedPlugin(asset){
  row.append(make('strong','',name+' · '+(asset.version||'Version unknown')));
  const note=make('p','ops-note','Checking plugin vulnerability advisory source…');row.append(note);panel.prepend(row);
  try{
-  const url='https://api.cveharbor.com/v1/plugin-advisories?asset_id='+encodeURIComponent(asset.id)+'&slug='+encodeURIComponent(slug);
+  const url='https://api.cveharbor.com/v1/plugin-monitor/refresh';
   const response=await fetch(url,{credentials:'include',headers:{Accept:'application/json'}});
   const payload=await response.json().catch(()=>({}));
   if(!response.ok||payload.status!=='checked'){
