@@ -116,7 +116,7 @@ function setupSourceEditor(){
  });
  const info=make('p','ops-note','');
  const button=make('button','ops-download','Save plugin sources');button.type='button';
- const verify=make('button','ops-download','Verify source');verify.type='button';
+ const verify=make('button','ops-download','Validate source mapping');verify.type='button';
  function redraw(){
   const previous=select.value;select.replaceChildren();option(select,'','Select plugin');
   const envId=$('inventoryEnvironmentSelect').value;
@@ -140,10 +140,9 @@ function setupSourceEditor(){
  }
  button.addEventListener('click',()=>void saveSources());
  verify.addEventListener('click',async()=>{
-  if(await saveSources())info.textContent+='; automatic release checks use only a verified official plugin slug.';
+  if(await saveSources())info.textContent+='; the next monitoring check will independently verify release data.';
  });
  box.prepend(select);box.append(button,verify,info);host.after(box);
- const original=render; // editor options are rebuilt following inventory load.
  window.addEventListener('cveharbor:inventory-loaded',redraw);redraw();
 }
 function refreshMatchCustomers(){
