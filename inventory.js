@@ -227,6 +227,9 @@ function setupPluginImport(){
    if(vendor_url&&!/^https:\/\/[^\s]+$/i.test(vendor_url)){result.textContent='Vendor URL must start with https:// for '+name;return}
    plugins.push({name,version,vendor_url});
   }
+  if(plugins.some(p=>p.vendor_url)&&!pluginSourceReady){
+   result.textContent='Plugin source migration is required before importing URLs. No entries were changed.';return;
+  }
   if(new Set(plugins.map(p=>p.name.toLowerCase())).size!==plugins.length){
    result.textContent='Duplicate plugin names in paste. Remove duplicates and retry.';return;
   }
