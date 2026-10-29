@@ -8,8 +8,8 @@ const cve='CVE-2026-12345';
 class DB {
  constructor(ready=true,owned=true){this.ready=ready;this.owned=owned;this.items=new Map()}
  prepare(sql){
-  if(sql.includes('LIMIT 1')&&!this.ready)return {first:async()=>{throw Error('no table')}};
-  if(sql.includes('LIMIT 1'))return {first:async()=>null};
+  if(/LIMIT 1$/.test(sql)&&!this.ready)return {first:async()=>{throw Error('no table')}};
+  if(/LIMIT 1$/.test(sql))return {first:async()=>null};
   const db=this;
   return {bind(...args){return {
    first:async()=>sql.includes('SELECT id FROM inventory_assets')?(db.owned?{id:asset}:null):null,
