@@ -1082,3 +1082,8 @@ body[data-page="home"] .page-section-intro{display:none!important}
 .customer-support-indicator[data-state=supported]{background:#1e5048;color:#a9f3d8}
 @media(max-width:950px){.customer-software-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.customer-visual-layout,.customer-software-grid{grid-template-columns:minmax(0,1fr)}}
+
+.customer-evidence-detail{margin-top:.65rem;padding:.75rem 1rem;border:1px solid rgba(122,186,206,.28);border-radius:10px;background:rgba(9,36,54,.65)}
+.customer-evidence-detail summary{cursor:pointer;font-weight:700;color:#8be8df}
+.customer-evidence-detail p{overflow-wrap:anywhere;margin:.6rem 0}
+.customer-report-table td{overflow-wrap:anywhere;white-space:normal}
