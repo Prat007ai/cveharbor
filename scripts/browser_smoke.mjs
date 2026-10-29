@@ -5,6 +5,30 @@ import fs from 'node:fs';
 import { JSDOM } from 'jsdom';
 
 const html=fs.readFileSync('index.html','utf8');
+// Validate every canonical page is actually emitted by the Pages build.
+const routes={
+ 'vulnerabilities':['technology','advisories'],
+ 'alerts':['securityWorkspace'],
+ 'threats':['threat-intelligence'],
+ 'malware':['malware-intelligence'],
+ 'lifecycle':['lifecycleMonitor'],
+ 'environments':['inventoryWorkspace'],
+ 'admin-tools':['operationsCentre'],
+ 'remediation':['remediationTracker']
+};
+for(const [route,ids] of Object.entries(routes)){
+ const output='public/'+route+'/index.html';
+ assert.ok(fs.existsSync(output),'dedicated page exists: '+route);
+ const page=fs.readFileSync(output,'utf8');
+ assert.ok(page.includes('data-page="'+route+'"'),'page renders its own route: '+route);
+ assert.ok(page.includes('src="/app.js?'),'nested page loads the root-level CVE popup application');
+ assert.ok(page.includes('src="/data.js"'),'nested page loads public data from site root');
+ assert.ok(page.includes('src="/page-router.js'),'route compatibility module loads');
+ for(const id of ids)assert.ok(page.includes('id="'+id+'"'),'preserve section/deep-link target '+id);
+}
+assert.ok(fs.readFileSync('public/index.html','utf8').includes('data-page="home"'),
+ 'homepage uses compact overview layout');
+
 const script=fs.readFileSync('app.js','utf8');
 const catalog=JSON.parse(fs.readFileSync('data/demo-advisories.json','utf8'));
 const dom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only',pretendToBeVisual:true});
