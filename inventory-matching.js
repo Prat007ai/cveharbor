@@ -27,7 +27,8 @@ function candidate(asset,cve){
  const tags=(cve.categories||[]).map(norm);
  if(!(categories[product]||[product]).some(t=>tags.includes(norm(t))))return null;
  const affected=String(cve.affected||''),version=String(asset.version||'').trim();
- let level='category',evidence='Relevant technology category. Confirm affected product and installed version against the vendor advisory.';
+ let level='category',evidence='Category match only. Product identity and affected versions have not been verified.';
+ let comparisonDetail='No reliable version comparison available from this advisory text.';
  // Only evaluate a single unambiguous numeric range associated with the named product.
  // Any qualifiers or complex ranges remain category-only candidates.
  const mentions=affected.toLowerCase().includes(product);
@@ -37,16 +38,24 @@ function candidate(asset,cve){
    const comparison=compare(version,ranges[0][2]);
    if(comparison!==null){
     const inclusive=/through|up to/i.test(ranges[0][1]);
-    if(inclusive?comparison>0:comparison>=0)return null;
-    level='version_review';
-    evidence='Installed version appears within a stated numeric affected range. Confirm product, edition, prerequisites and vendor fix.';
+    if(inclusive?comparison>0:comparison>=0){
+     return null; // Explicit single before/through range: installed numeric version is outside it.
+    }else{
+     level='version_review';
+     evidence='Installed version falls within one stated numeric affected range. Confirm exact product, package and exposure.';
+    }
+    comparisonDetail='Installed '+version+' compared with '+ranges[0][1]+' '+ranges[0][2]+' (single range extracted from advisory text; may not cover other branches).';
    }
   }
  }
  return {id:String(cve.id),title:String(cve.title||cve.summary||cve.id),
  severity:String(cve.severity||'unknown'),known_exploited:!!cve.known_exploited,
  asset_id:asset.id,technology:asset.technology,version,level,evidence,
- affected,source_url:(cve.sources||[]).map(s=>String(s.url||'')).find(url=>url.startsWith('https://'))||''};
+ affected,comparison_detail:comparisonDetail,
+ summary:String(cve.summary||cve.title||''),remediation:String(cve.remediation||''),
+ published:String(cve.published||''),updated:String(cve.updated||''),
+ source_label:String((cve.sources||[]).find(s=>String(s.url||'').startsWith('https://'))?.label||'Original advisory'),
+ source_url:(cve.sources||[]).map(s=>String(s.url||'')).find(url=>url.startsWith('https://'))||''};
 }
 function evaluate(assets,advisories,limit=150){
  const items=[],seen=new Set();
