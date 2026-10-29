@@ -15,6 +15,11 @@ on:
       - tests/test_update.py
       - account-backend/**
       - accounts.js
+      - account-page.js
+      - workspace-page.js
+      - header-auth.js
+      - account/index.html
+      - workspace/index.html
       - disclosure-trend.js
       - lifecycle-monitor.js
       - inventory.js
@@ -42,6 +47,11 @@ on:
       - malware-data.js
       - account-backend/**
       - accounts.js
+      - account-page.js
+      - workspace-page.js
+      - header-auth.js
+      - account/index.html
+      - workspace/index.html
       - disclosure-trend.js
       - lifecycle-monitor.js
       - inventory.js
@@ -79,11 +89,11 @@ jobs:
       - name: Unit and integration tests
         run: python -m unittest discover -s tests -v && python -m py_compile scripts/update_malware.py
       - name: Validate JavaScript
-        run: node --check app.js && node --check data.js && node --check accounts.js && node --check operations.js && node --check disclosure-trend.js && node --check lifecycle-monitor.js && node --check inventory.js && node --check inventory-matching.js && node --check geo-map.js && node --check malware.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js && node --check account-backend/src/remediation.js && node --check account-backend/src/inventory.js && node --check account-backend/src/lifecycle.js
+        run: node --check app.js && node --check data.js && node --check accounts.js && node --check account-page.js && node --check workspace-page.js && node --check header-auth.js && node --check operations.js && node --check disclosure-trend.js && node --check lifecycle-monitor.js && node --check inventory.js && node --check inventory-matching.js && node --check geo-map.js && node --check malware.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js && node --check account-backend/src/remediation.js && node --check account-backend/src/inventory.js && node --check account-backend/src/lifecycle.js
       - name: Test digest matching and email rendering
         run: cd account-backend && npm test
       - name: Verify public build
-        run: python scripts/build_site.py && test -f public/disclosure-trend.js
+        run: python scripts/build_site.py && test -f public/disclosure-trend.js && test -f public/account/index.html && test -f public/workspace/index.html
       - name: Install DOM smoke test dependency
         run: npm install --no-save --no-package-lock jsdom@26
       - name: Exercise site interactions
@@ -151,7 +161,7 @@ jobs:
       - name: Unit tests
         run: python -m unittest discover -s tests -v && python -m py_compile scripts/update_malware.py
       - name: Validate browser JavaScript
-        run: node --check app.js && node --check data.js && node --check accounts.js && node --check operations.js && node --check disclosure-trend.js && node --check lifecycle-monitor.js && node --check inventory.js && node --check inventory-matching.js && node --check geo-map.js && node --check malware.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js && node --check account-backend/src/remediation.js && node --check account-backend/src/inventory.js && node --check account-backend/src/lifecycle.js
+        run: node --check app.js && node --check data.js && node --check accounts.js && node --check account-page.js && node --check workspace-page.js && node --check header-auth.js && node --check operations.js && node --check disclosure-trend.js && node --check lifecycle-monitor.js && node --check inventory.js && node --check inventory-matching.js && node --check geo-map.js && node --check malware.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js && node --check account-backend/src/remediation.js && node --check account-backend/src/inventory.js && node --check account-backend/src/lifecycle.js
       - name: Test digest matching and email rendering
         run: cd account-backend && npm test
       - name: Install smoke test dependency
