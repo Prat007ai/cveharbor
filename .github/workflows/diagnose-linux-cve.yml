@@ -1,0 +1,33 @@
+name: Diagnose Linux CVE coverage gap
+on:
+  pull_request:
+    paths: ['.github/workflows/diagnose-linux-cve.yml']
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Diagnose archived collector and current records
+        run: |
+          python - <<'PY'
+          import base64,io,tarfile,json,re
+          from pathlib import Path
+          source=base64.b64decode(Path('deployment/source.tar.xz.b64').read_text())
+          with tarfile.open(fileobj=io.BytesIO(source),mode='r:xz') as tf:
+              names=tf.getnames()
+              print('Collector files:',[n for n in names if n.endswith('update.py') or n.endswith('test_update.py')])
+              for name in names:
+                  if not name.endswith('scripts/update.py'):continue
+                  raw=tf.extractfile(name).read().decode()
+                  for idx,line in enumerate(raw.splitlines(),1):
+                      if any(x in line.lower() for x in ('2500','max_records','limit=','per_page','category','linux','candidate_records','sort(', 'cisa','redhat', 'github', 'nvd')):
+                          print(str(idx)+': '+line[:240])
+          for name in ['data/advisories.json','data.js']:
+              p=Path(name)
+              raw=p.read_text() if p.exists() else ''
+              print('Dataset',name,'size',len(raw),'contains-target','CVE-2026-98432' in raw)
+          health=json.loads(Path('data/feed-health.json').read_text())
+          print('HEALTH: indexed',health.get('records_indexed'),'candidates',health.get('candidate_records'),'limited',health.get('coverage_limited'))
+          PY
