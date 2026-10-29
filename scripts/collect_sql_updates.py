@@ -69,11 +69,30 @@ def parse_microsoft_sql_updates(html):
     chosen=[]
     for year in SUPPORTED_YEARS:
         for kind in ("CU","GDR"):
-            rows=[r for r in results if r["cycle"]==year and kind in r["update_type"]]
+            rows=[r for r in results if r["cycle"]==year and (\n                ("CU" in r["update_type"]) if kind=="CU" else r["update_type"].startswith("GDR"))]
             if rows:
                 rows.sort(key=lambda r:tuple(map(int,r["version"].split("."))),reverse=True)
                 chosen.append(rows[0])
     return chosen
+
+def official_fix_summary(kb):
+    url=SUPPORT+kb
+    req=urllib.request.Request(url,headers={
+        "User-Agent":"CVEHarbor-Patch-Collector/1.0","Accept":"text/html"})
+    with urllib.request.urlopen(req,timeout=10) as response:
+        text=response.read(900_000).decode("utf-8","replace")
+    from html import unescape
+    plain=unescape(re.sub(r"<[^>]+>"," ",re.sub(r"<(script|style)\\b[^>]*>[\\s\\S]*?</\\1>"," ",text,flags=re.I)))
+    plain=" ".join(plain.split())
+    patterns=[
+        r"This update contains \\d+ fixes[^.]{0,240}\\.",
+        r"This article describes Cumulative Update[^.]{0,240}\\.",
+        r"This article describes (?:the )?security update[^.]{0,240}\\."
+    ]
+    for pattern in patterns:
+        match=re.search(pattern,plain,re.I)
+        if match:return match.group(0)[:400]
+    return ""
 
 def collect():
     req=urllib.request.Request(SOURCE,headers={
@@ -83,4 +102,11 @@ def collect():
     updates=parse_microsoft_sql_updates(markup)
     if not updates:
         raise ValueError("No current SQL CU/GDR table could be verified")
+    for update in updates:
+        try:
+            verified=official_fix_summary(update["kb"][2:])
+            if verified:
+                update["notes"]+=" "+verified
+        except Exception:
+            pass
     return updates
