@@ -7,6 +7,7 @@ security language may be labelled security-related, and even those need review.
 import json
 import re
 import urllib.request
+from collect_sql_updates import collect as collect_sql_updates
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -58,6 +59,12 @@ def collect():
                 })
         except Exception as exc:
             result["errors"].append({"source": repo, "reason": str(exc)[:110]})
+    try:
+        sql_updates=collect_sql_updates()
+        result["releases"].extend(sql_updates)
+    except Exception as exc:
+        result["errors"].append({"source":"Microsoft SQL Server official servicing index",
+                                 "reason":str(exc)[:110]})
     OUT.write_text("window.CVEHARBOR_PATCH_NOTES = " +
                    json.dumps(result, ensure_ascii=False).replace("</", "<\\/") +
                    ";\n", encoding="utf-8")
