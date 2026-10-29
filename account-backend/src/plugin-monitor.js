@@ -1,3 +1,4 @@
+import {wordpressSlug} from './plugin-sources.js';
 import {lookupRelease} from './plugin-releases.js';
 import {pluginAdvisoryRoute} from './plugin-advisories.js';
 const response=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','Access-Control-Allow-Origin':'https://cveharbor.com','Access-Control-Allow-Credentials':'true','Vary':'Origin'}});
@@ -11,7 +12,11 @@ export const slugOf=technology=>{
 async function ready(env){try{await env.DB.prepare('SELECT asset_id FROM plugin_monitor_checks LIMIT 1').first();return true}catch(_){return false}}
 const plugin=x=>String(x?.technology||'').startsWith('WordPress Plugin: ');
 export async function scanOne(env,asset,fetcher=fetch){
- const slug=slugOf(asset.technology),now=seconds(),installed=String(asset.version||'');
+ let slug=slugOf(asset.technology);const now=seconds(),installed=String(asset.version||'');
+ let source=null;
+ try{source=await env.DB.prepare('SELECT vendor_url,release_url,advisory_url,plugin_slug FROM plugin_source_mappings WHERE user_id=? AND asset_id=?').bind(asset.user_id,asset.id).first()}catch(_){}
+ const official=wordpressSlug(source?.vendor_url||'')||wordpressSlug(source?.release_url||'');
+ if(official)slug=official;
  let result={status:'unverified',reason:'Plugin identity unavailable',findings:[]};
  if(slug&&plugin(asset)){
   const url='https://api.cveharbor.com/v1/plugin-advisories?asset_id='+encodeURIComponent(asset.id)+'&slug='+encodeURIComponent(slug);
@@ -21,6 +26,7 @@ export async function scanOne(env,asset,fetcher=fetch){
   }catch(_){result={status:'unavailable',reason:'Advisory source request failed',findings:[]}}
  }
  const release=await lookupRelease(slug,installed,fetcher);
+ if(source?.vendor_url)release.vendor_url=source.vendor_url;
  await env.DB.prepare('INSERT INTO plugin_release_checks(user_id,asset_id,installed_version,slug,release_status,latest_version,update_status,release_source,last_updated,reason,checked_at) VALUES(?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(user_id,asset_id) DO UPDATE SET installed_version=excluded.installed_version,slug=excluded.slug,release_status=excluded.release_status,latest_version=excluded.latest_version,update_status=excluded.update_status,release_source=excluded.release_source,last_updated=excluded.last_updated,reason=excluded.reason,checked_at=excluded.checked_at').bind(asset.user_id,asset.id,installed,slug,release.release_status,release.latest_version||'',release.update_status||'Unknown',release.release_source||'',release.last_updated||'',release.reason||'',now).run();
  const state=['checked','unverified','unavailable'].includes(result.status)?result.status:'unavailable';
  const findings=Array.isArray(result.findings)?result.findings.slice(0,100):[];
@@ -29,7 +35,7 @@ export async function scanOne(env,asset,fetcher=fetch){
   .bind(asset.user_id,asset.id,installed,slug,state,String(result.reason||'').slice(0,300),JSON.stringify(findings),now,next).run();
  await env.DB.prepare('INSERT INTO plugin_monitor_history(id,user_id,asset_id,checked_at,status,finding_count,reason) VALUES(?,?,?,?,?,?,?)')
   .bind(crypto.randomUUID(),asset.user_id,asset.id,now,state,findings.length,String(result.reason||'').slice(0,300)).run();
- return {asset_id:asset.id,status:state,findings,checked_at:now,next_check_at:next,reason:result.reason||'',release};
+ return {asset_id:asset.id,status:state,findings,checked_at:now,next_check_at:next,reason:result.reason||'',release,plugin_slug:slug};
 }
 export async function monitorRoute(req,env,user,path,data={}){
  if(!await ready(env))return response({ready:false,checks:[],message:'Plugin monitor D1 migration is required'},req.method==='GET'?200:503);
