@@ -85,7 +85,7 @@ function setupPluginImport(){
  const panel=make('section','inventory-plugin-import');
  panel.append(make('h3','','Import WordPress plugins'),
   make('p','ops-note','Select a customer environment above, then select a local .txt file or paste one plugin per line as Plugin Name | Version. Each plugin is recorded separately. Existing entries with the same name are updated rather than duplicated.'));
- const area=make('textarea','','');area.placeholder='Gravity Forms | 2.9.5\\nYoast SEO | 24.7';
+ const area=make('textarea','','');area.placeholder='Gravity Forms | 2.9.5\nYoast SEO | 24.7';
  area.rows=7;area.setAttribute('aria-label','WordPress plugin names and versions');
  const fileLabel=make('label','ops-note','Choose a plugin list (.txt)');
  const fileInput=document.createElement('input');
@@ -94,7 +94,7 @@ function setupPluginImport(){
  fileInput.addEventListener('change',async()=>{
   const file=fileInput.files?.[0];if(!file)return;
   if(file.size>65536){result.textContent='File too large. Select a TXT file smaller than 64 KB.';fileInput.value='';return}
-  if(!/\\.txt$/i.test(file.name)){result.textContent='Please choose a .txt file.';fileInput.value='';return}
+  if(!/\.txt$/i.test(file.name)){result.textContent='Please choose a .txt file.';fileInput.value='';return}
   try{
    area.value=await file.text();
    result.textContent='Loaded '+file.name+'. Review the entries, then click Import plugins to save them.';
@@ -107,7 +107,7 @@ function setupPluginImport(){
   const assetName=$('inventoryAssetName').value.trim();
   if(!signedIn||!ready){result.textContent='Sign in to manage private inventory.';return}
   if(!environmentId||!assetName){result.textContent='Choose an environment and enter the WordPress site asset name first.';return}
-  const lines=area.value.split(/\\r?\\n/).map(x=>x.trim()).filter(Boolean);
+  const lines=area.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
   if(!lines.length||lines.length>150){result.textContent='Paste between 1 and 150 plugin entries.';return}
   const plugins=[];
   for(const line of lines){
@@ -116,7 +116,7 @@ function setupPluginImport(){
     result.textContent='Each line must contain Plugin Name | Version.';return;
    }
    const name=parts[0].trim(),version=parts[1].trim();
-   if(name.length>100||version.length>80||!/^\\d[\\w.+-]*$/.test(version)){
+   if(name.length>100||version.length>80||!/^\d[\w.+-]*$/.test(version)){
     result.textContent='Check plugin name or version: '+line;return;
    }
    plugins.push({name,version});
