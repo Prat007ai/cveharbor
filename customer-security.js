@@ -5,6 +5,7 @@ if(!$('customerDashStatus'))return;
 const reporting=!!$('customerReportBody');
 let inventory={customers:[],environments:[],assets:[]},records=[];
 let pluginFindings=[],pluginChecks={},pluginMonitorRows={};
+let pluginInstallationReady=false,pluginInstallationStatuses=new Map();
 const pluginSlugOverrides={'yoast seo':'wordpress-seo','wp file manager':'wp-file-manager','wps hide login':'wps-hide-login','autoptimize':'autoptimize','wp mail smtp':'wp-mail-smtp','advanced editor tools':'tinymce-advanced','addtoany share buttons':'add-to-any','events manager':'events-manager','wp store locator':'wp-store-locator','wpbakery page builder':'js_composer'};
 const pluginSlug=name=>pluginSlugOverrides[name.toLowerCase()]||name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 async function refreshPluginFindings(){
@@ -406,12 +407,12 @@ function drawReport(){
   root.append(text('p','Plugin monitoring: '+checked+' checked, '+unavailable+' unavailable or unverified, '+(pluginAssets.length-checked-unavailable)+' pending. Saved results refresh on a schedule. Unknown coverage does not establish safety.','ops-note'));
  }
  if(pluginAssets.length){
-  const monitor=table(['Plugin','Installed version','Latest available','Update status','Last check','Coverage','Potential CVEs','Vendor URL'],
+  const monitor=table(['Plugin','Installed version','Status','Latest available','Update status','Last check','Coverage','Potential CVEs','Vendor URL'],
    pluginAssets.map(a=>{
     const check=pluginMonitorRows[a.id];
     const release=check?.release;
     const validRelease=release?.installed_version===a.version&&release.release_status==='verified';
-    return [a.technology.slice('WordPress Plugin: '.length),a.version||'Unknown',
+    return [a.technology.slice('WordPress Plugin: '.length),a.version||'Unknown',pluginInstallationStatuses.get(a.id)||'Not recorded',
      validRelease?release.latest_version:'Not verified',validRelease?release.update_status:(release?.reason?'Unknown: '+release.reason.slice(0,90):'Unknown'),
      check?.checked_at?new Date(check.checked_at*1000).toISOString().replace('T',' ').slice(0,16)+' UTC':'Not checked',
      pluginChecks[a.id]==='checked'?'Checked':pluginChecks[a.id]==='pending'?'Pending':((check?.status||'Unavailable')+': '+(check?.reason||'Source lookup not confirmed').slice(0,110)),
@@ -419,13 +420,31 @@ function drawReport(){
    }));
   for(const [index,asset] of pluginAssets.entries()){
    const check=pluginMonitorRows[asset.id],release=check?.release;
-   const updateCell=monitor.tBodies[0].rows[index].cells[3];
+   const statusCell=monitor.tBodies[0].rows[index].cells[2];
+   const statusSelect=document.createElement('select');
+   statusSelect.className='customer-finding-status-select';
+   statusSelect.setAttribute('aria-label','WordPress installation status for '+asset.technology);
+   for(const value of ['Not recorded','Active','Inactive','Network active','Inactive, listing closed'])option(statusSelect,value,value);
+   statusSelect.value=pluginInstallationStatuses.get(asset.id)||'Not recorded';
+   statusSelect.disabled=!pluginInstallationReady;
+   statusSelect.addEventListener('change',async()=>{
+    const value=statusSelect.value;
+    statusSelect.disabled=true;
+    try{
+     if(value==='Not recorded')throw Error('Choose a status');
+     const response=await fetch('https://api.cveharbor.com/v1/plugin-installation-status/'+encodeURIComponent(asset.id),{method:'PUT',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:value})});
+     if(!response.ok)throw Error((await response.json()).error||'Save failed');
+     pluginInstallationStatuses.set(asset.id,value);
+    }catch(error){statusSelect.value=pluginInstallationStatuses.get(asset.id)||'Not recorded';window.alert(error.message)}finally{statusSelect.disabled=!pluginInstallationReady}
+   });
+   statusCell.replaceChildren(statusSelect);
+   const updateCell=monitor.tBodies[0].rows[index].cells[4];
    if(release?.release_status==='verified'&&release.update_status==='Update Available'){
     const marker=text('span','● Update Available','customer-update-indicator');
     marker.setAttribute('role','status');
     updateCell.replaceChildren(marker);
    }
-   const cell=monitor.tBodies[0].rows[index].cells[7];
+   const cell=monitor.tBodies[0].rows[index].cells[8];
    const wrap=text('div','','customer-source-editor');
    const input=document.createElement('input');
    input.type='url';input.placeholder='https://vendor.example/plugin';
@@ -562,6 +581,9 @@ async function init(){
    ticketAppendReady=!!tickets.append_ready;
    findingTickets=new Map();
    for(const t of tickets.tickets||[]){const k=t.asset_id+'|'+t.cve_id;findingTickets.set(k,[...(findingTickets.get(k)||[]),t.ticket_number])}
+   const installed=await api('plugin-installation-status').catch(()=>({ready:false,statuses:[]}));
+   pluginInstallationReady=!!installed.ready;
+   pluginInstallationStatuses=new Map((installed.statuses||[]).map(row=>[row.asset_id,row.status]));
    const sources=await api('plugin-sources').catch(()=>({ready:false,sources:[]}));
    pluginSourceReady=!!sources.ready;
    pluginSources=new Map((sources.sources||[]).map(s=>[s.asset_id,s]));
