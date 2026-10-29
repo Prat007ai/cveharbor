@@ -193,6 +193,11 @@ function syncCycles(){
  }
  if([...select.options].some(x=>x.value===was))select.value=was;
 }
+function updateActions(){
+ $('lifecycleWatchSave').disabled=!signed||!ready;
+ $('lifecyclePrefsSave').disabled=!signed||!ready;
+ // Preferences can be explored without sign in; saving requires an account.
+}
 function renderUser(){
  const results=$('lifecycleWatches');results.replaceChildren();
  $('lifecycleWatchCount').textContent=logged.length+' monitored';
@@ -201,7 +206,8 @@ function renderUser(){
  $('lifecycleDeliveryState').textContent=delivery
   ? 'Automatic lifecycle sending is enabled in the Cloudflare Worker.'
   : 'Saved preferences are not yet sending emails. Scheduled delivery requires activation in Cloudflare.';
- if(!signed||!ready){results.append(make('p','ops-note','Sign in and complete the D1 lifecycle migration to save preferences.'));return;}
+ updateActions();
+ if(!signed||!ready){results.append(make('p','ops-note','You can choose products and versions above. Sign in and complete the D1 migration to save monitoring and notifications.'));return;}
  if(!logged.length){results.append(make('p','ops-note','No saved product lifecycle watches. Choose a monitored product or add your own verified support date.'));return;}
  for(const watch of logged){
   const div=make('article','ops-result');
@@ -232,11 +238,13 @@ async function load(){
 }
 window.addEventListener('cveharbor:account-state',async event=>{
  signed=!!event.detail?.authenticated;
- for(const control of document.querySelectorAll('#lifecycleMonitor .lifecycle-auth-control'))control.disabled=!signed;
+ // Keep selection and custom product fields browsable for everyone.
+ // Only account mutations require sign in and the D1 migration.
+ updateActions();
  if(!signed){ready=false;logged=[];prefs={email_enabled:0,lead_days:90};delivery=false;renderUser();message('Sign in above to save lifecycle watches and email preferences.');return;}
  try{
   const flags=await call('/status');ready=!!flags.ready;
-  if(!ready){message('Cloudflare D1 lifecycle migration is required. Public lifecycle dates are still visible.');renderUser();return;}
+  if(!ready){message('Cloudflare D1 lifecycle migration is required to save preferences. Product and release browsing remains available.');renderUser();return;}
   await load();message('Saved lifecycle watches loaded from your private account.');
  }catch(e){message(e.message)}
 });
