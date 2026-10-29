@@ -17,22 +17,29 @@ function affected(v,installed){
 export function normalizePluginLookup(slug,installed,json){
  if(json?.error!==0)return {status:'unverified',slug,findings:[],reason:'Source did not provide a confirmed plugin record'};
  const data=json.data;
- if(!data||typeof data!=='object')return {status:'unverified',slug,findings:[],reason:'Source did not return structured plugin information'};
- // The public plugin endpoint is already scoped by the requested slug. Its
- // envelope does not always repeat the slug in data, so absence is not a mismatch.
- // Still reject any explicitly different identity.
- let item=Array.isArray(data)?data.find(x=>x&&typeof x==='object'&&String(x.slug||'').toLowerCase()===slug):data;
- if(!Array.isArray(data)&&Object.hasOwn(data,slug)&&data[slug]&&typeof data[slug]==='object')item=data[slug];
- if(!item||typeof item!=='object')return {status:'unverified',slug,findings:[],reason:'Plugin identity not confirmed by source'};
- if(item.slug&&String(item.slug).toLowerCase()!==slug)
-  return {status:'unverified',slug,findings:[],reason:'Source returned a different plugin slug'};
- const hasList=Array.isArray(item.vulnerabilities);
- const entries=hasList?item.vulnerabilities:[];
- if(!item.slug&&!hasList)
-  return {status:'unverified',slug,findings:[],reason:'Source returned no recognizable plugin vulnerability data'};
+ const empty={status:'checked',slug,findings:[],reason:'No vulnerability records returned by this source; this does not establish that the plugin is secure'};
+ // The endpoint is scoped to a plugin slug. An empty collection is a valid
+ // successful lookup, not an identity mismatch.
+ if(data===null||Array.isArray(data)&&data.length===0)return empty;
+ if(!data||typeof data!=='object')return {status:'unverified',slug,findings:[],reason:'Unexpected source payload'};
+ let entries=null;
+ if(Array.isArray(data)){
+  if(data.every(v=>v&&typeof v==='object'&&('vulnerabilities'in v||'slug'in v))){
+   const explicit=data.find(v=>v.slug===slug);
+   if(data.some(v=>v.slug&&v.slug!==slug)&&!explicit)return {status:'unverified',slug,findings:[],reason:'Source identified another plugin'};
+   entries=explicit?.vulnerabilities||[];
+  }else entries=data;
+ }else{
+  const item=data[slug]&&typeof data[slug]==='object'?data[slug]:data;
+  if(item.slug&&String(item.slug).toLowerCase()!==slug)return {status:'unverified',slug,findings:[],reason:'Source identified another plugin'};
+  if(Array.isArray(item.vulnerabilities))entries=item.vulnerabilities;
+  else if(Array.isArray(item.data))entries=item.data;
+  else if(Object.keys(item).length===0)return empty;
+ }
+ if(!Array.isArray(entries))return {status:'unverified',slug,findings:[],reason:'Source returned unsupported vulnerability data format'};
  const findings=[];
  for(const v of entries.slice(0,300)){
-  const identifiers=[v.cve,v.cve_id,v.id,...(Array.isArray(v.cves)?v.cves:[])].filter(Boolean).map(x=>String(x).toUpperCase());
+  const identifiers=[...(Array.isArray(v.cve)?v.cve:[v.cve]),v.cve_id,v.id,...(Array.isArray(v.cves)?v.cves:[])].filter(Boolean).map(x=>String(x).toUpperCase());
   const id=identifiers.find(x=>CVE.test(x));
   if(!id)continue;
   const applies=affected(v,installed);
