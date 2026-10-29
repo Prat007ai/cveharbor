@@ -273,6 +273,16 @@ function renderUser(){
   top.append(del);div.append(top);
   const info=summary(watch),day=daysTo(info?.date);
   if(watch.installed_version&&info?.latest)div.append(make('p','ops-note','Installed: '+watch.installed_version+' · Latest recorded release: '+info.latest+'. Verify vendor updates before assuming the release is a security fix.'));
+  const releases=(window.CVEHARBOR_PATCH_NOTES?.releases||[]).filter(x=>x.slug===watch.slug &&
+    x.version?.startsWith(watch.cycle+'.')).sort((a,b)=>String(b.published).localeCompare(String(a.published)));
+  if(releases.length){
+   const release=releases[0];
+   div.append(make('p','ops-note','Publisher release notes · '+release.version+' · '+release.published+
+    (release.security_mentioned?' · Source mentions security':' · Security status not confirmed')));
+   if(release.notes)div.append(make('p','ops-note',release.notes.slice(0,450)));
+   const link=make('a','ops-link','Read full original release notes');
+   link.href=release.url;link.target='_blank';link.rel='noopener noreferrer';div.append(link);
+  }
   div.append(make('p','ops-note',info?.date?
    (day===null?'Verify support date':day<0?'Ended '+Math.abs(day)+' days ago':day+' days remaining')+
     ' · '+info.date+' · '+info.origin:
