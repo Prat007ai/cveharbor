@@ -1416,7 +1416,7 @@ body.command-center-app{padding-left:74px}
 .command-center-app .hero-copy,.command-center-app .hero-visual{min-width:0}
 /* Enlarged hover/focus target stays within the sidebar and remains keyboard accessible. */
 @media(min-width:821px){
- .command-sidebar:not(:has(.command-nav-link:focus-visible)) .command-nav-link:hover svg,
+ .command-nav-link:hover svg,
  .command-nav-link:focus-visible svg{transform:scale(1.36)}
  .command-nav-link svg{transition:transform .18s ease;transform-origin:center}
  .command-nav-link:hover,.command-nav-link:focus-visible{
