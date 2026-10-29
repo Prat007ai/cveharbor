@@ -21,11 +21,18 @@ window.CVEHARBOR_INVENTORY_MATCH={evaluate(assets){
  level:'version_review',evidence:'Version review required',affected:'PHP before 8.4.27',comparison_detail:'Installed 8.4.26 before 8.4.27',summary:'Test  PHP\n vulnerability with   irregular spacing',remediation:'Upgrade to 8.4.27',source_label:'Test advisory',published:'2026-10-24',source_url:'https://example.com/cve'})),total:assets.filter(x=>x.technology==='PHP').length,limited:false};
 }};
 const seen=[];
-window.fetch=async url=>{
+const statusWrites=[];
+let savedStatus='Needs Review';
+window.fetch=async (url,options={})=>{
  seen.push(String(url));
  if(String(url).endsWith('/me'))return {ok:true,json:async()=>({authenticated:true,email:'admin@example.com'})};
  if(String(url).endsWith('/inventory/status'))return {ok:true,json:async()=>({ready:true})};
  if(String(url).endsWith('/inventory'))return {ok:true,json:async()=>sample};
+ if(String(url).endsWith('/finding-statuses'))return {ok:true,json:async()=>({ready:true,statuses:[]})};
+ if(String(url).includes('/finding-statuses/')&&options.method==='PUT'){
+  const body=JSON.parse(options.body);statusWrites.push({url:String(url),...body});savedStatus=body.status;
+  return {ok:true,json:async()=>({saved:true})};
+ }
  return {ok:false,json:async()=>({error:'Unexpected endpoint'})};
 };
 window.eval(fs.readFileSync('customer-security.js','utf8'));
@@ -39,6 +46,18 @@ assert.match(doc.querySelector('.customer-report-table:nth-of-type(3)')?.textCon
 assert.ok(!doc.querySelector('#customerReportBody').textContent.includes('Test  PHP'),'report does not expose repeated whitespace');
 assert.match(fs.readFileSync('customer-security.js','utf8'),/f\.published\|\|'Not available',shortSummary\(f\)/,'CSV has explicit missing publication date fallback');
 assert.equal(doc.querySelectorAll('#customerReportBody .customer-report-finding').length,1);
+const statusSelect=doc.querySelector('.customer-finding-status-select');
+assert.ok(statusSelect&&!statusSelect.disabled,'status is editable when D1 tracking is ready');
+assert.deepEqual([...statusSelect.options].map(o=>o.value),['Needs Review','Fix in Progress','Fixed/Patched','Not Applicable','Accepted Risk']);
+statusSelect.value='Fixed/Patched';
+statusSelect.dispatchEvent(new window.Event('change'));
+await new Promise(resolve=>setTimeout(resolve,20));
+assert.equal(statusWrites.length,1,'status saved with an authenticated PUT');
+assert.match(statusWrites[0].url,/\/finding-statuses\/a1\/CVE-2026-32101$/);
+assert.equal(statusWrites[0].status,'Fixed/Patched');
+assert.equal(doc.querySelectorAll('.customer-vulnerability-table tbody tr').length,0,'patched finding is filtered from unresolved view');
+doc.querySelectorAll('.customer-finding-filter')[0].click();
+assert.equal(doc.querySelector('.customer-finding-status-select').value,'Fixed/Patched','status persists in browser after redraw');
 assert.doesNotMatch(doc.querySelector('#customerReportBody').textContent,/Customer B|WEB02/,'other customer inventory never appears in report');
 assert.equal(doc.querySelector('#customerReportPrint').disabled,false);
 const overviewHtml=fs.readFileSync('customer-dashboard/index.html','utf8');
