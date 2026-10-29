@@ -1,0 +1,38 @@
+name: Activate WordPress Plugin Installation Status
+on:
+  workflow_dispatch:
+    inputs:
+      backup_confirmed:
+        type: boolean
+        required: true
+        default: false
+      apply_confirmed:
+        type: boolean
+        required: true
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: cveharbor-worker-production
+  cancel-in-progress: false
+jobs:
+  migrate:
+    if: inputs.backup_confirmed == true && inputs.apply_confirmed == true
+    runs-on: ubuntu-latest
+    environment: cloudflare-worker-production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test account Worker
+        working-directory: account-backend
+        run: npm test
+      - name: Add plugin installation status storage
+        working-directory: account-backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" && test -n "$CLOUDFLARE_ACCOUNT_ID"
+          npx --yes wrangler@4 d1 execute cveharbor-accounts --remote --file=./plugin-installation-status-schema.sql --yes
