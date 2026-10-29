@@ -379,6 +379,63 @@ function enableFindingSort(tableElement){
   });
  }
 }
+const scoreSeries=new Map();
+function renderScorePanel(root,customer,scope,stats){
+ const engine=window.CVEHARBOR_SCORE;
+ if(!engine)return;
+ const statuses=Object.fromEntries(findingStatuses.entries());
+ const checks=Object.fromEntries(stats.assets.map(a=>[a.id,pluginMonitorRows[a.id]||null]));
+ const assessment=engine.assessCustomer({assets:stats.assets,issues:stats.issues,checks,statuses});
+ const card=text('section','','customer-security-score-panel');
+ const title=text('h2','Inventory Based Security Assessment Score');
+ const score=text('strong',assessment.score===null?'Insufficient Data':assessment.score+' / 100','customer-score-number');
+ const confidence=text('p','Assessment confidence: '+assessment.confidence+' · Monitoring coverage: '+assessment.coverage+'%','ops-note');
+ const context=text('p',assessment.explanation,'ops-note');
+ card.append(title,score,confidence,context);
+ const b=assessment.parts;
+ card.append(table(['Score component','Maximum points','Provisional deduction'],[
+  ['Verified vulnerability exposure',50,b.exposure],['Software and patch currency',25,b.currency],
+  ['Remediation effectiveness',15,b.remediation],['Monitoring coverage',10,b.monitoring]
+ ]));
+ card.append(text('p','Scoring methodology v'+assessment.version+'. Inventory findings are candidates, not authenticated proof of exposure.','ops-note'));
+ const heading=text('h3','Security Score Trend');
+ const chart=document.createElement('div');chart.className='customer-score-trend';
+ const message=text('p','Historical scores will appear here as assessments are recorded.','ops-note');
+ const renderHistory=history=>{
+  const points=(history||[]).filter(r=>Number.isFinite(r.score)).map(r=>({score:r.score,time:r.recorded_at}));
+  chart.replaceChildren();
+  if(points.length<2){message.textContent=points.length===1?'One saved score is available. The trend appears after subsequent changes.':'No historical score data yet.';return}
+  message.textContent='Actual saved assessment snapshots. No historical estimates are generated.';
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 620 200');svg.setAttribute('role','img');svg.setAttribute('aria-label','Security score trend across '+points.length+' recorded assessments');
+  const positions=points.map((p,i)=>[30+i*560/(points.length-1),170-p.score*1.4]);
+  const grid=document.createElementNS(svg.namespaceURI,'path');
+  grid.setAttribute('d','M30 30H590 M30 100H590 M30 170H590');grid.setAttribute('stroke','currentColor');grid.setAttribute('opacity','.2');grid.setAttribute('fill','none');svg.append(grid);
+  const path=document.createElementNS(svg.namespaceURI,'polyline');
+  path.setAttribute('points',positions.map(p=>p.join(',')).join(' '));path.setAttribute('fill','none');path.setAttribute('stroke','#75e0ce');path.setAttribute('stroke-width','3');svg.append(path);
+  positions.forEach((p,i)=>{
+   const dot=document.createElementNS(svg.namespaceURI,'circle');dot.setAttribute('cx',p[0]);dot.setAttribute('cy',p[1]);dot.setAttribute('r','4');dot.setAttribute('fill','#75e0ce');
+   const label=document.createElementNS(svg.namespaceURI,'title');label.textContent=points[i].time+': '+points[i].score+'/100';dot.append(label);svg.append(dot);
+  });
+  chart.append(svg);
+ };
+ card.append(heading,chart,message);
+ root.append(card);
+ const key=customer.id+'|'+scope;
+ if(scoreSeries.has(key))renderHistory(scoreSeries.get(key));
+ void (async()=>{
+  const query='customer_id='+encodeURIComponent(customer.id)+(scope?'&environment_id='+encodeURIComponent(scope):'');
+  try{
+   const data=await api('customer-score-history?'+query);
+   if(!data.ready){message.textContent='Score history storage has not been activated.';return}
+   scoreSeries.set(key,data.history||[]);
+   renderHistory(data.history||[]);
+   const payload={customer_id:customer.id,environment_id:scope,method_version:assessment.version,score:assessment.score,confidence:assessment.confidence,coverage:assessment.coverage,breakdown:assessment.parts,metrics:{total_assets:assessment.total_assets,plugin_assets:assessment.plugin_assets,checked_plugins:assessment.checked_plugins,candidates:assessment.candidates,open_candidates:assessment.open_candidates}};
+   const response=await fetch('https://api.cveharbor.com/v1/customer-score-history',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+   if(response.ok){const fresh=await api('customer-score-history?'+query);if(fresh.ready){scoreSeries.set(key,fresh.history||[]);renderHistory(fresh.history||[])}}
+  }catch(_){message.textContent='Score history could not be loaded. Current assessment is still available.'}
+ })();
+}
 function drawReport(){
  const id=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const root=$('customerReportBody');root.replaceChildren();
@@ -390,6 +447,7 @@ function drawReport(){
  root.append(text('p','CVEHarbor | Customer Security Review','eyebrow'),text('h2',customer.name),
   text('p','Prepared: '+date+' · Scope: '+(env?(stats.environments[0]?.name||'Selected environment'):'All recorded environments')),
   text('p','This is an automated review of user-entered software inventory and a limited public advisory index. No customer endpoints were scanned. Potential findings must be validated before being treated as confirmed vulnerabilities.','ops-note'));
+ renderScorePanel(root,customer,env,stats);
  root.append(reportSection('Executive Summary'),
  table(['Metric','Count'],[['Environments',stats.environments.length],['Technology entries',stats.assets.length],
   ['Potential asset–CVE matches',stats.total],['Critical candidate matches',stats.critical],

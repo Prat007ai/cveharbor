@@ -106,7 +106,7 @@ jobs:
       - name: Install DOM smoke test dependency
         run: npm install --no-save --no-package-lock jsdom@26
       - name: Exercise site interactions
-        run: node scripts/browser_smoke.mjs && node scripts/customer_security_smoke.mjs
+        run: node scripts/browser_smoke.mjs && node scripts/customer_security_smoke.mjs && node scripts/customer_score_smoke.mjs
 
   restore:
     name: Restore site files
@@ -178,7 +178,7 @@ jobs:
         run: npm install --no-save --no-package-lock jsdom@26
       - name: Exercise site interactions
         if: github.event_name == 'push'
-        run: node scripts/browser_smoke.mjs && node scripts/customer_security_smoke.mjs
+        run: node scripts/browser_smoke.mjs && node scripts/customer_security_smoke.mjs && node scripts/customer_score_smoke.mjs
       - name: Fetch advisories
         id: collect
         continue-on-error: true
