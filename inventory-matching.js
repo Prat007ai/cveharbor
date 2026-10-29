@@ -39,8 +39,7 @@ function candidate(asset,cve){
    if(comparison!==null){
     const inclusive=/through|up to/i.test(ranges[0][1]);
     if(inclusive?comparison>0:comparison>=0){
-     level='outside_range';
-     evidence='Installed version is outside one stated numeric range. Other affected branches, package fixes and configurations have not been excluded.';
+     return null; // Explicit single before/through range: installed numeric version is outside it.
     }else{
      level='version_review';
      evidence='Installed version falls within one stated numeric affected range. Confirm exact product, package and exposure.';
