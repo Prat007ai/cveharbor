@@ -671,10 +671,10 @@ function render(){
    input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();save.click()}if(e.key==='Escape')close()});
    actions.append(cancel,save);dialog.append(title,label,feedback,actions);overlay.append(dialog);document.body.append(overlay);input.focus();
   });
-  header.append(editCustomer);
+  const customerActions=make('div','inventory-customer-actions');customerActions.append(editCustomer);
   const deleteCustomer=make('button','ops-remove','Remove customer');deleteCustomer.type='button';
   deleteCustomer.addEventListener('click',()=>remove('customers',customer.id,customer.name));
-  header.append(deleteCustomer);card.append(header);
+  customerActions.append(deleteCustomer);header.append(customerActions);card.append(header);
   const envs=data.environments.filter(x=>x.customer_id===customer.id);
   if(!envs.length)card.append(make('p','ops-note','No environments added yet.'));
   for(const env of envs){
