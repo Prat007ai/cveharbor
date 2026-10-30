@@ -11,7 +11,7 @@ assert.ok(dashboardHtml.includes('customerDashMetrics')&&dashboardHtml.includes(
 assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('href="/customer-dashboard/"'),'customer dashboard accessible from workspace');
 assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('href="/customer-reports/"'),'customer reports accessible from workspace');
 const html=fs.readFileSync('index.html','utf8');
-assert.ok(html.includes('styles.css?v=linux-packages-120'),'shared footer stylesheet cache version updated');
+assert.ok(html.includes('styles.css?v=new-customer-122'),'shared footer stylesheet cache version updated');
 assert.ok(fs.readFileSync('styles.css','utf8').includes('width:min(1500px,calc(100% - 32px))'),'compact feed banner width is shared globally');
 // Validate every canonical page is actually emitted by the Pages build.
 const routes={
@@ -255,7 +255,7 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('file.size>65536'),'pl
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('plugin-sources/'),'plugin source URLs can be saved and verified');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("Technology | Version"),'technology version entry format is validated');
 
-assert.ok(html.includes('inventory.js?v=linux-packages-120'),'public build references account inventory client');
+assert.ok(html.includes('inventory.js?v=new-customer-122'),'public build references account inventory client');
 const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
 const picker=inventoryDom.window.document.querySelector('.inventory-plugin-import:not(.inventory-bulk-import):not(.inventory-package-import) input[type=file]');
@@ -816,3 +816,6 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('has been successfully
 
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('setupPackageImport()'),'Linux package upload is available');
 assert.ok(fs.readFileSync('account-backend/src/inventory.js','utf8').includes('/v1/inventory/packages/import'),'account scoped package API exists');
+
+assert.ok(fs.readFileSync('inventory.js','utf8').includes("newCustomerSetup=true"),'new customer setup starts without previous account selection');
+assert.ok(fs.readFileSync('inventory.js','utf8').includes('startNewCustomer()'),'new customer action clears prior wizard data');

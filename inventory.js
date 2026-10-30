@@ -5,7 +5,7 @@ if(!$('inventoryWorkspace'))return;
 const api='https://api.cveharbor.com/v1/inventory';
 let signedIn=false,ready=false,data={customers:[],environments:[],assets:[]};
 let pluginSources=new Map(),pluginSourceReady=false;
-let setupCustomerId='',setupEnvironmentId='';
+let setupCustomerId='',setupEnvironmentId='',newCustomerSetup=true;
 const make=(tag,className='',value='')=>{
  const el=document.createElement(tag);if(className)el.className=className;el.textContent=String(value);return el;
 };
@@ -30,8 +30,8 @@ function selects(){
   const owner=data.customers.find(x=>x.id===environment.customer_id);
   option(envs,environment.id,(owner?.name||'Customer')+' / '+environment.name);
  }
- const customerId=setupCustomerId||previousCustomer;
- const environmentId=setupEnvironmentId||previousEnv;
+ const customerId=newCustomerSetup?'':(setupCustomerId||previousCustomer);
+ const environmentId=newCustomerSetup?'':(setupEnvironmentId||previousEnv);
  if(data.customers.some(x=>x.id===customerId))customers.value=customerId;
  if(data.environments.some(x=>x.id===environmentId))envs.value=environmentId;
  if(customers.value)setupCustomerId=customers.value;
@@ -499,15 +499,28 @@ setupPackageImport();
 
 
 
+function startNewCustomer(){
+ newCustomerSetup=true;setupCustomerId='';setupEnvironmentId='';
+ $('inventoryCustomerForm')?.reset();$('inventoryEnvironmentForm')?.reset();$('inventoryAssetForm')?.reset();
+ $('inventoryCustomerSelect').value='';$('inventoryEnvironmentSelect').value='';
+ for(const id of ['inventoryStepCustomer','inventoryStepEnvironment','inventoryStepAsset']){
+  const panel=$(id);if(panel){delete panel.dataset.setupStage;panel.classList.remove('inventory-step-collapsed');}
+ }
+ render();$('inventoryCustomerName')?.focus();
+}
+const newCustomerButton=make('button','ops-download inventory-new-customer','Start New Customer');
+newCustomerButton.type='button';newCustomerButton.addEventListener('click',startNewCustomer);
+$('inventorySetupProgress')?.before(newCustomerButton);
 function updateInventorySteps(){
  const customerCount=data.customers.length,environmentCount=data.environments.length;
  const step2=$('inventoryStepEnvironment'),step3=$('inventoryStepAsset');
  if(!step2||!step3)return;
- step2.hidden=!customerCount;step3.hidden=!environmentCount;
- const completion=document.querySelector('#inventoryWorkspace .inventory-complete-panel');if(completion)completion.hidden=!environmentCount;
- const stage=environmentCount?3:customerCount?2:1;
- const selectedCustomer=data.customers.find(x=>x.id===setupCustomerId)||data.customers[0];
- const selectedEnvironment=data.environments.find(x=>x.id===setupEnvironmentId)||data.environments.find(x=>x.customer_id===selectedCustomer?.id)||data.environments[0];
+ const selectedEnvironments=data.environments.filter(e=>e.customer_id===setupCustomerId);
+ const stage=newCustomerSetup?1:selectedEnvironments.length?3:setupCustomerId?2:1;
+ step2.hidden=stage<2;step3.hidden=stage<3;
+ const completion=document.querySelector('#inventoryWorkspace .inventory-complete-panel');if(completion)completion.hidden=stage<3;
+ const selectedCustomer=newCustomerSetup?null:data.customers.find(x=>x.id===setupCustomerId);
+ const selectedEnvironment=newCustomerSetup?null:data.environments.find(x=>x.id===setupEnvironmentId)||data.environments.find(x=>x.customer_id===selectedCustomer?.id);
  if(selectedCustomer&&!setupCustomerId)setupCustomerId=selectedCustomer.id;
  if(selectedEnvironment&&!setupEnvironmentId)setupEnvironmentId=selectedEnvironment.id;
  const customerSummary=$('inventoryCustomerSaved');
@@ -522,7 +535,9 @@ function updateInventorySteps(){
  }
  const customerNameField=$('inventoryCustomerName'),environmentNameField=$('inventoryEnvironmentName'),kindField=$('inventoryKind');
  if(customerNameField&&selectedCustomer&&document.activeElement!==customerNameField)customerNameField.value=selectedCustomer.name;
+ if(customerNameField&&newCustomerSetup&&document.activeElement!==customerNameField)customerNameField.value='';
  if(environmentNameField&&selectedEnvironment&&document.activeElement!==environmentNameField)environmentNameField.value=selectedEnvironment.name;
+ if(environmentNameField&&newCustomerSetup)environmentNameField.value='';
  if(kindField&&selectedEnvironment)kindField.value=selectedEnvironment.kind;
  const customerSelect=$('inventoryCustomerSelect'),environmentSelect=$('inventoryEnvironmentSelect');
  if(selectedCustomer&&customerSelect)customerSelect.value=selectedCustomer.id;
@@ -553,8 +568,8 @@ function updateInventorySteps(){
   toggle.setAttribute('aria-expanded',String(!panel.classList.contains('inventory-step-collapsed')));
  }
  const message=$('inventorySetupProgress');
- if(message)message.textContent=!customerCount?'Step 1 of 3: Add your first customer to begin.':
-  !environmentCount?'Step 2 of 3: Add an environment to continue.':
+ if(message)message.textContent=stage===1?'Step 1 of 3: Add your new customer to begin.':
+  stage===2?'Step 2 of 3: Add an environment to continue.':
   'Step 3 of 3: Register assets or bulk import technologies. You can also add more customers and environments above.';
 }
 function setupCustomerCompletion(){
@@ -734,7 +749,7 @@ async function save(form,endpoint,payload){
  if(!signedIn||!ready){status('Sign in and complete the database migration first.');return;}
  const button=form.querySelector('button[type=submit]');button.disabled=true;
  try{const saved=await call(endpoint,'POST',payload);
-  if(endpoint==='/customers'&&saved.id){setupCustomerId=saved.id;setupEnvironmentId='';}
+  if(endpoint==='/customers'&&saved.id){newCustomerSetup=false;setupCustomerId=saved.id;setupEnvironmentId='';}
   if(endpoint==='/environments'&&saved.id){setupCustomerId=payload.customer_id;setupEnvironmentId=saved.id;}
   form.reset();await load();status('Saved to your account inventory.')}
  catch(e){status('Could not save: '+e.message)}
