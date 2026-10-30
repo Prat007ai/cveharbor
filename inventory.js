@@ -441,6 +441,10 @@ function updateInventorySteps(){
   environmentSummary.hidden=!selectedEnvironment;
   environmentSummary.textContent=selectedEnvironment?'Saved environment: '+(data.customers.find(c=>c.id===selectedEnvironment.customer_id)?.name||'Customer')+' / '+selectedEnvironment.name+' ('+selectedEnvironment.kind+'). Use the form below only to add another environment.':'';
  }
+ const customerNameField=$('inventoryCustomerName'),environmentNameField=$('inventoryEnvironmentName'),kindField=$('inventoryKind');
+ if(customerNameField&&selectedCustomer&&document.activeElement!==customerNameField)customerNameField.value=selectedCustomer.name;
+ if(environmentNameField&&selectedEnvironment&&document.activeElement!==environmentNameField)environmentNameField.value=selectedEnvironment.name;
+ if(kindField&&selectedEnvironment)kindField.value=selectedEnvironment.kind;
  const customerSelect=$('inventoryCustomerSelect'),environmentSelect=$('inventoryEnvironmentSelect');
  if(selectedCustomer&&customerSelect)customerSelect.value=selectedCustomer.id;
  if(selectedEnvironment&&environmentSelect)environmentSelect.value=selectedEnvironment.id;
