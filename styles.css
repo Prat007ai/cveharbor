@@ -1944,3 +1944,22 @@ body.command-center-app{padding-left:74px}
 .account-settings-page .account-trust-row{display:none}
 @media(max-width:1000px){.workspace-redesign .account-hero-grid{grid-template-columns:1fr}.workspace-home-links .workspace-landing-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){.account-settings-page #accountPageSignedIn{grid-template-columns:1fr}.workspace-home-links .workspace-landing-grid{grid-template-columns:1fr}}
+
+/* Dedicated Account and Security dashboard */
+.account-security-dashboard .account-security-heading{font-size:clamp(38px,4vw,58px);line-height:1.14;margin:6px 0 12px}
+.account-security-dashboard .account-security-heading span{color:#4ee2d0}
+.account-security-intro{color:#bdcfdd;margin:0 0 27px}
+.account-security-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.account-security-grid[hidden]{display:none!important}
+.account-security-card{background:linear-gradient(140deg,#08263b,#071c2e);border:1px solid #1a5063;border-radius:14px;padding:24px;min-width:0}
+.account-security-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.account-security-card h2{font-size:18px;margin:0}
+.account-security-card-head span{color:#6de1d4}
+.account-security-card p,.account-security-note{font-size:13px;color:#acc7d6;line-height:1.65}
+.account-security-card dl{display:grid;grid-template-columns:minmax(95px,1fr) 1.7fr;gap:12px;margin:16px 0}
+.account-security-card dt{color:#9dbbca;font-size:13px}
+.account-security-card dd{margin:0;overflow-wrap:anywhere;font-size:13px}
+.account-security-card .account-secondary-button{margin:10px 0}
+.account-settings-link{display:block;color:#67ddd2;padding:10px 0;font-weight:700}
+.account-security-dashboard #accountSecurityStatus{font-size:13px;color:#9fdedb}
+@media(max-width:760px){.account-security-grid{grid-template-columns:1fr}.account-security-card{padding:19px}}
