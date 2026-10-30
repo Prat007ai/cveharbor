@@ -168,6 +168,12 @@ test('Outlook template uses centered presentation tables and explicit background
  assert.match(mail.html,/Investigate the affected versions/);
  assert.match(mail.html,/Review this CVE in CVEHarbor/);
 });
+test('assignment email identifies verified requester in HTML and plain text',()=>{
+ const requester='lini.peram@gmail.com';
+ const mail=renderAssignmentEmail('CVE-2026-76418','reviewer@example.org',requester);
+ assert.match(mail.text,/A colleague \(lini\.peram@gmail\.com\) has requested your review of CVE-2026-76418/);
+ assert.match(mail.html,/A colleague \(lini\.peram@gmail\.com\) has requested your review of CVE-2026-76418/);
+});
 test('D1 feature gate hides assignment emails until migration and explicit configuration',async()=>{
   assert.equal(await isMigrated({DB:new MockD1(false)}),false);
   assert.equal(await isMigrated({DB:new MockD1(true)}),true);

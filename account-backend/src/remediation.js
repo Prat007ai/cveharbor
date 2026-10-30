@@ -104,7 +104,7 @@ export function renderAssignmentEmail(cve,recipient,requester,reviewerNotes=''){
   const harbor='https://cveharbor.com/vulnerabilities/?cve='+encodeURIComponent(cve);
   const boards='https://learn.microsoft.com/en-us/azure/devops/boards/work-items/view-add-work-items';
   const subject='[CVEHarbor] Vulnerability review request: '+cve;
-  const requested='A colleague has requested your review of '+cve+'. This vulnerability may affect systems you manage, but exposure in your environment has not been confirmed. Review the original advisory and determine whether the affected product and versions are present in systems you manage.';
+  const requested='A colleague ('+requester+') has requested your review of '+cve+'. This vulnerability may affect systems you manage, but exposure in your environment has not been confirmed. Review the original advisory and determine whether the affected product and versions are present in systems you manage.';
   const actions=[
     'Review official vulnerability details and confirm affected products, versions and prerequisites.',
     'Check systems and applications within your responsibility and confirm whether they are affected.',
