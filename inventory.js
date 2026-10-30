@@ -678,6 +678,15 @@ function render(){
   for(const env of envs){
    const group=make('section','inventory-environment');
    const h=make('div','ops-result-top');h.append(make('strong','',env.name+' · '+env.kind));
+   const editEnv=make('button','ops-remove','Edit environment');editEnv.type='button';
+   editEnv.addEventListener('click',async()=>{
+    const name=window.prompt('Environment name',env.name);if(name===null)return;
+    const kind=window.prompt('Environment type: Production, Staging, Development, QA, UAT, Other',env.kind);if(kind===null)return;
+    if(!name.trim()||!['Production','Staging','Development','QA','UAT','Other'].includes(kind.trim())){status('Enter a valid environment name and type.');return}
+    try{await call('/environments/'+env.id,'PUT',{name:name.trim(),kind:kind.trim()});await load();status('Environment updated successfully.')}
+    catch(e){status(e.message)}
+   });
+   h.append(editEnv);
    const del=make('button','ops-remove','Remove environment');del.type='button';
    del.addEventListener('click',()=>remove('environments',env.id,env.name));h.append(del);group.append(h);
    const assets=data.assets.filter(x=>x.environment_id===env.id);
