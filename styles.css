@@ -1727,3 +1727,19 @@ body.command-center-app{padding-left:74px}
  body.account-page .customer-print-document .customer-print-finding[data-status=accepted] .customer-print-finding-status{color:#506377!important}
  body.account-page .customer-print-document .customer-print-finding[data-status=not-applicable] .customer-print-finding-status{color:#626a72!important}
 }
+
+/* Status ink survives print dialogs that omit page background graphics */
+@media print{
+ body.account-page .customer-print-document .customer-print-finding{border-left-style:solid!important;border-left-width:6px!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=review]{border-left-color:#287b9a!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=progress]{border-left-color:#b47d15!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=fixed]{border-left-color:#218057!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=accepted]{border-left-color:#647489!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=not-applicable]{border-left-color:#888e95!important}
+ body.account-page .customer-print-document .customer-print-finding .customer-print-finding-status{font-weight:800!important;border:1.5px solid currentColor!important;border-radius:4px;padding:2px 6px!important;white-space:nowrap}
+ body.account-page .customer-print-document .customer-print-finding[data-status=review] .customer-print-finding-status{color:#24647b!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=progress] .customer-print-finding-status{color:#95600b!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=fixed] .customer-print-finding-status{color:#24754e!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=accepted] .customer-print-finding-status{color:#506377!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=not-applicable] .customer-print-finding-status{color:#626a72!important}
+}

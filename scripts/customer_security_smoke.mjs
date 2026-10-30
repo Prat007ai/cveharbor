@@ -169,3 +169,5 @@ assert.ok(printCSS.includes('.customer-print-cover *{background-color:transparen
 
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes('block.dataset.status=statusTheme[findingStatus]'),'print finding cards use remediation status themes');
 assert.ok(fs.readFileSync('styles.css','utf8').includes('customer-print-finding[data-status=accepted]'),'accepted risk print theme exists');
+
+assert.ok(fs.readFileSync('styles.css','utf8').includes('border-left-width:6px!important'),'PDF status borders remain visible when backgrounds are suppressed');
