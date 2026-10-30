@@ -1534,3 +1534,14 @@ body.command-center-app{padding-left:74px}
 #inventoryWorkspace .inventory-bulk-import .inventory-bulk-table th,#inventoryWorkspace .inventory-bulk-import .inventory-bulk-table td{padding:9px 12px;border-bottom:1px solid #29495c;text-align:left;overflow-wrap:anywhere}
 #inventoryWorkspace .inventory-bulk-import .inventory-bulk-table th{background:#143c51;color:#a9ebe3}
 #inventoryWorkspace .inventory-bulk-import button:disabled{opacity:.5;cursor:not-allowed}
+
+/* Native CVEHarbor confirmation dialog for inventory removal */
+.inventory-confirm-overlay{position:fixed;inset:0;z-index:10000;background:rgba(2,10,20,.78);display:grid;place-items:center;padding:20px}
+.inventory-confirm-dialog{width:min(440px,100%);padding:24px;background:#102b40;border:1px solid #41788b;border-radius:15px;box-shadow:0 25px 70px #0009;color:#edfaff}
+.inventory-confirm-dialog h3{font-size:20px;margin:0 0 12px;line-height:1.35}
+.inventory-confirm-dialog p{font-size:14px;line-height:1.65;color:#b9d3df;margin:0 0 22px}
+.inventory-confirm-actions{display:flex;justify-content:flex-end;gap:12px}
+.inventory-confirm-actions button{font:inherit;font-weight:700;min-height:40px;padding:9px 19px;border-radius:8px;cursor:pointer}
+.inventory-confirm-cancel{background:#153749;color:#dceff5;border:1px solid #447184}
+.inventory-confirm-delete{background:#a33b4c;color:white;border:1px solid #ce596a}
+.inventory-confirm-actions button:focus-visible{outline:2px solid #65e6d2;outline-offset:3px}
