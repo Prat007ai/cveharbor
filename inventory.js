@@ -331,7 +331,7 @@ function setupBulkAssetImport(){
    'Production Web Stack,WEB,MySQL,8.0.43,Example only',
    'Production Web Stack,WEB,NGINX,1.26.3,Example only',
    'Production Web Stack,WEB,Ubuntu Linux,24.04,Example only'
-  ].join('\\r\\n')+'\\r\\n';
+  ].join('\r\n')+'\r\n';
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob),link=document.createElement('a');
   link.href=url;link.download='cveharbor-asset-import.csv';document.body.append(link);link.click();link.remove();URL.revokeObjectURL(url);
@@ -350,7 +350,7 @@ function setupBulkAssetImport(){
    if(quoted){if(c==='"'&&input[i+1]==='"'){field+='"';i++}else if(c==='"')quoted=false;else field+=c}
    else if(c==='"'){if(field!=='')throw Error('Invalid CSV quotes');quoted=true}
    else if(c===','){row.push(field);field=''}
-   else if(c==='\n'||c==='\r'){if(c==='\r'&&input[i+1]==='\\n')i++;row.push(field);field='';if(row.some(x=>x.trim()))rows.push(row.splice(0))}
+   else if(c==='\n'||c==='\r'){if(c==='\r'&&input[i+1]==='\n')i++;row.push(field);field='';if(row.some(x=>x.trim()))rows.push(row.splice(0))}
    else field+=c;
   }
   if(quoted)throw Error('Unclosed quoted field');
