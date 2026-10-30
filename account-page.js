@@ -86,7 +86,7 @@ $('accountPageRequiredEnrollForm').addEventListener('submit',async event=>{
   mfaChallenge='';
   $('accountPageRequiredEnrollForm').hidden=true;
   $('accountPageRequiredSecret').textContent='';
-  $('accountPageRequiredRecoveryCodes').textContent=result.recovery_codes.join('\\n');
+  $('accountPageRequiredRecoveryCodes').textContent=result.recovery_codes.join('\n');
   $('accountPageRequiredRecovery').hidden=false;
   message('Authenticator enabled. Save your recovery codes before continuing.');
   window.cveharborEnrolledEmail=result.email;
