@@ -867,4 +867,6 @@ const accountMarkup=fs.readFileSync('account/index.html','utf8');
 assert.ok(accountMarkup.includes('accountPageRequest') && accountMarkup.includes('accountPageVerify'),'account login and verification forms preserved');
 assert.ok(accountMarkup.includes('Private customer environments') && accountMarkup.includes('Customer ready reports'),'account benefits visible');
 assert.ok(!accountMarkup.includes('Cloudflare') && !accountMarkup.includes('pending Cloudflare backend'),'no provider or deployment disclosure on login');
-assert.ok(accountMarkup.includes('styles.css?v=account-wide-layout-148'),'latest login styles are loaded');
+const stylesheetMatch=accountMarkup.match(/href=["'](\/styles\.css\?v=[a-zA-Z0-9-]+)["']/);
+assert.ok(stylesheetMatch,'account page loads a versioned stylesheet');
+assert.ok(fs.readFileSync('styles.css','utf8').includes('.account-redesign'),'account stylesheet includes login layout');
