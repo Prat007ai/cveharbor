@@ -191,7 +191,7 @@ export async function assignRemediation(env,user,id,raw){
   const enc=new TextEncoder();
   const digest=await crypto.subtle.digest('SHA-256',enc.encode(recipient));
   const hash=Array.from(new Uint8Array(digest),x=>x.toString(16).padStart(2,'0')).join('');
-  if(!await quota(env,'assignment-target:'+hash,86400,2))
+  if(!await quota(env,'assignment-target:'+hash,86400,20))
     throw new RemediationError('Recipient notification limit reached for today',429);
   await capacity(env,user.id,cve);
   await env.DB.prepare(
