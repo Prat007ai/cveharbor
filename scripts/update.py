@@ -46,7 +46,7 @@ SOURCES = {
     "mariadb": "https://api.github.com/repos/MariaDB/server/security-advisories",
     "redhat": "https://access.redhat.com/hydra/rest/securitydata/cve.json",
 }
-MAX_RECORDS = 2500
+MAX_RECORDS = 5000
 HEALTH = ROOT / "data" / "feed-health.json"
 ALLOWED = {x["name"] for x in CATEGORIES}
 CVERE = re.compile(r"^CVE-\d{4}-\d{4,}$", re.I)
@@ -285,9 +285,9 @@ def ghsa_items() -> list[dict]:
     historical records that received routine metadata changes.
     """
     output = {}
-    for advisory_type in ("reviewed", "malware"):
+    for advisory_type in ("reviewed", "unreviewed", "malware"):
         for order in ("published", "updated"):
-            for page in (1, 2):
+            for page in range(1, 11 if advisory_type == "unreviewed" else 3):
                 params = urllib.parse.urlencode({
                     "type": advisory_type, "sort": order, "direction": "desc",
                     "per_page": 100, "page": page
@@ -346,7 +346,8 @@ def from_ghsa(item: dict) -> dict | None:
         return None
     cvss_obj = item.get("cvss") or {}
     cvss = cvss_obj.get("score") if isinstance(cvss_obj, dict) else None
-    sources = [{"label": "GitHub reviewed advisory", "url": f"https://github.com/advisories/{ghsa}"}]
+    review_label = "GitHub unreviewed advisory" if item.get("type") == "unreviewed" else ("GitHub malware advisory" if item.get("type") == "malware" else "GitHub reviewed advisory")
+    sources = [{"label": review_label, "url": f"https://github.com/advisories/{ghsa}"}]
     for ref in item.get("references") or []:
         url = clean_url(ref.get("url") if isinstance(ref, dict) else ref)
         if url and all(url != s["url"] for s in sources) and len(sources) < 4:
@@ -363,7 +364,7 @@ def from_ghsa(item: dict) -> dict | None:
         "exploitation": "Malicious software distribution advisory; investigate exposure" if item.get("type") == "malware" else "Not confirmed by this source; check CISA KEV",
         "kind": "cve" if CVERE.match(fid) else "advisory",
         "cvss": str(cvss) if isinstance(cvss, (int, float)) else None,
-        "status": "GitHub reviewed advisory" if item.get("type") != "malware" else "GitHub malware advisory",
+        "status": review_label,
         "first_seen_at": utc_iso(), "source_updated_at": item.get("updated_at") or "",
         "source_type": "github", "known_exploited": False,
     }
