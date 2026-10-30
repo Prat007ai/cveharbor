@@ -914,3 +914,12 @@ assert.ok(authRetryWorker.includes("emailKey,5")&&authRetryWorker.includes("ipKe
 assert.ok(authRetryPage.includes('accountPageRetryMessage')&&authRetryPage.includes('accountPageResend'),'Workspace provides retry text and resend action');
 assert.ok(authRetryClient.includes('window.setInterval(update,1000)')&&authRetryClient.includes('cooldown(60)'),'browser exposes a live retry countdown');
 assert.ok(accountStatusClient.includes('Your account is signed in, but authenticator settings could not be refreshed'),'Account preserves authenticated profile on temporary MFA status errors');
+
+const workspaceCleanup=fs.readFileSync('workspace/index.html','utf8');
+assert.ok(workspaceCleanup.includes('workspace-signed-in-note'),'signed in Workspace welcomes user to tools');
+assert.ok(workspaceCleanup.includes('href="/account/" class="account-secondary-button workspace-security-link"'),'Workspace links to Account security controls');
+assert.ok(workspaceCleanup.includes('id="accountPageLogout" class="account-secondary-button" hidden'),'sign out no longer appears in Workspace');
+assert.ok(workspaceCleanup.includes('aria-label="Authenticator security settings" hidden'),'MFA management is not displayed on Workspace after login');
+assert.ok(workspaceCleanup.includes('accountPageRequiredEnroll'),'MFA enrollment stays available during sign in');
+const securityDashboard=fs.readFileSync('account/index.html','utf8');
+assert.ok(securityDashboard.includes('accountSecurityRecoveryStart')&&securityDashboard.includes('accountSecuritySignOut'),'recovery management and sign out remain in Account');
