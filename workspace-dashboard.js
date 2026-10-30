@@ -47,6 +47,6 @@ async function loadPublic(){
 }
 let loaded=false;
 function start(){if(loaded||!$('workspaceAccess')||$('workspaceAccess').hidden)return;loaded=true;void loadPrivate();void loadPublic()}
-window.addEventListener('cveharbor-auth-change',event=>{if(event.detail?.authenticated)start()});
+window.addEventListener('cveharbor-auth-change',event=>{if(event.detail?.authenticated)setTimeout(start,0)});
 fetch(API+'/me',{credentials:'include',cache:'no-store'}).then(r=>r.ok?r.json():null).then(x=>{if(x?.authenticated){setTimeout(start,0);window.setTimeout(start,600)}}).catch(()=>{});
 })();
