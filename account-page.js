@@ -37,15 +37,16 @@ function signedIn(email){
  $('accountPageSignedOut').hidden=true;
  $('accountPageSignedIn').hidden=false;
  $('accountPageIdentity').textContent='Signed in as '+email;
- $('accountPageHeading').innerHTML='Welcome to your <span>CVEHarbor workspace</span>';
+ if(document.body.classList.contains('workspace-redesign')){$('accountPageHeading').innerHTML='My <span>Workspace</span>';const links=$('workspaceAccess');if(links)links.hidden=false;}else $('accountPageHeading').innerHTML='Account <span>&amp; Security</span>';
  message('Your account is connected.');
  loadTotpStatus();
 }
 function signedOut(){
+ if(document.body.classList.contains('account-settings-page')){location.replace('/workspace/');return;}
  mfaChallenge='';$('accountPageRequiredEnroll').hidden=true;$('accountPageTotpVerify').hidden=true;$('accountPageTotpCode').value='';
  $('accountPageSignedOut').hidden=false;
  $('accountPageSignedIn').hidden=true;
- $('accountPageHeading').innerHTML='Access your private <span>CVEHarbor workspace</span>';
+ if(document.body.classList.contains('workspace-redesign')){$('accountPageHeading').innerHTML='My <span>Workspace</span>';const links=$('workspaceAccess');if(links)links.hidden=true;}else $('accountPageHeading').innerHTML='Account <span>&amp; Security</span>';
 }
 const mode=new URLSearchParams(location.search).get('mode');
 if(mode==='register')$('accountFormTitle').textContent='Create your free CVEHarbor account';
