@@ -255,7 +255,7 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('file.size>65536'),'pl
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('plugin-sources/'),'plugin source URLs can be saved and verified');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("Technology | Version"),'technology version entry format is validated');
 
-assert.ok(html.includes('inventory.js?v=edit-full-128'),'public build references account inventory client');
+assert.ok(html.includes('inventory.js?v=asset-edit-129'),'public build references account inventory client');
 const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
 const picker=inventoryDom.window.document.querySelector('.inventory-plugin-import:not(.inventory-bulk-import):not(.inventory-package-import) input[type=file]');
@@ -271,6 +271,28 @@ assert.match(inventoryDom.window.document.querySelector('.inventory-plugin-impor
 assert.match(inventoryDom.window.document.getElementById('inventoryMessage').textContent,/Sign in/,'anonymous inventory is not displayed');
 assert.equal(inventoryDom.window.document.getElementById('inventoryCustomerCount').textContent,'0');
 inventoryDom.window.close();
+// Exercise actual customer and asset Edit controls with a synthetic authenticated inventory.
+const editDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
+editDom.window.HTMLElement.prototype.scrollIntoView=function(){};
+editDom.window.fetch=async url=>({ok:true,json:async()=>String(url).endsWith('/status')?{ready:true}:String(url).includes('/plugin-sources')?{ready:true,sources:[]}:{
+ customers:[{id:'customer-one',name:'Woodbine.com'}],
+ environments:[{id:'env-one',customer_id:'customer-one',name:'Production',kind:'Production'}],
+ assets:[{id:'asset-one',environment_id:'env-one',name:'Web Servers',asset_type:'WEB',technology:'PHP',version:'8.3.36',notes:'Production Servers'}]
+}});
+editDom.window.eval(fs.readFileSync('inventory.js','utf8'));
+editDom.window.dispatchEvent(new editDom.window.CustomEvent('cveharbor:account-state',{detail:{authenticated:true}}));
+await new Promise(resolve=>setTimeout(resolve,70));
+assert.ok(editDom.window.document.querySelector('.inventory-customer .inventory-edit-customer'),'saved customer has edit action');
+editDom.window.document.querySelector('.inventory-customer .inventory-edit-customer').click();
+assert.equal(editDom.window.document.getElementById('inventoryEnvironmentSelect').value,'env-one','customer edit selects its environment');
+const assetEdit=[...editDom.window.document.querySelectorAll('.inventory-asset button')].find(b=>b.textContent==='Edit');
+assert.ok(assetEdit,'saved asset has Edit button');assetEdit.click();
+assert.equal(editDom.window.document.getElementById('inventoryAssetEditId').value,'asset-one','asset Edit selects record ID');
+assert.equal(editDom.window.document.getElementById('inventoryVersion').value,'8.3.36','asset Edit populates installed version');
+assert.equal(editDom.window.document.getElementById('inventoryStepAsset').hidden,false,'asset editing step is visible');
+assert.equal(editDom.window.document.getElementById('inventoryAssetForm').hidden,false,'asset editing form is visible');
+editDom.window.close();
+
 assert.ok(html.includes('id="operationsCentre"'),'operations centre exists');
 assert.ok(fs.readFileSync('operations.js','utf8').includes('https://api.osv.dev/v1/query'),'version checker uses OSV');
 const opsDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
