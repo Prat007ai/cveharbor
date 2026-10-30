@@ -1591,3 +1591,12 @@ body.command-center-app{padding-left:74px}
 @media(max-width:600px){.inventory-review-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.inventory-review-dialog{padding:15px}.inventory-review-row{gap:8px}}
 
 #inventoryWorkspace .inventory-complete-panel[hidden]{display:none!important}
+
+#inventoryWorkspace .inventory-package-import{border-color:#3b7180;background:#102e42}
+#inventoryWorkspace .inventory-package-import>input[type=file]{display:block;color:#dbf5f7;font-size:13px;max-width:100%}
+#inventoryWorkspace .inventory-package-preview{width:100%;max-height:380px;overflow:auto;background:#081d2b;border:1px solid #376275;border-radius:9px;padding:12px}
+#inventoryWorkspace .inventory-package-preview[hidden]{display:none!important}
+#inventoryWorkspace .inventory-package-preview table{width:100%;min-width:880px;border-collapse:collapse;font-size:12px;color:#e2f4f7}
+#inventoryWorkspace .inventory-package-preview th,#inventoryWorkspace .inventory-package-preview td{padding:9px;text-align:left;border-bottom:1px solid #29495a}
+#inventoryWorkspace .inventory-package-preview th{background:#154258;color:#abf1e6}
+#inventoryWorkspace .inventory-package-import button:disabled{opacity:.5;cursor:not-allowed}
