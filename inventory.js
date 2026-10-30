@@ -321,10 +321,17 @@ setupSourceEditor();
 function setupBulkAssetImport(){
  const form=$('inventoryAssetForm');if(!form)return;
  const panel=make('section','inventory-plugin-import inventory-bulk-import');
- panel.append(make('h3','','Bulk import technology stack'),make('p','ops-note','Select the customer environment above, then upload a CSV file exported from Excel. Review the entries before saving. Existing assets are never overwritten.'));
+ panel.append(make('h3','','Bulk import technology stack'),make('p','ops-note','Select the customer environment above and upload a CSV from Excel. For servers sharing the same software versions, use one logical asset name such as Production Web Stack for all technology rows. The sample versions are examples only. Review before importing. Existing records are not overwritten.'));
  const template=make('button','ops-download','Download Excel CSV template');template.type='button';
  template.addEventListener('click',()=>{
-  const csv='Asset Name,Asset Type,Technology,Version,Notes\r\nWEB01,WEB,PHP,8.4.26,Production web server\r\nWEB01,WEB,WordPress,6.8.3,\r\nDB01,Database,MySQL,8.0.43,\r\n';
+  const csv=[
+   'Asset Name,Asset Type,Technology,Version,Notes',
+   'Production Web Stack,WEB,PHP,8.4.26,Example only',
+   'Production Web Stack,WEB,WordPress,6.8.3,Example only',
+   'Production Web Stack,WEB,MySQL,8.0.43,Example only',
+   'Production Web Stack,WEB,NGINX,1.26.3,Example only',
+   'Production Web Stack,WEB,Ubuntu Linux,24.04,Example only'
+  ].join('\r\n')+'\r\n';
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob),link=document.createElement('a');
   link.href=url;link.download='cveharbor-asset-import.csv';document.body.append(link);link.click();link.remove();URL.revokeObjectURL(url);
@@ -337,13 +344,13 @@ function setupBulkAssetImport(){
  let parsed=[],previewEnvironment='';
  function parseCsv(text){
   const rows=[],row=[];let field='',quoted=false;
-  const input=text.replace(/^\\uFEFF/,'');
+  const input=text.replace(/^\uFEFF/,'');
   for(let i=0;i<input.length;i++){
    const c=input[i];
    if(quoted){if(c==='"'&&input[i+1]==='"'){field+='"';i++}else if(c==='"')quoted=false;else field+=c}
    else if(c==='"'){if(field!=='')throw Error('Invalid CSV quotes');quoted=true}
    else if(c===','){row.push(field);field=''}
-   else if(c==='\\n'||c==='\\r'){if(c==='\\r'&&input[i+1]==='\\n')i++;row.push(field);field='';if(row.some(x=>x.trim()))rows.push(row.splice(0))}
+   else if(c==='\n'||c==='\r'){if(c==='\r'&&input[i+1]==='\n')i++;row.push(field);field='';if(row.some(x=>x.trim()))rows.push(row.splice(0))}
    else field+=c;
   }
   if(quoted)throw Error('Unclosed quoted field');
@@ -357,7 +364,7 @@ function setupBulkAssetImport(){
   resetPreview('');
   const chosen=file.files?.[0];if(!chosen)return;
   if(chosen.size>131072){resetPreview('CSV file exceeds 128 KB.');return}
-  if(!/\\.csv$/i.test(chosen.name)){resetPreview('Export the Excel worksheet as CSV UTF-8 first.');return}
+  if(!/\.csv$/i.test(chosen.name)){resetPreview('Export the Excel worksheet as CSV UTF-8 first.');return}
   const envId=$('inventoryEnvironmentSelect').value;
   if(!envId){resetPreview('Select a customer environment before uploading.');return}
   try{
