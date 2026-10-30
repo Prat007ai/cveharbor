@@ -44,11 +44,11 @@ function signedIn(email){
 }
 function signedOut(){
  window.dispatchEvent(new CustomEvent('cveharbor-auth-change',{detail:{authenticated:false}}));
- if(document.body.classList.contains('account-settings-page')){location.replace('/workspace/');return;}
  mfaChallenge='';$('accountPageRequiredEnroll').hidden=true;$('accountPageTotpVerify').hidden=true;$('accountPageTotpCode').value='';
  $('accountPageSignedOut').hidden=false;
  $('accountPageSignedIn').hidden=true;
  if(document.body.classList.contains('workspace-redesign')){$('accountPageHeading').innerHTML='My <span>Workspace</span>';const links=$('workspaceAccess');if(links)links.hidden=true;}else $('accountPageHeading').innerHTML='Account <span>&amp; Security</span>';
+ if(document.body.classList.contains('account-settings-page'))location.replace('/workspace/');
 }
 const mode=new URLSearchParams(location.search).get('mode');
 if(mode==='register')$('accountFormTitle').textContent='Create your free CVEHarbor account';
