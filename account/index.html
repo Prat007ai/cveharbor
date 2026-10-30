@@ -45,6 +45,7 @@
    <section id="accountPageRequiredEnroll" class="account-mfa-settings" hidden>
     <h2>Set up your authenticator to continue</h2>
     <p>Scan this enrollment link using a compatible QR code or enter the setup key in Microsoft Authenticator or Google Authenticator.</p>
+    <div id="accountPageRequiredQr" class="account-mfa-qr" aria-label="Scan with your authenticator app"></div>
     <code id="accountPageRequiredSecret" class="account-mfa-secret"></code>
     <form id="accountPageRequiredEnrollForm" class="account-entry-form">
      <label for="accountPageRequiredCode">Six digit authenticator code</label>
@@ -66,6 +67,7 @@
      <button type="button" id="accountPageTotpSetup" class="account-secondary-button" hidden>Set up authenticator app</button>
      <div id="accountPageTotpEnroll" hidden>
       <p>In Microsoft Authenticator or Google Authenticator, add a new account using this setup key:</p>
+      <div id="accountPageTotpQr" class="account-mfa-qr" aria-label="Scan with your authenticator app"></div>
       <code id="accountPageTotpSecret" class="account-mfa-secret"></code>
       <p>Enter a code from your authenticator to complete enrollment.</p>
       <form id="accountPageTotpEnrollForm" class="account-entry-form">
@@ -112,6 +114,7 @@
   </div>
  </section>
 </main>
-<script src="/account-page.js?v=totp-mfa-152"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="/account-page.js?v=totp-mfa-153"></script>
 <script src="/command-center.js?v=home-sidebar-89"></script>
 </body></html>
