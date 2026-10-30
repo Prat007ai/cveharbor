@@ -861,3 +861,10 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('inventory-record-acti
 assert.ok(fs.readFileSync('styles.css','utf8').includes('Align customer and nested environment actions'),'customer and environment button alignment style exists');
 
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes("if(needsReview){card.classList.add('customer-software-attention')"),'needs review findings trigger red attention class');
+
+// Account redesign retains passwordless sign-in contract and removes provider disclosure.
+const accountMarkup=fs.readFileSync('account/index.html','utf8');
+assert.ok(accountMarkup.includes('accountPageRequest') && accountMarkup.includes('accountPageVerify'),'account login and verification forms preserved');
+assert.ok(accountMarkup.includes('Private customer environments') && accountMarkup.includes('Customer ready reports'),'account benefits visible');
+assert.ok(!accountMarkup.includes('Cloudflare') && !accountMarkup.includes('pending Cloudflare backend'),'no provider or deployment disclosure on login');
+assert.ok(accountMarkup.includes('styles.css?v=account-redesign-147'),'latest login styles are loaded');
