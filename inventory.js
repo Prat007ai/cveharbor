@@ -324,7 +324,7 @@ function setupBulkAssetImport(){
  panel.append(make('h3','','Bulk import technology stack'),make('p','ops-note','Select the customer environment above, then upload a CSV file exported from Excel. Review the entries before saving. Existing assets are never overwritten.'));
  const template=make('button','ops-download','Download Excel CSV template');template.type='button';
  template.addEventListener('click',()=>{
-  const csv='Asset Name,Asset Type,Technology,Version,Notes\\r\\nWEB01,WEB,PHP,8.4.26,Production web server\\r\\nWEB01,WEB,WordPress,6.8.3,\\r\\nDB01,Database,MySQL,8.0.43,\\r\\n';
+  const csv='Asset Name,Asset Type,Technology,Version,Notes\r\nWEB01,WEB,PHP,8.4.26,Production web server\r\nWEB01,WEB,WordPress,6.8.3,\r\nDB01,Database,MySQL,8.0.43,\r\n';
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob),link=document.createElement('a');
   link.href=url;link.download='cveharbor-asset-import.csv';document.body.append(link);link.click();link.remove();URL.revokeObjectURL(url);
