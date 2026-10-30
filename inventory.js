@@ -409,8 +409,19 @@ function setupBulkAssetImport(){
 setupBulkAssetImport();
 
 
+function updateInventorySteps(){
+ const customerCount=data.customers.length,environmentCount=data.environments.length;
+ const step2=$('inventoryStepEnvironment'),step3=$('inventoryStepAsset');
+ if(!step2||!step3)return;
+ step2.hidden=!customerCount;step3.hidden=!environmentCount;
+ const message=$('inventorySetupProgress');
+ if(message)message.textContent=!customerCount?'Step 1 of 3: Add your first customer to begin.':
+  !environmentCount?'Step 2 of 3: Add an environment to continue.':
+  'Step 3 of 3: Register assets or bulk import technologies. You can also add more customers and environments above.';
+}
 function render(){
  selects();
+ updateInventorySteps();
  $('inventoryCustomerCount').textContent=data.customers.length;
  $('inventoryEnvironmentCount').textContent=data.environments.length;
  $('inventoryAssetCount').textContent=data.assets.length;
