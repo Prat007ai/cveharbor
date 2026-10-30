@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-30",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6065,
+  "candidate_records": 6076,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -5483,6 +5483,47 @@
       "first_seen_at": "2026-10-30T14:25:53Z",
       "source_updated_at": "2026-10-30T14:16:47.540",
       "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119282",
+      "title": "@nx/maven and @nx/gradle have OS command injection via nx.json plugin options",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "## Summary `@nx/maven` and `@nx/gradle` spawn their project-graph analyzers through a shell and interpolate plugin options read from `nx.json` straight into the command line. Because a shell parses the whole line, an option value containing shell syntax is executed as a command by any `nx` command that constructs the project graph. Anyone who clones a hostile repository, or who checks out a pull request that edits `nx.json`, runs the injected command with their own privileges. ## Severity A victim who runs an ordinary `nx` command in an attacker-supplied Maven or Gradle workspace gets code execution as themselves. In most such workspaces an attacker who can write `nx.json` can already run code through the repository's build files (`./mvnw`, `pom.xml`, and the Gradle equivalents), so the genuinely new exposure is narrow — for example CI building a fork's pull request where `nx.json` is writable but the build files are not. We have no evidence of exploitation in the wild. ## Affected & Patched Versions | Package | Vulnerable | Patched | | --- | --- | --- | | `@nx/maven` | `>= 22.0.2, < 22.7.9`; `>= 23.0.0, < 23.1.2` | `22.7.9`, `23.1.2` | | `@nx/gradle` | `>= 21.0.0, < 22.7.9`; `>= 23.0.0, < 23.1.2` | `22.7.9`, `23.1.2` | > [!IMPORTANT] > Workspaces that register neither `@nx/maven",
+      "affected": "npm: @nx/maven (>= 22.0.2, < 22.7.9); npm: @nx/maven (>= 23.0.0, < 23.1.2); npm: @nx/gradle (>= 21.0.0, < 22.7.9); npm: @nx/gradle (>= 23.0.0, < 23.1.2)",
+      "remediation": "@nx/maven: 22.7.9; @nx/maven: 23.1.2; @nx/gradle: 22.7.9; @nx/gradle: 23.1.2",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-qm8w-vx34-5j9j"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/nrwl/nx/security/advisories/GHSA-qm8w-vx34-5j9j"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119282"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/nrwl/nx/pull/36626"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-30T14:44:16Z",
+      "source_updated_at": "2026-10-30T14:42:16Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -118273,315 +118314,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-69534",
-      "title": "CVE-2026-69534 Windows Program Compatibility Assistant Service Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Improper neutralization of special elements used in a command ('command injection') in Windows Program Compatibility Assistant Service allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69534"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69574",
-      "title": "CVE-2026-69574 Windows Device Association Service Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Windows Device Association Service allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69574"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69540",
-      "title": "CVE-2026-69540 Windows Audio Service Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Windows Audio Service allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69540"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69563",
-      "title": "CVE-2026-69563 Windows Program Compatibility Assistant Service Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Heap-based buffer overflow in Windows Program Compatibility Assistant Service allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69563"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69553",
-      "title": "CVE-2026-69553 Windows Hyper-V Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "HyperV",
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Missing authorization in Windows Hyper-V allows an authorized attacker to elevate privileges over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69553"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69552",
-      "title": "CVE-2026-69552 Windows Print Spooler Components Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Generation of error message containing sensitive information in Windows Print Spooler Components allows an authorized attacker to disclose information over a network.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69552"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69554",
-      "title": "CVE-2026-69554 Microsoft Windows Search Component Tampering Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Missing authentication for critical function in Microsoft Windows Search Component allows an authorized attacker to perform tampering locally.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69554"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69585",
-      "title": "CVE-2026-69585 Microsoft Windows Search Component Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Incorrect type conversion or cast in Microsoft Windows Search Component allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69585"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69588",
-      "title": "CVE-2026-69588 Windows TCP/IP Denial of Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Missing release of memory after effective lifetime in Windows TCP/IP allows an unauthorized attacker to deny service over a network.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69588"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69587",
-      "title": "CVE-2026-69587 Windows Internet Key Exchange (IKE) Extension Denial of Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Null pointer dereference in Windows IKE Extension allows an unauthorized attacker to deny service over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69587"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69609",
-      "title": "CVE-2026-69609 Win32k Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Out-of-bounds read in Windows Win32K allows an authorized attacker to disclose information locally.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69609"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-86422",
       "title": "ImageMagick before 7.1.2-30 contains a time-of-check-time-of-use vulnerability in path policy enforcement on Windows that allows attackers to bypass read or write restrictions",
       "severity": "low",
@@ -126627,14 +126359,14 @@
     {
       "id": "CVE-2026-63959",
       "title": "In the Linux kernel, the following vulnerability has been resolved: usb: typec: tcpm/tcpci_maxim: validate header NDO against RX_BYTE_CNT A broken/malicious port can transmit ",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "Linux"
       ],
       "published": "2026-07-19",
       "updated": "2026-10-30",
       "summary": "In the Linux kernel, the following vulnerability has been resolved: usb: typec: tcpm/tcpci_maxim: validate header NDO against RX_BYTE_CNT A broken/malicious port can transmit a CRC-valid frame whose header advertises up to seven data objects but whose body carries fewer than that. Check for this, and rightfully reject the message, instead of reading from uninitialized stack memory.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
       "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
       "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
       "sources": [
@@ -126645,10 +126377,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "5.5",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T13:28:25Z",
-      "source_updated_at": "2026-10-30T13:19:23.403",
+      "source_updated_at": "2026-10-30T14:35:20.390",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -127839,7 +127571,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: usb: typec: wcove: don't write past struct pd_message in wcove_read_rx_buffer() wcove_read_rx_buffer() copi",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-07-19",
       "updated": "2026-10-30",
@@ -127887,6 +127620,286 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T14:35:15Z",
       "source_updated_at": "2026-10-30T14:31:12.177",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63897",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: mct_u232: fix missing interrupt-in transfer sanity check Add the missing sanity check on the s",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: mct_u232: fix missing interrupt-in transfer sanity check Add the missing sanity check on the size of interrupt-in transfers to avoid parsing stale or uninitialised slab data (and leaking it to user space).",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63897"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:44:16Z",
+      "source_updated_at": "2026-10-30T14:38:41.577",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63898",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: mct_u232: fix memory corruption with small endpoint The driver overrides the maximum transfer ",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: mct_u232: fix memory corruption with small endpoint The driver overrides the maximum transfer size for a specific device which only accepts 16 byte packets for its 32 byte bulk-out endpoint. Make sure to never increase the maximum transfer size to prevent slab corruption should a malicious device report a smaller endpoint max packet size than expected.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63898"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:44:16Z",
+      "source_updated_at": "2026-10-30T14:38:34.630",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63899",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: mxuport: fix memory corruption with small endpoint Make sure that the bulk-out endpoint max pa",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: mxuport: fix memory corruption with small endpoint Make sure that the bulk-out endpoint max packet size is at least eight bytes to avoid user-controlled slab corruption should a malicious device report a smaller size.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63899"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:44:16Z",
+      "source_updated_at": "2026-10-30T14:38:26.447",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63900",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: keyspan: fix missing indat transfer sanity check Add the missing sanity check on the size of u",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: keyspan: fix missing indat transfer sanity check Add the missing sanity check on the size of usa49wg indat transfers to avoid parsing stale or uninitialised slab data.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63900"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:44:16Z",
+      "source_updated_at": "2026-10-30T14:38:09.157",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63901",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: digi_acceleport: fix memory corruption with small endpoints Add the missing bulk-out buffer si",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: digi_acceleport: fix memory corruption with small endpoints Add the missing bulk-out buffer size sanity checks to avoid out-of-bounds memory accesses or slab corruption should a malicious device report smaller buffers than expected.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63901"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:44:16Z",
+      "source_updated_at": "2026-10-30T14:38:04.080",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63902",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: cypress_m8: validate interrupt packet headers cypress_read_int_callback() parses the interrupt",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: cypress_m8: validate interrupt packet headers cypress_read_int_callback() parses the interrupt-in buffer according to the selected Cypress packet format. Format 1 has a two-byte status/count header and format 2 has a one-byte combined status/count header. The usb-serial core sizes the interrupt-in buffer from the endpoint descriptor's wMaxPacketSize, and successful interrupt transfers can complete short when URB_SHORT_NOT_OK is not set. Check that the completed packet contains the selected header before reading it. Malformed short reports are ignored and the interrupt URB is resubmitted through the existing retry path, preventing out-of-bounds header-byte reads. KASAN report as below: KASAN slab-out-of-bounds in cypress_read_int_callback+0x240/0x7f0 Read of size 1 Call trace: cypress_read_int_callback() (drivers/usb/serial/cypress_m8.c:1009) __usb_hcd_giveback_urb() dummy_timer() [ johan: use constants in header length sanity checks ]",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63902"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:44:16Z",
+      "source_updated_at": "2026-10-30T14:37:55.883",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63903",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: belkin_sa: validate interrupt status length The Belkin interrupt callback treats interrupt dat",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: belkin_sa: validate interrupt status length The Belkin interrupt callback treats interrupt data as a four-byte status report and reads LSR/MSR fields at offsets 2 and 3. The interrupt-in buffer length is derived from endpoint wMaxPacketSize, and short interrupt transfers may complete successfully with a smaller actual_length. Check the completed interrupt packet length before parsing status fields so short interrupt endpoints and short successful packets are ignored instead of causing out-of-bounds or stale status-byte reads. KASAN report as below: BUG: KASAN: slab-out-of-bounds in belkin_sa_read_int_callback() Read of size 1 Call trace: belkin_sa_read_int_callback() (drivers/usb/serial/belkin_sa.c:202) __usb_hcd_giveback_urb() (drivers/usb/core/hcd.c:1630) dummy_timer() (?:?)",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63903"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:44:16Z",
+      "source_updated_at": "2026-10-30T14:37:48.093",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63904",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: usb: usbtmc: check URB actual_length for interrupt-IN notifications USBTMC devices can use an optional inte",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: usb: usbtmc: check URB actual_length for interrupt-IN notifications USBTMC devices can use an optional interrupt endpoint for notification messages. These typically contain two-byte headers indicating the payload format, but the driver does not check if these headers are present before accessing the data buffers. In cases where the URB actual_length is not enough to fit these headers, the driver will either cause an out-of-bounds read, or consume stale leftover data from a previous notification. Fix by checking if actual_data contains enough bytes for the headers, otherwise resubmit URB to the interrupt endpoint.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63904"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:44:16Z",
+      "source_updated_at": "2026-10-30T14:37:41.347",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63905",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: usbip: vudc: Fix use after free bug in vudc_remove due to race condition This patch follows up Zheng Wang's",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: usbip: vudc: Fix use after free bug in vudc_remove due to race condition This patch follows up Zheng Wang's 2023 report of a use-after-free in vudc_remove(). The original thread stalled on Shuah Khan's request for runtime testing of the unplug/unbind path. This patch supplies that testing and keeps Zheng's original fix shape. In vudc_probe(), v_init_timer() binds udc->tr_timer.timer to v_timer(). usbip_sockfd_store() starts the timer via v_start_timer()/v_kick_timer(). vudc_remove() can then free the containing struct vudc while the timer is still pending or executing. KASAN confirms the race on an unpatched x86_64 QEMU guest with CONFIG_KASAN=y, CONFIG_USBIP_VUDC=y, CONFIG_USB_ZERO=y, and a tight loop that repeatedly writes a socket fd to usbip_sockfd, closes the socket pair, and unbinds/rebinds usbip-vudc.0: BUG: KASAN: slab-use-after-free in __run_timer_base.part.0+0x8ba/0x8e0 Write of size 8 at addr ffff888001b80740 by task trigger_and_unb/239 Allocated by task 239: vudc_probe+0x4d/0xaa0 Freed by task 239: kfree+0x18f/0x520 device_release_driver_internal+0x388/0x540 unbind_store+0xd9/0x100 This lands in the timer core rather than v_timer() itself because the e",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63905"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:44:16Z",
+      "source_updated_at": "2026-10-30T14:37:32.330",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63906",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: usb: musb: omap2430: Fix use-after-free in omap2430_probe() In omap2430_probe(), of_node_put(np) is called ",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: usb: musb: omap2430: Fix use-after-free in omap2430_probe() In omap2430_probe(), of_node_put(np) is called prematurely before the last access to np, leading to a use-after-free if the node's reference count drops to zero. Move the of_node_put() calls after the last use of np in both the success and error paths.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63906"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:44:16Z",
+      "source_updated_at": "2026-10-30T14:37:24.840",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -136759,37 +136772,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.11772,
-      "epss_percentile": 0.96066,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2025-7624",
       "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
@@ -136818,6 +136800,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.10514,
       "epss_percentile": 0.95752,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.11772,
+      "epss_percentile": 0.96066,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -157223,85 +157236,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T14:35:15Z",
-      "last_attempt": "2026-10-30T14:35:15Z",
-      "items_processed": 258,
+      "last_success": "2026-10-30T14:44:16Z",
+      "last_attempt": "2026-10-30T14:44:16Z",
+      "items_processed": 257,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T14:35:15Z",
-      "last_attempt": "2026-10-30T14:35:15Z",
+      "last_success": "2026-10-30T14:44:16Z",
+      "last_attempt": "2026-10-30T14:44:16Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T14:35:15Z",
-      "last_attempt": "2026-10-30T14:35:15Z",
-      "items_processed": 1814,
+      "last_success": "2026-10-30T14:44:16Z",
+      "last_attempt": "2026-10-30T14:44:16Z",
+      "items_processed": 1825,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T14:35:15Z",
-      "last_attempt": "2026-10-30T14:35:15Z",
+      "last_success": "2026-10-30T14:44:16Z",
+      "last_attempt": "2026-10-30T14:44:16Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:35:15Z",
-      "last_attempt": "2026-10-30T14:35:15Z",
+      "last_success": "2026-10-30T14:44:16Z",
+      "last_attempt": "2026-10-30T14:44:16Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:35:15Z",
-      "last_attempt": "2026-10-30T14:35:15Z",
+      "last_success": "2026-10-30T14:44:16Z",
+      "last_attempt": "2026-10-30T14:44:16Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:35:15Z",
-      "last_attempt": "2026-10-30T14:35:15Z",
+      "last_success": "2026-10-30T14:44:16Z",
+      "last_attempt": "2026-10-30T14:44:16Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:35:15Z",
-      "last_attempt": "2026-10-30T14:35:15Z",
+      "last_success": "2026-10-30T14:44:16Z",
+      "last_attempt": "2026-10-30T14:44:16Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:35:15Z",
-      "last_attempt": "2026-10-30T14:35:15Z",
+      "last_success": "2026-10-30T14:44:16Z",
+      "last_attempt": "2026-10-30T14:44:16Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T14:35:15Z",
-      "last_attempt": "2026-10-30T14:35:15Z",
+      "last_success": "2026-10-30T14:44:16Z",
+      "last_attempt": "2026-10-30T14:44:16Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T14:35:15Z",
-      "last_attempt": "2026-10-30T14:35:15Z",
+      "last_success": "2026-10-30T14:44:16Z",
+      "last_attempt": "2026-10-30T14:44:16Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T14:35:15Z",
-      "last_attempt": "2026-10-30T14:35:15Z",
+      "last_success": "2026-10-30T14:44:16Z",
+      "last_attempt": "2026-10-30T14:44:16Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -157313,7 +157326,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T14:35:15Z",
-  "last_successful_update": "2026-10-30T14:35:15Z",
+  "last_checked_at": "2026-10-30T14:44:16Z",
+  "last_successful_update": "2026-10-30T14:44:16Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
