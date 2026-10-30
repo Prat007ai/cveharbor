@@ -21,7 +21,7 @@ assert.equal(match.candidate(pluginAsset,finding('CVE-2026-11118','WordPress / P
 matchingDom.window.close();
 
 const html=fs.readFileSync('customer-reports/index.html','utf8');
-assert.ok(html.includes('customer-security.js?v=report-print-134'),'report loads fresh plugin monitoring script');
+assert.ok(html.includes('customer-security.js?v=email-report-140'),'report loads current script');
 const dom=new JSDOM(html,{url:'https://cveharbor.com/customer-reports/?customer=c1',runScripts:'outside-only'});
 const {window}=dom,doc=window.document;
 const sample={
@@ -179,3 +179,6 @@ assert.ok(reportSource.includes("stateLabel.style.setProperty('color',ink,'impor
 
 assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('id="customerReportEmail"'),'report email control available');
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes('customer-report-email'),'report email dialog calls authenticated service');
+
+assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('customer-security.js?v=email-report-140'),'email report loads current script');
+assert.ok(fs.readFileSync('customer-security.js','utf8').includes("$('customerReportEmail').addEventListener('click'"),'email report click handler is registered');
