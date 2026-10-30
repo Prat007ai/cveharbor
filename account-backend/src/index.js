@@ -63,12 +63,20 @@ export default {async fetch(req,env,ctx){
    let user=await env.DB.prepare('SELECT id,email FROM users WHERE email=?').bind(row.email).first();
    if(!user){const uid=crypto.randomUUID();await env.DB.prepare('INSERT OR IGNORE INTO users(id,email) VALUES(?,?)').bind(uid,row.email).run();user=await env.DB.prepare('SELECT id,email FROM users WHERE email=?').bind(row.email).first()}
    if(!env.TOTP_ENCRYPTION_KEY)return response({error:'MFA service unavailable'},503);
-   const factor=await env.DB.prepare('SELECT enabled FROM user_totp WHERE user_id=?').bind(user.id).first();
+   const factor=await env.DB.prepare('SELECT enabled,encrypted_secret FROM user_totp WHERE user_id=?').bind(user.id).first();
    const pending=token(),now=Math.floor(Date.now()/1000);
    await env.DB.prepare('INSERT INTO totp_login_challenges(id,user_id,token_hash,expires_at,created_at) VALUES(?,?,?,?,?)').bind(crypto.randomUUID(),user.id,await sha(pending),now+300,now).run();
    if(factor?.enabled===1)return response({authenticated:false,mfa_required:true,mfa_challenge:pending});
-   const secret=newSecret(),encrypted=await encryptSecret(env,secret,user.id);
-   await env.DB.prepare('INSERT INTO user_totp(user_id,encrypted_secret,enabled,last_counter,created_at) VALUES(?,?,0,-1,?) ON CONFLICT(user_id) DO UPDATE SET encrypted_secret=excluded.encrypted_secret WHERE enabled=0').bind(user.id,encrypted,now).run();
+   let secret;
+   if(factor?.encrypted_secret){
+    secret=await decryptSecret(env,factor.encrypted_secret,user.id);
+   }else{
+    const candidate=newSecret(),encrypted=await encryptSecret(env,candidate,user.id);
+    await env.DB.prepare('INSERT OR IGNORE INTO user_totp(user_id,encrypted_secret,enabled,last_counter,created_at) VALUES(?,?,0,-1,?)').bind(user.id,encrypted,now).run();
+    const saved=await env.DB.prepare('SELECT encrypted_secret,enabled FROM user_totp WHERE user_id=?').bind(user.id).first();
+    if(saved?.enabled===1)return response({authenticated:false,mfa_required:true,mfa_challenge:pending});
+    secret=await decryptSecret(env,saved.encrypted_secret,user.id);
+   }
    return response({authenticated:false,mfa_enrollment_required:true,mfa_challenge:pending,secret,otpauth_url:'otpauth://totp/'+encodeURIComponent('CVEHarbor:'+user.email)+'?secret='+secret+'&issuer=CVEHarbor&algorithm=SHA1&digits=6&period=30'});
 
   }
