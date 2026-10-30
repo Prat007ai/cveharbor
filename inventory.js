@@ -430,6 +430,7 @@ function updateInventorySteps(){
  const step2=$('inventoryStepEnvironment'),step3=$('inventoryStepAsset');
  if(!step2||!step3)return;
  step2.hidden=!customerCount;step3.hidden=!environmentCount;
+ const completion=document.querySelector('#inventoryWorkspace .inventory-complete-panel');if(completion)completion.hidden=!environmentCount;
  const stage=environmentCount?3:customerCount?2:1;
  const selectedCustomer=data.customers.find(x=>x.id===setupCustomerId)||data.customers[0];
  const selectedEnvironment=data.environments.find(x=>x.id===setupEnvironmentId)||data.environments.find(x=>x.customer_id===selectedCustomer?.id)||data.environments[0];
@@ -533,6 +534,7 @@ function setupCustomerCompletion(){
   dialog.append(header,title,summary,details,notice,actions);overlay.append(dialog);document.body.append(overlay);cancel.focus();
  });
  panel.append(reviewButton,message);
+ panel.hidden=!data.environments.length;
  host.after(panel);
 }
 setupCustomerCompletion();
