@@ -488,7 +488,7 @@ function setupPackageImport(){
   button.disabled=true;
   try{
    const result=await call('/packages/import','POST',{environment_id:originalEnvironment,packages});
-   info.textContent=result.saved+' package records saved to Cloudflare D1.';
+   info.textContent=result.saved+' packages imported successfully into CVEHarbor.';
   }catch(e){info.textContent=e.message}finally{button.disabled=false}
  });
  panel.append(template,fileInput,preview,button,info);
