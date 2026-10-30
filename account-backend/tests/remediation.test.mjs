@@ -282,6 +282,7 @@ test('assignment sending enforces ten per sender hourly and twenty per recipient
     for(let i=0;i<20;i++){
       const db=new MockD1();
       db.rate=sharedRecipientRate;
+      if(i===10)sharedRecipientRate.delete('assignment-sender:'+user.id); // Simulate a new sender hourly window
       const cv='CVE-2026-'+(70001+i);
       const response=await worker.fetch(request('/remediations/'+cv+'/assign','POST',{
         email:'same@example.org'
