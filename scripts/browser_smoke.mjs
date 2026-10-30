@@ -220,6 +220,19 @@ assert.equal(engine.candidate(asset,{...advisory,affected:'PHP before 8.4.27 onl
  'configuration-dependent advisories never claim verified version exposure');
 assert.equal(engine.evaluate([asset],[advisory,advisory]).total,1,
  'duplicate CVE items are not counted twice for the same asset');
+const falsePositives=[
+ {id:'CVE-2016-10033',title:'PHPMailer command injection',summary:'PHPMailer fails to sanitize user input',categories:['PHP'],affected:'PHPMailer before 5.2.18'},
+ {id:'CVE-2023-36844',title:'Juniper Junos OS PHP external variable modification',categories:['PHP','Linux'],affected:'Juniper Junos OS on EX Series'},
+ {id:'CVE-2025-68645',title:'Zimbra PHP remote file inclusion',categories:['PHP'],affected:'Zimbra Collaboration Suite'},
+ {id:'CVE-2026-41940',title:'cPanel and WHM authentication bypass',categories:['PHP','WordPress / Plugins'],affected:'cPanel WP2'},
+ {id:'CVE-2020-17496',title:'vBulletin PHP widget code execution',categories:['PHP'],affected:'vBulletin widget'},
+];
+for(const v of falsePositives)assert.equal(engine.candidate(asset,v),null,'foreign application excluded from PHP runtime: '+v.id);
+const debian={id:'debian',technology:'Debian',version:'12'};
+assert.equal(engine.candidate(debian,{id:'CVE-2026-11111',categories:['Linux'],title:'Linux kernel memory issue',affected:'Linux kernel before 6.1'}),null,'generic kernel advisory not matched to Debian OS version');
+assert.ok(engine.candidate(debian,{id:'CVE-2026-11112',categories:['Linux'],title:'Debian 12 security update for curl',affected:'Debian 12 curl security issue'}),'explicit Debian advisory remains a candidate');
+assert.equal(engine.candidate(debian,{id:'CVE-2026-11113',categories:['Linux'],title:'Ubuntu kernel security update',affected:'Ubuntu kernel 6.8'}),null,'Ubuntu advisory excluded from Debian');
+assert.equal(engine.candidate({...asset,technology:'PHP'}, {...advisory,affected:'PHP before 8.4.27'}).level,'version_review','explicit PHP runtime range stays eligible');
 matcherDom.window.close();
 assert.ok(html.includes('id="inventoryCustomerName"')&&html.includes('id="inventoryEnvironmentName"')&&html.includes('id="inventoryVersion"'),'customer environment and software version input fields exist');
 assert.ok(html.includes('id="inventoryAdditionalTechnologies"'),'multiple technology version input exists');
