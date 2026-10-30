@@ -36,15 +36,22 @@ $('accountSecuritySignOut').addEventListener('click',async()=>{
  try{
   const me=await request('/me');
   if(!me.authenticated)throw Error('Sign in required');
-  const mfa=await request('/auth/totp/status');
-  if(!mfa.enabled){location.replace('/workspace/');return}
   $('accountSecurityEmail').textContent=me.email||'';
-  $('accountSecurityMfaStatus').textContent='Enabled';
-  $('accountSecurityMfaBadge').textContent='Enabled';
-  $('accountSecurityDashboard').hidden=false;status('');
+  $('accountSecurityDashboard').hidden=false;
+  try{
+   const mfa=await request('/auth/totp/status');
+   if(!mfa.enabled){status('Authenticator status needs verification. Your session remains signed in.');return}
+   $('accountSecurityMfaStatus').textContent='Enabled';
+   $('accountSecurityMfaBadge').textContent='Enabled';
+   status('');
+  }catch(error){
+   $('accountSecurityMfaStatus').textContent='Temporarily unavailable';
+   $('accountSecurityMfaBadge').textContent='Check status';
+   status('Your account is signed in, but authenticator settings could not be refreshed. Try reloading this page.');
+  }
  }catch(error){
   if(/Sign in required|Unauthorized|MFA not enabled/.test(error.message)){location.replace('/workspace/');return}
-  status('Account service unavailable. Your settings could not be loaded.');
+  status('Could not verify your session. Please retry this page. Your account settings were not changed.');
  }
 })();
 })();
