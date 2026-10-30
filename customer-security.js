@@ -828,7 +828,7 @@ async function init(){
     document.addEventListener('keydown',onKey);cancel.addEventListener('click',close);
     send.addEventListener('click',async()=>{
      const target=address.value.trim(),pdf=file.files?.[0];
-     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(target)){message.textContent='Enter a valid recipient email address.';return}
+     if(!address.checkValidity()||!target.includes('@')||target.split('@')[1]?.lastIndexOf('.')<1){message.textContent='Enter a valid recipient email address.';address.focus();return}
      if(!pdf||pdf.size>2500000||pdf.size<100||!pdf.name.toLowerCase().endsWith('.pdf')){message.textContent='Choose a saved PDF report under 2.5 MB.';return}
      if(!consent.checked){message.textContent='Confirm that the recipient is authorized to receive the report.';return}
      send.disabled=true;message.textContent='Sending report…';
