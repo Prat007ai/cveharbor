@@ -14,9 +14,10 @@ import sys
 
 root=Path(__file__).resolve().parents[1]
 base="https://cveharbor.com"
-routes=["/account/","/customer-reports/","/customer-dashboard/","/environments/"]
+routes=["/account/","/workspace/","/customer-reports/","/customer-dashboard/","/environments/"]
 required={
- "/account/":["accountPageRequest","accountPageVerify","account-hero-grid"],
+ "/account/":["accountSecurityDashboard","accountSecurityRecoveryStart","account-security.js"],
+ "/workspace/":["accountPageRequest","accountPageVerify","accountPageRequiredEnroll"],
  "/customer-reports/":["customerReportEmail","customerReportPrint","customerReportCsv"],
  "/customer-dashboard/":["customerDashStatus"],
  "/environments/":["inventoryCustomerName"]
