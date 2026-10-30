@@ -21,7 +21,7 @@ assert.equal(match.candidate(pluginAsset,finding('CVE-2026-11118','WordPress / P
 matchingDom.window.close();
 
 const html=fs.readFileSync('customer-reports/index.html','utf8');
-assert.ok(html.includes('customer-security.js?v=remediation-colors-133'),'report loads fresh plugin monitoring script');
+assert.ok(html.includes('customer-security.js?v=report-print-134'),'report loads fresh plugin monitoring script');
 const dom=new JSDOM(html,{url:'https://cveharbor.com/customer-reports/?customer=c1',runScripts:'outside-only'});
 const {window}=dom,doc=window.document;
 const sample={
@@ -159,3 +159,6 @@ console.log('Customer reports remain scoped to selected customer and include can
 
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes("card.classList.add('customer-software-progress')"),'in progress findings turn cards yellow');
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes("card.classList.add('customer-software-accepted')"),'accepted risks turn cards gray');
+
+assert.ok(fs.readFileSync('customer-security.js','utf8').includes('buildCustomerPrintDocument(customer,stats'),'report builds dedicated print document');
+assert.ok(fs.readFileSync('styles.css','utf8').includes('.customer-report>:not(.customer-print-document)'),'print mode hides interactive report');
