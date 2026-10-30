@@ -11,7 +11,7 @@ assert.ok(dashboardHtml.includes('customerDashMetrics')&&dashboardHtml.includes(
 assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('href="/customer-dashboard/"'),'customer dashboard accessible from workspace');
 assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('href="/customer-reports/"'),'customer reports accessible from workspace');
 const html=fs.readFileSync('index.html','utf8');
-assert.ok(html.includes('styles.css?v=collapse-visible-109'),'shared footer stylesheet cache version updated');
+assert.ok(html.includes('styles.css?v=shared-stack-csv-110'),'shared footer stylesheet cache version updated');
 assert.ok(fs.readFileSync('styles.css','utf8').includes('width:min(1500px,calc(100% - 32px))'),'compact feed banner width is shared globally');
 // Validate every canonical page is actually emitted by the Pages build.
 const routes={
@@ -231,7 +231,7 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('file.size>65536'),'pl
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('plugin-sources/'),'plugin source URLs can be saved and verified');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("Technology | Version"),'technology version entry format is validated');
 
-assert.ok(html.includes('inventory.js?v=collapse-visible-109'),'public build references account inventory client');
+assert.ok(html.includes('inventory.js?v=shared-stack-csv-110'),'public build references account inventory client');
 const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
 const picker=inventoryDom.window.document.querySelector('.inventory-plugin-import:not(.inventory-bulk-import) input[type=file]');
@@ -767,3 +767,8 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('updateInventorySteps(
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('inventory-step-collapsed'),'guided setup can collapse completed stages');
 
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("form.hidden=panel.classList.contains('inventory-step-collapsed')"),'completed setup forms are hidden directly');
+
+const bulkSource=fs.readFileSync('inventory.js','utf8');
+assert.ok(bulkSource.includes('Production Web Stack,WEB,NGINX'),'CSV sample includes a logical web software stack');
+assert.ok(bulkSource.includes(String.raw`.join('\\r\\n')`)===false,'CSV generation must not use literal backslash sequences');
+assert.ok(bulkSource.includes(String.raw`.join('\r\n')`),'CSV generation uses actual CRLF escapes');
