@@ -198,6 +198,42 @@
   ],
   "advisories": [
     {
+      "id": "CVE-2026-119317",
+      "title": "On Linux, an authenticated, low-privileged Nessus user with scan-creation rights could read...",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "On Linux, an authenticated, low-privileged Nessus user with scan-creation rights could read arbitrary text files on the scanner host with the privileges of the nessusd process by running a custom Unix compliance audit against the scanner itself.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119317"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-hmr9-h7g4-xrjg"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.tenable.com/security/tns-2026-33"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-29T22:31:24Z",
+      "source_updated_at": "2026-10-30T00:30:41Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-118585",
       "title": "A vulnerability was identified in configuroweb inventariobasico c9377cdba474deb3eb5a0704d197b5733af16b47/f9db0c0a04d79ad931c218140df4fb23809d4fab",
       "severity": "low",
@@ -7443,34 +7479,6 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-29T22:31:24Z",
       "source_updated_at": "2026-10-29T22:17:01.517",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119317",
-      "title": "On Linux, an authenticated, low-privileged Nessus user with scan-creation rights could read arbitrary text files on the scanner host with the privileges of the nessusd process",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "On Linux, an authenticated, low-privileged Nessus user with scan-creation rights could read arbitrary text files on the scanner host with the privileges of the nessusd process by running a custom Unix compliance audit against the scanner itself.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119317"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.0",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T22:31:24Z",
-      "source_updated_at": "2026-10-29T22:17:01.670",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -122797,7 +122805,7 @@
     },
     {
       "id": "CVE-2026-13116",
-      "title": "The PDF Invoices & Packing Slips for WooCommerce plugin for WordPress is vulnerable to Insecure Direct Object Reference in all versions up to, and including, 5.14.0 via the ge",
+      "title": "The PDF Invoices & Packing Slips for WooCommerce plugin for WordPress is vulnerable to Insecure...",
       "severity": "medium",
       "categories": [
         "WordPress / Plugins"
@@ -122805,22 +122813,34 @@
       "published": "2026-07-11",
       "updated": "2026-10-30",
       "summary": "The PDF Invoices & Packing Slips for WooCommerce plugin for WordPress is vulnerable to Insecure Direct Object Reference in all versions up to, and including, 5.14.0 via the generate_document_shortcode due to missing validation on a user controlled key. This makes it possible for authenticated attackers, with contributor-level access and above, to mint publicly accessible, session-free download links for arbitrary third-party orders, exposing customer names, billing and shipping addresses, email addresses, phone numbers, order and invoice numbers, line items, totals, payment details, and customer notes contained in those orders' invoices and packing slips. Exploitation requires the plugin's Document link access type setting to be configured to 'full'; with the default 'logged_in' value, generated URLs are signed with a per-session nonce rather than the order_key, making the shortcode path unexploitable for unauthorized access to third-party orders.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-13116"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-wr2f-frvr-f8hg"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/woocommerce-pdf-invoices-packing-slips/tags/5.14.0/includes/Endpoint.php#L111"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/woocommerce-pdf-invoices-packing-slips/tags/5.14.0/includes/Frontend.php#L271"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "4.3",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-10-30T00:16:43.330",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T00:30:33Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -122954,17 +122974,17 @@
     },
     {
       "id": "CVE-2026-55655",
-      "title": "A flaw was found in OpenSSH",
+      "title": "A flaw was found in OpenSSH. A local unprivileged attacker on a Linux client host can hijack...",
       "severity": "medium",
       "categories": [
         "Linux"
       ],
       "published": "2026-06-23",
-      "updated": "2026-10-29",
+      "updated": "2026-10-30",
       "summary": "A flaw was found in OpenSSH. A local unprivileged attacker on a Linux client host can hijack client-side X11 forwarding connections. This is possible by pre-binding the preferred abstract X socket name when X11 forwarding is enabled and a local UNIX-domain X socket is used. A successful attack can compromise the confidentiality of forwarded X11 traffic, including sensitive window contents and input, and may allow some manipulation of the forwarded session.",
-      "affected": "Products identified in NVD configurations: openbsd openssh; redhat enterprise_linux",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
@@ -122977,15 +122997,19 @@
         {
           "label": "Vendor advisory",
           "url": "https://bugzilla.redhat.com/show_bug.cgi?id=2462250"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-wcvf-3x75-j4c6"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": "6.1",
-      "status": "NVD indexed CVE",
+      "cvss": "5.0",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-10-29T23:16:57.133",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T00:30:33Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -124431,37 +124455,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.11772,
-      "epss_percentile": 0.96066,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2025-7624",
       "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
@@ -124490,6 +124483,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.10514,
       "epss_percentile": 0.95752,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.11772,
+      "epss_percentile": 0.96066,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -141070,85 +141094,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T00:29:14Z",
-      "last_attempt": "2026-10-30T00:29:14Z",
-      "items_processed": 295,
+      "last_success": "2026-10-30T00:35:03Z",
+      "last_attempt": "2026-10-30T00:35:03Z",
+      "items_processed": 289,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T00:29:14Z",
-      "last_attempt": "2026-10-30T00:29:14Z",
+      "last_success": "2026-10-30T00:35:03Z",
+      "last_attempt": "2026-10-30T00:35:03Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T00:29:14Z",
-      "last_attempt": "2026-10-30T00:29:14Z",
+      "last_success": "2026-10-30T00:35:03Z",
+      "last_attempt": "2026-10-30T00:35:03Z",
       "items_processed": 761,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T00:29:14Z",
-      "last_attempt": "2026-10-30T00:29:14Z",
+      "last_success": "2026-10-30T00:35:03Z",
+      "last_attempt": "2026-10-30T00:35:03Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T00:29:14Z",
-      "last_attempt": "2026-10-30T00:29:14Z",
+      "last_success": "2026-10-30T00:35:03Z",
+      "last_attempt": "2026-10-30T00:35:03Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T00:29:14Z",
-      "last_attempt": "2026-10-30T00:29:14Z",
+      "last_success": "2026-10-30T00:35:03Z",
+      "last_attempt": "2026-10-30T00:35:03Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T00:29:14Z",
-      "last_attempt": "2026-10-30T00:29:14Z",
+      "last_success": "2026-10-30T00:35:03Z",
+      "last_attempt": "2026-10-30T00:35:03Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T00:29:14Z",
-      "last_attempt": "2026-10-30T00:29:14Z",
+      "last_success": "2026-10-30T00:35:03Z",
+      "last_attempt": "2026-10-30T00:35:03Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T00:29:14Z",
-      "last_attempt": "2026-10-30T00:29:14Z",
+      "last_success": "2026-10-30T00:35:03Z",
+      "last_attempt": "2026-10-30T00:35:03Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T00:29:14Z",
-      "last_attempt": "2026-10-30T00:29:14Z",
+      "last_success": "2026-10-30T00:35:03Z",
+      "last_attempt": "2026-10-30T00:35:03Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T00:29:14Z",
-      "last_attempt": "2026-10-30T00:29:14Z",
+      "last_success": "2026-10-30T00:35:03Z",
+      "last_attempt": "2026-10-30T00:35:03Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T00:29:14Z",
-      "last_attempt": "2026-10-30T00:29:14Z",
+      "last_success": "2026-10-30T00:35:03Z",
+      "last_attempt": "2026-10-30T00:35:03Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -141160,7 +141184,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T00:29:14Z",
-  "last_successful_update": "2026-10-30T00:29:14Z",
+  "last_checked_at": "2026-10-30T00:35:03Z",
+  "last_successful_update": "2026-10-30T00:35:03Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
