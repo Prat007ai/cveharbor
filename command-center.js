@@ -57,6 +57,7 @@ body.insertBefore(bar,body.firstChild);
 const protectedLinks=Array.from(nav.querySelectorAll('[data-requires-auth="true"]'));
 function setProtectedLinks(authenticated){for(const link of protectedLinks)link.hidden=!authenticated;}
 setProtectedLinks(false);
+window.addEventListener('cveharbor-auth-change',event=>setProtectedLinks(Boolean(event.detail?.authenticated)));
 fetch('https://api.cveharbor.com/v1/me',{credentials:'include',headers:{Accept:'application/json'},cache:'no-store'})
  .then(response=>response.ok?response.json():null)
  .then(info=>setProtectedLinks(Boolean(info?.authenticated)))
