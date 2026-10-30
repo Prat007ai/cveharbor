@@ -318,6 +318,97 @@ function setupPluginImport(){
 setupPluginImport();
 setupSourceEditor();
 
+function setupBulkAssetImport(){
+ const form=$('inventoryAssetForm');if(!form)return;
+ const panel=make('section','inventory-plugin-import inventory-bulk-import');
+ panel.append(make('h3','','Bulk import technology stack'),make('p','ops-note','Select the customer environment above, then upload a CSV file exported from Excel. Review the entries before saving. Existing assets are never overwritten.'));
+ const template=make('button','ops-download','Download Excel CSV template');template.type='button';
+ template.addEventListener('click',()=>{
+  const csv='Asset Name,Asset Type,Technology,Version,Notes\\r\\nWEB01,Server,PHP,8.4.26,Production web server\\r\\nWEB01,Server,WordPress,6.8.3,\\r\\nDB01,Database,MySQL,8.0.43,\\r\\n';
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob),link=document.createElement('a');
+  link.href=url;link.download='cveharbor-asset-import.csv';document.body.append(link);link.click();link.remove();URL.revokeObjectURL(url);
+ });
+ const label=make('label','inventory-plugin-file-label','Upload Excel CSV file');
+ const file=document.createElement('input');file.type='file';file.accept='.csv,text/csv,text/plain';file.setAttribute('aria-label','Choose asset inventory CSV file');label.append(file);
+ const preview=make('div','inventory-bulk-preview');preview.hidden=true;
+ const result=make('p','ops-note inventory-plugin-status','');result.setAttribute('role','status');
+ const importButton=make('button','ops-download','Import reviewed assets');importButton.type='button';importButton.disabled=true;
+ let parsed=[],previewEnvironment='';
+ function parseCsv(text){
+  const rows=[],row=[];let field='',quoted=false;
+  const input=text.replace(/^\\uFEFF/,'');
+  for(let i=0;i<input.length;i++){
+   const c=input[i];
+   if(quoted){if(c==='"'&&input[i+1]==='"'){field+='"';i++}else if(c==='"')quoted=false;else field+=c}
+   else if(c==='"'){if(field!=='')throw Error('Invalid CSV quotes');quoted=true}
+   else if(c===','){row.push(field);field=''}
+   else if(c==='\\n'||c==='\\r'){if(c==='\\r'&&input[i+1]==='\\n')i++;row.push(field);field='';if(row.some(x=>x.trim()))rows.push(row.splice(0))}
+   else field+=c;
+  }
+  if(quoted)throw Error('Unclosed quoted field');
+  row.push(field);if(row.some(x=>x.trim()))rows.push(row);
+  return rows;
+ }
+ function resetPreview(message){
+  parsed=[];importButton.disabled=true;preview.hidden=true;preview.replaceChildren();result.textContent=message||'';
+ }
+ file.addEventListener('change',async()=>{
+  resetPreview('');
+  const chosen=file.files?.[0];if(!chosen)return;
+  if(chosen.size>131072){resetPreview('CSV file exceeds 128 KB.');return}
+  if(!/\\.csv$/i.test(chosen.name)){resetPreview('Export the Excel worksheet as CSV UTF-8 first.');return}
+  const envId=$('inventoryEnvironmentSelect').value;
+  if(!envId){resetPreview('Select a customer environment before uploading.');return}
+  try{
+   const rows=parseCsv(await chosen.text());
+   const expected=['Asset Name','Asset Type','Technology','Version','Notes'];
+   if(!rows.length||expected.some((v,i)=>(rows[0][i]||'').trim().toLowerCase()!==v.toLowerCase())||rows[0].length!==5)throw Error('The CSV headers must be Asset Name, Asset Type, Technology, Version, Notes.');
+   if(rows.length<2||rows.length>201)throw Error('Include between 1 and 200 asset entries.');
+   const allowed=new Set(['Server','Application','Database','Cloud Service','Network Device','Software','Other']);
+   const unique=new Set();
+   parsed=rows.slice(1).map((cells,index)=>{
+    if(cells.length!==5)throw Error('Row '+(index+2)+' must have five columns.');
+    const [name,asset_type,technology,version,notes]=cells.map(v=>v.trim());
+    if(!name||name.length>120||!technology||technology.length>120||!allowed.has(asset_type)||version.length>80||notes.length>500)throw Error('Invalid asset fields on row '+(index+2));
+    const key=[name.toLowerCase(),asset_type.toLowerCase(),technology.toLowerCase()].join('|');
+    if(unique.has(key))throw Error('Duplicate asset technology on row '+(index+2));
+    unique.add(key);return {environment_id:envId,name,asset_type,technology,version,notes};
+   });
+   previewEnvironment=envId;
+   const summary=make('p','ops-note',parsed.length+' entries ready for review. Showing the first 10.');
+   const table=make('table','inventory-bulk-table');
+   const head=make('tr','');for(const value of expected)head.append(make('th','',value));table.append(head);
+   for(const entry of parsed.slice(0,10)){const tr=make('tr','');for(const value of [entry.name,entry.asset_type,entry.technology,entry.version,entry.notes])tr.append(make('td','',value));table.append(tr)}
+   preview.append(summary,table);preview.hidden=false;importButton.disabled=false;
+   result.textContent='Review the preview and select Import reviewed assets. Existing records with the same asset name, type and technology will be skipped.';
+  }catch(e){resetPreview(e.message)}
+ });
+ $('inventoryEnvironmentSelect').addEventListener('change',()=>{if(parsed.length)resetPreview('Environment changed. Please upload the CSV again.')});
+ importButton.addEventListener('click',async()=>{
+  if(!signedIn||!ready){result.textContent='Sign in and ensure inventory storage is ready.';return}
+  if(!parsed.length||previewEnvironment!==$('inventoryEnvironmentSelect').value){resetPreview('Select the original environment and upload again.');return}
+  importButton.disabled=true;
+  let created=0,skipped=0;
+  try{
+   data=await call();
+   const existing=new Set(data.assets.filter(a=>a.environment_id===previewEnvironment).map(a=>[a.name.toLowerCase(),a.asset_type.toLowerCase(),a.technology.toLowerCase()].join('|')));
+   for(const item of parsed){
+    const key=[item.name.toLowerCase(),item.asset_type.toLowerCase(),item.technology.toLowerCase()].join('|');
+    if(existing.has(key)){skipped++;continue}
+    await call('/assets','POST',item);existing.add(key);created++;
+    result.textContent='Importing '+(created+skipped)+' of '+parsed.length;
+   }
+   await load();resetPreview('Import complete: '+created+' created, '+skipped+' existing entries skipped.');
+  }catch(e){await load();resetPreview('Imported '+created+' entries and skipped '+skipped+'. '+e.message+' Review before retrying.')}
+  finally{importButton.disabled=!parsed.length}
+ });
+ panel.append(template,label,preview,importButton,result);
+ form.after(panel);
+}
+setupBulkAssetImport();
+
+
 function render(){
  selects();
  $('inventoryCustomerCount').textContent=data.customers.length;

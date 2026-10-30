@@ -11,7 +11,7 @@ assert.ok(dashboardHtml.includes('customerDashMetrics')&&dashboardHtml.includes(
 assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('href="/customer-dashboard/"'),'customer dashboard accessible from workspace');
 assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('href="/customer-reports/"'),'customer reports accessible from workspace');
 const html=fs.readFileSync('index.html','utf8');
-assert.ok(html.includes('styles.css?v=compact-inventory-101'),'shared footer stylesheet cache version updated');
+assert.ok(html.includes('styles.css?v=bulk-csv-102'),'shared footer stylesheet cache version updated');
 assert.ok(fs.readFileSync('styles.css','utf8').includes('width:min(1500px,calc(100% - 32px))'),'compact feed banner width is shared globally');
 // Validate every canonical page is actually emitted by the Pages build.
 const routes={
@@ -231,19 +231,19 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('file.size>65536'),'pl
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('plugin-sources/'),'plugin source URLs can be saved and verified');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("Technology | Version"),'technology version entry format is validated');
 
-assert.ok(html.includes('inventory.js?v=compact-inventory-101'),'public build references account inventory client');
+assert.ok(html.includes('inventory.js?v=bulk-csv-102'),'public build references account inventory client');
 const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
-const picker=inventoryDom.window.document.querySelector('.inventory-plugin-import input[type=file]');
+const picker=inventoryDom.window.document.querySelector('.inventory-plugin-import:not(.inventory-bulk-import) input[type=file]');
 assert.ok(picker,'plugin importer renders the Browse file input');
 const pluginFile=new inventoryDom.window.File(['Gravity Forms | 2.9.5\nYoast SEO | 24.7'], 'Woodbine_WordPress_Plugins_Import.txt',{type:'text/plain'});
 Object.defineProperty(picker,'files',{configurable:true,value:[pluginFile]});
 picker.dispatchEvent(new inventoryDom.window.Event('change'));
 await new Promise(resolve=>setTimeout(resolve,35));
-const pluginPreview=inventoryDom.window.document.querySelector('.inventory-plugin-import textarea');
+const pluginPreview=inventoryDom.window.document.querySelector('.inventory-plugin-import:not(.inventory-bulk-import) textarea');
 assert.ok(pluginPreview.value.includes('Gravity Forms | 2.9.5'),'local TXT content loads into preview');
 assert.ok(pluginPreview.value.includes('Yoast SEO | 24.7'),'multiple plugin lines remain distinct');
-assert.match(inventoryDom.window.document.querySelector('.inventory-plugin-status').textContent,/Loaded .*2 lines/,'upload acknowledges the selected filename and line count');
+assert.match(inventoryDom.window.document.querySelector('.inventory-plugin-import:not(.inventory-bulk-import) .inventory-plugin-status').textContent,/Loaded .*2 lines/,'upload acknowledges the selected filename and line count');
 assert.match(inventoryDom.window.document.getElementById('inventoryMessage').textContent,/Sign in/,'anonymous inventory is not displayed');
 assert.equal(inventoryDom.window.document.getElementById('inventoryCustomerCount').textContent,'0');
 inventoryDom.window.close();
