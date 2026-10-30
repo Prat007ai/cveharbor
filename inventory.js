@@ -324,7 +324,7 @@ function setupBulkAssetImport(){
  panel.append(make('h3','','Bulk import technology stack'),make('p','ops-note','Select the customer environment above, then upload a CSV file exported from Excel. Review the entries before saving. Existing assets are never overwritten.'));
  const template=make('button','ops-download','Download Excel CSV template');template.type='button';
  template.addEventListener('click',()=>{
-  const csv='Asset Name,Asset Type,Technology,Version,Notes\\r\\nWEB01,Server,PHP,8.4.26,Production web server\\r\\nWEB01,Server,WordPress,6.8.3,\\r\\nDB01,Database,MySQL,8.0.43,\\r\\n';
+  const csv='Asset Name,Asset Type,Technology,Version,Notes\\r\\nWEB01,WEB,PHP,8.4.26,Production web server\\r\\nWEB01,WEB,WordPress,6.8.3,\\r\\nDB01,Database,MySQL,8.0.43,\\r\\n';
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob),link=document.createElement('a');
   link.href=url;link.download='cveharbor-asset-import.csv';document.body.append(link);link.click();link.remove();URL.revokeObjectURL(url);
@@ -365,7 +365,7 @@ function setupBulkAssetImport(){
    const expected=['Asset Name','Asset Type','Technology','Version','Notes'];
    if(!rows.length||expected.some((v,i)=>(rows[0][i]||'').trim().toLowerCase()!==v.toLowerCase())||rows[0].length!==5)throw Error('The CSV headers must be Asset Name, Asset Type, Technology, Version, Notes.');
    if(rows.length<2||rows.length>201)throw Error('Include between 1 and 200 asset entries.');
-   const allowed=new Set(['Server','Application','Database','Cloud Service','Network Device','Software','Other']);
+   const allowed=new Set(['Server','WEB','Application','Database','Cloud Service','Network Device','Software','Other']);
    const unique=new Set();
    parsed=rows.slice(1).map((cells,index)=>{
     if(cells.length!==5)throw Error('Row '+(index+2)+' must have five columns.');
