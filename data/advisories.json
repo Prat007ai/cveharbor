@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-30",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6218,
+  "candidate_records": 6222,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -8838,6 +8838,90 @@
       "first_seen_at": "2026-10-30T21:32:29Z",
       "source_updated_at": "2026-10-30T21:32:35Z",
       "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-111578",
+      "title": "The PDF Invoices & Packing Slips for WooCommerce WordPress plugin from 5.16.2 before 5.16.5 does not properly escape several customer-supplied order fields — including the bil",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "The PDF Invoices & Packing Slips for WooCommerce WordPress plugin from 5.16.2 before 5.16.5 does not properly escape several customer-supplied order fields — including the billing and shipping address values and the customer order note — before they are output in generated invoice and packing-slip documents, allowing unauthenticated users placing guest orders to store a malicious script that executes when a shop administrator views the document, leading to Stored Cross-Site Scripting.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111578"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T22:18:51Z",
+      "source_updated_at": "2026-10-30T22:16:53.880",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63121",
+      "title": "Kubewarden policies is a collection of WebAssembly policies for securing and governing Kubernetes clusters",
+      "severity": "medium",
+      "categories": [
+        "Docker / Kubernetes"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "Kubewarden policies is a collection of WebAssembly policies for securing and governing Kubernetes clusters. For versions provisionally classified as affected before 2.1.2, `trusted-repos-policy` compares an image's `registry` hostname against `reject lists` and `allow lists` case-sensitively even though `registry` DNS names are case-insensitive. An image with an uppercase or mixed-case `registry` hostname can miss a rejection rule for the equivalent lowercase host, so the admission policy accepts a resource whose container runtime pulls the same prohibited image. Only reject-list configurations have this bypass: allow-list configurations fail closed by over-denying differently cased hostnames. The security consequences depend on the configured rejection policy and deployment environment. This issue is fixed in version 2.1.2.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63121"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T22:18:51Z",
+      "source_updated_at": "2026-10-30T22:16:58.123",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63184",
+      "title": "Refitter is a tool for generating a C# REST API client using the Refit library",
+      "severity": "high",
+      "categories": [
+        ".NET / ASP.NET"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "Refitter is a tool for generating a C# REST API client using the Refit library. Prior to 2.1.1, the `refitter` dotnet tool invokes `NJsonSchema` with unsafe defaults for `$ref` resolution when generating Refit interfaces and contracts from attacker-controlled or attacker-influenced OpenAPI descriptions. Remote `http(s)` references cause requests from the developer or CI host and inline untrusted remote schema content into generated output. Absolute local file paths and relative `../` traversal outside the input directory also resolve and inline local content, permitting arbitrary local-file disclosure. The demonstrated chain stops at server-side request forgery, remote file inclusion, and local file inclusion, not code execution: Refit sets the base URL at runtime, enum values use verbatim-string doubling, and string defaults are escaped. This issue is fixed in version 2.1.1.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63184"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T22:18:51Z",
+      "source_updated_at": "2026-10-30T22:16:58.447",
+      "source_type": "nvd",
       "known_exploited": false
     },
     {
@@ -117936,6 +118020,410 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-68880",
+      "title": "CVE-2026-68880 Windows Win32k Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-09-08",
+      "updated": "2026-10-30",
+      "summary": "<p>Heap-based buffer overflow in Windows Win32K allows an authorized attacker to elevate privileges over a network.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-68880"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-68880"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.0",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-30T00:18:28Z",
+      "source_updated_at": "2026-09-08",
+      "source_type": "msrc_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-58649",
+      "title": "CVE-2026-58649 .NET Information Disclosure Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        ".NET / ASP.NET",
+        "Linux",
+        "Windows"
+      ],
+      "published": "2026-09-08",
+      "updated": "2026-10-30",
+      "summary": "<p>Origin validation error in .NET allows an unauthorized attacker to disclose information over a network.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-58649"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-58649"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-30T22:18:51Z",
+      "source_updated_at": "2026-09-08",
+      "source_type": "msrc_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-69304",
+      "title": "CVE-2026-69304 ASP.NET Core Denial of Service Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core",
+        "Windows"
+      ],
+      "published": "2026-09-08",
+      "updated": "2026-10-30",
+      "summary": "<p>Improper handling of highly compressed data (data amplification) in ASP.NET Core allows an unauthorized attacker to deny service over a network.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-69304"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69304"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.9",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-30T22:18:51Z",
+      "source_updated_at": "2026-09-08",
+      "source_type": "msrc_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-69439",
+      "title": "CVE-2026-69439 .NET and Visual Studio Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        ".NET / ASP.NET",
+        "Windows"
+      ],
+      "published": "2026-09-08",
+      "updated": "2026-10-30",
+      "summary": "<p>Heap-based buffer overflow in .NET and Visual Studio allows an unauthorized attacker to elevate privileges over a network.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-69439"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69439"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-30T22:18:51Z",
+      "source_updated_at": "2026-09-08",
+      "source_type": "msrc_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-69499",
+      "title": "CVE-2026-69499 Windows Imaging Component Remote Code Execution Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-09-08",
+      "updated": "2026-10-30",
+      "summary": "<p>Integer overflow or wraparound in Windows Imaging Component allows an unauthorized attacker to execute code over a network.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-69499"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69499"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-30T22:18:51Z",
+      "source_updated_at": "2026-09-08",
+      "source_type": "msrc_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-69576",
+      "title": "Use after free in Graphic Fonts allows an authorized attacker to elevate privileges locally.",
+      "severity": "high",
+      "categories": [
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-09-08",
+      "updated": "2026-10-30",
+      "summary": "Use after free in Graphic Fonts allows an authorized attacker to elevate privileges locally.",
+      "affected": "Products identified in NVD configurations: microsoft windows_10_1607; microsoft windows_10_1809; microsoft windows_10_21h2; microsoft windows_10_22h2; microsoft windows_11_23h2; microsoft windows_11_24h2; microsoft windows_11_25h2; microsoft windows_11_26h1; microsoft windows_server_2012; microsoft windows_server_2016; microsoft windows_server_2019; microsoft windows_server_2022",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-69576"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69576"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T22:18:51Z",
+      "source_updated_at": "2026-10-30T22:17:38.157",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-69609",
+      "title": "CVE-2026-69609 Win32k Information Disclosure Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-09-08",
+      "updated": "2026-10-30",
+      "summary": "Out-of-bounds read in Windows Win32K allows an authorized attacker to disclose information locally.",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-69609"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69609"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-30T22:18:51Z",
+      "source_updated_at": "2026-09-08",
+      "source_type": "msrc_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-69610",
+      "title": "CVE-2026-69610 Windows Win32k Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-09-08",
+      "updated": "2026-10-30",
+      "summary": "<p>Buffer over-read in Windows Win32K allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-69610"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69610"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.0",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-30T22:18:51Z",
+      "source_updated_at": "2026-09-08",
+      "source_type": "msrc_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-69806",
+      "title": "CVE-2026-69806 .NET Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        ".NET / ASP.NET",
+        "Linux"
+      ],
+      "published": "2026-09-08",
+      "updated": "2026-10-30",
+      "summary": "<p>Exposure of sensitive information to an unauthorized actor in .NET allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-69806"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69806"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.0",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-30T22:18:51Z",
+      "source_updated_at": "2026-09-08",
+      "source_type": "msrc_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-71328",
+      "title": "CVE-2026-71328 .NET and Visual Studio Remote Code Execution Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        ".NET / ASP.NET",
+        "Windows"
+      ],
+      "published": "2026-09-08",
+      "updated": "2026-10-30",
+      "summary": "<p>Heap-based buffer overflow in Visual Studio allows an unauthorized attacker to execute code over a network.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-71328"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-71328"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-30T22:18:51Z",
+      "source_updated_at": "2026-09-08",
+      "source_type": "msrc_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-73013",
+      "title": "CVE-2026-73013 Windows Imaging Component Remote Code Execution Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-09-08",
+      "updated": "2026-10-30",
+      "summary": "<p>Heap-based buffer overflow in Windows Imaging Component allows an unauthorized attacker to execute code over a network.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-73013"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-73013"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-30T22:18:51Z",
+      "source_updated_at": "2026-09-08",
+      "source_type": "msrc_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-77491",
+      "title": "CVE-2026-77491 Windows GDI Information Disclosure Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-09-08",
+      "updated": "2026-10-30",
+      "summary": "<p>Out-of-bounds read in Windows GDI allows an unauthorized attacker to disclose information locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-77491"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-77491"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-30T22:18:51Z",
+      "source_updated_at": "2026-09-08",
+      "source_type": "msrc_rss",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-84387",
       "title": "An Improper Neutralization of Special Elements used in a Command ('Command Injection') vulnerability [CWE-77] vulnerability in Fortinet FortiSandbox 5.2.0, FortiSandbox 5.0.0 ",
       "severity": "high",
@@ -118720,34 +119208,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-68880",
-      "title": "CVE-2026-68880 Windows Win32k Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-09",
-      "summary": "<p>Heap-based buffer overflow in Windows Win32K allows an authorized attacker to elevate privileges over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-68880"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-69301",
       "title": "CVE-2026-69301 Windows Win32k Elevation of Privilege Vulnerability",
       "severity": "bulletin",
@@ -118904,398 +119364,6 @@
         {
           "label": "Microsoft Security Update Guide",
           "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69433"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69571",
-      "title": "CVE-2026-69571 Windows USB Audio Class driver (usbaudio.sys) Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-09",
-      "summary": "Heap-based buffer overflow in Windows USB Audio Class driver (usbaudio.sys) allows an authorized attacker to elevate privileges locally.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69571"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69566",
-      "title": "CVE-2026-69566 Windows NTFS Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-09",
-      "summary": "Heap-based buffer overflow in Windows NTFS allows an unauthorized attacker to execute code with a physical attack.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69566"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69688",
-      "title": "CVE-2026-69688 Windows Encrypting File System (EFS) Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-09",
-      "summary": "Heap-based buffer overflow in Windows Encrypting File System (EFS) allows an authorized attacker to elevate privileges over a network.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69688"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-72987",
-      "title": "CVE-2026-72987 Windows DNS Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-09",
-      "summary": "<p>Use after free in Windows DNS allows an unauthorized attacker to execute code over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-72987"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69598",
-      "title": "CVE-2026-69598 Windows iSCSI Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-09",
-      "summary": "<p>Incorrect calculation of buffer size in Windows iSCSI allows an unauthorized attacker to execute code over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69598"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69581",
-      "title": "CVE-2026-69581 Windows Device Association Service Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-08",
-      "summary": "<p>Use after free in Windows Device Association Service allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69581"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69270",
-      "title": "CVE-2026-69270 Windows USB Audio Class driver (usbaudio.sys) Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-08",
-      "summary": "<p>Heap-based buffer overflow in Windows USB Audio Class driver (usbaudio.sys) allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69270"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-77904",
-      "title": "CVE-2026-77904 Windows Volume Manager Extension Driver Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-08",
-      "summary": "<p>Heap-based buffer overflow in Windows Volume Manager Extension Driver allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-77904"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69436",
-      "title": "CVE-2026-69436 Windows Error Reporting Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-07",
-      "summary": "<p>Heap-based buffer overflow in Windows Error Reporting allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69436"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-71343",
-      "title": "CVE-2026-71343 Windows Remote Access Connection Manager Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-06",
-      "summary": "<p>Heap-based buffer overflow in Windows Remote Access Connection Manager allows an authorized attacker to execute code locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-71343"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69265",
-      "title": "CVE-2026-69265 Windows NTFS Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-06",
-      "summary": "<p>Out-of-bounds read in Windows NTFS allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69265"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-68894",
-      "title": "CVE-2026-68894 Windows Error Reporting Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-06",
-      "summary": "<p>Heap-based buffer overflow in Windows Error Reporting allows an authorized attacker to elevate privileges over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-68894"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69844",
-      "title": "CVE-2026-69844 Windows Win32k Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-06",
-      "summary": "<p>Out-of-bounds read in Windows Win32K allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69844"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-72999",
-      "title": "CVE-2026-72999 Windows USB Hub Driver Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-06",
-      "summary": "<p>Out-of-bounds read in Windows USB Hub Driver allows an unauthorized attacker to elevate privileges with a physical attack.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-72999"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
@@ -159156,85 +159224,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T22:13:39Z",
-      "last_attempt": "2026-10-30T22:13:39Z",
+      "last_success": "2026-10-30T22:18:51Z",
+      "last_attempt": "2026-10-30T22:18:51Z",
       "items_processed": 268,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T22:13:39Z",
-      "last_attempt": "2026-10-30T22:13:39Z",
+      "last_success": "2026-10-30T22:18:51Z",
+      "last_attempt": "2026-10-30T22:18:51Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T22:13:39Z",
-      "last_attempt": "2026-10-30T22:13:39Z",
-      "items_processed": 1952,
+      "last_success": "2026-10-30T22:18:51Z",
+      "last_attempt": "2026-10-30T22:18:51Z",
+      "items_processed": 1956,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T22:13:39Z",
-      "last_attempt": "2026-10-30T22:13:39Z",
+      "last_success": "2026-10-30T22:18:51Z",
+      "last_attempt": "2026-10-30T22:18:51Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T22:13:39Z",
-      "last_attempt": "2026-10-30T22:13:39Z",
+      "last_success": "2026-10-30T22:18:51Z",
+      "last_attempt": "2026-10-30T22:18:51Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T22:13:39Z",
-      "last_attempt": "2026-10-30T22:13:39Z",
+      "last_success": "2026-10-30T22:18:51Z",
+      "last_attempt": "2026-10-30T22:18:51Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T22:13:39Z",
-      "last_attempt": "2026-10-30T22:13:39Z",
+      "last_success": "2026-10-30T22:18:51Z",
+      "last_attempt": "2026-10-30T22:18:51Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T22:13:39Z",
-      "last_attempt": "2026-10-30T22:13:39Z",
+      "last_success": "2026-10-30T22:18:51Z",
+      "last_attempt": "2026-10-30T22:18:51Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T22:13:39Z",
-      "last_attempt": "2026-10-30T22:13:39Z",
+      "last_success": "2026-10-30T22:18:51Z",
+      "last_attempt": "2026-10-30T22:18:51Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T22:13:39Z",
-      "last_attempt": "2026-10-30T22:13:39Z",
+      "last_success": "2026-10-30T22:18:51Z",
+      "last_attempt": "2026-10-30T22:18:51Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T22:13:39Z",
-      "last_attempt": "2026-10-30T22:13:39Z",
+      "last_success": "2026-10-30T22:18:51Z",
+      "last_attempt": "2026-10-30T22:18:51Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T22:13:39Z",
-      "last_attempt": "2026-10-30T22:13:39Z",
+      "last_success": "2026-10-30T22:18:51Z",
+      "last_attempt": "2026-10-30T22:18:51Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -159246,7 +159314,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T22:13:39Z",
-  "last_successful_update": "2026-10-30T22:13:39Z",
+  "last_checked_at": "2026-10-30T22:18:51Z",
+  "last_successful_update": "2026-10-30T22:18:51Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
