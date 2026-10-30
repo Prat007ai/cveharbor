@@ -358,11 +358,15 @@ assert.equal(opsDoc.getElementById('remediationSendAssignment').disabled,false,
 opsDoc.getElementById('remediationAssignEmail').value='engineer@example.org';
 opsDoc.getElementById('remediationAssignConfirm').checked=true;
 opsDoc.getElementById('remediationAssignForm').dispatchEvent(new opsDom.window.Event('submit',{bubbles:true,cancelable:true}));
+await new Promise(resolve=>setTimeout(resolve,0));
+assert.equal(opsDoc.getElementById('remediationConfirmDialog').open,true,'branded confirmation opens before sending');
+opsDoc.getElementById('remediationConfirmSend').click();
 await new Promise(resolve=>setTimeout(resolve,15));
 assert.equal(cloudRows[0].assigned_to,'engineer@example.org',
   'assignment API receives the named colleague email');
-assert.match(opsDoc.getElementById('remediationAssignMessage').textContent,/accepted by SMTP2GO/,
-  'assignment status states provider acceptance');
+assert.match(opsDoc.getElementById('remediationAssignMessage').textContent,/Request submitted successfully/,
+  'assignment confirmation does not expose provider');
+assert.equal(opsDoc.getElementById('remediationSuccessDialog').open,true,'branded success dialog opens');
 assert.match(opsDoc.getElementById('remediationRows').textContent,/engineer@example.org/,
   'tracker shows assigned recipient from D1');
 
