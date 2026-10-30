@@ -21,7 +21,7 @@ assert.equal(match.candidate(pluginAsset,finding('CVE-2026-11118','WordPress / P
 matchingDom.window.close();
 
 const html=fs.readFileSync('customer-reports/index.html','utf8');
-assert.ok(html.includes('customer-security.js?v=cve-attention-132'),'report loads fresh plugin monitoring script');
+assert.ok(html.includes('customer-security.js?v=remediation-colors-133'),'report loads fresh plugin monitoring script');
 const dom=new JSDOM(html,{url:'https://cveharbor.com/customer-reports/?customer=c1',runScripts:'outside-only'});
 const {window}=dom,doc=window.document;
 const sample={
@@ -156,3 +156,6 @@ assert.equal(unauth.window.document.getElementById('customerDashLogin').hidden,f
 assert.match(unauth.window.document.getElementById('customerDashStatus').textContent,/Sign in required/);
 unauth.window.close();
 console.log('Customer reports remain scoped to selected customer and include candidate evidence');
+
+assert.ok(fs.readFileSync('customer-security.js','utf8').includes("card.classList.add('customer-software-progress')"),'in progress findings turn cards yellow');
+assert.ok(fs.readFileSync('customer-security.js','utf8').includes("card.classList.add('customer-software-accepted')"),'accepted risks turn cards gray');
