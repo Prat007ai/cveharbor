@@ -202,7 +202,9 @@ function setupSourceEditor(){
   }catch(e){info.textContent='Could not verify source: '+e.message}
   finally{verify.disabled=false}
  });
- actions.append(button,verify);box.append(actions,info);host.after(box);
+ actions.append(button,verify);box.append(actions,info);
+ const importPanel=document.querySelector('#inventoryWorkspace .inventory-plugin-import:not(.inventory-source-editor):not(.inventory-bulk-import)');
+ if(importPanel)importPanel.after(box);else host.after(box);
  window.addEventListener('cveharbor:inventory-loaded',redraw);redraw();
 }
 function refreshMatchCustomers(){
