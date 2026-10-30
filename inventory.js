@@ -109,7 +109,27 @@ function setupSourceEditor(){
  const box=make('section','inventory-plugin-import inventory-source-editor');
  box.append(make('h3','','Edit WordPress plugin sources'),make('p','ops-note','Choose an existing WordPress plugin, then save its vendor, release and security advisory URLs. Only verified WordPress.org plugin URLs are used for automatic version lookups.'));
  const select=document.createElement('select');select.setAttribute('aria-label','Select existing plugin');select.className='inventory-source-select';
- const pickerLabel=make('label','inventory-source-picker-label','Plugin');pickerLabel.append(select);box.append(pickerLabel);
+ const pickerLabel=make('div','inventory-source-picker-label');
+ const pickerTitle=make('label','','Plugin');pickerLabel.append(pickerTitle);
+ const pickerInput=document.createElement('input');pickerInput.type='search';pickerInput.className='inventory-source-search';pickerInput.placeholder='Search and select a plugin';pickerInput.autocomplete='off';pickerInput.setAttribute('aria-label','Search existing WordPress plugins');pickerInput.setAttribute('aria-expanded','false');
+ const pickerList=make('div','inventory-source-list');pickerList.setAttribute('role','listbox');pickerList.hidden=true;
+ pickerLabel.append(pickerInput,pickerList);box.append(pickerLabel);
+ select.hidden=true;box.append(select);
+ function showPicker(){
+  pickerList.replaceChildren();
+  const query=pickerInput.value.trim().toLowerCase();
+  const entries=[...select.options].filter(o=>o.value&&o.textContent.toLowerCase().includes(query));
+  for(const entry of entries){
+   const choice=make('button','inventory-source-choice',entry.textContent);choice.type='button';choice.setAttribute('role','option');choice.setAttribute('aria-selected',String(select.value===entry.value));
+   choice.addEventListener('click',()=>{select.value=entry.value;pickerInput.value=entry.textContent;pickerList.hidden=true;pickerInput.setAttribute('aria-expanded','false');select.dispatchEvent(new Event('change'));});
+   pickerList.append(choice);
+  }
+  if(!entries.length)pickerList.append(make('p','ops-note','No matching plugins in this environment.'));
+  pickerList.hidden=false;pickerInput.setAttribute('aria-expanded','true');
+ }
+ pickerInput.addEventListener('focus',()=>{pickerInput.select();showPicker()});
+ pickerInput.addEventListener('input',showPicker);
+ pickerInput.addEventListener('keydown',e=>{if(e.key==='Escape'){pickerList.hidden=true;pickerInput.setAttribute('aria-expanded','false')}});
  const fieldGrid=make('div','inventory-source-fields');box.append(fieldGrid);
  const fields=['vendor_url','release_url','advisory_url'].map(key=>{
   const label=make('label','ops-note',key.replace('_',' '));
@@ -125,6 +145,8 @@ function setupSourceEditor(){
   const envId=$('inventoryEnvironmentSelect').value;
   for(const a of data.assets.filter(x=>x.environment_id===envId&&x.technology.startsWith('WordPress Plugin: ')))option(select,a.id,a.technology.slice(18));
   if([...select.options].some(o=>o.value===previous))select.value=previous;
+  pickerInput.value=select.selectedOptions[0]?.value?select.selectedOptions[0].textContent:'';
+  pickerList.hidden=true;pickerInput.setAttribute('aria-expanded','false');
   const source=pluginSources.get(select.value)||{};
   for(const {key,input} of fields)input.value=source[key]||'';
   info.textContent=source.verification||'No source verification yet';

@@ -1500,3 +1500,13 @@ body.command-center-app{padding-left:74px}
 #inventoryWorkspace .inventory-source-editor .inventory-source-actions button:first-child{background:#14565d;color:#eafffb;border-color:#28878b}
 #inventoryWorkspace .inventory-source-editor .inventory-source-feedback{display:block!important;padding:11px 13px;border:1px solid #31566b;background:#0a2031;border-radius:8px;min-height:43px;color:#b9d7df;overflow-wrap:anywhere}
 @media(max-width:850px){#inventoryWorkspace .inventory-source-editor .inventory-source-fields{grid-template-columns:1fr}#inventoryWorkspace .inventory-source-editor{padding:16px}}
+
+/* Custom WordPress plugin chooser avoids browser native white popup */
+#inventoryWorkspace .inventory-source-editor .inventory-source-picker-label{position:relative;display:flex!important;flex-direction:column;gap:8px;min-width:0}
+#inventoryWorkspace .inventory-source-editor .inventory-source-picker-label>label{color:#bde2e7;font-size:12px;font-weight:700}
+#inventoryWorkspace .inventory-source-editor select[hidden]{display:none!important}
+#inventoryWorkspace .inventory-source-editor .inventory-source-search{width:100%;min-height:45px;padding:10px 14px;border:1px solid #4c798c;border-radius:9px;background:#091c2d!important;color:#eefaff!important;-webkit-text-fill-color:#eefaff;font:inherit;font-size:14px}
+#inventoryWorkspace .inventory-source-editor .inventory-source-list{position:absolute;z-index:100;top:100%;left:0;right:0;max-height:245px;overflow-y:auto;background:#0b2336;border:1px solid #548294;border-radius:9px;box-shadow:0 18px 34px #020b18d9;padding:5px}
+#inventoryWorkspace .inventory-source-editor .inventory-source-list[hidden]{display:none!important}
+#inventoryWorkspace .inventory-source-editor .inventory-source-choice{display:block;width:100%;text-align:left;background:transparent;color:#e7f7fa;border:0;border-radius:6px;padding:10px 12px;min-height:38px;font:inherit;font-size:13px;cursor:pointer;white-space:normal}
+#inventoryWorkspace .inventory-source-editor .inventory-source-choice:hover,#inventoryWorkspace .inventory-source-editor .inventory-source-choice:focus-visible,#inventoryWorkspace .inventory-source-editor .inventory-source-choice[aria-selected=true]{background:#155068;color:#fff;outline:none}
