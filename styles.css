@@ -1908,3 +1908,11 @@ body.command-center-app{padding-left:74px}
 
 .account-mfa-qr{display:flex;align-items:center;justify-content:center;width:216px;min-height:216px;margin:14px 0;padding:10px;border-radius:12px;background:#fff}
 .account-mfa-qr img,.account-mfa-qr canvas{display:block;max-width:100%;height:auto}
+
+/* Recovery codes: one numbered entry per row with safe copying. */
+.account-recovery-list{list-style:decimal;margin:14px 0 18px;padding:12px 12px 12px 42px;border:1px solid #286a73;border-radius:9px;background:#041a2b;color:#d7f9f4}
+.account-recovery-list li{padding:8px 0;display:list-item}
+.account-recovery-list li+li{border-top:1px solid #21475b}
+.account-recovery-list code{font-size:15px;letter-spacing:0.06em;user-select:all;color:#9ef8e7;overflow-wrap:anywhere}
+.account-recovery-copy{margin-left:16px;background:#103b4a;border:1px solid #347784;border-radius:7px;color:#e4faf7;padding:5px 10px;font-size:12px}
+@media(max-width:520px){.account-recovery-copy{display:block;margin:8px 0 0}}
