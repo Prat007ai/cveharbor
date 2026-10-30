@@ -142,10 +142,22 @@ test('assignment email states exposure is not confirmed and requires Azure DevOp
   assert.match(mail.text,/your own Azure DevOps organization/);
   assert.match(mail.text,/does not create a DevOps work item automatically/);
   assert.doesNotMatch(mail.text,/password=\w+/);
-  assert.match(mail.html,/CVEHARBOR SECURITY ASSIGNMENT/);
+  assert.match(mail.html,/VULNERABILITY REVIEW REQUEST/);
   assert.match(mail.html,/www\.cve\.org/);
 });
 
+test('branded assignment includes safe notes and authoritative links without inventing CVE severity',()=>{
+ const mail=renderAssignmentEmail('CVE-2026-12345','engineer@example.net','security@example.org','Check the public-facing software stack <script>alert(1)</script>');
+ assert.match(mail.html,/VULNERABILITY REVIEW REQUEST/);
+ assert.match(mail.html,/CVEHarbor/);
+ assert.match(mail.html,/NVD vulnerability details/);
+ assert.match(mail.html,/Sender notes/);
+ assert.match(mail.html,/&lt;script&gt;/);
+ assert.doesNotMatch(mail.html,/<script>alert/);
+ assert.match(mail.text,/Check the public-facing software stack/);
+ assert.doesNotMatch(mail.html,/Severity:\\s*Critical/);
+ assert.throws(()=>renderAssignmentEmail('CVE-2026-12345','engineer@example.net','security@example.org','a'.repeat(1001)));
+});
 test('D1 feature gate hides assignment emails until migration and explicit configuration',async()=>{
   assert.equal(await isMigrated({DB:new MockD1(false)}),false);
   assert.equal(await isMigrated({DB:new MockD1(true)}),true);
@@ -179,7 +191,7 @@ test('cloud upserts preserve private records, bulk import merges, and deletion i
   assert.equal(db.rows.size,1);
 });
 
-test('assignment uses a protected verified sender, domain allowlist, no custom notes, and repeat suppression',async()=>{
+test('assignment uses verified sender, domain allowlist, sanitized reviewer notes and repeat suppression',async()=>{
   const db=new MockD1(),workerEnv=env(db);
   const original=globalThis.fetch;
   let count=0,submitted=null;
