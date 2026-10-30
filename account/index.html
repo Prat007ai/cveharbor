@@ -42,6 +42,21 @@
     <button type="submit" class="account-primary-button">Verify authenticator</button>
     <button type="button" id="accountPageTotpBack" class="account-secondary-button">Start again</button>
    </form>
+   <section id="accountPageRequiredEnroll" class="account-mfa-settings" hidden>
+    <h2>Set up your authenticator to continue</h2>
+    <p>Scan this enrollment link using a compatible QR code or enter the setup key in Microsoft Authenticator or Google Authenticator.</p>
+    <code id="accountPageRequiredSecret" class="account-mfa-secret"></code>
+    <form id="accountPageRequiredEnrollForm" class="account-entry-form">
+     <label for="accountPageRequiredCode">Six digit authenticator code</label>
+     <input id="accountPageRequiredCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
+     <button type="submit" class="account-primary-button">Verify and enable MFA</button>
+    </form>
+    <div id="accountPageRequiredRecovery" hidden>
+     <p>Save these recovery codes now. Each can be used only once.</p>
+     <pre id="accountPageRequiredRecoveryCodes" class="account-mfa-secret"></pre>
+     <button id="accountPageRequiredContinue" type="button" class="account-primary-button">I have saved my codes</button>
+    </div>
+   </section>
    <div id="accountPageSignedIn" hidden>
     <p id="accountPageIdentity" class="account-signed-identity"></p>
     <a id="accountPageWorkspace" href="/workspace/" class="account-primary-button">Open My Workspace <span aria-hidden="true">→</span></a>
