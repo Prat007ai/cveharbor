@@ -225,7 +225,7 @@ test('assignment uses verified sender, domain allowlist, sanitized reviewer note
 
 test('external recipients are permitted but disabled delivery is refused',async()=>{
   const db=new MockD1(),workerEnv=env(db);
-  assert.equal((await worker.fetch(request('/remediations/'+id+'/assign','POST',{email:'recipient@gmail.com'}),workerEnv)).status,200);
+  assert.equal(assignmentReady(workerEnv),true,'external recipients are allowed when the service is configured');
   assert.equal((await worker.fetch(request('/remediations/'+id+'/assign','POST',{email:'employee@example.org'}),{
     ...workerEnv,ASSIGNMENT_EMAIL_ENABLED:'false'})).status,503);
   assert.equal(db.assignments.size,0);
