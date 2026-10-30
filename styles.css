@@ -1639,3 +1639,10 @@ body.command-center-app{padding-left:74px}
 .customer-software-card.customer-software-attention:hover,.customer-software-card.customer-software-attention:focus-visible{border-color:#ff8696;background:#492938}
 @keyframes customer-cve-attention{0%,100%{border-color:#df5265;box-shadow:0 0 0 1px #b7334855}50%{border-color:#ff8494;box-shadow:0 0 22px #ed405d88;background:#542b3a}}
 @media(prefers-reduced-motion:reduce){.customer-software-card.customer-software-attention{animation:none}}
+
+.customer-software-card.customer-software-progress{border:2px solid #deb653;background:#403a21;box-shadow:0 0 0 1px #bd903844}
+.customer-software-card.customer-software-progress .customer-software-count{color:#ffe29c}
+.customer-software-card.customer-software-progress:hover,.customer-software-card.customer-software-progress:focus-visible{border-color:#ffe08a;background:#4c4226}
+.customer-software-card.customer-software-accepted{border:2px solid #8795a2;background:#293641;box-shadow:none}
+.customer-software-card.customer-software-accepted .customer-software-count{color:#d4dce4}
+.customer-software-card.customer-software-accepted:hover,.customer-software-card.customer-software-accepted:focus-visible{border-color:#b3c0cb;background:#35434e}
