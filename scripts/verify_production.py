@@ -30,7 +30,7 @@ for attempt in range(6):
     try:
         for route in routes:
             html=fetch(route)
-            expected=(root / route.strip("/") / "index.html").read_text(encoding="utf-8")
+            expected=(root / "public" / route.strip("/") / "index.html").read_text(encoding="utf-8")
             for marker in required[route]:
                 if marker not in html: raise RuntimeError(f"{route} missing {marker}")
             for asset in ("styles.css","customer-security.js","inventory.js"):
