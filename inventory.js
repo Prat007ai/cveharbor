@@ -424,6 +424,80 @@ function setupBulkAssetImport(){
 }
 setupBulkAssetImport();
 
+function setupPackageImport(){
+ const form=$('inventoryAssetForm');if(!form)return;
+ const panel=make('section','inventory-plugin-import inventory-package-import');
+ panel.append(make('h3','','Import installed Linux packages'),make('p','ops-note','Optional for Debian or Ubuntu. Select the customer environment in Step 3. Upload a CSV or TXT file with the package inventory. Package data is private to your account.'));
+ const info=make('p','ops-note inventory-package-status','Choose a sample CSV template or an exported Linux package inventory.');
+ info.setAttribute('role','status');
+ const fileInput=document.createElement('input');fileInput.type='file';fileInput.accept='.csv,.txt,text/plain,text/csv';fileInput.setAttribute('aria-label','Installed Linux package inventory');
+ const preview=make('div','inventory-package-preview');preview.hidden=true;
+ const template=make('button','ops-download','Download package CSV template');template.type='button';
+ const columns=['Asset Name','Distribution','Release','Architecture','Package Name','Source Package','Installed Version','Collected At'];
+ const demo=[['Production Web Stack','Debian','12','amd64','openssl','openssl','3.0.17-1~deb12u2','2026-10-29'],['Production Web Stack','Debian','12','amd64','nginx','nginx','1.22.1-9+deb12u3','2026-10-29']];
+ template.addEventListener('click',()=>{
+  const csv=[columns,...demo].map(row=>row.map(cell=>'"'+String(cell).replace(/"/g,'""')+'"').join(',')).join('\r\n')+'\r\n';
+  const url=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  const a=document.createElement('a');a.href=url;a.download='cveharbor-linux-packages.csv';document.body.append(a);a.click();a.remove();URL.revokeObjectURL(url);
+ });
+ function csvRows(value){
+  const rows=[];let row=[],field='',quoted=false;
+  for(let i=0;i<value.length;i++){
+   const c=value[i];if(quoted){if(c==='"'&&value[i+1]==='"'){field+='"';i++}else if(c==='"')quoted=false;else field+=c}
+   else if(c==='"'&&!field)quoted=true;
+   else if(c===','){row.push(field);field=''}
+   else if(c==='\r'||c==='\n'){if(c==='\r'&&value[i+1]==='\n')i++;row.push(field);field='';if(row.some(x=>x.trim()))rows.push(row);row=[]}
+   else field+=c;
+  }
+  if(quoted)throw Error('Unclosed quotation mark in CSV');
+  row.push(field);if(row.some(x=>x.trim()))rows.push(row);
+  return rows;
+ }
+ let packages=[],originalEnvironment='';
+ const button=make('button','ops-download','Import Packages');button.type='button';button.disabled=true;
+ fileInput.addEventListener('change',async()=>{
+  packages=[];preview.replaceChildren();preview.hidden=true;button.disabled=true;
+  const file=fileInput.files?.[0];if(!file)return;
+  if(file.size>200000){info.textContent='File exceeds 200 KB. Upload up to 200 packages per batch.';return}
+  try{
+   const environmentId=$('inventoryEnvironmentSelect').value;
+   if(!environmentId)throw Error('Select an environment in Step 3 first.');
+   const raw=(await file.text()).replace(/^\uFEFF/,'');
+   const rows=csvRows(raw),header=rows.shift()||[];
+   if(header.length!==8||columns.some((v,i)=>header[i]?.trim().toLowerCase()!==v.toLowerCase()))throw Error('The file must contain the eight CSV template columns. Export Excel as CSV UTF 8.');
+   if(!rows.length||rows.length>200)throw Error('Include 1 to 200 package records.');
+   packages=rows.map((r,i)=>{
+    if(r.length!==8)throw Error('Row '+(i+2)+' must contain eight values.');
+    const [asset_name,distribution,release,architecture,package_name,source_package,installed_version,collected_at]=r.map(x=>x.trim());
+    if(!asset_name||!package_name||!source_package||!installed_version||!['Debian','Ubuntu'].includes(distribution)||!release||!architecture||!/^\d{4}-\d{2}-\d{2}$/.test(collected_at))throw Error('Invalid package details at row '+(i+2));
+    return {asset_name,distribution,release,architecture,package_name,source_package,installed_version,collected_at};
+   });
+   const keys=packages.map(p=>[p.asset_name,p.package_name,p.architecture].join('|').toLowerCase());
+   if(new Set(keys).size!==keys.length)throw Error('Duplicate asset, package and architecture entries in file.');
+   originalEnvironment=environmentId;
+   const t=make('table','inventory-bulk-table');const h=make('tr','');
+   for(const name of columns)h.append(make('th','',name));t.append(h);
+   for(const p of packages.slice(0,10)){const row=make('tr','');for(const v of Object.values(p))row.append(make('td','',v));t.append(row)}
+   preview.append(make('p','ops-note',packages.length+' packages validated. Showing first 10. Existing matching packages will be updated.'),t);
+   preview.hidden=false;button.disabled=false;info.textContent='Review the preview, then choose Import Packages.';
+  }catch(e){info.textContent=e.message}
+ });
+ button.addEventListener('click',async()=>{
+  if(!packages.length||!signedIn||!ready){info.textContent='Sign in and choose a validated file first.';return}
+  if(originalEnvironment!==$('inventoryEnvironmentSelect').value){info.textContent='Environment changed. Reupload the file.';return}
+  button.disabled=true;
+  try{
+   const result=await call('/packages/import','POST',{environment_id:originalEnvironment,packages});
+   info.textContent=result.saved+' package records saved to Cloudflare D1.';
+  }catch(e){info.textContent=e.message}finally{button.disabled=false}
+ });
+ panel.append(template,fileInput,preview,button,info);
+ const bulk=document.querySelector('#inventoryWorkspace .inventory-bulk-import');
+ if(bulk)bulk.after(panel);else form.after(panel);
+}
+setupPackageImport();
+
+
 
 function updateInventorySteps(){
  const customerCount=data.customers.length,environmentCount=data.environments.length;

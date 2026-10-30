@@ -46,6 +46,47 @@ export async function inventoryRoute(req,env,user,path,data={}){
     ]);
     return json({customers:customers.results||[],environments:environments.results||[],assets:assets.results||[]});
   }
+  if(path==='/v1/inventory/packages'&&req.method==='GET'){
+    const environment=id(new URL(req.url).searchParams.get('environment_id'));
+    if(!environment)throw new InventoryError('Select a valid environment');
+    await owned(env,'inventory_environments',user.id,environment);
+    try{
+      const rows=await env.DB.prepare('SELECT asset_name,distribution,release,architecture,package_name,source_package,installed_version,collected_at,updated_at FROM inventory_packages WHERE user_id=? AND environment_id=? ORDER BY asset_name,package_name LIMIT 5000').bind(user.id,environment).all();
+      return json({ready:true,packages:rows.results||[]});
+    }catch(_){return json({ready:false,error:'Package inventory D1 migration required'},503)}
+  }
+  if(path==='/v1/inventory/packages/import'&&req.method==='POST'){
+    const environment=id(data.environment_id);
+    if(!environment)throw new InventoryError('Valid environment required');
+    await owned(env,'inventory_environments',user.id,environment);
+    const rows=data.packages;
+    if(!Array.isArray(rows)||!rows.length||rows.length>200)throw new InventoryError('Import between 1 and 200 packages');
+    const normalized=[],seen=new Set();
+    for(const row of rows){
+      const asset=required(row.asset_name,120,'asset name');
+      const distribution=required(row.distribution,32,'distribution');
+      if(!['Debian','Ubuntu'].includes(distribution))throw new InventoryError('Only Debian and Ubuntu packages supported');
+      const release=required(row.release,40,'OS release');
+      const architecture=required(row.architecture,32,'architecture');
+      const pkg=required(row.package_name,120,'package name');
+      const source=required(row.source_package,120,'source package');
+      const version=required(row.installed_version,150,'installed version');
+      const collected=required(row.collected_at,30,'collection date');
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(collected)||Number.isNaN(Date.parse(collected)))throw new InventoryError('Use YYYY-MM-DD collection date');
+      const key=[asset,architecture,pkg].map(x=>x.toLowerCase()).join('|');
+      if(seen.has(key))throw new InventoryError('Duplicate package in upload: '+pkg);
+      seen.add(key);
+      normalized.push([crypto.randomUUID(),user.id,environment,asset,distribution,release,architecture,pkg,source,version,collected]);
+    }
+    try{
+      // D1 batch is transactional and prevents partial imports.
+      const statements=normalized.map(row=>env.DB.prepare(
+        'INSERT INTO inventory_packages(id,user_id,environment_id,asset_name,distribution,release,architecture,package_name,source_package,installed_version,collected_at) VALUES(?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(user_id,environment_id,asset_name,architecture,package_name) DO UPDATE SET distribution=excluded.distribution,release=excluded.release,source_package=excluded.source_package,installed_version=excluded.installed_version,collected_at=excluded.collected_at,updated_at=CURRENT_TIMESTAMP'
+      ).bind(...row));
+      await env.DB.batch(statements);
+    }catch(e){throw new InventoryError('Package inventory storage unavailable. Confirm the D1 migration before importing.',503)}
+    return json({saved:normalized.length,environment_id:environment});
+  }
   if(path==='/v1/inventory/customers'&&req.method==='POST'){
     const name=required(data.name,120,'customer name');await cap(env,'inventory_customers',user.id,100);
     const recordId=crypto.randomUUID();
