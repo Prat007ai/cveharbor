@@ -1551,3 +1551,12 @@ body.command-center-app{padding-left:74px}
 #inventoryWorkspace .inventory-guided-forms>article{grid-column:1;width:100%;box-sizing:border-box}
 #inventoryWorkspace .inventory-guided-forms>article[hidden]{display:none!important}
 #inventoryWorkspace .inventory-setup-progress{border:1px solid #356575;border-radius:9px;background:#103448;color:#a8ece3;padding:12px 16px;font-size:13px;font-weight:650;margin:14px 0}
+
+/* Compact completed setup steps without removing their edit forms */
+#inventoryWorkspace .inventory-guided-forms>article{position:relative}
+#inventoryWorkspace .inventory-guided-forms .inventory-step-toggle{position:absolute;top:15px;right:18px;background:#123e50;border:1px solid #397386;border-radius:8px;padding:7px 12px;color:#a9eee6;font-size:12px;font-weight:700;cursor:pointer}
+#inventoryWorkspace .inventory-guided-forms>article h3{padding-right:140px}
+#inventoryWorkspace .inventory-guided-forms>article.inventory-step-collapsed{padding-top:15px;padding-bottom:15px}
+#inventoryWorkspace .inventory-guided-forms>article.inventory-step-collapsed form{display:none!important}
+#inventoryWorkspace .inventory-guided-forms>article.inventory-step-collapsed h3{margin:0;line-height:32px}
+#inventoryWorkspace .inventory-guided-forms .inventory-step-toggle:focus-visible{outline:2px solid #65e6d2;outline-offset:2px}
