@@ -176,3 +176,6 @@ const reportSource=fs.readFileSync('customer-security.js','utf8');
 assert.ok(reportSource.includes("block.style.setProperty('background-color',surface,'important')"),'print status card background is set inline');
 assert.ok(reportSource.includes("block.style.setProperty('border-left','6px solid '+edge,'important')"),'printed status borders are explicitly set');
 assert.ok(reportSource.includes("stateLabel.style.setProperty('color',ink,'important')"),'status labels receive matching ink');
+
+assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('id="customerReportEmail"'),'report email control available');
+assert.ok(fs.readFileSync('customer-security.js','utf8').includes('customer-report-email'),'report email dialog calls authenticated service');
