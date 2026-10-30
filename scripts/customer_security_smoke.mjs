@@ -162,3 +162,7 @@ assert.ok(fs.readFileSync('customer-security.js','utf8').includes("card.classLis
 
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes('buildCustomerPrintDocument(customer,stats'),'report builds dedicated print document');
 assert.ok(fs.readFileSync('styles.css','utf8').includes('.customer-report>:not(.customer-print-document)'),'print mode hides interactive report');
+
+const printCSS=fs.readFileSync('styles.css','utf8');
+assert.ok(!printCSS.includes('.customer-report *{color:#111!important;background:#fff!important}'),'legacy print rules must not override branded cover');
+assert.ok(printCSS.includes('.customer-print-cover *{background-color:transparent!important'),'cover children remain transparent');
