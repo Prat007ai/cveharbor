@@ -231,7 +231,7 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('file.size>65536'),'pl
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('plugin-sources/'),'plugin source URLs can be saved and verified');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("Technology | Version"),'technology version entry format is validated');
 
-assert.ok(html.includes('inventory.js?v=plugin-sources-73'),'public build references account inventory client');
+assert.ok(html.includes('inventory.js?v=plugin-source-dark-97'),'public build references account inventory client');
 const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
 const picker=inventoryDom.window.document.querySelector('.inventory-plugin-import input[type=file]');
