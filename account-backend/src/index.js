@@ -1,4 +1,5 @@
 // CVEHarbor account API with opt-in vulnerability digest support.
+import {newSecret,totp,verifyTotp,encryptSecret,decryptSecret,newRecoveryCodes,hashRecovery} from './totp.js';
 import { saveOptin, loadAlertSubscription, sendUserSample, dispatchDueDigests, unsubscribe } from './delivery.js';
 import { handlePublicCveLookup } from './cve-lookup.js';
 import { handler as lifecycleHandler, LifecycleError, dispatchLifecycle } from './lifecycle.js';
@@ -61,12 +62,77 @@ export default {async fetch(req,env,ctx){
    if(consumed.meta.changes!==1)return response({error:'Already used'},401);
    let user=await env.DB.prepare('SELECT id,email FROM users WHERE email=?').bind(row.email).first();
    if(!user){const uid=crypto.randomUUID();await env.DB.prepare('INSERT OR IGNORE INTO users(id,email) VALUES(?,?)').bind(uid,row.email).run();user=await env.DB.prepare('SELECT id,email FROM users WHERE email=?').bind(row.email).first()}
+   if(env.TOTP_ENCRYPTION_KEY){
+    const factor=await env.DB.prepare('SELECT enabled FROM user_totp WHERE user_id=?').bind(user.id).first();
+    if(factor?.enabled===1){
+     const pending=token(),pendingId=crypto.randomUUID(),now=Math.floor(Date.now()/1000);
+     await env.DB.prepare('INSERT INTO totp_login_challenges(id,user_id,token_hash,expires_at,created_at) VALUES(?,?,?,?,?)').bind(pendingId,user.id,await sha(pending),now+300,now).run();
+     return response({authenticated:false,mfa_required:true,mfa_challenge:pending,message:'Enter your authenticator code.'});
+    }
+   }
    const session=token();await env.DB.prepare('INSERT INTO sessions(id,user_id,token_hash,expires_at,created_at) VALUES(?,?,?,?,?)').bind(crypto.randomUUID(),user.id,await sha(session),Math.floor(Date.now()/1000)+604800,Math.floor(Date.now()/1000)).run();
    return response({email:user.email,authenticated:true},200,{'Set-Cookie':setCookie(session,604800)});
+  }
+  if(path==='/v1/auth/totp/verify'&&req.method==='POST'){
+   if(!env.TOTP_ENCRYPTION_KEY)return response({error:'MFA unavailable'},503);
+   const data=await body(req),pending=String(data.mfa_challenge||''),code=String(data.code||'').trim().toLowerCase(),now=Math.floor(Date.now()/1000);
+   if(!/^[a-f0-9]{64}$/.test(pending)||(!/^\\d{6}$/.test(code)&&!(/^[a-f0-9]{16}$/.test(code))))return response({error:'Invalid authentication code'},400);
+   const ip=req.headers.get('CF-Connecting-IP')||'unknown';
+   if(!await limit(env,'totp-ip:'+await sha(ip),20)||!await limit(env,'totp-challenge:'+await sha(pending),8))return response({error:'Too many attempts'},429);
+   const pendingRow=await env.DB.prepare('SELECT user_id FROM totp_login_challenges WHERE token_hash=? AND consumed_at IS NULL AND expires_at>?').bind(await sha(pending),now).first();
+   if(!pendingRow)return response({error:'Expired MFA challenge'},401);
+   const factor=await env.DB.prepare('SELECT encrypted_secret,last_counter FROM user_totp WHERE user_id=? AND enabled=1').bind(pendingRow.user_id).first();
+   if(!factor)return response({error:'MFA not configured'},401);
+   let valid=false,counter=-1,recoveryHash='';
+   if(/^\\d{6}$/.test(code)){
+    const secret=await decryptSecret(env,factor.encrypted_secret,pendingRow.user_id);
+    counter=await verifyTotp(secret,code);
+    valid=counter>factor.last_counter;
+   }else{
+    recoveryHash=await hashRecovery(code,pendingRow.user_id);
+    const match=await env.DB.prepare('SELECT code_hash FROM totp_recovery_codes WHERE user_id=? AND code_hash=? AND used_at IS NULL').bind(pendingRow.user_id,recoveryHash).first();
+    valid=!!match;
+   }
+   if(!valid)return response({error:'Invalid or already used authentication code'},401);
+   const consumed=await env.DB.prepare('UPDATE totp_login_challenges SET consumed_at=? WHERE token_hash=? AND consumed_at IS NULL AND expires_at>?').bind(now,await sha(pending),now).run();
+   if(consumed.meta.changes!==1)return response({error:'Challenge already used'},401);
+   if(recoveryHash){const used=await env.DB.prepare('UPDATE totp_recovery_codes SET used_at=? WHERE user_id=? AND code_hash=? AND used_at IS NULL').bind(now,pendingRow.user_id,recoveryHash).run();if(used.meta.changes!==1)return response({error:'Recovery code already used'},401)}
+   else{const advanced=await env.DB.prepare('UPDATE user_totp SET last_counter=? WHERE user_id=? AND last_counter<?').bind(counter,pendingRow.user_id,counter).run();if(advanced.meta.changes!==1)return response({error:'Authenticator code already used'},401)}
+   const session=token();
+   await env.DB.prepare('INSERT INTO sessions(id,user_id,token_hash,expires_at,created_at) VALUES(?,?,?,?,?)').bind(crypto.randomUUID(),pendingRow.user_id,await sha(session),now+604800,now).run();
+   const account=await env.DB.prepare('SELECT email FROM users WHERE id=?').bind(pendingRow.user_id).first();
+   return response({authenticated:true,email:account.email},200,{'Set-Cookie':setCookie(session,604800)});
   }
   const user=await me(req,env);
   if(path==='/v1/me'&&req.method==='GET')return response(user?{authenticated:true,email:user.email}:{authenticated:false},user?200:401);
   if(!user)return response({error:'Sign in required'},401);
+  if(path==='/v1/auth/totp/status'&&req.method==='GET'){
+   const row=env.TOTP_ENCRYPTION_KEY?await env.DB.prepare('SELECT enabled FROM user_totp WHERE user_id=?').bind(user.id).first():null;
+   return response({available:!!env.TOTP_ENCRYPTION_KEY,enabled:row?.enabled===1});
+  }
+  if(path==='/v1/auth/totp/setup'&&req.method==='POST'){
+   if(!env.TOTP_ENCRYPTION_KEY)return response({error:'MFA setup unavailable'},503);
+   const existing=await env.DB.prepare('SELECT enabled FROM user_totp WHERE user_id=?').bind(user.id).first();
+   if(existing?.enabled===1)return response({error:'MFA already enabled'},409);
+   if(!await limit(env,'totp-setup:'+user.id,5))return response({error:'Too many attempts'},429);
+   const secret=newSecret(),encrypted=await encryptSecret(env,secret,user.id),now=Math.floor(Date.now()/1000);
+   await env.DB.prepare('INSERT INTO user_totp(user_id,encrypted_secret,enabled,last_counter,created_at) VALUES(?,?,0,-1,?) ON CONFLICT(user_id) DO UPDATE SET encrypted_secret=excluded.encrypted_secret,enabled=0,last_counter=-1,created_at=excluded.created_at').bind(user.id,encrypted,now).run();
+   return response({secret,otpauth_url:'otpauth://totp/'+encodeURIComponent('CVEHarbor:'+user.email)+'?secret='+secret+'&issuer=CVEHarbor&algorithm=SHA1&digits=6&period=30'});
+  }
+  if(path==='/v1/auth/totp/enable'&&req.method==='POST'){
+   if(!env.TOTP_ENCRYPTION_KEY)return response({error:'MFA setup unavailable'},503);
+   const data=await body(req),code=String(data.code||''),now=Math.floor(Date.now()/1000);
+   if(!await limit(env,'totp-enable:'+user.id,10))return response({error:'Too many attempts'},429);
+   const row=await env.DB.prepare('SELECT encrypted_secret,enabled FROM user_totp WHERE user_id=?').bind(user.id).first();
+   if(!row||row.enabled)return response({error:'No pending authenticator enrollment'},409);
+   const secret=await decryptSecret(env,row.encrypted_secret,user.id),counter=await verifyTotp(secret,code);
+   if(counter<0)return response({error:'Incorrect authenticator code'},401);
+   const applied=await env.DB.prepare('UPDATE user_totp SET enabled=1,enabled_at=?,last_counter=? WHERE user_id=? AND enabled=0').bind(now,counter,user.id).run();
+   if(applied.meta.changes!==1)return response({error:'Enrollment already completed'},409);
+   const recovery=newRecoveryCodes();
+   for(const item of recovery)await env.DB.prepare('INSERT INTO totp_recovery_codes(user_id,code_hash) VALUES(?,?)').bind(user.id,await hashRecovery(item,user.id)).run();
+   return response({enabled:true,recovery_codes:recovery,message:'Save these codes securely. Each can only be used once.'});
+  }
   if(path==='/v1/customer-report-email'&&req.method==='POST'){
     const data=await body(req,3501000);
     const address=String(data.to||'').trim();
