@@ -653,23 +653,21 @@ function render(){
   const header=make('div','ops-result-top');header.append(make('h4','',customer.name));
   const editCustomer=make('button','ops-remove inventory-edit-customer','Edit customer');editCustomer.type='button';
   editCustomer.addEventListener('click',()=>{
-   const overlay=make('div','inventory-confirm-overlay'),dialog=make('section','inventory-confirm-dialog');
-   dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Edit customer');
-   const title=make('h3','','Edit customer');
-   const label=make('label','','Customer name'),input=document.createElement('input');
-   input.type='text';input.maxLength=120;input.value=customer.name;input.className='inventory-edit-customer-input';label.append(input);
-   const feedback=make('p','ops-note',''),actions=make('div','inventory-confirm-actions');
-   const cancel=make('button','inventory-confirm-cancel','Cancel'),save=make('button','ops-download','Save changes');
-   cancel.type='button';save.type='button';
-   const close=()=>overlay.remove();cancel.addEventListener('click',close);
-   save.addEventListener('click',async()=>{
-    const name=input.value.trim();if(!name){feedback.textContent='Enter a customer name.';return}
-    save.disabled=true;
-    try{await call('/customers/'+customer.id,'PUT',{name});close();await load();status('Customer information updated successfully.')}
-    catch(e){feedback.textContent=e.message;save.disabled=false}
-   });
-   input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();save.click()}if(e.key==='Escape')close()});
-   actions.append(cancel,save);dialog.append(title,label,feedback,actions);overlay.append(dialog);document.body.append(overlay);input.focus();
+   newCustomerSetup=false;setupCustomerId=customer.id;
+   const environments=data.environments.filter(e=>e.customer_id===customer.id);
+   setupEnvironmentId=environments[0]?.id||'';
+   for(const id of ['inventoryStepCustomer','inventoryStepEnvironment','inventoryStepAsset']){
+    const panel=$(id);if(panel){delete panel.dataset.setupStage;panel.classList.remove('inventory-step-invalid')}
+   }
+   render();
+   $('inventoryCustomerName').value=customer.name;
+   $('inventoryCustomerSelect').value=customer.id;
+   $('inventoryEnvironmentSelect').value=setupEnvironmentId;
+   const current=data.environments.find(e=>e.id===setupEnvironmentId);
+   if(current){$('inventoryEnvironmentName').value=current.name;$('inventoryKind').value=current.kind}
+   const target=environments.length?$('inventoryStepAsset'):$('inventoryStepEnvironment');
+   if(target){target.classList.remove('inventory-step-collapsed');const form=target.querySelector('form');if(form){form.hidden=false;form.style.display=''}target.scrollIntoView({behavior:'smooth',block:'start'})}
+   status('Editing '+customer.name+'. Select a saved technology below to edit its version, or import more technologies and packages into this customer environment.');
   });
   const customerActions=make('div','inventory-customer-actions');customerActions.append(editCustomer);
   const deleteCustomer=make('button','ops-remove','Remove customer');deleteCustomer.type='button';
