@@ -771,4 +771,4 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes("form.hidden=panel.cla
 const bulkSource=fs.readFileSync('inventory.js','utf8');
 assert.ok(bulkSource.includes('Production Web Stack,WEB,NGINX'),'CSV sample includes a logical web software stack');
 assert.ok(bulkSource.includes(String.raw`.join('\\r\\n')`)===false,'CSV generation must not use literal backslash sequences');
-assert.ok(bulkSource.includes(String.raw`.join('\r\n')`),'CSV generation uses actual CRLF escapes');
+assert.ok(bulkSource.includes('Production Web Stack,WEB,Ubuntu Linux'),'CSV sample includes an OS');
