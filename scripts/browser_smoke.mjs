@@ -384,14 +384,14 @@ assert.ok(html.includes('id="accountWorkspace"')&&html.includes('id="accountVeri
 assert.ok(html.includes('href="/account/?mode=login"')&&html.includes('href="/account/?mode=register"'),
  'login and registration actions are visible in the global site header');
 assert.ok(html.includes('header-auth.js?v=account-navigation-1'),'header auth status is loaded');
-const accountHtml=fs.readFileSync('account/index.html','utf8');
+const accountHtml=fs.readFileSync('workspace/index.html','utf8');
 const workspaceHtml=fs.readFileSync('workspace/index.html','utf8');
 assert.match(accountHtml,/accountPageRequest/);
 assert.match(accountHtml,/accountPageVerify/);
 assert.match(accountHtml,/accountPageLogout/);
 assert.ok(workspaceHtml.includes('href="/environments/#inventoryWorkspace"')&&workspaceHtml.includes('href="/lifecycle/#lifecycleMonitor"'),
  'workspace links keep existing feature anchors operational');
-const accountPageDom=new JSDOM(accountHtml,{url:'https://cveharbor.com/account/?mode=register',runScripts:'outside-only'});
+const accountPageDom=new JSDOM(accountHtml,{url:'https://cveharbor.com/workspace/?mode=register',runScripts:'outside-only'});
 const aw=accountPageDom.window,ad=aw.document;
 const authCalls=[];
 aw.fetch=async(url,options={})=>{
@@ -863,7 +863,7 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('Align customer and nest
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes("if(needsReview){card.classList.add('customer-software-attention')"),'needs review findings trigger red attention class');
 
 // Account redesign retains passwordless sign-in contract and removes provider disclosure.
-const accountMarkup=fs.readFileSync('account/index.html','utf8');
+const accountMarkup=fs.readFileSync('workspace/index.html','utf8');
 assert.ok(accountMarkup.includes('accountPageRequest') && accountMarkup.includes('accountPageVerify'),'account login and verification forms preserved');
 assert.ok(accountMarkup.includes('Private customer environments') && accountMarkup.includes('Customer ready reports'),'account benefits visible');
 assert.ok(!accountMarkup.includes('Cloudflare') && !accountMarkup.includes('pending Cloudflare backend'),'no provider or deployment disclosure on login');
@@ -875,13 +875,13 @@ const mandatoryMfaWorker=fs.readFileSync('account-backend/src/index.js','utf8');
 assert.ok(mandatoryMfaWorker.includes("mfa_enrollment_required:true"),'users without MFA must enroll');
 assert.ok(mandatoryMfaWorker.includes("mfa_required:true"),'enrolled users must verify MFA');
 assert.ok(mandatoryMfaWorker.includes("JOIN user_totp ON user_totp.user_id=users.id AND user_totp.enabled=1"),'private sessions require completed enrollment');
-assert.ok(fs.readFileSync('account/index.html','utf8').includes('accountPageRequiredEnroll'),'required enrollment form exists');
+assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('accountPageRequiredEnroll'),'required enrollment form exists');
 
 assert.ok(accountMarkup.includes('accountPageRequiredQr'),'mandatory authenticator enrollment contains QR target');
-assert.ok(accountMarkup.includes('qrcode.min.js'),'account QR generation library loaded');
+assert.ok(accountMarkup.includes('qrcode.min.js'),'workspace QR generation library loaded');
 assert.ok(fs.readFileSync('account-page.js','utf8').includes("renderQr('accountPageRequiredQr',data.otpauth_url)"),'QR provisioning uses local authenticator URI');
 
-const recoveryPage=fs.readFileSync('account/index.html','utf8');
+const recoveryPage=fs.readFileSync('workspace/index.html','utf8');
 const recoveryClient=fs.readFileSync('account-page.js','utf8');
 const recoveryWorker=fs.readFileSync('account-backend/src/index.js','utf8');
 assert.ok(recoveryPage.includes('<ol id="accountPageRequiredRecoveryCodes"'),'initial recovery codes displayed as an ordered list');
@@ -898,5 +898,8 @@ const sidebarScript=fs.readFileSync('command-center.js','utf8');
 assert.ok(workspaceMarkup.includes('accountPageRequest')&&workspaceMarkup.includes('accountPageRequiredEnroll'),'Workspace includes full email and MFA sign in');
 assert.ok(workspaceMarkup.includes('accountPageTotpVerify')&&workspaceMarkup.includes('accountPageTotpRecovery'),'Workspace retains MFA recovery functionality');
 assert.ok(workspaceMarkup.includes('workspaceAccess'),'Workspace shows authenticated destinations');
-assert.ok(accountSecurityMarkup.includes('account-settings-page')&&accountSecurityMarkup.includes('account-profile-card'),'Account focuses on profile and security');
+assert.ok(accountSecurityMarkup.includes('account-security-dashboard')&&accountSecurityMarkup.includes('accountSecurityRecoveryStart'),'Account focuses on authenticated profile and security');
 assert.ok(sidebarScript.includes("link.dataset.requiresAuth='true'")&&sidebarScript.includes("info?.authenticated"),'protected sidebar requires verified API session');
+
+assert.ok(accountSecurityMarkup.includes('account-security.js?v=account-security-156'),'Account uses independent security controller');
+assert.ok(!accountSecurityMarkup.includes('id="accountPageRequest"'),'Account no longer duplicates Workspace sign in');
