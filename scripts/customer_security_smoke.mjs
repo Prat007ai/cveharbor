@@ -21,7 +21,7 @@ assert.equal(match.candidate(pluginAsset,finding('CVE-2026-11118','WordPress / P
 matchingDom.window.close();
 
 const html=fs.readFileSync('customer-reports/index.html','utf8');
-assert.ok(html.includes('customer-security.js?v=email-validation-142'),'report loads current script');
+assert.ok(html.includes('customer-security.js?v=email-validation-143'),'report loads current script');
 const dom=new JSDOM(html,{url:'https://cveharbor.com/customer-reports/?customer=c1',runScripts:'outside-only'});
 const {window}=dom,doc=window.document;
 const sample={
@@ -180,7 +180,7 @@ assert.ok(reportSource.includes("stateLabel.style.setProperty('color',ink,'impor
 assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('id="customerReportEmail"'),'report email control available');
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes('customer-report-email'),'report email dialog calls authenticated service');
 
-assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('customer-security.js?v=email-validation-142'),'email report loads current script');
+assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('customer-security.js?v=email-validation-143'),'email report loads current script');
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes("$('customerReportEmail').addEventListener('click'"),'email report click handler is registered');
 
 assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('class="customer-report-actions"'),'report actions share aligned toolbar');
@@ -194,3 +194,6 @@ assert.ok(new RegExp(clientEmailPattern.slice(1,-1)).test('prat.mahen@gmail.com'
 const serverEmailPattern=serverSource.match(/if\(!((?:\/\^).+?\$\/)\.test\(address\)\)/)?.[1];
 assert.ok(serverEmailPattern,'server report recipient validator exists');
 assert.ok(new RegExp(serverEmailPattern.slice(1,-1)).test('prat.mahen@gmail.com'),'actual entered email passes Worker validation');
+
+assert.ok(fs.readFileSync('customer-security.js','utf8').includes('address.checkValidity()'),'client uses browser email validation');
+assert.ok(fs.readFileSync('account-backend/src/index.js','utf8').includes("address.split('@').length!==2"),'Worker validates recipient structure');
