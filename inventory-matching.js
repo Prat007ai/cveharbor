@@ -20,6 +20,22 @@ function compare(a,b){
  }
  return 0;
 }
+// Fixed PHP release versions published by the PHP project on 21 October 2026.
+// Keep this narrowly scoped; an arbitrary bulletin must not inherit this evidence.
+const phpVendorFixes={
+ 'CVE-2026-109618':{'8.2':'8.2.35','8.3':'8.3.36','8.4':'8.4.27','8.5':'8.5.12'},
+ 'CVE-2026-109619':{'8.2':'8.2.35','8.3':'8.3.36','8.4':'8.4.27','8.5':'8.5.12'}
+};
+function phpVendorAssessment(product,version,cve){
+ if(product!=='php'||!phpVendorFixes[cve.id])return null;
+ const branch=String(version).match(/^(\d+\.\d+)\.(\d+)$/);
+ if(!branch)return {level:'category',evidence:'PHP vendor advisory found. Exact installed PHP version is required.',comparison_detail:'Official PHP security releases: https://www.php.net/'};
+ const fixed=phpVendorFixes[cve.id][branch[1]];
+ if(!fixed)return {level:'category',evidence:'PHP version branch not covered by this release table; consult official PHP security and support information.',comparison_detail:'https://www.php.net/'};
+ const comparison=compare(version,fixed);
+ if(comparison>=0)return {exclude:true};
+ return {level:'version_review',evidence:'Official PHP release advisory: the installed branch version predates the fixed release. Validate packaging, deployment and patch provenance.',comparison_detail:'PHP '+version+' predates fixed PHP '+fixed+' for '+cve.id+'. Source: https://www.php.net/'};
+}
 function preciseProductMatch(asset,cve){
  const product=norm(asset.technology);
  const detail=norm([cve.title,cve.summary,cve.affected].filter(Boolean).join(' '));
@@ -69,10 +85,19 @@ function candidate(asset,cve){
  const affected=String(cve.affected||''),version=String(asset.version||'').trim();
  let level='category',evidence='Category match only. Product identity and affected versions have not been verified.';
  let comparisonDetail='No reliable version comparison available from this advisory text.';
+ const vendorAssessment=phpVendorAssessment(product,version,cve);
+ if(vendorAssessment?.exclude)return null;
+ if(vendorAssessment){level=vendorAssessment.level;evidence=vendorAssessment.evidence;comparisonDetail=vendorAssessment.comparison_detail;}
+ const distroAsset=['debian','debian linux','ubuntu','ubuntu linux'].includes(product);
+ if(distroAsset){
+  evidence='Distribution advisory candidate only. OS release does not identify the installed source package or Debian backported revision. Verify package name, Debian suite and installed package version in the security tracker.';
+  comparisonDetail='Review https://security-tracker.debian.org/tracker/'+encodeURIComponent(cve.id)+' and compare the exact installed source package revision; no OS-version comparison was attempted.';
+ }
+
  // Only evaluate a single unambiguous numeric range associated with the named product.
  // Any qualifiers or complex ranges remain category-only candidates.
  const mentions=affected.toLowerCase().includes(product);
- if(mentions&&numeric(version)&&!/\b(except|unless|only when|requires|if configured)\b/i.test(affected)){
+ if(!vendorAssessment&&!distroAsset&&mentions&&numeric(version)&&!/\b(except|unless|only when|requires|if configured)\b/i.test(affected)){
   const ranges=[...affected.matchAll(/\b(before|prior to|earlier than|through|up to)\s+(?:version\s+)?(\d+(?:\.\d+){1,3})\b/gi)];
   if(ranges.length===1){
    const comparison=compare(version,ranges[0][2]);
