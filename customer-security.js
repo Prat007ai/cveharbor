@@ -582,6 +582,7 @@ function drawReport(){
  const customer=inventory.customers.find(c=>c.id===id);
  $('customerReportPrint').disabled=!customer;
  $('customerReportCsv').disabled=!customer;
+ $('customerReportEmail').disabled=!customer;
  if(!customer){root.append(text('p','Select a customer to generate their security review.','ops-note'));return}
  const stats=compute(customer.id,env),date=new Date().toISOString().slice(0,10);
  root.append(buildCustomerPrintDocument(customer,stats,env?(stats.environments[0]?.name||'Selected environment'):'All environments',date));
@@ -804,6 +805,51 @@ async function init(){
    window.addEventListener('afterprint',()=>setReportPrintMode(false));
    $('customerReportPrint').addEventListener('click',()=>window.print());
    $('customerReportCsv').addEventListener('click',csvReport);
+   $('customerReportEmail').addEventListener('click',()=>{
+    const customer=inventory.customers.find(c=>c.id===$('customerDashFilter').value);
+    if(!customer)return;
+    const shade=text('div','','customer-email-overlay');
+    const dialog=text('section','','customer-email-dialog');
+    dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Email customer report');
+    dialog.append(text('h2','Email customer security report'));
+    dialog.append(text('p','Send the customer report PDF as a confidential attachment. First use Print or Save PDF to generate the current report, then select that file below.','ops-note'));
+    const addressLabel=text('label','Recipient email address'),address=document.createElement('input');
+    address.type='email';address.required=true;address.placeholder='recipient@example.com';addressLabel.append(address);
+    const fileLabel=text('label','Attach saved report PDF'),file=document.createElement('input');
+    file.type='file';file.accept='.pdf,application/pdf';file.required=true;fileLabel.append(file);
+    const confirmation=text('label','','customer-email-confirm');
+    const consent=document.createElement('input');consent.type='checkbox';confirmation.append(consent,text('span','I confirm that this recipient is authorized to receive the selected customer report.'));
+    const message=text('p','','ops-note');message.setAttribute('role','status');
+    const actions=text('div','','customer-email-actions');
+    const cancel=text('button','Cancel','workspace-clear'),send=text('button','Send Report','ops-download');
+    cancel.type='button';send.type='button';
+    function close(){document.removeEventListener('keydown',onKey);shade.remove()}
+    function onKey(e){if(e.key==='Escape')close()}
+    document.addEventListener('keydown',onKey);cancel.addEventListener('click',close);
+    send.addEventListener('click',async()=>{
+     const target=address.value.trim(),pdf=file.files?.[0];
+     if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(target)){message.textContent='Enter a valid recipient email address.';return}
+     if(!pdf||pdf.size>2500000||pdf.size<100||!pdf.name.toLowerCase().endsWith('.pdf')){message.textContent='Choose a saved PDF report under 2.5 MB.';return}
+     if(!consent.checked){message.textContent='Confirm that the recipient is authorized to receive the report.';return}
+     send.disabled=true;message.textContent='Sending report…';
+     try{
+      const bytes=new Uint8Array(await pdf.arrayBuffer());
+      if(String.fromCharCode(...bytes.slice(0,5))!=='%PDF-')throw Error('Selected file is not a PDF');
+      let binary='';for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));
+      const encoded=btoa(binary);
+      const response=await fetch('https://api.cveharbor.com/v1/customer-report-email',{
+       method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},
+       body:JSON.stringify({to:target,customer_id:customer.id,environment_id:$('customerDashEnvironment').value,pdf_base64:encoded})
+      });
+      const result=await response.json().catch(()=>({}));
+      if(!response.ok||!result.sent)throw Error(result.error||'Unable to email report');
+      message.textContent='Report sent successfully to '+target+'.';
+      file.value='';consent.checked=false;
+     }catch(error){message.textContent=error.message}
+     finally{send.disabled=false}
+    });
+    actions.append(cancel,send);dialog.append(addressLabel,fileLabel,confirmation,message,actions);shade.append(dialog);document.body.append(shade);address.focus();
+   });
   }
   $('customerDashStatus').textContent=inventory.customers.length+' customer records loaded privately. Advisory matching is preliminary.';
   void refreshPluginFindings();
