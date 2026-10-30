@@ -1615,3 +1615,10 @@ body.command-center-app{padding-left:74px}
 #inventoryWorkspace .inventory-customer-actions button{min-height:36px;padding:8px 14px;border-radius:8px;font-weight:700}
 #inventoryWorkspace .inventory-customer-actions .inventory-edit-customer{background:#145c4c!important;color:#e5fff2!important;border:1px solid #289d7d!important}
 #inventoryWorkspace .inventory-customer-actions .ops-remove:not(.inventory-edit-customer){background:#682330!important;color:#ffe8ec!important;border:1px solid #b8485c!important}
+
+#inventoryWorkspace .inventory-record-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-left:auto;flex-wrap:wrap}
+#inventoryWorkspace .inventory-record-actions button{min-height:34px;padding:7px 12px;border-radius:8px;font-weight:700}
+#inventoryWorkspace .inventory-record-actions button:first-child{background:#145c4c!important;color:#e5fff2!important;border:1px solid #289d7d!important}
+#inventoryWorkspace .inventory-record-actions button:last-child{background:#682330!important;color:#ffe8ec!important;border:1px solid #b8485c!important}
+.inventory-confirm-dialog label{display:block;margin:12px 0;color:#c7e5ed;font-size:13px;font-weight:650}
+.inventory-confirm-dialog select.inventory-edit-customer-input{color-scheme:dark;background:#081e2c;color:#fff}
