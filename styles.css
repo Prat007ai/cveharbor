@@ -1589,3 +1589,5 @@ body.command-center-app{padding-left:74px}
 .inventory-review-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
 .inventory-review-actions button{padding:10px 20px;border-radius:8px;min-height:40px}
 @media(max-width:600px){.inventory-review-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.inventory-review-dialog{padding:15px}.inventory-review-row{gap:8px}}
+
+#inventoryWorkspace .inventory-complete-panel[hidden]{display:none!important}
