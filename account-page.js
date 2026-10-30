@@ -3,7 +3,25 @@
 const root=document.getElementById('accountPageRequest');if(!root)return;
 const $=id=>document.getElementById(id);
 const API='https://api.cveharbor.com/v1';
-let challenge='',salt='',mfaChallenge='';
+let challenge='',salt='',mfaChallenge='',retryUntil=0,retryTicker=null;
+function cooldown(seconds){
+ const amount=Math.max(0,Number(seconds)||0);
+ if(!amount)return;
+ retryUntil=Date.now()+amount*1000;
+ if(retryTicker!==null)window.clearInterval(retryTicker);
+ const update=()=>{
+  const left=Math.max(0,Math.ceil((retryUntil-Date.now())/1000));
+  const text=left?'You can request another code in '+Math.floor(left/60)+'m '+String(left%60).padStart(2,'0')+'s.':'You can request a new verification code now.';
+  const info=$('accountPageRetryMessage');if(info)info.textContent=text;
+  const resend=$('accountPageResend');if(resend)resend.disabled=left>0;
+  const send=$('accountPageSend');if(send)send.disabled=left>0;
+  if(!left&&retryTicker!==null){window.clearInterval(retryTicker);retryTicker=null;}
+ };
+ update();
+ if(amount)retryTicker=window.setInterval(update,1000);
+}
+function authError(error){if(error.retry_after)cooldown(error.retry_after);message(error.message)}
+
 const message=text=>{$('accountPageMessage').textContent=text;};
 function renderQr(id,uri){
  const target=$(id);target.replaceChildren();
@@ -16,7 +34,7 @@ async function request(path,method='GET',payload){
   headers:{'Content-Type':'application/json'},
   body:payload===undefined?undefined:JSON.stringify(payload)});
  const result=await response.json().catch(()=>({}));
- if(!response.ok)throw Error(result.error||'Account service unavailable');
+ if(!response.ok){const error=Error(result.error||'Account service unavailable');error.retry_after=Number(result.retry_after||response.headers?.get?.('Retry-After')||0);error.status=response.status;throw error;}
  return result;
 }
 function showRecoveryCodes(id,codes){
@@ -57,12 +75,25 @@ root.addEventListener('submit',async event=>{
  event.preventDefault();const button=$('accountPageSend');button.disabled=true;
  try{
   const data=await request('/auth/request','POST',{email:$('accountPageEmail').value.trim()});
-  challenge=data.challenge_id;salt=data.salt;
+  challenge=data.challenge_id;salt=data.salt;cooldown(60);
   $('accountPageVerify').hidden=false;root.hidden=true;
   message('Check your email for the six digit code. It expires after ten minutes.');
   $('accountPageCode').focus();
- }catch(error){message(error.message)}
- finally{button.disabled=false}
+ }catch(error){authError(error)}
+ finally{button.disabled=Date.now()<retryUntil}
+});
+const resendButton=$('accountPageResend');
+if(resendButton)resendButton.addEventListener('click',async()=>{
+ if(Date.now()<retryUntil)return;
+ resendButton.disabled=true;
+ try{
+  const data=await request('/auth/request','POST',{email:$('accountPageEmail').value.trim()});
+  challenge=data.challenge_id;salt=data.salt;
+  $('accountPageCode').value='';
+  cooldown(60);
+  message('A new code was sent. Use only the latest email code within ten minutes.');
+ }catch(error){authError(error)}
+ finally{resendButton.disabled=Date.now()<retryUntil}
 });
 $('accountPageVerify').addEventListener('submit',async event=>{
  event.preventDefault();const button=$('accountPageConfirm');button.disabled=true;
