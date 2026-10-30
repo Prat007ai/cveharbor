@@ -1916,3 +1916,31 @@ body.command-center-app{padding-left:74px}
 .account-recovery-list code{font-size:15px;letter-spacing:0.06em;user-select:all;color:#9ef8e7;overflow-wrap:anywhere}
 .account-recovery-copy{margin-left:16px;background:#103b4a;border:1px solid #347784;border-radius:7px;color:#e4faf7;padding:5px 10px;font-size:12px}
 @media(max-width:520px){.account-recovery-copy{display:block;margin:8px 0 0}}
+
+/* Workspace and account redesign */
+.command-nav-link[hidden]{display:none!important}
+.workspace-redesign .account-hero-right{padding-top:10px}
+.workspace-redesign .account-value-panel{min-height:420px}
+.workspace-redesign .account-value-panel>h2,.workspace-redesign .account-value-panel>.account-kicker,
+.workspace-redesign .account-value-panel>p:not(.account-kicker){max-width:none}
+.workspace-redesign .account-feature-grid{margin-top:20px;grid-template-columns:1fr;gap:23px}
+.workspace-redesign .account-hero-grid{grid-template-columns:minmax(350px,0.95fr) minmax(0,1fr);gap:clamp(30px,4vw,75px)}
+.workspace-redesign .account-new-login{max-width:100%}
+.workspace-home-links{border-top:1px solid #244457;padding-top:26px;margin-top:32px}
+.workspace-home-links h2{font-size:23px}
+.workspace-home-links .workspace-landing-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.account-settings-page .account-hero-grid{display:block}
+.account-settings-page .account-hero-left{max-width:100%;padding-top:10px}
+.account-settings-page .account-hero-right,.account-settings-page .account-bottom-section{display:none}
+.account-settings-page .account-new-login{background:transparent;border:0;box-shadow:none;padding:10px 0;max-width:none}
+.account-settings-page .account-hero-description{max-width:none}
+.account-settings-page #accountPageSignedIn{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}
+.account-settings-page #accountPageSignedIn[hidden]{display:none!important}
+.account-settings-page #accountPageSignedIn>.account-profile-card,
+.account-settings-page #accountPageSignedIn>.account-mfa-settings{background:#082438;border:1px solid #1a4f60;border-radius:14px;padding:22px;min-height:170px;margin:0}
+.account-settings-page #accountPageSignedIn>.account-primary-button,
+.account-settings-page #accountPageSignedIn>#accountPageLogout{grid-column:1/-1}
+.account-settings-page #accountPageSignedIn>.account-profile-card h3{margin:0 0 18px;font-size:18px}
+.account-settings-page .account-trust-row{display:none}
+@media(max-width:1000px){.workspace-redesign .account-hero-grid{grid-template-columns:1fr}.workspace-home-links .workspace-landing-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.account-settings-page #accountPageSignedIn{grid-template-columns:1fr}.workspace-home-links .workspace-landing-grid{grid-template-columns:1fr}}
