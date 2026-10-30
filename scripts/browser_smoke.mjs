@@ -11,7 +11,7 @@ assert.ok(dashboardHtml.includes('customerDashMetrics')&&dashboardHtml.includes(
 assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('href="/customer-dashboard/"'),'customer dashboard accessible from workspace');
 assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('href="/customer-reports/"'),'customer reports accessible from workspace');
 const html=fs.readFileSync('index.html','utf8');
-assert.ok(html.includes('styles.css?v=plugin-order-115'),'shared footer stylesheet cache version updated');
+assert.ok(html.includes('styles.css?v=review-complete-116'),'shared footer stylesheet cache version updated');
 assert.ok(fs.readFileSync('styles.css','utf8').includes('width:min(1500px,calc(100% - 32px))'),'compact feed banner width is shared globally');
 // Validate every canonical page is actually emitted by the Pages build.
 const routes={
@@ -231,7 +231,7 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('file.size>65536'),'pl
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('plugin-sources/'),'plugin source URLs can be saved and verified');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("Technology | Version"),'technology version entry format is validated');
 
-assert.ok(html.includes('inventory.js?v=plugin-order-115'),'public build references account inventory client');
+assert.ok(html.includes('inventory.js?v=review-complete-116'),'public build references account inventory client');
 const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
 const picker=inventoryDom.window.document.querySelector('.inventory-plugin-import:not(.inventory-bulk-import) input[type=file]');
@@ -786,3 +786,6 @@ assert.ok(csvGenerator.includes("'Production Web Stack,WEB,Ubuntu Linux,24.04,Ex
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("||'WordPress'"),'plugin import defaults asset name');
 
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('importPanel.after(box)'),'plugin source editor follows importer');
+
+assert.ok(fs.readFileSync('inventory.js','utf8').includes('setupCustomerCompletion()'),'customer review step exists');
+assert.ok(fs.readFileSync('inventory.js','utf8').includes('has been successfully added to the CVEHarbor Vulnerability Intelligence Portal'),'customer completion success message exists');
