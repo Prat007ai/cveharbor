@@ -1993,3 +1993,33 @@ body.workspace-redesign.workspace-authenticated .account-hero-grid{display:block
 body.workspace-redesign.workspace-authenticated #workspaceAccess{display:block!important}
 body.workspace-redesign #workspaceAccess[hidden]{display:none!important}
 body.workspace-redesign.workspace-authenticated .account-hero-description{max-width:850px}
+
+/* CVEHarbor signed in security command dashboard */
+.workspace-dashboard{color:#eaf6ff;margin-top:24px}.workspace-dashboard[hidden]{display:none!important}
+.workspace-dash-top{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:25px}
+.workspace-dash-top h2{font-size:31px;margin:5px 0 7px}.workspace-dash-top p{color:#a9c8db;margin:0}.workspace-dash-account{border:1px solid #236897;border-radius:9px;padding:12px 18px;color:#80c9ff;text-decoration:none;white-space:nowrap}
+.workspace-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:30px}
+.workspace-kpis article{min-width:0;display:flex;gap:18px;align-items:center;border:1px solid #173d56;background:#092034;border-radius:11px;padding:21px 16px}
+.workspace-kpis article div{min-width:0;color:#c0d6e8;font-size:14px}.workspace-kpis strong{display:block;color:#fff;font-size:31px;line-height:1.4}.workspace-kpis small{display:block;font-size:11px;color:#8caec1}
+.workspace-kpi-icon{width:52px;height:52px;flex:none;display:grid;place-items:center;border-radius:10px;font-size:27px;font-weight:700}
+.workspace-kpi-icon.critical{background:#422335;color:#ff566b}.workspace-kpi-icon.blue{background:#103d6c;color:#5bafff}.workspace-kpi-icon.green{background:#073f42;color:#4ce0b8}.workspace-kpi-icon.amber{background:#433722;color:#f9c44a}
+.workspace-dash-section-title{font-size:23px;margin:8px 0 15px}.workspace-tool-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:0 0 27px}
+.workspace-tool-card{min-width:0;min-height:110px;display:flex;align-items:center;gap:14px;border-radius:11px;padding:17px 14px;border:1px solid #17405e;background:#0c2745;text-decoration:none;color:#f3faff;transition:transform .15s,border-color .15s}
+.workspace-tool-card:hover,.workspace-tool-card:focus-visible{transform:translateY(-2px);border-color:#52dcd2}.workspace-tool-card>div{min-width:0;flex:1}.workspace-tool-card strong{display:block;font-size:14px}.workspace-tool-card small{display:block;font-size:12px;color:#adcce0;line-height:1.55;margin-top:5px}.workspace-tool-card b{font-size:26px;font-weight:400;color:#b4d6f8}
+.workspace-tool-icon{width:50px;height:50px;flex:none;display:grid;place-items:center;border-radius:10px;background:#154171;color:#75baff;font-size:27px}
+.workspace-tool-card.tool-teal{background:#052a37}.tool-teal .workspace-tool-icon{background:#064d4b;color:#42e4c2}
+.workspace-tool-card.tool-purple{background:#1a1b4a}.tool-purple .workspace-tool-icon{background:#323077;color:#b69dff}
+.workspace-tool-card.tool-green{background:#062a37}.tool-green .workspace-tool-icon{background:#034b48;color:#4be0bb}
+.workspace-tool-card.tool-gold{background:#222b2c}.tool-gold .workspace-tool-icon{background:#544922;color:#ffd65c}
+.workspace-tool-card.tool-red{background:#302330}.tool-red .workspace-tool-icon{background:#623041;color:#ff6d81}
+.workspace-tool-card.tool-slate{background:#17283a}.tool-slate .workspace-tool-icon{background:#34465a;color:#c2d3e4}
+.workspace-insights{display:grid;grid-template-columns:1.15fr 1.1fr .95fr;gap:15px}.workspace-insight-panel{min-width:0;border:1px solid #163c58;border-radius:12px;background:#071e32;padding:17px}
+.workspace-panel-header{display:flex;align-items:center;justify-content:space-between;gap:10px}.workspace-panel-header h3{font-size:18px;margin:0 0 16px}.workspace-panel-header a{color:#66bfff;text-decoration:none;font-size:12px}.workspace-panel-header span{font-size:11px;color:#9db7c8}
+.workspace-insight-panel>p{font-size:13px;line-height:1.65;color:#abc7d8}.workspace-empty-graph{height:156px;display:flex;align-items:end;gap:12px;padding:18px;border-bottom:1px solid #2b526b}
+.workspace-empty-graph div{width:14%;height:8px;background:#224c68;border-radius:4px 4px 0 0}.workspace-empty-graph div:nth-child(even){height:12px}
+.workspace-recent-list{display:grid;gap:3px;max-height:310px;overflow:auto}.workspace-feed-row{display:block;border-bottom:1px solid #1b3b50;padding:11px 2px;text-decoration:none;color:#eaf6ff}
+.workspace-feed-row strong{font-size:13px;display:block}.workspace-feed-row small{font-size:12px;color:#9dbdd1;display:block;margin-top:4px}
+.workspace-panel-action{display:block;margin-top:15px;padding:11px;border:1px solid #2b6d91;border-radius:8px;text-align:center;color:#82cdff;text-decoration:none}
+.workspace-dashboard .workspace-disclaimer{font-size:11px;color:#8aadc0}
+@media(max-width:1260px){.workspace-kpis,.workspace-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace-insights{grid-template-columns:1fr 1fr}.workspace-insights article:last-child{grid-column:1/-1}}
+@media(max-width:690px){.workspace-dash-top{align-items:start;flex-direction:column}.workspace-kpis,.workspace-tool-grid,.workspace-insights{grid-template-columns:1fr}.workspace-insights article:last-child{grid-column:auto}}
