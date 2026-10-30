@@ -1,11 +1,106 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>My Security Workspace | CVEHarbor</title><meta name="description" content="Manage your CVEHarbor private watchlists, customer environments, lifecycle subscriptions and vulnerability remediation."><link rel="stylesheet" href="/styles.css?v=home-sidebar-89"></head>
-<body class="account-page"><a class="skip-link" href="#workspaceMain">Skip to workspace</a><header class="site-header"><div class="shell topbar"><a class="brand" href="/"><span class="brand-mark">◇</span><span class="brand-type">CVE<span>Harbor</span><small>VULNERABILITY INTELLIGENCE</small></span></a><nav class="topnav" aria-label="Main navigation"><a href="/">Home</a><a href="/vulnerabilities/#advisories">Vulnerabilities</a><a href="/lifecycle/#lifecycleMonitor">Lifecycle</a><a href="/account/">Account</a></nav></div></header>
-<main id="workspaceMain" class="shell account-landing"><p class="eyebrow">PERSONAL SECURITY WORKSPACE</p><h1>My Workspace</h1><p id="workspaceSession" role="status" class="ops-note">Checking your account session...</p>
-<div id="workspaceAccess" hidden><p class="section-sub">Choose the part of your private workspace you want to manage.</p><div class="workspace-landing-grid"><a href="/customer-dashboard/" class="workspace-entry"><strong>Multi-Customer Security Dashboard</strong><span>Cross-customer inventory metrics and potential vulnerabilities</span></a><a href="/customer-reports/" class="workspace-entry"><strong>Customer Security Reports</strong><span>Customer-specific printable security reviews and CSV findings</span></a>
-<a href="/alerts/#securityWorkspace" class="workspace-entry"><strong>My Watchlist & Alerts</strong><span>Saved technologies and notification preferences</span></a>
-<a href="/environments/#inventoryWorkspace" class="workspace-entry"><strong>Customer Environments</strong><span>Customer inventories, software versions and CVE matching</span></a>
-<a href="/remediation/#remediationTracker" class="workspace-entry"><strong>Vulnerability Remediation</strong><span>Track and assign vulnerability investigations</span></a>
-<a href="/lifecycle/#lifecycleMonitor" class="workspace-entry"><strong>Lifecycle & Patch Watch</strong><span>Product support deadlines and release alerts</span></a>
-</div><p class="ops-note">Each tool now has its own dedicated CVEHarbor page. Your account and saved records remain in the existing cloud service.</p></div>
-<div id="workspaceSignIn" hidden><p>Sign in with your email address to access your saved workspace data.</p><a href="/account/?mode=login" class="ops-download">Log In</a><a href="/account/?mode=register" class="workspace-clear">Create Account</a></div>
-</main><script src="/workspace-page.js?v=account-navigation-1"></script><script src="/command-center.js?v=home-sidebar-89"></script></body></html>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Workspace | CVEHarbor</title><meta name="description" content="Sign in securely to manage customer security, vulnerability findings and reports.">
+<link rel="stylesheet" href="/styles.css?v=workspace-redesign-155"></head>
+<body class="account-page account-redesign workspace-redesign">
+<a class="skip-link" href="#workspaceMain">Skip to workspace</a>
+<header class="account-hero-header"><a class="account-hero-brand" href="/"><span class="account-logo-icon">⬡</span><span class="account-brand-name">CVE<span>Harbor</span><small>VULNERABILITY INTELLIGENCE</small></span></a><a class="account-back-link" href="/">Back to CVEHarbor</a></header>
+<main id="workspaceMain" class="account-new-main">
+<section class="account-hero-grid">
+<div class="account-hero-left"><p class="account-kicker">PERSONAL SECURITY WORKSPACE</p>
+<h1 id="accountPageHeading">My <span>Workspace</span></h1>
+<p class="account-hero-description">Access your private workspace to manage environments, track vulnerabilities and generate customer reports.</p>
+  <article class="account-new-login">
+   <h2 id="accountFormTitle">Continue with email</h2>
+   <p class="account-login-explainer">We’ll send you a secure verification code to sign in.</p>
+   <p id="accountPageMessage" class="account-login-message" role="status" aria-live="polite"></p>
+   <div id="accountPageSignedOut">
+    <form id="accountPageRequest" class="account-entry-form">
+     <label for="accountPageEmail">Email address</label>
+     <input id="accountPageEmail" type="email" autocomplete="email" placeholder="you@company.com" maxlength="254" required>
+     <button type="submit" id="accountPageSend" class="account-primary-button">Send verification code <span aria-hidden="true">→</span></button>
+    </form>
+    <form id="accountPageVerify" class="account-entry-form" hidden>
+     <label for="accountPageCode">Six digit verification code</label>
+     <input id="accountPageCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
+     <button type="submit" id="accountPageConfirm" class="account-primary-button">Verify and continue <span aria-hidden="true">→</span></button>
+     <button type="button" id="accountPageBack" class="account-secondary-button">Use another email</button>
+    </form>
+   </div>
+   <form id="accountPageTotpVerify" class="account-entry-form" hidden>
+    <label for="accountPageTotpCode">Authenticator code or recovery code</label>
+    <input id="accountPageTotpCode" autocomplete="one-time-code" inputmode="text" maxlength="16" placeholder="Six digit code" required>
+    <button type="submit" class="account-primary-button">Verify authenticator</button>
+    <button type="button" id="accountPageTotpBack" class="account-secondary-button">Start again</button>
+   </form>
+   <section id="accountPageRequiredEnroll" class="account-mfa-settings" hidden>
+    <h2>Set up your authenticator to continue</h2>
+    <p>Scan this enrollment link using a compatible QR code or enter the setup key in Microsoft Authenticator or Google Authenticator.</p>
+    <div id="accountPageRequiredQr" class="account-mfa-qr" aria-label="Scan with your authenticator app"></div>
+    <code id="accountPageRequiredSecret" class="account-mfa-secret"></code>
+    <form id="accountPageRequiredEnrollForm" class="account-entry-form">
+     <label for="accountPageRequiredCode">Six digit authenticator code</label>
+     <input id="accountPageRequiredCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
+     <button type="submit" class="account-primary-button">Verify and enable MFA</button>
+    </form>
+    <div id="accountPageRequiredRecovery" hidden>
+     <p>Save these recovery codes now. Each can be used only once.</p>
+     <ol id="accountPageRequiredRecoveryCodes" class="account-recovery-list"></ol>
+     <button id="accountPageRequiredContinue" type="button" class="account-primary-button">I have saved my codes</button>
+    </div>
+   </section>
+   <div id="accountPageSignedIn" hidden>
+    <p id="accountPageIdentity" class="account-signed-identity"></p>
+    <a id="accountPageWorkspace" href="/workspace/" class="account-primary-button">Open My Workspace <span aria-hidden="true">→</span></a>
+    <section class="account-mfa-settings" aria-label="Authenticator security settings">
+     <h3>Authenticator app security</h3>
+     <p id="accountPageTotpStatus">Checking security settings...</p>
+     <button type="button" id="accountPageTotpSetup" class="account-secondary-button" hidden>Set up authenticator app</button>
+     <div id="accountPageTotpEnroll" hidden>
+      <p>In Microsoft Authenticator or Google Authenticator, add a new account using this setup key:</p>
+      <div id="accountPageTotpQr" class="account-mfa-qr" aria-label="Scan with your authenticator app"></div>
+      <code id="accountPageTotpSecret" class="account-mfa-secret"></code>
+      <p>Enter a code from your authenticator to complete enrollment.</p>
+      <form id="accountPageTotpEnrollForm" class="account-entry-form">
+       <label for="accountPageTotpEnrollCode">Authenticator code</label>
+       <input id="accountPageTotpEnrollCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
+       <button type="submit" class="account-primary-button">Enable authenticator</button>
+      </form>
+     </div>
+     <button type="button" id="accountPageRecoveryRotateStart" class="account-secondary-button">Generate new recovery codes</button>
+     <form id="accountPageRecoveryRotateForm" class="account-entry-form" hidden>
+      <p>Old recovery codes will stop working. Enter a fresh code from your authenticator app to confirm.</p>
+      <label for="accountPageRecoveryRotateCode">Six digit authenticator code</label>
+      <input id="accountPageRecoveryRotateCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
+      <button type="submit" class="account-primary-button">Replace recovery codes</button>
+     </form>
+     <div id="accountPageTotpRecovery" hidden>
+      <p>Save these one time recovery codes now. They will not be shown again.</p>
+      <ol id="accountPageTotpRecoveryCodes" class="account-recovery-list"></ol>
+      <button type="button" id="accountPageTotpRecoveryDone" class="account-secondary-button">I have saved my recovery codes</button>
+     </div>
+    </section>
+    <button type="button" id="accountPageLogout" class="account-secondary-button">Sign out</button>
+   </div>
+   <div class="account-trust-row"><div><span aria-hidden="true">♙</span>Passwordless<br>sign in</div><div><span aria-hidden="true">⬡</span>Private<br>workspace</div><div><span aria-hidden="true">✓</span>No password<br>required</div></div>
+  </article>
+</div>
+<div class="account-hero-right workspace-intro-right"><article class="account-value-panel">
+<p class="account-kicker">YOUR CVEHARBOR WORKSPACE</p><h2>Everything you need to stay ahead of vulnerabilities</h2>
+<p>Manage customer environments, prioritize vulnerabilities and prepare security reports in one private workspace.</p>
+<div class="account-feature-grid">
+<div class="account-feature"><span>▤</span><div><h3>Manage customer environments</h3><p>Organize customer assets and installed software versions.</p></div></div>
+<div class="account-feature"><span>◎</span><div><h3>Track vulnerabilities</h3><p>Review potential CVE matches and remediation progress.</p></div></div>
+<div class="account-feature"><span>▤</span><div><h3>Generate professional reports</h3><p>Create customer security reports and export findings.</p></div></div>
+<div class="account-feature"><span>⬡</span><div><h3>Software and plugin monitoring</h3><p>Monitor installed technologies and WordPress plugins.</p></div></div>
+</div></article></div></section>
+<section id="workspaceAccess" class="workspace-home-links" hidden><h2>Your workspace</h2>
+<div class="workspace-landing-grid">
+<a class="workspace-entry" href="/customer-dashboard/"><strong>Customer dashboard</strong><span>Security posture across customers</span></a>
+<a class="workspace-entry" href="/environments/"><strong>Customer environments</strong><span>Assets, installed software and plugins</span></a>
+<a class="workspace-entry" href="/customer-reports/"><strong>Security reports</strong><span>Export and review findings</span></a>
+<a class="workspace-entry" href="/remediation/"><strong>Remediation</strong><span>Track the work required to resolve findings</span></a>
+</div></section></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="/account-page.js?v=workspace-redesign-155"></script>
+<script src="/command-center.js?v=workspace-redesign-155"></script></body></html>
