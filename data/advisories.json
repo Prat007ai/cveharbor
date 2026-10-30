@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-30",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6076,
+  "candidate_records": 6081,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -5490,8 +5490,8 @@
       "title": "@nx/maven and @nx/gradle have OS command injection via nx.json plugin options",
       "severity": "high",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -55079,6 +55079,38 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T14:31:00Z",
       "source_updated_at": "2026-10-30T14:27:32.320",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-101762",
+      "title": "Vulnerability in the MySQL Server, MySQL Cluster product of Oracle MySQL (component: Server: Security: Encryption)",
+      "severity": "medium",
+      "categories": [
+        "MySQL / MariaDB"
+      ],
+      "published": "2026-10-20",
+      "updated": "2026-10-30",
+      "summary": "Vulnerability in the MySQL Server, MySQL Cluster product of Oracle MySQL (component: Server: Security: Encryption). Supported versions that are affected are MySQL Server: 8.4.0-8.4.12, 9.7.0-9.7.3, 26.7.0-26.7.1; MySQL Cluster: 8.0.0-8.0.49, 8.4.0-8.4.12, 9.7.0-9.7.3 and 26.7.0-26.7.1. Difficult to exploit vulnerability allows low privileged attacker with network access via multiple protocols to compromise MySQL Server, MySQL Cluster. Successful attacks of this vulnerability can result in unauthorized ability to cause a hang or frequently repeatable crash (complete DOS) of MySQL Server, MySQL Cluster. CVSS 3.1 Base Score 5.3 (Availability impacts). CVSS Vector: (CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:N/I:N/A:H).",
+      "affected": "Products identified in NVD configurations: oracle mysql_cluster; oracle mysql_server",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-101762"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://www.oracle.com/security-alerts/cpuoct2026.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:51:14Z",
+      "source_updated_at": "2026-10-30T14:51:06.900",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -118174,146 +118206,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-69527",
-      "title": "CVE-2026-69527 Windows USB Mass Storage Class Driver Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Out-of-bounds read in Windows USB Mass Storage Class Driver allows an authorized attacker to disclose information locally.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69527"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69525",
-      "title": "CVE-2026-69525 Remote Desktop Services Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Windows Remote Desktop Services allows an unauthorized attacker to execute code over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69525"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69539",
-      "title": "CVE-2026-69539 Remote Desktop Services Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Windows Remote Desktop Services allows an authorized attacker to execute code over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69539"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69524",
-      "title": "CVE-2026-69524 Windows Active Directory Domain Services Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Active Directory Domain Services allows an unauthorized attacker to execute code over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69524"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69528",
-      "title": "CVE-2026-69528 Windows Shell Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Missing authentication for critical function in Windows Shell allows an authorized attacker to elevate privileges locally.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69528"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-86422",
       "title": "ImageMagick before 7.1.2-30 contains a time-of-check-time-of-use vulnerability in path policy enforcement on Windows that allows attackers to bypass read or write restrictions",
       "severity": "low",
@@ -127900,6 +127792,118 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T14:44:16Z",
       "source_updated_at": "2026-10-30T14:37:24.840",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63876",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: serial: zs: Convert to use a platform device Prevent a crash from happening as the first serial port is ini",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: serial: zs: Convert to use a platform device Prevent a crash from happening as the first serial port is initialised: Console: switching to mono frame buffer device 160x64 fb0: PMAG-AA frame buffer device at tc0 DECstation Z85C30 serial driver version 0.10 CPU 0 Unable to handle kernel paging request at virtual address 0000002c, epc == 803ab00c, ra == 803aafe0 Oops[#1]: CPU: 0 PID: 1 Comm: swapper Not tainted 6.4.0-rc3-00031-g84a9582fd203-dirty #57 $ 0 : 00000000 10012c00 803aaeb0 00000000 $ 4 : 80e12f60 80e12f50 80e12f58 81000030 $ 8 : 00000000 805ff37c 00000000 33433538 $12 : 65732030 00000006 80c2915d 6c616972 $16 : 80e12f00 807b7630 00000000 00000000 $20 : 00000004 00000348 000001a0 807623b8 $24 : 00000018 00000000 $28 : 80c24000 80c25d60 8078b148 803aafe0 Hi : 00000000 Lo : 00000000 epc : 803ab00c serial_base_ctrl_add+0x78/0xf4 ra : 803aafe0 serial_base_ctrl_add+0x4c/0xf4 Status: 10012c03 KERNEL EXL IE Cause : 00000008 (ExcCode 02) BadVA : 0000002c PrId : 00000440 (R4400SC) Modules linked in: Process swapper (pid: 1, threadinfo=(ptrval), task=(ptrval), tls=00000000) Stack : 80760000 00000cc0 00400044 00400040 803aa02c 80d61ab8 00000000 807b7630 80760000 807623",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63876"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:51:14Z",
+      "source_updated_at": "2026-10-30T14:50:06.397",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63877",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: serial: dz: Convert to use a platform device Prevent a crash from happening as the first serial port is ini",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: serial: dz: Convert to use a platform device Prevent a crash from happening as the first serial port is initialised: Console: switching to colour frame buffer device 160x64 tgafb: SFB+ detected, rev=0x02 fb0: Digital ZLX-E1 frame buffer device at 0x1e000000 DECstation DZ serial driver version 1.04 CPU 0 Unable to handle kernel paging request at virtual address 000000bc, epc == 8048b3a4, ra == 80470a78 Oops[#1]: CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.19.0-dirty #35 NONE $ 0 : 00000000 1000ac00 00000004 804707ac $ 4 : 00000000 80e20850 80e20858 81000030 $ 8 : 00000000 8072c81c 00000008 fefefeff $12 : 6c616972 00000006 80c5917f 69726420 $16 : 80e20800 00000000 808f8968 80e20800 $20 : 00000000 807f5a90 808b0094 808d3bc8 $24 : 00000018 80479030 $28 : 80c2e000 80c2fd70 00000069 80470a78 Hi : 00000004 Lo : 00000000 epc : 8048b3a4 __dev_fwnode+0x0/0xc ra : 80470a78 serial_base_ctrl_add+0xa0/0x168 Status: 1000ac04 IEp Cause : 30000008 (ExcCode 02) BadVA : 000000bc PrId : 00000220 (R3000) Modules linked in: Process swapper/0 (pid: 1, threadinfo=(ptrval), task=(ptrval), tls=00000000) Stack : 00400044 00400040 8046f4cc 00000000 808a6148 808a0000 808f8968 8086983c ",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63877"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:51:14Z",
+      "source_updated_at": "2026-10-30T14:49:31.513",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63878",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: drm/amdgpu: check num_entries in GEM_OP GET_MAPPING_INFO kvcalloc(args->num_entries, sizeof(*vm_entries), G",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: drm/amdgpu: check num_entries in GEM_OP GET_MAPPING_INFO kvcalloc(args->num_entries, sizeof(*vm_entries), GFP_KERNEL) at amdgpu_gem.c:1050 uses the user-supplied num_entries directly without any upper bounds check. Since num_entries is a __u32 and sizeof(drm_amdgpu_gem_vm_entry) is 32 bytes, a large num_entries produces an allocation exceeding INT_MAX, triggering WARNING in __kvmalloc_node_noprof(), causing a kernel WARNING, TAINT_WARN, and panic on CONFIG_PANIC_ON_WARN=y systems. Add a size bounds check before we invoke the kvzalloc() to reject oversized num_entries early with -EINVAL. (cherry picked from commit 1fe7bf5457f6efd7be60b17e23163ba54341d73d)",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63878"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:51:14Z",
+      "source_updated_at": "2026-10-30T14:49:19.500",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63880",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: drm/amdgpu: fix lock leak on ENOMEM in AMDGPU_GEM_OP_GET_MAPPING_INFO The AMDGPU_GEM_OP_GET_MAPPING_INFO br",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: drm/amdgpu: fix lock leak on ENOMEM in AMDGPU_GEM_OP_GET_MAPPING_INFO The AMDGPU_GEM_OP_GET_MAPPING_INFO branch of amdgpu_gem_op_ioctl() holds three cleanup-tracked resources before calling kvcalloc(): the drm_gem_object reference from drm_gem_object_lookup(), the drm_exec lock on the looked-up GEM via drm_exec_lock_obj(), and the drm_exec lock on the per-process VM root page directory via amdgpu_vm_lock_pd(). All three are released by the out_exec label that every other error path in this function jumps to. The kvcalloc() failure path returns -ENOMEM directly, skipping out_exec and leaking all three. The leaked per-process VM root PD dma_resv lock is the load-bearing leak: any subsequent operation on the same VM (further GEM ops, command-submission, eviction, TTM shrinker callbacks) blocks on the held lock. DRM_IOCTL_AMDGPU_GEM_OP is DRM_AUTH | DRM_RENDER_ALLOW, so this is an unprivileged-local denial of service against the caller's GPU context, reachable by any process with /dev/dri/renderD* access. Route the failure through out_exec so drm_exec_fini() and drm_gem_object_put() run. Reproduced on stock 7.0.0-10, Ryzen 7 5700U / Radeon Vega (Lucienne): the failing",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63880"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:51:14Z",
+      "source_updated_at": "2026-10-30T14:49:06.277",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -157236,85 +157240,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T14:44:16Z",
-      "last_attempt": "2026-10-30T14:44:16Z",
+      "last_success": "2026-10-30T14:51:14Z",
+      "last_attempt": "2026-10-30T14:51:14Z",
       "items_processed": 257,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T14:44:16Z",
-      "last_attempt": "2026-10-30T14:44:16Z",
+      "last_success": "2026-10-30T14:51:14Z",
+      "last_attempt": "2026-10-30T14:51:14Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T14:44:16Z",
-      "last_attempt": "2026-10-30T14:44:16Z",
-      "items_processed": 1825,
+      "last_success": "2026-10-30T14:51:14Z",
+      "last_attempt": "2026-10-30T14:51:14Z",
+      "items_processed": 1830,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T14:44:16Z",
-      "last_attempt": "2026-10-30T14:44:16Z",
+      "last_success": "2026-10-30T14:51:14Z",
+      "last_attempt": "2026-10-30T14:51:14Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:44:16Z",
-      "last_attempt": "2026-10-30T14:44:16Z",
+      "last_success": "2026-10-30T14:51:14Z",
+      "last_attempt": "2026-10-30T14:51:14Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:44:16Z",
-      "last_attempt": "2026-10-30T14:44:16Z",
+      "last_success": "2026-10-30T14:51:14Z",
+      "last_attempt": "2026-10-30T14:51:14Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:44:16Z",
-      "last_attempt": "2026-10-30T14:44:16Z",
+      "last_success": "2026-10-30T14:51:14Z",
+      "last_attempt": "2026-10-30T14:51:14Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:44:16Z",
-      "last_attempt": "2026-10-30T14:44:16Z",
+      "last_success": "2026-10-30T14:51:14Z",
+      "last_attempt": "2026-10-30T14:51:14Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:44:16Z",
-      "last_attempt": "2026-10-30T14:44:16Z",
+      "last_success": "2026-10-30T14:51:14Z",
+      "last_attempt": "2026-10-30T14:51:14Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T14:44:16Z",
-      "last_attempt": "2026-10-30T14:44:16Z",
+      "last_success": "2026-10-30T14:51:14Z",
+      "last_attempt": "2026-10-30T14:51:14Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T14:44:16Z",
-      "last_attempt": "2026-10-30T14:44:16Z",
+      "last_success": "2026-10-30T14:51:14Z",
+      "last_attempt": "2026-10-30T14:51:14Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T14:44:16Z",
-      "last_attempt": "2026-10-30T14:44:16Z",
+      "last_success": "2026-10-30T14:51:14Z",
+      "last_attempt": "2026-10-30T14:51:14Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -157326,7 +157330,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T14:44:16Z",
-  "last_successful_update": "2026-10-30T14:44:16Z",
+  "last_checked_at": "2026-10-30T14:51:14Z",
+  "last_successful_update": "2026-10-30T14:51:14Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
