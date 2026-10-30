@@ -39,7 +39,7 @@ def verify_local_build():
             if marker not in html:
                 raise RuntimeError(f"Generated {route} missing {marker}")
         for asset in ("styles.css", "customer-security.js", "inventory.js"):
-            match = re.search(r'/'+re.escape(asset)+r'\\?v=([a-zA-Z0-9-]+)', html)
+            match = re.search(r'/'+re.escape(asset)+r'\?v=([a-zA-Z0-9-]+)', html)
             if match and not (root / "public" / asset).is_file():
                 raise RuntimeError(f"Generated {route} references missing asset {asset}")
     print("PASS: Generated routes and linked assets verified before deployment")
