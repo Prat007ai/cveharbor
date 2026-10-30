@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-30",
   "mode": "live",
   "coverage_limited": false,
-  "candidate_records": 4583,
+  "candidate_records": 4586,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -1665,7 +1665,8 @@
       "title": "Improper Neutralization of Input During Web Page Generation (\"Cross-site Scripting\") vulnerability in Drupal Bootstrap allows Cross-Site Scripting (XSS)",
       "severity": "bulletin",
       "categories": [
-        "Drupal / CMS"
+        "Drupal / CMS",
+        "jQuery / Bootstrap"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -3253,6 +3254,62 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T04:58:03Z",
       "source_updated_at": "2026-10-30T04:18:31.060",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-104368",
+      "title": "The Export and Import Users and Customers plugin for WordPress is vulnerable to Privilege Escalation in all versions up to, and including, 2.7.5 via the plugin's own export an",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "The Export and Import Users and Customers plugin for WordPress is vulnerable to Privilege Escalation in all versions up to, and including, 2.7.5 via the plugin's own export and re-import workflow. The vulnerability exists because of a CSV escape-character mismatch between the exporter and the importer: class-csvwriter.php writes cells with fputcsv() using PHP's default backslash (\\) escape character, while class-csvreader.php parses the same file with fgetcsv() using a double-quote (\") as the escape character. As a result, a crafted value stored in a Subscriber's Biographical Info field — containing a backslash-quote sequence followed by a newline — is written as a single quoted CSV field but parsed back as two separate rows on import. The injected second row is then processed by hf_create_customer() as a new user record whose user_login, user_pass, user_email, and role are entirely attacker-controlled, allowing the creation of an arbitrary Administrator account. This makes it possible for authenticated attackers with Subscriber-level access and above to escalate their privileges to Administrator.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-104368"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T05:56:45Z",
+      "source_updated_at": "2026-10-30T05:16:57.833",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-5461",
+      "title": "The Forminator Forms plugin for WordPress is vulnerable to Limited File Deletion in all versions up to, and including, 1.55.0.2",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "The Forminator Forms plugin for WordPress is vulnerable to Limited File Deletion in all versions up to, and including, 1.55.0.2. This is due to the plugin accepting arbitrary upload field metadata from POST requests in draft submissions without proper validation, which is then used to delete files when a subsequent draft references the poisoned draft via the previous_draft_id parameter. This makes it possible for unauthenticated attackers to delete arbitrary non-PHP files within the wp-content/uploads/ directory.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-5461"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T05:56:45Z",
+      "source_updated_at": "2026-10-30T05:16:59.327",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -47516,7 +47573,7 @@
           "url": "https://www.php.net/archive/2026.php"
         },
         {
-          "label": "Vendor advisory",
+          "label": "PHP upstream security advisory",
           "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
         },
         {
@@ -91287,6 +91344,34 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-75888",
+      "title": "A flaw was found in the OpenShift console",
+      "severity": "high",
+      "categories": [
+        "Docker / Kubernetes"
+      ],
+      "published": "2026-10-12",
+      "updated": "2026-10-30",
+      "summary": "A flaw was found in the OpenShift console. An authenticated console user can exploit a Server-Side Request Forgery (SSRF) vulnerability by providing a specially crafted Helm chart URL without proper validation. This allows the user to make the console pod fetch arbitrary URLs, potentially leading to the disclosure of sensitive information through error messages or enabling blind port scanning within the cluster.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-75888"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.7",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T00:18:28Z",
+      "source_updated_at": "2026-10-30T05:16:59.470",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "GHSA-hmg9-h2ww-x4x3",
       "title": "Malicious code in npp-ml (PyPI)",
       "severity": "bulletin",
@@ -91366,34 +91451,6 @@
       "first_seen_at": "2026-10-30T00:18:28Z",
       "source_updated_at": "2026-10-29T15:31:37Z",
       "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-75888",
-      "title": "A flaw was found in the OpenShift console",
-      "severity": "high",
-      "categories": [
-        "Docker / Kubernetes"
-      ],
-      "published": "2026-10-12",
-      "updated": "2026-10-29",
-      "summary": "A flaw was found in the OpenShift console. An authenticated console user can exploit a Server-Side Request Forgery (SSRF) vulnerability by providing a specially crafted Helm chart URL without proper validation. This allows the user to make the console pod fetch arbitrary URLs, potentially leading to the disclosure of sensitive information through error messages or enabling blind port scanning within the cluster.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-75888"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-10-29T17:18:10.473",
-      "source_type": "nvd",
       "known_exploited": false
     },
     {
@@ -92813,6 +92870,34 @@
       "first_seen_at": "2026-10-30T00:18:28Z",
       "source_updated_at": "2026-09-22",
       "source_type": "msrc_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-92574",
+      "title": "A vulnerability in CRI-O checkpoint restore allows a user who can create a pod from a malicious checkpointed container to bypass the destination Kubernetes security context",
+      "severity": "high",
+      "categories": [
+        "Docker / Kubernetes"
+      ],
+      "published": "2026-09-21",
+      "updated": "2026-10-30",
+      "summary": "A vulnerability in CRI-O checkpoint restore allows a user who can create a pod from a malicious checkpointed container to bypass the destination Kubernetes security context. The restored process may retain credentials, Linux capabilities, no_new_privs, and seccomp state from the checkpoint instead of enforcing the destination configuration. This can allow execution with elevated privileges across the container security boundary. Affected upstream supported versions are CRI-O 1.34 and later. Downstream Red Hat products are affected from OCP 4.17 onward. Fixes have been applied to supported branches but are not yet released. Exploitation requires permission to create a pod from a malicious checkpoint image and checkpoint restore functionality to be available.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-92574"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T05:56:45Z",
+      "source_updated_at": "2026-10-30T05:16:59.937",
+      "source_type": "nvd",
       "known_exploited": false
     },
     {
@@ -144157,85 +144242,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T04:58:03Z",
-      "last_attempt": "2026-10-30T04:58:03Z",
+      "last_success": "2026-10-30T05:56:45Z",
+      "last_attempt": "2026-10-30T05:56:45Z",
       "items_processed": 268,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T04:58:03Z",
-      "last_attempt": "2026-10-30T04:58:03Z",
+      "last_success": "2026-10-30T05:56:45Z",
+      "last_attempt": "2026-10-30T05:56:45Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T04:58:03Z",
-      "last_attempt": "2026-10-30T04:58:03Z",
-      "items_processed": 793,
+      "last_success": "2026-10-30T05:56:45Z",
+      "last_attempt": "2026-10-30T05:56:45Z",
+      "items_processed": 773,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T04:58:03Z",
-      "last_attempt": "2026-10-30T04:58:03Z",
+      "last_success": "2026-10-30T05:56:45Z",
+      "last_attempt": "2026-10-30T05:56:45Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T04:58:03Z",
-      "last_attempt": "2026-10-30T04:58:03Z",
+      "last_success": "2026-10-30T05:56:45Z",
+      "last_attempt": "2026-10-30T05:56:45Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T04:58:03Z",
-      "last_attempt": "2026-10-30T04:58:03Z",
+      "last_success": "2026-10-30T05:56:45Z",
+      "last_attempt": "2026-10-30T05:56:45Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T04:58:03Z",
-      "last_attempt": "2026-10-30T04:58:03Z",
+      "last_success": "2026-10-30T05:56:45Z",
+      "last_attempt": "2026-10-30T05:56:45Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T04:58:03Z",
-      "last_attempt": "2026-10-30T04:58:03Z",
+      "last_success": "2026-10-30T05:56:45Z",
+      "last_attempt": "2026-10-30T05:56:45Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T04:58:03Z",
-      "last_attempt": "2026-10-30T04:58:03Z",
+      "last_success": "2026-10-30T05:56:45Z",
+      "last_attempt": "2026-10-30T05:56:45Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T04:58:03Z",
-      "last_attempt": "2026-10-30T04:58:03Z",
+      "last_success": "2026-10-30T05:56:45Z",
+      "last_attempt": "2026-10-30T05:56:45Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T04:58:03Z",
-      "last_attempt": "2026-10-30T04:58:03Z",
+      "last_success": "2026-10-30T05:56:45Z",
+      "last_attempt": "2026-10-30T05:56:45Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T04:58:03Z",
-      "last_attempt": "2026-10-30T04:58:03Z",
+      "last_success": "2026-10-30T05:56:45Z",
+      "last_attempt": "2026-10-30T05:56:45Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -144247,7 +144332,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T04:58:03Z",
-  "last_successful_update": "2026-10-30T04:58:03Z",
+  "last_checked_at": "2026-10-30T05:56:45Z",
+  "last_successful_update": "2026-10-30T05:56:45Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
