@@ -543,10 +543,27 @@ function buildCustomerPrintDocument(customer,stats,scope,date){
   const findingStatus=statusFor(finding);
   const statusTheme={'Needs Review':'review','Fix in Progress':'progress','Fixed/Patched':'fixed','Accepted Risk':'accepted','Not Applicable':'not-applicable'};
   block.dataset.status=statusTheme[findingStatus]||'review';
+  // Inline important declarations override legacy print rules and remain
+  // attached to the finding even if the browser caches an older stylesheet.
+  const printPalette={
+   review:['#edf6f8','#287b9a','#24647b'],
+   progress:['#fff7e8','#b47d15','#95600b'],
+   fixed:['#edf8f1','#218057','#24754e'],
+   accepted:['#f0f2f5','#647489','#506377'],
+   'not-applicable':['#f7f7f7','#888e95','#626a72']
+  };
+  const [surface,edge,ink]=printPalette[block.dataset.status];
+  block.style.setProperty('background-color',surface,'important');
+  block.style.setProperty('border-left','6px solid '+edge,'important');
+  block.style.setProperty('print-color-adjust','exact','important');
+  block.style.setProperty('-webkit-print-color-adjust','exact','important');
   const head=text('div','','customer-print-finding-top');
   const sev=text('span',String(finding.severity||'unknown').toUpperCase(),'customer-print-severity');
   sev.dataset.level=String(finding.severity||'unknown').toLowerCase();
-  head.append(text('strong',finding.id),sev,text('span',statusFor(finding),'customer-print-finding-status'));
+  const stateLabel=text('span',findingStatus,'customer-print-finding-status');
+  stateLabel.style.setProperty('color',ink,'important');
+  stateLabel.style.setProperty('border','1.5px solid '+edge,'important');
+  head.append(text('strong',finding.id),sev,stateLabel);
   block.append(head,text('h3',finding.technology+' · '+(finding.version||'Unknown')),text('p',shortSummary(finding)));
   const meta=text('p','Asset: '+(finding.asset?.name||'Recorded asset')+'  |  Published: '+(finding.published||'Not available'),'customer-print-note');
   block.append(meta);

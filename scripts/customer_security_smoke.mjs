@@ -171,3 +171,8 @@ assert.ok(fs.readFileSync('customer-security.js','utf8').includes('block.dataset
 assert.ok(fs.readFileSync('styles.css','utf8').includes('customer-print-finding[data-status=accepted]'),'accepted risk print theme exists');
 
 assert.ok(fs.readFileSync('styles.css','utf8').includes('border-left-width:6px!important'),'PDF status borders remain visible when backgrounds are suppressed');
+
+const reportSource=fs.readFileSync('customer-security.js','utf8');
+assert.ok(reportSource.includes("block.style.setProperty('background-color',surface,'important')"),'print status card background is set inline');
+assert.ok(reportSource.includes("block.style.setProperty('border-left','6px solid '+edge,'important')"),'printed status borders are explicitly set');
+assert.ok(reportSource.includes("stateLabel.style.setProperty('color',ink,'important')"),'status labels receive matching ink');
