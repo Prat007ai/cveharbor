@@ -255,7 +255,7 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('file.size>65536'),'pl
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('plugin-sources/'),'plugin source URLs can be saved and verified');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("Technology | Version"),'technology version entry format is validated');
 
-assert.ok(html.includes('inventory.js?v=package-copy-123'),'public build references account inventory client');
+assert.ok(html.includes('inventory.js?v=setup-error-124'),'public build references account inventory client');
 const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
 const picker=inventoryDom.window.document.querySelector('.inventory-plugin-import:not(.inventory-bulk-import):not(.inventory-package-import) input[type=file]');
@@ -821,3 +821,5 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes("newCustomerSetup=true
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('startNewCustomer()'),'new customer action clears prior wizard data');
 
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('packages imported successfully into CVEHarbor.'),'package import uses customer friendly confirmation');
+
+assert.ok(fs.readFileSync('inventory.js','utf8').includes('showSetupError('),'review uses setup validation alerts');
