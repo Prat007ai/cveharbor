@@ -651,6 +651,27 @@ function render(){
  for(const customer of data.customers){
   const card=make('article','inventory-customer');
   const header=make('div','ops-result-top');header.append(make('h4','',customer.name));
+  const editCustomer=make('button','ops-remove','Edit customer');editCustomer.type='button';
+  editCustomer.addEventListener('click',()=>{
+   const overlay=make('div','inventory-confirm-overlay'),dialog=make('section','inventory-confirm-dialog');
+   dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Edit customer');
+   const title=make('h3','','Edit customer');
+   const label=make('label','','Customer name'),input=document.createElement('input');
+   input.type='text';input.maxLength=120;input.value=customer.name;input.className='inventory-edit-customer-input';label.append(input);
+   const feedback=make('p','ops-note',''),actions=make('div','inventory-confirm-actions');
+   const cancel=make('button','inventory-confirm-cancel','Cancel'),save=make('button','ops-download','Save changes');
+   cancel.type='button';save.type='button';
+   const close=()=>overlay.remove();cancel.addEventListener('click',close);
+   save.addEventListener('click',async()=>{
+    const name=input.value.trim();if(!name){feedback.textContent='Enter a customer name.';return}
+    save.disabled=true;
+    try{await call('/customers/'+customer.id,'PUT',{name});close();await load();status('Customer information updated successfully.')}
+    catch(e){feedback.textContent=e.message;save.disabled=false}
+   });
+   input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();save.click()}if(e.key==='Escape')close()});
+   actions.append(cancel,save);dialog.append(title,label,feedback,actions);overlay.append(dialog);document.body.append(overlay);input.focus();
+  });
+  header.append(editCustomer);
   const deleteCustomer=make('button','ops-remove','Remove customer');deleteCustomer.type='button';
   deleteCustomer.addEventListener('click',()=>remove('customers',customer.id,customer.name));
   header.append(deleteCustomer);card.append(header);
