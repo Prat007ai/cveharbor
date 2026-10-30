@@ -179,3 +179,6 @@ assert.ok(reportSource.includes("stateLabel.style.setProperty('color',ink,'impor
 
 assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('id="customerReportEmail"'),'report email control available');
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes('customer-report-email'),'report email dialog calls authenticated service');
+
+assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('customer-security.js?v=email-report-140'),'email report loads current script');
+assert.ok(fs.readFileSync('customer-security.js','utf8').includes("$('customerReportEmail').addEventListener('click'"),'email report click handler is registered');
