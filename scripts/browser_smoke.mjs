@@ -876,3 +876,7 @@ assert.ok(mandatoryMfaWorker.includes("mfa_enrollment_required:true"),'users wit
 assert.ok(mandatoryMfaWorker.includes("mfa_required:true"),'enrolled users must verify MFA');
 assert.ok(mandatoryMfaWorker.includes("JOIN user_totp ON user_totp.user_id=users.id AND user_totp.enabled=1"),'private sessions require completed enrollment');
 assert.ok(fs.readFileSync('account/index.html','utf8').includes('accountPageRequiredEnroll'),'required enrollment form exists');
+
+assert.ok(accountMarkup.includes('accountPageRequiredQr'),'mandatory authenticator enrollment contains QR target');
+assert.ok(accountMarkup.includes('qrcode.min.js'),'account QR generation library loaded');
+assert.ok(fs.readFileSync('account-page.js','utf8').includes("renderQr('accountPageRequiredQr',data.otpauth_url)"),'QR provisioning uses local authenticator URI');
