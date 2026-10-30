@@ -5,6 +5,12 @@ const $=id=>document.getElementById(id);
 const API='https://api.cveharbor.com/v1';
 let challenge='',salt='',mfaChallenge='';
 const message=text=>{$('accountPageMessage').textContent=text;};
+function renderQr(id,uri){
+ const target=$(id);target.replaceChildren();
+ if(!uri||!uri.startsWith('otpauth://totp/'))return;
+ if(typeof QRCode!=='function'){message('QR code unavailable. Use the setup key below.');return;}
+ new QRCode(target,{text:uri,width:196,height:196,colorDark:'#071624',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+}
 async function request(path,method='GET',payload){
  const response=await fetch(API+path,{method,credentials:'include',
   headers:{'Content-Type':'application/json'},
@@ -49,6 +55,7 @@ $('accountPageVerify').addEventListener('submit',async event=>{
    mfaChallenge=data.mfa_challenge;
    $('accountPageSignedOut').hidden=true;
    $('accountPageRequiredSecret').textContent=data.secret;
+   renderQr('accountPageRequiredQr',data.otpauth_url);
    $('accountPageRequiredEnroll').hidden=false;
    message('Authenticator setup is required before accessing your workspace.');
    return;
@@ -107,6 +114,7 @@ $('accountPageTotpVerify').addEventListener('submit',async event=>{
 $('accountPageTotpBack').addEventListener('click',()=>{signedOut();$('accountPageVerify').hidden=true;root.hidden=false;message('Request another email verification code.');});
 $('accountPageTotpSetup').addEventListener('click',async()=>{
  try{const result=await request('/auth/totp/setup','POST');$('accountPageTotpSecret').textContent=result.secret;
+  renderQr('accountPageTotpQr',result.otpauth_url);
   $('accountPageTotpEnroll').hidden=false;$('accountPageTotpSetup').hidden=true;message('Add the key to your authenticator app, then verify the code.');
  }catch(e){message(e.message)}
 });
