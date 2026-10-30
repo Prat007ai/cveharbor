@@ -233,6 +233,15 @@ assert.equal(engine.candidate(debian,{id:'CVE-2026-11111',categories:['Linux'],t
 assert.ok(engine.candidate(debian,{id:'CVE-2026-11112',categories:['Linux'],title:'Debian 12 security update for curl',affected:'Debian 12 curl security issue'}),'explicit Debian advisory remains a candidate');
 assert.equal(engine.candidate(debian,{id:'CVE-2026-11113',categories:['Linux'],title:'Ubuntu kernel security update',affected:'Ubuntu kernel 6.8'}),null,'Ubuntu advisory excluded from Debian');
 assert.equal(engine.candidate({...asset,technology:'PHP'}, {...advisory,affected:'PHP before 8.4.27'}).level,'version_review','explicit PHP runtime range stays eligible');
+const phpRelease={id:'CVE-2026-109618',title:'PHP runtime request handling RCE',categories:['PHP'],affected:'PHP web request handling',sources:[{url:'https://www.php.net/'}]};
+assert.equal(engine.candidate({...asset,version:'8.3.35'},phpRelease)?.level,'version_review','vendor bulletin flags PHP predating fixed release');
+assert.equal(engine.candidate({...asset,version:'8.3.36'},phpRelease),null,'vendor bulletin excludes fixed PHP 8.3 release');
+assert.equal(engine.candidate({...asset,version:'8.4.26'},phpRelease)?.level,'version_review','vendor bulletin flags older PHP 8.4');
+assert.equal(engine.candidate({...asset,version:'8.4.27'},phpRelease),null,'vendor bulletin excludes patched PHP 8.4');
+const debianVendor={id:'CVE-2026-11115',title:'Debian 12 security advisory for curl',categories:['Linux'],affected:'Debian 12 curl package before 7.88',sources:[{url:'https://security-tracker.debian.org/tracker/CVE-2026-11115'}]};
+const debianFinding=engine.candidate({id:'deb-1',technology:'Debian',version:'12'},debianVendor);
+assert.equal(debianFinding.level,'category','Debian OS version is not compared to package revision');
+assert.match(debianFinding.evidence,/source package/,'Debian review requires package evidence');
 matcherDom.window.close();
 assert.ok(html.includes('id="inventoryCustomerName"')&&html.includes('id="inventoryEnvironmentName"')&&html.includes('id="inventoryVersion"'),'customer environment and software version input fields exist');
 assert.ok(html.includes('id="inventoryAdditionalTechnologies"'),'multiple technology version input exists');
