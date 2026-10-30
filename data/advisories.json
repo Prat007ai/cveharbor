@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-30",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6056,
+  "candidate_records": 6065,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -83408,6 +83408,42 @@
       "epss_as_of": "2026-10-30"
     },
     {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60678,
+      "epss_as_of": "2026-10-30"
+    },
+    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -83446,42 +83482,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.558,
-      "epss_as_of": "2026-10-30"
-    },
-    {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60678,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -118582,258 +118582,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-69645",
-      "title": "CVE-2026-69645 Windows Message Queuing Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Windows Message Queuing allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69645"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69648",
-      "title": "CVE-2026-69648 Windows Notification Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Use after free in Windows Notification allows an authorized attacker to elevate privileges locally.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69648"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69684",
-      "title": "CVE-2026-69684 Windows Error Reporting Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Generation of error message containing sensitive information in Windows Error Reporting allows an authorized attacker to disclose information locally.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69684"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69623",
-      "title": "CVE-2026-69623 Windows HTTP Print Provider Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Heap-based buffer overflow in Windows HTTP Print Provider allows an authorized attacker to execute code over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69623"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69689",
-      "title": "CVE-2026-69689 Windows Win32k Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Out-of-bounds read in Windows Win32K allows an authorized attacker to elevate privileges over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69689"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69627",
-      "title": "CVE-2026-69627 Windows Remote Desktop Licensing Service Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Out-of-bounds read in Windows Remote Desktop Licensing Service allows an authorized attacker to disclose information locally.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69627"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69628",
-      "title": "CVE-2026-69628 Windows iSCSI Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Heap-based buffer overflow in Windows iSCSI allows an authorized attacker to execute code over a network.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69628"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69790",
-      "title": "CVE-2026-69790 Windows Credential Providers Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Heap-based buffer overflow in Windows Credential Providers allows an authorized attacker to elevate privileges locally.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69790"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69631",
-      "title": "CVE-2026-69631 Windows DNS Denial of Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Integer overflow or wraparound in Windows DNS allows an unauthorized attacker to deny service over a network.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69631"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-86422",
       "title": "ImageMagick before 7.1.2-30 contains a time-of-check-time-of-use vulnerability in path policy enforcement on Windows that allows attackers to bypass read or write restrictions",
       "severity": "low",
@@ -127500,7 +127248,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: l2tp: use refcount_inc_not_zero in l2tp_session_get_by_ifname A reader in l2tp_session_get_by_ifname() can ",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-07-19",
       "updated": "2026-10-30",
@@ -127584,7 +127333,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: iio: buffer: hw-consumer: fix use-after-free in error path In the err_put_buffers cleanup path of iio_hw_co",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-07-19",
       "updated": "2026-10-30",
@@ -127864,7 +127614,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: mm/rmap: initialize nr_pages to 1 at loop start in try_to_unmap_one Initialize nr_pages to 1 at the start o",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-07-19",
       "updated": "2026-10-30",
@@ -127884,6 +127635,258 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T14:31:00Z",
       "source_updated_at": "2026-10-30T14:27:36.503",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63951",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: zram: fix use-after-free in zram_writeback_endio A crash was observed in zram_writeback_endio due to a NULL",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: zram: fix use-after-free in zram_writeback_endio A crash was observed in zram_writeback_endio due to a NULL pointer dereference in wake_up. The root cause is a race condition between the bio completion handler (zram_writeback_endio) and the writeback task. In zram_writeback_endio, wake_up() is called on &wb_ctl->done_wait after releasing wb_ctl->done_lock. This creates a race window where the writeback task can see num_inflight become 0, return, and free wb_ctl before zram_writeback_endio calls wake_up(). CPU 0 (zram_writeback_endio) CPU 1 (writeback_store) ============================ ============================ zram_writeback_slots zram_submit_wb_request zram_submit_wb_request wait_event(wb_ctl->done_wait) spin_lock(&wb_ctl->done_lock); list_add(&req->entry, &wb_ctl->done_reqs); spin_unlock(&wb_ctl->done_lock); wake_up(&wb_ctl->done_wait); zram_complete_done_reqs spin_lock(&wb_ctl->done_lock); list_add(&req->entry, &wb_ctl->done_reqs); spin_unlock(&wb_ctl->done_lock); while (num_inflight) > 0) spin_lock(&wb_ctl->done_lock); list_del(&req->entry); spin_unlock(&wb_ctl->done_lock); // num_inflight becomes 0 atomic_dec(num_inflight); // Leave zram_writeback_slots /",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63951"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:35:15Z",
+      "source_updated_at": "2026-10-30T14:32:36.153",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63953",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: mm/migrate_device: fix pgtable leak in migrate_vma_insert_huge_pmd_page When migrate_vma_insert_huge_pmd_pa",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: mm/migrate_device: fix pgtable leak in migrate_vma_insert_huge_pmd_page When migrate_vma_insert_huge_pmd_page() jumps to unlock_abort due to a PMD check failure, the pgtable allocated earlier via pte_alloc_one() is never freed, causing a memory leak. Added free_abort label to release the pgtable in error path.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63953"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:35:15Z",
+      "source_updated_at": "2026-10-30T14:32:41.960",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63954",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: hpfs: fix a crash if hpfs_map_dnode_bitmap fails If hpfs_map_dnode_bitmap fails, the code would call hpfs_b",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: hpfs: fix a crash if hpfs_map_dnode_bitmap fails If hpfs_map_dnode_bitmap fails, the code would call hpfs_brelse4 on uninitialized quad buffer head, causing a crash.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63954"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:35:15Z",
+      "source_updated_at": "2026-10-30T14:32:48.370",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63955",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: mm/vmalloc: do not trigger BUG() on BH disabled context __get_vm_area_node() currently triggers a BUG() if ",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: mm/vmalloc: do not trigger BUG() on BH disabled context __get_vm_area_node() currently triggers a BUG() if in_interrupt() returns true. However, in_interrupt() also reports true when BH are disabled. The bridge code can call rhashtable_lookup_insert_fast() with bottom halves disabled: __vlan_add() -> br_fdb_add_local() spin_lock_bh(&br->hash_lock); <-- Disable BH -> fdb_add_local() -> fdb_create() -> rhashtable_lookup_insert_fast() -> kvmalloc() -> vmalloc() -> __get_vm_area_node() -> BUG_ON(in_interrupt()) spin_unlock_bh(&br->hash_lock) this triggers the BUG() despite the caller not being in NMI or hard IRQ context. Replace the in_interrupt() check with in_nmi() || in_hardirq().",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63955"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:35:15Z",
+      "source_updated_at": "2026-10-30T14:32:54.370",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63956",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: cypress_m8: fix memory corruption with small endpoint Make sure that the interrupt-out endpoin",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: cypress_m8: fix memory corruption with small endpoint Make sure that the interrupt-out endpoint max packet size is at least eight bytes to avoid user-controlled slab corruption or NULL-pointer dereference should a malicious device report a smaller size.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63956"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:35:15Z",
+      "source_updated_at": "2026-10-30T14:32:20.473",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63957",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: safe_serial: fix memory corruption with small endpoint Make sure that the bulk-out buffer size",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: USB: serial: safe_serial: fix memory corruption with small endpoint Make sure that the bulk-out buffer size is at least eight bytes to avoid user-controlled slab corruption in \"safe\" mode should a malicious device report a smaller size.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63957"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:35:15Z",
+      "source_updated_at": "2026-10-30T14:32:28.370",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63958",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: usb: typec: ucsi: validate connector number in ucsi_connector_change() The connector number in a UCSI CCI n",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: usb: typec: ucsi: validate connector number in ucsi_connector_change() The connector number in a UCSI CCI notification is a 7-bit field supplied by the PPM. ucsi_connector_change() uses it to index the ucsi->connector[] array without checking it against the number of connectors the PPM reported at init time, so a buggy or malicious PPM (EC firmware, or an I2C-attached UCSI controller on the ccg / stm32g0 / glink transports) can drive schedule_work() on memory past the end of the array. Reject connector numbers that are zero or exceed cap.num_connectors before dereferencing the array.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63958"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:35:15Z",
+      "source_updated_at": "2026-10-30T14:32:03.687",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63960",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: usb: typec: wcove: don't write past struct pd_message in wcove_read_rx_buffer() wcove_read_rx_buffer() copi",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: usb: typec: wcove: don't write past struct pd_message in wcove_read_rx_buffer() wcove_read_rx_buffer() copies the PD RX FIFO into the caller's struct pd_message with for (i = 0; i < USBC_RXINFO_RXBYTES(info); i++) regmap_read(wcove->regmap, USBC_RX_DATA + i, msg + i); which has two problems: USBC_RXINFO_RXBYTES() is a 5-bit field (max 31) while struct pd_message is 30 bytes (__le16 header + __le32 payload[PD_MAX_PAYLOAD], packed). The byte count latched in RXINFO is the number of bytes the port partner put on the wire, so a malicious partner that transmits a 31-byte frame can drive the loop one byte past the destination if the WCOVE BMC receiver does not enforce the PD object-count limit in hardware. The existing FIXME flagged this as unverified. Independently, regmap_read() takes an unsigned int * and stores a full unsigned int at the destination. Passing the byte pointer msg + i means each iteration writes four bytes; the high three are zero (val_bits is 8) and are normally overwritten by the next iteration, but the final iteration's high bytes are not. With RXBYTES == 30 the i == 29 iteration already writes three zero bytes past msg, which sits on the IRQ threa",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63960"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:35:15Z",
+      "source_updated_at": "2026-10-30T14:31:22.270",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63961",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: usb: typec: altmodes/displayport: validate count before reading Status Update VDO A broken/malicious device",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: usb: typec: altmodes/displayport: validate count before reading Status Update VDO A broken/malicious device can send the incorrect count for a status update VDO, which will cause the kernel to read uninitialized stack data and send it off elsewhere. Fix this up by correctly verifying the count for the update object.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63961"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T14:35:15Z",
+      "source_updated_at": "2026-10-30T14:31:12.177",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -157220,85 +157223,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T14:31:00Z",
-      "last_attempt": "2026-10-30T14:31:00Z",
+      "last_success": "2026-10-30T14:35:15Z",
+      "last_attempt": "2026-10-30T14:35:15Z",
       "items_processed": 258,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T14:31:00Z",
-      "last_attempt": "2026-10-30T14:31:00Z",
+      "last_success": "2026-10-30T14:35:15Z",
+      "last_attempt": "2026-10-30T14:35:15Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T14:31:00Z",
-      "last_attempt": "2026-10-30T14:31:00Z",
-      "items_processed": 1806,
+      "last_success": "2026-10-30T14:35:15Z",
+      "last_attempt": "2026-10-30T14:35:15Z",
+      "items_processed": 1814,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T14:31:00Z",
-      "last_attempt": "2026-10-30T14:31:00Z",
+      "last_success": "2026-10-30T14:35:15Z",
+      "last_attempt": "2026-10-30T14:35:15Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:31:00Z",
-      "last_attempt": "2026-10-30T14:31:00Z",
+      "last_success": "2026-10-30T14:35:15Z",
+      "last_attempt": "2026-10-30T14:35:15Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:31:00Z",
-      "last_attempt": "2026-10-30T14:31:00Z",
+      "last_success": "2026-10-30T14:35:15Z",
+      "last_attempt": "2026-10-30T14:35:15Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:31:00Z",
-      "last_attempt": "2026-10-30T14:31:00Z",
+      "last_success": "2026-10-30T14:35:15Z",
+      "last_attempt": "2026-10-30T14:35:15Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:31:00Z",
-      "last_attempt": "2026-10-30T14:31:00Z",
+      "last_success": "2026-10-30T14:35:15Z",
+      "last_attempt": "2026-10-30T14:35:15Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:31:00Z",
-      "last_attempt": "2026-10-30T14:31:00Z",
+      "last_success": "2026-10-30T14:35:15Z",
+      "last_attempt": "2026-10-30T14:35:15Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T14:31:00Z",
-      "last_attempt": "2026-10-30T14:31:00Z",
+      "last_success": "2026-10-30T14:35:15Z",
+      "last_attempt": "2026-10-30T14:35:15Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T14:31:00Z",
-      "last_attempt": "2026-10-30T14:31:00Z",
+      "last_success": "2026-10-30T14:35:15Z",
+      "last_attempt": "2026-10-30T14:35:15Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T14:31:00Z",
-      "last_attempt": "2026-10-30T14:31:00Z",
+      "last_success": "2026-10-30T14:35:15Z",
+      "last_attempt": "2026-10-30T14:35:15Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -157310,7 +157313,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T14:31:00Z",
-  "last_successful_update": "2026-10-30T14:31:00Z",
+  "last_checked_at": "2026-10-30T14:35:15Z",
+  "last_successful_update": "2026-10-30T14:35:15Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
