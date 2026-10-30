@@ -923,3 +923,9 @@ assert.ok(workspaceCleanup.includes('aria-label="Authenticator security settings
 assert.ok(workspaceCleanup.includes('accountPageRequiredEnroll'),'MFA enrollment stays available during sign in');
 const securityDashboard=fs.readFileSync('account/index.html','utf8');
 assert.ok(securityDashboard.includes('accountSecurityRecoveryStart')&&securityDashboard.includes('accountSecuritySignOut'),'recovery management and sign out remain in Account');
+
+const assignmentMarkup=fs.readFileSync('index.html','utf8');
+const assignmentClient=fs.readFileSync('operations.js','utf8');
+assert.ok(assignmentMarkup.includes('id="remediationAssignNotes"'),'assignment has optional reviewer notes');
+assert.ok(assignmentMarkup.includes('id="remediationAssignNotesCount"'),'assignment shows notes character count');
+assert.ok(assignmentClient.includes("reviewer_notes:$('remediationAssignNotes').value.trim().slice(0,1000)"),'assignment includes bounded notes in request');
