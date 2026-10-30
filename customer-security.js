@@ -582,7 +582,7 @@ function drawReport(){
  const customer=inventory.customers.find(c=>c.id===id);
  $('customerReportPrint').disabled=!customer;
  $('customerReportCsv').disabled=!customer;
- $('customerReportEmail').disabled=!customer;
+ const emailButton=$('customerReportEmail');if(emailButton)emailButton.disabled=!customer;
  if(!customer){root.append(text('p','Select a customer to generate their security review.','ops-note'));return}
  const stats=compute(customer.id,env),date=new Date().toISOString().slice(0,10);
  root.append(buildCustomerPrintDocument(customer,stats,env?(stats.environments[0]?.name||'Selected environment'):'All environments',date));
