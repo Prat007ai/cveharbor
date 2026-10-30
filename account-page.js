@@ -34,6 +34,7 @@ function showRecoveryCodes(id,codes){
  }
 }
 function signedIn(email){
+ window.dispatchEvent(new CustomEvent('cveharbor-auth-change',{detail:{authenticated:true}}));
  $('accountPageSignedOut').hidden=true;
  $('accountPageSignedIn').hidden=false;
  $('accountPageIdentity').textContent='Signed in as '+email;
@@ -42,6 +43,7 @@ function signedIn(email){
  loadTotpStatus();
 }
 function signedOut(){
+ window.dispatchEvent(new CustomEvent('cveharbor-auth-change',{detail:{authenticated:false}}));
  if(document.body.classList.contains('account-settings-page')){location.replace('/workspace/');return;}
  mfaChallenge='';$('accountPageRequiredEnroll').hidden=true;$('accountPageTotpVerify').hidden=true;$('accountPageTotpCode').value='';
  $('accountPageSignedOut').hidden=false;
