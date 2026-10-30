@@ -128,10 +128,13 @@ export default {async fetch(req,env,ctx){
    if(!row||row.enabled)return response({error:'No pending authenticator enrollment'},409);
    const secret=await decryptSecret(env,row.encrypted_secret,user.id),counter=await verifyTotp(secret,code);
    if(counter<0)return response({error:'Incorrect authenticator code'},401);
-   const applied=await env.DB.prepare('UPDATE user_totp SET enabled=1,enabled_at=?,last_counter=? WHERE user_id=? AND enabled=0').bind(now,counter,user.id).run();
-   if(applied.meta.changes!==1)return response({error:'Enrollment already completed'},409);
    const recovery=newRecoveryCodes();
-   for(const item of recovery)await env.DB.prepare('INSERT INTO totp_recovery_codes(user_id,code_hash) VALUES(?,?)').bind(user.id,await hashRecovery(item,user.id)).run();
+   const statements=[env.DB.prepare('DELETE FROM totp_recovery_codes WHERE user_id=?').bind(user.id)];
+   for(const item of recovery)statements.push(env.DB.prepare('INSERT INTO totp_recovery_codes(user_id,code_hash) VALUES(?,?)').bind(user.id,await hashRecovery(item,user.id)));
+   statements.push(env.DB.prepare('UPDATE user_totp SET enabled=1,enabled_at=?,last_counter=? WHERE user_id=? AND enabled=0').bind(now,counter,user.id));
+   // D1 batch is transactional: do not enable MFA without all recovery codes.
+   const applied=await env.DB.batch(statements);
+   if(applied[applied.length-1]?.meta?.changes!==1)return response({error:'Enrollment already completed'},409);
    return response({enabled:true,recovery_codes:recovery,message:'Save these codes securely. Each can only be used once.'});
   }
   if(path==='/v1/customer-report-email'&&req.method==='POST'){
