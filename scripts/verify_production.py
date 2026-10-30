@@ -10,11 +10,13 @@ from urllib.parse import urlsplit
 import hashlib
 import re
 import time
+import sys
 
 root=Path(__file__).resolve().parents[1]
 base="https://cveharbor.com"
-routes=["/customer-reports/","/customer-dashboard/","/environments/"]
+routes=["/account/","/customer-reports/","/customer-dashboard/","/environments/"]
 required={
+ "/account/":["accountPageRequest","accountPageVerify","account-hero-grid"],
  "/customer-reports/":["customerReportEmail","customerReportPrint","customerReportCsv"],
  "/customer-dashboard/":["customerDashStatus"],
  "/environments/":["inventoryCustomerName"]
@@ -25,6 +27,27 @@ def fetch(path):
     with urlopen(request,timeout=30) as response:
         if response.status != 200: raise RuntimeError(f"{path} returned HTTP {response.status}")
         return response.read().decode("utf-8")
+
+def verify_local_build():
+    """Check generated site and linked assets before publishing."""
+    for route in routes:
+        page = root / "public" / route.strip("/") / "index.html"
+        if not page.is_file():
+            raise RuntimeError(f"Generated route missing: {page}")
+        html = page.read_text(encoding="utf-8")
+        for marker in required[route]:
+            if marker not in html:
+                raise RuntimeError(f"Generated {route} missing {marker}")
+        for asset in ("styles.css", "customer-security.js", "inventory.js"):
+            match = re.search(r'/'+re.escape(asset)+r'\?v=([a-zA-Z0-9-]+)', html)
+            if match and not (root / "public" / asset).is_file():
+                raise RuntimeError(f"Generated {route} references missing asset {asset}")
+    print("PASS: Generated routes and linked assets verified before deployment")
+
+
+verify_local_build()
+if "--preflight" in sys.argv:
+    sys.exit(0)
 
 for attempt in range(6):
     try:
