@@ -1474,3 +1474,11 @@ body.command-center-app{padding-left:74px}
 @media(min-width:1200px){.hero-network-status{left:27%;bottom:14px;max-width:58%}}
 @media(max-width:820px){.hero-network-status{left:5%;bottom:12px;max-width:90%}}
 @media(max-width:600px){.hero-network-status{font-size:10px;bottom:7px;max-width:94%;padding:6px 9px}}
+
+/* Hero card headline and network stage label */
+.hero-panel .hp-head{display:grid;grid-template-columns:10px minmax(0,1fr) 20px;align-items:start;column-gap:9px;min-height:48px;letter-spacing:normal}
+.hero-panel .hp-tagline{color:#e5f9f7;font-size:12px;font-weight:800;line-height:1.35;letter-spacing:0;display:block}
+.hero-panel .hp-gridicon{line-height:1.2;text-align:right}
+.hero-panel .pulse-graphic{height:166px}
+.hero-network-labels text{paint-order:stroke fill;stroke:#071725;stroke-width:2px}
+@media(max-width:600px){.hero-panel .hp-tagline{font-size:11px}.hero-panel .hp-head{column-gap:7px}}
