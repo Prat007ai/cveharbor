@@ -355,8 +355,12 @@ function render(){
     for(const asset of entries){
     const row=make('div','inventory-asset ops-result-top');
     const info=make('div','');
-    info.append(make('strong','',asset.name+' · '+asset.technology),
-      make('p','ops-note',asset.asset_type+' · Version: '+(asset.version||'Not recorded')+
+    const pluginPrefix='WordPress Plugin: ';
+    const plugin=asset.technology.startsWith(pluginPrefix);
+    const displayName=plugin?asset.technology.slice(pluginPrefix.length):asset.technology;
+    info.append(make('strong','inventory-technology-name',displayName),
+      make('p','ops-note inventory-technology-meta',(plugin?'WordPress plugin · ':'')+
+        asset.asset_type+' · Version: '+(asset.version||'Not recorded')+
         (asset.notes?' · '+asset.notes:'')));
     const actions=make('div','inventory-actions');
     const edit=make('button','ops-remove','Edit');edit.type='button';
