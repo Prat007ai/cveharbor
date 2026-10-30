@@ -572,6 +572,17 @@ function updateInventorySteps(){
   stage===2?'Step 2 of 3: Add an environment to continue.':
   'Step 3 of 3: Register assets or bulk import technologies. You can also add more customers and environments above.';
 }
+function showSetupError(message,stepId){
+ const box=document.querySelector('#inventoryWorkspace .inventory-complete-message');
+ if(!box)return;
+ box.textContent=message;box.setAttribute('role','alert');box.setAttribute('aria-live','assertive');
+ box.classList.remove('inventory-complete-success','inventory-error-flash');
+ for(const p of document.querySelectorAll('#inventoryWorkspace .inventory-step-invalid'))p.classList.remove('inventory-step-invalid');
+ const step=$(stepId);
+ if(step){step.classList.add('inventory-step-invalid');step.classList.remove('inventory-step-collapsed');const form=step.querySelector('form');if(form){form.hidden=false;form.style.display=''}}
+ void box.offsetWidth;box.classList.add('inventory-error-flash');
+ box.setAttribute('tabindex','-1');box.focus({preventScroll:true});box.scrollIntoView({behavior:'smooth',block:'center'});
+}
 function setupCustomerCompletion(){
  const host=$('inventoryStepAsset');if(!host)return;
  const panel=make('section','inventory-complete-panel');
@@ -579,14 +590,17 @@ function setupCustomerCompletion(){
  const reviewButton=make('button','ops-download','Review and Complete');reviewButton.type='button';
  const message=make('p','inventory-complete-message','');message.setAttribute('role','status');
  reviewButton.addEventListener('click',async()=>{
-  if(!signedIn||!ready){message.textContent='Sign in to review saved inventory.';return}
-  try{data=await call();render()}catch(e){message.textContent='Unable to refresh saved inventory: '+e.message;return}
+  if(!signedIn||!ready){showSetupError('Sign in to review saved inventory.','inventoryStepCustomer');return}
+  try{data=await call();render()}catch(e){showSetupError('Unable to refresh saved inventory: '+e.message,'inventoryStepCustomer');return}
   const env=data.environments.find(x=>x.id===$('inventoryEnvironmentSelect').value)||data.environments.find(x=>x.id===setupEnvironmentId);
   const customer=data.customers.find(x=>x.id===env?.customer_id)||data.customers.find(x=>x.id===setupCustomerId);
-  if(!customer){message.textContent='Select a saved customer and environment before reviewing.';return}
+  if(!customer){showSetupError('Select or add a customer before completing setup.','inventoryStepCustomer');return}
   const environments=data.environments.filter(e=>e.customer_id===customer.id);
   const assets=data.assets.filter(a=>environments.some(e=>e.id===a.environment_id));
-  if(!environments.length||!assets.length){message.textContent='Add an environment and at least one technology before completing setup.';return}
+  if(!environments.length){showSetupError('Add an environment before completing setup.','inventoryStepEnvironment');return}
+  if(!assets.length){showSetupError('Add at least one technology before completing setup.','inventoryStepAsset');return}
+  message.classList.remove('inventory-error-flash');
+  for(const p of document.querySelectorAll('#inventoryWorkspace .inventory-step-invalid'))p.classList.remove('inventory-step-invalid');
   const overlay=make('div','inventory-review-overlay');
   const dialog=make('section','inventory-review-dialog');dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Review customer inventory');
   const header=make('div','inventory-review-header');

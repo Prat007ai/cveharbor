@@ -1602,3 +1602,8 @@ body.command-center-app{padding-left:74px}
 #inventoryWorkspace .inventory-package-import button:disabled{opacity:.5;cursor:not-allowed}
 
 #inventoryWorkspace .inventory-new-customer{display:inline-flex;align-items:center;margin:8px 0 14px;padding:10px 16px;border-radius:9px;background:#14555d;color:#eafffb;border:1px solid #2d8689;font-weight:750}
+
+#inventoryWorkspace .inventory-error-flash{display:block;background:rgba(166,20,31,.22);border:2px solid #ff4d5c;color:#ffe6e7;padding:12px 15px;border-radius:10px;font-weight:750;animation:inventory-error-pulse .75s ease-in-out 4;box-shadow:0 0 15px #e7475144}
+#inventoryWorkspace .inventory-step-invalid{border:2px solid #f06a75!important;box-shadow:0 0 0 2px #dd3a3a22}
+@keyframes inventory-error-pulse{0%,100%{background:rgba(166,20,31,.22);box-shadow:0 0 8px #e7475144}50%{background:rgba(225,48,59,.42);box-shadow:0 0 22px #ff596677}}
+@media(prefers-reduced-motion:reduce){#inventoryWorkspace .inventory-error-flash{animation:none}}
