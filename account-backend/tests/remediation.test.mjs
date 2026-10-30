@@ -158,6 +158,16 @@ test('branded assignment includes safe notes and authoritative links without inv
  assert.doesNotMatch(mail.html,/Severity:\\s*Critical/);
  assert.throws(()=>renderAssignmentEmail('CVE-2026-12345','engineer@example.net','security@example.org','a'.repeat(1001)));
 });
+test('Outlook template uses centered presentation tables and explicit background cells',()=>{
+ const mail=renderAssignmentEmail('CVE-2026-12345','engineer@example.net','security@example.org','Investigate the affected versions');
+ assert.match(mail.html,/\[if mso\]/);
+ assert.match(mail.html,/width="640"/);
+ assert.match(mail.html,/bgcolor="#f3f7fa"/);
+ assert.match(mail.html,/bgcolor="#ffffff"/);
+ assert.match(mail.html,/border-collapse:collapse/);
+ assert.match(mail.html,/Investigate the affected versions/);
+ assert.match(mail.html,/Review this CVE in CVEHarbor/);
+});
 test('D1 feature gate hides assignment emails until migration and explicit configuration',async()=>{
   assert.equal(await isMigrated({DB:new MockD1(false)}),false);
   assert.equal(await isMigrated({DB:new MockD1(true)}),true);
