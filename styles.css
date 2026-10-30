@@ -1646,3 +1646,55 @@ body.command-center-app{padding-left:74px}
 .customer-software-card.customer-software-accepted{border:2px solid #8795a2;background:#293641;box-shadow:none}
 .customer-software-card.customer-software-accepted .customer-software-count{color:#d4dce4}
 .customer-software-card.customer-software-accepted:hover,.customer-software-card.customer-software-accepted:focus-visible{border-color:#b3c0cb;background:#35434e}
+
+/* Dedicated customer deliverable: browser screen stays interactive, print is isolated. */
+.customer-print-document{display:none}
+@page{size:letter portrait;margin:15mm 13mm 16mm}
+@media print{
+ body.account-page{background:#fff!important;color:#172d3a!important;font-family:Arial,Helvetica,sans-serif!important}
+ body.account-page .site-header,body.account-page .account-landing>h1,body.account-page .account-landing>.eyebrow,body.account-page .account-landing>.section-sub,body.account-page .customer-dash-toolbar,body.account-page #customerDashStatus,body.account-page #customerDashLogin{display:none!important}
+ body.account-page main.account-landing{padding:0!important;margin:0!important;max-width:none!important;width:100%!important}
+ body.account-page #customerDashAccess{display:block!important}
+ body.account-page .customer-report{display:block!important;overflow:visible!important;max-width:none!important;width:100%!important;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;background:white!important}
+ body.account-page .customer-report>:not(.customer-print-document){display:none!important}
+ body.account-page .customer-print-document{display:block!important;max-width:none!important;width:100%!important;color:#172d3a!important;background:white!important;font-size:10pt;line-height:1.5}
+ body.account-page .customer-print-document *{box-sizing:border-box;max-width:100%;overflow-wrap:anywhere}
+ body.account-page .customer-print-document .customer-print-cover{background:#10374a!important;color:#fff!important;padding:28mm 12mm 14mm!important;min-height:245mm!important;display:flex;flex-direction:column;break-after:page;page-break-after:always;position:relative}
+ .customer-print-cover .customer-print-brand{color:#8ee8d3!important;font-size:22pt;font-weight:800;letter-spacing:.07em}
+ .customer-print-cover .customer-print-eyebrow{color:#a5ded7!important;font-size:9pt;letter-spacing:.13em;margin-top:32mm}
+ .customer-print-cover h1{color:#fff!important;font-size:31pt!important;margin:9mm 0 3mm!important;line-height:1.12}
+ .customer-print-cover .customer-print-subtitle{color:#d5e8f1!important;font-size:14pt}
+ .customer-print-metadata{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22mm;padding:14px 0;border-top:1px solid #58838c;border-bottom:1px solid #58838c}
+ .customer-print-meta small{display:block;color:#9fd3db!important;font-size:8pt}
+ .customer-print-meta strong{display:block;color:#fff!important;font-size:10pt}
+ .customer-print-cover .customer-print-disclaimer{margin-top:auto;color:#d0e4e9!important;font-size:8pt;line-height:1.5}
+ .customer-print-overview,.customer-print-section{padding:3mm 0;break-before:auto}
+ .customer-print-heading{font-size:17pt!important;line-height:1.3;color:#12384a!important;border-bottom:2px solid #2f9e95;padding-bottom:3mm;margin:6mm 0 5mm!important;break-after:avoid}
+ .customer-print-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;margin:5mm 0 9mm}
+ .customer-print-metric{border:1px solid #d4e5e8!important;border-radius:4px;background:#f0f7f8!important;padding:5mm 4mm;break-inside:avoid}
+ .customer-print-metric strong{display:block;color:#126f73!important;font-size:22pt;line-height:1.1}
+ .customer-print-metric span{color:#385a66!important;font-size:9pt}
+ .customer-print-bars{display:grid;gap:4mm;margin-bottom:8mm}
+ .customer-print-bar-row{display:grid;grid-template-columns:18mm 1fr 12mm;align-items:center;gap:4mm;font-size:9pt}
+ .customer-print-track{height:7mm;background:#e7eff1!important;border-radius:6px;overflow:hidden}
+ .customer-print-fill{height:100%;background:#8daab5!important}
+ .customer-print-fill[data-kind=critical]{background:#c95562!important}.customer-print-fill[data-kind=high]{background:#dfac4f!important}
+ .customer-print-note{color:#506b75!important;font-size:8.5pt!important;margin:3mm 0!important}
+ .customer-print-table{width:100%!important;table-layout:fixed!important;border-collapse:collapse!important;font-size:8.6pt!important}
+ .customer-print-table th{background:#153c4d!important;color:#fff!important;text-align:left;padding:3mm!important;border:1px solid #153c4d!important}
+ .customer-print-table td{background:#fff!important;color:#213f4b!important;border-bottom:1px solid #dce8ea!important;padding:2.5mm 3mm!important;vertical-align:top;word-break:break-word;overflow-wrap:anywhere}
+ .customer-print-table th:nth-child(1){width:36%}.customer-print-table th:nth-child(2){width:43%}.customer-print-table th:nth-child(3){width:21%}
+ .customer-print-table thead{display:table-header-group!important}.customer-print-table tr{break-inside:avoid!important}
+ .customer-print-finding{border:1px solid #d7e5e9!important;border-left:4px solid #3f9f99!important;border-radius:4px;margin:3mm 0!important;padding:3mm 4mm!important;break-inside:avoid!important;page-break-inside:avoid!important;background:#fff!important}
+ .customer-print-finding-top{display:flex;gap:4mm;align-items:center;flex-wrap:wrap}
+ .customer-print-finding-top strong{font-size:10pt;color:#133f53!important}
+ .customer-print-severity{font-size:7.5pt;font-weight:bold;background:#e6eff2!important;border-radius:3px;padding:1mm 2mm;color:#315365!important}
+ .customer-print-severity[data-level=critical]{background:#fae4e5!important;color:#a32b3d!important}
+ .customer-print-severity[data-level=high]{background:#fff0d6!important;color:#87540d!important}
+ .customer-print-finding-status{margin-left:auto;color:#516f78!important;font-size:8pt}
+ .customer-print-finding h3{font-size:10pt!important;margin:2mm 0!important;color:#164a5c!important}
+ .customer-print-finding p{font-size:8.5pt!important;margin:2mm 0!important;color:#253e48!important}
+ .customer-print-finding .customer-print-source{font-size:7pt!important;color:#246c7b!important}
+ .customer-print-footer{margin:10mm 0 0;border-top:1px solid #bdd3d9;padding:3mm 0;color:#54707b!important;font-size:8pt}
+ *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+}

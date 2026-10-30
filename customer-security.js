@@ -493,6 +493,69 @@ function renderScorePanel(root,customer,scope,stats){
   }catch(_){message.textContent='Score history could not be loaded. Current assessment is still available.'}
  })();
 }
+function buildCustomerPrintDocument(customer,stats,scope,date){
+ const doc=text('div','','customer-print-document');
+ const cover=text('section','','customer-print-cover');
+ const brand=text('div','CVEHarbor','customer-print-brand');
+ const eyebrow=text('p','VULNERABILITY INTELLIGENCE  /  CUSTOMER SECURITY REVIEW','customer-print-eyebrow');
+ cover.append(brand,eyebrow,text('h1',customer.name),text('p','Inventory Based Vulnerability Intelligence Report','customer-print-subtitle'));
+ const metadata=text('div','','customer-print-metadata');
+ for(const [label,value] of [['Report date',date],['Environment',scope],['Classification','Customer Confidential']]){
+  const item=text('div','','customer-print-meta');item.append(text('small',label),text('strong',value));metadata.append(item);
+ }
+ cover.append(metadata);
+ const notice=text('p','Based on submitted software inventory and available public advisories. No authenticated endpoint scan was performed. Findings are candidates requiring vendor and environment verification.','customer-print-disclaimer');
+ cover.append(notice);doc.append(cover);
+ const section=(name)=>text('h2',name,'customer-print-heading');
+ const counts=text('section','','customer-print-overview');
+ counts.append(section('Executive overview'));
+ const metrics=text('div','','customer-print-metrics');
+ const unresolved=stats.issues.filter(i=>!closedStatus(statusFor(i)));
+ const critical=unresolved.filter(i=>i.severity==='critical').length;
+ const high=unresolved.filter(i=>i.severity==='high').length;
+ const values=[['Technology entries',stats.assets.length],['Potential findings',stats.total],['Open for review',unresolved.length],['Critical candidates',critical],['High candidates',high],['Environments',stats.environments.length]];
+ for(const [label,count] of values){const card=text('div','','customer-print-metric');card.append(text('strong',count),text('span',label));metrics.append(card)}
+ counts.append(metrics);
+ const colorBars=text('div','','customer-print-bars');
+ const severityCounts=[['Critical',critical,'critical'],['High',high,'high'],['Other',unresolved.length-critical-high,'other']];
+ for(const [label,num,kind] of severityCounts){
+  const group=text('div','','customer-print-bar-row');
+  group.append(text('span',label),text('div','','customer-print-track'),text('strong',num));
+  const fill=text('div','','customer-print-fill');fill.dataset.kind=kind;fill.style.width=(unresolved.length?Math.round(100*num/unresolved.length):0)+'%';
+  group.children[1].append(fill);colorBars.append(group);
+ }
+ counts.append(section('Open finding severity'),colorBars);
+ counts.append(text('p','Prioritization is preliminary. A recorded status does not independently verify whether a patch has been deployed.','customer-print-note'));
+ doc.append(counts);
+ const inventorySection=text('section','','customer-print-section');inventorySection.append(section('Recorded software inventory'));
+ const inventoryTable=table(['Asset / environment','Technology','Installed version'],stats.assets.map(a=>[
+  a.name+' / '+(stats.environments.find(e=>e.id===a.environment_id)?.name||'Environment'),
+  a.technology.replace(/^WordPress Plugin: /,''),a.version||'Unknown'
+ ]));
+ inventoryTable.classList.add('customer-print-table');inventorySection.append(inventoryTable);doc.append(inventorySection);
+ const findingsSection=text('section','','customer-print-section');
+ findingsSection.append(section('Findings requiring verification'));
+ findingsSection.append(text('p','Listed statuses are user recorded. Confirm affected product versions and prerequisites against original advisories before remediation decisions.','customer-print-note'));
+ const order={critical:0,high:1,medium:2,low:3};
+ const findings=[...stats.issues].sort((a,b)=>(order[a.severity]??4)-(order[b.severity]??4)).slice(0,250);
+ for(const finding of findings){
+  const block=text('article','','customer-print-finding');
+  const head=text('div','','customer-print-finding-top');
+  const sev=text('span',String(finding.severity||'unknown').toUpperCase(),'customer-print-severity');
+  sev.dataset.level=String(finding.severity||'unknown').toLowerCase();
+  head.append(text('strong',finding.id),sev,text('span',statusFor(finding),'customer-print-finding-status'));
+  block.append(head,text('h3',finding.technology+' · '+(finding.version||'Unknown')),text('p',shortSummary(finding)));
+  const meta=text('p','Asset: '+(finding.asset?.name||'Recorded asset')+'  |  Published: '+(finding.published||'Not available'),'customer-print-note');
+  block.append(meta);
+  if(finding.evidence)block.append(text('p','Assessment: '+finding.evidence,'customer-print-note'));
+  if(finding.source_url)block.append(text('p','Source: '+finding.source_url,'customer-print-source'));
+  findingsSection.append(block);
+ }
+ if(stats.issues.length>250||stats.limited)findingsSection.append(text('p','Additional candidate findings may exist beyond the report limit. Narrow by environment to review the remaining records.','customer-print-note'));
+ doc.append(findingsSection);
+ const footer=text('p','CVEHarbor  ·  Customer Confidential  ·  Inventory Based Security Review','customer-print-footer');doc.append(footer);
+ return doc;
+}
 function drawReport(){
  const id=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const root=$('customerReportBody');root.replaceChildren();
@@ -501,6 +564,7 @@ function drawReport(){
  $('customerReportCsv').disabled=!customer;
  if(!customer){root.append(text('p','Select a customer to generate their security review.','ops-note'));return}
  const stats=compute(customer.id,env),date=new Date().toISOString().slice(0,10);
+ root.append(buildCustomerPrintDocument(customer,stats,env?(stats.environments[0]?.name||'Selected environment'):'All environments',date));
  root.append(text('p','CVEHarbor | Customer Security Review','eyebrow'),text('h2',customer.name),
   text('p','Prepared: '+date+' · Scope: '+(env?(stats.environments[0]?.name||'Selected environment'):'All recorded environments')),
   text('p','This is an automated review of user-entered software inventory and a limited public advisory index. No customer endpoints were scanned. Potential findings must be validated before being treated as confirmed vulnerabilities.','ops-note'));
