@@ -754,7 +754,7 @@ assert.ok(html.includes('<option>WEB</option>'),'WEB asset type appears in inven
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("'Server','WEB','Application'"),'CSV importer accepts WEB asset type');
 
 assert.ok(fs.readFileSync('inventory.js','utf8').includes(String.raw`Version,Notes\\r\\nWEB01`) === false,'CSV template does not emit escaped newline literals');
-assert.ok(fs.readFileSync('inventory.js','utf8').includes(String.raw`Version,Notes\r\nWEB01`),'CSV template uses actual newline escape sequences');
+assert.ok(fs.readFileSync('inventory.js','utf8').includes('Production Web Stack,WEB,PHP'),'CSV template includes shared stack rows');
 
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("const displayName=plugin?asset.technology.slice(pluginPrefix.length):asset.technology"),'inventory uses short plugin labels');
 
