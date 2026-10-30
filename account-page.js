@@ -19,6 +19,20 @@ async function request(path,method='GET',payload){
  if(!response.ok)throw Error(result.error||'Account service unavailable');
  return result;
 }
+function showRecoveryCodes(id,codes){
+ const list=$(id);list.replaceChildren();
+ for(const code of codes){
+  if(!/^[a-f0-9]{16}$/.test(code))throw Error('Unexpected recovery code format');
+  const item=document.createElement('li'),value=document.createElement('code'),copy=document.createElement('button');
+  value.textContent=code;
+  copy.type='button';copy.className='account-recovery-copy';copy.textContent='Copy code';
+  copy.addEventListener('click',async()=>{
+   try{await navigator.clipboard.writeText(code);copy.textContent='Copied';}
+   catch{message('Select and copy the code text manually.')}
+  });
+  item.append(value,copy);list.append(item);
+ }
+}
 function signedIn(email){
  $('accountPageSignedOut').hidden=true;
  $('accountPageSignedIn').hidden=false;
@@ -86,14 +100,14 @@ $('accountPageRequiredEnrollForm').addEventListener('submit',async event=>{
   mfaChallenge='';
   $('accountPageRequiredEnrollForm').hidden=true;
   $('accountPageRequiredSecret').textContent='';
-  $('accountPageRequiredRecoveryCodes').textContent=result.recovery_codes.join('\n');
+  showRecoveryCodes('accountPageRequiredRecoveryCodes',result.recovery_codes);
   $('accountPageRequiredRecovery').hidden=false;
   message('Authenticator enabled. Save your recovery codes before continuing.');
   window.cveharborEnrolledEmail=result.email;
  }catch(error){message(error.message)}finally{button.disabled=false}
 });
 $('accountPageRequiredContinue').addEventListener('click',()=>{
- $('accountPageRequiredRecoveryCodes').textContent='';
+ $('accountPageRequiredRecoveryCodes').replaceChildren();
  $('accountPageRequiredEnroll').hidden=true;
  signedIn(window.cveharborEnrolledEmail||$('accountPageEmail').value.trim());
 });
@@ -122,13 +136,29 @@ $('accountPageTotpEnrollForm').addEventListener('submit',async event=>{
  event.preventDefault();const button=event.currentTarget.querySelector('button[type=submit]');button.disabled=true;
  try{const result=await request('/auth/totp/enable','POST',{code:$('accountPageTotpEnrollCode').value.trim()});
   $('accountPageTotpEnroll').hidden=true;$('accountPageTotpSecret').textContent='';
-  $('accountPageTotpRecoveryCodes').textContent=result.recovery_codes.join('\n');
+  showRecoveryCodes('accountPageTotpRecoveryCodes',result.recovery_codes);
   $('accountPageTotpRecovery').hidden=false;
   $('accountPageTotpStatus').textContent='Authenticator app enabled.';
   message('MFA is enabled. Save your recovery codes securely.');
  }catch(e){message(e.message)}finally{button.disabled=false}
 });
-$('accountPageTotpRecoveryDone').addEventListener('click',()=>{$('accountPageTotpRecoveryCodes').textContent='';$('accountPageTotpRecovery').hidden=true;message('Recovery codes hidden. Sign in will now require your authenticator.');});
+$('accountPageTotpRecoveryDone').addEventListener('click',()=>{$('accountPageTotpRecoveryCodes').replaceChildren();$('accountPageTotpRecovery').hidden=true;message('Recovery codes hidden. Sign in will now require your authenticator.');});
+$('accountPageRecoveryRotateStart').addEventListener('click',()=>{
+ $('accountPageRecoveryRotateForm').hidden=false;
+ $('accountPageRecoveryRotateCode').focus();
+});
+$('accountPageRecoveryRotateForm').addEventListener('submit',async event=>{
+ event.preventDefault();const button=event.currentTarget.querySelector('button[type=submit]');
+ button.disabled=true;
+ try{
+  const result=await request('/auth/totp/recovery/rotate','POST',{code:$('accountPageRecoveryRotateCode').value.trim()});
+  showRecoveryCodes('accountPageTotpRecoveryCodes',result.recovery_codes);
+  $('accountPageTotpRecovery').hidden=false;
+  $('accountPageRecoveryRotateForm').hidden=true;
+  $('accountPageRecoveryRotateCode').value='';
+  message('All old recovery codes are invalid. Save the new numbered codes securely.');
+ }catch(error){message(error.message)}finally{button.disabled=false}
+});
 request('/me').then(data=>{
  if(data.authenticated)signedIn(data.email||'');
  else signedOut();
