@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-30",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6084,
+  "candidate_records": 6088,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -55141,6 +55141,134 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-101774",
+      "title": "Vulnerability in the MySQL Server, MySQL Cluster product of Oracle MySQL (component: Server: Pluggable Auth)",
+      "severity": "medium",
+      "categories": [
+        "MySQL / MariaDB"
+      ],
+      "published": "2026-10-20",
+      "updated": "2026-10-30",
+      "summary": "Vulnerability in the MySQL Server, MySQL Cluster product of Oracle MySQL (component: Server: Pluggable Auth). Supported versions that are affected are MySQL Server: 8.4.0-8.4.12, 9.7.0-9.7.3, 26.7.0-26.7.1; MySQL Cluster: 8.0.0-8.0.49, 8.4.0-8.4.12, 9.7.0-9.7.3 and 26.7.0-26.7.1. Difficult to exploit vulnerability allows unauthenticated attacker with network access via multiple protocols to compromise MySQL Server, MySQL Cluster. Successful attacks of this vulnerability can result in unauthorized ability to cause a hang or frequently repeatable crash (complete DOS) of MySQL Server, MySQL Cluster as well as unauthorized update, insert or delete access to some of MySQL Server, MySQL Cluster accessible data. CVSS 3.1 Base Score 6.5 (Integrity and Availability impacts). CVSS Vector: (CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:H).",
+      "affected": "Products identified in NVD configurations: oracle mysql_cluster; oracle mysql_server",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-101774"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://www.oracle.com/security-alerts/cpuoct2026.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:09:45Z",
+      "source_updated_at": "2026-10-30T15:06:55.220",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-101775",
+      "title": "Vulnerability in the MySQL Server, MySQL Cluster product of Oracle MySQL (component: Server: Replication)",
+      "severity": "high",
+      "categories": [
+        "MySQL / MariaDB"
+      ],
+      "published": "2026-10-20",
+      "updated": "2026-10-30",
+      "summary": "Vulnerability in the MySQL Server, MySQL Cluster product of Oracle MySQL (component: Server: Replication). Supported versions that are affected are MySQL Server: 8.4.0-8.4.12, 9.7.0-9.7.3, 26.7.0-26.7.1; MySQL Cluster: 8.0.0-8.0.49, 8.4.0-8.4.12, 9.7.0-9.7.3 and 26.7.0-26.7.1. Difficult to exploit vulnerability allows unauthenticated attacker with network access via multiple protocols to compromise MySQL Server, MySQL Cluster. Successful attacks of this vulnerability can result in unauthorized creation, deletion or modification access to critical data or all MySQL Server, MySQL Cluster accessible data and unauthorized ability to cause a hang or frequently repeatable crash (complete DOS) of MySQL Server, MySQL Cluster. CVSS 3.1 Base Score 7.4 (Integrity and Availability impacts). CVSS Vector: (CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:H).",
+      "affected": "Products identified in NVD configurations: oracle mysql_cluster; oracle mysql_server",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-101775"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://www.oracle.com/security-alerts/cpuoct2026.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:09:45Z",
+      "source_updated_at": "2026-10-30T15:08:20.247",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-101776",
+      "title": "Vulnerability in the MySQL Server, MySQL Cluster product of Oracle MySQL (component: Server: Group Replication Plugin)",
+      "severity": "medium",
+      "categories": [
+        "MySQL / MariaDB"
+      ],
+      "published": "2026-10-20",
+      "updated": "2026-10-30",
+      "summary": "Vulnerability in the MySQL Server, MySQL Cluster product of Oracle MySQL (component: Server: Group Replication Plugin). Supported versions that are affected are MySQL Server: 8.4.0-8.4.12, 9.7.0-9.7.3, 26.7.0-26.7.1; MySQL Cluster: 8.0.0-8.0.49, 8.4.0-8.4.12, 9.7.0-9.7.3 and 26.7.0-26.7.1. Easily exploitable vulnerability allows high privileged attacker with network access via multiple protocols to compromise MySQL Server, MySQL Cluster. Successful attacks of this vulnerability can result in unauthorized ability to cause a hang or frequently repeatable crash (complete DOS) of MySQL Server, MySQL Cluster. CVSS 3.1 Base Score 4.9 (Availability impacts). CVSS Vector: (CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:N/I:N/A:H).",
+      "affected": "Products identified in NVD configurations: oracle mysql_cluster; oracle mysql_server",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-101776"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://www.oracle.com/security-alerts/cpuoct2026.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:09:45Z",
+      "source_updated_at": "2026-10-30T15:08:39.047",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-101777",
+      "title": "Vulnerability in the MySQL Server, MySQL Cluster product of Oracle MySQL (component: Server: Security: Encryption)",
+      "severity": "medium",
+      "categories": [
+        "MySQL / MariaDB"
+      ],
+      "published": "2026-10-20",
+      "updated": "2026-10-30",
+      "summary": "Vulnerability in the MySQL Server, MySQL Cluster product of Oracle MySQL (component: Server: Security: Encryption). Supported versions that are affected are MySQL Server: 9.7.0-9.7.3, 26.7.0-26.7.1; MySQL Cluster: 9.7.0-9.7.3 and 26.7.0-26.7.1. Easily exploitable vulnerability allows high privileged attacker with network access via multiple protocols to compromise MySQL Server, MySQL Cluster. Successful attacks of this vulnerability can result in unauthorized ability to cause a hang or frequently repeatable crash (complete DOS) of MySQL Server, MySQL Cluster and unauthorized read access to a subset of MySQL Server, MySQL Cluster accessible data. CVSS 3.1 Base Score 5.5 (Confidentiality and Availability impacts). CVSS Vector: (CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:L/I:N/A:H).",
+      "affected": "Products identified in NVD configurations: oracle mysql_cluster; oracle mysql_server",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-101777"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://www.oracle.com/security-alerts/cpuoct2026.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:09:45Z",
+      "source_updated_at": "2026-10-30T15:08:49.157",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-101471",
       "title": "Vulnerability in the Oracle Product Lifecycle Analytics product of Oracle Supply Chain (component: Installation Issues)",
       "severity": "medium",
@@ -62860,51 +62988,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-102870",
-      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core",
-        "Linux"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
-      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
-      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
-      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft corrected Blazor debugger security advisory",
-          "url": "https://github.com/dotnet/announcements/issues/492"
-        },
-        {
-          "label": "ASP.NET Core GHSA vendor record",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
-        },
-        {
-          "label": "Ubuntu Security Notice",
-          "url": "https://ubuntu.com/security/notices/USN-8958-1"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-25",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00906,
-      "epss_percentile": 0.59766,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2026-96951",
       "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
       "severity": "high",
@@ -62947,6 +63030,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.09813,
       "epss_percentile": 0.95536,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2026-102870",
+      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core",
+        "Linux"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
+      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
+      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
+      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "ASP.NET Core GHSA vendor record",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
+        },
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8958-1"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-25",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00906,
+      "epss_percentile": 0.59766,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -118036,118 +118164,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-69517",
-      "title": "CVE-2026-69517 Windows Wireless Networking Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Windows Wireless Networking allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69517"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69500",
-      "title": "CVE-2026-69500 Windows Image Acquisition Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Windows Image Acquisition allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69500"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69505",
-      "title": "CVE-2026-69505 Windows NTFS Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Out-of-bounds read in Windows NTFS allows an authorized attacker to elevate privileges over a network.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69505"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69507",
-      "title": "CVE-2026-69507 Microsoft Windows Search Component Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Insertion of sensitive information into externally-accessible file or directory in Microsoft Windows Search Component allows an authorized attacker to disclose information over a network.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69507"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-86422",
       "title": "ImageMagick before 7.1.2-30 contains a time-of-check-time-of-use vulnerability in path policy enforcement on Windows that allows attackers to bypass read or write restrictions",
       "severity": "low",
@@ -136802,37 +136818,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2025-7624",
-      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
-      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
-      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.10514,
-      "epss_percentile": 0.95752,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2025-6704",
       "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
       "severity": "critical",
@@ -136861,6 +136846,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.11772,
       "epss_percentile": 0.96066,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2025-7624",
+      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
+      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
+      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.10514,
+      "epss_percentile": 0.95752,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -157266,85 +157282,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T15:03:57Z",
-      "last_attempt": "2026-10-30T15:03:57Z",
+      "last_success": "2026-10-30T15:09:45Z",
+      "last_attempt": "2026-10-30T15:09:45Z",
       "items_processed": 254,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T15:03:57Z",
-      "last_attempt": "2026-10-30T15:03:57Z",
+      "last_success": "2026-10-30T15:09:45Z",
+      "last_attempt": "2026-10-30T15:09:45Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T15:03:57Z",
-      "last_attempt": "2026-10-30T15:03:57Z",
-      "items_processed": 1833,
+      "last_success": "2026-10-30T15:09:45Z",
+      "last_attempt": "2026-10-30T15:09:45Z",
+      "items_processed": 1837,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T15:03:57Z",
-      "last_attempt": "2026-10-30T15:03:57Z",
+      "last_success": "2026-10-30T15:09:45Z",
+      "last_attempt": "2026-10-30T15:09:45Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T15:03:57Z",
-      "last_attempt": "2026-10-30T15:03:57Z",
+      "last_success": "2026-10-30T15:09:45Z",
+      "last_attempt": "2026-10-30T15:09:45Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T15:03:57Z",
-      "last_attempt": "2026-10-30T15:03:57Z",
+      "last_success": "2026-10-30T15:09:45Z",
+      "last_attempt": "2026-10-30T15:09:45Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T15:03:57Z",
-      "last_attempt": "2026-10-30T15:03:57Z",
+      "last_success": "2026-10-30T15:09:45Z",
+      "last_attempt": "2026-10-30T15:09:45Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T15:03:57Z",
-      "last_attempt": "2026-10-30T15:03:57Z",
+      "last_success": "2026-10-30T15:09:45Z",
+      "last_attempt": "2026-10-30T15:09:45Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T15:03:57Z",
-      "last_attempt": "2026-10-30T15:03:57Z",
+      "last_success": "2026-10-30T15:09:45Z",
+      "last_attempt": "2026-10-30T15:09:45Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T15:03:57Z",
-      "last_attempt": "2026-10-30T15:03:57Z",
+      "last_success": "2026-10-30T15:09:45Z",
+      "last_attempt": "2026-10-30T15:09:45Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T15:03:57Z",
-      "last_attempt": "2026-10-30T15:03:57Z",
+      "last_success": "2026-10-30T15:09:45Z",
+      "last_attempt": "2026-10-30T15:09:45Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T15:03:57Z",
-      "last_attempt": "2026-10-30T15:03:57Z",
+      "last_success": "2026-10-30T15:09:45Z",
+      "last_attempt": "2026-10-30T15:09:45Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -157356,7 +157372,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T15:03:57Z",
-  "last_successful_update": "2026-10-30T15:03:57Z",
+  "last_checked_at": "2026-10-30T15:09:45Z",
+  "last_successful_update": "2026-10-30T15:09:45Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
