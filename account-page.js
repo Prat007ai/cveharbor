@@ -58,7 +58,7 @@ function signedIn(email){
  $('accountPageIdentity').textContent='Signed in as '+email;
  if(document.body.classList.contains('workspace-redesign')){$('accountPageHeading').innerHTML='My <span>Workspace</span>';const links=$('workspaceAccess');if(links)links.hidden=false;}else $('accountPageHeading').innerHTML='Account <span>&amp; Security</span>';
  message('Your account is connected.');
- loadTotpStatus();
+ if(!document.body.classList.contains('workspace-redesign'))loadTotpStatus();
 }
 function signedOut(){
  window.dispatchEvent(new CustomEvent('cveharbor-auth-change',{detail:{authenticated:false}}));
