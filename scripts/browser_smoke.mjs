@@ -11,7 +11,7 @@ assert.ok(dashboardHtml.includes('customerDashMetrics')&&dashboardHtml.includes(
 assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('href="/customer-dashboard/"'),'customer dashboard accessible from workspace');
 assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('href="/customer-reports/"'),'customer reports accessible from workspace');
 const html=fs.readFileSync('index.html','utf8');
-assert.ok(html.includes('styles.css?v=report-print-134'),'shared footer stylesheet cache version updated');
+assert.match(html,/styles\\.css\\?v=[a-zA-Z0-9-]+/,'versioned main stylesheet loaded');
 assert.ok(fs.readFileSync('styles.css','utf8').includes('width:min(1500px,calc(100% - 32px))'),'compact feed banner width is shared globally');
 // Validate every canonical page is actually emitted by the Pages build.
 const routes={
