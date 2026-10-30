@@ -139,6 +139,14 @@ export async function inventoryRoute(req,env,user,path,data={}){
     await env.DB.prepare('UPDATE inventory_customers SET name=? WHERE id=? AND user_id=?').bind(name,match[2],user.id).run();
     return json({saved:true});
   }
+  if(match&&req.method==='PUT'&&match[1]==='environments'){
+    await owned(env,'inventory_environments',user.id,match[2]);
+    const name=required(data.name,100,'environment name');
+    const kind=required(data.kind,32,'environment type');
+    if(!['Production','Staging','Development','QA','UAT','Other'].includes(kind))throw new InventoryError('Invalid environment type');
+    await env.DB.prepare('UPDATE inventory_environments SET name=?,kind=? WHERE id=? AND user_id=?').bind(name,kind,match[2],user.id).run();
+    return json({saved:true});
+  }
   if(match&&req.method==='PUT'&&match[1]==='assets'){
     await owned(env,'inventory_assets',user.id,match[2]);
     const name=required(data.name,120,'asset name'),technology=required(data.technology,120,'technology');

@@ -255,7 +255,7 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('file.size>65536'),'pl
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('plugin-sources/'),'plugin source URLs can be saved and verified');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("Technology | Version"),'technology version entry format is validated');
 
-assert.ok(html.includes('inventory.js?v=customer-actions-127'),'public build references account inventory client');
+assert.ok(html.includes('inventory.js?v=edit-full-128'),'public build references account inventory client');
 const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
 const picker=inventoryDom.window.document.querySelector('.inventory-plugin-import:not(.inventory-bulk-import):not(.inventory-package-import) input[type=file]');
@@ -830,3 +830,5 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('customerActions.appen
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('inventory-edit-customer'),'customer edit action has stable selector');
 
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('customerActions.append(deleteCustomer)'),'customer actions grouped together');
+
+assert.ok(fs.readFileSync('inventory.js','utf8').includes('setupCustomerId=customer.id'),'edit customer selects saved customer inventory');
