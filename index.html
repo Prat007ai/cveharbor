@@ -389,15 +389,16 @@
     <div class="dialog-layout">
       <button type="button" class="close-dialog" id="closeRemediationAssign" aria-label="Close assignment form">×</button>
       <p class="eyebrow">VULNERABILITY REVIEW REQUEST</p><h2 id="remediationAssignTitle">Assign a CVE for investigation</h2>
-      <p class="ops-note">An email will ask your colleague to confirm whether the CVE affects an environment they manage, then create and manage a work item in their own Azure DevOps organization. No DevOps ticket is created automatically.</p>
+      <p class="ops-note">Your colleague will receive a CVEHarbor email with verified reference links, your notes and investigation steps. They can review the affected products and manage any remediation in their own Azure DevOps organization. No DevOps ticket is created automatically.</p>
       <form id="remediationAssignForm" class="ops-form">
         <label>CVE ID<input id="remediationAssignCve" readonly required aria-readonly="true"></label>
         <label>Colleague email address<input id="remediationAssignEmail" type="email" autocomplete="off" maxlength="254" placeholder="colleague@company.com" required></label>
+        <label class="ops-span">Notes for the reviewer (optional)<textarea id="remediationAssignNotes" maxlength="1000" rows="4" placeholder="What should the reviewer check? Do not include private customer or server details."></textarea><small id="remediationAssignNotesCount">0/1000 characters</small></label>
         <label class="ops-span remediation-confirm"><span><input id="remediationAssignConfirm" type="checkbox" required> I have confirmed this person is responsible for security reviews and the recipient email is appropriate.</span></label>
         <button id="remediationSendAssignment" class="ops-download" type="submit">Assign and send email</button>
       </form>
       <p id="remediationAssignMessage" class="ops-note" role="status">Sign in to CVEHarbor to send controlled assignments.</p>
-      <p class="ops-note">CVEHarbor never emails your private notes, server names, or customer records. Assignments are restricted to administrator approved email domains.</p>
+      <p class="ops-note">Only add notes appropriate for email. Do not include credentials, private customer records, internal server names or sensitive environment details. Assignments are restricted to administrator approved email domains.</p>
     </div>
   </dialog>
   <dialog id="lifecycleDetailDialog" class="detail-dialog lifecycle-detail-dialog" aria-labelledby="lifecycleDetailTitle">
