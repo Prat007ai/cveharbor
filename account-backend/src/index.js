@@ -132,9 +132,11 @@ export default {async fetch(req,env,ctx){
    const statements=[env.DB.prepare('DELETE FROM totp_recovery_codes WHERE user_id=?').bind(user.id)];
    for(const item of recovery)statements.push(env.DB.prepare('INSERT INTO totp_recovery_codes(user_id,code_hash) VALUES(?,?)').bind(user.id,await hashRecovery(item,user.id)));
    statements.push(env.DB.prepare('UPDATE user_totp SET enabled=1,enabled_at=?,last_counter=? WHERE user_id=? AND enabled=0').bind(now,counter,user.id));
+   // Revoke other existing sessions so an earlier email-only session cannot persist after enrollment.
+   statements.push(env.DB.prepare('DELETE FROM sessions WHERE user_id=? AND id<>?').bind(user.id,user.sid));
    // D1 batch is transactional: do not enable MFA without all recovery codes.
    const applied=await env.DB.batch(statements);
-   if(applied[applied.length-1]?.meta?.changes!==1)return response({error:'Enrollment already completed'},409);
+   if(applied[applied.length-2]?.meta?.changes!==1)return response({error:'Enrollment already completed'},409);
    return response({enabled:true,recovery_codes:recovery,message:'Save these codes securely. Each can only be used once.'});
   }
   if(path==='/v1/customer-report-email'&&req.method==='POST'){
