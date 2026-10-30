@@ -826,7 +826,7 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('showSetupError('),'re
 
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('Edit customer'),'customer edit action exists');
 
-assert.ok(fs.readFileSync('inventory.js','utf8').includes("header.append(editCustomer)"),'customer cards include edit action');
+assert.ok(fs.readFileSync('inventory.js','utf8').includes('customerActions.append(editCustomer)'),'customer cards include edit action');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('inventory-edit-customer'),'customer edit action has stable selector');
 
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('customerActions.append(deleteCustomer)'),'customer actions grouped together');
