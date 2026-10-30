@@ -843,8 +843,22 @@ async function init(){
       });
       const result=await response.json().catch(()=>({}));
       if(!response.ok||!result.sent)throw Error(result.error||'Unable to email report');
-      message.textContent='Report sent successfully to '+target+'.';
       file.value='';consent.checked=false;
+      close();
+      const successShade=text('div','','customer-email-overlay customer-email-success-overlay');
+      const successDialog=text('section','','customer-email-success-dialog');
+      successDialog.setAttribute('role','dialog');
+      successDialog.setAttribute('aria-modal','true');
+      successDialog.setAttribute('aria-labelledby','customerEmailSuccessTitle');
+      const check=text('div','✓','customer-email-success-check');check.setAttribute('aria-hidden','true');
+      const heading=text('h2','Report sent successfully');heading.id='customerEmailSuccessTitle';
+      const detail=text('p','Report sent successfully to '+target+'.','customer-email-success-detail');
+      const dismiss=text('button','Close','ops-download');dismiss.type='button';
+      const dismissSuccess=()=>{document.removeEventListener('keydown',successKey);successShade.remove();$('customerReportEmail')?.focus()};
+      const successKey=e=>{if(e.key==='Escape')dismissSuccess()};
+      document.addEventListener('keydown',successKey);
+      dismiss.addEventListener('click',dismissSuccess);
+      successDialog.append(check,heading,detail,dismiss);successShade.append(successDialog);document.body.append(successShade);dismiss.focus();
      }catch(error){message.textContent=error.message}
      finally{send.disabled=false}
     });
