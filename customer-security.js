@@ -540,6 +540,9 @@ function buildCustomerPrintDocument(customer,stats,scope,date){
  const findings=[...stats.issues].sort((a,b)=>(order[a.severity]??4)-(order[b.severity]??4)).slice(0,250);
  for(const finding of findings){
   const block=text('article','','customer-print-finding');
+  const findingStatus=statusFor(finding);
+  const statusTheme={'Needs Review':'review','Fix in Progress':'progress','Fixed/Patched':'fixed','Accepted Risk':'accepted','Not Applicable':'not-applicable'};
+  block.dataset.status=statusTheme[findingStatus]||'review';
   const head=text('div','','customer-print-finding-top');
   const sev=text('span',String(finding.severity||'unknown').toUpperCase(),'customer-print-severity');
   sev.dataset.level=String(finding.severity||'unknown').toLowerCase();

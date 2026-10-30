@@ -166,3 +166,6 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('.customer-report>:not(.
 const printCSS=fs.readFileSync('styles.css','utf8');
 assert.ok(!printCSS.includes('.customer-report *{color:#111!important;background:#fff!important}'),'legacy print rules must not override branded cover');
 assert.ok(printCSS.includes('.customer-print-cover *{background-color:transparent!important'),'cover children remain transparent');
+
+assert.ok(fs.readFileSync('customer-security.js','utf8').includes('block.dataset.status=statusTheme[findingStatus]'),'print finding cards use remediation status themes');
+assert.ok(fs.readFileSync('styles.css','utf8').includes('customer-print-finding[data-status=accepted]'),'accepted risk print theme exists');
