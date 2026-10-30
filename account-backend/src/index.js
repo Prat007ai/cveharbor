@@ -67,6 +67,36 @@ export default {async fetch(req,env,ctx){
   const user=await me(req,env);
   if(path==='/v1/me'&&req.method==='GET')return response(user?{authenticated:true,email:user.email}:{authenticated:false},user?200:401);
   if(!user)return response({error:'Sign in required'},401);
+  if(path==='/v1/customer-report-email'&&req.method==='POST'){
+    const data=await body(req);
+    const address=String(data.to||'').trim();
+    const customerId=String(data.customer_id||'');
+    const environmentId=String(data.environment_id||'');
+    const pdf=String(data.pdf_base64||'');
+    if(!/^[^\\s@]{1,64}@[^\\s@]{1,190}\\.[^\\s@]+$/.test(address))return response({error:'Valid recipient email address required'},400);
+    if(!/^[0-9a-f-]{36}$/i.test(customerId))return response({error:'Select a customer'},400);
+    if(pdf.length>3500000||pdf.length<100||!/^JVBERi0/.test(pdf)||!/^[A-Za-z0-9+/]+={0,2}$/.test(pdf))return response({error:'Attach a valid PDF report smaller than 2.5 MB'},400);
+    const record=await env.DB.prepare('SELECT name FROM inventory_customers WHERE id=? AND user_id=?').bind(customerId,user.id).first();
+    if(!record)return response({error:'Customer not found in your account'},404);
+    if(environmentId){
+      const associated=await env.DB.prepare('SELECT id FROM inventory_environments WHERE id=? AND customer_id=? AND user_id=?').bind(environmentId,customerId,user.id).first();
+      if(!associated)return response({error:'Environment does not belong to the selected customer'},400);
+    }
+    if(!await limit(env,'report-email:'+user.id,5))return response({error:'Email limit reached. Try again later.'},429);
+    const escape=x=>String(x).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const subject='CVEHarbor Customer Security Review | '+record.name;
+    const html='<div style="background:#f1f6f8;padding:30px 16px;font-family:Arial,sans-serif;color:#153648"><div style="max-width:620px;margin:auto;background:white;border:1px solid #d7e4e9;border-radius:12px;overflow:hidden"><div style="background:#10374a;color:white;padding:26px 30px"><strong style="font-size:24px;letter-spacing:1px;color:#8ee8d3">CVEHarbor</strong><p style="margin:8px 0 0;color:#d8eaf0">Vulnerability Intelligence</p></div><div style="padding:28px 30px"><p style="color:#2c8c85;font-weight:bold">CUSTOMER SECURITY REVIEW</p><h2 style="margin:6px 0 20px">'+escape(record.name)+'</h2><p>Please find attached the CVEHarbor customer security review report for your reference.</p><p>The report summarizes the recorded technology inventory and potential security advisories identified for review. Findings require validation against the installed software and applicable vendor guidance.</p><p>For questions about the report or its findings, please contact the person who shared it with you.</p><p style="margin-top:25px;color:#52707b;font-size:12px">Confidential customer information. Please share only with authorized recipients.</p></div><div style="background:#edf5f6;padding:14px 30px;color:#52707b;font-size:12px">CVEHarbor | Customer Security Intelligence</div></div></div>';
+    const textBody='CVEHarbor | Customer Security Review\\n\\nPlease find attached the CVEHarbor customer security review report for '+record.name+'.\\n\\nThe report contains inventory based potential advisory findings that require validation against the installed software and vendor guidance.\\n\\nConfidential customer information. Share only with authorized recipients.';
+    const outgoing=await fetch('https://api.smtp2go.com/v3/email/send',{
+      method:'POST',headers:{'Content-Type':'application/json','X-Smtp2go-Api-Key':env.ALERT_SMTP2GO_API_KEY||env.SMTP2GO_API_KEY||''},
+      body:JSON.stringify({sender:env.EMAIL_FROM,to:[address],subject,html_body:html,text_body:textBody,
+        attachments:[{filename:'CVEHarbor-Customer-Security-Review.pdf',fileblob:pdf,mimetype:'application/pdf'}]})
+    });
+    if(!outgoing.ok)return response({error:'Unable to send report email'},503);
+    const delivered=await outgoing.json();
+    if(Number(delivered?.data?.failed)>0||Number(delivered?.data?.succeeded)!==1)return response({error:'Email service did not accept report'},503);
+    return response({sent:true,message:'Report emailed successfully.'});
+  }
   if(path==='/v1/auth/logout'&&req.method==='POST'){await env.DB.prepare('DELETE FROM sessions WHERE id=?').bind(user.sid).run();return response({authenticated:false},200,{'Set-Cookie':setCookie('',0)})}
   if(path.startsWith('/v1/lifecycle'))return await lifecycleHandler(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/finding-tickets'))return await findingTicketRoute(req,env,user,path,req.method==='POST'?await body(req):{});
