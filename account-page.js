@@ -22,7 +22,7 @@ function signedIn(email){
  loadTotpStatus();
 }
 function signedOut(){
- mfaChallenge='';$('accountPageTotpVerify').hidden=true;$('accountPageTotpCode').value='';
+ mfaChallenge='';$('accountPageRequiredEnroll').hidden=true;$('accountPageTotpVerify').hidden=true;$('accountPageTotpCode').value='';
  $('accountPageSignedOut').hidden=false;
  $('accountPageSignedIn').hidden=true;
  $('accountPageHeading').innerHTML='Access your private <span>CVEHarbor workspace</span>';
@@ -45,6 +45,14 @@ $('accountPageVerify').addEventListener('submit',async event=>{
  event.preventDefault();const button=$('accountPageConfirm');button.disabled=true;
  try{
   const data=await request('/auth/verify','POST',{challenge_id:challenge,salt,code:$('accountPageCode').value});
+  if(data.mfa_enrollment_required){
+   mfaChallenge=data.mfa_challenge;
+   $('accountPageSignedOut').hidden=true;
+   $('accountPageRequiredSecret').textContent=data.secret;
+   $('accountPageRequiredEnroll').hidden=false;
+   message('Authenticator setup is required before accessing your workspace.');
+   return;
+  }
   if(data.mfa_required){mfaChallenge=data.mfa_challenge;$('accountPageSignedOut').hidden=true;$('accountPageTotpVerify').hidden=false;message('Enter your authenticator code or a saved recovery code.');$('accountPageTotpCode').focus();return;}
   if(!data.authenticated)throw Error('Could not confirm your account.');
   signedIn(data.email||$('accountPageEmail').value.trim());
@@ -63,6 +71,25 @@ $('accountPageLogout').addEventListener('click',async()=>{
  }catch(error){message(error.message)}
 });
 
+$('accountPageRequiredEnrollForm').addEventListener('submit',async event=>{
+ event.preventDefault();const button=event.currentTarget.querySelector('button[type=submit]');button.disabled=true;
+ try{
+  const result=await request('/auth/totp/enroll','POST',{mfa_challenge:mfaChallenge,code:$('accountPageRequiredCode').value.trim()});
+  if(!result.authenticated)throw Error('Could not enable authenticator.');
+  mfaChallenge='';
+  $('accountPageRequiredEnrollForm').hidden=true;
+  $('accountPageRequiredSecret').textContent='';
+  $('accountPageRequiredRecoveryCodes').textContent=result.recovery_codes.join('\\n');
+  $('accountPageRequiredRecovery').hidden=false;
+  message('Authenticator enabled. Save your recovery codes before continuing.');
+  window.cveharborEnrolledEmail=result.email;
+ }catch(error){message(error.message)}finally{button.disabled=false}
+});
+$('accountPageRequiredContinue').addEventListener('click',()=>{
+ $('accountPageRequiredRecoveryCodes').textContent='';
+ $('accountPageRequiredEnroll').hidden=true;
+ signedIn(window.cveharborEnrolledEmail||$('accountPageEmail').value.trim());
+});
 async function loadTotpStatus(){
  try{
   const status=await request('/auth/totp/status');
