@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-30",
   "mode": "live",
   "coverage_limited": false,
-  "candidate_records": 4610,
+  "candidate_records": 4612,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -4643,7 +4643,7 @@
     },
     {
       "id": "CVE-2026-103039",
-      "title": "The Gravity Forms plugin for WordPress is vulnerable to PHP Object Injection in all versions up to, and including, 3.1.2 via a Post Custom Field whose input type is List",
+      "title": "The Gravity Forms plugin for WordPress is vulnerable to PHP Object Injection in all versions up...",
       "severity": "critical",
       "categories": [
         "PHP",
@@ -4652,27 +4652,39 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "The Gravity Forms plugin for WordPress is vulnerable to PHP Object Injection in all versions up to, and including, 3.1.2 via a Post Custom Field whose input type is List. This is due to GFFormsModel::create_post() passing the submitted value to WordPress' unrestricted global maybe_unserialize() rather than the plugin's own hardened GFCommon::maybe_unserialize(), which was added in 3.1.1 and passes allowed_classes => false precisely to prevent object instantiation. Where the field has a content template enabled, the submitted row reaches that call verbatim. This makes it possible for unauthenticated attackers to inject a PHP object into post meta. No PHP Object Injection gadget chain is present in the plugin itself; however, if a gadget chain is present via an additional plugin or theme, it could allow the attacker to perform actions such as remote code execution. Where the custom field is mapped to the protected _wp_page_template meta key, WordPress itself supplies the chain: validate_file() accepts non-scalars, WP_Theme::__toString() then resolves an attacker-controlled path, and on hosts with a readable PEAR install and register_argc_argv enabled this yields remote code execution.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-103039"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-635p-78xg-j6w3"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://docs.gravityforms.com"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.wordfence.com/threat-intel/vulnerabilities/id/ec1fba15-81e5-42e3-9154-1978c3f81b26?source=cve"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "9.8",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T08:12:25Z",
-      "source_updated_at": "2026-10-30T07:16:30.733",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T09:31:24Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-110732",
-      "title": "The AI Engine – The Chatbot, AI Framework & MCP for WordPress plugin for WordPress is vulnerable to Missing Authorization in all versions up to, and including, 3.8.6 This is d",
+      "title": "The AI Engine – The Chatbot, AI Framework & MCP for WordPress plugin for WordPress is vulnerable...",
       "severity": "high",
       "categories": [
         "WordPress / Plugins"
@@ -4680,27 +4692,39 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "The AI Engine – The Chatbot, AI Framework & MCP for WordPress plugin for WordPress is vulnerable to Missing Authorization in all versions up to, and including, 3.8.6 This is due to the MCP module's OAuth 2.1 Dynamic Client Registration endpoint (/wp-json/mcp/v1/oauth/register) being registered with a permission_callback of __return_true, allowing an unauthenticated user to register an active OAuth client with an attacker-controlled redirect URI. This makes it possible for unauthenticated attackers to obtain an administrator-bound MCP access token, and thereby full administrator-level control through the MCP tools (including user creation and option updates), once an administrator approves the attacker's client on the OAuth consent screen. The consent page is additionally served without X-Frame-Options or Content-Security-Policy frame-ancestors, so that approval can be obtained via clickjacking.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110732"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-22w7-p44p-2gq7"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/ai-engine/tags/3.8.3/labs/mcp-oauth.php#L1159"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/ai-engine/tags/3.8.3/labs/mcp-oauth.php#L317"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "7.5",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T08:12:25Z",
-      "source_updated_at": "2026-10-30T07:16:31.913",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T09:31:30Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-116622",
-      "title": "The Food Store – Online Food Delivery & Pickup plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'service_time' parameter in all versions up to, and in",
+      "title": "The Food Store – Online Food Delivery & Pickup plugin for WordPress is vulnerable to Stored Cross...",
       "severity": "high",
       "categories": [
         "WordPress / Plugins"
@@ -4708,27 +4732,39 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "The Food Store – Online Food Delivery & Pickup plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'service_time' parameter in all versions up to, and including, 1.5.5 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Exploitation requires the site to have the 'Enable Checkout Service Fields' option turned off, which is a non-default configuration, while 'Enable Pickup/Delivery Service' remains enabled.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116622"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-v228-2jfw-f8cg"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/food-store/tags/1.5.5/includes/class-wfs-order.php#L302"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/food-store/tags/1.5.5/includes/class-wfs-services.php#L405"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "7.2",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T08:12:25Z",
-      "source_updated_at": "2026-10-30T07:16:33.040",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T09:31:24Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-118593",
-      "title": "A flaw was found in Red Hat Enterprise Linux 9 kernel builds",
+      "title": "A flaw was found in Red Hat Enterprise Linux 9 kernel builds. An incomplete backport of the CVE...",
       "severity": "medium",
       "categories": [
         "Linux"
@@ -4736,27 +4772,39 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "A flaw was found in Red Hat Enterprise Linux 9 kernel builds. An incomplete backport of the CVE-2026-46099 fix in RHEL 9.6 through 9.10 left a local_bh imbalance in seg6_input_core(), where the drop path returns with bottom halves still disabled. This can lead to softirq starvation and denial of service on systems with SRv6 tunnels configured. Upstream and RHEL 10 are not affected.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118593"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-p38h-8554-v633"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-118593"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://bugzilla.redhat.com/show_bug.cgi?id=2563095"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "5.9",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T08:12:25Z",
-      "source_updated_at": "2026-10-30T07:16:33.357",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T09:31:25Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-89435",
-      "title": "The Formidable Forms – WordPress Form Builder for Contact Forms, Calculators, Quizzes & More plugin for WordPress is vulnerable to Arbitrary Plugin Installation in all version",
+      "title": "The Formidable Forms – WordPress Form Builder for Contact Forms, Calculators, Quizzes & More...",
       "severity": "high",
       "categories": [
         "WordPress / Plugins"
@@ -4764,27 +4812,39 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "The Formidable Forms – WordPress Form Builder for Contact Forms, Calculators, Quizzes & More plugin for WordPress is vulnerable to Arbitrary Plugin Installation in all versions up to, and including, 6.35 via the 'file_url' parameter parameter. This is due to insufficient URL prefix validation in validate_url_is_in_s3_bucket() and a permission callback that relies solely on a shared token obtainable by any user with the delegable frm_view_forms capability, without checking install_plugins or activate_plugins capabilities. This makes it possible for authenticated attackers, with subscriber-level access and above, to install arbitrary plugins on the server. Exploitation additionally requires that the site is free-only (Formidable Pro is NOT installed).",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-89435"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-7366-rqfr-5w7j"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/formidable/tags/6.35/classes/controllers/FrmAddonsController.php#L1459"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/formidable/tags/6.35/classes/controllers/FrmAddonsController.php#L1489"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "8.8",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T08:12:25Z",
-      "source_updated_at": "2026-10-30T07:16:34.410",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T09:31:25Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-90437",
-      "title": "The Gravity Forms plugin for WordPress is vulnerable to Stored Cross-Site Scripting via Post Excerpt / Post Custom Field / Rich-Text Paragraph Field Values in all versions up ",
+      "title": "The Gravity Forms plugin for WordPress is vulnerable to Stored Cross-Site Scripting via Post...",
       "severity": "high",
       "categories": [
         "JavaScript / TypeScript",
@@ -4793,27 +4853,39 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "The Gravity Forms plugin for WordPress is vulnerable to Stored Cross-Site Scripting via Post Excerpt / Post Custom Field / Rich-Text Paragraph Field Values in all versions up to, and including, 3.1.1 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. This is possible because Post Excerpt, Post Custom Field, and Rich-Text-Editor-enabled Paragraph Text fields allow raw HTML submissions via allow_html(), and an entity-encoded payload stored in a data-dialog-confirm attribute evades wp_kses_post() at save time but is decoded into executable markup by the browser when the plugin's admin JavaScript passes the attribute value to insertAdjacentHTML().",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-90437"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-8r7c-j2qw-g3gp"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://docs.gravityforms.com"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.wordfence.com/threat-intel/vulnerabilities/id/7aee2acb-f109-4ba7-91ed-e65868b32f4f?source=cve"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "7.2",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T08:12:25Z",
-      "source_updated_at": "2026-10-30T07:16:34.600",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T09:31:26Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-97645",
-      "title": "The Gravity Forms plugin for WordPress is vulnerable to Stored Cross-Site Scripting via List Field in all versions up to, and including, 3.1.2 due to insufficient input saniti",
+      "title": "The Gravity Forms plugin for WordPress is vulnerable to Stored Cross-Site Scripting via List...",
       "severity": "high",
       "categories": [
         "JavaScript / TypeScript",
@@ -4822,21 +4894,94 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "The Gravity Forms plugin for WordPress is vulnerable to Stored Cross-Site Scripting via List Field in all versions up to, and including, 3.1.2 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Successful exploitation requires the administrator to click the injected link in the entry detail view and confirm a dialog, which triggers the admin JavaScript bundle's delegated data-dialog-callback handler to invoke the attacker-supplied function reference.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-97645"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-774g-h2fq-p98f"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://docs.gravityforms.com"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.wordfence.com/threat-intel/vulnerabilities/id/9889e718-381b-4d11-a234-0278037c61c4?source=cve"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-30T08:12:25Z",
+      "source_updated_at": "2026-10-30T09:31:32Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-73xg-497j-5qqr",
+      "title": "Malicious code in claims-acct-unlock (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "## Source: ossf-package-analysis (49e97601227bdd6c1f90001323f6ec7ec7242416e3577d752dd5045453688a14) The OpenSSF Package Analysis project identified 'claims-acct-unlock' @ 25.2.1 (npm) as malicious. It is considered malicious because: - The package communicates with a domain associated with malicious activity. - The package executes one or more commands associated with malicious behavior. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/9491c59f1a2d14f216fe08ddaa2562a2717e563b/osv/malicious/npm/claims-acct-unlock/MAL-2026-18404.json))",
+      "affected": "npm: claims-acct-unlock (= 25.2.1)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-73xg-497j-5qqr"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/9491c59f1a2d14f216fe08ddaa2562a2717e563b/osv/malicious/npm/claims-acct-unlock/MAL-2026-18404.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-30T10:01:38Z",
+      "source_updated_at": "2026-10-30T09:31:23Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-97209",
+      "title": "Insecure Temporary File vulnerability in Mix deps.partition in Elixir allows a local user to execute code as another user via a swapped partition config file",
+      "severity": "medium",
+      "categories": [
+        "Application dependencies"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "Insecure Temporary File vulnerability in Mix deps.partition in Elixir allows a local user to execute code as another user via a swapped partition config file. Partitioned dependency compilation passes the project configuration to each partition VM through a file in a fixed-name directory under the shared system temporary directory, and the partition trusts what it reads back. Another local user on the same host can exploit this during a mix deps.compile run that uses partitioned compilation. Mix.Tasks.Deps.Partition.server/4 in lib/mix/lib/mix/tasks/deps.partition.ex creates the directory with File.mkdir_p/1, which accepts an existing directory without checking its owner, so a user who created it first can replace the file before client/0 reads it. This issue affects mix: from 1.20.0-rc.4 before 1.20.5.",
       "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
       "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
       "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
       "sources": [
         {
           "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-97645"
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-97209"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": "7.2",
+      "cvss": "5.4",
       "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T08:12:25Z",
-      "source_updated_at": "2026-10-30T07:16:35.393",
+      "first_seen_at": "2026-10-30T10:01:38Z",
+      "source_updated_at": "2026-10-30T09:17:15.640",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -55209,51 +55354,6 @@
       "epss_as_of": "2026-10-30"
     },
     {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        "Windows",
-        "Windows 11 OS",
-        "Windows Server OS"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
-        },
-        {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.09813,
-      "epss_percentile": 0.95536,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2026-102870",
       "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
       "severity": "high",
@@ -55296,6 +55396,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00906,
       "epss_percentile": 0.59766,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+        },
+        {
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.09813,
+      "epss_percentile": 0.95536,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -129131,37 +129276,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.11772,
-      "epss_percentile": 0.96066,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2025-7624",
       "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
@@ -129190,6 +129304,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.10514,
       "epss_percentile": 0.95752,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.11772,
+      "epss_percentile": 0.96066,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -145770,85 +145915,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T09:03:42Z",
-      "last_attempt": "2026-10-30T09:03:42Z",
-      "items_processed": 355,
+      "last_success": "2026-10-30T10:01:38Z",
+      "last_attempt": "2026-10-30T10:01:38Z",
+      "items_processed": 339,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T09:03:42Z",
-      "last_attempt": "2026-10-30T09:03:42Z",
+      "last_success": "2026-10-30T10:01:38Z",
+      "last_attempt": "2026-10-30T10:01:38Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T09:03:42Z",
-      "last_attempt": "2026-10-30T09:03:42Z",
-      "items_processed": 504,
+      "last_success": "2026-10-30T10:01:38Z",
+      "last_attempt": "2026-10-30T10:01:38Z",
+      "items_processed": 488,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T09:03:42Z",
-      "last_attempt": "2026-10-30T09:03:42Z",
+      "last_success": "2026-10-30T10:01:38Z",
+      "last_attempt": "2026-10-30T10:01:38Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T09:03:42Z",
-      "last_attempt": "2026-10-30T09:03:42Z",
+      "last_success": "2026-10-30T10:01:38Z",
+      "last_attempt": "2026-10-30T10:01:38Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T09:03:42Z",
-      "last_attempt": "2026-10-30T09:03:42Z",
+      "last_success": "2026-10-30T10:01:38Z",
+      "last_attempt": "2026-10-30T10:01:38Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T09:03:42Z",
-      "last_attempt": "2026-10-30T09:03:42Z",
+      "last_success": "2026-10-30T10:01:38Z",
+      "last_attempt": "2026-10-30T10:01:38Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T09:03:42Z",
-      "last_attempt": "2026-10-30T09:03:42Z",
+      "last_success": "2026-10-30T10:01:38Z",
+      "last_attempt": "2026-10-30T10:01:38Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T09:03:42Z",
-      "last_attempt": "2026-10-30T09:03:42Z",
+      "last_success": "2026-10-30T10:01:38Z",
+      "last_attempt": "2026-10-30T10:01:38Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T09:03:42Z",
-      "last_attempt": "2026-10-30T09:03:42Z",
+      "last_success": "2026-10-30T10:01:38Z",
+      "last_attempt": "2026-10-30T10:01:38Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T09:03:42Z",
-      "last_attempt": "2026-10-30T09:03:42Z",
+      "last_success": "2026-10-30T10:01:38Z",
+      "last_attempt": "2026-10-30T10:01:38Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T09:03:42Z",
-      "last_attempt": "2026-10-30T09:03:42Z",
+      "last_success": "2026-10-30T10:01:38Z",
+      "last_attempt": "2026-10-30T10:01:38Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -145860,7 +146005,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T09:03:42Z",
-  "last_successful_update": "2026-10-30T09:03:42Z",
+  "last_checked_at": "2026-10-30T10:01:38Z",
+  "last_successful_update": "2026-10-30T10:01:38Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
