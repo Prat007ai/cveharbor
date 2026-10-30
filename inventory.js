@@ -414,6 +414,28 @@ function updateInventorySteps(){
  const step2=$('inventoryStepEnvironment'),step3=$('inventoryStepAsset');
  if(!step2||!step3)return;
  step2.hidden=!customerCount;step3.hidden=!environmentCount;
+ const stage=environmentCount?3:customerCount?2:1;
+ for(const [number,id] of [[1,'inventoryStepCustomer'],[2,'inventoryStepEnvironment'],[3,'inventoryStepAsset']]){
+  const panel=$(id),form=panel?.querySelector('form');if(!panel||!form)continue;
+  let toggle=panel.querySelector('.inventory-step-toggle');
+  if(!toggle){
+   toggle=make('button','inventory-step-toggle','');toggle.type='button';
+   toggle.setAttribute('aria-controls',form.id);
+   panel.querySelector('h3')?.after(toggle);
+   toggle.addEventListener('click',()=>{
+    const closed=panel.classList.toggle('inventory-step-collapsed');
+    toggle.textContent=closed?'Expand section':'Collapse section';
+    toggle.setAttribute('aria-expanded',String(!closed));
+   });
+  }
+  const completed=number<stage;
+  if(panel.dataset.setupStage!==String(stage)){
+   panel.classList.toggle('inventory-step-collapsed',completed);
+   panel.dataset.setupStage=String(stage);
+  }
+  toggle.textContent=panel.classList.contains('inventory-step-collapsed')?'Expand section':'Collapse section';
+  toggle.setAttribute('aria-expanded',String(!panel.classList.contains('inventory-step-collapsed')));
+ }
  const message=$('inventorySetupProgress');
  if(message)message.textContent=!customerCount?'Step 1 of 3: Add your first customer to begin.':
   !environmentCount?'Step 2 of 3: Add an environment to continue.':
