@@ -21,6 +21,16 @@ function setCookie(value,maxAge){return 'cvh_session='+value+'; Path=/; Secure; 
 async function me(req,env){const value=cookie(req);if(!/^[a-f0-9]{64}$/.test(value))return null;return env.DB.prepare('SELECT users.id,users.email,sessions.id AS sid FROM sessions JOIN users ON users.id=sessions.user_id JOIN user_totp ON user_totp.user_id=users.id AND user_totp.enabled=1 WHERE sessions.token_hash=? AND sessions.expires_at>?').bind(await sha(value),Math.floor(Date.now()/1000)).first()}
 async function body(req,maxBytes=18000){const size=Number(req.headers.get('content-length')||0);if(size>maxBytes)throw Error('Request too large');const raw=await req.text();if(raw.length>maxBytes)throw Error('Request too large');return JSON.parse(raw)}
 async function limit(env,key,max){const now=Math.floor(Date.now()/1000),start=now-3600;await env.DB.prepare('DELETE FROM auth_rate_limits WHERE window_start<?').bind(start).run();await env.DB.prepare('INSERT INTO auth_rate_limits(key,window_start,count) VALUES(?,?,1) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN window_start<? THEN 1 ELSE count+1 END,window_start=CASE WHEN window_start<? THEN ? ELSE window_start END').bind(key,now,start,start,now).run();const row=await env.DB.prepare('SELECT count FROM auth_rate_limits WHERE key=?').bind(key).first();return row.count<=max}
+async function authWait(env,key,max){
+ const now=Math.floor(Date.now()/1000);
+ const row=await env.DB.prepare('SELECT window_start,count FROM auth_rate_limits WHERE key=?').bind(key).first();
+ if(!row||row.window_start<=now-3600||row.count<max)return 0;
+ return Math.max(1,row.window_start+3600-now);
+}
+function retryResponse(seconds,kind='limit'){
+ const delay=Math.max(1,Math.ceil(seconds));
+ return response({error:kind==='resend'?'Please wait before requesting another verification code.':'Too many verification requests. Please try again when the limit resets.',retry_after:delay},429,{'Retry-After':String(delay)});
+}
 async function emailCode(env,address,code){const response=await fetch('https://api.smtp2go.com/v3/email/send',{method:'POST',headers:{'Content-Type':'application/json','X-Smtp2go-Api-Key':env.SMTP2GO_API_KEY},body:JSON.stringify({sender:env.EMAIL_FROM,to:[address],subject:'CVEHarbor sign in code',text_body:'Your CVEHarbor code: '+code+'\n\nExpires in 10 minutes. If you did not request this, ignore this email.'})});if(!response.ok)throw Error('Email delivery unavailable');const payload=await response.json();if(!payload.data||payload.data.failed>0||payload.data.succeeded<1)throw Error('Email delivery unsuccessful')}
 export default {async fetch(req,env,ctx){
  const url=new URL(req.url),origin=req.headers.get('origin');
@@ -44,7 +54,16 @@ export default {async fetch(req,env,ctx){
    const data=await body(req),address=String(data.email||'').trim().toLowerCase();
    if(!/^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]+$/.test(address))return response({error:'Valid email required'},400);
    const ip=req.headers.get('CF-Connecting-IP')||'unknown';
-   if(!await limit(env,'ip:'+await sha(ip),12)||!await limit(env,'email:'+await sha(address),5))return response({error:'Too many requests'},429);
+   const ipKey='ip:'+await sha(ip),emailKey='email:'+await sha(address);
+   // Do not consume hourly quota when the user is already blocked.
+   const blocked=Math.max(await authWait(env,ipKey,12),await authWait(env,emailKey,5));
+   if(blocked)return retryResponse(blocked);
+   const recent=await env.DB.prepare('SELECT created_at FROM login_challenges WHERE email=? AND created_at>? ORDER BY created_at DESC LIMIT 1').bind(address,Math.floor(Date.now()/1000)-60).first();
+   if(recent)return retryResponse(Math.max(1,recent.created_at+60-Math.floor(Date.now()/1000)),'resend');
+   if(!await limit(env,ipKey,12)||!await limit(env,emailKey,5)){
+    const wait=Math.max(await authWait(env,ipKey,12),await authWait(env,emailKey,5));
+    return retryResponse(wait||60);
+   }
    const code=String(crypto.getRandomValues(new Uint32Array(1))[0]%1000000).padStart(6,'0');
    const id=crypto.randomUUID(),salt=token();
    await env.DB.prepare('INSERT INTO login_challenges(id,email,token_hash,expires_at,created_at) VALUES(?,?,?,?,?)').bind(id,address,await sha(salt+':'+code),Math.floor(Date.now()/1000)+600,Math.floor(Date.now()/1000)).run();
