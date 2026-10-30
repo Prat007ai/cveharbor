@@ -1753,3 +1753,8 @@ body.command-center-app{padding-left:74px}
 .customer-email-confirm input{margin-top:3px}
 .customer-email-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
 .customer-email-actions button{padding:10px 16px;border-radius:8px}
+
+/* Customer report actions aligned as one toolbar group */
+.customer-report-actions{display:flex;align-items:center;gap:10px;flex:0 0 auto;flex-wrap:wrap}
+.customer-report-actions button{min-height:44px;display:inline-flex;justify-content:center;align-items:center;padding:10px 14px;border-radius:8px;white-space:nowrap}
+@media(max-width:760px){.customer-report-actions{width:100%}.customer-report-actions button{flex:1 1 auto}}
