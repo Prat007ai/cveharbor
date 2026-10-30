@@ -1713,3 +1713,17 @@ body.command-center-app{padding-left:74px}
  body.account-page .customer-print-document .customer-print-metric *,
  body.account-page .customer-print-document .customer-print-bar-row *{background-image:none}
 }
+
+/* Client report: subtle, status-specific finding cards. Severity remains independent. */
+@media print{
+ body.account-page .customer-print-document .customer-print-finding[data-status=review]{background:#edf6f8!important;border-left-color:#51899b!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=progress]{background:#fff7e8!important;border-left-color:#c58e32!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=fixed]{background:#edf8f1!important;border-left-color:#398b66!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=accepted]{background:#f0f2f5!important;border-left-color:#778798!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=not-applicable]{background:#f7f7f7!important;border-left-color:#a3a6ac!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=review] .customer-print-finding-status{color:#24647b!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=progress] .customer-print-finding-status{color:#95600b!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=fixed] .customer-print-finding-status{color:#24754e!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=accepted] .customer-print-finding-status{color:#506377!important}
+ body.account-page .customer-print-document .customer-print-finding[data-status=not-applicable] .customer-print-finding-status{color:#626a72!important}
+}
