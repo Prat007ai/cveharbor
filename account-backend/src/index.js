@@ -73,7 +73,7 @@ export default {async fetch(req,env,ctx){
     const customerId=String(data.customer_id||'');
     const environmentId=String(data.environment_id||'');
     const pdf=String(data.pdf_base64||'');
-    if(!/^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]+$/.test(address))return response({error:'Valid recipient email address required'},400);
+    if(address.length>254||!address.includes('@')||address.split('@').length!==2||!address.split('@')[1]?.includes('.')||/\s/.test(address))return response({error:'Valid recipient email address required'},400);
     if(!/^[0-9a-f-]{36}$/i.test(customerId))return response({error:'Select a customer'},400);
     if(pdf.length>3500000||pdf.length<100||!/^JVBERi0/.test(pdf)||!/^[A-Za-z0-9+/]+={0,2}$/.test(pdf))return response({error:'Attach a valid PDF report smaller than 2.5 MB'},400);
     const record=await env.DB.prepare('SELECT name FROM inventory_customers WHERE id=? AND user_id=?').bind(customerId,user.id).first();
