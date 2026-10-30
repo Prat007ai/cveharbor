@@ -8,7 +8,7 @@ const categories={
  'azure':['Azure'],'windows server':['Windows'],'fortigate':['Fortinet'],
  'fortios':['Fortinet'],'docker':['Docker / Kubernetes'],
  'kubernetes':['Docker / Kubernetes'],'linux':['Linux'],
- 'ubuntu':['Linux'],'debian':['Linux'],'sitefinity':['Progress Sitefinity']
+ 'ubuntu':['Linux'],'ubuntu linux':['Linux'],'debian':['Linux'],'debian linux':['Linux'],'sitefinity':['Progress Sitefinity']
 };
 const norm=x=>String(x||'').trim().toLowerCase().replace(/\s+/g,' ');
 const numeric=x=>/^\d+(?:\.\d+){1,3}$/.test(x);
@@ -38,16 +38,24 @@ function preciseProductMatch(asset,cve){
   return /\bwordpress\b/i.test(detail)||!detail;
  }
  if(product==='php'){
-  // Broad PHP categories can include unrelated applications written in PHP.
-  if(/\b(linux kernel|\.net|asp\.net|brotli|python|debian kernel|windows kernel)\b/i.test(detail))return false;
-  if(/\b(plugin|wordpress|joomla|drupal|dedecms|satellite tracker|woocommerce)\b/i.test(detail)&&
-    !/\bphp (core|runtime|interpreter|versions?|before|through|8\.|7\.)\b/i.test(detail))return false;
-  // A PHP mention in "PHP code injection" does not identify PHP runtime.
-  if(/\bphp code injection\b/i.test(detail)&&!/\bphp (runtime|interpreter|versions?|before|through)\b/i.test(detail))return false;
-  return /\bphp\b/i.test(detail)||!detail;
+  // Requiring runtime identity prevents PHP applications and vendor appliances
+  // from being reported against the installed PHP interpreter.
+  const foreign=/\b(phpmailer|phpmyadmin|zimbra|junos|juniper|cpanel|whm|wp2|vbulletin|joomla|drupal|dedecms|wordpress|woocommerce|widgetconfig|roundcube|magento|laravel|symfony)\b/i;
+  if(foreign.test(detail))return false;
+  const core=/\bphp\s*(?:runtime|interpreter|core|engine|versions?|8\.\d+|7\.\d+|cgi|fpm)\b|\bphp\s+(?:before|prior to|through|up to|earlier than)\s+\d|\b(?:php\.net|php-src)\b/i;
+  return core.test(affected)||core.test(detail);
  }
- if(product==='debian'||product==='ubuntu'){
-  if(/\b(linux kernel)\b/i.test(detail))return true;
+ if(['debian','debian linux','ubuntu','ubuntu linux'].includes(product)){
+  const distro=product.startsWith('debian')?'debian':'ubuntu';
+  // Linux is a category, not proof that the affected package exists on
+  // this distribution. Generic Linux kernel notices need kernel inventory.
+  const explicit=new RegExp('\\b'+distro+'\\b','i');
+  const vendor=(cve.sources||[]).some(s=>{try{const host=new URL(s.url).hostname;return distro==='debian'?host==='security-tracker.debian.org'||host==='debian.org'||host.endsWith('.debian.org'):host==='ubuntu.com'||host.endsWith('.ubuntu.com')}catch(_){return false}});
+  if(!explicit.test(detail)&&!vendor)return false;
+  if(distro==='debian'&&/\bubuntu\b/i.test(detail)&&!/\bdebian\b/i.test(detail))return false;
+  if(distro==='ubuntu'&&/\bdebian\b/i.test(detail)&&!/\bubuntu\b/i.test(detail))return false;
+  if(/\b(juniper|junos|zimbra|cpanel|whm|windows server)\b/i.test(detail))return false;
+  return true;
  }
  return true;
 }
