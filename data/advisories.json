@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-30",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6088,
+  "candidate_records": 6101,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -5616,6 +5616,260 @@
       "first_seen_at": "2026-10-29T22:31:24Z",
       "source_updated_at": "2026-10-30T14:54:26Z",
       "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2010-20125",
+      "title": "DedeCMS before 5.7 contains a file inclusion vulnerability in plus/carbuyaction.php that allows remote unauthenticated attackers to control the include path by manipulating th",
+      "severity": "high",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "DedeCMS before 5.7 contains a file inclusion vulnerability in plus/carbuyaction.php that allows remote unauthenticated attackers to control the include path by manipulating the uninitialized code parameter passed to require_once. Attackers can supply path traversal sequences ../../ to include arbitrary local files outside the intended payment directory, potentially achieving local file disclosure. Exploitation evidence was first observed by the Shadowserver Foundation on 2023-10-18.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2010-20125"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.7",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:27:22Z",
+      "source_updated_at": "2026-10-30T15:16:43.023",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2015-20130",
+      "title": "Netsweeper before 4.0.11 and 4.1.0 before 4.1.5 contains a reflected cross-site scripting vulnerability in webadmin/reporter/view_server_log.php that allows remote attackers t",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "Netsweeper before 4.0.11 and 4.1.0 before 4.1.5 contains a reflected cross-site scripting vulnerability in webadmin/reporter/view_server_log.php that allows remote attackers to execute arbitrary JavaScript by injecting malicious code through the log request parameter, which is reflected into the HTML response without output encoding. Attackers can craft a malicious URL and induce a user to request it, resulting in arbitrary JavaScript execution within the victim's browser session against the Netsweeper web administration interface. Exploitation evidence was first observed by the Shadowserver Foundation on 2023-10-19.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-20130"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:27:22Z",
+      "source_updated_at": "2026-10-30T15:16:44.197",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119647",
+      "title": "RuoYi-Vue-Plus through 6.0.0 contains an authorization bypass vulnerability in SysUserServiceImpl.selectUserListByDept that allows authenticated users to read users of other d",
+      "severity": "medium",
+      "categories": [
+        "Node.js / npm"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "RuoYi-Vue-Plus through 6.0.0 contains an authorization bypass vulnerability in SysUserServiceImpl.selectUserListByDept that allows authenticated users to read users of other departments. Users holding system:user:list under a department-restricted role can request GET /system/user/list/dept/{deptId} with any department id to obtain usernames, nicknames, account status, last login IP and time, and remarks.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119647"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:27:22Z",
+      "source_updated_at": "2026-10-30T15:16:48.140",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119680",
+      "title": "A stored cross-site scripting (XSS) vulnerability exists in the chart feature of SharePoint Manager Plus (SPMP) due to improper sanitization and HTML encoding of user-controll",
+      "severity": "high",
+      "categories": [
+        "Microsoft 365",
+        "SharePoint / SharePoint Server"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "A stored cross-site scripting (XSS) vulnerability exists in the chart feature of SharePoint Manager Plus (SPMP) due to improper sanitization and HTML encoding of user-controlled data. An attacker can inject malicious HTML or JavaScript into attributes used to generate charts, including users' full names, site names, or group names. The injected content is stored and subsequently executed in the context of other users' browsers when the affected charts are rendered. This vulnerability was fixed in client application build 4508.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119680"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:27:22Z",
+      "source_updated_at": "2026-10-30T15:16:51.187",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119682",
+      "title": "An improper access control vulnerability exists in the multi-factor authentication (MFA) functionality of ManageEngine SharePoint Manager Plus (SPMP)",
+      "severity": "high",
+      "categories": [
+        "Microsoft 365",
+        "SharePoint / SharePoint Server"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "An improper access control vulnerability exists in the multi-factor authentication (MFA) functionality of ManageEngine SharePoint Manager Plus (SPMP). A low-privileged authenticated user can bypass authorization checks to read and modify MFA configuration settings, enable or disable MFA for the application, enumerate MFA-enrolled users, and delete MFA-enrolled accounts. Successful exploitation could allow an attacker to weaken authentication protections or cause a denial of service by configuring invalid MFA settings, potentially locking legitimate users out of the application. This vulnerability was fixed in build 4507. The reproduction explicitly uses build 4506.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119682"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:27:22Z",
+      "source_updated_at": "2026-10-30T15:16:51.327",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-44344",
+      "title": "Chamilo LMS is an open-source learning management system",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "Chamilo LMS is an open-source learning management system. In the 1.x line before 1.11.40, and the 2.x line before 2.0.1, multiple `eval()` calls in the vendored PEAR `HTML_QuickForm` libraries can execute arbitrary PHP code if form element names contain attacker-influenced data. Standard Chamilo forms use hardcoded element names; exploitation requires a developer-specific plugin or misconfiguration that lets user input reach those element names. Where that conditional path exists, the impact can be full server compromise. This issue is fixed in versions 1.11.40 and 2.0.1.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-44344"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.6",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:27:22Z",
+      "source_updated_at": "2026-10-30T15:16:51.463",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-45141",
+      "title": "Chamilo LMS is an open-source learning management system",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "Chamilo LMS is an open-source learning management system. Prior to 2.0.1, the `add`, `delete_gradebook_from_skill`, `save_profile`, and `delete_profile` actions in `public/main/inc/ajax/skill.ajax.php` perform database mutations without `Security::check_token()` validation. An attacker can use cross-site request forgery to cause an authenticated administrator or DRH who visits a malicious page to create, modify, or delete skill records and profiles, or remove skill-gradebook associations. This issue is fixed in version 2.0.1.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-45141"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:27:22Z",
+      "source_updated_at": "2026-10-30T15:16:51.633",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-45145",
+      "title": "Chamilo LMS is an open-source learning management system",
+      "severity": "high",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "Chamilo LMS is an open-source learning management system. Prior to 2.0.1, `public/main/inc/lib/career.lib.php` and `public/main/cron/import_csv.php` call PHP's native `unserialize()` on `user_career.extra_data` retrieved from the database without the `allowed_classes: false` safety option. An attacker able to write crafted serialized PHP objects to that column, for example through a separate SQL injection, a compromised admin CSV import, or a lower-privilege admin panel, can instantiate arbitrary PHP objects and trigger POP gadget chains in autoloaded `Symfony`, `Doctrine`, or `Monolog` components. This permits arbitrary OS commands as the web server user, compromising server confidentiality, integrity, and availability. This issue is fixed in version 2.0.1.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-45145"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:27:22Z",
+      "source_updated_at": "2026-10-30T15:16:51.923",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61737",
+      "title": "ng-antd-admin is an Angular and NestJS administration system template",
+      "severity": "critical",
+      "categories": [
+        "Node.js / npm"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "ng-antd-admin is an Angular and NestJS administration system template. Prior to 22.0, a hardcoded default `JWT` secret permits token forgery when a deployment has not replaced the default secret, without a startup warning. An attacker can bypass authentication and authorization, impersonate any user including administrators, and access protected API endpoints, leading to account takeover, data leakage and unauthorized operations. Version 22.0 rejects the shipped secret in production but permits it with a warning in non-production environments.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61737"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:27:22Z",
+      "source_updated_at": "2026-10-30T15:16:53.363",
+      "source_type": "nvd",
       "known_exploited": false
     },
     {
@@ -16226,6 +16480,105 @@
       "epss_as_of": "2026-10-30"
     },
     {
+      "id": "CVE-2026-118256",
+      "title": "Vue I18n: `escapeParameter` does not escape named values when the same call also passes a list",
+      "severity": "low",
+      "categories": [
+        "Application dependencies",
+        "JavaScript / TypeScript",
+        "Linux",
+        "Node.js / npm"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-30",
+      "summary": "### Summary When `escapeParameter` is enabled (`escapeParameterHtml` in the Legacy API), Vue I18n escapes the interpolation parameters before formatting a message. `escapeParams()` escapes either the list values or the named values, but not both: the two branches are joined by `else`. When a single call passes both, for example `t(key, ['...'], { named: { ... } })`, the named values reach the message without being escaped. ### Details `escapeParams()` in [`packages/core-base/src/translate.ts` (v11.4.13)](https://github.com/intlify/vue-i18n/blob/v11.4.13/packages/core-base/src/translate.ts): ```ts function escapeParams(options: TranslateOptions) { if (isArray(options.list)) { options.list = options.list.map(item => (isString(item) ? escapeHtml(item) : item)) } else if (isObject(options.named)) { // ...escapes the named values } } ``` `t(key, list, options)` is a public overload, and `TranslateOptions` has a `named` field, so a call can carry both. The list is checked first, and the named values are then left as they are. The translated string still goes through `sanitizeTranslatedHtml()` (added for CVE-2025-53892), which neutralizes event handler attributes and `javascript:` URLs. Other markup in the named values, such as links and forms, is inserted as is. Before the fix for GHSA",
+      "affected": "npm: vue-i18n (>= 9.0.0-beta.5, < 11.4.14); npm: vue-i18n (>= 12.0.0-alpha.1, < 12.0.0-alpha.5); npm: @intlify/core (>= 9.0.0-beta.10, < 11.4.14); npm: @intlify/core (>= 12.0.0-alpha.1, < 12.0.0-alpha.5); npm: @intlify/core-base (>= 9.0.0-beta.12, < 11.4.14); npm: @intlify/core-base (>= 12.0.0-alpha.1, < 12.0.0-alpha.5); npm: petite-vue-i18n (>= 9.2.0-alpha.7, < 11.4.14); npm: petite-vue-i18n (>= 12.0.0-alpha.1, < 12.0.0-alpha.5); npm: @intlify/vue-i18n-core (>= 9.2.0-alpha.7, < 11.4.14); npm: @intlify/vue-i18n-core (>= 12.0.0-alpha.1, < 12.0.0-alpha.5)",
+      "remediation": "vue-i18n: 11.4.14; vue-i18n: 12.0.0-alpha.5; @intlify/core: 11.4.14; @intlify/core: 12.0.0-alpha.5; @intlify/core-base: 11.4.14; @intlify/core-base: 12.0.0-alpha.5; petite-vue-i18n: 11.4.14; petite-vue-i18n: 12.0.0-alpha.5; @intlify/vue-i18n-core: 11.4.14; @intlify/vue-i18n-core: 12.0.0-alpha.5",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118256"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-8rc2-428q-7ww3"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/intlify/vue-i18n/security/advisories/GHSA-8rc2-428q-7ww3"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/intlify/vue-i18n/pull/2680"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/intlify/vue-i18n/commit/d657ce8f4b3b6b198a8f6e3d09e2b57a5d019fb8"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "2.1",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T19:35:42Z",
+      "source_updated_at": "2026-10-28T21:06:35Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.0048,
+      "epss_percentile": 0.41372,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2026-116578",
+      "title": "Tornado: Open redirect in RedirectHandler via protocol-relative URLs",
+      "severity": "low",
+      "categories": [
+        "Application dependencies",
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-30",
+      "summary": "### Summary `tornado.web.RedirectHandler` builds its target URL by substituting parts of the request path into a template. Depending on where those substitutions appear in the template, an attacker can craft a request that redirects to a host of their choosing. This creates an open redirect on the application's domain, which can be used in phishing. ### Impact Applications are affected if they use `RedirectHandler` with a URL template where a regex capture group can influence the scheme or host of the redirect. This includes: - **A substitution at the start of the path**, for example `(r\"/(.*)/target\", RedirectHandler, {\"url\": \"/{0}/destination\"})`. A request to `https://example.com//evil.com/target` redirects to `//evil.com/destination`, a protocol-relative URL pointing to evil.com. Variants using backslashes or encoded characters have the same effect, because browsers treat them as equivalent to `//`. - **A substitution directly after the host**, for example `(r\"/old(.*)\", RedirectHandler, {\"url\": \"https://new.example.com{0}\"})`. A request to `/old.evil.com/` or `/old@evil.com/` redirects to evil.com. - **A template that begins with a substitution** (such as `\"{0}\"`), which can be given an absolute URL. Applications are not affected if their `RedirectHandler` templates use only",
+      "affected": "pip: tornado (< 6.6)",
+      "remediation": "tornado: 6.6",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116578"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-116578"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-pw9p-v7r6-gx4p"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/tornadoweb/tornado/security/advisories/GHSA-pw9p-v7r6-gx4p"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/tornadoweb/tornado/pull/3786"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "2.1",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T04:00:40Z",
+      "source_updated_at": "2026-10-28T22:43:46Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00459,
+      "epss_percentile": 0.39709,
+      "epss_as_of": "2026-10-30"
+    },
+    {
       "id": "CVE-2026-115730",
       "title": "i18next-http-backend: Namespace value starting with / forms a protocol-relative URL when loadPath/addPath places {{ns}} right after a / (bypass of the // check added for GHSA-",
       "severity": "low",
@@ -18528,56 +18881,6 @@
       "known_exploited": false,
       "epss": 0.00177,
       "epss_percentile": 0.07223,
-      "epss_as_of": "2026-10-30"
-    },
-    {
-      "id": "CVE-2026-118256",
-      "title": "Vue I18n: `escapeParameter` does not escape named values when the same call also passes a list",
-      "severity": "low",
-      "categories": [
-        "Application dependencies",
-        "JavaScript / TypeScript",
-        "Linux",
-        "Node.js / npm"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-29",
-      "summary": "### Summary When `escapeParameter` is enabled (`escapeParameterHtml` in the Legacy API), Vue I18n escapes the interpolation parameters before formatting a message. `escapeParams()` escapes either the list values or the named values, but not both: the two branches are joined by `else`. When a single call passes both, for example `t(key, ['...'], { named: { ... } })`, the named values reach the message without being escaped. ### Details `escapeParams()` in [`packages/core-base/src/translate.ts` (v11.4.13)](https://github.com/intlify/vue-i18n/blob/v11.4.13/packages/core-base/src/translate.ts): ```ts function escapeParams(options: TranslateOptions) { if (isArray(options.list)) { options.list = options.list.map(item => (isString(item) ? escapeHtml(item) : item)) } else if (isObject(options.named)) { // ...escapes the named values } } ``` `t(key, list, options)` is a public overload, and `TranslateOptions` has a `named` field, so a call can carry both. The list is checked first, and the named values are then left as they are. The translated string still goes through `sanitizeTranslatedHtml()` (added for CVE-2025-53892), which neutralizes event handler attributes and `javascript:` URLs. Other markup in the named values, such as links and forms, is inserted as is. Before the fix for GHSA",
-      "affected": "npm: vue-i18n (>= 9.0.0-beta.5, < 11.4.14); npm: vue-i18n (>= 12.0.0-alpha.1, < 12.0.0-alpha.5); npm: @intlify/core (>= 9.0.0-beta.10, < 11.4.14); npm: @intlify/core (>= 12.0.0-alpha.1, < 12.0.0-alpha.5); npm: @intlify/core-base (>= 9.0.0-beta.12, < 11.4.14); npm: @intlify/core-base (>= 12.0.0-alpha.1, < 12.0.0-alpha.5); npm: petite-vue-i18n (>= 9.2.0-alpha.7, < 11.4.14); npm: petite-vue-i18n (>= 12.0.0-alpha.1, < 12.0.0-alpha.5); npm: @intlify/vue-i18n-core (>= 9.2.0-alpha.7, < 11.4.14); npm: @intlify/vue-i18n-core (>= 12.0.0-alpha.1, < 12.0.0-alpha.5)",
-      "remediation": "vue-i18n: 11.4.14; vue-i18n: 12.0.0-alpha.5; @intlify/core: 11.4.14; @intlify/core: 12.0.0-alpha.5; @intlify/core-base: 11.4.14; @intlify/core-base: 12.0.0-alpha.5; petite-vue-i18n: 11.4.14; petite-vue-i18n: 12.0.0-alpha.5; @intlify/vue-i18n-core: 11.4.14; @intlify/vue-i18n-core: 12.0.0-alpha.5",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118256"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-8rc2-428q-7ww3"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/intlify/vue-i18n/security/advisories/GHSA-8rc2-428q-7ww3"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/intlify/vue-i18n/pull/2680"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/intlify/vue-i18n/commit/d657ce8f4b3b6b198a8f6e3d09e2b57a5d019fb8"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "2.1",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T19:35:42Z",
-      "source_updated_at": "2026-10-28T21:06:35Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.0048,
-      "epss_percentile": 0.41372,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -26483,55 +26786,6 @@
       "known_exploited": false,
       "epss": 0.00384,
       "epss_percentile": 0.32384,
-      "epss_as_of": "2026-10-30"
-    },
-    {
-      "id": "CVE-2026-116578",
-      "title": "Tornado: Open redirect in RedirectHandler via protocol-relative URLs",
-      "severity": "low",
-      "categories": [
-        "Application dependencies",
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "### Summary `tornado.web.RedirectHandler` builds its target URL by substituting parts of the request path into a template. Depending on where those substitutions appear in the template, an attacker can craft a request that redirects to a host of their choosing. This creates an open redirect on the application's domain, which can be used in phishing. ### Impact Applications are affected if they use `RedirectHandler` with a URL template where a regex capture group can influence the scheme or host of the redirect. This includes: - **A substitution at the start of the path**, for example `(r\"/(.*)/target\", RedirectHandler, {\"url\": \"/{0}/destination\"})`. A request to `https://example.com//evil.com/target` redirects to `//evil.com/destination`, a protocol-relative URL pointing to evil.com. Variants using backslashes or encoded characters have the same effect, because browsers treat them as equivalent to `//`. - **A substitution directly after the host**, for example `(r\"/old(.*)\", RedirectHandler, {\"url\": \"https://new.example.com{0}\"})`. A request to `/old.evil.com/` or `/old@evil.com/` redirects to evil.com. - **A template that begins with a substitution** (such as `\"{0}\"`), which can be given an absolute URL. Applications are not affected if their `RedirectHandler` templates use only",
-      "affected": "pip: tornado (< 6.6)",
-      "remediation": "tornado: 6.6",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116578"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-116578"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-pw9p-v7r6-gx4p"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/tornadoweb/tornado/security/advisories/GHSA-pw9p-v7r6-gx4p"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/tornadoweb/tornado/pull/3786"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "2.1",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T04:00:40Z",
-      "source_updated_at": "2026-10-28T22:43:46Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00459,
-      "epss_percentile": 0.39709,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -46211,6 +46465,42 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-115776",
+      "title": "twisted: Twisted: Denial of Service via unbounded IRC buffer",
+      "severity": "high",
+      "categories": [
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-23",
+      "updated": "2026-10-30",
+      "summary": "twisted: Twisted: Denial of Service via unbounded IRC buffer",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-115776"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115776"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T12:42:42Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.00501,
+      "epss_percentile": 0.42836,
+      "epss_as_of": "2026-10-30"
+    },
+    {
       "id": "CVE-2026-115535",
       "title": "A vulnerability was identified in gedelumbung HospitalManagement up to c2d45543789a3887067d3915f69d44cfc2cf76a8",
       "severity": "low",
@@ -48123,37 +48413,6 @@
       "known_exploited": false,
       "epss": 0.0054,
       "epss_percentile": 0.45389,
-      "epss_as_of": "2026-10-30"
-    },
-    {
-      "id": "CVE-2026-115776",
-      "title": "twisted: Twisted: Denial of Service via unbounded IRC buffer",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-23",
-      "updated": "2026-10-23",
-      "summary": "twisted: Twisted: Denial of Service via unbounded IRC buffer",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-115776"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T12:42:42Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00501,
-      "epss_percentile": 0.42836,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -52748,6 +53007,34 @@
       "epss_as_of": "2026-10-30"
     },
     {
+      "id": "CVE-2026-114144",
+      "title": "toml-node is a TOML parser for Node.js and the browser",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-30",
+      "summary": "toml-node is a TOML parser for Node.js and the browser. Prior to 5.0.1, toml.parse() passes unbounded hexadecimal, octal, binary, and decimal digit sequences from lib/parser.js to BigInt() before reduceInteger() in lib/compiler.js checks whether the resulting value fits the TOML 64-bit integer range. Converting a sufficiently long integer string consumes super-linear CPU time and synchronously blocks the Node.js event loop, allowing one attacker-supplied TOML document to deny service to concurrent work in the process. The later range check cannot prevent the conversion cost because it executes after BigInt(). This issue is fixed in version 5.0.1.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-114144"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:27:22Z",
+      "source_updated_at": "2026-10-30T15:16:45.470",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-109618",
       "title": "RCE via OOM corruption",
       "severity": "critical",
@@ -55265,6 +55552,102 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T15:09:45Z",
       "source_updated_at": "2026-10-30T15:08:49.157",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-101778",
+      "title": "Vulnerability in the MySQL Server, MySQL Cluster product of Oracle MySQL (component: Server: Components Services)",
+      "severity": "medium",
+      "categories": [
+        "MySQL / MariaDB"
+      ],
+      "published": "2026-10-20",
+      "updated": "2026-10-30",
+      "summary": "Vulnerability in the MySQL Server, MySQL Cluster product of Oracle MySQL (component: Server: Components Services). Supported versions that are affected are MySQL Server: 8.4.0-8.4.12, 9.7.0-9.7.3, 26.7.0-26.7.1; MySQL Cluster: 8.0.0-8.0.49, 8.4.0-8.4.12, 9.7.0-9.7.3 and 26.7.0-26.7.1. Easily exploitable vulnerability allows low privileged attacker with network access via multiple protocols to compromise MySQL Server, MySQL Cluster. Successful attacks of this vulnerability can result in unauthorized ability to cause a hang or frequently repeatable crash (complete DOS) of MySQL Server, MySQL Cluster. CVSS 3.1 Base Score 6.5 (Availability impacts). CVSS Vector: (CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H).",
+      "affected": "Products identified in NVD configurations: oracle mysql_cluster; oracle mysql_server",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-101778"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://www.oracle.com/security-alerts/cpuoct2026.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:27:22Z",
+      "source_updated_at": "2026-10-30T15:16:24.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-101779",
+      "title": "Vulnerability in the MySQL Server, MySQL Cluster product of Oracle MySQL (component: Server: Telemetry)",
+      "severity": "low",
+      "categories": [
+        "MySQL / MariaDB"
+      ],
+      "published": "2026-10-20",
+      "updated": "2026-10-30",
+      "summary": "Vulnerability in the MySQL Server, MySQL Cluster product of Oracle MySQL (component: Server: Telemetry). Supported versions that are affected are MySQL Server: 8.4.0-8.4.12, 9.7.0-9.7.3, 26.7.0-26.7.1; MySQL Cluster: 8.4.0-8.4.12, 9.7.0-9.7.3 and 26.7.0-26.7.1. Easily exploitable vulnerability allows high privileged attacker with network access via multiple protocols to compromise MySQL Server, MySQL Cluster. Successful attacks of this vulnerability can result in unauthorized ability to cause a partial denial of service (partial DOS) of MySQL Server, MySQL Cluster. CVSS 3.1 Base Score 2.7 (Availability impacts). CVSS Vector: (CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:N/I:N/A:L).",
+      "affected": "Products identified in NVD configurations: oracle mysql_cluster; oracle mysql_server",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-101779"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://www.oracle.com/security-alerts/cpuoct2026.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "2.7",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:27:22Z",
+      "source_updated_at": "2026-10-30T15:20:46.540",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-101780",
+      "title": "Vulnerability in the MySQL Server, MySQL Cluster product of Oracle MySQL (component: Server: X Plugin)",
+      "severity": "medium",
+      "categories": [
+        "MySQL / MariaDB"
+      ],
+      "published": "2026-10-20",
+      "updated": "2026-10-30",
+      "summary": "Vulnerability in the MySQL Server, MySQL Cluster product of Oracle MySQL (component: Server: X Plugin). Supported versions that are affected are MySQL Server: 8.4.0-8.4.12, 9.7.0-9.7.3, 26.7.0-26.7.1; MySQL Cluster: 8.0.0-8.0.49, 8.4.0-8.4.12, 9.7.0-9.7.3 and 26.7.0-26.7.1. Easily exploitable vulnerability allows low privileged attacker with network access via multiple protocols to compromise MySQL Server, MySQL Cluster. Successful attacks of this vulnerability can result in unauthorized ability to cause a hang or frequently repeatable crash (complete DOS) of MySQL Server, MySQL Cluster. CVSS 3.1 Base Score 6.5 (Availability impacts). CVSS Vector: (CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H).",
+      "affected": "Products identified in NVD configurations: oracle mysql_cluster; oracle mysql_server",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-101780"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://www.oracle.com/security-alerts/cpuoct2026.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:27:22Z",
+      "source_updated_at": "2026-10-30T15:22:11.380",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -62988,51 +63371,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        "Windows",
-        "Windows 11 OS",
-        "Windows Server OS"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
-        },
-        {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.09813,
-      "epss_percentile": 0.95536,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2026-102870",
       "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
       "severity": "high",
@@ -63075,6 +63413,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00906,
       "epss_percentile": 0.59766,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+        },
+        {
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.09813,
+      "epss_percentile": 0.95536,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -117800,370 +118183,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-69513",
-      "title": "CVE-2026-69513 Windows Error Reporting Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Heap-based buffer overflow in Windows Error Reporting allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69513"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69455",
-      "title": "CVE-2026-69455 Windows Remote Access Connection Manager Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Heap-based buffer overflow in Windows Remote Access Connection Manager allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69455"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69532",
-      "title": "CVE-2026-69532 Windows NTFS Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Out-of-bounds read in Windows NTFS allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69532"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69450",
-      "title": "CVE-2026-69450 Windows Error Reporting Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Out-of-bounds read in Windows Error Reporting allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69450"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69463",
-      "title": "CVE-2026-69463 Windows NTFS Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Heap-based buffer overflow in Windows NTFS allows an unauthorized attacker to execute code over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69463"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69472",
-      "title": "CVE-2026-69472 Windows Devices Human Interface Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Windows Devices Human Interface allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69472"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69470",
-      "title": "CVE-2026-69470 Connected User Experiences and Telemetry Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Windows Connected User Experiences and Telemetry allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69470"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69479",
-      "title": "CVE-2026-69479 Windows NTFS Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Heap-based buffer overflow in Windows NTFS allows an unauthorized attacker to execute code locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69479"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69481",
-      "title": "CVE-2026-69481 Windows Enterprise App Management Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Heap-based buffer overflow in Windows Enterprise App Management allows an authorized attacker to elevate privileges over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69481"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69494",
-      "title": "CVE-2026-69494 Windows Event Logging Service Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Out-of-bounds read in Windows Event Logging Service allows an unauthorized attacker to execute code over a network.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69494"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69495",
-      "title": "CVE-2026-69495 Windows Event Logging Service Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Heap-based buffer overflow in Windows Event Logging Service allows an unauthorized attacker to execute code over a network.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69495"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69496",
-      "title": "CVE-2026-69496 Windows Compressed Folder Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Heap-based buffer overflow in Windows Compressed Folder allows an unauthorized attacker to execute code over a network.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69496"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69531",
-      "title": "CVE-2026-69531 Microsoft Windows Speech Tampering Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Unintended proxy or intermediary ('confused deputy') in Microsoft Windows Speech allows an authorized attacker to perform tampering locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69531"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-86422",
       "title": "ImageMagick before 7.1.2-30 contains a time-of-check-time-of-use vulnerability in path policy enforcement on Windows that allows attackers to bypass read or write restrictions",
       "severity": "low",
@@ -136818,37 +136837,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2025-7624",
-      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
-      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
-      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.10514,
-      "epss_percentile": 0.95752,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2025-6704",
       "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
       "severity": "critical",
@@ -136877,6 +136865,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.11772,
       "epss_percentile": 0.96066,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2025-7624",
+      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
+      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
+      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.10514,
+      "epss_percentile": 0.95752,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -157282,85 +157301,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T15:14:46Z",
-      "last_attempt": "2026-10-30T15:14:46Z",
+      "last_success": "2026-10-30T15:27:22Z",
+      "last_attempt": "2026-10-30T15:27:22Z",
       "items_processed": 254,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T15:14:46Z",
-      "last_attempt": "2026-10-30T15:14:46Z",
+      "last_success": "2026-10-30T15:27:22Z",
+      "last_attempt": "2026-10-30T15:27:22Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T15:14:46Z",
-      "last_attempt": "2026-10-30T15:14:46Z",
-      "items_processed": 1837,
+      "last_success": "2026-10-30T15:27:22Z",
+      "last_attempt": "2026-10-30T15:27:22Z",
+      "items_processed": 1852,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T15:14:46Z",
-      "last_attempt": "2026-10-30T15:14:46Z",
+      "last_success": "2026-10-30T15:27:22Z",
+      "last_attempt": "2026-10-30T15:27:22Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T15:14:46Z",
-      "last_attempt": "2026-10-30T15:14:46Z",
+      "last_success": "2026-10-30T15:27:22Z",
+      "last_attempt": "2026-10-30T15:27:22Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T15:14:46Z",
-      "last_attempt": "2026-10-30T15:14:46Z",
+      "last_success": "2026-10-30T15:27:22Z",
+      "last_attempt": "2026-10-30T15:27:22Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T15:14:46Z",
-      "last_attempt": "2026-10-30T15:14:46Z",
+      "last_success": "2026-10-30T15:27:22Z",
+      "last_attempt": "2026-10-30T15:27:22Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T15:14:46Z",
-      "last_attempt": "2026-10-30T15:14:46Z",
+      "last_success": "2026-10-30T15:27:22Z",
+      "last_attempt": "2026-10-30T15:27:22Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T15:14:46Z",
-      "last_attempt": "2026-10-30T15:14:46Z",
+      "last_success": "2026-10-30T15:27:22Z",
+      "last_attempt": "2026-10-30T15:27:22Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T15:14:46Z",
-      "last_attempt": "2026-10-30T15:14:46Z",
+      "last_success": "2026-10-30T15:27:22Z",
+      "last_attempt": "2026-10-30T15:27:22Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T15:14:46Z",
-      "last_attempt": "2026-10-30T15:14:46Z",
+      "last_success": "2026-10-30T15:27:22Z",
+      "last_attempt": "2026-10-30T15:27:22Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T15:14:46Z",
-      "last_attempt": "2026-10-30T15:14:46Z",
+      "last_success": "2026-10-30T15:27:22Z",
+      "last_attempt": "2026-10-30T15:27:22Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -157372,7 +157391,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T15:14:46Z",
-  "last_successful_update": "2026-10-30T15:14:46Z",
+  "last_checked_at": "2026-10-30T15:27:22Z",
+  "last_successful_update": "2026-10-30T15:27:22Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
