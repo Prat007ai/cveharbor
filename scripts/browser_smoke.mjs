@@ -819,3 +819,5 @@ assert.ok(fs.readFileSync('account-backend/src/inventory.js','utf8').includes('/
 
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("newCustomerSetup=true"),'new customer setup starts without previous account selection');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('startNewCustomer()'),'new customer action clears prior wizard data');
+
+assert.ok(fs.readFileSync('inventory.js','utf8').includes('packages imported successfully into CVEHarbor.'),'package import uses customer friendly confirmation');
