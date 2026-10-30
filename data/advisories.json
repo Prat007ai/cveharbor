@@ -44489,7 +44489,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: usb: hub: use shorter 120ms post resume hold for SS root hubs Holding a USB3 hub PM runtime reference for 2",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "iOS / Android"
       ],
       "published": "2026-10-23",
       "updated": "2026-10-30",
@@ -45273,6 +45274,7 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: Bluetooth: RFCOMM: connect the session socket without rfcomm_mutex An RFCOMM connect() issued while a BR/ED",
       "severity": "bulletin",
       "categories": [
+        "Application dependencies",
         "Linux"
       ],
       "published": "2026-10-23",
@@ -45721,7 +45723,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: memstick: rtsx_usb_ms: complete requests after eject instead of dropping them memstick_check() can pass its",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-23",
       "updated": "2026-10-30",
@@ -45917,7 +45920,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: ipv4: do not warn on route notification size race Commit 680aea08e78c (\"net: ipv4: Emit notification when f",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-23",
       "updated": "2026-10-30",
@@ -45945,7 +45949,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: ipv4: stop route notification sizing when nexthop group shrinks Commit 680aea08e78c (\"net: ipv4: Emit notif",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-23",
       "updated": "2026-10-30",
@@ -45973,7 +45978,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: ipv4: udp: Create exceptions before socket matching Currently, when ICMP Fragmentation Needed and Redirect ",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-23",
       "updated": "2026-10-30",
@@ -57312,7 +57318,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: smb: client: fix create context out-of-bounds reads smb2_parse_contexts() validates the complete create-con",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-18",
       "updated": "2026-10-30",
@@ -57368,7 +57375,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: netfilter: nf_tables: skip expired catchall elements on insert and delete nft_setelem_catchall_insert() loo",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-18",
       "updated": "2026-10-30",
@@ -58796,7 +58804,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: Bluetooth: hci_core: Serialize fragmented ISO packet queueing The fragmented path in hci_queue_iso() calls ",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-18",
       "updated": "2026-10-30",
@@ -58852,7 +58861,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: Bluetooth: hci_conn: Lock parent access during enhanced SCO setup Bluetooth: hci_conn: Lock parent access d",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-18",
       "updated": "2026-10-30",
@@ -59636,6 +59646,7 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: nitro_enclaves: fix use-after-free on SLOT_ALLOC failure When ne_create_vm_ioctl() fails the SLOT_ALLOC req",
       "severity": "bulletin",
       "categories": [
+        "AWS",
         "Linux"
       ],
       "published": "2026-10-18",
@@ -60392,7 +60403,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: net/packet: prevent TX_RING byte count overflow tpacket_snd() drains every SEND_REQUEST frame in a TX ring ",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-18",
       "updated": "2026-10-30",
@@ -62314,48 +62326,40 @@
       "epss_as_of": "2026-10-30"
     },
     {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
-      "severity": "high",
-      "cvss": "8.8",
+      "id": "CVE-2026-83699",
+      "title": "CVE-2026-83699 Windows Client-Side Caching (CSC) Service Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
       "categories": [
         "Windows",
         "Windows 11 OS",
         "Windows Server OS"
       ],
       "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
+      "updated": "2026-10-30",
+      "summary": "<p>Stack-based buffer overflow in Windows Client-Side Caching (CSC) Service allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
       "sources": [
         {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        },
-        {
           "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
-        },
-        {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83699"
         },
         {
           "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-83699"
         }
       ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "source_type": "vendor_baseline",
+      "cvss": "7.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
       "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.09813,
-      "epss_percentile": 0.95536,
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.0042,
+      "epss_percentile": 0.36241,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -62401,6 +62405,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00906,
       "epss_percentile": 0.59766,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+        },
+        {
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.09813,
+      "epss_percentile": 0.95536,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -82961,6 +83010,42 @@
       "epss_as_of": "2026-10-30"
     },
     {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60678,
+      "epss_as_of": "2026-10-30"
+    },
+    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -82999,42 +83084,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.558,
-      "epss_as_of": "2026-10-30"
-    },
-    {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60678,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -86210,37 +86259,6 @@
       "known_exploited": false,
       "epss": 0.00928,
       "epss_percentile": 0.60436,
-      "epss_as_of": "2026-10-30"
-    },
-    {
-      "id": "CVE-2026-83699",
-      "title": "CVE-2026-83699 Windows Client-Side Caching (CSC) Service Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Stack-based buffer overflow in Windows Client-Side Caching (CSC) Service allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-83699"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.0042,
-      "epss_percentile": 0.36241,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -99994,7 +100012,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: vlan: require the MAC header to be present in __vlan_insert_inner_tag() __vlan_insert_inner_tag() only guar",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-09",
       "updated": "2026-10-30",
@@ -100259,7 +100278,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: mm/hugetlb: preserve mremap address delta when skipping page tables move_hugetlb_page_tables() optimizes mr",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-07",
       "updated": "2026-10-30",
@@ -100315,7 +100335,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: smb: client: fix OOB struct field reads in move_smb2_ea_to_cifs() In move_smb2_ea_to_cifs(), the while (src",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-06",
       "updated": "2026-10-30",
@@ -100343,7 +100364,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: smb: client: fix next_buffer UAF and NextCommand bounds in compound PDUs Fix several related bounds checkin",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-06",
       "updated": "2026-10-30",
@@ -100399,7 +100421,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: smb: client: fix use-after-free of iface in cifs_try_adding_channels() cifs_try_adding_channels() iterates ",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-06",
       "updated": "2026-10-30",
@@ -100427,7 +100450,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: wifi: wcn36xx: Fix potential use-after-free in TX ack timer teardown wcn36xx_dxe_deinit() tears down the TX",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-10-06",
       "updated": "2026-10-30",
@@ -101219,7 +101243,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: scsi: qla2xxx: Fix soft lockup polling continuation IOCB signature qla27xx_copy_multiple_pkt() and qla27xx_",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-25",
       "updated": "2026-10-30",
@@ -101471,7 +101496,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: smb: client: avoid leaking refcount when cifs_sb_tlink() fails cifs_oplock_break() takes over the reference",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-25",
       "updated": "2026-10-30",
@@ -102087,7 +102113,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: tick/broadcast: Plug clockevents replacement race 朱恺乾 reported and decoded the following race condition whe",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-25",
       "updated": "2026-10-30",
@@ -102115,7 +102142,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: tracing: Set the trace clock before registering the histogram trigger hist_register_trigger() puts the trig",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-25",
       "updated": "2026-10-30",
@@ -102548,8 +102576,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: ext4: fix circular lock dependency in ext4_ext_migrate Move iput(tmp_inode) after ext4_writepages_up_write(",
       "severity": "bulletin",
       "categories": [
-        "Linux",
-        "Application dependencies"
+        "Application dependencies",
+        "Linux"
       ],
       "published": "2026-09-24",
       "updated": "2026-10-30",
@@ -103165,7 +103193,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: tty: serial: 8250: protect against NULL uart->port.dev in register serial8250_register_8250_port() conditio",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-24",
       "updated": "2026-10-30",
@@ -104290,6 +104319,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: Drivers: hv: vmbus: Skip VMBus module cleanup for non-nested root partition The VMBus module initialization",
       "severity": "bulletin",
       "categories": [
+        "Application dependencies",
+        "HyperV",
         "Linux"
       ],
       "published": "2026-09-17",
@@ -105074,7 +105105,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: ksmbd: fix slab-out-of-bounds read in ksmbd_alloc_user() ksmbd_alloc_user() copies resp->hash_sz bytes out ",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-17",
       "updated": "2026-10-30",
@@ -106026,7 +106058,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: serial: core: clear freed pointers on uart_register_driver() failure uart_register_driver() leaves drv->sta",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-17",
       "updated": "2026-10-30",
@@ -106138,7 +106171,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: wifi: nl80211: clean up color-change beacon data on errors nl80211_color_change() calls nl80211_parse_beaco",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-17",
       "updated": "2026-10-30",
@@ -106978,6 +107012,7 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: firmware: arm_scmi: Drop handle on protocol bind failures The SCMI bus notifier acquires an SCMI handle whe",
       "severity": "bulletin",
       "categories": [
+        "Application dependencies",
         "Linux"
       ],
       "published": "2026-09-17",
@@ -107146,7 +107181,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: firmware: arm_scmi: Publish channel state before callbacks Transport setup can enable callbacks before the ",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "Windows"
       ],
       "published": "2026-09-17",
       "updated": "2026-10-30",
@@ -107594,7 +107630,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: drm/amd/display: Fix dangling pointer in CRTC reset function amdgpu_dm_crtc_reset_state() frees the old sta",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-17",
       "updated": "2026-10-30",
@@ -107622,7 +107659,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: drm/amd/display: Fix dangling pointer in plane reset function amdgpu_dm_plane_drm_plane_reset() frees the o",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-17",
       "updated": "2026-10-30",
@@ -107734,7 +107772,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: nvdimm: virtio_pmem: refcount requests for token lifetime KASAN reports slab-use-after-free in __wake_up_co",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-17",
       "updated": "2026-10-30",
@@ -108183,8 +108222,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: PCI: Allow per function PCI slots to fix slot reset on s390 On s390 systems, which use a machine level hype",
       "severity": "high",
       "categories": [
-        "Linux",
-        "HyperV"
+        "HyperV",
+        "Linux"
       ],
       "published": "2026-09-16",
       "updated": "2026-10-30",
@@ -108632,7 +108671,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: scsi: qla2xxx: Initialize NVMe abort_work once at submission qla_nvme_fcp_abort() and qla_nvme_ls_abort() r",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-16",
       "updated": "2026-10-30",
@@ -108828,7 +108868,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: KVM: s390: Fix length check __import_wp_info() struct kvm_hw_breakpoint::len is a __u64 that is fully contr",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "WordPress / Plugins"
       ],
       "published": "2026-09-16",
       "updated": "2026-10-30",
@@ -109360,7 +109401,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: staging: rtl8723bs: fix OOB read in rtw_restruct_wmm_ie() rtw_restruct_wmm_ie() scans in_ie for a WMM IE wi",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-16",
       "updated": "2026-10-30",
@@ -109500,7 +109542,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: HID: sony: clean up device list on probe failure sony_input_configured() adds some controllers to sony_devi",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-16",
       "updated": "2026-10-30",
@@ -109949,7 +109992,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: net: thunderbolt: Mark the connection down when bringing it up fails Every failure path in tbnet_connected_",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-11",
       "updated": "2026-10-30",
@@ -109977,7 +110021,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: net: thunderbolt: Release the Rx HopID that was handed out on mismatch tb_xdomain_alloc_in_hopid() passes t",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-11",
       "updated": "2026-10-30",
@@ -110313,7 +110358,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: power: supply: charger-manager: register regulators before exposing sysfs charger_manager_remove() and the ",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "Windows"
       ],
       "published": "2026-09-11",
       "updated": "2026-10-30",
@@ -110481,7 +110527,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: sched/core: Make core-sched flips wait for in-flight selections Core scheduling's pick_next_task() operates",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-11",
       "updated": "2026-10-30",
@@ -110957,7 +111004,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: dm array: validate array block headers on read array_block_check() validates blocknr and csum and nothing e",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-11",
       "updated": "2026-10-30",
@@ -111573,7 +111621,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: nfsd: fix stale s2s_cp_stateids IDR entry for async COPY For an async COPY, nfsd4_copy() called nfs4_init_c",
       "severity": "critical",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-11",
       "updated": "2026-10-30",
@@ -111965,7 +112014,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: device property: fix infinite loop in fwnode_for_each_child_node() When iterate over children of a fwnode t",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-11",
       "updated": "2026-10-30",
@@ -119598,7 +119648,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: tls: device: fix out-of-bounds write in tls_append_frag() Found with syzkaller and a local syzbot instance ",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-09-04",
       "updated": "2026-10-30",
@@ -120218,7 +120269,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: btrfs: lzo: reject compressed segment that overflows the compressed input lzo_decompress_bio() validates ea",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-08-28",
       "updated": "2026-10-30",
@@ -120890,7 +120942,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: ASoC: SOF: ipc4-pcm: Continue the pipeline trigger in case of IPC timeout Ignore IPC errors for pipeline st",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-08-26",
       "updated": "2026-10-30",
@@ -121650,7 +121703,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: dm-ioctl: fix a possible overflow in list_version_get_info sizeof(tt->version) is 12 bytes, but the code wr",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-08-15",
       "updated": "2026-10-30",
@@ -121762,7 +121816,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: ocfs2: fix UBSAN array-index-out-of-bounds in ocfs2_sum_rightmost_rec [BUG] On-disk corruption setting l_ne",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-08-15",
       "updated": "2026-10-30",
@@ -121846,7 +121901,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: ntfs: detect mapping-pairs LCN accumulator overflow The NTFS mapping-pairs parser accumulates relative LCN ",
       "severity": "critical",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-08-15",
       "updated": "2026-10-30",
@@ -122854,7 +122910,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: net: watchdog: fix refcount tracking races Blamed commit converted the untracked dev_hold()/dev_put() calls",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-08-15",
       "updated": "2026-10-30",
@@ -122994,6 +123051,7 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: ext4: validate donor file superblock early in EXT4_IOC_MOVE_EXT Reject the EXT4_IOC_MOVE_EXT ioctl early if",
       "severity": "bulletin",
       "categories": [
+        "Application dependencies",
         "Linux"
       ],
       "published": "2026-08-15",
@@ -123022,7 +123080,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: ext4: fix kernel BUG in ext4_write_inline_data_end When the data=journal mount option is used, the ext4_jou",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-08-15",
       "updated": "2026-10-30",
@@ -124734,7 +124793,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: tipc: serialize udp bearer replicast list updates tipc_udp_rcast_add() and cleanup_bearer() both update ub-",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-08-10",
       "updated": "2026-10-30",
@@ -125042,7 +125102,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: xfrm: fix stale skb->prev after async crypto steals a GSO segment skb_gso_segment() leaves the segment list",
       "severity": "critical",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-08-10",
       "updated": "2026-10-30",
@@ -125134,7 +125195,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: perf/core: Detach event groups during remove_on_exec perf_event_remove_on_exec() removes events by calling ",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-07-29",
       "updated": "2026-10-30",
@@ -125218,7 +125280,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: nvmet: fix pre-auth out-of-bounds heap read in Discovery Get Log Page nvmet_execute_disc_get_log_page() val",
       "severity": "critical",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-07-25",
       "updated": "2026-10-30",
@@ -127372,7 +127435,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: usb: typec: tcpm: bound altmode_desc[] per iteration in svdm_consume_modes() svdm_consume_modes() checks pm",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-07-19",
       "updated": "2026-10-30",
@@ -127456,7 +127520,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: netfilter: nf_tables: fix dst corruption in same register operation For lshift and rshift, the shift operat",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-07-19",
       "updated": "2026-10-30",
@@ -127792,7 +127857,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: test_kprobes: clear kprobes between test runs Running the kprobes sanity tests twice makes all tests fail a",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-07-19",
       "updated": "2026-10-30",
@@ -128021,7 +128087,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: KVM: Don't WARN if memory is dirtied without a vCPU when the VM is dying When marking a page dirty, complai",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-07-01",
       "updated": "2026-10-30",
@@ -128109,7 +128176,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: btrfs: only release the dirty pages io tree after successful writes [WARNING] With extra warning on dirty e",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-06-26",
       "updated": "2026-10-30",
@@ -128501,7 +128569,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: netfilter: nft_ct: bail out on template ct in get eval I noticed this issue while looking at a historic syz",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-06-25",
       "updated": "2026-10-30",
@@ -128753,7 +128822,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: ice: fix double-free of tx_buf skb If ice_tso() or ice_tx_csum() fail, the error path in ice_xmit_frame_rin",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-06-24",
       "updated": "2026-10-30",
@@ -129893,7 +129963,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: netfilter: nfnetlink_queue: do shared-unconfirmed check before segmentation Ulrich reports a regression wit",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-05-27",
       "updated": "2026-10-30",
@@ -130425,7 +130496,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: KVM: nSVM: Always use NextRIP as vmcb02's NextRIP after first L2 VMRUN For guests with NRIPS disabled, L1 d",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-05-27",
       "updated": "2026-10-30",
@@ -131325,7 +131397,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: ksmbd: fix signededness bug in smb_direct_prepare_negotiation() smb_direct_prepare_negotiation() casts an u",
       "severity": "critical",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-05-06",
       "updated": "2026-10-30",
@@ -131745,7 +131818,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: ksmbd: validate response sizes in ipc_validate_msg() ipc_validate_msg() computes the expected message size ",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-05-01",
       "updated": "2026-10-30",
@@ -131885,7 +131959,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: drm/i915/dsi: Don't do DSC horizontal timing adjustments in command mode Stop adjusting the horizontal timi",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "Windows"
       ],
       "published": "2026-05-01",
       "updated": "2026-10-30",
@@ -132473,7 +132548,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: ipv4: nexthop: allocate skb dynamically in rtm_get_nexthop() When querying a nexthop object via RTM_GETNEXT",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-04-23",
       "updated": "2026-10-30",
@@ -132729,8 +132805,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: net/rds: Fix circular locking dependency in rds_tcp_tune syzbot reported a circular locking dependency in r",
       "severity": "medium",
       "categories": [
-        "Linux",
-        "Application dependencies"
+        "Application dependencies",
+        "Linux"
       ],
       "published": "2026-04-03",
       "updated": "2026-10-30",
@@ -133612,7 +133688,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: btrfs: fix NULL dereference on root when tracing inode eviction When evicting an inode the first thing we d",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-01-31",
       "updated": "2026-10-30",
@@ -133640,7 +133717,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: dst: fix races in rt6_uncached_list_del() and rt_del_uncached_list() syzbot was able to crash the kernel in",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-01-25",
       "updated": "2026-10-30",
@@ -134216,6 +134294,7 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: blk-cgroup: fix possible deadlock while configuring policy Following deadlock can be triggered easily by lo",
       "severity": "bulletin",
       "categories": [
+        "Application dependencies",
         "Linux"
       ],
       "published": "2025-12-16",
@@ -135251,7 +135330,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: xfrm: xfrm_alloc_spi shouldn't use 0 as SPI x->id.spi == 0 means \"no SPI assigned\", but since commit 94f398",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2025-10-13",
       "updated": "2026-10-30",
@@ -135475,7 +135555,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: bpf: Tell memcg to use allow_spinning=false path in bpf_timer_init() Currently, calling bpf_map_kmalloc_nod",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2025-09-23",
       "updated": "2026-10-30",
@@ -135503,7 +135584,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: vxlan: Fix NPD in {arp,neigh}_reduce() when using nexthop objects When the \"proxy\" option is enabled on a V",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2025-09-19",
       "updated": "2026-10-30",
@@ -135531,7 +135613,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: vxlan: Fix NPD when refreshing an FDB entry with a nexthop object VXLAN FDB entries can point to either a r",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2025-09-19",
       "updated": "2026-10-30",
@@ -135672,7 +135755,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: trace/fgraph: Fix the warning caused by missing unregister notifier This warning was triggered during testi",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2025-09-16",
       "updated": "2026-10-30",
@@ -135756,7 +135840,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: xfrm: Duplicate SPI Handling The issue originates when Strongswan initiates an XFRM_MSG_ALLOCSPI Netlink me",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2025-09-12",
       "updated": "2026-10-30",
@@ -136176,7 +136261,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: pinmux: fix race causing mux_owner NULL with active mux_usecount commit 5a3e85c3c397 (\"pinmux: Use sequenti",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2025-08-22",
       "updated": "2026-10-30",
@@ -136204,7 +136290,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: rv: Use strings in da monitors tracepoints Using DA monitors tracepoints with KASAN enabled triggers the fo",
       "severity": "high",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2025-08-22",
       "updated": "2026-10-30",
@@ -136345,7 +136432,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: drm/rockchip: vop2: fail cleanly if missing a primary plane for a video-port Each window of a vop2 is usabl",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "Windows"
       ],
       "published": "2025-08-19",
       "updated": "2026-10-30",
@@ -157086,85 +157174,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T13:28:25Z",
-      "last_attempt": "2026-10-30T13:28:25Z",
+      "last_success": "2026-10-30T13:38:28Z",
+      "last_attempt": "2026-10-30T13:38:28Z",
       "items_processed": 258,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T13:28:25Z",
-      "last_attempt": "2026-10-30T13:28:25Z",
+      "last_success": "2026-10-30T13:38:28Z",
+      "last_attempt": "2026-10-30T13:38:28Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T13:28:25Z",
-      "last_attempt": "2026-10-30T13:28:25Z",
-      "items_processed": 1776,
+      "last_success": "2026-10-30T13:38:28Z",
+      "last_attempt": "2026-10-30T13:38:28Z",
+      "items_processed": 1777,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T13:28:25Z",
-      "last_attempt": "2026-10-30T13:28:25Z",
+      "last_success": "2026-10-30T13:38:28Z",
+      "last_attempt": "2026-10-30T13:38:28Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T13:28:25Z",
-      "last_attempt": "2026-10-30T13:28:25Z",
+      "last_success": "2026-10-30T13:38:28Z",
+      "last_attempt": "2026-10-30T13:38:28Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T13:28:25Z",
-      "last_attempt": "2026-10-30T13:28:25Z",
+      "last_success": "2026-10-30T13:38:28Z",
+      "last_attempt": "2026-10-30T13:38:28Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T13:28:25Z",
-      "last_attempt": "2026-10-30T13:28:25Z",
+      "last_success": "2026-10-30T13:38:28Z",
+      "last_attempt": "2026-10-30T13:38:28Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T13:28:25Z",
-      "last_attempt": "2026-10-30T13:28:25Z",
+      "last_success": "2026-10-30T13:38:28Z",
+      "last_attempt": "2026-10-30T13:38:28Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T13:28:25Z",
-      "last_attempt": "2026-10-30T13:28:25Z",
+      "last_success": "2026-10-30T13:38:28Z",
+      "last_attempt": "2026-10-30T13:38:28Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T13:28:25Z",
-      "last_attempt": "2026-10-30T13:28:25Z",
+      "last_success": "2026-10-30T13:38:28Z",
+      "last_attempt": "2026-10-30T13:38:28Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T13:28:25Z",
-      "last_attempt": "2026-10-30T13:28:25Z",
+      "last_success": "2026-10-30T13:38:28Z",
+      "last_attempt": "2026-10-30T13:38:28Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T13:28:25Z",
-      "last_attempt": "2026-10-30T13:28:25Z",
+      "last_success": "2026-10-30T13:38:28Z",
+      "last_attempt": "2026-10-30T13:38:28Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -157176,7 +157264,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T13:28:25Z",
-  "last_successful_update": "2026-10-30T13:28:25Z",
+  "last_checked_at": "2026-10-30T13:38:28Z",
+  "last_successful_update": "2026-10-30T13:38:28Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
