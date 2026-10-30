@@ -140,28 +140,72 @@ $('closeRemediationAssign').addEventListener('click',()=>{
 $('remediationAssignDialog').addEventListener('click',event=>{
   if(event.target===$('remediationAssignDialog'))$('closeRemediationAssign').click();
 });
-$('remediationAssignForm').addEventListener('submit',async event=>{
-  event.preventDefault();
-  const cve=$('remediationAssignCve').value;
-  const email=$('remediationAssignEmail').value.trim().toLowerCase();
-  const send=$('remediationSendAssignment');
-  const status=$('remediationAssignMessage');
-  if(!cloudMode||!capabilities?.assignments_available||!capabilities?.assignment_email_enabled){
-    status.textContent='Assignment email is not available. Please check cloud account setup.';return;
+function closeCvhDialog(id){
+ const dialog=$(id);
+ if(typeof dialog.close==='function'&&dialog.open)dialog.close();
+ else dialog.removeAttribute('open');
+}
+function openCvhDialog(id){
+ const dialog=$(id);
+ if(typeof dialog.showModal==='function'&&!dialog.open)dialog.showModal();
+ else dialog.setAttribute('open','');
+}
+function confirmReviewRequest(cve,email){
+ return new Promise(resolve=>{
+  const dialog=$('remediationConfirmDialog');
+  $('remediationConfirmText').textContent='Send the '+cve+' vulnerability review request to '+email+'?';
+  const send=$('remediationConfirmSend'),cancel=$('remediationConfirmCancel'),x=$('remediationConfirmX');
+  let settled=false;
+  function finish(value){
+   if(settled)return;settled=true;
+   send.removeEventListener('click',onSend);cancel.removeEventListener('click',onCancel);
+   x.removeEventListener('click',onCancel);dialog.removeEventListener('cancel',onCancel);
+   dialog.removeEventListener('close',onClose);
+   closeCvhDialog('remediationConfirmDialog');
+   resolve(value);
   }
-  if(!$('remediationAssignConfirm').checked){status.textContent='Confirm that this is an appropriate recipient.';return;}
-  if(!window.confirm('Send the '+cve+' vulnerability review request to '+email+'?'))return;
-  send.disabled=true;status.textContent='Submitting the assignment request to CVEHarbor...';
-  try{
-    const result=await api('/remediations/'+cve+'/assign','POST',{email,reviewer_notes:$('remediationAssignNotes').value.trim().slice(0,1000)});
-    await refreshRecords();
-    status.textContent=result.message||'Assignment saved. The email provider accepted the notification.';
-    msg(cve+' assigned to '+email+'.');
-  }catch(error){
-    status.textContent='Assignment not sent: '+error.message;
-    msg('Email assignment could not be completed. '+error.message);
-  }finally{send.disabled=false;}
+  function onSend(){finish(true)}
+  function onCancel(event){if(event?.type==='cancel')event.preventDefault();finish(false)}
+  function onClose(){finish(false)}
+  send.addEventListener('click',onSend);cancel.addEventListener('click',onCancel);
+  x.addEventListener('click',onCancel);dialog.addEventListener('cancel',onCancel);
+  dialog.addEventListener('close',onClose);
+  openCvhDialog('remediationConfirmDialog');
+ });
+}
+function showReviewSuccess(email){
+ $('remediationSuccessText').textContent='Your request has been submitted to '+email+'.';
+ openCvhDialog('remediationSuccessDialog');
+}
+for(const id of ['remediationSuccessClose','remediationSuccessX'])
+ $(id).addEventListener('click',()=>{
+  closeCvhDialog('remediationSuccessDialog');
+  $('closeRemediationAssign').click();
+ });
+$('remediationAssignForm').addEventListener('submit',async event=>{
+ event.preventDefault();
+ const cve=$('remediationAssignCve').value;
+ const email=$('remediationAssignEmail').value.trim().toLowerCase();
+ const send=$('remediationSendAssignment'),status=$('remediationAssignMessage');
+ if(!cloudMode||!capabilities?.assignments_available||!capabilities?.assignment_email_enabled){
+  status.textContent='Email assignment is currently unavailable. Please try again later.';return;
+ }
+ if(!$('remediationAssignConfirm').checked){status.textContent='Confirm that this is an appropriate recipient.';return;}
+ if(!await confirmReviewRequest(cve,email))return;
+ send.disabled=true;status.textContent='Submitting your review request...';
+ try{
+  const result=await api('/remediations/'+cve+'/assign','POST',{email,reviewer_notes:$('remediationAssignNotes').value.trim().slice(0,1000)});
+  if(!result.assigned||!result.notified)throw Error('The request was not confirmed as sent.');
+  try{await refreshRecords()}catch(_){}
+  status.textContent='Request submitted successfully.';
+  msg('Review request submitted for '+cve+'.');
+  showReviewSuccess(email);
+ }catch(error){
+  status.textContent='Request not sent: '+error.message;
+  msg('Review request could not be completed. '+error.message);
+ }finally{send.disabled=false}
 });
+
 $('remediationForm').addEventListener('submit',async event=>{
   event.preventDefault();
   const id=$('remediationCve').value.trim().toUpperCase();
