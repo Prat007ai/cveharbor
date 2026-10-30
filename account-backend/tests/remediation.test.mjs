@@ -289,6 +289,7 @@ test('assignment sending enforces ten per sender hourly and twenty per recipient
       }),env(db));
       assert.equal(response.status,200,'twenty recipient notifications are accepted');
     }
+    sharedRecipientRate.delete('assignment-sender:'+user.id); // Avoid masking recipient ceiling with hourly sender ceiling
     const extraDb=new MockD1();
     extraDb.rate=sharedRecipientRate;
     const extra=await worker.fetch(request('/remediations/CVE-2026-70021/assign','POST',{
