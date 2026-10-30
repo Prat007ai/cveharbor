@@ -106,15 +106,18 @@ function checkSavedPlugins(assets){
 }
 function setupSourceEditor(){
  const host=$('inventoryAssetForm');if(!host)return;
- const box=make('section','inventory-plugin-import');
+ const box=make('section','inventory-plugin-import inventory-source-editor');
  box.append(make('h3','','Edit WordPress plugin sources'),make('p','ops-note','Choose an existing WordPress plugin, then save its vendor, release and security advisory URLs. Only verified WordPress.org plugin URLs are used for automatic version lookups.'));
- const select=document.createElement('select');select.setAttribute('aria-label','Select existing plugin');
+ const select=document.createElement('select');select.setAttribute('aria-label','Select existing plugin');select.className='inventory-source-select';
+ const pickerLabel=make('label','inventory-source-picker-label','Plugin');pickerLabel.append(select);box.append(pickerLabel);
+ const fieldGrid=make('div','inventory-source-fields');box.append(fieldGrid);
  const fields=['vendor_url','release_url','advisory_url'].map(key=>{
   const label=make('label','ops-note',key.replace('_',' '));
   const input=document.createElement('input');input.type='url';input.placeholder='https://';input.setAttribute('aria-label',key);
-  label.append(input);box.append(label);return {key,input};
+  label.append(input);fieldGrid.append(label);return {key,input};
  });
- const info=make('p','ops-note','');
+ const info=make('p','ops-note inventory-source-feedback','');info.setAttribute('role','status');
+ const actions=make('div','inventory-source-actions');
  const button=make('button','ops-download','Save plugin sources');button.type='button';
  const verify=make('button','ops-download','Validate source mapping');verify.type='button';
  function redraw(){
@@ -152,7 +155,7 @@ function setupSourceEditor(){
   }catch(e){info.textContent='Could not verify source: '+e.message}
   finally{verify.disabled=false}
  });
- box.prepend(select);box.append(button,verify,info);host.after(box);
+ actions.append(button,verify);box.append(actions,info);host.after(box);
  window.addEventListener('cveharbor:inventory-loaded',redraw);redraw();
 }
 function refreshMatchCustomers(){
