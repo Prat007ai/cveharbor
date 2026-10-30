@@ -313,12 +313,12 @@ class FeedTests(unittest.TestCase):
         today = u.NOW.date().isoformat()
         old = {f'CVE-2026-{n:06d}': {'id':f'CVE-2026-{n:06d}',
                'published':'2026-04-02','updated':today,
-               'source_updated_at':today,'categories':['PHP']} for n in range(2750)}
+               'source_updated_at':today,'categories':['PHP']} for n in range(5250)}
         new = {'CVE-2026-999991': {'id':'CVE-2026-999991',
                'published':today,'updated':today,
                'source_updated_at':today,'categories':['PHP']}}
         selected=u.choose_records({**old,**new},set())
-        self.assertEqual(2500,len(selected))
+        self.assertEqual(5000,len(selected))
         self.assertEqual(selected[0]['id'],'CVE-2026-999991')
         self.assertNotEqual(selected[0]['published'],'2026-04-02')
 
@@ -344,7 +344,7 @@ class FeedTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'GitHub advisory feed returned no'):
                 u.ghsa_items()
         self.assertEqual({'published','updated'},{x['sort'][0] for x in seen})
-        self.assertEqual({'reviewed','malware'},{x['type'][0] for x in seen})
+        self.assertEqual({'reviewed','unreviewed','malware'},{x['type'][0] for x in seen})
 
     def test_cisa_date_added_is_not_original_published_date(self):
         result=u.from_kev({'cveID':'CVE-2026-91818',
