@@ -258,7 +258,7 @@ test('missing assignment table blocks mail while leaving existing cloud record s
 });
 
 
-test('assignment sending enforces ten per sender hourly and two per recipient daily',async()=>{
+test('assignment sending enforces ten per sender hourly and twenty per recipient daily',async()=>{
   const previous=globalThis.fetch;
   globalThis.fetch=async()=>new Response(JSON.stringify({data:{succeeded:1,failed:0,email_id:'quota-test'}}),{
     status:200,headers:{'Content-Type':'application/json'}
@@ -277,17 +277,23 @@ test('assignment sending enforces ten per sender hourly and two per recipient da
     }),env(first));
     assert.equal(over.status,429,'eleventh assignment in an hour is rejected');
 
-    const second=new MockD1();
-    for(const id of ['CVE-2026-70001','CVE-2026-70002']){
-      const response=await worker.fetch(request('/remediations/'+id+'/assign','POST',{
+    // Separate account instances simulate independent senders to test the recipient-wide cap.
+    const sharedRecipientRate=new Map();
+    for(let i=0;i<20;i++){
+      const db=new MockD1();
+      db.rate=sharedRecipientRate;
+      const cv='CVE-2026-'+(70001+i);
+      const response=await worker.fetch(request('/remediations/'+cv+'/assign','POST',{
         email:'same@example.org'
-      }),env(second));
-      assert.equal(response.status,200);
+      }),env(db));
+      assert.equal(response.status,200,'twenty recipient notifications are accepted');
     }
-    const third=await worker.fetch(request('/remediations/CVE-2026-70003/assign','POST',{
+    const extraDb=new MockD1();
+    extraDb.rate=sharedRecipientRate;
+    const extra=await worker.fetch(request('/remediations/CVE-2026-70021/assign','POST',{
       email:'same@example.org'
-    }),env(second));
-    assert.equal(third.status,429,'a third email to the same recipient in 24 hours is rejected');
+    }),env(extraDb));
+    assert.equal(extra.status,429,'twenty first email to the same recipient in 24 hours is rejected');
   }finally{globalThis.fetch=previous;}
 });
 
