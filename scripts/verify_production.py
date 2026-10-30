@@ -34,7 +34,7 @@ for attempt in range(6):
             for marker in required[route]:
                 if marker not in html: raise RuntimeError(f"{route} missing {marker}")
             for asset in ("styles.css","customer-security.js","inventory.js"):
-                m=re.search(r'/(?:'+re.escape(asset)+r')\\?v=([a-zA-Z0-9-]+)',expected)
+                m=re.search(r'/'+re.escape(asset)+r'\?v=([a-zA-Z0-9-]+)',expected)
                 if not m: continue
                 expected_url=f"/{asset}?v={m.group(1)}"
                 if expected_url not in html:
