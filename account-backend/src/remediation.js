@@ -116,25 +116,42 @@ export function renderAssignmentEmail(cve,recipient,requester,reviewerNotes=''){
    'WHAT YOU NEED TO DO',...actions.map((x,i)=>(i+1)+'. '+x),'',
    ...(notes?['NOTES FROM THE REQUESTER',notes,'']:[]),'RELATED REFERENCES',...links.map(([name,url])=>name+': '+url),'',
    'CVEHarbor does not create a DevOps work item automatically. This is a review request, not proof of exposure. Keep customer secrets and internal environment details in your approved private systems.'];
-  const linkHtml=links.map(([name,url])=>'<li style="padding:5px 0"><a href="'+safe(url)+'" style="color:#5ce1d3">'+safe(name)+'</a></li>').join('');
-  const actionHtml=actions.map((item,i)=>'<tr><td style="width:34px;vertical-align:top;color:#46dac7;font-weight:bold;padding:8px">'+(i+1)+'.</td><td style="padding:8px;color:#dceaf3">'+safe(item)+'</td></tr>').join('');
+  // Fixed-width presentation tables and explicit cell backgrounds support Outlook desktop.
+  const td=(content,background='#ffffff',padding='22px 28px')=>'<td bgcolor="'+background+'" style="background-color:'+background+';padding:'+padding+';font-family:Arial,Helvetica,sans-serif;color:#193247;">'+content+'</td>';
+  const row=(content,background,padding)=>'<tr>'+td(content,background,padding)+'</tr>';
+  const linkHtml=links.map(([name,url])=>'<tr><td style="padding:6px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;"><a href="'+safe(url)+'" style="color:#087f88;text-decoration:underline;">'+safe(name)+'</a></td></tr>').join('');
+  const actionHtml=actions.map((item,i)=>'<tr><td width="32" valign="top" style="padding:9px 6px 9px 0;color:#068a88;font-weight:bold;font-size:15px;">'+(i+1)+'.</td><td valign="top" style="padding:9px 0;font-size:14px;line-height:21px;color:#243e51;">'+safe(item)+'</td></tr>').join('');
+  const headline='<div style="font-size:11px;letter-spacing:1.5px;font-weight:bold;color:#087f88;margin-bottom:10px;">VULNERABILITY REVIEW REQUEST</div>'+
+    '<h1 style="font-family:Arial,Helvetica,sans-serif;font-size:25px;line-height:32px;margin:0 0 18px;color:#102d40;">Review requested: '+safe(cve)+'</h1>'+
+    '<p style="font-size:14px;line-height:22px;margin:0 0 12px;">Hello,</p>'+
+    '<p style="font-size:14px;line-height:23px;margin:0;">'+safe(requested)+'</p>';
+  const details='<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#eaf5f6" style="border-collapse:collapse;background-color:#eaf5f6;"><tr><td style="padding:20px 22px;font-family:Arial,Helvetica,sans-serif;color:#18384a;">'+
+    '<div style="font-size:17px;font-weight:bold;margin-bottom:12px;">CVE details</div>'+
+    '<div style="font-size:14px;line-height:23px;">CVE ID: <strong>'+safe(cve)+'</strong></div>'+
+    '<div style="font-size:13px;line-height:21px;margin-top:10px;color:#405d6e;">Check severity, affected versions and publication details in the official links below.</div></td></tr></table>';
+  const notesHtml=notes?row('<h2 style="font-size:17px;margin:0 0 12px;color:#15394c;">Sender notes</h2>'+
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#edf6f8"><tr><td style="padding:15px;font-size:14px;line-height:22px;white-space:pre-wrap;color:#27485b;">'+safe(notes).replace(/\\n/g,'<br>')+'</td></tr></table>','#ffffff','8px 28px 16px'):'';
+  const button='<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center"><tr><td bgcolor="#078f8a" style="background-color:#078f8a;padding:14px 24px;text-align:center;">'+
+    '<a href="'+safe(harbor)+'" style="font-family:Arial,Helvetica,sans-serif;color:#ffffff;text-decoration:none;font-size:15px;font-weight:bold;">Review this CVE in CVEHarbor</a></td></tr></table>';
   const html='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>'+
-   '<body style="margin:0;padding:24px 10px;background:#071523;font-family:Arial,sans-serif;color:#e8f5fa">'+
-   '<table role="presentation" style="max-width:680px;width:100%;margin:auto;border-collapse:separate;border-spacing:0;background:#0c2438;border:1px solid #245467;border-radius:14px">'+
-   '<tr><td style="background:#071927;padding:24px 28px;border-bottom:3px solid #36c7ba"><div style="font-size:25px;font-weight:bold;color:#f3fbff">CVE<span style="color:#48dacc">Harbor</span></div><div style="font-size:10px;letter-spacing:2px;color:#9ec1d2">VULNERABILITY INTELLIGENCE</div></td></tr>'+
-   '<tr><td style="padding:26px 28px"><p style="font-size:12px;letter-spacing:2px;color:#59d7ce;font-weight:bold">VULNERABILITY REVIEW REQUEST</p>'+
-   '<h1 style="margin:8px 0 18px;font-size:26px;color:#f2f9ff">Review requested: '+safe(cve)+'</h1>'+
-   '<p style="font-size:14px;color:#c1d7e2;line-height:1.7">Hello,</p>'+
-   '<p style="font-size:14px;color:#d4e5ed;line-height:1.7">'+safe(requested)+'</p>'+
-   '<table role="presentation" style="width:100%;background:#102f45;border:1px solid #2c5568;border-radius:10px;margin:22px 0"><tr><td style="padding:18px">'+
-   '<strong style="color:#f1fbff;font-size:16px">CVE details</strong><p style="color:#b9d5e1">CVE ID: <strong>'+safe(cve)+'</strong></p>'+
-   '<p style="color:#b9d5e1;margin-bottom:0">Severity, affected software and publication details: verify using the linked official records.</p></td></tr></table>'+
-   '<h2 style="color:#f3fbff;font-size:17px">What you need to do</h2><table role="presentation" style="width:100%">'+actionHtml+'</table>'+
-   (notes?'<h2 style="color:#f3fbff;font-size:17px;margin-top:22px">Sender notes</h2><div style="background:#102f45;border:1px solid #31586a;padding:15px;border-radius:8px;white-space:pre-wrap;line-height:1.6;color:#d5e8f1">'+safe(notes)+'</div>':'')+
-   '<h2 style="color:#f3fbff;font-size:17px;margin-top:24px">Related links</h2><ul style="line-height:1.8">'+linkHtml+'</ul>'+
-   '<p><a href="'+safe(harbor)+'" style="display:block;padding:15px;text-align:center;background:#14a99c;border-radius:8px;color:#fff;font-weight:bold;text-decoration:none">Review this CVE in CVEHarbor</a></p>'+
-   '<p style="font-size:12px;line-height:1.7;color:#aac7d5;border-top:1px solid #305063;padding-top:18px">Requested by '+safe(requester)+'. No Azure DevOps work item is created automatically. Avoid including customer secrets or internal system details in email. If unexpected, verify the request with the sender.</p>'+
-   '</td></tr></table></body></html>';
+    '<body style="margin:0;padding:0;background-color:#f3f7fa;font-family:Arial,Helvetica,sans-serif;color:#193247;">'+
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f3f7fa" style="border-collapse:collapse;background-color:#f3f7fa;"><tr><td align="center" style="padding:28px 12px;">'+
+    '<!--[if mso]><table role="presentation" width="640" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->'+
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="center" bgcolor="#ffffff" style="border-collapse:collapse;width:100%;max-width:640px;background-color:#ffffff;border:1px solid #d6e5ea;">'+
+    row('<div style="font-size:26px;font-weight:bold;line-height:32px;color:#ffffff;">CVE<span style="color:#5ae1d4;">Harbor</span></div>'+
+      '<div style="font-size:10px;letter-spacing:1.8px;color:#badce2;margin-top:6px;">VULNERABILITY INTELLIGENCE</div>','#0b2538','23px 28px')+
+    '<tr><td bgcolor="#21bdb2" height="3" style="height:3px;line-height:3px;font-size:0;">&nbsp;</td></tr>'+
+    row(headline)+
+    row(details,'#ffffff','8px 28px 18px')+
+    row('<h2 style="font-size:17px;margin:0 0 12px;color:#15394c;">What you need to do</h2>'+
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">'+actionHtml+'</table>','#ffffff','8px 28px 16px')+
+    notesHtml+
+    row('<h2 style="font-size:17px;margin:0 0 10px;color:#15394c;">Related links</h2>'+
+      '<table role="presentation" cellpadding="0" cellspacing="0" border="0">'+linkHtml+'</table>','#ffffff','8px 28px 22px')+
+    row(button,'#ffffff','0 28px 24px')+
+    row('<div style="font-size:12px;line-height:19px;color:#5c7482;">Requested by '+safe(requester)+'. This email requests investigation and does not confirm exposure or automatically create an Azure DevOps work item. Keep sensitive customer details inside your approved systems.</div>','#eff5f7','20px 28px')+
+    '</table><!--[if mso]></td></tr></table><![endif]-->'+
+    '</td></tr></table></body></html>';
   return {subject,text:textBody.join('\\n'),html};
 }
 
