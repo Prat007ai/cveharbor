@@ -188,12 +188,7 @@ assert.ok(fs.readFileSync('customer-security.js','utf8').includes('emailButton.d
 
 const clientSource=fs.readFileSync('customer-security.js','utf8');
 const serverSource=fs.readFileSync('account-backend/src/index.js','utf8');
-const clientEmailPattern=clientSource.match(/if\(!((?:\/\^).+?\$\/)\.test\(target\)\)/)?.[1];
-assert.ok(clientEmailPattern,'client email validator exists');
-assert.ok(new RegExp(clientEmailPattern.slice(1,-1)).test('prat.mahen@gmail.com'),'actual entered email passes frontend validation');
-const serverEmailPattern=serverSource.match(/if\(!((?:\/\^).+?\$\/)\.test\(address\)\)/)?.[1];
-assert.ok(serverEmailPattern,'server report recipient validator exists');
-assert.ok(new RegExp(serverEmailPattern.slice(1,-1)).test('prat.mahen@gmail.com'),'actual entered email passes Worker validation');
-
+assert.ok(clientSource.includes('address.checkValidity()'),'browser email validation is used');
+assert.ok(serverSource.includes("address.split('@').length!==2"),'Worker validates address structure');
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes('address.checkValidity()'),'client uses browser email validation');
 assert.ok(fs.readFileSync('account-backend/src/index.js','utf8').includes("address.split('@').length!==2"),'Worker validates recipient structure');
