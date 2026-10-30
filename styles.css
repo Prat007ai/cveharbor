@@ -1844,3 +1844,57 @@ body.command-center-app{padding-left:74px}
 @media(max-width:1100px){.account-hero-grid{grid-template-columns:1fr 1fr;gap:26px}.account-hero-right{padding-top:115px}.account-dashboard-art{width:72%;height:200px}.account-value-panel{padding:25px 20px}.account-feature-grid{grid-template-columns:1fr}.account-benefit-cards{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:760px){.account-redesign .account-hero-header,.account-redesign .account-new-main{width:min(100% - 32px,560px)}.account-redesign .account-hero-header{padding:20px 0}.account-brand-name{font-size:21px}.account-brand-name small{font-size:7px}.account-back-link{font-size:11px!important}.account-hero-grid{grid-template-columns:1fr}.account-hero-left{padding-top:10px}.account-hero-right{padding-top:0}.account-dashboard-art{display:none}.account-value-panel{padding:24px}.account-feature-grid{grid-template-columns:1fr 1fr;gap:18px}.account-hero-left h1{font-size:36px}.account-new-login{padding:24px 20px}.account-benefit-cards{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.account-feature-grid,.account-benefit-cards{grid-template-columns:1fr}.account-trust-row{grid-template-columns:1fr 1fr}.account-new-login{padding:22px 18px}.account-hero-left h1{font-size:33px}.account-bottom-section>h2{font-size:19px}}
+
+/* Account workspace: full-width layout and non-overlapping dashboard illustration. */
+@media (min-width: 761px) {
+  .account-redesign .account-hero-header,
+  .account-redesign .account-new-main {
+    width: calc(100% - 128px);
+    max-width: none;
+    margin-left: 88px;
+    margin-right: 40px;
+  }
+}
+@media (min-width: 1251px) {
+  .account-hero-grid {
+    grid-template-columns: minmax(360px, 0.83fr) minmax(0, 1.55fr);
+    gap: clamp(32px, 4vw, 80px);
+  }
+  .account-hero-left { padding-top: 12px; }
+  .account-hero-right { padding-top: 0; }
+  .account-value-panel { padding: 34px 36px 28px; }
+  .account-value-panel > .account-kicker,
+  .account-value-panel > h2,
+  .account-value-panel > p:not(.account-kicker) {
+    max-width: 54%;
+  }
+  .account-dashboard-art {
+    z-index: 2;
+    top: 18px;
+    right: 22px;
+    width: min(39%, 420px);
+    height: 200px;
+    transform: none;
+    pointer-events: none;
+  }
+  .account-art-layout { height: 145px; grid-template-columns: 44px minmax(0,1fr) 98px; gap: 8px; }
+  .account-art-nav i { width: 30px; height: 7px; }
+  .account-art-ring { width: 90px; height: 90px; border-width: 10px; font-size: 40px; }
+  .account-art-stats strong { font-size: 16px; }
+  .account-feature-grid { margin-top: 56px; gap: 24px 30px; }
+  .account-feature { min-width: 0; }
+  .account-bottom-section { margin-top: 38px; }
+  .account-benefit-cards { gap: 16px; }
+}
+@media (min-width: 761px) and (max-width: 1250px) {
+  .account-hero-right { padding-top: 0; }
+  .account-dashboard-art { display: none; }
+}
+@media (min-width: 761px) and (max-width: 900px) {
+  .account-redesign .account-hero-header,
+  .account-redesign .account-new-main {
+    width: calc(100% - 72px);
+    margin-left: 48px;
+    margin-right: 24px;
+  }
+}
