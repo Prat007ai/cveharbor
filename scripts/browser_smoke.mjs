@@ -816,3 +816,6 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('has been successfully
 
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('setupPackageImport()'),'Linux package upload is available');
 assert.ok(fs.readFileSync('account-backend/src/inventory.js','utf8').includes('/v1/inventory/packages/import'),'account scoped package API exists');
+
+assert.ok(fs.readFileSync('inventory.js','utf8').includes("newCustomerSetup=true"),'new customer setup starts without previous account selection');
+assert.ok(fs.readFileSync('inventory.js','utf8').includes('startNewCustomer()'),'new customer action clears prior wizard data');
