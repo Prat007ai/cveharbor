@@ -18,7 +18,7 @@ async function sha(value){const digest=await crypto.subtle.digest('SHA-256',enc.
 function token(){return Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('')}
 function cookie(req){return (req.headers.get('cookie')||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('cvh_session='))?.slice(12)||''}
 function setCookie(value,maxAge){return 'cvh_session='+value+'; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age='+maxAge}
-async function me(req,env){const value=cookie(req);if(!/^[a-f0-9]{64}$/.test(value))return null;return env.DB.prepare('SELECT users.id,users.email,sessions.id AS sid FROM sessions JOIN users ON users.id=sessions.user_id WHERE sessions.token_hash=? AND sessions.expires_at>?').bind(await sha(value),Math.floor(Date.now()/1000)).first()}
+async function me(req,env){const value=cookie(req);if(!/^[a-f0-9]{64}$/.test(value))return null;return env.DB.prepare('SELECT users.id,users.email,sessions.id AS sid FROM sessions JOIN users ON users.id=sessions.user_id JOIN user_totp ON user_totp.user_id=users.id AND user_totp.enabled=1 WHERE sessions.token_hash=? AND sessions.expires_at>?').bind(await sha(value),Math.floor(Date.now()/1000)).first()}
 async function body(req,maxBytes=18000){const size=Number(req.headers.get('content-length')||0);if(size>maxBytes)throw Error('Request too large');const raw=await req.text();if(raw.length>maxBytes)throw Error('Request too large');return JSON.parse(raw)}
 async function limit(env,key,max){const now=Math.floor(Date.now()/1000),start=now-3600;await env.DB.prepare('DELETE FROM auth_rate_limits WHERE window_start<?').bind(start).run();await env.DB.prepare('INSERT INTO auth_rate_limits(key,window_start,count) VALUES(?,?,1) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN window_start<? THEN 1 ELSE count+1 END,window_start=CASE WHEN window_start<? THEN ? ELSE window_start END').bind(key,now,start,start,now).run();const row=await env.DB.prepare('SELECT count FROM auth_rate_limits WHERE key=?').bind(key).first();return row.count<=max}
 async function emailCode(env,address,code){const response=await fetch('https://api.smtp2go.com/v3/email/send',{method:'POST',headers:{'Content-Type':'application/json','X-Smtp2go-Api-Key':env.SMTP2GO_API_KEY},body:JSON.stringify({sender:env.EMAIL_FROM,to:[address],subject:'CVEHarbor sign in code',text_body:'Your CVEHarbor code: '+code+'\n\nExpires in 10 minutes. If you did not request this, ignore this email.'})});if(!response.ok)throw Error('Email delivery unavailable');const payload=await response.json();if(!payload.data||payload.data.failed>0||payload.data.succeeded<1)throw Error('Email delivery unsuccessful')}
@@ -62,17 +62,41 @@ export default {async fetch(req,env,ctx){
    if(consumed.meta.changes!==1)return response({error:'Already used'},401);
    let user=await env.DB.prepare('SELECT id,email FROM users WHERE email=?').bind(row.email).first();
    if(!user){const uid=crypto.randomUUID();await env.DB.prepare('INSERT OR IGNORE INTO users(id,email) VALUES(?,?)').bind(uid,row.email).run();user=await env.DB.prepare('SELECT id,email FROM users WHERE email=?').bind(row.email).first()}
-   {
-    const factor=await env.DB.prepare('SELECT enabled FROM user_totp WHERE user_id=?').bind(user.id).first();
-    if(factor?.enabled===1){
-     if(!env.TOTP_ENCRYPTION_KEY)return response({error:'MFA service temporarily unavailable'},503);
-     const pending=token(),pendingId=crypto.randomUUID(),now=Math.floor(Date.now()/1000);
-     await env.DB.prepare('INSERT INTO totp_login_challenges(id,user_id,token_hash,expires_at,created_at) VALUES(?,?,?,?,?)').bind(pendingId,user.id,await sha(pending),now+300,now).run();
-     return response({authenticated:false,mfa_required:true,mfa_challenge:pending,message:'Enter your authenticator code.'});
-    }
-   }
-   const session=token();await env.DB.prepare('INSERT INTO sessions(id,user_id,token_hash,expires_at,created_at) VALUES(?,?,?,?,?)').bind(crypto.randomUUID(),user.id,await sha(session),Math.floor(Date.now()/1000)+604800,Math.floor(Date.now()/1000)).run();
-   return response({email:user.email,authenticated:true},200,{'Set-Cookie':setCookie(session,604800)});
+   if(!env.TOTP_ENCRYPTION_KEY)return response({error:'MFA service unavailable'},503);
+   const factor=await env.DB.prepare('SELECT enabled FROM user_totp WHERE user_id=?').bind(user.id).first();
+   const pending=token(),now=Math.floor(Date.now()/1000);
+   await env.DB.prepare('INSERT INTO totp_login_challenges(id,user_id,token_hash,expires_at,created_at) VALUES(?,?,?,?,?)').bind(crypto.randomUUID(),user.id,await sha(pending),now+300,now).run();
+   if(factor?.enabled===1)return response({authenticated:false,mfa_required:true,mfa_challenge:pending});
+   const secret=newSecret(),encrypted=await encryptSecret(env,secret,user.id);
+   await env.DB.prepare('INSERT INTO user_totp(user_id,encrypted_secret,enabled,last_counter,created_at) VALUES(?,?,0,-1,?) ON CONFLICT(user_id) DO UPDATE SET encrypted_secret=excluded.encrypted_secret WHERE enabled=0').bind(user.id,encrypted,now).run();
+   return response({authenticated:false,mfa_enrollment_required:true,mfa_challenge:pending,secret,otpauth_url:'otpauth://totp/'+encodeURIComponent('CVEHarbor:'+user.email)+'?secret='+secret+'&issuer=CVEHarbor&algorithm=SHA1&digits=6&period=30'});
+
+  }
+  if(path==='/v1/auth/totp/enroll'&&req.method==='POST'){
+   if(!env.TOTP_ENCRYPTION_KEY)return response({error:'MFA unavailable'},503);
+   const data=await body(req),pending=String(data.mfa_challenge||''),code=String(data.code||''),now=Math.floor(Date.now()/1000);
+   if(!/^[a-f0-9]{64}$/.test(pending)||!/^\\d{6}$/.test(code))return response({error:'Invalid enrollment code'},400);
+   const ip=req.headers.get('CF-Connecting-IP')||'unknown';
+   if(!await limit(env,'enroll-ip:'+await sha(ip),20)||!await limit(env,'enroll-challenge:'+await sha(pending),8))return response({error:'Too many attempts'},429);
+   const pendingHash=await sha(pending);
+   const challenge=await env.DB.prepare('SELECT user_id FROM totp_login_challenges WHERE token_hash=? AND consumed_at IS NULL AND expires_at>?').bind(pendingHash,now).first();
+   if(!challenge)return response({error:'Enrollment expired. Sign in again.'},401);
+   const factor=await env.DB.prepare('SELECT encrypted_secret FROM user_totp WHERE user_id=? AND enabled=0').bind(challenge.user_id).first();
+   if(!factor)return response({error:'Enrollment not available'},409);
+   const counter=await verifyTotp(await decryptSecret(env,factor.encrypted_secret,challenge.user_id),code);
+   if(counter<0)return response({error:'Incorrect authenticator code'},401);
+   const recovery=newRecoveryCodes();
+   const statements=[env.DB.prepare('UPDATE totp_login_challenges SET consumed_at=? WHERE token_hash=? AND consumed_at IS NULL').bind(now,pendingHash)];
+   statements.push(env.DB.prepare('DELETE FROM totp_recovery_codes WHERE user_id=?').bind(challenge.user_id));
+   for(const item of recovery)statements.push(env.DB.prepare('INSERT INTO totp_recovery_codes(user_id,code_hash) VALUES(?,?)').bind(challenge.user_id,await hashRecovery(item,challenge.user_id)));
+   statements.push(env.DB.prepare('UPDATE user_totp SET enabled=1,enabled_at=?,last_counter=? WHERE user_id=? AND enabled=0').bind(now,counter,challenge.user_id));
+   statements.push(env.DB.prepare('DELETE FROM sessions WHERE user_id=?').bind(challenge.user_id));
+   const result=await env.DB.batch(statements);
+   if(result[0]?.meta?.changes!==1||result[result.length-2]?.meta?.changes!==1)return response({error:'Enrollment already completed'},409);
+   const session=token();
+   await env.DB.prepare('INSERT INTO sessions(id,user_id,token_hash,expires_at,created_at) VALUES(?,?,?,?,?)').bind(crypto.randomUUID(),challenge.user_id,await sha(session),now+604800,now).run();
+   const account=await env.DB.prepare('SELECT email FROM users WHERE id=?').bind(challenge.user_id).first();
+   return response({authenticated:true,email:account.email,recovery_codes:recovery},200,{'Set-Cookie':setCookie(session,604800)});
   }
   if(path==='/v1/auth/totp/verify'&&req.method==='POST'){
    if(!env.TOTP_ENCRYPTION_KEY)return response({error:'MFA unavailable'},503);
