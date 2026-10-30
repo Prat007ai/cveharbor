@@ -857,3 +857,5 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('setupCustomerId=custo
 
 assert.equal(fs.readFileSync('inventory.js','utf8').includes("window.prompt('Environment name'"),false,'environment editing avoids native browser prompt');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('inventory-record-actions'),'asset and environment actions grouped');
+
+assert.ok(fs.readFileSync('styles.css','utf8').includes('Align customer and nested environment actions'),'customer and environment button alignment style exists');
