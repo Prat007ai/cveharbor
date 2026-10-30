@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>My Workspace | CVEHarbor</title><meta name="description" content="Sign in securely to manage customer security, vulnerability findings and reports.">
-<link rel="stylesheet" href="/styles.css?v=workspace-tools-165"></head>
+<link rel="stylesheet" href="/styles.css?v=workspace-dashboard-166"></head>
 <body class="account-page account-redesign workspace-redesign">
 <a class="skip-link" href="#workspaceMain">Skip to workspace</a>
 <header class="account-hero-header"><a class="account-hero-brand" href="/"><span class="account-logo-icon">⬡</span><span class="account-brand-name">CVE<span>Harbor</span><small>VULNERABILITY INTELLIGENCE</small></span></a><a class="account-back-link" href="/">Back to CVEHarbor</a></header>
@@ -96,13 +96,31 @@
 <div class="account-feature"><span>▤</span><div><h3>Generate professional reports</h3><p>Create customer security reports and export findings.</p></div></div>
 <div class="account-feature"><span>⬡</span><div><h3>Software and plugin monitoring</h3><p>Monitor installed technologies and WordPress plugins.</p></div></div>
 </div></article></div></section>
-<section id="workspaceAccess" class="workspace-home-links" hidden><h2>Your workspace</h2>
-<div class="workspace-landing-grid">
-<a class="workspace-entry" href="/customer-dashboard/"><strong>Customer dashboard</strong><span>Security posture across customers</span></a>
-<a class="workspace-entry" href="/environments/#inventoryWorkspace"><strong>Customer environments</strong><span>Assets, installed software and plugins</span></a>
-<a class="workspace-entry" href="/customer-reports/"><strong>Security reports</strong><span>Export and review findings</span></a>
-<a class="workspace-entry" href="/remediation/#remediationTracker"><strong>Remediation</strong><span>Track the work required to resolve findings</span></a>
-<a class="workspace-entry" href="/lifecycle/#lifecycleMonitor"><strong>Lifecycle and patch watch</strong><span>Support deadlines and vendor advisories</span></a></div></section></main>
+<section id="workspaceAccess" class="workspace-dashboard" hidden>
+<div class="workspace-dash-top"><div><p class="account-kicker">PERSONAL SECURITY WORKSPACE</p><h2>Security overview</h2><p>Account scoped information and quick access to your security tools.</p></div><a href="/account/" class="workspace-dash-account">⚙ Account &amp; Security</a></div>
+<div class="workspace-kpis">
+<article><span class="workspace-kpi-icon critical">!</span><div>Critical findings<strong id="wsCritical">—</strong><small id="wsCriticalHint">Not yet assessed</small></div></article>
+<article><span class="workspace-kpi-icon blue">▤</span><div>Active environments<strong id="wsEnvironments">—</strong><small id="wsEnvironmentHint">Checking inventory</small></div></article>
+<article><span class="workspace-kpi-icon green">✓</span><div>Open remediation items<strong id="wsOpenRemediation">—</strong><small id="wsRemediationHint">Checking records</small></div></article>
+<article><span class="workspace-kpi-icon amber">▤</span><div>Recent advisories<strong id="wsAdvisories">—</strong><small id="wsAdvisoriesHint">Published feed</small></div></article>
+</div>
+<h2 class="workspace-dash-section-title">Your workspace</h2>
+<div class="workspace-tool-grid">
+<a href="/customer-dashboard/" class="workspace-tool-card tool-blue"><span class="workspace-tool-icon">♧</span><div><strong>Customer dashboard</strong><small>Security posture across customers</small></div><b>›</b></a>
+<a href="/environments/#inventoryWorkspace" class="workspace-tool-card tool-teal"><span class="workspace-tool-icon">▤</span><div><strong>Customer environments</strong><small>Manage assets, software and plugins</small></div><b>›</b></a>
+<a href="/customer-reports/" class="workspace-tool-card tool-purple"><span class="workspace-tool-icon">▥</span><div><strong>Security reports</strong><small>Generate and export findings</small></div><b>›</b></a>
+<a href="/remediation/#remediationTracker" class="workspace-tool-card tool-green"><span class="workspace-tool-icon">✓</span><div><strong>Remediation</strong><small>Track the work required to resolve findings</small></div><b>›</b></a>
+<a href="/lifecycle/#lifecycleMonitor" class="workspace-tool-card tool-gold"><span class="workspace-tool-icon">◷</span><div><strong>Lifecycle and patch watch</strong><small>Support deadlines and vendor advisories</small></div><b>›</b></a>
+<a href="/alerts/#securityWorkspace" class="workspace-tool-card tool-red"><span class="workspace-tool-icon">♧</span><div><strong>Alerts and updates</strong><small>Review your security notifications</small></div><b>›</b></a>
+<a href="/vulnerabilities/" class="workspace-tool-card tool-blue"><span class="workspace-tool-icon">⌕</span><div><strong>Vulnerability search</strong><small>Find and review published CVEs</small></div><b>›</b></a>
+<a href="/account/" class="workspace-tool-card tool-slate"><span class="workspace-tool-icon">⚙</span><div><strong>Account and security</strong><small>MFA, recovery and account settings</small></div><b>›</b></a>
+</div>
+<div class="workspace-insights">
+<article class="workspace-insight-panel"><div class="workspace-panel-header"><h3>Vulnerability overview</h3><span>Account specific</span></div><p id="wsCoverageMessage">Confirmed vulnerability trends will appear when sufficient assessment history is available.</p><div class="workspace-empty-graph"><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div><p class="workspace-disclaimer">No fabricated findings or trend values are displayed.</p></article>
+<article class="workspace-insight-panel"><div class="workspace-panel-header"><h3>Recent CVEs</h3><a href="/vulnerabilities/">View all ›</a></div><div id="wsRecentCves" class="workspace-recent-list"><p>Loading published vulnerability information...</p></div></article>
+<article class="workspace-insight-panel"><div class="workspace-panel-header"><h3>My remediation tracker</h3><a href="/remediation/#remediationTracker">View all ›</a></div><div id="wsRecentRemediation" class="workspace-recent-list"><p>Checking your remediation records...</p></div><a class="workspace-panel-action" href="/remediation/#remediationTracker">Open Remediation Tracker ›</a></article>
+</div></section></main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="/account-page.js?v=workspace-tools-165"></script>
+<script src="/account-page.js?v=workspace-dashboard-166"></script>
+<script src="/workspace-dashboard.js?v=workspace-dashboard-166"></script>
 <script src="/command-center.js?v=workspace-redesign-155"></script></body></html>
