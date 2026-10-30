@@ -15,25 +15,38 @@ async function loadPrivate(){
   if(!records.length)target.textContent='No remediation records saved yet.';
  }catch{set('wsOpenRemediation','—','wsRemediationHint','Unavailable');$('wsRecentRemediation').textContent='Remediation records are temporarily unavailable.'}
  try{
-  const response=await request('/inventory/environments');
+  const response=await request('/inventory');
   const environments=Array.isArray(response)?response:(response.environments||[]);
   set('wsEnvironments',String(environments.length),'wsEnvironmentHint','Saved in your account');
  }catch{set('wsEnvironments','—','wsEnvironmentHint','View environments to check')}
  set('wsCritical','—','wsCriticalHint','Requires validated matching');
 }
 async function loadPublic(){
+ const target=$('wsRecentCves');
  try{
-  const response=await fetch('/data.js',{cache:'no-store'});if(!response.ok)throw Error('feed');
-  const text=await response.text();
-  const matches=[...text.matchAll(/CVE-\d{4}-\d{4,}/g)];
-  const unique=[...new Set(matches.map(m=>m[0]))];
-  set('wsAdvisories',unique.length?String(unique.length):'—','wsAdvisoriesHint','Published CVEs in feed snapshot');
-  const container=$('wsRecentCves');container.replaceChildren();
-  for(const id of unique.slice(0,5))addRow(container,id,'Review current advisory and affected products','/vulnerabilities/?q='+encodeURIComponent(id));
-  if(!unique.length)container.textContent='No indexed CVEs available in the current feed snapshot.';
- }catch{$('wsRecentCves').textContent='Published feed is temporarily unavailable.'}
+  const response=await fetch('/feed-health.json',{cache:'no-store'});
+  if(!response.ok)throw Error('feed unavailable');
+  const feed=await response.json();
+  const indexed=Number(feed.records_indexed);
+  if(!Number.isFinite(indexed)||indexed<0)throw Error('invalid feed data');
+  set('wsAdvisories',indexed.toLocaleString(),'wsAdvisoriesHint','Indexed public advisory records');
+  target.replaceChildren();
+  const p=document.createElement('p');
+  p.textContent='The public advisory index currently contains '+indexed.toLocaleString()+' records. Open Vulnerabilities to search the current feed.';
+  target.append(p);
+  addRow(target,'Browse published CVEs','Review severity, vendor references and affected software','/vulnerabilities/');
+  if(feed.coverage_limited){
+   const note=document.createElement('p');
+   note.textContent='The advisory index has a coverage limit and is not a complete vulnerability database.';
+   target.append(note);
+  }
+ }catch{
+  set('wsAdvisories','—','wsAdvisoriesHint','Feed unavailable');
+  target.textContent='Published advisory data is temporarily unavailable. Browse the public Vulnerabilities page.';
+ }
 }
-function start(){if(!$('workspaceAccess')||$('workspaceAccess').hidden)return;loadPrivate();loadPublic()}
+let loaded=false;
+function start(){if(loaded||!$('workspaceAccess')||$('workspaceAccess').hidden)return;loaded=true;void loadPrivate();void loadPublic()}
 window.addEventListener('cveharbor-auth-change',event=>{if(event.detail?.authenticated)start()});
-fetch(API+'/me',{credentials:'include',cache:'no-store'}).then(r=>r.ok?r.json():null).then(x=>{if(x?.authenticated)setTimeout(start,0)}).catch(()=>{});
+fetch(API+'/me',{credentials:'include',cache:'no-store'}).then(r=>r.ok?r.json():null).then(x=>{if(x?.authenticated){setTimeout(start,0);window.setTimeout(start,600)}}).catch(()=>{});
 })();
