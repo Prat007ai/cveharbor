@@ -5,7 +5,7 @@
 <meta name="theme-color" content="#061523">
 <title>Access Your Private Workspace | CVEHarbor</title>
 <meta name="description" content="Sign in to your private CVEHarbor workspace to track vulnerabilities, manage customer environments, register software inventory and create professional security reports.">
-<link rel="stylesheet" href="/styles.css?v=account-wide-layout-148">
+<link rel="stylesheet" href="/styles.css?v=totp-mfa-152">
 </head>
 <body class="account-page account-redesign">
 <a class="skip-link" href="#accountMain">Skip to account</a>
@@ -36,9 +36,52 @@
      <button type="button" id="accountPageBack" class="account-secondary-button">Use another email</button>
     </form>
    </div>
+   <form id="accountPageTotpVerify" class="account-entry-form" hidden>
+    <label for="accountPageTotpCode">Authenticator code or recovery code</label>
+    <input id="accountPageTotpCode" autocomplete="one-time-code" inputmode="text" maxlength="16" placeholder="Six digit code" required>
+    <button type="submit" class="account-primary-button">Verify authenticator</button>
+    <button type="button" id="accountPageTotpBack" class="account-secondary-button">Start again</button>
+   </form>
+   <section id="accountPageRequiredEnroll" class="account-mfa-settings" hidden>
+    <h2>Set up your authenticator to continue</h2>
+    <p>Scan this enrollment link using a compatible QR code or enter the setup key in Microsoft Authenticator or Google Authenticator.</p>
+    <div id="accountPageRequiredQr" class="account-mfa-qr" aria-label="Scan with your authenticator app"></div>
+    <code id="accountPageRequiredSecret" class="account-mfa-secret"></code>
+    <form id="accountPageRequiredEnrollForm" class="account-entry-form">
+     <label for="accountPageRequiredCode">Six digit authenticator code</label>
+     <input id="accountPageRequiredCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
+     <button type="submit" class="account-primary-button">Verify and enable MFA</button>
+    </form>
+    <div id="accountPageRequiredRecovery" hidden>
+     <p>Save these recovery codes now. Each can be used only once.</p>
+     <pre id="accountPageRequiredRecoveryCodes" class="account-mfa-secret"></pre>
+     <button id="accountPageRequiredContinue" type="button" class="account-primary-button">I have saved my codes</button>
+    </div>
+   </section>
    <div id="accountPageSignedIn" hidden>
     <p id="accountPageIdentity" class="account-signed-identity"></p>
     <a id="accountPageWorkspace" href="/workspace/" class="account-primary-button">Open My Workspace <span aria-hidden="true">→</span></a>
+    <section class="account-mfa-settings" aria-label="Authenticator security settings">
+     <h3>Authenticator app security</h3>
+     <p id="accountPageTotpStatus">Checking security settings...</p>
+     <button type="button" id="accountPageTotpSetup" class="account-secondary-button" hidden>Set up authenticator app</button>
+     <div id="accountPageTotpEnroll" hidden>
+      <p>In Microsoft Authenticator or Google Authenticator, add a new account using this setup key:</p>
+      <div id="accountPageTotpQr" class="account-mfa-qr" aria-label="Scan with your authenticator app"></div>
+      <code id="accountPageTotpSecret" class="account-mfa-secret"></code>
+      <p>Enter a code from your authenticator to complete enrollment.</p>
+      <form id="accountPageTotpEnrollForm" class="account-entry-form">
+       <label for="accountPageTotpEnrollCode">Authenticator code</label>
+       <input id="accountPageTotpEnrollCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
+       <button type="submit" class="account-primary-button">Enable authenticator</button>
+      </form>
+     </div>
+     <div id="accountPageTotpRecovery" hidden>
+      <p>Save these one time recovery codes now. They will not be shown again.</p>
+      <pre id="accountPageTotpRecoveryCodes" class="account-mfa-secret"></pre>
+      <button type="button" id="accountPageTotpRecoveryDone" class="account-secondary-button">I have saved my recovery codes</button>
+     </div>
+    </section>
     <button type="button" id="accountPageLogout" class="account-secondary-button">Sign out</button>
    </div>
    <div class="account-trust-row"><div><span aria-hidden="true">♙</span>Passwordless<br>sign in</div><div><span aria-hidden="true">⬡</span>Private<br>workspace</div><div><span aria-hidden="true">✓</span>No password<br>required</div></div>
@@ -71,6 +114,7 @@
   </div>
  </section>
 </main>
-<script src="/account-page.js?v=account-wide-layout-148"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="/account-page.js?v=totp-mfa-153"></script>
 <script src="/command-center.js?v=home-sidebar-89"></script>
 </body></html>
