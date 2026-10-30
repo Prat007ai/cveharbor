@@ -255,7 +255,7 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('file.size>65536'),'pl
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('plugin-sources/'),'plugin source URLs can be saved and verified');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("Technology | Version"),'technology version entry format is validated');
 
-assert.ok(html.includes('inventory.js?v=asset-edit-129'),'public build references account inventory client');
+assert.ok(html.includes('inventory.js?v=env-dialog-130'),'public build references account inventory client');
 const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
 const picker=inventoryDom.window.document.querySelector('.inventory-plugin-import:not(.inventory-bulk-import):not(.inventory-package-import) input[type=file]');
@@ -854,3 +854,6 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('inventory-edit-custom
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('customerActions.append(deleteCustomer)'),'customer actions grouped together');
 
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('setupCustomerId=customer.id'),'edit customer selects saved customer inventory');
+
+assert.equal(fs.readFileSync('inventory.js','utf8').includes("window.prompt('Environment name'"),false,'environment editing avoids native browser prompt');
+assert.ok(fs.readFileSync('inventory.js','utf8').includes('inventory-record-actions'),'asset and environment actions grouped');

@@ -679,16 +679,36 @@ function render(){
    const group=make('section','inventory-environment');
    const h=make('div','ops-result-top');h.append(make('strong','',env.name+' · '+env.kind));
    const editEnv=make('button','ops-remove','Edit environment');editEnv.type='button';
-   editEnv.addEventListener('click',async()=>{
-    const name=window.prompt('Environment name',env.name);if(name===null)return;
-    const kind=window.prompt('Environment type: Production, Staging, Development, QA, UAT, Other',env.kind);if(kind===null)return;
-    if(!name.trim()||!['Production','Staging','Development','QA','UAT','Other'].includes(kind.trim())){status('Enter a valid environment name and type.');return}
-    try{await call('/environments/'+env.id,'PUT',{name:name.trim(),kind:kind.trim()});await load();status('Environment updated successfully.')}
-    catch(e){status(e.message)}
+   editEnv.addEventListener('click',()=>{
+    const overlay=make('div','inventory-confirm-overlay'),dialog=make('section','inventory-confirm-dialog');
+    dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Edit environment');
+    const title=make('h3','','Edit environment');
+    const nameLabel=make('label','','Environment name'),nameInput=document.createElement('input');
+    nameInput.className='inventory-edit-customer-input';nameInput.value=env.name;nameInput.maxLength=100;nameLabel.append(nameInput);
+    const kindLabel=make('label','','Environment type'),kindSelect=document.createElement('select');
+    kindSelect.className='inventory-edit-customer-input';
+    for(const kind of ['Production','Staging','Development','QA','UAT','Other'])option(kindSelect,kind,kind);
+    kindSelect.value=env.kind;kindLabel.append(kindSelect);
+    const feedback=make('p','ops-note',''),actions=make('div','inventory-confirm-actions');
+    const cancel=make('button','inventory-confirm-cancel','Cancel'),save=make('button','ops-download','Save changes');
+    cancel.type='button';save.type='button';
+    const close=()=>{document.removeEventListener('keydown',keyHandler);overlay.remove()};
+    const keyHandler=e=>{if(e.key==='Escape')close()};
+    document.addEventListener('keydown',keyHandler);
+    cancel.addEventListener('click',close);
+    save.addEventListener('click',async()=>{
+     const name=nameInput.value.trim();if(!name){feedback.textContent='Enter an environment name.';return}
+     save.disabled=true;
+     try{await call('/environments/'+env.id,'PUT',{name,kind:kindSelect.value});close();await load();status('Environment updated successfully.')}
+     catch(e){feedback.textContent=e.message;save.disabled=false}
+    });
+    actions.append(cancel,save);dialog.append(title,nameLabel,kindLabel,feedback,actions);overlay.append(dialog);document.body.append(overlay);nameInput.focus();
    });
-   h.append(editEnv);
+   const envActions=make('div','inventory-record-actions');
+   envActions.append(editEnv);
    const del=make('button','ops-remove','Remove environment');del.type='button';
-   del.addEventListener('click',()=>remove('environments',env.id,env.name));h.append(del);group.append(h);
+   del.addEventListener('click',()=>remove('environments',env.id,env.name));
+   envActions.append(del);h.append(envActions);group.append(h);
    const assets=data.assets.filter(x=>x.environment_id===env.id);
    if(!assets.length)group.append(make('p','ops-note','No servers, applications or software versions recorded.'));
    // One asset can carry many technologies. Keep legacy D1 rows intact and
@@ -739,7 +759,7 @@ function render(){
     });
     const removeAsset=make('button','ops-remove','Remove');removeAsset.type='button';
     removeAsset.addEventListener('click',()=>remove('assets',asset.id,asset.name));
-    actions.append(edit,removeAsset);row.append(info,actions);groupCard.append(row);
+    actions.classList.add('inventory-record-actions');actions.append(edit,removeAsset);row.append(info,actions);groupCard.append(row);
     }
     group.append(groupCard);
    }
