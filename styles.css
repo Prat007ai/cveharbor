@@ -1743,3 +1743,13 @@ body.command-center-app{padding-left:74px}
  body.account-page .customer-print-document .customer-print-finding[data-status=accepted] .customer-print-finding-status{color:#506377!important}
  body.account-page .customer-print-document .customer-print-finding[data-status=not-applicable] .customer-print-finding-status{color:#626a72!important}
 }
+
+.customer-email-overlay{position:fixed;inset:0;z-index:15000;background:#04111ed9;display:grid;place-items:center;padding:16px}
+.customer-email-dialog{width:min(520px,100%);max-height:90vh;overflow:auto;background:#102d40;border:1px solid #4b788b;border-radius:15px;box-shadow:0 22px 70px #0009;padding:25px;color:#e7f9fd}
+.customer-email-dialog h2{font-size:23px;margin:0 0 12px}
+.customer-email-dialog label:not(.customer-email-confirm){display:block;margin:17px 0;color:#d6edf2;font-size:13px;font-weight:700}
+.customer-email-dialog input[type=email],.customer-email-dialog input[type=file]{display:block;width:100%;margin-top:8px;padding:10px;box-sizing:border-box;background:#061f30;color:#e7f9fd;border:1px solid #4d7887;border-radius:8px}
+.customer-email-confirm{display:flex;gap:10px;align-items:flex-start;margin:18px 0;font-size:13px;color:#d0e6ec}
+.customer-email-confirm input{margin-top:3px}
+.customer-email-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
+.customer-email-actions button{padding:10px 16px;border-radius:8px}
