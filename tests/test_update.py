@@ -313,12 +313,12 @@ class FeedTests(unittest.TestCase):
         today = u.NOW.date().isoformat()
         old = {f'CVE-2026-{n:06d}': {'id':f'CVE-2026-{n:06d}',
                'published':'2026-04-02','updated':today,
-               'source_updated_at':today,'categories':['PHP']} for n in range(2750)}
+               'source_updated_at':today,'categories':['PHP']} for n in range(5250)}
         new = {'CVE-2026-999991': {'id':'CVE-2026-999991',
                'published':today,'updated':today,
                'source_updated_at':today,'categories':['PHP']}}
         selected=u.choose_records({**old,**new},set())
-        self.assertEqual(2500,len(selected))
+        self.assertEqual(5000,len(selected))
         self.assertEqual(selected[0]['id'],'CVE-2026-999991')
         self.assertNotEqual(selected[0]['published'],'2026-04-02')
 
@@ -344,7 +344,27 @@ class FeedTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'GitHub advisory feed returned no'):
                 u.ghsa_items()
         self.assertEqual({'published','updated'},{x['sort'][0] for x in seen})
-        self.assertEqual({'reviewed','malware'},{x['type'][0] for x in seen})
+        self.assertEqual({'reviewed','unreviewed','malware'},{x['type'][0] for x in seen})
+
+    def test_missing_linux_kernel_cve_from_unreviewed_ghsa(self):
+        advisory = {
+            "ghsa_id": "GHSA-qp6h-4hvh-qqqc",
+            "cve_id": "CVE-2026-98432",
+            "type": "unreviewed",
+            "summary": "Linux kernel IPv4 TCP vulnerability",
+            "description": "A Linux kernel TCP vulnerability.",
+            "severity": "critical",
+            "published_at": "2026-10-15T00:00:00Z",
+            "updated_at": "2026-10-16T00:00:00Z",
+            "vulnerabilities": [],
+        }
+        record = u.from_ghsa(advisory)
+        self.assertIsNotNone(record)
+        self.assertEqual("CVE-2026-98432", record["id"])
+        self.assertIn("Linux", record["categories"])
+        self.assertEqual("GitHub unreviewed advisory", record["status"])
+        selected = u.choose_records({record["id"]: record}, set())
+        self.assertIn("CVE-2026-98432", {r["id"] for r in selected})
 
     def test_cisa_date_added_is_not_original_published_date(self):
         result=u.from_kev({'cveID':'CVE-2026-91818',
