@@ -202,10 +202,18 @@ function visualize(groups,all){
   const {customer,asset,findings,environment}=item;
   const card=text('button','','customer-software-card');
   card.type='button';
-  if(findings.length>0){card.classList.add('customer-software-attention');card.setAttribute('aria-label',asset.technology+' has '+findings.length+' potential CVE matches. Review required.');}
+  const statuses=findings.map(statusFor);
+  const needsReview=statuses.filter(x=>x==='Needs Review').length;
+  const inProgress=statuses.filter(x=>x==='Fix in Progress').length;
+  const accepted=statuses.filter(x=>x==='Accepted Risk').length;
+  const active=needsReview+inProgress;
+  if(needsReview){card.classList.add('customer-software-attention');}
+  else if(inProgress){card.classList.add('customer-software-progress');}
+  else if(accepted){card.classList.add('customer-software-accepted');}
+  card.setAttribute('aria-label',asset.technology+': '+needsReview+' needs review, '+inProgress+' fixes in progress, '+accepted+' accepted risks. '+(findings.length-active-accepted)+' fixed or not applicable.');
   card.append(text('strong',asset.technology),text('span',customer.name+' · '+(environment?.name||'Environment')+' · '+asset.name),
    text('span','Installed '+(asset.version||'version unknown')),
-   text('span',findings.length+' potential CVE '+(findings.length===1?'match':'matches'),'customer-software-count'));
+   text('span',active?active+' unresolved CVE '+(active===1?'finding':'findings'):accepted?accepted+' accepted '+(accepted===1?'risk':'risks'):'No unresolved CVE findings','customer-software-count'));
   const support=lifecycleFor(asset.technology,asset.version);
   const badge=text('span',support.text,'customer-support-indicator');badge.dataset.state=support.state;card.append(badge);
   const last=(window.CVEHARBOR_PATCH_NOTES?.releases||[]).find(r=>normalize(r.slug)===normalize(asset.technology).replace(/\s+/g,'-'));
