@@ -943,3 +943,10 @@ assert.ok(remediationUi.includes('confirmReviewRequest(cve,email)'),'assignment 
 assert.ok(!remediationUi.includes("window.confirm('Send the "),'native browser confirm removed for assignment');
 assert.ok(remediationUi.includes("Your request has been submitted to "),'success text contains recipient address');
 assert.ok(remediationStyles.includes('#remediationDue::-webkit-calendar-picker-indicator'),'date calendar icon has higher contrast');
+
+const signedInWorkspaceJs=fs.readFileSync('account-page.js','utf8');
+const signedInWorkspaceCss=fs.readFileSync('styles.css','utf8');
+assert.ok(signedInWorkspaceJs.includes("classList.add('workspace-authenticated')"),'successful login changes Workspace layout');
+assert.ok(signedInWorkspaceJs.includes("classList.remove('workspace-authenticated')"),'sign out restores login layout');
+assert.ok(signedInWorkspaceCss.includes('workspace-authenticated .account-new-login{display:none!important}'),'signed in login card is hidden');
+assert.ok(signedInWorkspaceCss.includes('workspace-authenticated #workspaceAccess{display:block!important}'),'signed in Workspace tools are displayed');

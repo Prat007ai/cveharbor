@@ -1985,3 +1985,11 @@ body.command-center-app{padding-left:74px}
 #remediationDue{color-scheme:dark;padding-right:14px}
 #remediationDue::-webkit-calendar-picker-indicator{opacity:1;cursor:pointer;filter:invert(75%) sepia(61%) saturate(456%) hue-rotate(116deg) brightness(107%);width:19px;height:19px;padding:5px;border:1px solid #49cdbf;border-radius:5px;background-color:#14384b}
 #remediationDue:focus-visible{outline:2px solid #53e0d1;outline-offset:2px}
+
+/* Signed in Workspace is a work hub, not a duplicate account page. */
+body.workspace-redesign.workspace-authenticated .account-new-login{display:none!important}
+body.workspace-redesign.workspace-authenticated .workspace-intro-right{display:none!important}
+body.workspace-redesign.workspace-authenticated .account-hero-grid{display:block}
+body.workspace-redesign.workspace-authenticated #workspaceAccess{display:block!important}
+body.workspace-redesign #workspaceAccess[hidden]{display:none!important}
+body.workspace-redesign.workspace-authenticated .account-hero-description{max-width:850px}

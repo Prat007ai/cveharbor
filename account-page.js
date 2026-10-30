@@ -55,6 +55,7 @@ function signedIn(email){
  window.dispatchEvent(new CustomEvent('cveharbor-auth-change',{detail:{authenticated:true}}));
  $('accountPageSignedOut').hidden=true;
  $('accountPageSignedIn').hidden=false;
+ if(document.body.classList.contains('workspace-redesign'))document.body.classList.add('workspace-authenticated');
  $('accountPageIdentity').textContent='Signed in as '+email;
  if(document.body.classList.contains('workspace-redesign')){$('accountPageHeading').innerHTML='My <span>Workspace</span>';const links=$('workspaceAccess');if(links)links.hidden=false;}else $('accountPageHeading').innerHTML='Account <span>&amp; Security</span>';
  message('Your account is connected.');
@@ -65,6 +66,7 @@ function signedOut(){
  mfaChallenge='';$('accountPageRequiredEnroll').hidden=true;$('accountPageTotpVerify').hidden=true;$('accountPageTotpCode').value='';
  $('accountPageSignedOut').hidden=false;
  $('accountPageSignedIn').hidden=true;
+ document.body.classList.remove('workspace-authenticated');
  if(document.body.classList.contains('workspace-redesign')){$('accountPageHeading').innerHTML='My <span>Workspace</span>';const links=$('workspaceAccess');if(links)links.hidden=true;}else $('accountPageHeading').innerHTML='Account <span>&amp; Security</span>';
  if(document.body.classList.contains('account-settings-page'))location.replace('/workspace/');
 }
