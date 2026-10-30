@@ -666,7 +666,7 @@ function render(){
    const current=data.environments.find(e=>e.id===setupEnvironmentId);
    if(current){$('inventoryEnvironmentName').value=current.name;$('inventoryKind').value=current.kind}
    const target=environments.length?$('inventoryStepAsset'):$('inventoryStepEnvironment');
-   if(target){target.classList.remove('inventory-step-collapsed');const form=target.querySelector('form');if(form){form.hidden=false;form.style.display=''}target.scrollIntoView({behavior:'smooth',block:'start'})}
+   if(target){target.hidden=false;target.classList.remove('inventory-step-collapsed');const form=target.querySelector('form');if(form){form.hidden=false;form.style.display=''}target.scrollIntoView({behavior:'smooth',block:'start'})}
    status('Editing '+customer.name+'. Select a saved technology below to edit its version, or import more technologies and packages into this customer environment.');
   });
   const customerActions=make('div','inventory-customer-actions');customerActions.append(editCustomer);
@@ -717,6 +717,13 @@ function render(){
     const actions=make('div','inventory-actions');
     const edit=make('button','ops-remove','Edit');edit.type='button';
     edit.addEventListener('click',()=>{
+      newCustomerSetup=false;
+      setupCustomerId=customer.id;
+      setupEnvironmentId=asset.environment_id;
+      const step=$('inventoryStepAsset');
+      if(step){step.hidden=false;step.classList.remove('inventory-step-collapsed');delete step.dataset.setupStage;
+       const stepForm=step.querySelector('form');if(stepForm){stepForm.hidden=false;stepForm.style.display=''}}
+      $('inventoryCustomerSelect').value=customer.id;
       $('inventoryEnvironmentSelect').value=asset.environment_id;
       $('inventoryAssetName').value=asset.name;
       $('inventoryType').value=asset.asset_type;
@@ -726,7 +733,9 @@ function render(){
       $('inventoryAdditionalTechnologies').value='';
       $('inventoryAssetEditId').value=asset.id;
       $('inventoryAssetSave').textContent='Update asset';
+      $('inventoryAssetName').scrollIntoView({behavior:'smooth',block:'center'});
       $('inventoryAssetName').focus();
+      status('Editing '+asset.technology+' for '+customer.name+'. Update the fields and select Update asset.');
     });
     const removeAsset=make('button','ops-remove','Remove');removeAsset.type='button';
     removeAsset.addEventListener('click',()=>remove('assets',asset.id,asset.name));
