@@ -1758,3 +1758,15 @@ body.command-center-app{padding-left:74px}
 .customer-report-actions{display:flex;align-items:center;gap:10px;flex:0 0 auto;flex-wrap:wrap}
 .customer-report-actions button{min-height:44px;display:inline-flex;justify-content:center;align-items:center;padding:10px 14px;border-radius:8px;white-space:nowrap}
 @media(max-width:760px){.customer-report-actions{width:100%}.customer-report-actions button{flex:1 1 auto}}
+
+/* Reports: keep selects and all three actions on one balanced baseline */
+@media(min-width:1040px){
+ body.account-page #customerReports .customer-dash-toolbar{display:grid;grid-template-columns:minmax(180px,1fr) minmax(220px,1fr) auto;align-items:end;gap:12px}
+ body.account-page #customerReports .customer-dash-toolbar>label{min-width:0;margin:0}
+ body.account-page #customerReports .customer-report-actions{display:flex;flex-wrap:nowrap;align-items:stretch;gap:8px;width:auto;min-width:0}
+ body.account-page #customerReports .customer-report-actions button{flex:0 0 auto;height:44px;min-height:44px;margin:0;padding:0 12px;line-height:1.2;font-size:12px}
+}
+@media(max-width:1039px){
+ body.account-page #customerReports .customer-report-actions{display:flex;justify-content:flex-start;align-items:stretch;gap:8px;width:100%;flex-wrap:wrap}
+ body.account-page #customerReports .customer-report-actions button{height:44px;min-height:44px;flex:0 1 auto;margin:0;padding:0 12px}
+}
