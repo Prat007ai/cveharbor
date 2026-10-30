@@ -568,8 +568,8 @@ function updateInventorySteps(){
   toggle.setAttribute('aria-expanded',String(!panel.classList.contains('inventory-step-collapsed')));
  }
  const message=$('inventorySetupProgress');
- if(message)message.textContent=!customerCount?'Step 1 of 3: Add your first customer to begin.':
-  !environmentCount?'Step 2 of 3: Add an environment to continue.':
+ if(message)message.textContent=stage===1?'Step 1 of 3: Add your new customer to begin.':
+  stage===2?'Step 2 of 3: Add an environment to continue.':
   'Step 3 of 3: Register assets or bulk import technologies. You can also add more customers and environments above.';
 }
 function setupCustomerCompletion(){
