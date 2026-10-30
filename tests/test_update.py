@@ -346,6 +346,26 @@ class FeedTests(unittest.TestCase):
         self.assertEqual({'published','updated'},{x['sort'][0] for x in seen})
         self.assertEqual({'reviewed','unreviewed','malware'},{x['type'][0] for x in seen})
 
+    def test_missing_linux_kernel_cve_from_unreviewed_ghsa(self):
+        advisory = {
+            "ghsa_id": "GHSA-qp6h-4hvh-qqqc",
+            "cve_id": "CVE-2026-98432",
+            "type": "unreviewed",
+            "summary": "Linux kernel IPv4 TCP vulnerability",
+            "description": "A Linux kernel TCP vulnerability.",
+            "severity": "critical",
+            "published_at": "2026-10-15T00:00:00Z",
+            "updated_at": "2026-10-16T00:00:00Z",
+            "vulnerabilities": [],
+        }
+        record = u.from_ghsa(advisory)
+        self.assertIsNotNone(record)
+        self.assertEqual("CVE-2026-98432", record["id"])
+        self.assertIn("Linux", record["categories"])
+        self.assertEqual("GitHub unreviewed advisory", record["status"])
+        selected = u.choose_records({record["id"]: record}, set())
+        self.assertIn("CVE-2026-98432", {r["id"] for r in selected})
+
     def test_cisa_date_added_is_not_original_published_date(self):
         result=u.from_kev({'cveID':'CVE-2026-91818',
            'vendorProject':'Microsoft','product':'Windows Server',
