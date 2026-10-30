@@ -115,13 +115,24 @@ function setupSourceEditor(){
  const pickerList=make('div','inventory-source-list');pickerList.setAttribute('role','listbox');pickerList.hidden=true;
  pickerLabel.append(pickerInput,pickerList);box.append(pickerLabel);
  select.hidden=true;box.append(select);
+ function closePicker(){
+  pickerList.hidden=true;pickerInput.setAttribute('aria-expanded','false');
+ }
+ function choosePlugin(entry){
+  select.value=entry.value;pickerInput.value=entry.textContent;closePicker();select.dispatchEvent(new Event('change'));
+ }
  function showPicker(){
   pickerList.replaceChildren();
   const query=pickerInput.value.trim().toLowerCase();
-  const entries=[...select.options].filter(o=>o.value&&o.textContent.toLowerCase().includes(query));
+  const entries=[...select.options].filter(o=>o.value&&o.textContent.toLowerCase().includes(query)).slice(0,12);
   for(const entry of entries){
-   const choice=make('button','inventory-source-choice',entry.textContent);choice.type='button';choice.setAttribute('role','option');choice.setAttribute('aria-selected',String(select.value===entry.value));
-   choice.addEventListener('click',()=>{select.value=entry.value;pickerInput.value=entry.textContent;pickerList.hidden=true;pickerInput.setAttribute('aria-expanded','false');select.dispatchEvent(new Event('change'));});
+   const choice=document.createElement('div');
+   choice.className='inventory-source-choice';choice.textContent=entry.textContent;
+   choice.setAttribute('role','option');choice.setAttribute('tabindex','0');
+   choice.setAttribute('aria-selected',String(select.value===entry.value));
+   choice.addEventListener('mousedown',e=>e.preventDefault());
+   choice.addEventListener('click',()=>choosePlugin(entry));
+   choice.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();choosePlugin(entry)}});
    pickerList.append(choice);
   }
   if(!entries.length)pickerList.append(make('p','ops-note','No matching plugins in this environment.'));
@@ -129,8 +140,13 @@ function setupSourceEditor(){
  }
  pickerInput.addEventListener('focus',()=>{pickerInput.select();showPicker()});
  pickerInput.addEventListener('input',showPicker);
- pickerInput.addEventListener('keydown',e=>{if(e.key==='Escape'){pickerList.hidden=true;pickerInput.setAttribute('aria-expanded','false')}});
- const fieldGrid=make('div','inventory-source-fields');box.append(fieldGrid);
+ pickerInput.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closePicker();return}
+  if(e.key==='ArrowDown'){e.preventDefault();pickerList.querySelector('[role=option]')?.focus();return}
+  if(e.key==='Enter'&&!pickerList.hidden){e.preventDefault();const first=pickerList.querySelector('[role=option]');if(first)first.click()}
+ });
+ document.addEventListener('pointerdown',e=>{if(!pickerLabel.contains(e.target))closePicker()});
+  const fieldGrid=make('div','inventory-source-fields');box.append(fieldGrid);
  const fields=['vendor_url','release_url','advisory_url'].map(key=>{
   const label=make('label','ops-note',key.replace('_',' '));
   const input=document.createElement('input');input.type='url';input.placeholder='https://';input.setAttribute('aria-label',key);
