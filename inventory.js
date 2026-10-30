@@ -482,6 +482,60 @@ function updateInventorySteps(){
   !environmentCount?'Step 2 of 3: Add an environment to continue.':
   'Step 3 of 3: Register assets or bulk import technologies. You can also add more customers and environments above.';
 }
+function setupCustomerCompletion(){
+ const host=$('inventoryStepAsset');if(!host)return;
+ const panel=make('section','inventory-complete-panel');
+ panel.append(make('h3','','4. Review and Complete'),make('p','ops-note','Review the customer details saved in your private inventory before completing setup.'));
+ const reviewButton=make('button','ops-download','Review and Complete');reviewButton.type='button';
+ const message=make('p','inventory-complete-message','');message.setAttribute('role','status');
+ reviewButton.addEventListener('click',async()=>{
+  if(!signedIn||!ready){message.textContent='Sign in to review saved inventory.';return}
+  try{data=await call();render()}catch(e){message.textContent='Unable to refresh saved inventory: '+e.message;return}
+  const env=data.environments.find(x=>x.id===$('inventoryEnvironmentSelect').value)||data.environments.find(x=>x.id===setupEnvironmentId);
+  const customer=data.customers.find(x=>x.id===env?.customer_id)||data.customers.find(x=>x.id===setupCustomerId);
+  if(!customer){message.textContent='Select a saved customer and environment before reviewing.';return}
+  const environments=data.environments.filter(e=>e.customer_id===customer.id);
+  const assets=data.assets.filter(a=>environments.some(e=>e.id===a.environment_id));
+  if(!environments.length||!assets.length){message.textContent='Add an environment and at least one technology before completing setup.';return}
+  const overlay=make('div','inventory-review-overlay');
+  const dialog=make('section','inventory-review-dialog');dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Review customer inventory');
+  const header=make('div','inventory-review-header');
+  header.append(make('span','inventory-review-icon','✓'),make('div','', 'Customer inventory review'));
+  const title=make('h2','',customer.name);
+  const summary=make('div','inventory-review-metrics');
+  for(const [num,label] of [[environments.length,'Environments'],[new Set(assets.map(a=>a.name.toLowerCase()+'|'+a.environment_id)).size,'Logical assets'],[assets.length,'Technology entries'],[assets.filter(a=>a.technology.startsWith('WordPress Plugin: ')).length,'WordPress plugins']]){
+   const metric=make('div','inventory-review-metric');metric.append(make('strong','',String(num)),make('span','',label));summary.append(metric);
+  }
+  const details=make('div','inventory-review-details');
+  for(const environment of environments){
+   const section=make('section','inventory-review-environment');
+   section.append(make('h3','',environment.name+' · '+environment.kind));
+   const rows=assets.filter(a=>a.environment_id===environment.id);
+   for(const a of rows){
+    const row=make('div','inventory-review-row');
+    const label=a.technology.startsWith('WordPress Plugin: ')?a.technology.slice(18):a.technology;
+    row.append(make('span','',label),make('strong','',a.version||'Version not recorded'));section.append(row);
+   }
+   details.append(section);
+  }
+  const notice=make('p','inventory-review-notice','Submitting confirms that you have reviewed the saved inventory. It does not change software versions or mark vulnerabilities as resolved.');
+  const actions=make('div','inventory-review-actions');
+  const cancel=make('button','inventory-confirm-cancel','Back');cancel.type='button';
+  const submit=make('button','ops-download','Submit');submit.type='button';
+  const prior=document.activeElement;
+  function close(){overlay.remove();document.removeEventListener('keydown',onKey);prior?.focus?.()}
+  function onKey(e){if(e.key==='Escape')close()}
+  cancel.addEventListener('click',close);
+  overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
+  submit.addEventListener('click',()=>{close();message.textContent=customer.name+' has been successfully added to the CVEHarbor Vulnerability Intelligence Portal.';message.classList.add('inventory-complete-success')});
+  document.addEventListener('keydown',onKey);
+  actions.append(cancel,submit);
+  dialog.append(header,title,summary,details,notice,actions);overlay.append(dialog);document.body.append(overlay);cancel.focus();
+ });
+ panel.append(reviewButton,message);
+ host.after(panel);
+}
+setupCustomerCompletion();
 function render(){
  selects();
  updateInventorySteps();
