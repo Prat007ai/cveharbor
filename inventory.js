@@ -319,7 +319,8 @@ function setupPluginImport(){
   finally{button.disabled=false}
  });
  panel.append(fileLabel,area,button,result);
- form.after(panel);
+ const sourceEditor=document.querySelector('#inventoryWorkspace .inventory-source-editor');
+ if(sourceEditor)sourceEditor.before(panel);else form.after(panel);
 }
 setupPluginImport();
 setupSourceEditor();
