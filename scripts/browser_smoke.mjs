@@ -880,3 +880,14 @@ assert.ok(fs.readFileSync('account/index.html','utf8').includes('accountPageRequ
 assert.ok(accountMarkup.includes('accountPageRequiredQr'),'mandatory authenticator enrollment contains QR target');
 assert.ok(accountMarkup.includes('qrcode.min.js'),'account QR generation library loaded');
 assert.ok(fs.readFileSync('account-page.js','utf8').includes("renderQr('accountPageRequiredQr',data.otpauth_url)"),'QR provisioning uses local authenticator URI');
+
+const recoveryPage=fs.readFileSync('account/index.html','utf8');
+const recoveryClient=fs.readFileSync('account-page.js','utf8');
+const recoveryWorker=fs.readFileSync('account-backend/src/index.js','utf8');
+assert.ok(recoveryPage.includes('<ol id="accountPageRequiredRecoveryCodes"'),'initial recovery codes displayed as an ordered list');
+assert.ok(recoveryPage.includes('<ol id="accountPageTotpRecoveryCodes"'),'rotated recovery codes displayed as an ordered list');
+assert.ok(recoveryClient.includes('showRecoveryCodes('),'recovery code renderer available');
+assert.ok(recoveryClient.includes("navigator.clipboard.writeText(code)"),'individual copy includes only the code');
+assert.ok(recoveryClient.includes("'/auth/totp/recovery/rotate'"),'rotation requires a separate authenticated request');
+assert.ok(recoveryWorker.includes("'/v1/auth/totp/recovery/rotate'"),'Worker implements recovery code rotation');
+assert.ok(recoveryWorker.includes("last_counter<? AND enabled=1"),'rotation prevents reuse of an authenticator code');
