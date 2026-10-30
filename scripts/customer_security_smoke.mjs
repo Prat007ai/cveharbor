@@ -21,7 +21,7 @@ assert.equal(match.candidate(pluginAsset,finding('CVE-2026-11118','WordPress / P
 matchingDom.window.close();
 
 const html=fs.readFileSync('customer-reports/index.html','utf8');
-assert.ok(html.includes('customer-security.js?v=email-active-141'),'report loads current script');
+assert.ok(html.includes('customer-security.js?v=email-validation-142'),'report loads current script');
 const dom=new JSDOM(html,{url:'https://cveharbor.com/customer-reports/?customer=c1',runScripts:'outside-only'});
 const {window}=dom,doc=window.document;
 const sample={
@@ -180,8 +180,17 @@ assert.ok(reportSource.includes("stateLabel.style.setProperty('color',ink,'impor
 assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('id="customerReportEmail"'),'report email control available');
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes('customer-report-email'),'report email dialog calls authenticated service');
 
-assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('customer-security.js?v=email-active-141'),'email report loads current script');
+assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('customer-security.js?v=email-validation-142'),'email report loads current script');
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes("$('customerReportEmail').addEventListener('click'"),'email report click handler is registered');
 
 assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('class="customer-report-actions"'),'report actions share aligned toolbar');
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes('emailButton.disabled=!customer'),'email action enabled for selected customer');
+
+const clientSource=fs.readFileSync('customer-security.js','utf8');
+const serverSource=fs.readFileSync('account-backend/src/index.js','utf8');
+const clientEmailPattern=clientSource.match(/if\(!((?:\/\^).+?\$\/)\.test\(target\)\)/)?.[1];
+assert.ok(clientEmailPattern,'client email validator exists');
+assert.ok(new RegExp(clientEmailPattern.slice(1,-1)).test('prat.mahen@gmail.com'),'actual entered email passes frontend validation');
+const serverEmailPattern=serverSource.match(/if\(!((?:\/\^).+?\$\/)\.test\(address\)\)/)?.[1];
+assert.ok(serverEmailPattern,'server report recipient validator exists');
+assert.ok(new RegExp(serverEmailPattern.slice(1,-1)).test('prat.mahen@gmail.com'),'actual entered email passes Worker validation');
