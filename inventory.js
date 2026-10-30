@@ -5,6 +5,7 @@ if(!$('inventoryWorkspace'))return;
 const api='https://api.cveharbor.com/v1/inventory';
 let signedIn=false,ready=false,data={customers:[],environments:[],assets:[]};
 let pluginSources=new Map(),pluginSourceReady=false;
+let setupCustomerId='',setupEnvironmentId='';
 const make=(tag,className='',value='')=>{
  const el=document.createElement(tag);if(className)el.className=className;el.textContent=String(value);return el;
 };
@@ -29,8 +30,12 @@ function selects(){
   const owner=data.customers.find(x=>x.id===environment.customer_id);
   option(envs,environment.id,(owner?.name||'Customer')+' / '+environment.name);
  }
- if(data.customers.some(x=>x.id===previousCustomer))customers.value=previousCustomer;
- if(data.environments.some(x=>x.id===previousEnv))envs.value=previousEnv;
+ const customerId=setupCustomerId||previousCustomer;
+ const environmentId=setupEnvironmentId||previousEnv;
+ if(data.customers.some(x=>x.id===customerId))customers.value=customerId;
+ if(data.environments.some(x=>x.id===environmentId))envs.value=environmentId;
+ if(customers.value)setupCustomerId=customers.value;
+ if(envs.value)setupEnvironmentId=envs.value;
 }
 function renderMatches(){
  const panel=$('inventoryMatchResults');if(!panel)return;
@@ -422,6 +427,24 @@ function updateInventorySteps(){
  if(!step2||!step3)return;
  step2.hidden=!customerCount;step3.hidden=!environmentCount;
  const stage=environmentCount?3:customerCount?2:1;
+ const selectedCustomer=data.customers.find(x=>x.id===setupCustomerId)||data.customers[0];
+ const selectedEnvironment=data.environments.find(x=>x.id===setupEnvironmentId)||data.environments.find(x=>x.customer_id===selectedCustomer?.id)||data.environments[0];
+ if(selectedCustomer&&!setupCustomerId)setupCustomerId=selectedCustomer.id;
+ if(selectedEnvironment&&!setupEnvironmentId)setupEnvironmentId=selectedEnvironment.id;
+ const customerSummary=$('inventoryCustomerSaved');
+ const environmentSummary=$('inventoryEnvironmentSaved');
+ if(customerSummary){
+  customerSummary.hidden=!selectedCustomer;
+  customerSummary.textContent=selectedCustomer?'Saved customer: '+selectedCustomer.name+'. Use the form below only to add another customer.':'';
+ }
+ if(environmentSummary){
+  environmentSummary.hidden=!selectedEnvironment;
+  environmentSummary.textContent=selectedEnvironment?'Saved environment: '+(data.customers.find(c=>c.id===selectedEnvironment.customer_id)?.name||'Customer')+' / '+selectedEnvironment.name+' ('+selectedEnvironment.kind+'). Use the form below only to add another environment.':'';
+ }
+ const customerSelect=$('inventoryCustomerSelect'),environmentSelect=$('inventoryEnvironmentSelect');
+ if(selectedCustomer&&customerSelect)customerSelect.value=selectedCustomer.id;
+ if(selectedEnvironment&&environmentSelect)environmentSelect.value=selectedEnvironment.id;
+
  for(const [number,id] of [[1,'inventoryStepCustomer'],[2,'inventoryStepEnvironment'],[3,'inventoryStepAsset']]){
   const panel=$(id),form=panel?.querySelector('form');if(!panel||!form)continue;
   let toggle=panel.querySelector('.inventory-step-toggle');
@@ -572,10 +595,10 @@ window.addEventListener('cveharbor:account-state',event=>{void onAccount(event)}
 async function save(form,endpoint,payload){
  if(!signedIn||!ready){status('Sign in and complete the database migration first.');return;}
  const button=form.querySelector('button[type=submit]');button.disabled=true;
- try{const saved=await call(endpoint,'POST',payload);form.reset();await load();
-  if(endpoint==='/customers'&&saved.id)$('inventoryCustomerSelect').value=saved.id;
-  if(endpoint==='/environments'&&saved.id)$('inventoryEnvironmentSelect').value=saved.id;
-  status('Saved to your account inventory.')}
+ try{const saved=await call(endpoint,'POST',payload);
+  if(endpoint==='/customers'&&saved.id){setupCustomerId=saved.id;setupEnvironmentId='';}
+  if(endpoint==='/environments'&&saved.id){setupCustomerId=payload.customer_id;setupEnvironmentId=saved.id;}
+  form.reset();await load();status('Saved to your account inventory.')}
  catch(e){status('Could not save: '+e.message)}
  finally{button.disabled=false}
 }
@@ -583,6 +606,8 @@ $('inventoryCustomerForm').addEventListener('submit',event=>{
  event.preventDefault();
  void save(event.currentTarget,'/customers',{name:$('inventoryCustomerName').value.trim()});
 });
+$('inventoryCustomerSelect').addEventListener('change',event=>{setupCustomerId=event.target.value;setupEnvironmentId='';});
+$('inventoryEnvironmentSelect').addEventListener('change',event=>{setupEnvironmentId=event.target.value;});
 $('inventoryEnvironmentForm').addEventListener('submit',event=>{
  event.preventDefault();
  void save(event.currentTarget,'/environments',{customer_id:$('inventoryCustomerSelect').value,
