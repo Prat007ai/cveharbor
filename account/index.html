@@ -5,9 +5,9 @@
 <meta name="theme-color" content="#061523">
 <title>Access Your Private Workspace | CVEHarbor</title>
 <meta name="description" content="Sign in to your private CVEHarbor workspace to track vulnerabilities, manage customer environments, register software inventory and create professional security reports.">
-<link rel="stylesheet" href="/styles.css?v=recovery-rotation-154">
+<link rel="stylesheet" href="/styles.css?v=workspace-redesign-155">
 </head>
-<body class="account-page account-redesign">
+<body class="account-page account-redesign account-settings-page">
 <a class="skip-link" href="#accountMain">Skip to account</a>
 <header class="account-hero-header">
  <a class="account-hero-brand" href="/" aria-label="CVEHarbor home"><span class="account-logo-icon" aria-hidden="true">⬡</span><span class="account-brand-name">CVE<span>Harbor</span><small>SECURE. INFORMED. ALWAYS AHEAD.</small></span></a>
@@ -17,8 +17,8 @@
  <section class="account-hero-grid" aria-label="Access your workspace">
  <div class="account-hero-left">
   <p class="account-kicker">SECURE CVEHARBOR ACCOUNT</p>
-  <h1 id="accountPageHeading">Access your private <span>CVEHarbor workspace</span></h1>
-  <p class="account-hero-description">Sign in to manage your environments, track vulnerabilities, and generate reports, all in one secure workspace built for security teams and MSPs.</p>
+  <h1 id="accountPageHeading">Account <span>&amp; Security</span></h1>
+  <p class="account-hero-description">Manage your account, authenticator security and recovery settings.</p>
   <article class="account-new-login">
    <h2 id="accountFormTitle">Continue with email</h2>
    <p class="account-login-explainer">We’ll send you a secure verification code to sign in.</p>
@@ -59,7 +59,7 @@
     </div>
    </section>
    <div id="accountPageSignedIn" hidden>
-    <p id="accountPageIdentity" class="account-signed-identity"></p>
+    <section class="account-profile-card"><h3>Profile information</h3><p id="accountPageIdentity" class="account-signed-identity"></p><p>Your email address identifies your CVEHarbor account.</p></section>
     <a id="accountPageWorkspace" href="/workspace/" class="account-primary-button">Open My Workspace <span aria-hidden="true">→</span></a>
     <section class="account-mfa-settings" aria-label="Authenticator security settings">
      <h3>Authenticator app security</h3>
@@ -89,6 +89,7 @@
       <button type="button" id="accountPageTotpRecoveryDone" class="account-secondary-button">I have saved my recovery codes</button>
      </div>
     </section>
+    <section class="account-profile-card"><h3>Recovery and session security</h3><p>Recovery codes are displayed only when generated. Keep them in a secure password manager.</p><p>For security, sign out after using a shared device.</p></section>
     <button type="button" id="accountPageLogout" class="account-secondary-button">Sign out</button>
    </div>
    <div class="account-trust-row"><div><span aria-hidden="true">♙</span>Passwordless<br>sign in</div><div><span aria-hidden="true">⬡</span>Private<br>workspace</div><div><span aria-hidden="true">✓</span>No password<br>required</div></div>
@@ -122,6 +123,6 @@
  </section>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="/account-page.js?v=recovery-rotation-154"></script>
-<script src="/command-center.js?v=home-sidebar-89"></script>
+<script src="/account-page.js?v=workspace-redesign-155"></script>
+<script src="/command-center.js?v=workspace-redesign-155"></script>
 </body></html>

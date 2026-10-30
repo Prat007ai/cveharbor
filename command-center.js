@@ -31,6 +31,7 @@ for(const group of groups){
  for(const [name,url,icon] of group.items){
   const link=document.createElement('a');link.href=url;link.className='command-nav-link';link.title=name;link.setAttribute('aria-label',name);
   link.innerHTML=svg(icon)+'<span>'+name+'</span>';
+  if(['Customers','Environments','Reports','Remediation'].includes(name)){link.dataset.requiresAuth='true';link.hidden=true;}
   if((url.replace(/\/$/,'')||'/')===route){link.classList.add('is-current');link.setAttribute('aria-current','page')}
   nav.append(link);
  }
@@ -53,4 +54,14 @@ function setExpanded(value){
 toggle.addEventListener('click',()=>setExpanded(!expanded));
 setExpanded(expanded);
 body.insertBefore(bar,body.firstChild);
+const protectedLinks=Array.from(nav.querySelectorAll('[data-requires-auth="true"]'));
+function setProtectedLinks(authenticated){for(const link of protectedLinks)link.hidden=!authenticated;}
+setProtectedLinks(false);
+window.addEventListener('cveharbor-auth-change',event=>setProtectedLinks(Boolean(event.detail?.authenticated)));
+fetch('https://api.cveharbor.com/v1/me',{credentials:'include',headers:{Accept:'application/json'},cache:'no-store'})
+ .then(response=>response.ok?response.json():null)
+ .then(info=>setProtectedLinks(Boolean(info?.authenticated)))
+ .catch(()=>setProtectedLinks(false));
+window.addEventListener('pageshow',()=>fetch('https://api.cveharbor.com/v1/me',{credentials:'include',cache:'no-store'})
+ .then(r=>r.ok?r.json():null).then(info=>setProtectedLinks(Boolean(info?.authenticated))).catch(()=>setProtectedLinks(false)));
 })();
