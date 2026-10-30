@@ -651,7 +651,7 @@ function render(){
  for(const customer of data.customers){
   const card=make('article','inventory-customer');
   const header=make('div','ops-result-top');header.append(make('h4','',customer.name));
-  const editCustomer=make('button','ops-remove','Edit customer');editCustomer.type='button';
+  const editCustomer=make('button','ops-remove inventory-edit-customer','Edit customer');editCustomer.type='button';
   editCustomer.addEventListener('click',()=>{
    const overlay=make('div','inventory-confirm-overlay'),dialog=make('section','inventory-confirm-dialog');
    dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Edit customer');
