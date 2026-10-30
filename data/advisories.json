@@ -50554,51 +50554,6 @@
       "epss_as_of": "2026-10-30"
     },
     {
-      "id": "CVE-2026-102870",
-      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core",
-        "Linux"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
-      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
-      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
-      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft corrected Blazor debugger security advisory",
-          "url": "https://github.com/dotnet/announcements/issues/492"
-        },
-        {
-          "label": "ASP.NET Core GHSA vendor record",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
-        },
-        {
-          "label": "Ubuntu Security Notice",
-          "url": "https://ubuntu.com/security/notices/USN-8958-1"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-25",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00906,
-      "epss_percentile": 0.59766,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2026-96951",
       "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
       "severity": "high",
@@ -50641,6 +50596,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.09813,
       "epss_percentile": 0.95536,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2026-102870",
+      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core",
+        "Linux"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
+      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
+      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
+      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "ASP.NET Core GHSA vendor record",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
+        },
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8958-1"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-25",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00906,
+      "epss_percentile": 0.59766,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -71201,6 +71201,42 @@
       "epss_as_of": "2026-10-30"
     },
     {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60678,
+      "epss_as_of": "2026-10-30"
+    },
+    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -71239,42 +71275,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.558,
-      "epss_as_of": "2026-10-30"
-    },
-    {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60678,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -86227,8 +86227,8 @@
       "title": "CVE-2026-100214 Microsoft Dynamics 365 Business Central Remote Code Execution Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Microsoft 365",
-        "Dynamics 365"
+        "Dynamics 365",
+        "Microsoft 365"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
@@ -86396,8 +86396,8 @@
       "title": "CVE-2026-70023 Windows Hyper-V Elevation of Privilege Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows",
-        "HyperV"
+        "HyperV",
+        "Windows"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
@@ -87153,8 +87153,8 @@
       "title": "CVE-2026-102214 Windows Hyper-V Remote Code Execution Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows",
-        "HyperV"
+        "HyperV",
+        "Windows"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
@@ -87939,8 +87939,8 @@
       "title": "CVE-2026-97813 Windows Hyper-V Information Disclosure Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows",
-        "HyperV"
+        "HyperV",
+        "Windows"
       ],
       "published": "2026-10-13",
       "updated": "2026-10-13",
@@ -88220,8 +88220,8 @@
       "title": "Malicious code in npp-ml (PyPI)",
       "severity": "bulletin",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Python / PyPI"
       ],
       "published": "2026-10-12",
       "updated": "2026-10-29",
@@ -88261,8 +88261,8 @@
       "title": "Malicious code in minecraftaccfinder (PyPI)",
       "severity": "bulletin",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Python / PyPI"
       ],
       "published": "2026-10-12",
       "updated": "2026-10-29",
@@ -88330,8 +88330,8 @@
       "title": "Malicious code in pxnpm (npm)",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-09",
       "updated": "2026-10-29",
@@ -88567,8 +88567,8 @@
       "title": "Malicious code in virgil-cli (npm)",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-06",
       "updated": "2026-10-29",
@@ -88608,8 +88608,9 @@
       "title": "Malicious code in zencleaner (PyPI)",
       "severity": "bulletin",
       "categories": [
+        "Application dependencies",
         "Python / PyPI",
-        "Application dependencies"
+        "Windows"
       ],
       "published": "2026-10-06",
       "updated": "2026-10-29",
@@ -88677,8 +88678,8 @@
       "title": "Malicious code in echogen (PyPI)",
       "severity": "bulletin",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Python / PyPI"
       ],
       "published": "2026-10-03",
       "updated": "2026-10-29",
@@ -88718,8 +88719,8 @@
       "title": "Malicious code in @kelvdra/baileys (npm)",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-09-30",
       "updated": "2026-10-29",
@@ -88759,8 +88760,8 @@
       "title": "Malicious code in monte-md-baileys (npm)",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-09-30",
       "updated": "2026-10-29",
@@ -88800,8 +88801,9 @@
       "title": "Malicious code in godsplan (npm)",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "JavaScript / TypeScript",
+        "Node.js / npm"
       ],
       "published": "2026-09-30",
       "updated": "2026-10-29",
@@ -88841,8 +88843,9 @@
       "title": "Malicious code in friendly-greeting-tools (PyPI)",
       "severity": "bulletin",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "AWS",
+        "Application dependencies",
+        "Python / PyPI"
       ],
       "published": "2026-09-30",
       "updated": "2026-10-29",
@@ -88882,8 +88885,8 @@
       "title": "Malicious code in @rennnpm/baileys (npm)",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-09-30",
       "updated": "2026-10-29",
@@ -88923,8 +88926,8 @@
       "title": "Malicious code in noxleyss (npm)",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-09-30",
       "updated": "2026-10-29",
@@ -89076,8 +89079,8 @@
       "title": "Malicious code in reqparser (PyPI)",
       "severity": "bulletin",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Python / PyPI"
       ],
       "published": "2026-09-25",
       "updated": "2026-10-29",
@@ -89305,6 +89308,7 @@
       "title": "Various packet overreads in mysqlnd_writeprotocol.c",
       "severity": "low",
       "categories": [
+        "MySQL / MariaDB",
         "PHP"
       ],
       "published": "2026-09-24",
@@ -89401,7 +89405,8 @@
       "title": "Phar TAR phar_tar_number() Integer Overflow - Archive Entry Injection",
       "severity": "medium",
       "categories": [
-        "PHP"
+        "PHP",
+        "React / Next.js"
       ],
       "published": "2026-09-24",
       "updated": "2026-09-25",
@@ -89529,8 +89534,8 @@
       "title": "CVE-2026-59113 Visual Studio Code Remote Code Execution Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Microsoft 365",
-        "Dynamics 365"
+        "Dynamics 365",
+        "Microsoft 365"
       ],
       "published": "2026-09-24",
       "updated": "2026-09-24",
@@ -89558,8 +89563,8 @@
       "title": "CVE-2026-65675 CoPilot Chat Security Feature Bypass Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Microsoft 365",
-        "Dynamics 365"
+        "Dynamics 365",
+        "Microsoft 365"
       ],
       "published": "2026-09-24",
       "updated": "2026-09-24",
@@ -89587,6 +89592,7 @@
       "title": "When implementing the JavaScript interface, Foxit PDF Editor/Reader did not perform the attribute authorization checks required by the specification",
       "severity": "medium",
       "categories": [
+        "JavaScript / TypeScript",
         "Windows"
       ],
       "published": "2026-09-23",
@@ -89743,8 +89749,10 @@
       "title": "Malicious code in gemini-computer-use (npm)",
       "severity": "bulletin",
       "categories": [
+        "Application dependencies",
+        "Linux",
         "Node.js / npm",
-        "Application dependencies"
+        "Windows"
       ],
       "published": "2026-09-21",
       "updated": "2026-10-29",
@@ -90181,7 +90189,8 @@
       "title": "CVE-2026-76654",
       "severity": "bulletin",
       "categories": [
-        "Docker / Kubernetes"
+        "Docker / Kubernetes",
+        "Windows"
       ],
       "published": "2026-09-14",
       "updated": "2026-09-14",
@@ -96017,8 +96026,8 @@
       "title": "CVE-2026-69553 Windows Hyper-V Elevation of Privilege Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows",
-        "HyperV"
+        "HyperV",
+        "Windows"
       ],
       "published": "2026-09-08",
       "updated": "2026-09-08",
@@ -98902,8 +98911,8 @@
       "title": "CVE-2026-69603 Windows Hyper-V Remote Code Execution Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows",
-        "HyperV"
+        "HyperV",
+        "Windows"
       ],
       "published": "2026-09-08",
       "updated": "2026-09-08",
@@ -100085,8 +100094,8 @@
       "title": "CVE-2026-77908 Microsoft Dynamics 365 On-Premises Remote Code Execution Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Microsoft 365",
-        "Dynamics 365"
+        "Dynamics 365",
+        "Microsoft 365"
       ],
       "published": "2026-09-08",
       "updated": "2026-09-08",
@@ -100478,8 +100487,8 @@
       "title": "CVE-2026-80083 Windows Hyper-V Remote Code Execution Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows",
-        "HyperV"
+        "HyperV",
+        "Windows"
       ],
       "published": "2026-09-08",
       "updated": "2026-09-08",
@@ -103895,8 +103904,8 @@
       "title": "CVE-2026-69459 Windows Power Dependency Coordinator Elevation of Privilege Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows",
-        "Application dependencies"
+        "Application dependencies",
+        "Windows"
       ],
       "published": "2026-09-08",
       "updated": "2026-09-08",
@@ -105884,8 +105893,8 @@
       "title": "CVE-2026-69713 Windows Secure Boot Security Feature Bypass Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows",
-        "Application dependencies"
+        "Application dependencies",
+        "Windows"
       ],
       "published": "2026-09-08",
       "updated": "2026-09-08",
@@ -107705,8 +107714,8 @@
       "title": "CVE-2026-72961 Windows Hyper-V Elevation of Privilege Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows",
-        "HyperV"
+        "HyperV",
+        "Windows"
       ],
       "published": "2026-09-08",
       "updated": "2026-09-08",
@@ -108070,8 +108079,8 @@
       "title": "CVE-2026-69910 Windows Hyper-V Remote Code Execution Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows",
-        "HyperV"
+        "HyperV",
+        "Windows"
       ],
       "published": "2026-09-08",
       "updated": "2026-09-08",
@@ -108889,8 +108898,8 @@
       "title": "CVE-2026-65772 Microsoft Dynamics 365 On-Premises Remote Code Execution Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Microsoft 365",
-        "Dynamics 365"
+        "Dynamics 365",
+        "Microsoft 365"
       ],
       "published": "2026-09-08",
       "updated": "2026-09-08",
@@ -111928,7 +111937,9 @@
       "title": "environment injection via wsrep bootstrap in the mariadb.service file",
       "severity": "high",
       "categories": [
-        "MySQL / MariaDB"
+        "MySQL / MariaDB",
+        "React / Next.js",
+        "jQuery / Bootstrap"
       ],
       "published": "2026-09-07",
       "updated": "2026-10-09",
@@ -112997,8 +113008,8 @@
       "title": "langgraph-api: Incomplete assistant authorization in LangGraph Server run creation",
       "severity": "medium",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Python / PyPI"
       ],
       "published": "2026-08-19",
       "updated": "2026-10-28",
@@ -113038,8 +113049,9 @@
       "title": "langgraph-api: Relative webhook targets in LangGraph Server can reach in-process routes without authentication",
       "severity": "medium",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Docker / Kubernetes",
+        "Python / PyPI"
       ],
       "published": "2026-08-19",
       "updated": "2026-10-28",
@@ -113303,6 +113315,7 @@
       "title": "CodeWhale versions >= 0.3.10 and < 0.8.64 (published as deepseek-tui >= 0.3.10 and < 0.8.41 on npm and 0.3.10 through 0.8.41 on crates.io, and as codewhale / codewhale-tui >= ",
       "severity": "high",
       "categories": [
+        "MySQL / MariaDB",
         "Node.js / npm"
       ],
       "published": "2026-08-18",
@@ -114036,8 +114049,8 @@
       "title": "CVE-2022-41127 Microsoft Dynamics NAV and Microsoft Dynamics 365 Business Central (On Premises) Remote Code Execution Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Microsoft 365",
-        "Dynamics 365"
+        "Dynamics 365",
+        "Microsoft 365"
       ],
       "published": "2026-08-12",
       "updated": "2026-08-12",
@@ -117230,8 +117243,8 @@
       "title": "CVE-2026-61368 Windows Hyper-V Information Disclosure Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows",
-        "HyperV"
+        "HyperV",
+        "Windows"
       ],
       "published": "2026-08-11",
       "updated": "2026-08-11",
@@ -118887,8 +118900,8 @@
       "title": "CVE-2026-65815 Microsoft Dynamics 365 On-Premises Remote Code Execution Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Microsoft 365",
-        "Dynamics 365"
+        "Dynamics 365",
+        "Microsoft 365"
       ],
       "published": "2026-08-11",
       "updated": "2026-08-11",
@@ -118972,8 +118985,8 @@
       "title": "CVE-2026-66301 Microsoft Dynamics 365 (On-Premises) Information Disclosure Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Microsoft 365",
-        "Dynamics 365"
+        "Dynamics 365",
+        "Microsoft 365"
       ],
       "published": "2026-08-11",
       "updated": "2026-08-11",
@@ -121789,8 +121802,8 @@
       "title": "CVE-2026-40417 Microsoft Dynamics 365 Business Central Elevation of Privilege Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Microsoft 365",
-        "Dynamics 365"
+        "Dynamics 365",
+        "Microsoft 365"
       ],
       "published": "2026-08-10",
       "updated": "2026-08-10",
@@ -121846,8 +121859,8 @@
       "title": "CVE-2021-34474 Microsoft Dynamics 365 Business Central Remote Code Execution Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Microsoft 365",
-        "Dynamics 365"
+        "Dynamics 365",
+        "Microsoft 365"
       ],
       "published": "2026-08-10",
       "updated": "2026-08-10",
@@ -121903,8 +121916,8 @@
       "title": "CVE-2024-38225 Microsoft Dynamics 365 Business Central Elevation of Privilege Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Microsoft 365",
-        "Dynamics 365"
+        "Dynamics 365",
+        "Microsoft 365"
       ],
       "published": "2026-08-10",
       "updated": "2026-08-10",
@@ -121960,7 +121973,8 @@
       "title": "CVE-2026-19444",
       "severity": "bulletin",
       "categories": [
-        "Docker / Kubernetes"
+        "Docker / Kubernetes",
+        "Windows"
       ],
       "published": "2026-08-10",
       "updated": "2026-08-10",
@@ -122575,8 +122589,8 @@
       "title": "n8n before 2.29.8 and 2.30.x before 2.30.1 does not enforce shell sandbox restrictions on Linux and Windows in the @n8n/computer-use package (sandboxing was applied only on ma",
       "severity": "medium",
       "categories": [
-        "Windows",
-        "Linux"
+        "Linux",
+        "Windows"
       ],
       "published": "2026-07-22",
       "updated": "2026-10-29",
@@ -122644,8 +122658,8 @@
       "title": "Malicious code in litellm (PyPI)",
       "severity": "bulletin",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Python / PyPI"
       ],
       "published": "2026-07-21",
       "updated": "2026-10-29",
@@ -122725,7 +122739,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: tcp: fix stale per-CPU tcp_tw_isn leak enabling ISN prediction Blamed commit moved the TIME_WAIT-derived IS",
       "severity": "critical",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-07-19",
       "updated": "2026-10-29",
@@ -122877,7 +122892,8 @@
       "title": "ext/openssl: Memory corruption (zend_mm_heap corrupted) in openssl_encrypt with AES-WRAP-PAD",
       "severity": "medium",
       "categories": [
-        "PHP"
+        "PHP",
+        "React / Next.js"
       ],
       "published": "2026-07-02",
       "updated": "2026-07-02",
@@ -122977,6 +122993,8 @@
       "title": "WordPress appointment-booking-calendar 1.1.24 contains multiple privilege escalation...",
       "severity": "medium",
       "categories": [
+        "JavaScript / TypeScript",
+        "PHP",
         "WordPress / Plugins"
       ],
       "published": "2026-06-15",
@@ -123045,8 +123063,10 @@
       "title": "WWBN AVideo: Unauthenticated Stored DOM Cross-Site Scripting via Per-Client Metadata Broadcast in YPTSocket Plugin",
       "severity": "critical",
       "categories": [
+        "Application dependencies",
+        "JavaScript / TypeScript",
         "PHP",
-        "Application dependencies"
+        "jQuery / Bootstrap"
       ],
       "published": "2026-06-04",
       "updated": "2026-10-29",
@@ -123378,6 +123398,7 @@
       "title": "XSS within PHP-FPM status endpoint",
       "severity": "medium",
       "categories": [
+        "JavaScript / TypeScript",
         "PHP"
       ],
       "published": "2026-05-07",
@@ -123506,7 +123527,8 @@
       "title": "SQL injection in pdo_firebird via NUL bytes in quoted strings",
       "severity": "high",
       "categories": [
-        "PHP"
+        "PHP",
+        "React / Next.js"
       ],
       "published": "2026-05-07",
       "updated": "2026-05-07",
@@ -123570,7 +123592,8 @@
       "title": "DoS attack via DOMNode::C14N()",
       "severity": "high",
       "categories": [
-        "PHP"
+        "PHP",
+        "React / Next.js"
       ],
       "published": "2026-05-07",
       "updated": "2026-05-07",
@@ -123662,8 +123685,9 @@
       "title": "LiquidJS has Exponential Memory Amplification through its replace_first Filter $& Pattern",
       "severity": "high",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "JavaScript / TypeScript",
+        "Node.js / npm"
       ],
       "published": "2026-03-25",
       "updated": "2026-10-29",
@@ -124094,6 +124118,7 @@
       "title": "Null byte termination in dns_get_record()",
       "severity": "low",
       "categories": [
+        ".NET / ASP.NET",
         "PHP"
       ],
       "published": "2025-12-18",
@@ -124284,8 +124309,8 @@
       "title": "LangGraph SQLite Checkpoint Filter Key SQL Injection POC for SqliteStore",
       "severity": "high",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Python / PyPI"
       ],
       "published": "2025-10-29",
       "updated": "2026-10-28",
@@ -124325,7 +124350,8 @@
       "title": "CVE-2025-9708",
       "severity": "bulletin",
       "categories": [
-        "Docker / Kubernetes"
+        "Docker / Kubernetes",
+        "React / Next.js"
       ],
       "published": "2025-09-15",
       "updated": "2025-09-15",
@@ -124471,7 +124497,9 @@
       "title": "CVE-2025-7342",
       "severity": "bulletin",
       "categories": [
-        "Docker / Kubernetes"
+        "Docker / Kubernetes",
+        "VMware",
+        "Windows"
       ],
       "published": "2025-07-21",
       "updated": "2025-07-21",
@@ -124832,6 +124860,7 @@
       "title": "Reference counting in php_request_shutdown causes Use-After-Free",
       "severity": "medium",
       "categories": [
+        "Linux",
         "PHP"
       ],
       "published": "2025-03-13",
@@ -124864,6 +124893,7 @@
       "title": "Possible out of bounds read when XML_OPTION_SKIP_TAGSTART used",
       "severity": "low",
       "categories": [
+        ".NET / ASP.NET",
         "PHP"
       ],
       "published": "2025-03-13",
@@ -125112,7 +125142,8 @@
       "title": "CVE-2024-9042",
       "severity": "bulletin",
       "categories": [
-        "Docker / Kubernetes"
+        "Docker / Kubernetes",
+        "Windows"
       ],
       "published": "2025-01-15",
       "updated": "2025-01-15",
@@ -125140,6 +125171,7 @@
       "title": "[Mysqlnd] Leak partial content of the heap through heap buffer over-read",
       "severity": "high",
       "categories": [
+        "MySQL / MariaDB",
         "PHP"
       ],
       "published": "2024-11-21",
@@ -125204,6 +125236,7 @@
       "title": "Configuring a proxy in a stream context might allow for CRLF injection in URIs",
       "severity": "medium",
       "categories": [
+        ".NET / ASP.NET",
         "PHP"
       ],
       "published": "2024-11-21",
@@ -125416,7 +125449,9 @@
       "title": "PHP RCE: A Bypass of CVE-2012-1823, Argument Injection in PHP-CGI",
       "severity": "high",
       "categories": [
-        "PHP"
+        ".NET / ASP.NET",
+        "PHP",
+        "Windows"
       ],
       "published": "2024-09-28",
       "updated": "2024-09-28",
@@ -125452,6 +125487,7 @@
       "title": "cgi.force_redirect configuration is bypassable due to the environment variable collision",
       "severity": "medium",
       "categories": [
+        ".NET / ASP.NET",
         "PHP"
       ],
       "published": "2024-09-27",
@@ -125484,7 +125520,9 @@
       "title": "PHP CGI Parameter Injection Vulnerability (CVE-2024-4577 bypass)",
       "severity": "medium",
       "categories": [
-        "PHP"
+        ".NET / ASP.NET",
+        "PHP",
+        "Windows"
       ],
       "published": "2024-09-27",
       "updated": "2024-09-27",
@@ -125636,7 +125674,8 @@
       "title": "CVE-2024-5321",
       "severity": "bulletin",
       "categories": [
-        "Docker / Kubernetes"
+        "Docker / Kubernetes",
+        "Windows"
       ],
       "published": "2024-07-17",
       "updated": "2024-07-17",
@@ -125664,7 +125703,8 @@
       "title": "bypass CVE-2024-1874",
       "severity": "high",
       "categories": [
-        "PHP"
+        "PHP",
+        "Windows"
       ],
       "published": "2024-06-09",
       "updated": "2024-06-09",
@@ -125728,6 +125768,7 @@
       "title": "PHP is vulnerable to the Marvin Attack",
       "severity": "medium",
       "categories": [
+        ".NET / ASP.NET",
         "PHP"
       ],
       "published": "2024-06-06",
@@ -125816,6 +125857,7 @@
       "title": "Command injection via array-ish $command parameter of proc_open even if bypass_shell option enabled on Windows",
       "severity": "critical",
       "categories": [
+        ".NET / ASP.NET",
         "PHP",
         "Windows"
       ],
@@ -125913,6 +125955,8 @@
       "title": "__Host-/__Secure- cookie bypass due to partial CVE-2022-31629 fix",
       "severity": "medium",
       "categories": [
+        ".NET / ASP.NET",
+        "Docker / Kubernetes",
         "PHP"
       ],
       "published": "2024-04-11",
@@ -125945,7 +125989,8 @@
       "title": "CVE-2023-5528",
       "severity": "bulletin",
       "categories": [
-        "Docker / Kubernetes"
+        "Docker / Kubernetes",
+        "Windows"
       ],
       "published": "2023-11-14",
       "updated": "2023-11-14",
@@ -126089,7 +126134,9 @@
       "title": "Security issue with external entity loading in XML without enabling it",
       "severity": "high",
       "categories": [
-        "PHP"
+        "Linux",
+        "PHP",
+        "React / Next.js"
       ],
       "published": "2023-08-05",
       "updated": "2023-08-05",
@@ -126121,7 +126168,8 @@
       "title": "CVE-2023-3955",
       "severity": "bulletin",
       "categories": [
-        "Docker / Kubernetes"
+        "Docker / Kubernetes",
+        "Windows"
       ],
       "published": "2023-07-26",
       "updated": "2023-07-26",
@@ -126149,7 +126197,8 @@
       "title": "CVE-2023-3893",
       "severity": "bulletin",
       "categories": [
-        "Docker / Kubernetes"
+        "Docker / Kubernetes",
+        "Windows"
       ],
       "published": "2023-07-26",
       "updated": "2023-07-26",
@@ -126177,7 +126226,8 @@
       "title": "CVE-2023-3676",
       "severity": "bulletin",
       "categories": [
-        "Docker / Kubernetes"
+        "Docker / Kubernetes",
+        "Windows"
       ],
       "published": "2023-07-14",
       "updated": "2023-07-14",
@@ -126497,7 +126547,8 @@
       "title": "CVE-2021-25749",
       "severity": "bulletin",
       "categories": [
-        "Docker / Kubernetes"
+        "Docker / Kubernetes",
+        "Windows"
       ],
       "published": "2022-09-01",
       "updated": "2022-09-01",
@@ -126973,7 +127024,8 @@
       "title": "CVE-2020-8563",
       "severity": "bulletin",
       "categories": [
-        "Docker / Kubernetes"
+        "Docker / Kubernetes",
+        "VMware"
       ],
       "published": "2020-10-15",
       "updated": "2020-10-15",
@@ -127841,6 +127893,7 @@
       "title": "WordPress Core Remote File Inclusion Vulnerability",
       "severity": "bulletin",
       "categories": [
+        "PHP",
         "WordPress / Plugins"
       ],
       "published": "",
@@ -128518,7 +128571,8 @@
       "title": "Microsoft Windows Buffer Overflow Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows"
+        "Windows",
+        "Windows Server OS"
       ],
       "published": "",
       "updated": "2026-05-20",
@@ -128546,6 +128600,7 @@
       "title": "Microsoft Exchange Server Cross-Site Scripting Vulnerability",
       "severity": "bulletin",
       "categories": [
+        "JavaScript / TypeScript",
         "Microsoft 365"
       ],
       "published": "",
@@ -129109,6 +129164,7 @@
       "severity": "bulletin",
       "categories": [
         "Node.js / npm",
+        "Windows",
         "iOS / Android"
       ],
       "published": "",
@@ -129529,8 +129585,8 @@
       "title": "Microsoft Windows Server Update Service (WSUS) Deserialization of Untrusted Data Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows Server OS",
-        "Windows"
+        "Windows",
+        "Windows Server OS"
       ],
       "published": "",
       "updated": "2025-10-24",
@@ -130989,8 +131045,8 @@
       "title": "Microsoft Windows Hyper-V NT Kernel Integration VSP Use-After-Free Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows",
-        "HyperV"
+        "HyperV",
+        "Windows"
       ],
       "published": "",
       "updated": "2025-01-14",
@@ -131018,8 +131074,8 @@
       "title": "Microsoft Windows Hyper-V NT Kernel Integration VSP Use-After-Free Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows",
-        "HyperV"
+        "HyperV",
+        "Windows"
       ],
       "published": "",
       "updated": "2025-01-14",
@@ -131047,8 +131103,8 @@
       "title": "Microsoft Windows Hyper-V NT Kernel Integration VSP Heap-based Buffer Overflow Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows",
-        "HyperV"
+        "HyperV",
+        "Windows"
       ],
       "published": "",
       "updated": "2025-01-14",
@@ -131076,7 +131132,8 @@
       "title": "Fortinet FortiOS and FortiProxy Authentication Bypass Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Fortinet"
+        "Fortinet",
+        "Node.js / npm"
       ],
       "published": "",
       "updated": "2025-01-14",
@@ -131693,8 +131750,8 @@
       "title": "Microsoft Windows Power Dependency Coordinator Privilege Escalation Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows",
-        "Application dependencies"
+        "Application dependencies",
+        "Windows"
       ],
       "published": "",
       "updated": "2024-08-13",
@@ -131834,6 +131891,7 @@
       "title": "Android Kernel Remote Code Execution Vulnerability",
       "severity": "bulletin",
       "categories": [
+        "Linux",
         "iOS / Android"
       ],
       "published": "",
@@ -131946,8 +132004,8 @@
       "title": "Microsoft Windows Hyper-V Privilege Escalation Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows",
-        "HyperV"
+        "HyperV",
+        "Windows"
       ],
       "published": "",
       "updated": "2024-07-09",
@@ -132199,6 +132257,7 @@
       "title": "Microsoft Windows Print Spooler Privilege Escalation Vulnerability",
       "severity": "bulletin",
       "categories": [
+        "JavaScript / TypeScript",
         "Windows"
       ],
       "published": "",
@@ -132873,6 +132932,7 @@
       "title": "Microsoft Windows CNG Key Isolation Service Privilege Escalation Vulnerability",
       "severity": "bulletin",
       "categories": [
+        "React / Next.js",
         "Windows"
       ],
       "published": "",
@@ -133995,6 +134055,7 @@
       "title": "Microsoft Windows CNG Key Isolation Service Privilege Escalation Vulnerability",
       "severity": "bulletin",
       "categories": [
+        "React / Next.js",
         "Windows"
       ],
       "published": "",
@@ -135031,6 +135092,7 @@
       "title": "Microsoft Windows Remote Code Execution Vulnerability",
       "severity": "bulletin",
       "categories": [
+        ".NET / ASP.NET",
         "Windows"
       ],
       "published": "",
@@ -135311,6 +135373,7 @@
       "title": "Cisco IOS XR Open Port Vulnerability",
       "severity": "bulletin",
       "categories": [
+        "NoSQL / MongoDB",
         "iOS / Android"
       ],
       "published": "",
@@ -135956,8 +136019,8 @@
       "title": "Debian-specific Redis Server Lua Sandbox Escape Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "NoSQL / MongoDB",
-        "Linux"
+        "Linux",
+        "NoSQL / MongoDB"
       ],
       "published": "",
       "updated": "2022-03-28",
@@ -136237,7 +136300,8 @@
       "title": "Drupal Core Remote Code Execution Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Drupal / CMS"
+        "Drupal / CMS",
+        "PHP"
       ],
       "published": "",
       "updated": "2022-03-25",
@@ -138281,8 +138345,8 @@
       "title": "System Information Library for Node.JS Command Injection",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "",
       "updated": "2022-01-18",
@@ -138646,6 +138710,7 @@
       "title": "Android Kernel Use-After-Free Vulnerability",
       "severity": "bulletin",
       "categories": [
+        "Linux",
         "iOS / Android"
       ],
       "published": "",
@@ -139906,8 +139971,8 @@
       "title": "Microsoft Windows Server Message Block (SMBv1) Remote Code Execution Vulnerability",
       "severity": "bulletin",
       "categories": [
-        "Windows Server OS",
-        "Windows"
+        "Windows",
+        "Windows Server OS"
       ],
       "published": "",
       "updated": "2021-11-03",
@@ -140921,6 +140986,7 @@
       "title": "WordPress File Manager Plugin Remote Code Execution Vulnerability",
       "severity": "bulletin",
       "categories": [
+        "PHP",
         "WordPress / Plugins"
       ],
       "published": "",
@@ -141004,85 +141070,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T00:18:28Z",
-      "last_attempt": "2026-10-30T00:18:28Z",
+      "last_success": "2026-10-30T00:23:57Z",
+      "last_attempt": "2026-10-30T00:23:57Z",
       "items_processed": 295,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T00:18:28Z",
-      "last_attempt": "2026-10-30T00:18:28Z",
+      "last_success": "2026-10-30T00:23:57Z",
+      "last_attempt": "2026-10-30T00:23:57Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T00:18:28Z",
-      "last_attempt": "2026-10-30T00:18:28Z",
+      "last_success": "2026-10-30T00:23:57Z",
+      "last_attempt": "2026-10-30T00:23:57Z",
       "items_processed": 761,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T00:18:28Z",
-      "last_attempt": "2026-10-30T00:18:28Z",
+      "last_success": "2026-10-30T00:23:57Z",
+      "last_attempt": "2026-10-30T00:23:57Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T00:18:28Z",
-      "last_attempt": "2026-10-30T00:18:28Z",
+      "last_success": "2026-10-30T00:23:57Z",
+      "last_attempt": "2026-10-30T00:23:57Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T00:18:28Z",
-      "last_attempt": "2026-10-30T00:18:28Z",
+      "last_success": "2026-10-30T00:23:57Z",
+      "last_attempt": "2026-10-30T00:23:57Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T00:18:28Z",
-      "last_attempt": "2026-10-30T00:18:28Z",
+      "last_success": "2026-10-30T00:23:57Z",
+      "last_attempt": "2026-10-30T00:23:57Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T00:18:28Z",
-      "last_attempt": "2026-10-30T00:18:28Z",
+      "last_success": "2026-10-30T00:23:57Z",
+      "last_attempt": "2026-10-30T00:23:57Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T00:18:28Z",
-      "last_attempt": "2026-10-30T00:18:28Z",
+      "last_success": "2026-10-30T00:23:57Z",
+      "last_attempt": "2026-10-30T00:23:57Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T00:18:28Z",
-      "last_attempt": "2026-10-30T00:18:28Z",
+      "last_success": "2026-10-30T00:23:57Z",
+      "last_attempt": "2026-10-30T00:23:57Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T00:18:28Z",
-      "last_attempt": "2026-10-30T00:18:28Z",
+      "last_success": "2026-10-30T00:23:57Z",
+      "last_attempt": "2026-10-30T00:23:57Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T00:18:28Z",
-      "last_attempt": "2026-10-30T00:18:28Z",
+      "last_success": "2026-10-30T00:23:57Z",
+      "last_attempt": "2026-10-30T00:23:57Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -141094,7 +141160,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T00:18:28Z",
-  "last_successful_update": "2026-10-30T00:18:28Z",
+  "last_checked_at": "2026-10-30T00:23:57Z",
+  "last_successful_update": "2026-10-30T00:23:57Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
