@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-30",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6222,
+  "candidate_records": 6223,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -8922,6 +8922,47 @@
       "first_seen_at": "2026-10-30T22:18:51Z",
       "source_updated_at": "2026-10-30T22:16:58.447",
       "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-96629",
+      "title": "AdminNeo: CSRF Token Secret Recoverable from Single Observed Token, Enabling Cross-Site Request Forgery",
+      "severity": "medium",
+      "categories": [
+        "PHP",
+        "Application dependencies"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "### Summary AdminNeo's CSRF protection uses a BREACH-resistant XOR masking scheme, but the implementation transmits both the XOR mask and the masked value in every token. This allows any observer who sees a single CSRF token (via network sniffing, log files, Referrer header, or XSS) to instantly recover the session secret and forge unlimited valid CSRF tokens. Additionally, the underlying session token has only ~20 bits of entropy (`rand(1, 1e6)`), making blind brute-force feasible even without token observation. Originally reported by @az0mb13 in Adminer: [GHSA-q4f2-39gr-45jh](https://github.com/vrana/adminer/security/advisories/GHSA-33j4-hc95-pggg) ### Details Token generation in `admin/include/functions.inc.php` lines 1181-1184: ```php function get_token() { $rand = rand(1, 1e6); return ($rand ^ $_SESSION[\"token\"]) . \":$rand\"; } ``` Token verification in lines 1189-1192: ```php function verify_token() { list($token, $rand) = explode(\":\", $_POST[\"token\"]); return ($rand ^ $_SESSION[\"token\"]) == $token; } ``` Session token initialized in `admin/include/auth.inc.php` lines 327 and 385: ```php $_SESSION[\"token\"] = rand(1, 1e6); ``` **Three distinct weaknesses:** 1. **Instant recovery:** The token format `(rand XOR secret):rand` transmits both operands. Recovery is trivial: `secret",
+      "affected": "composer: adminneo-org/adminneo (< 5.5.1)",
+      "remediation": "adminneo-org/adminneo: 5.5.1",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-wm25-49w3-5qrg"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/adminneo-org/adminneo/security/advisories/GHSA-wm25-49w3-5qrg"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/adminneo-org/adminneo/commit/f575eee5e35eacd6c55a9912648e9e8fe24a9f44"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/adminneo-org/adminneo/releases/tag/v5.5.1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.8",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-30T22:51:24Z",
+      "source_updated_at": "2026-10-30T22:51:31Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -119348,34 +119389,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-69433",
-      "title": "CVE-2026-69433 Windows Error Reporting Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-09",
-      "summary": "<p>Heap-based buffer overflow in Windows Error Reporting allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69433"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-96940",
       "title": "Microsoft Exchange Server SE weak authentication privilege escalation",
       "severity": "high",
@@ -159224,85 +159237,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T22:49:18Z",
-      "last_attempt": "2026-10-30T22:49:18Z",
+      "last_success": "2026-10-30T22:51:24Z",
+      "last_attempt": "2026-10-30T22:51:24Z",
       "items_processed": 268,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T22:49:18Z",
-      "last_attempt": "2026-10-30T22:49:18Z",
+      "last_success": "2026-10-30T22:51:24Z",
+      "last_attempt": "2026-10-30T22:51:24Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T22:49:18Z",
-      "last_attempt": "2026-10-30T22:49:18Z",
+      "last_success": "2026-10-30T22:51:24Z",
+      "last_attempt": "2026-10-30T22:51:24Z",
       "items_processed": 1956,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T22:49:18Z",
-      "last_attempt": "2026-10-30T22:49:18Z",
+      "last_success": "2026-10-30T22:51:24Z",
+      "last_attempt": "2026-10-30T22:51:24Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T22:49:18Z",
-      "last_attempt": "2026-10-30T22:49:18Z",
+      "last_success": "2026-10-30T22:51:24Z",
+      "last_attempt": "2026-10-30T22:51:24Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T22:49:18Z",
-      "last_attempt": "2026-10-30T22:49:18Z",
+      "last_success": "2026-10-30T22:51:24Z",
+      "last_attempt": "2026-10-30T22:51:24Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T22:49:18Z",
-      "last_attempt": "2026-10-30T22:49:18Z",
+      "last_success": "2026-10-30T22:51:24Z",
+      "last_attempt": "2026-10-30T22:51:24Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T22:49:18Z",
-      "last_attempt": "2026-10-30T22:49:18Z",
+      "last_success": "2026-10-30T22:51:24Z",
+      "last_attempt": "2026-10-30T22:51:24Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T22:49:18Z",
-      "last_attempt": "2026-10-30T22:49:18Z",
+      "last_success": "2026-10-30T22:51:24Z",
+      "last_attempt": "2026-10-30T22:51:24Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T22:49:18Z",
-      "last_attempt": "2026-10-30T22:49:18Z",
+      "last_success": "2026-10-30T22:51:24Z",
+      "last_attempt": "2026-10-30T22:51:24Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T22:49:18Z",
-      "last_attempt": "2026-10-30T22:49:18Z",
+      "last_success": "2026-10-30T22:51:24Z",
+      "last_attempt": "2026-10-30T22:51:24Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T22:49:18Z",
-      "last_attempt": "2026-10-30T22:49:18Z",
+      "last_success": "2026-10-30T22:51:24Z",
+      "last_attempt": "2026-10-30T22:51:24Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -159314,7 +159327,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T22:49:18Z",
-  "last_successful_update": "2026-10-30T22:49:18Z",
+  "last_checked_at": "2026-10-30T22:51:24Z",
+  "last_successful_update": "2026-10-30T22:51:24Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
