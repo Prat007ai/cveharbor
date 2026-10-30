@@ -49,9 +49,10 @@ function preciseProductMatch(asset,cve){
    !(!affected.includes(name)&&/wordpress core|wordpress itself/i.test(detail));
  }
  if(product==='wordpress'){
-  if(/\b(plugin|extension|theme|woocommerce|wpbakery)\b/i.test(detail)&&
-    !/wordpress core|wordpress itself|wordpress versions/i.test(detail))return false;
-  return /\bwordpress\b/i.test(detail)||!detail;
+  // Core inventory must not inherit vulnerabilities in plugins, hosting panels,
+  // themes or other WordPress ecosystem products.
+  if(/\b(cpanel|whm|wp2|woocommerce|plugin|theme|appointment-booking|geo my wordpress|wpbakery|extension)\b/i.test(detail))return false;
+  return /\bwordpress (?:core|versions?|itself)\b/i.test(detail)||/\bwordpress\b[^.]{0,55}\b(?:core|before|through)\b/i.test(affected);
  }
  if(product==='php'){
   // Requiring runtime identity prevents PHP applications and vendor appliances
@@ -82,9 +83,18 @@ function candidate(asset,cve){
  const tags=(cve.categories||[]).map(norm);
  if(!(product.startsWith('wordpress plugin:')?tags.includes('wordpress / plugins'):(categories[product]||[product]).some(t=>tags.includes(norm(t)))))return null;
  if(!preciseProductMatch(asset,cve))return null;
+ // An OS release alone cannot establish exposure to arbitrary application
+ // packages (Redis, curl, OpenSSL, etc). Require actual package inventory.
+ if(['debian','debian linux','ubuntu','ubuntu linux'].includes(product))return null;
  const affected=String(cve.affected||''),version=String(asset.version||'').trim();
  let level='category',evidence='Category match only. Product identity and affected versions have not been verified.';
  let comparisonDetail='No reliable version comparison available from this advisory text.';
+ // Generic PHP category advisories with no runtime fixed-version evidence
+ // remain research leads, not customer-specific vulnerability findings.
+ if(product==='php'&&!phpVendorFixes[cve.id]){
+  const text=String(cve.affected||'');
+  if(!/\bphp\s+(?:before|prior to|earlier than|through|up to)\s+(?:version\s+)?\d+\.\d+/i.test(text))return null;
+ }
  const vendorAssessment=phpVendorAssessment(product,version,cve);
  if(vendorAssessment?.exclude)return null;
  if(vendorAssessment){level=vendorAssessment.level;evidence=vendorAssessment.evidence;comparisonDetail=vendorAssessment.comparison_detail;}

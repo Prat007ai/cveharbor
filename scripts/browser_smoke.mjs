@@ -230,7 +230,7 @@ const falsePositives=[
 for(const v of falsePositives)assert.equal(engine.candidate(asset,v),null,'foreign application excluded from PHP runtime: '+v.id);
 const debian={id:'debian',technology:'Debian',version:'12'};
 assert.equal(engine.candidate(debian,{id:'CVE-2026-11111',categories:['Linux'],title:'Linux kernel memory issue',affected:'Linux kernel before 6.1'}),null,'generic kernel advisory not matched to Debian OS version');
-assert.ok(engine.candidate(debian,{id:'CVE-2026-11112',categories:['Linux'],title:'Debian 12 security update for curl',affected:'Debian 12 curl security issue'}),'explicit Debian advisory remains a candidate');
+assert.equal(engine.candidate(debian,{id:'CVE-2026-11112',categories:['Linux'],title:'Debian 12 security update for curl',affected:'Debian 12 curl security issue'}),null,'OS release alone cannot confirm curl package exposure');
 assert.equal(engine.candidate(debian,{id:'CVE-2026-11113',categories:['Linux'],title:'Ubuntu kernel security update',affected:'Ubuntu kernel 6.8'}),null,'Ubuntu advisory excluded from Debian');
 assert.equal(engine.candidate({...asset,technology:'PHP'}, {...advisory,affected:'PHP before 8.4.27'}).level,'version_review','explicit PHP runtime range stays eligible');
 const phpRelease={id:'CVE-2026-109618',title:'PHP runtime request handling RCE',categories:['PHP'],affected:'PHP web request handling',sources:[{url:'https://www.php.net/'}]};
@@ -240,8 +240,10 @@ assert.equal(engine.candidate({...asset,version:'8.4.26'},phpRelease)?.level,'ve
 assert.equal(engine.candidate({...asset,version:'8.4.27'},phpRelease),null,'vendor bulletin excludes patched PHP 8.4');
 const debianVendor={id:'CVE-2026-11115',title:'Debian 12 security advisory for curl',categories:['Linux'],affected:'Debian 12 curl package before 7.88',sources:[{url:'https://security-tracker.debian.org/tracker/CVE-2026-11115'}]};
 const debianFinding=engine.candidate({id:'deb-1',technology:'Debian',version:'12'},debianVendor);
-assert.equal(debianFinding.level,'category','Debian OS version is not compared to package revision');
-assert.match(debianFinding.evidence,/source package/,'Debian review requires package evidence');
+assert.equal(debianFinding,null,'Debian package advisories require explicit installed package inventory');
+assert.equal(engine.candidate({id:'wp',technology:'WordPress',version:'6.6.2'},{id:'CVE-2026-41940',categories:['WordPress / Plugins'],title:'cPanel WHM WP2 authentication bypass',affected:'WebPros cPanel WP2 WordPress Squared'}),null,'cPanel WP2 is not WordPress core');
+assert.equal(engine.candidate({id:'wp',technology:'WordPress',version:'6.6.2'},{id:'CVE-2026-61992',categories:['WordPress / Plugins'],title:'GEO my WordPress plugin PHP object injection',affected:'GEO my WordPress plugin before 4.5'}),null,'third party WordPress plugin excluded from core');
+assert.ok(engine.candidate({id:'wp',technology:'WordPress',version:'6.6.2'},{id:'CVE-2026-60317',categories:['WordPress / Plugins'],title:'WordPress Core SQL injection',affected:'WordPress core before 6.7'}),'explicit WordPress core remains eligible');
 matcherDom.window.close();
 assert.ok(html.includes('id="inventoryCustomerName"')&&html.includes('id="inventoryEnvironmentName"')&&html.includes('id="inventoryVersion"'),'customer environment and software version input fields exist');
 assert.ok(html.includes('id="inventoryAdditionalTechnologies"'),'multiple technology version input exists');
