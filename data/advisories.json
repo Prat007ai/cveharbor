@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-30",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6216,
+  "candidate_records": 6218,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -354,7 +354,7 @@
     },
     {
       "id": "CVE-2026-107249",
-      "title": "Improperly Controlled Modification of Dynamically-Determined Object Attributes vulnerability in Drupal Block AJAX allows Object Injection",
+      "title": "Improperly Controlled Modification of Dynamically-Determined Object Attributes vulnerability in...",
       "severity": "critical",
       "categories": [
         "Drupal / CMS"
@@ -362,27 +362,35 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Improperly Controlled Modification of Dynamically-Determined Object Attributes vulnerability in Drupal Block AJAX allows Object Injection. This issue affects Block AJAX versions: from 0.0.0 to 3.0.2.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107249"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-6pcx-w9cj-f597"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.drupal.org/sa-contrib-2026-192"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "9.8",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T20:16:54.733",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:19Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-107250",
-      "title": "Vulnerability in Drupal ECA Helper",
+      "title": "Vulnerability in Drupal ECA Helper. This issue affects ECA Helper versions: *.*.",
       "severity": "medium",
       "categories": [
         "Drupal / CMS"
@@ -390,22 +398,30 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Vulnerability in Drupal ECA Helper. This issue affects ECA Helper versions: *.*.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107250"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-h245-vm7g-29gx"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.drupal.org/sa-contrib-2026-193"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "5.9",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T20:16:54.900",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:19Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -438,7 +454,7 @@
     },
     {
       "id": "CVE-2026-107252",
-      "title": "Improper Neutralization of Input During Web Page Generation (\"Cross-site Scripting\") vulnerability in Drupal MathJax: LaTeX for Drupal allows Cross-Site Scripting (XSS)",
+      "title": "Improper Neutralization of Input During Web Page Generation (\"Cross-site Scripting\")...",
       "severity": "medium",
       "categories": [
         "Drupal / CMS"
@@ -446,27 +462,35 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Improper Neutralization of Input During Web Page Generation (\"Cross-site Scripting\") vulnerability in Drupal MathJax: LaTeX for Drupal allows Cross-Site Scripting (XSS). This issue affects MathJax: LaTeX for Drupal versions: from 0.0.0 to 4.1.2.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107252"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-cxwv-8h42-979j"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.drupal.org/sa-contrib-2026-195"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "5.4",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T20:16:55.187",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:19Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-107253",
-      "title": "Vulnerability in Drupal Orphans Media",
+      "title": "Vulnerability in Drupal Orphans Media. This issue affects Orphans Media versions: *.*.",
       "severity": "medium",
       "categories": [
         "Drupal / CMS"
@@ -474,27 +498,35 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Vulnerability in Drupal Orphans Media. This issue affects Orphans Media versions: *.*.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107253"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-9qcq-j447-mmpr"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.drupal.org/sa-contrib-2026-196"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "5.9",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T20:16:55.327",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:07Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-107254",
-      "title": "Authentication Bypass Using an Alternate Path or Channel vulnerability in Drupal Authenticator Login Plus (2FA) allows Authentication Bypass",
+      "title": "Authentication Bypass Using an Alternate Path or Channel vulnerability in Drupal Authenticator...",
       "severity": "medium",
       "categories": [
         "Drupal / CMS"
@@ -502,22 +534,30 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Authentication Bypass Using an Alternate Path or Channel vulnerability in Drupal Authenticator Login Plus (2FA) allows Authentication Bypass. This issue affects Authenticator Login Plus (2FA) versions: from 0.0.0 to 1.0.1.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107254"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-p825-6r72-qfr4"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.drupal.org/sa-contrib-2026-197"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "4.8",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T20:16:55.470",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:21Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -578,7 +618,7 @@
     },
     {
       "id": "CVE-2026-107257",
-      "title": "Incorrect Authorization vulnerability in Drupal Actstream allows Forceful Browsing",
+      "title": "Incorrect Authorization vulnerability in Drupal Actstream allows Forceful Browsing. This issue...",
       "severity": "medium",
       "categories": [
         "Drupal / CMS"
@@ -586,28 +626,36 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Incorrect Authorization vulnerability in Drupal Actstream allows Forceful Browsing. This issue affects Actstream versions: from 0.0.0 to 2.0.1, from 2.1.0 to 2.1.1.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107257"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-49qr-j2v8-5wg8"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.drupal.org/sa-contrib-2026-198"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "6.5",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T20:16:55.613",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:06Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-107258",
       "title": "Incorrect Authorization vulnerability in Drupal Inline Entity Form Dialog allows Forceful...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "Drupal / CMS"
       ],
@@ -633,10 +681,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "5.4",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T06:31:57Z",
+      "source_updated_at": "2026-10-30T21:32:27Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -698,7 +746,7 @@
     },
     {
       "id": "CVE-2026-107261",
-      "title": "Authentication Bypass Using an Alternate Path or Channel vulnerability in Drupal Authenticator Login Plus (2FA) allows Authentication Bypass",
+      "title": "Authentication Bypass Using an Alternate Path or Channel vulnerability in Drupal Authenticator...",
       "severity": "medium",
       "categories": [
         "Drupal / CMS"
@@ -706,28 +754,36 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Authentication Bypass Using an Alternate Path or Channel vulnerability in Drupal Authenticator Login Plus (2FA) allows Authentication Bypass. This issue affects Authenticator Login Plus (2FA) versions: from 0.0.0 to 1.0.1.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107261"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-4r22-vvmj-7r8j"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.drupal.org/sa-contrib-2026-201"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "4.2",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T20:16:56.273",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:26Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-107262",
       "title": "Cross-Site Request Forgery (CSRF) vulnerability in Drupal Advanced Filesystem allows Cross Site...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "Drupal / CMS"
       ],
@@ -753,10 +809,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "5.3",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T06:31:57Z",
+      "source_updated_at": "2026-10-30T21:32:27Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -827,7 +883,7 @@
     {
       "id": "CVE-2026-107265",
       "title": "Improper Neutralization of Input During Web Page Generation (\"Cross-site Scripting\")...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "Drupal / CMS"
       ],
@@ -853,10 +909,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "5.4",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T06:31:57Z",
+      "source_updated_at": "2026-10-30T21:32:23Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -982,7 +1038,7 @@
     },
     {
       "id": "CVE-2026-107307",
-      "title": "Incorrect Authorization vulnerability in Drupal SmartLinker AI allows Forceful Browsing",
+      "title": "Incorrect Authorization vulnerability in Drupal SmartLinker AI allows Forceful Browsing. This...",
       "severity": "medium",
       "categories": [
         "Drupal / CMS"
@@ -990,27 +1046,35 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Incorrect Authorization vulnerability in Drupal SmartLinker AI allows Forceful Browsing. This issue affects SmartLinker AI versions: from 0.0.0 to 1.0.3.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107307"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-hvjg-3x8r-ppfw"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.drupal.org/sa-contrib-2026-210"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "4.3",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T21:16:49.863",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:22Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-107308",
-      "title": "Improper Neutralization of Input During Web Page Generation (\"Cross-site Scripting\") vulnerability in Drupal Country allows Cross-Site Scripting (XSS)",
+      "title": "Improper Neutralization of Input During Web Page Generation (\"Cross-site Scripting\")...",
       "severity": "low",
       "categories": [
         "Drupal / CMS"
@@ -1018,28 +1082,36 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Improper Neutralization of Input During Web Page Generation (\"Cross-site Scripting\") vulnerability in Drupal Country allows Cross-Site Scripting (XSS). This issue affects Country versions: from 0.0.0 to 2.1.3, from 2.2.0 to 2.2.1.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107308"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-8x23-vvq4-9478"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.drupal.org/sa-contrib-2026-211"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "3.1",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T21:16:50.017",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:09Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-107309",
       "title": "Missing Authorization vulnerability in Drupal Easy Breadcrumb allows Forceful Browsing. This...",
-      "severity": "bulletin",
+      "severity": "low",
       "categories": [
         "Drupal / CMS"
       ],
@@ -1065,17 +1137,17 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "3.7",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T06:31:57Z",
+      "source_updated_at": "2026-10-30T21:32:29Z",
       "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-107310",
       "title": "Server-Side Request Forgery (SSRF) vulnerability in Drupal Freelinking allows Server Side Request...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "Drupal / CMS"
       ],
@@ -1101,16 +1173,16 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "4.3",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T06:31:57Z",
+      "source_updated_at": "2026-10-30T21:32:24Z",
       "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-107311",
-      "title": "Improper Check for Unusual or Exceptional Conditions vulnerability in Drupal Permissions by Term allows Forceful Browsing",
+      "title": "Improper Check for Unusual or Exceptional Conditions vulnerability in Drupal Permissions by Term...",
       "severity": "low",
       "categories": [
         "Drupal / CMS"
@@ -1118,22 +1190,30 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Improper Check for Unusual or Exceptional Conditions vulnerability in Drupal Permissions by Term allows Forceful Browsing. This issue affects Permissions by Term versions: from 0.0.0 to 3.1.41.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107311"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-wm34-8fvp-f9p7"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.drupal.org/sa-contrib-2026-214"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "3.7",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T21:16:50.463",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:06Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -2348,7 +2428,7 @@
     {
       "id": "CVE-2026-114555",
       "title": "Improper Neutralization of Input During Web Page Generation (\"Cross-site Scripting\")...",
-      "severity": "bulletin",
+      "severity": "low",
       "categories": [
         "Drupal / CMS"
       ],
@@ -2374,10 +2454,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "3.5",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T06:32:02Z",
+      "source_updated_at": "2026-10-30T21:32:10Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -2420,7 +2500,7 @@
     {
       "id": "CVE-2026-114572",
       "title": "Authentication Bypass Using an Alternate Path or Channel vulnerability in Drupal Domain Login...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "Drupal / CMS"
       ],
@@ -2446,10 +2526,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "5.4",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T06:31:57Z",
+      "source_updated_at": "2026-10-30T21:32:25Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -2492,7 +2572,7 @@
     {
       "id": "CVE-2026-118539",
       "title": "Missing Authorization vulnerability in Drupal Commerce Core allows Forceful Browsing. This issue...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "Drupal / CMS"
       ],
@@ -2518,10 +2598,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "6.5",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T06:31:58Z",
+      "source_updated_at": "2026-10-30T21:32:10Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -8046,22 +8126,30 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Unauthenticated Bypass Vulnerability in YITH WooCommerce Product Add-Ons <= 4.34.0 versions.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107868"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-pwhw-2725-hhpc"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://patchstack.com/database/wordpress/plugin/yith-woocommerce-product-add-ons/vulnerability/wordpress-yith-woocommerce-product-add-ons-plugin-4-34-0-bypass-vulnerability-vulnerability?_s_id=cve"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "5.3",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T19:20:24Z",
-      "source_updated_at": "2026-10-30T19:22:27.173",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:21Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -8074,22 +8162,30 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Shop manager PHP Object Injection in Product Feed Manager <= 7.14.1 versions.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118089"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-mgc7-265c-8fhm"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://patchstack.com/database/wordpress/plugin/best-woocommerce-feed/vulnerability/wordpress-product-feed-manager-plugin-7-14-1-php-object-injection-vulnerability?_s_id=cve"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "7.2",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T19:20:24Z",
-      "source_updated_at": "2026-10-30T19:22:27.173",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:44Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -8102,22 +8198,30 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Subscriber PHP Object Injection in MasterStudy LMS <= 3.7.55 versions.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118090"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-rm8v-6xph-365g"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://patchstack.com/database/wordpress/plugin/masterstudy-lms-learning-management-system/vulnerability/wordpress-masterstudy-lms-plugin-3-7-55-php-object-injection-vulnerability?_s_id=cve"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "8.8",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T19:20:24Z",
-      "source_updated_at": "2026-10-30T19:22:27.173",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:27Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -8130,27 +8234,35 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Unauthenticated PHP Object Injection in FunnelKit Automations <= 3.8.6.1 versions.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-39738"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-9cg4-h688-392x"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://patchstack.com/database/wordpress/plugin/wp-marketing-automations/vulnerability/wordpress-funnelkit-automations-plugin-3-8-6-1-php-object-injection-vulnerability?_s_id=cve"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "9.8",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T19:20:24Z",
-      "source_updated_at": "2026-10-30T19:22:27.173",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:28Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-52710",
-      "title": "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS) vulnerability in ithemelandco GIFTiT &#8211; Free Gifts for WooCommerce ithemeland-free-gifts-for",
+      "title": "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS) vulnerability in...",
       "severity": "medium",
       "categories": [
         "WordPress / Plugins"
@@ -8158,27 +8270,35 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS) vulnerability in ithemelandco GIFTiT &#8211; Free Gifts for WooCommerce ithemeland-free-gifts-for-woo allows Code Injection.This issue affects GIFTiT &#8211; Free Gifts for WooCommerce: from n/a through 4.5.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-52710"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-56mc-w4mj-q72x"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://patchstack.com/database/wordpress/plugin/ithemeland-free-gifts-for-woo/vulnerability/wordpress-giftit-8211-free-gifts-for-woocommerce-plugin-4-5-content-injection-vulnerability?_s_id=cve"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "5.3",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T19:20:24Z",
-      "source_updated_at": "2026-10-30T19:22:27.173",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:29Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-62121",
-      "title": "Improper Control of Filename for Include/Require Statement in PHP Program ('PHP Remote File Inclusion') vulnerability in Unlimited Elements Unlimited Elements For Elementor (F",
+      "title": "Improper Control of Filename for Include/Require Statement in PHP Program ('PHP Remote File...",
       "severity": "medium",
       "categories": [
         "PHP"
@@ -8186,22 +8306,30 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Improper Control of Filename for Include/Require Statement in PHP Program ('PHP Remote File Inclusion') vulnerability in Unlimited Elements Unlimited Elements For Elementor (Free Widgets, Addons, Templates) unlimited-elements-for-elementor allows PHP Local File Inclusion.This issue affects Unlimited Elements For Elementor (Free Widgets, Addons, Templates): from n/a through 2.0.26.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-62121"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-7352-x4h3-95fw"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://patchstack.com/database/wordpress/plugin/unlimited-elements-for-elementor/vulnerability/wordpress-unlimited-elements-for-elementor-free-widgets-addons-templates-plugin-2-0-26-local-file-inclusion-vulnerability?_s_id=cve"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "6.5",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T19:20:24Z",
-      "source_updated_at": "2026-10-30T19:22:27.173",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:44Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -8242,22 +8370,30 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Subscriber PHP Object Injection in Enable Media Replace <= 4.2.2 versions.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-73186"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-g6cf-mrxg-xvmr"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://patchstack.com/database/wordpress/plugin/enable-media-replace/vulnerability/wordpress-enable-media-replace-plugin-4-2-2-php-object-injection-vulnerability?_s_id=cve"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "8.8",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T19:20:24Z",
-      "source_updated_at": "2026-10-30T19:22:27.173",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:50Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -8270,22 +8406,30 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Contributor PHP Object Injection in GS Testimonial Slider <= 3.3.10 versions.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-78527"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-wrw7-7jpm-q2cw"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://patchstack.com/database/wordpress/plugin/gs-testimonial/vulnerability/wordpress-gs-testimonial-slider-plugin-3-3-10-php-object-injection-vulnerability?_s_id=cve"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "8.8",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T19:20:24Z",
-      "source_updated_at": "2026-10-30T19:22:27.173",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:31Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -8298,22 +8442,30 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Unauthenticated PHP Object Injection in LeadSnap <= 1.25 versions.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-90888"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-27wj-mp2h-85jg"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://patchstack.com/database/wordpress/plugin/leadsnap/vulnerability/wordpress-leadsnap-plugin-1-25-php-object-injection-vulnerability?_s_id=cve"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "9.8",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T19:20:24Z",
-      "source_updated_at": "2026-10-30T19:22:27.173",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:32Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -8406,7 +8558,7 @@
     },
     {
       "id": "CVE-2026-78402",
-      "title": "Stack-based buffer overflow and out-of-bounds write vulnerability in Thales Sentinel Keys Server on Windows allows Overflow Buffers. Sentinel Keys Server does not check the le",
+      "title": "Stack-based buffer overflow and out-of-bounds write vulnerability in Thales Sentinel Keys Server...",
       "severity": "high",
       "categories": [
         "Windows"
@@ -8414,27 +8566,35 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Stack-based buffer overflow and out-of-bounds write vulnerability in Thales Sentinel Keys Server on Windows allows Overflow Buffers. Sentinel Keys Server does not check the length of the first field in the input message. A local attacker may craft an input and send it to Sentinel Keys Server. It may lead to code execution as NT AUTHORITY\\SYSTEM enabling local privilege escalation. This issue affects Sentinel Keys Server: versions lower than 1.3.8.0.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-78402"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-58x3-qrxv-fm7v"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://supportportal.thalesgroup.com/csm?id=kb_article_view&sys_kb_id=50fc9f3b3b005f10bba8b41864e45a61&sysparm_article=KB0031216"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": "7.3",
-      "status": "NVD indexed CVE",
+      "cvss": "7.8",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T20:53:09Z",
-      "source_updated_at": "2026-10-30T20:17:17.653",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:35Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-78403",
-      "title": "Stack-based buffer overflow and missing authorization vulnerability in Thales Sentinel Keys Server on Windows allows Overflow Buffers",
+      "title": "Stack-based buffer overflow and missing authorization vulnerability in Thales Sentinel Keys...",
       "severity": "critical",
       "categories": [
         "Windows"
@@ -8442,22 +8602,30 @@
       "published": "2026-10-30",
       "updated": "2026-10-30",
       "summary": "Stack-based buffer overflow and missing authorization vulnerability in Thales Sentinel Keys Server on Windows allows Overflow Buffers. Sentinel Keys Server does not check the length of the first field in the HTTP request. An attacker may craft an HTTP request and send it to Sentinel Keys Server. It may lead to remote code execution as NT AUTHORITY\\SYSTEM. This issue affects Sentinel Keys Server: versions lower than 1.3.8.0.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-78403"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-fxcq-q77c-fh3w"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://supportportal.thalesgroup.com/csm?id=kb_article_view&sys_kb_id=50fc9f3b3b005f10bba8b41864e45a61&sysparm_article=KB0031216"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": "9.3",
-      "status": "NVD indexed CVE",
+      "cvss": "9.8",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T20:53:09Z",
-      "source_updated_at": "2026-10-30T20:17:17.843",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-30T21:32:49Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -8598,6 +8766,46 @@
       "first_seen_at": "2026-10-30T21:29:48Z",
       "source_updated_at": "2026-10-30T21:17:16.310",
       "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119730",
+      "title": "Maxthon Browser for Android before 7.5.8.103 contains an address bar spoofing vulnerability that...",
+      "severity": "medium",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "Maxthon Browser for Android before 7.5.8.103 contains an address bar spoofing vulnerability that allows remote attackers to misrepresent a page's origin by exploiting the lack of a persistent fullscreen notification or trusted origin indicator when the Fullscreen API is invoked. Attackers can craft a malicious web page that renders a counterfeit address bar showing a trusted domain while displaying attacker-controlled content, tricking users who perform a single tap to enter fullscreen into disclosing credentials via phishing.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-59rh-729h-3ffx"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119730"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.maxthon.com/history"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.vulncheck.com/advisories/maxthon-browser-for-android-fullscreen-address-bar-spoofing"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.3",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-30T21:32:29Z",
+      "source_updated_at": "2026-10-30T21:32:35Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -39723,6 +39931,46 @@
       "epss_as_of": "2026-10-30"
     },
     {
+      "id": "CVE-2026-86954",
+      "title": "An out-of-bounds read was addressed with improved bounds checking. This issue is fixed in iOS 26...",
+      "severity": "medium",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-10-26",
+      "updated": "2026-10-30",
+      "summary": "An out-of-bounds read was addressed with improved bounds checking. This issue is fixed in iOS 26.7.2 and iPadOS 26.7.2, iOS 27 and iPadOS 27, macOS Golden Gate 27, macOS Sequoia 15.8.2, macOS Tahoe 26.7.2, tvOS 27, visionOS 27, watchOS 27. Processing a maliciously crafted image may lead to unexpected app termination.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-9x79-wp23-pccw"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-86954"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://support.apple.com/en-us/149034"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://support.apple.com/en-us/149035"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-30T21:32:29Z",
+      "source_updated_at": "2026-10-30T21:32:10Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-10757",
       "title": "There is a SQL injection vulnerability in Esri ArcGIS Server versions 12.1 and earlier on Windows and Linux that may allow a remote attacker with privileges to access the serv",
       "severity": "critical",
@@ -56766,53 +57014,6 @@
       "epss_as_of": "2026-10-30"
     },
     {
-      "id": "CVE-2026-109619",
-      "title": "RCE via stale global state",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-30",
-      "summary": "## Summary PHP contains various global state, such as error, session, object and extension state that is retained by a worker but points to memory owned by one request. That state must be reset before the request memory is released. Some input, configuration, session and error handling operations run before normal initialization of the next request. They inadvertently access stale state not reset by the previous request before initialization has a chance to replace it, causing a use after free. A strategically crafted heap layout can produce full remote code execution (RCE). State can survive for more than one reason. A fatal error, including one caused by memory exhaustion, can abandon an operation before it performs its matching reset. A warning or other nonfatal diagnostic can also repopulate error state after that state was already cleared during shutdown. The request heap is then freed while the worker global field still refers to it. A later operation that runs before normal request initialization can consume the stale value. Successful exploitation of this vulnerability requires both a producer and a consumer. The producer is a PHP operation that stores state owned by one request in a location PHP can access later in a subsequent request. The consumer is a subsequent PHP o",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-6wmf-4rv5-p3rp"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:13Z",
-      "source_type": "php_upstream",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99999,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2026-109618",
       "title": "RCE via OOM corruption",
       "severity": "critical",
@@ -56857,6 +57058,53 @@
       "known_exploited": true,
       "epss": 0.99999,
       "epss_percentile": 0.99998,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2026-109619",
+      "title": "RCE via stale global state",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-30",
+      "summary": "## Summary PHP contains various global state, such as error, session, object and extension state that is retained by a worker but points to memory owned by one request. That state must be reset before the request memory is released. Some input, configuration, session and error handling operations run before normal initialization of the next request. They inadvertently access stale state not reset by the previous request before initialization has a chance to replace it, causing a use after free. A strategically crafted heap layout can produce full remote code execution (RCE). State can survive for more than one reason. A fatal error, including one caused by memory exhaustion, can abandon an operation before it performs its matching reset. A warning or other nonfatal diagnostic can also repopulate error state after that state was already cleared during shutdown. The request heap is then freed while the worker global field still refers to it. A later operation that runs before normal request initialization can consume the stale value. Successful exploitation of this vulnerability requires both a producer and a consumer. The producer is a PHP operation that stores state owned by one request in a location PHP can access later in a subsequent request. The consumer is a subsequent PHP o",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-6wmf-4rv5-p3rp"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:13Z",
+      "source_type": "php_upstream",
+      "known_exploited": true,
+      "epss": 0.99999,
+      "epss_percentile": 0.99999,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -118996,62 +119244,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-73009",
-      "title": "CVE-2026-73009 Windows Secure Socket Tunneling Protocol (SSTP) Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-06",
-      "summary": "<p>Use after free in Windows Secure Socket Tunneling Protocol (SSTP) allows an unauthorized attacker to execute code over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-73009"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69267",
-      "title": "CVE-2026-69267 Windows Connected User Experiences and Telemetry Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-05",
-      "summary": "Insufficient granularity of access control in Windows Connected User Experiences and Telemetry allows an authorized attacker to disclose information locally.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69267"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-96940",
       "title": "Microsoft Exchange Server SE weak authentication privilege escalation",
       "severity": "high",
@@ -138379,37 +138571,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2025-7624",
-      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
-      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
-      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.10514,
-      "epss_percentile": 0.95752,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2025-6704",
       "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
       "severity": "critical",
@@ -138438,6 +138599,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.11772,
       "epss_percentile": 0.96066,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2025-7624",
+      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
+      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
+      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.10514,
+      "epss_percentile": 0.95752,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -158900,85 +159092,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T21:29:48Z",
-      "last_attempt": "2026-10-30T21:29:48Z",
-      "items_processed": 275,
+      "last_success": "2026-10-30T21:32:29Z",
+      "last_attempt": "2026-10-30T21:32:29Z",
+      "items_processed": 291,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T21:29:48Z",
-      "last_attempt": "2026-10-30T21:29:48Z",
+      "last_success": "2026-10-30T21:32:29Z",
+      "last_attempt": "2026-10-30T21:32:29Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T21:29:48Z",
-      "last_attempt": "2026-10-30T21:29:48Z",
+      "last_success": "2026-10-30T21:32:29Z",
+      "last_attempt": "2026-10-30T21:32:29Z",
       "items_processed": 1952,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T21:29:48Z",
-      "last_attempt": "2026-10-30T21:29:48Z",
+      "last_success": "2026-10-30T21:32:29Z",
+      "last_attempt": "2026-10-30T21:32:29Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T21:29:48Z",
-      "last_attempt": "2026-10-30T21:29:48Z",
+      "last_success": "2026-10-30T21:32:29Z",
+      "last_attempt": "2026-10-30T21:32:29Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T21:29:48Z",
-      "last_attempt": "2026-10-30T21:29:48Z",
+      "last_success": "2026-10-30T21:32:29Z",
+      "last_attempt": "2026-10-30T21:32:29Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T21:29:48Z",
-      "last_attempt": "2026-10-30T21:29:48Z",
+      "last_success": "2026-10-30T21:32:29Z",
+      "last_attempt": "2026-10-30T21:32:29Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T21:29:48Z",
-      "last_attempt": "2026-10-30T21:29:48Z",
+      "last_success": "2026-10-30T21:32:29Z",
+      "last_attempt": "2026-10-30T21:32:29Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T21:29:48Z",
-      "last_attempt": "2026-10-30T21:29:48Z",
+      "last_success": "2026-10-30T21:32:29Z",
+      "last_attempt": "2026-10-30T21:32:29Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T21:29:48Z",
-      "last_attempt": "2026-10-30T21:29:48Z",
+      "last_success": "2026-10-30T21:32:29Z",
+      "last_attempt": "2026-10-30T21:32:29Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T21:29:48Z",
-      "last_attempt": "2026-10-30T21:29:48Z",
+      "last_success": "2026-10-30T21:32:29Z",
+      "last_attempt": "2026-10-30T21:32:29Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T21:29:48Z",
-      "last_attempt": "2026-10-30T21:29:48Z",
+      "last_success": "2026-10-30T21:32:29Z",
+      "last_attempt": "2026-10-30T21:32:29Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -158990,7 +159182,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T21:29:48Z",
-  "last_successful_update": "2026-10-30T21:29:48Z",
+  "last_checked_at": "2026-10-30T21:32:29Z",
+  "last_successful_update": "2026-10-30T21:32:29Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
