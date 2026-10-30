@@ -1607,3 +1607,6 @@ body.command-center-app{padding-left:74px}
 #inventoryWorkspace .inventory-step-invalid{border:2px solid #f06a75!important;box-shadow:0 0 0 2px #dd3a3a22}
 @keyframes inventory-error-pulse{0%,100%{background:rgba(166,20,31,.22);box-shadow:0 0 8px #e7475144}50%{background:rgba(225,48,59,.42);box-shadow:0 0 22px #ff596677}}
 @media(prefers-reduced-motion:reduce){#inventoryWorkspace .inventory-error-flash{animation:none}}
+
+.inventory-edit-customer-input{display:block;width:100%;box-sizing:border-box;min-height:43px;margin:8px 0 13px;padding:10px 12px;background:#081e2c;color:#fff;border:1px solid #4a7b8a;border-radius:8px;font:inherit}
+.inventory-edit-customer-input:focus-visible{outline:2px solid #65e6d2}
