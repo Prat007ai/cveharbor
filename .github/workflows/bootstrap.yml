@@ -12,6 +12,7 @@ on:
       - data/vendor-baseline.json
       - scripts/update.py
       - scripts/build_site.py
+      - scripts/verify_production.py
       - tests/test_update.py
       - account-backend/**
       - accounts.js
@@ -269,6 +270,8 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify public production pages and published assets
+        run: python scripts/verify_production.py
       - name: Flag incomplete source collection
         if: always() && steps.collect.outcome == 'success'
         run: |
