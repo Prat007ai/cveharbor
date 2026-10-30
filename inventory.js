@@ -424,6 +424,7 @@ function updateInventorySteps(){
    panel.querySelector('h3')?.after(toggle);
    toggle.addEventListener('click',()=>{
     const closed=panel.classList.toggle('inventory-step-collapsed');
+    form.hidden=closed;form.style.display=closed?'none':'';
     toggle.textContent=closed?'Expand section':'Collapse section';
     toggle.setAttribute('aria-expanded',String(!closed));
    });
@@ -433,6 +434,8 @@ function updateInventorySteps(){
    panel.classList.toggle('inventory-step-collapsed',completed);
    panel.dataset.setupStage=String(stage);
   }
+  form.hidden=panel.classList.contains('inventory-step-collapsed');
+  form.style.display=form.hidden?'none':'';
   toggle.textContent=panel.classList.contains('inventory-step-collapsed')?'Expand section':'Collapse section';
   toggle.setAttribute('aria-expanded',String(!panel.classList.contains('inventory-step-collapsed')));
  }
