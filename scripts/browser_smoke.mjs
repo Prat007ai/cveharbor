@@ -860,4 +860,4 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('inventory-record-acti
 
 assert.ok(fs.readFileSync('styles.css','utf8').includes('Align customer and nested environment actions'),'customer and environment button alignment style exists');
 
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes("if(findings.length>0){card.classList.add('customer-software-attention')"),'software matches trigger red attention class');
+assert.ok(fs.readFileSync('customer-security.js','utf8').includes("if(needsReview){card.classList.add('customer-software-attention')"),'needs review findings trigger red attention class');
