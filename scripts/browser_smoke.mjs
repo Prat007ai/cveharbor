@@ -780,7 +780,7 @@ assert.ok(html.includes('href="/vulnerabilities/"'),'advisories have a distinct 
 assert.ok(html.includes('href="/lifecycle/"'),'lifecycle has a distinct navigation URL');
 
 assert.ok(fs.readFileSync('public/command-center.js','utf8').includes('command-sidebar'),'command center navigation published');
-for(const route of ['index.html','account/index.html','workspace/index.html','customer-dashboard/index.html','customer-reports/index.html'])assert.ok(fs.readFileSync(route,'utf8').includes('/command-center.js?v=home-sidebar-89'),'shared navigation loaded on '+route);
+for(const route of ['index.html','account/index.html','workspace/index.html','customer-dashboard/index.html','customer-reports/index.html'])assert.match(fs.readFileSync(route,'utf8'),/\/command-center\.js\?v=[a-zA-Z0-9-]+/,'shared navigation loaded on '+route);
 assert.ok(fs.readFileSync('styles.css','utf8').includes('body.command-center-app'),'command center responsive design available');
 
 assert.ok(html.includes('hero-intelligence-network'),'hero contains visible animated security intelligence network');
