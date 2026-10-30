@@ -515,10 +515,10 @@ function updateInventorySteps(){
  const customerCount=data.customers.length,environmentCount=data.environments.length;
  const step2=$('inventoryStepEnvironment'),step3=$('inventoryStepAsset');
  if(!step2||!step3)return;
- step2.hidden=stage<2;step3.hidden=stage<3;
- const completion=document.querySelector('#inventoryWorkspace .inventory-complete-panel');if(completion)completion.hidden=stage<3;
  const selectedEnvironments=data.environments.filter(e=>e.customer_id===setupCustomerId);
  const stage=newCustomerSetup?1:selectedEnvironments.length?3:setupCustomerId?2:1;
+ step2.hidden=stage<2;step3.hidden=stage<3;
+ const completion=document.querySelector('#inventoryWorkspace .inventory-complete-panel');if(completion)completion.hidden=stage<3;
  const selectedCustomer=newCustomerSetup?null:data.customers.find(x=>x.id===setupCustomerId);
  const selectedEnvironment=newCustomerSetup?null:data.environments.find(x=>x.id===setupEnvironmentId)||data.environments.find(x=>x.customer_id===selectedCustomer?.id);
  if(selectedCustomer&&!setupCustomerId)setupCustomerId=selectedCustomer.id;
