@@ -113,7 +113,8 @@ function setupSourceEditor(){
  const pickerTitle=make('label','','Plugin');pickerLabel.append(pickerTitle);
  const pickerInput=document.createElement('input');pickerInput.type='search';pickerInput.className='inventory-source-search';pickerInput.placeholder='Search and select a plugin';pickerInput.autocomplete='off';pickerInput.setAttribute('aria-label','Search existing WordPress plugins');pickerInput.setAttribute('aria-expanded','false');
  const pickerList=make('div','inventory-source-list');pickerList.setAttribute('role','listbox');pickerList.hidden=true;
- pickerLabel.append(pickerInput,pickerList);box.append(pickerLabel);
+ const pickerCount=make('p','ops-note inventory-source-count','');pickerCount.setAttribute('role','status');
+ pickerLabel.append(pickerInput,pickerCount,pickerList);box.append(pickerLabel);
  select.hidden=true;box.append(select);
  function closePicker(){
   pickerList.hidden=true;pickerInput.setAttribute('aria-expanded','false');
@@ -124,7 +125,9 @@ function setupSourceEditor(){
  function showPicker(){
   pickerList.replaceChildren();
   const query=pickerInput.value.trim().toLowerCase();
-  const entries=[...select.options].filter(o=>o.value&&o.textContent.toLowerCase().includes(query)).slice(0,12);
+  const allEntries=[...select.options].filter(o=>o.value);
+  const entries=allEntries.filter(o=>o.textContent.toLowerCase().includes(query));
+  pickerCount.textContent=entries.length+' matching plugins of '+allEntries.length+' in this environment';
   for(const entry of entries){
    const choice=document.createElement('div');
    choice.className='inventory-source-choice';choice.textContent=entry.textContent;
@@ -162,6 +165,7 @@ function setupSourceEditor(){
   for(const a of data.assets.filter(x=>x.environment_id===envId&&x.technology.startsWith('WordPress Plugin: ')))option(select,a.id,a.technology.slice(18));
   if([...select.options].some(o=>o.value===previous))select.value=previous;
   pickerInput.value=select.selectedOptions[0]?.value?select.selectedOptions[0].textContent:'';
+  pickerCount.textContent=([...select.options].filter(o=>o.value).length)+' plugins in this environment';
   pickerList.hidden=true;pickerInput.setAttribute('aria-expanded','false');
   const source=pluginSources.get(select.value)||{};
   for(const {key,input} of fields)input.value=source[key]||'';
