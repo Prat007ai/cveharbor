@@ -77,7 +77,7 @@ export default {async fetch(req,env,ctx){
   if(path==='/v1/auth/totp/verify'&&req.method==='POST'){
    if(!env.TOTP_ENCRYPTION_KEY)return response({error:'MFA unavailable'},503);
    const data=await body(req),pending=String(data.mfa_challenge||''),code=String(data.code||'').trim().toLowerCase(),now=Math.floor(Date.now()/1000);
-   if(!/^[a-f0-9]{64}$/.test(pending)||(!/^\\d{6}$/.test(code)&&!(/^[a-f0-9]{16}$/.test(code))))return response({error:'Invalid authentication code'},400);
+   if(!/^[a-f0-9]{64}$/.test(pending)||(!/^\d{6}$/.test(code)&&!(/^[a-f0-9]{16}$/.test(code))))return response({error:'Invalid authentication code'},400);
    const ip=req.headers.get('CF-Connecting-IP')||'unknown';
    if(!await limit(env,'totp-ip:'+await sha(ip),20)||!await limit(env,'totp-challenge:'+await sha(pending),8))return response({error:'Too many attempts'},429);
    const pendingRow=await env.DB.prepare('SELECT user_id FROM totp_login_challenges WHERE token_hash=? AND consumed_at IS NULL AND expires_at>?').bind(await sha(pending),now).first();
@@ -85,7 +85,7 @@ export default {async fetch(req,env,ctx){
    const factor=await env.DB.prepare('SELECT encrypted_secret,last_counter FROM user_totp WHERE user_id=? AND enabled=1').bind(pendingRow.user_id).first();
    if(!factor)return response({error:'MFA not configured'},401);
    let valid=false,counter=-1,recoveryHash='';
-   if(/^\\d{6}$/.test(code)){
+   if(/^\d{6}$/.test(code)){
     const secret=await decryptSecret(env,factor.encrypted_secret,pendingRow.user_id);
     counter=await verifyTotp(secret,code);
     valid=counter>factor.last_counter;
