@@ -929,3 +929,13 @@ const assignmentClient=fs.readFileSync('operations.js','utf8');
 assert.ok(assignmentMarkup.includes('id="remediationAssignNotes"'),'assignment has optional reviewer notes');
 assert.ok(assignmentMarkup.includes('id="remediationAssignNotesCount"'),'assignment shows notes character count');
 assert.ok(assignmentClient.includes("reviewer_notes:$('remediationAssignNotes').value.trim().slice(0,1000)"),'assignment includes bounded notes in request');
+
+const remediationDialogs=fs.readFileSync('index.html','utf8');
+const remediationUi=fs.readFileSync('operations.js','utf8');
+const remediationStyles=fs.readFileSync('styles.css','utf8');
+assert.ok(remediationDialogs.includes('id="remediationConfirmDialog"'),'branded pre-send confirmation exists');
+assert.ok(remediationDialogs.includes('id="remediationSuccessDialog"'),'branded success dialog exists');
+assert.ok(remediationUi.includes('confirmReviewRequest(cve,email)'),'assignment invokes branded confirmation');
+assert.ok(!remediationUi.includes("window.confirm('Send the "),'native browser confirm removed for assignment');
+assert.ok(remediationUi.includes("Your request has been submitted to "),'success text contains recipient address');
+assert.ok(remediationStyles.includes('#remediationDue::-webkit-calendar-picker-indicator'),'date calendar icon has higher contrast');
