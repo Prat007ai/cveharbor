@@ -865,7 +865,7 @@ assert.ok(fs.readFileSync('customer-security.js','utf8').includes("if(needsRevie
 // Account redesign retains passwordless sign-in contract and removes provider disclosure.
 const accountMarkup=fs.readFileSync('workspace/index.html','utf8');
 assert.ok(accountMarkup.includes('accountPageRequest') && accountMarkup.includes('accountPageVerify'),'account login and verification forms preserved');
-assert.ok(accountMarkup.includes('Private customer environments') && accountMarkup.includes('Customer ready reports'),'account benefits visible');
+assert.ok(accountMarkup.includes('Manage customer environments') && accountMarkup.includes('Generate professional reports'),'workspace benefits visible');
 assert.ok(!accountMarkup.includes('Cloudflare') && !accountMarkup.includes('pending Cloudflare backend'),'no provider or deployment disclosure on login');
 const stylesheetMatch=accountMarkup.match(/href=["'](\/styles\.css\?v=[a-zA-Z0-9-]+)["']/);
 assert.ok(stylesheetMatch,'account page loads a versioned stylesheet');
