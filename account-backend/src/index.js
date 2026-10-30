@@ -62,9 +62,10 @@ export default {async fetch(req,env,ctx){
    if(consumed.meta.changes!==1)return response({error:'Already used'},401);
    let user=await env.DB.prepare('SELECT id,email FROM users WHERE email=?').bind(row.email).first();
    if(!user){const uid=crypto.randomUUID();await env.DB.prepare('INSERT OR IGNORE INTO users(id,email) VALUES(?,?)').bind(uid,row.email).run();user=await env.DB.prepare('SELECT id,email FROM users WHERE email=?').bind(row.email).first()}
-   if(env.TOTP_ENCRYPTION_KEY){
+   {
     const factor=await env.DB.prepare('SELECT enabled FROM user_totp WHERE user_id=?').bind(user.id).first();
     if(factor?.enabled===1){
+     if(!env.TOTP_ENCRYPTION_KEY)return response({error:'MFA service temporarily unavailable'},503);
      const pending=token(),pendingId=crypto.randomUUID(),now=Math.floor(Date.now()/1000);
      await env.DB.prepare('INSERT INTO totp_login_challenges(id,user_id,token_hash,expires_at,created_at) VALUES(?,?,?,?,?)').bind(pendingId,user.id,await sha(pending),now+300,now).run();
      return response({authenticated:false,mfa_required:true,mfa_challenge:pending,message:'Enter your authenticator code.'});
