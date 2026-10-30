@@ -114,7 +114,7 @@ export function renderAssignmentEmail(cve,recipient,requester,reviewerNotes=''){
   const harbor='https://cveharbor.com/vulnerabilities/?cve='+encodeURIComponent(cve);
   const boards='https://learn.microsoft.com/en-us/azure/devops/boards/work-items/view-add-work-items';
   const subject='[CVEHarbor] Vulnerability review request: '+cve;
-  const requested='A colleague has requested your review of '+cve+'. Exposure in your environment has not been confirmed. Review the original advisory and determine whether the affected product and versions are present in systems you manage.';
+  const requested='A colleague has requested your review of '+cve+'. This vulnerability may affect systems you manage, but exposure in your environment has not been confirmed. Review the original advisory and determine whether the affected product and versions are present in systems you manage.';
   const actions=[
     'Review official vulnerability details and confirm affected products, versions and prerequisites.',
     'Check systems and applications within your responsibility and confirm whether they are affected.',
@@ -125,7 +125,7 @@ export function renderAssignmentEmail(cve,recipient,requester,reviewerNotes=''){
   const textBody=['CVEHARBOR | VULNERABILITY REVIEW REQUEST','','Vulnerability review request: '+cve,'','Requested by: '+requester,'',requested,'',
    'WHAT YOU NEED TO DO',...actions.map((x,i)=>(i+1)+'. '+x),'',
    ...(notes?['NOTES FROM THE REQUESTER',notes,'']:[]),'RELATED REFERENCES',...links.map(([name,url])=>name+': '+url),'',
-   'No Azure DevOps work item is created automatically. This is a review request, not proof of exposure. Keep customer secrets and internal environment details in your approved private systems.'];
+   'CVEHarbor does not create a DevOps work item automatically. This is a review request, not proof of exposure. Keep customer secrets and internal environment details in your approved private systems.'];
   const linkHtml=links.map(([name,url])=>'<li style="padding:5px 0"><a href="'+safe(url)+'" style="color:#5ce1d3">'+safe(name)+'</a></li>').join('');
   const actionHtml=actions.map((item,i)=>'<tr><td style="width:34px;vertical-align:top;color:#46dac7;font-weight:bold;padding:8px">'+(i+1)+'.</td><td style="padding:8px;color:#dceaf3">'+safe(item)+'</td></tr>').join('');
   const html='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>'+
