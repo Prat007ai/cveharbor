@@ -950,3 +950,10 @@ assert.ok(signedInWorkspaceJs.includes("classList.add('workspace-authenticated')
 assert.ok(signedInWorkspaceJs.includes("classList.remove('workspace-authenticated')"),'sign out restores login layout');
 assert.ok(signedInWorkspaceCss.includes('workspace-authenticated .account-new-login{display:none!important}'),'signed in login card is hidden');
 assert.ok(signedInWorkspaceCss.includes('workspace-authenticated #workspaceAccess{display:block!important}'),'signed in Workspace tools are displayed');
+
+const workspaceDashboardMarkup=fs.readFileSync('workspace/index.html','utf8');
+assert.ok(workspaceDashboardMarkup.includes('id="workspaceAccess"')&&workspaceDashboardMarkup.includes('workspace-kpis'),'authenticated Workspace has full dashboard');
+assert.ok(workspaceDashboardMarkup.includes('wsRecentRemediation')&&workspaceDashboardMarkup.includes('wsRecentCves'),'dashboard contains remediation and advisory panels');
+assert.ok(workspaceDashboardMarkup.includes('wsCriticalHint'),'critical count does not imply unvalidated findings');
+assert.ok(workspaceDashboardMarkup.includes('accountPageRequiredEnroll'),'mandatory MFA enrollment retained');
+assert.ok(fs.readFileSync('workspace-dashboard.js','utf8').includes("credentials:'include'"),'private dashboard fetches include account session');
