@@ -3,52 +3,74 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#061523">
-<title>Log In or Create Account | CVEHarbor</title>
-<meta name="description" content="Sign in to CVEHarbor securely by email verification code. Manage your vulnerability watchlists, customer environments and remediation records.">
-<link rel="stylesheet" href="/styles.css?v=home-sidebar-89">
+<title>Access Your Private Workspace | CVEHarbor</title>
+<meta name="description" content="Sign in to your private CVEHarbor workspace to track vulnerabilities, manage customer environments, register software inventory and create professional security reports.">
+<link rel="stylesheet" href="/styles.css?v=account-redesign-147">
 </head>
-<body class="account-page">
+<body class="account-page account-redesign">
 <a class="skip-link" href="#accountMain">Skip to account</a>
-<header class="site-header"><div class="shell topbar">
-<a class="brand" href="/" aria-label="CVEHarbor home"><span class="brand-mark" aria-hidden="true">◇</span><span class="brand-type">CVE<span>Harbor</span><small>VULNERABILITY INTELLIGENCE</small></span></a>
-<nav class="topnav" aria-label="Main navigation"><a href="/">Home</a><a href="/vulnerabilities/#advisories">Vulnerabilities</a><a href="/lifecycle/#lifecycleMonitor">Lifecycle & Patches</a><a href="/malware/#malware-intelligence">Malware</a></nav>
-</div></header>
-<main id="accountMain" class="shell account-landing">
-<p class="eyebrow">SECURE CVEHARBOR ACCOUNT</p>
-<h1 id="accountPageHeading">Log in or create an account</h1>
-<p class="section-sub">Use your email address to access personal security alerts, saved technologies and customer environments. No password is required.</p>
-<div class="account-landing-grid">
-<article class="data-panel account-entry-panel">
-<h2 id="accountFormTitle">Continue with email</h2>
-<p id="accountPageMessage" class="ops-note" role="status" aria-live="polite">New users and returning users use the same secure email verification process.</p>
-<div id="accountPageSignedOut">
-<form id="accountPageRequest" class="account-entry-form">
-<label for="accountPageEmail">Email address</label>
-<input id="accountPageEmail" type="email" autocomplete="email" placeholder="you@company.com" maxlength="254" required>
-<button type="submit" id="accountPageSend" class="ops-download">Send verification code</button>
-</form>
-<form id="accountPageVerify" class="account-entry-form" hidden>
-<label for="accountPageCode">Six digit verification code</label>
-<input id="accountPageCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
-<button type="submit" id="accountPageConfirm" class="ops-download">Verify and continue</button>
-<button type="button" id="accountPageBack" class="workspace-clear">Use another email</button>
-</form>
-</div>
-<div id="accountPageSignedIn" hidden>
-<p class="ops-note" id="accountPageIdentity"></p>
-<a id="accountPageWorkspace" href="/workspace/" class="ops-download">Open My Workspace</a>
-<button type="button" id="accountPageLogout" class="workspace-clear">Sign out</button>
-</div>
-</article>
-<article class="data-panel account-benefits">
-<h2>Your security workspace</h2>
-<p>After signing in, manage the products you monitor and the notification preferences saved to your CVEHarbor account.</p>
-<p>Create customer environments, register installed technology versions and review potential CVE matches.</p>
-<p>Track remediation assignments and investigate published lifecycle changes. Some newer features require the pending Cloudflare backend deployment.</p>
-<p class="ops-note">Public vulnerability intelligence remains available without an account.</p>
-</article>
-</div>
+<header class="account-hero-header">
+ <a class="account-hero-brand" href="/" aria-label="CVEHarbor home"><span class="account-logo-icon" aria-hidden="true">⬡</span><span class="account-brand-name">CVE<span>Harbor</span><small>SECURE. INFORMED. ALWAYS AHEAD.</small></span></a>
+ <a class="account-back-link" href="/">← &nbsp; Back to CVEHarbor</a>
+</header>
+<main id="accountMain" class="account-new-main">
+ <section class="account-hero-grid" aria-label="Access your workspace">
+ <div class="account-hero-left">
+  <p class="account-kicker">SECURE CVEHARBOR ACCOUNT</p>
+  <h1 id="accountPageHeading">Access your private <span>CVEHarbor workspace</span></h1>
+  <p class="account-hero-description">Sign in to manage your environments, track vulnerabilities, and generate reports, all in one secure workspace built for security teams and MSPs.</p>
+  <article class="account-new-login">
+   <h2 id="accountFormTitle">Continue with email</h2>
+   <p class="account-login-explainer">We’ll send you a secure verification code to sign in.</p>
+   <p id="accountPageMessage" class="account-login-message" role="status" aria-live="polite"></p>
+   <div id="accountPageSignedOut">
+    <form id="accountPageRequest" class="account-entry-form">
+     <label for="accountPageEmail">Email address</label>
+     <input id="accountPageEmail" type="email" autocomplete="email" placeholder="you@company.com" maxlength="254" required>
+     <button type="submit" id="accountPageSend" class="account-primary-button">Send verification code <span aria-hidden="true">→</span></button>
+    </form>
+    <form id="accountPageVerify" class="account-entry-form" hidden>
+     <label for="accountPageCode">Six digit verification code</label>
+     <input id="accountPageCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
+     <button type="submit" id="accountPageConfirm" class="account-primary-button">Verify and continue <span aria-hidden="true">→</span></button>
+     <button type="button" id="accountPageBack" class="account-secondary-button">Use another email</button>
+    </form>
+   </div>
+   <div id="accountPageSignedIn" hidden>
+    <p id="accountPageIdentity" class="account-signed-identity"></p>
+    <a id="accountPageWorkspace" href="/workspace/" class="account-primary-button">Open My Workspace <span aria-hidden="true">→</span></a>
+    <button type="button" id="accountPageLogout" class="account-secondary-button">Sign out</button>
+   </div>
+   <div class="account-trust-row"><div><span aria-hidden="true">♙</span>Passwordless<br>sign in</div><div><span aria-hidden="true">⬡</span>Private<br>workspace</div><div><span aria-hidden="true">✓</span>No password<br>required</div></div>
+  </article>
+ </div>
+ <div class="account-hero-right">
+  <div class="account-dashboard-art" aria-hidden="true"><div class="account-art-head">⬡ &nbsp; CVE<span>Harbor</span></div><div class="account-art-layout"><div class="account-art-nav"><i></i><i></i><i></i><i></i></div><div class="account-art-ring">✓</div><div class="account-art-stats"><div>Vulnerabilities<strong>247</strong><span class="account-art-spark">▂▄▃▆█</span></div><div>Environments<strong>12</strong><span class="account-art-spark">▁▃▂▄▆</span></div><div>Assets<strong>1,428</strong><span class="account-art-spark">▂▆▄▆█</span></div></div></div></div>
+  <article class="account-value-panel">
+   <p class="account-kicker">YOUR CVEHARBOR WORKSPACE</p>
+   <h2>Everything you need to stay ahead of vulnerabilities</h2>
+   <p>Get a complete view of your security posture, manage multiple customers, track remediation, and generate professional reports in a private workspace.</p>
+   <div class="account-feature-grid">
+    <div class="account-feature"><span aria-hidden="true">▤</span><div><h3>Private customer environments</h3><p>Create and manage customer environments with a complete asset inventory.</p></div></div>
+    <div class="account-feature"><span aria-hidden="true">◎</span><div><h3>Vulnerability tracking</h3><p>Review potential CVE matches and manage remediation statuses.</p></div></div>
+    <div class="account-feature"><span aria-hidden="true">▤</span><div><h3>Customer ready reports</h3><p>Generate professional PDF reports and export findings to CSV.</p></div></div>
+    <div class="account-feature"><span aria-hidden="true">✉</span><div><h3>Email report delivery</h3><p>Send customer security reports as PDF attachments to authorized recipients.</p></div></div>
+    <div class="account-feature"><span aria-hidden="true">⬡</span><div><h3>Software and plugin monitoring</h3><p>Track installed software, plugins and technologies across environments.</p></div></div>
+    <div class="account-feature"><span aria-hidden="true">♧</span><div><h3>Multiple customer management</h3><p>Keep customer records and remediation progress organized in one workspace.</p></div></div>
+   </div>
+  </article>
+ </div>
+ </section>
+ <section class="account-bottom-section" aria-label="Workspace advantages">
+  <p class="account-kicker">BUILT FOR SECURITY TEAMS</p><h2>A more proactive and organized approach to vulnerability management</h2>
+  <div class="account-benefit-cards">
+   <article><span aria-hidden="true">⬡</span><div><h3>Improve security posture</h3><p>Identify and prioritize vulnerabilities across the technologies you manage.</p></div></article>
+   <article><span aria-hidden="true">◷</span><div><h3>Save time</h3><p>Keep inventory, findings and reporting together in one place.</p></div></article>
+   <article><span aria-hidden="true">♧</span><div><h3>Built for MSPs and security teams</h3><p>Manage multiple customers and environments from one account.</p></div></article>
+   <article><span aria-hidden="true">▥</span><div><h3>Make better decisions</h3><p>Share clear findings and professional customer reports.</p></div></article>
+  </div>
+ </section>
 </main>
-<footer class="shell account-landing-footer"><a href="/">Back to CVEHarbor</a><p>Authentication uses the existing CVEHarbor Cloudflare account service.</p></footer>
-<script src="/account-page.js?v=account-navigation-1"></script>
-<script src="/command-center.js?v=home-sidebar-89"></script></body></html>
+<script src="/account-page.js?v=account-redesign-147"></script>
+<script src="/command-center.js?v=home-sidebar-89"></script>
+</body></html>
