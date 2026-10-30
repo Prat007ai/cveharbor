@@ -62428,51 +62428,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        "Windows",
-        "Windows 11 OS",
-        "Windows Server OS"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
-        },
-        {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.09813,
-      "epss_percentile": 0.95536,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2026-102870",
       "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
       "severity": "high",
@@ -62515,6 +62470,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00906,
       "epss_percentile": 0.59766,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+        },
+        {
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.09813,
+      "epss_percentile": 0.95536,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -157183,85 +157183,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T13:54:05Z",
-      "last_attempt": "2026-10-30T13:54:05Z",
+      "last_success": "2026-10-30T14:03:43Z",
+      "last_attempt": "2026-10-30T14:03:43Z",
       "items_processed": 258,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T13:54:05Z",
-      "last_attempt": "2026-10-30T13:54:05Z",
+      "last_success": "2026-10-30T14:03:43Z",
+      "last_attempt": "2026-10-30T14:03:43Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T13:54:05Z",
-      "last_attempt": "2026-10-30T13:54:05Z",
+      "last_success": "2026-10-30T14:03:43Z",
+      "last_attempt": "2026-10-30T14:03:43Z",
       "items_processed": 1779,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T13:54:05Z",
-      "last_attempt": "2026-10-30T13:54:05Z",
+      "last_success": "2026-10-30T14:03:43Z",
+      "last_attempt": "2026-10-30T14:03:43Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T13:54:05Z",
-      "last_attempt": "2026-10-30T13:54:05Z",
+      "last_success": "2026-10-30T14:03:43Z",
+      "last_attempt": "2026-10-30T14:03:43Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T13:54:05Z",
-      "last_attempt": "2026-10-30T13:54:05Z",
+      "last_success": "2026-10-30T14:03:43Z",
+      "last_attempt": "2026-10-30T14:03:43Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T13:54:05Z",
-      "last_attempt": "2026-10-30T13:54:05Z",
+      "last_success": "2026-10-30T14:03:43Z",
+      "last_attempt": "2026-10-30T14:03:43Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T13:54:05Z",
-      "last_attempt": "2026-10-30T13:54:05Z",
+      "last_success": "2026-10-30T14:03:43Z",
+      "last_attempt": "2026-10-30T14:03:43Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T13:54:05Z",
-      "last_attempt": "2026-10-30T13:54:05Z",
+      "last_success": "2026-10-30T14:03:43Z",
+      "last_attempt": "2026-10-30T14:03:43Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T13:54:05Z",
-      "last_attempt": "2026-10-30T13:54:05Z",
+      "last_success": "2026-10-30T14:03:43Z",
+      "last_attempt": "2026-10-30T14:03:43Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T13:54:05Z",
-      "last_attempt": "2026-10-30T13:54:05Z",
+      "last_success": "2026-10-30T14:03:43Z",
+      "last_attempt": "2026-10-30T14:03:43Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T13:54:05Z",
-      "last_attempt": "2026-10-30T13:54:05Z",
+      "last_success": "2026-10-30T14:03:43Z",
+      "last_attempt": "2026-10-30T14:03:43Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -157273,7 +157273,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T13:54:05Z",
-  "last_successful_update": "2026-10-30T13:54:05Z",
+  "last_checked_at": "2026-10-30T14:03:43Z",
+  "last_successful_update": "2026-10-30T14:03:43Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
