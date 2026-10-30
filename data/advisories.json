@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-30",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6118,
+  "candidate_records": 6137,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -4997,7 +4997,7 @@
       "cvss": "5.4",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T10:01:38Z",
-      "source_updated_at": "2026-10-30T09:17:15.640",
+      "source_updated_at": "2026-10-30T17:17:32.373",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -5918,7 +5918,7 @@
       "cvss": "6.6",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T15:27:22Z",
-      "source_updated_at": "2026-10-30T15:16:51.463",
+      "source_updated_at": "2026-10-30T17:13:54.187",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -5946,7 +5946,7 @@
       "cvss": "6.5",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T15:27:22Z",
-      "source_updated_at": "2026-10-30T16:17:56.053",
+      "source_updated_at": "2026-10-30T17:13:54.187",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -5974,7 +5974,7 @@
       "cvss": "7.5",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T15:27:22Z",
-      "source_updated_at": "2026-10-30T16:17:56.170",
+      "source_updated_at": "2026-10-30T17:13:54.187",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -6080,8 +6080,8 @@
       "title": "Malware in wrangler-deploy",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -6109,8 +6109,8 @@
       "title": "Malware in ourin-baileys",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -6138,8 +6138,8 @@
       "title": "Malware in apex-fetch",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -6167,8 +6167,8 @@
       "title": "Malware in grizzly-baileys",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -6196,6 +6196,7 @@
       "title": "Zuke is a code-first, strongly typed build automation system for Deno",
       "severity": "high",
       "categories": [
+        "JavaScript / TypeScript",
         "Windows"
       ],
       "published": "2026-10-30",
@@ -6215,7 +6216,7 @@
       "cvss": "7.0",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T16:57:29Z",
-      "source_updated_at": "2026-10-30T16:17:42.873",
+      "source_updated_at": "2026-10-30T17:13:54.187",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -6224,6 +6225,7 @@
       "title": "My Calendar WordPress plugin 3.8.8 before 3.8.11 contains a shortcode injection vulnerability that allows unauthenticated attackers to execute registered shortcodes via the mc",
       "severity": "medium",
       "categories": [
+        "PHP",
         "WordPress / Plugins"
       ],
       "published": "2026-10-30",
@@ -6300,6 +6302,92 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T16:57:29Z",
       "source_updated_at": "2026-10-30T16:17:55.170",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-367q-mf84-m8j3",
+      "title": "Malware in neuralwhatsapp",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: neuralwhatsapp (>= 0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-367q-mf84-m8j3"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:11:29Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119466",
+      "title": "Cross-Site Request Forgery (CSRF) vulnerability in WPExperts APIExperts Square for WooCommerce woosquare allows Cross Site Request Forgery.This issue affects APIExperts Square",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "Cross-Site Request Forgery (CSRF) vulnerability in WPExperts APIExperts Square for WooCommerce woosquare allows Cross Site Request Forgery.This issue affects APIExperts Square for WooCommerce: from n/a through 4.7.5.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119466"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:18:40.007",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61789",
+      "title": "DBHub is a database MCP server for Postgres, MySQL, SQL Server, Oracle, MariaDB, SQLite",
+      "severity": "medium",
+      "categories": [
+        "SQL Server",
+        "MySQL / MariaDB"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "DBHub is a database MCP server for Postgres, MySQL, SQL Server, Oracle, MariaDB, SQLite. Prior to 0.22.6, read-only SQL validation can be bypassed on the MySQL and MariaDB connectors. In `src/utils/sql-parser.ts`, `scanSingleLineComment` treats every double dash as a comment start, whereas MySQL and MariaDB require following whitespace, a control character, or the end of the line. The read-only check in `src/tools/execute-sql.ts` validates split statements with `isReadOnlySQL`, but `src/connectors/mysql/index.ts` and `src/connectors/mariadb/index.ts` execute the original string with `multipleStatements` enabled. A double dash followed by a non-whitespace character can therefore hide a subsequent write or destructive DDL statement from the validator while the database interprets the dashes as minus operators and executes both statements. Anyone able to influence the assistant's SQL, including through prompt injection in content the assistant reads, can bypass read-only mode to modify or drop database data, subject to the database account's privileges. PostgreSQL is not affected by this path because its double-dash parsing agrees with the checker and its connector executes individual split statements. This issue is fixed in version ",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61789"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:17:26.867",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -6870,7 +6958,7 @@
       "cvss": "5.9",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "2026-10-30T16:17:42.477",
+      "source_updated_at": "2026-10-30T17:07:53.700",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -6905,6 +6993,733 @@
       "first_seen_at": "2026-10-29T22:31:24Z",
       "source_updated_at": "",
       "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119115",
+      "title": "Incorrect authorization in the issuer resolution logic in AWS Private CA Connector for Kubernetes (aws-privateca-issuer) before v1.10.1 might allow an authenticated remote use",
+      "severity": "high",
+      "categories": [
+        "AWS",
+        "Docker / Kubernetes"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "Incorrect authorization in the issuer resolution logic in AWS Private CA Connector for Kubernetes (aws-privateca-issuer) before v1.10.1 might allow an authenticated remote user to obtain certificates, including subordinate CA certificates, signed by a cluster-scoped AWS Private CA issuer that their approval policy does not authorize. To remediate this issue, users should upgrade aws-privateca-issuer to version v1.10.1 or the AWS Private CA Connector for Kubernetes EKS add-on to version v1.10.1-eksbuild.1, and update any certificate requests, Certificate resources, or Ingress annotations whose issuerRef.kind is missing, incorrect, or does not match the referenced issuer, since v1.10.1 requires issuerRef.kind to be exactly AWSPCAIssuer or AWSPCAClusterIssuer and to match the issuer it references.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119115"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T17:46:45Z",
+      "source_updated_at": "2026-10-30T17:07:53.700",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118767",
+      "title": "Botan is a C++ cryptography library",
+      "severity": "medium",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "Botan is a C++ cryptography library. From 1.11.22 until 3.13.0, Botan's Python binding converted Python strings containing U+0000 to const char* values without consistently rejecting the embedded NUL, causing bcrypt and check_bcrypt to process only the prefix before the NUL. Applications could validate a longer password but hash a shorter effective value, allowing application password-policy bypass; scrypt and argon2 are unaffected. This issue is fixed in version 3.13.0.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118767"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T18:23:28Z",
+      "source_updated_at": "2026-10-30T17:17:15.877",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119193",
+      "title": "PHPUnit is a testing framework for PHP",
+      "severity": "medium",
+      "categories": [
+        "PHP",
+        "Windows"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "PHPUnit is a testing framework for PHP. From 13.4.0 until 13.4.4, the TestCase::coverageFilesDirectory() logic in src/Runner/Phpt/TestCase.php creates temporary files for PHPT code coverage in a predictable phpunit-phpt directory under sys_get_temp_dir() and reuses that directory without verifying its ownership or permissions. On multi-user systems with a shared temporary path, a local attacker who creates the directory before the developer runs PHPT tests with code coverage can replace the generated job file before the child process executes it with require, allowing arbitrary code execution with the developer's privileges while the test and coverage report appear successful. PHPUnit 12.5 and earlier, default macOS and Windows configurations with per-user temporary directories, and single-user environments where another user cannot create files in the temporary path are not affected. This issue is fixed in 13.4.4.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119193"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T20:55:56Z",
+      "source_updated_at": "2026-10-30T17:18:03.880",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119194",
+      "title": "pyasn1: pyasn1: Denial of Service via hash collisions in schemaless decoding",
+      "severity": "high",
+      "categories": [
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "pyasn1: pyasn1: Denial of Service via hash collisions in schemaless decoding",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119194"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-119194"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-29T20:55:56Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119195",
+      "title": "pyasn1: pyasn1: Denial of Service via quadratic processing of fragmented ASN.1 data",
+      "severity": "high",
+      "categories": [
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "pyasn1: pyasn1: Denial of Service via quadratic processing of fragmented ASN.1 data",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119195"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-119195"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-29T20:55:56Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119196",
+      "title": "pyasn1: pyasn1: Denial of Service via constructed bit string decoding",
+      "severity": "high",
+      "categories": [
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "pyasn1: pyasn1: Denial of Service via constructed bit string decoding",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119196"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-119196"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-29T20:55:56Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119197",
+      "title": "pyasn1 is a generic ASN.1 library for Python",
+      "severity": "high",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "pyasn1 is a generic ASN.1 library for Python. Prior to 0.6.5, binary REAL decoding builds a large mantissa one octet at a time by shifting a growing integer and slicing the remaining byte string. Attacker-controlled ASN.1 includes a binary-encoded REAL with a large mantissa and reaches BER, CER, or DER decode(), with or without a schema containing REAL. RealPayloadDecoder.valueDecoder repeatedly performs a left shift, OR, and suffix copy for every mantissa octet, making decode time quadratic in mantissa length. A comparatively small REAL value can hold a decoding worker on one CPU core for seconds or longer and cause availability loss. This issue is fixed in version 0.6.5.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119197"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T20:55:56Z",
+      "source_updated_at": "2026-10-30T17:18:03.880",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119198",
+      "title": "Nuxt is an open-source web development framework for Vue.js",
+      "severity": "medium",
+      "categories": [
+        "JavaScript / TypeScript",
+        "Node.js / npm"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "Nuxt is an open-source web development framework for Vue.js. From 4.6.0 until 4.6.3, a client with TCP access to an exposed Nuxt development server can send a nuxt:dev:client-error event over the HMR socket with an absolute file path at the end of its message. The development server reads that file while building the client error report and returns its contents through the error overlay, development error channel, and terminal report, bypassing Vite's server.fs allow list. The default localhost binding limits remote exposure, cross-origin browser requests are rejected, production builds and Nuxt 3 are not affected, and no browser interaction is required. This issue is fixed in version 4.6.3.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119198"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "2026-10-30T17:18:03.880",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119199",
+      "title": "Nuxt is an open-source web development framework for Vue.js",
+      "severity": "medium",
+      "categories": [
+        "JavaScript / TypeScript",
+        "Node.js / npm"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "Nuxt is an open-source web development framework for Vue.js. From 3.0.0 until 4.6.3, the Nuxt development server can expose the Nitro 2 development bundle at <buildDir>/dev/index.mjs through Vite file serving when the server is reachable over HTTP. Nitro inlines private runtimeConfig values resolved at build time into that bundle, including secrets configured in nuxt.config, and Nuxt 4.6.0 and later also inline the generated development appSecret. The default localhost binding limits remote exposure, production builds and Nitro 3 are not affected, and runtime configuration supplied only through NUXT_* environment variables at server startup is not inlined. This issue is fixed in version 4.6.3.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119199"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "2026-10-30T17:18:03.880",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119200",
+      "title": "Nuxt is an open-source web development framework for Vue.js",
+      "severity": "medium",
+      "categories": [
+        "Node.js / npm"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "Nuxt is an open-source web development framework for Vue.js. From 4.6.0 until 4.6.3, Nuxt resolves literal or percent-encoded dot segments before rendering a page while Nitro routing, server/middleware checks, and server route rules evaluate the unresolved path. A request such as /%2e/admin can therefore render app/pages/admin.vue and its server-rendered data while checks keyed to /admin, redirects, or per-route security headers do not apply. API handlers, appMiddleware, Nuxt 3, and Nuxt 4.0.0 through 4.5.x are not affected, and exploitation requires a client that sends dot segments without browser normalization. This issue is fixed in version 4.6.3.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119200"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "2026-10-30T17:18:03.880",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119201",
+      "title": "Nuxt is an open-source web development framework for Vue.js",
+      "severity": "medium",
+      "categories": [
+        "JavaScript / TypeScript",
+        "Node.js / npm"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "Nuxt is an open-source web development framework for Vue.js. From 4.6.0 until 4.6.3, nuxt dev stores a generated appSecret in <buildDir>/app-secret, by default .nuxt/app-secret, within a directory allowed by Vite's server.fs configuration. A client with direct HTTP access to an exposed development server can fetch the file, use deriveSecret() to compute derived secrets such as the default useSession password, and forge session cookies accepted by that development server. The default localhost binding limits remote exposure, cross-origin browser reads are blocked, production builds and development servers with an explicitly configured appSecret are not affected. This issue is fixed in version 4.6.3.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119201"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "2026-10-30T17:18:03.880",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119203",
+      "title": "pypdf: pypdf: Denial of Service via infinite loop on crafted incomplete PDF",
+      "severity": "medium",
+      "categories": [
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "pypdf: pypdf: Denial of Service via infinite loop on crafted incomplete PDF",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119203"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-119203"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119204",
+      "title": "pypdf: pypdf: Denial of Service via excessive memory consumption during PDF parsing",
+      "severity": "medium",
+      "categories": [
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "pypdf: pypdf: Denial of Service via excessive memory consumption during PDF parsing",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119204"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-119204"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119205",
+      "title": "pypdf: pypdf: Denial of Service via infinite loop during dictionary cloning",
+      "severity": "medium",
+      "categories": [
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "pypdf: pypdf: Denial of Service via infinite loop during dictionary cloning",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119205"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-119205"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119206",
+      "title": "pypdf: pypdf: Denial of Service via crafted PDF page labels",
+      "severity": "medium",
+      "categories": [
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "pypdf: pypdf: Denial of Service via crafted PDF page labels",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119206"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-119206"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119207",
+      "title": "pypdf: pypdf: Denial of Service via crafted invalid PDF dictionary",
+      "severity": "medium",
+      "categories": [
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "pypdf: pypdf: Denial of Service via crafted invalid PDF dictionary",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119207"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-119207"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119208",
+      "title": "pypdf: pypdf: Denial of Service via forged page count in encrypted PDFs",
+      "severity": "medium",
+      "categories": [
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "pypdf: pypdf: Denial of Service via forged page count in encrypted PDFs",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119208"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-119208"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119210",
+      "title": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases",
+      "severity": "medium",
+      "categories": [
+        "MySQL / MariaDB"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases. From 3.0.0 until 3.3.7, 3.4.5, and 3.5.11, the ClientMessage.validateLocalFileName() check used a regular expression that could match LOAD DATA LOCAL INFILE text inside quoted identifiers, string literals, or comments instead of requiring a real statement. A malicious or compromised server, or a machine-in-the-middle attacker, could return crafted database or table identifiers that the connector reused in metadata or updatable-result queries, then answer with a LOCAL INFILE request for a client file. With allowLocalInfile enabled, this caused the connector to stream any readable client-host file named by the crafted text, including through DatabaseMetaData.getImportedKeys(), DatabaseMetaData.getExportedKeys(), or ResultSet.updateRow() paths. This issue is fixed in versions 3.3.7, 3.4.5, and 3.5.11.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119210"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "2026-10-30T17:18:03.880",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119276",
+      "title": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases",
+      "severity": "medium",
+      "categories": [
+        "MySQL / MariaDB"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases. From 3.0.0 until 3.3.7, 3.4.5, and 3.5.11, when CLIENT_SESSION_TRACK was negotiated, the OkPacket.parse() and OkPacket.parseWithInfo() paths allocated byte arrays using server-declared lengths for the OK packet info field and session-state variable names and values before confirming that the bytes remained in the packet. A malicious or compromised server, or a machine-in-the-middle attacker, could send a small OK packet declaring a much larger length and repeatedly force attacker-controlled heap allocations before the subsequent copy failed. This could create garbage-collection pressure or an OutOfMemoryError in the client application. This issue is fixed in versions 3.3.7, 3.4.5, and 3.5.11.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119276"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "2026-10-30T17:18:03.880",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119277",
+      "title": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases",
+      "severity": "medium",
+      "categories": [
+        "MySQL / MariaDB"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases. From 3.0.0 until 3.3.7, 3.4.5, and 3.5.11, decoders for OK packet session-state blocks, column definition packets, text row data, or binary row data used server-declared lengths without confirming that the requested bytes remained in the receive buffer. The decoders could position reads, create sub-buffers, or decode strings beyond the packet boundary. A malicious or compromised server, or a machine-in-the-middle attacker, could trigger unchecked ArrayIndexOutOfBoundsException or IllegalArgumentException failures inside JDBC calls and terminate connection handling. This issue is fixed in versions 3.3.7, 3.4.5, and 3.5.11.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119277"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "2026-10-30T17:18:03.880",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119279",
+      "title": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases",
+      "severity": "medium",
+      "categories": [
+        "MySQL / MariaDB"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases. From 3.0.0 until 3.3.7, 3.4.5, and 3.5.10, the ReadableByteBuf.readLength() and ReadableByteBuf.readIntLengthEncodedNotNull() methods narrowed the protocol's unsigned 8-byte length-encoded integer to a Java int without checking that the value fit a non-negative integer. Values above Integer.MAX_VALUE could wrap to a negative or unrelated length that downstream allocation and read paths used. A malicious or compromised server, or a machine-in-the-middle attacker, could trigger NegativeArraySizeException, out-of-bounds failures, or oversized allocation behavior in client connection handling. This issue is fixed in versions 3.3.7, 3.4.5, and 3.5.10.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119279"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "2026-10-30T17:18:03.880",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119280",
+      "title": "org.mariadb.jdbc/mariadb-java-client: MariaDB Connector/J: Denial of Service via unvalidated lengths during XA recovery",
+      "severity": "low",
+      "categories": [
+        "Linux",
+        "MySQL / MariaDB"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "org.mariadb.jdbc/mariadb-java-client: MariaDB Connector/J: Denial of Service via unvalidated lengths during XA recovery",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119280"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-119280"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "3.7",
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119281",
+      "title": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases",
+      "severity": "medium",
+      "categories": [
+        "MySQL / MariaDB"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases. From 3.0.0 until 3.3.7, 3.4.5, and 3.5.11, the connector assumed result bytes were UTF-8 but guarded only changes to character_set_client. It did not reject non-UTF-8 character_set_results changes and relied on the server's global session_track_system_variables configuration to report character-set changes. A malicious or compromised server, or a machine-in-the-middle attacker, could suppress tracking or change the result charset so application strings differed from the returned bytes, potentially defeating application-side validation or escaping that depended on the decoded values. This issue is fixed in versions 3.3.7, 3.4.5, and 3.5.11.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119281"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "2026-10-30T17:18:03.880",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61671",
+      "title": "WeGIA is a web manager for charitable institutions",
+      "severity": "high",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-10-30",
+      "summary": "WeGIA is a web manager for charitable institutions. Prior to the advisory's stated patched version 3.8.7, the `/controle/control.php` dispatch endpoint accepts attacker-controlled `nomeClasse`, `metodo`, and record identifier parameters through `extract($_REQUEST)`, including id, `idatendido`, `idInterno`, and `id_funcionario`, while the affected Controle CRUD methods do not verify record ownership. Any authenticated user can view, modify, or delete another user's records, exposing CPF, RG, addresses, medical records, financial data, and employee records. `AtendidoControle` lacks ownership checks on alterar, excluir, `listarUm`, `alterarInfPessoal`, `alterarDocumentacao`, `alterarImagem`, `alterarEndereco`, and `alterarStatus`; `InternoControle` lacks them on incluir, alterar, excluir, `listarUm`, `listarTodos`, and `listarCpf`. `FuncionarioControle` lacks ownership checks on `alterarInfPessoal`, `alterarEndereco`, `alterarDocumentacao`, `alterarImagem`, `alterarCargaHoraria`, and excluir; `VoluntarioControle` lacks them on `alterarInfPessoal`, `alterarEndereco`, `alterarDetalhes`, `alterarImagem`, and excluir. `AtendidoControle` and `InternoControle` additionally lack CSRF validation, allowing a malicious page visited by an authe",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61671"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-29T22:31:24Z",
+      "source_updated_at": "2026-10-30T17:17:26.620",
+      "source_type": "nvd",
       "known_exploited": false
     },
     {
@@ -12515,63 +13330,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-119115",
-      "title": "Incorrect authorization in the issuer resolution logic in AWS Private CA Connector for Kubernetes (aws-privateca-issuer) before v1.10.1 might allow an authenticated remote use",
-      "severity": "high",
-      "categories": [
-        "AWS",
-        "Docker / Kubernetes"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "Incorrect authorization in the issuer resolution logic in AWS Private CA Connector for Kubernetes (aws-privateca-issuer) before v1.10.1 might allow an authenticated remote user to obtain certificates, including subordinate CA certificates, signed by a cluster-scoped AWS Private CA issuer that their approval policy does not authorize. To remediate this issue, users should upgrade aws-privateca-issuer to version v1.10.1 or the AWS Private CA Connector for Kubernetes EKS add-on to version v1.10.1-eksbuild.1, and update any certificate requests, Certificate resources, or Ingress annotations whose issuerRef.kind is missing, incorrect, or does not match the referenced issuer, since v1.10.1 requires issuerRef.kind to be exactly AWSPCAIssuer or AWSPCAClusterIssuer and to match the issuer it references.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119115"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T17:46:45Z",
-      "source_updated_at": "2026-10-29T17:18:07.667",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-118767",
-      "title": "Botan is a C++ cryptography library",
-      "severity": "medium",
-      "categories": [
-        "Python / PyPI"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "Botan is a C++ cryptography library. From 1.11.22 until 3.13.0, Botan's Python binding converted Python strings containing U+0000 to const char* values without consistently rejecting the embedded NUL, causing bcrypt and check_bcrypt to process only the prefix before the NUL. Applications could validate a longer password but hash a shorter effective value, allowing application password-policy bypass; scrypt and argon2 are unaffected. This issue is fixed in version 3.13.0.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118767"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T18:23:28Z",
-      "source_updated_at": "2026-10-29T18:17:28.853",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-51851",
       "title": "modelscope agent-zero 1.7, 1.8, 1.9, and 1.10 is vulnerable to Directory Traversal in python...",
       "severity": "bulletin",
@@ -12672,162 +13430,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-119193",
-      "title": "PHPUnit is a testing framework for PHP",
-      "severity": "medium",
-      "categories": [
-        "PHP",
-        "Windows"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "PHPUnit is a testing framework for PHP. From 13.4.0 until 13.4.4, the TestCase::coverageFilesDirectory() logic in src/Runner/Phpt/TestCase.php creates temporary files for PHPT code coverage in a predictable phpunit-phpt directory under sys_get_temp_dir() and reuses that directory without verifying its ownership or permissions. On multi-user systems with a shared temporary path, a local attacker who creates the directory before the developer runs PHPT tests with code coverage can replace the generated job file before the child process executes it with require, allowing arbitrary code execution with the developer's privileges while the test and coverage report appear successful. PHPUnit 12.5 and earlier, default macOS and Windows configurations with per-user temporary directories, and single-user environments where another user cannot create files in the temporary path are not affected. This issue is fixed in 13.4.4.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119193"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T20:55:56Z",
-      "source_updated_at": "2026-10-29T20:17:30.340",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119194",
-      "title": "pyasn1: pyasn1: Denial of Service via hash collisions in schemaless decoding",
-      "severity": "high",
-      "categories": [
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "pyasn1: pyasn1: Denial of Service via hash collisions in schemaless decoding",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119194"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119194"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-29T20:55:56Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119195",
-      "title": "pyasn1: pyasn1: Denial of Service via quadratic processing of fragmented ASN.1 data",
-      "severity": "high",
-      "categories": [
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "pyasn1: pyasn1: Denial of Service via quadratic processing of fragmented ASN.1 data",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119195"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119195"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-29T20:55:56Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119196",
-      "title": "pyasn1: pyasn1: Denial of Service via constructed bit string decoding",
-      "severity": "high",
-      "categories": [
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "pyasn1: pyasn1: Denial of Service via constructed bit string decoding",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119196"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119196"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-29T20:55:56Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119197",
-      "title": "pyasn1 is a generic ASN.1 library for Python",
-      "severity": "high",
-      "categories": [
-        "Python / PyPI"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "pyasn1 is a generic ASN.1 library for Python. Prior to 0.6.5, binary REAL decoding builds a large mantissa one octet at a time by shifting a growing integer and slicing the remaining byte string. Attacker-controlled ASN.1 includes a binary-encoded REAL with a large mantissa and reaches BER, CER, or DER decode(), with or without a schema containing REAL. RealPayloadDecoder.valueDecoder repeatedly performs a left shift, OR, and suffix copy for every mantissa octet, making decode time quadratic in mantissa length. A comparatively small REAL value can hold a decoding worker on one CPU core for seconds or longer and cause availability loss. This issue is fixed in version 0.6.5.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119197"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T20:55:56Z",
-      "source_updated_at": "2026-10-29T20:17:30.907",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-51831",
       "title": "An issue in IDrive IDrive Backup for Windows Version 7.0.1.1 and below affected, remediated in...",
       "severity": "bulletin",
@@ -12905,492 +13507,6 @@
       "first_seen_at": "2026-10-29T20:55:56Z",
       "source_updated_at": "2026-10-29T21:31:36Z",
       "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119198",
-      "title": "Nuxt is an open-source web development framework for Vue.js",
-      "severity": "medium",
-      "categories": [
-        "JavaScript / TypeScript",
-        "Node.js / npm"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "Nuxt is an open-source web development framework for Vue.js. From 4.6.0 until 4.6.3, a client with TCP access to an exposed Nuxt development server can send a nuxt:dev:client-error event over the HMR socket with an absolute file path at the end of its message. The development server reads that file while building the client error report and returns its contents through the error overlay, development error channel, and terminal report, bypassing Vite's server.fs allow list. The default localhost binding limits remote exposure, cross-origin browser requests are rejected, production builds and Nuxt 3 are not affected, and no browser interaction is required. This issue is fixed in version 4.6.3.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119198"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "2026-10-29T21:17:18.653",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119199",
-      "title": "Nuxt is an open-source web development framework for Vue.js",
-      "severity": "medium",
-      "categories": [
-        "JavaScript / TypeScript",
-        "Node.js / npm"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "Nuxt is an open-source web development framework for Vue.js. From 3.0.0 until 4.6.3, the Nuxt development server can expose the Nitro 2 development bundle at <buildDir>/dev/index.mjs through Vite file serving when the server is reachable over HTTP. Nitro inlines private runtimeConfig values resolved at build time into that bundle, including secrets configured in nuxt.config, and Nuxt 4.6.0 and later also inline the generated development appSecret. The default localhost binding limits remote exposure, production builds and Nitro 3 are not affected, and runtime configuration supplied only through NUXT_* environment variables at server startup is not inlined. This issue is fixed in version 4.6.3.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119199"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "2026-10-29T21:17:18.797",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119200",
-      "title": "Nuxt is an open-source web development framework for Vue.js",
-      "severity": "medium",
-      "categories": [
-        "Node.js / npm"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "Nuxt is an open-source web development framework for Vue.js. From 4.6.0 until 4.6.3, Nuxt resolves literal or percent-encoded dot segments before rendering a page while Nitro routing, server/middleware checks, and server route rules evaluate the unresolved path. A request such as /%2e/admin can therefore render app/pages/admin.vue and its server-rendered data while checks keyed to /admin, redirects, or per-route security headers do not apply. API handlers, appMiddleware, Nuxt 3, and Nuxt 4.0.0 through 4.5.x are not affected, and exploitation requires a client that sends dot segments without browser normalization. This issue is fixed in version 4.6.3.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119200"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "2026-10-29T21:17:18.943",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119201",
-      "title": "Nuxt is an open-source web development framework for Vue.js",
-      "severity": "medium",
-      "categories": [
-        "JavaScript / TypeScript",
-        "Node.js / npm"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "Nuxt is an open-source web development framework for Vue.js. From 4.6.0 until 4.6.3, nuxt dev stores a generated appSecret in <buildDir>/app-secret, by default .nuxt/app-secret, within a directory allowed by Vite's server.fs configuration. A client with direct HTTP access to an exposed development server can fetch the file, use deriveSecret() to compute derived secrets such as the default useSession password, and forge session cookies accepted by that development server. The default localhost binding limits remote exposure, cross-origin browser reads are blocked, production builds and development servers with an explicitly configured appSecret are not affected. This issue is fixed in version 4.6.3.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119201"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "2026-10-29T21:17:19.077",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119203",
-      "title": "pypdf: pypdf: Denial of Service via infinite loop on crafted incomplete PDF",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "pypdf: pypdf: Denial of Service via infinite loop on crafted incomplete PDF",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119203"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119203"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119204",
-      "title": "pypdf: pypdf: Denial of Service via excessive memory consumption during PDF parsing",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "pypdf: pypdf: Denial of Service via excessive memory consumption during PDF parsing",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119204"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119204"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119205",
-      "title": "pypdf: pypdf: Denial of Service via infinite loop during dictionary cloning",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "pypdf: pypdf: Denial of Service via infinite loop during dictionary cloning",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119205"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119205"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119206",
-      "title": "pypdf: pypdf: Denial of Service via crafted PDF page labels",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "pypdf: pypdf: Denial of Service via crafted PDF page labels",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119206"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119206"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119207",
-      "title": "pypdf: pypdf: Denial of Service via crafted invalid PDF dictionary",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "pypdf: pypdf: Denial of Service via crafted invalid PDF dictionary",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119207"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119207"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119208",
-      "title": "pypdf: pypdf: Denial of Service via forged page count in encrypted PDFs",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "pypdf: pypdf: Denial of Service via forged page count in encrypted PDFs",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119208"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119208"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119210",
-      "title": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases",
-      "severity": "medium",
-      "categories": [
-        "MySQL / MariaDB"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases. From 3.0.0 until 3.3.7, 3.4.5, and 3.5.11, the ClientMessage.validateLocalFileName() check used a regular expression that could match LOAD DATA LOCAL INFILE text inside quoted identifiers, string literals, or comments instead of requiring a real statement. A malicious or compromised server, or a machine-in-the-middle attacker, could return crafted database or table identifiers that the connector reused in metadata or updatable-result queries, then answer with a LOCAL INFILE request for a client file. With allowLocalInfile enabled, this caused the connector to stream any readable client-host file named by the crafted text, including through DatabaseMetaData.getImportedKeys(), DatabaseMetaData.getExportedKeys(), or ResultSet.updateRow() paths. This issue is fixed in versions 3.3.7, 3.4.5, and 3.5.11.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119210"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "2026-10-29T21:17:20.403",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119276",
-      "title": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases",
-      "severity": "medium",
-      "categories": [
-        "MySQL / MariaDB"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases. From 3.0.0 until 3.3.7, 3.4.5, and 3.5.11, when CLIENT_SESSION_TRACK was negotiated, the OkPacket.parse() and OkPacket.parseWithInfo() paths allocated byte arrays using server-declared lengths for the OK packet info field and session-state variable names and values before confirming that the bytes remained in the packet. A malicious or compromised server, or a machine-in-the-middle attacker, could send a small OK packet declaring a much larger length and repeatedly force attacker-controlled heap allocations before the subsequent copy failed. This could create garbage-collection pressure or an OutOfMemoryError in the client application. This issue is fixed in versions 3.3.7, 3.4.5, and 3.5.11.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119276"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "2026-10-29T21:17:20.907",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119277",
-      "title": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases",
-      "severity": "medium",
-      "categories": [
-        "MySQL / MariaDB"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases. From 3.0.0 until 3.3.7, 3.4.5, and 3.5.11, decoders for OK packet session-state blocks, column definition packets, text row data, or binary row data used server-declared lengths without confirming that the requested bytes remained in the receive buffer. The decoders could position reads, create sub-buffers, or decode strings beyond the packet boundary. A malicious or compromised server, or a machine-in-the-middle attacker, could trigger unchecked ArrayIndexOutOfBoundsException or IllegalArgumentException failures inside JDBC calls and terminate connection handling. This issue is fixed in versions 3.3.7, 3.4.5, and 3.5.11.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119277"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "2026-10-29T21:17:21.067",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119279",
-      "title": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases",
-      "severity": "medium",
-      "categories": [
-        "MySQL / MariaDB"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases. From 3.0.0 until 3.3.7, 3.4.5, and 3.5.10, the ReadableByteBuf.readLength() and ReadableByteBuf.readIntLengthEncodedNotNull() methods narrowed the protocol's unsigned 8-byte length-encoded integer to a Java int without checking that the value fit a non-negative integer. Values above Integer.MAX_VALUE could wrap to a negative or unrelated length that downstream allocation and read paths used. A malicious or compromised server, or a machine-in-the-middle attacker, could trigger NegativeArraySizeException, out-of-bounds failures, or oversized allocation behavior in client connection handling. This issue is fixed in versions 3.3.7, 3.4.5, and 3.5.10.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119279"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "2026-10-29T21:17:21.387",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119280",
-      "title": "org.mariadb.jdbc/mariadb-java-client: MariaDB Connector/J: Denial of Service via unvalidated lengths during XA recovery",
-      "severity": "low",
-      "categories": [
-        "Linux",
-        "MySQL / MariaDB"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "org.mariadb.jdbc/mariadb-java-client: MariaDB Connector/J: Denial of Service via unvalidated lengths during XA recovery",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119280"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119280"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "3.7",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119281",
-      "title": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases",
-      "severity": "medium",
-      "categories": [
-        "MySQL / MariaDB"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "MariaDB Connector/J is used to connect applications developed in Java to MariaDB and MySQL databases. From 3.0.0 until 3.3.7, 3.4.5, and 3.5.11, the connector assumed result bytes were UTF-8 but guarded only changes to character_set_client. It did not reject non-UTF-8 character_set_results changes and relied on the server's global session_track_system_variables configuration to report character-set changes. A malicious or compromised server, or a machine-in-the-middle attacker, could suppress tracking or change the result charset so application strings differed from the returned bytes, potentially defeating application-side validation or escaping that depended on the decoded values. This issue is fixed in versions 3.3.7, 3.4.5, and 3.5.11.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119281"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "2026-10-29T21:17:21.710",
-      "source_type": "nvd",
       "known_exploited": false
     },
     {
@@ -13576,34 +13692,6 @@
       "first_seen_at": "2026-10-29T22:31:24Z",
       "source_updated_at": "2026-10-29T22:14:17Z",
       "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-61671",
-      "title": "WeGIA is a web manager for charitable institutions",
-      "severity": "high",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "WeGIA is a web manager for charitable institutions. Prior to the advisory's stated patched version 3.8.7, the `/controle/control.php` dispatch endpoint accepts attacker-controlled `nomeClasse`, `metodo`, and record identifier parameters through `extract($_REQUEST)`, including id, `idatendido`, `idInterno`, and `id_funcionario`, while the affected Controle CRUD methods do not verify record ownership. Any authenticated user can view, modify, or delete another user's records, exposing CPF, RG, addresses, medical records, financial data, and employee records. `AtendidoControle` lacks ownership checks on alterar, excluir, `listarUm`, `alterarInfPessoal`, `alterarDocumentacao`, `alterarImagem`, `alterarEndereco`, and `alterarStatus`; `InternoControle` lacks them on incluir, alterar, excluir, `listarUm`, `listarTodos`, and `listarCpf`. `FuncionarioControle` lacks ownership checks on `alterarInfPessoal`, `alterarEndereco`, `alterarDocumentacao`, `alterarImagem`, `alterarCargaHoraria`, and excluir; `VoluntarioControle` lacks them on `alterarInfPessoal`, `alterarEndereco`, `alterarDetalhes`, `alterarImagem`, and excluir. `AtendidoControle` and `InternoControle` additionally lack CSRF validation, allowing a malicious page visited by an authe",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61671"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T22:31:24Z",
-      "source_updated_at": "2026-10-29T22:17:05.407",
-      "source_type": "nvd",
       "known_exploited": false
     },
     {
@@ -51866,6 +51954,34 @@
       "epss_as_of": "2026-10-30"
     },
     {
+      "id": "CVE-2026-87941",
+      "title": "Vulnerability in Drupal Patreon",
+      "severity": "medium",
+      "categories": [
+        "Drupal / CMS"
+      ],
+      "published": "2026-10-22",
+      "updated": "2026-10-30",
+      "summary": "Vulnerability in Drupal Patreon. This issue affects Patreon versions: 7.x.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-87941"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:17:30.667",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "GHSA-9j83-qj34-g5vc",
       "title": "Malware in @factiii/runner",
       "severity": "bulletin",
@@ -54412,6 +54528,102 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T16:57:29Z",
       "source_updated_at": "2026-10-30T16:17:38.947",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-96636",
+      "title": "Pillow is a Python imaging library",
+      "severity": "medium",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-30",
+      "summary": "Pillow is a Python imaging library. Prior to 13.0.0, MpoImageFile.seek() and DcxImageFile.seek() reparse later MPO or DCX frames and replace self._size without rerunning Image._decompression_bomb_check(). A crafted multi-frame image can use a tiny first frame to pass Image.open() and then declare an over-limit later frame. Normal frame iteration through seek(), load(), or ImageSequence.Iterator can decode that frame and commit hundreds of megabytes or more, causing memory-exhaustion denial of service. This issue is fixed in version 13.0.0.",
+      "affected": "Products identified in NVD configurations: python pillow",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96636"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/python-pillow/Pillow/security/advisories/GHSA-p8hx-v2p6-rp84"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:17:32.103",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-96642",
+      "title": "Pillow is a Python imaging library",
+      "severity": "high",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-30",
+      "summary": "Pillow is a Python imaging library. Prior to 13.0.0, the TarIO initializer in src/PIL/TarIO.py accepts a negative octal member size and computes a backward seek that returns to the same 512-byte header. When the requested member name does not match, the parser repeatedly reads that header, consumes a full CPU core, and never returns. TarIO is reached only when an application directly uses PIL.TarIO.TarIO rather than the default Image.open() path. This issue is fixed in version 13.0.0.",
+      "affected": "Products identified in NVD configurations: python pillow",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96642"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/python-pillow/Pillow/security/advisories/GHSA-3j72-p6qg-6xp7"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:17:32.240",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-114501",
+      "title": "Pillow is a Python imaging library",
+      "severity": "medium",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-30",
+      "summary": "Pillow is a Python imaging library. From 11.2.1 until 13.0.0, Arrow export assumes that an image's rows are tightly contiguous and exports from im->blocks[0].ptr even when PILLOW_ALIGNMENT makes aligned_linesize include row padding or an aligned offset before the first row. The resulting Arrow buffer can include uninitialized padding, bytes preceding the first row, or stale heap contents from previously freed images. Applications that configure alignment and export images to Arrow can therefore disclose one user's pixels or other process memory to another user. This issue is fixed in version 13.0.0.",
+      "affected": "Products identified in NVD configurations: python pillow",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-114501"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/python-pillow/Pillow/security/advisories/GHSA-654x-cwwv-5j9c"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:17:14.473",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -118556,538 +118768,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-68833",
-      "title": "CVE-2026-68833 Windows NTFS Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Heap-based buffer overflow in Windows NTFS allows an unauthorized attacker to execute code with a physical attack.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-68833"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-68835",
-      "title": "CVE-2026-68835 Windows Print Spooler Components Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Windows Print Spooler Components allows an authorized attacker to elevate privileges over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-68835"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-68847",
-      "title": "CVE-2026-68847 Connected User Experiences and Telemetry Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Windows Connected User Experiences and Telemetry allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-68847"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-68849",
-      "title": "CVE-2026-68849 Windows Bluetooth Port Driver Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Out-of-bounds read in Windows Bluetooth Port Driver allows an authorized attacker to disclose information locally.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-68849"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-68845",
-      "title": "CVE-2026-68845 Windows Program Compatibility Assistant Service Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Heap-based buffer overflow in Windows Program Compatibility Assistant Service allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-68845"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-68846",
-      "title": "CVE-2026-68846 Windows Kernel Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Windows Kernel allows an authorized attacker to elevate privileges over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-68846"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-68851",
-      "title": "CVE-2026-68851 Windows NTFS Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Buffer over-read in Windows NTFS allows an authorized attacker to disclose information locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-68851"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-68884",
-      "title": "CVE-2026-68884 Windows Kernel Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Heap-based buffer overflow in Windows Kernel allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-68884"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-68893",
-      "title": "CVE-2026-68893 Remote Desktop Licensing Service Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Windows Remote Desktop Licensing Service allows an authorized attacker to elevate privileges over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-68893"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69279",
-      "title": "CVE-2026-69279 Windows Cloud Files Mini Filter Driver Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Use after free in Windows Cloud Files Mini Filter Driver allows an authorized attacker to elevate privileges locally.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69279"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69296",
-      "title": "CVE-2026-69296 Windows Device Association Service Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Windows Device Association Service allows an authorized attacker to elevate privileges over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69296"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69310",
-      "title": "CVE-2026-69310 Windows DNS Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Windows DNS allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69310"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69333",
-      "title": "CVE-2026-69333 Windows Win32k Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Windows Win32K allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69333"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69339",
-      "title": "CVE-2026-69339 Windows MIDI Service Module Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Exposure of sensitive system information to an unauthorized control sphere in Windows MIDI Service Module allows an authorized attacker to disclose information locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69339"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69347",
-      "title": "CVE-2026-69347 Windows Fast FAT Driver Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Heap-based buffer overflow in Windows Fast FAT Driver allows an unauthorized attacker to execute code locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69347"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69377",
-      "title": "CVE-2026-69377 Windows Modern Device Management (MDM) Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Missing authorization in Windows Modern Device Management (MDM) allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69377"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69349",
-      "title": "CVE-2026-69349 Windows Management Instrumentation Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Use of uninitialized resource in Windows Management Instrumentation allows an authorized attacker to disclose information over a network.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69349"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69362",
-      "title": "CVE-2026-69362 Windows Error Reporting Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "Use after free in Windows Error Reporting allows an authorized attacker to elevate privileges locally.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69362"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69389",
-      "title": "CVE-2026-69389 Windows Storage Management Provider Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Heap-based buffer overflow in Windows Storage Management Provider allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69389"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-86422",
       "title": "ImageMagick before 7.1.2-30 contains a time-of-check-time-of-use vulnerability in path policy enforcement on Windows that allows attackers to bypass read or write restrictions",
       "severity": "low",
@@ -120692,6 +120372,47 @@
       "first_seen_at": "2026-10-30T13:28:25Z",
       "source_updated_at": "2026-10-30T13:20:07.533",
       "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-54606",
+      "title": "SunEditor Embed Plugin has DOM XSS via External Script Element After Iframe Embed",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-08-26",
+      "updated": "2026-10-30",
+      "summary": "Summary A DOM-based Cross-Site Scripting (XSS) vulnerability exists in the SunEditor Embed plugin. Crafted iframe embed HTML followed by an external <script src=...> element bypasses the plugin’s sanitization logic. The plugin recreates and appends the attacker-controlled script element to the live DOM, causing JavaScript execution in the context of the editor page. If an application stores or reflects SunEditor content without additional backend sanitization, this can lead to stored or reflected XSS when another user opens, previews, renders, or edits the malicious content. Details The Embed plugin parses raw embed HTML and processes the resulting DOM nodes. When a <script> element is included after a valid iframe, the plugin creates a new script element using the attacker-controlled src value and appends it to the DOM. Relevant behavior: const embedDOM = new DOMParser().parseFromString(src, 'text/html').body.children; if (/^script$/i.test(chd.nodeName)) { scriptTag = dom.utils.createElement('script', { src: chd.getAttribute('src'), async: 'true' }, null); continue; } cover.appendChild(scriptTag); Because the script is newly created and appended, it executes. PoC Start a local server hosting a JavaScript payload: ``` mkdir -p /tmp/suneditor-poc cd /tmp/suneditor-poc cat > poc.js",
+      "affected": "npm: suneditor (>= 3.0.0, <= 3.1.3)",
+      "remediation": "suneditor: 3.1.4",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-w93q-cq9w-58p7"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/JiHong88/suneditor/security/advisories/GHSA-w93q-cq9w-58p7"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/JiHong88/suneditor/issues/1649"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/JiHong88/suneditor/commit/9d43a5e082101d2d6475cba86e0d58d7c2cf6677"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T16:58:55Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -127133,7 +126854,7 @@
     {
       "id": "CVE-2026-63962",
       "title": "In the Linux kernel, the following vulnerability has been resolved: usb: typec: tcpm: bound altmode_desc[] per iteration in svdm_consume_modes() svdm_consume_modes() checks pm",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "Linux",
         "React / Next.js"
@@ -127141,7 +126862,7 @@
       "published": "2026-07-19",
       "updated": "2026-10-30",
       "summary": "In the Linux kernel, the following vulnerability has been resolved: usb: typec: tcpm: bound altmode_desc[] per iteration in svdm_consume_modes() svdm_consume_modes() checks pmdata->altmodes against the array size once before the loop over the count, but forgot to check the bound at every point in the loop. In the well-behaved SVDM discovery flow this is harmless because each of at most SVID_DISCOVERY_MAX SVIDs contributes at most MODE_DISCOVERY_MAX modes, exactly filling altmode_desc[ALTMODE_DISCOVERY_MAX]. But the CMDT_RSP_ACK handler in tcpm_pd_svdm() does not correlate an incoming ACK with any request the port actually sent. Once port->partner is set, an unsolicited Discover Modes ACK is consumed unconditionally. A broken or malicious port partner can therefore drive altmodes to ALTMODE_DISCOVERY_MAX - 1 via the normal flow, and then send one extra Discover Modes ACK with seven VDOs. Because the pre-loop check passes, the loop could then writes up to five entries past altmode_desc[]. For mode_data_prime the next field in struct tcpm_port is the partner_altmode[] pointer array, which then receives partner-chosen SVID/VDO bytes. Move the bound check inside the loop so the array can never be indexed past ALTMODE_DISCOVERY_MAX rega",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
       "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
       "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
       "sources": [
@@ -127152,24 +126873,24 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "5.5",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T13:28:25Z",
-      "source_updated_at": "2026-10-30T13:19:23.560",
+      "source_updated_at": "2026-10-30T17:34:40.657",
       "source_type": "nvd",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-63963",
       "title": "In the Linux kernel, the following vulnerability has been resolved: usb: typec: tcpm: validate VDO count in Discover Identity ACK handlers Properly validate the count passed f",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "Linux"
       ],
       "published": "2026-07-19",
       "updated": "2026-10-30",
       "summary": "In the Linux kernel, the following vulnerability has been resolved: usb: typec: tcpm: validate VDO count in Discover Identity ACK handlers Properly validate the count passed from a device when calling svdm_consume_identity() or svdm_consume_identity_sop_prime() as the device-controlled value could index off of the static arrays, which could leak data.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
       "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
       "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
       "sources": [
@@ -127180,10 +126901,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "5.5",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T13:28:25Z",
-      "source_updated_at": "2026-10-30T13:19:23.720",
+      "source_updated_at": "2026-10-30T17:39:30.497",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -128842,6 +128563,315 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T15:03:57Z",
       "source_updated_at": "2026-10-30T14:57:03.330",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63912",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: xfrm: esp: restore combined single-frag length gate The ESP out-of-place fast path appends the trailer in e",
+      "severity": "critical",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: xfrm: esp: restore combined single-frag length gate The ESP out-of-place fast path appends the trailer in esp_output_head() before esp_output_tail() allocates the destination page frag. The head-side gate currently checks skb->data_len and tailen separately, but the tail code allocates a single destination frag from the combined post-trailer skb->data_len. Reject the page-frag fast path when the combined aligned length exceeds a page. Otherwise skb_page_frag_refill() may fall back to a single page while the destination sg still spans the combined skb->data_len. Restore this combined-length page gate for both IPv4 and IPv6.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63912"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:56:10.920",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63913",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: netfilter: conntrack: tcp: do not force CLOSE on invalid-seq RST without direction check An unintended beha",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: netfilter: conntrack: tcp: do not force CLOSE on invalid-seq RST without direction check An unintended behavior in the TCP conntrack state machine allows a connection to be forced into the CLOSE state using an RST packet with an invalid sequence number. Specifically, after a SYN packet is observed, an RST with an invalid SEQ can transition the conntrack entry to TCP_CONNTRACK_CLOSE, regardless of whether the RST corresponds to the expected reply direction. The relevant code path assumes the RST is a response to an outgoing SYN, but does not validate packet direction or ensure that a matching SYN was actually sent in the opposite direction. As a result, a crafted packet sequence consisting of a SYN followed by an invalid-sequence RST can prematurely terminate an active NAT entry. This makes connection teardown easier than intended. So, tighten the state transition logic to ensure that RST-triggered CLOSE transitions only occur when the RST is a valid response to a previously observed SYN in the correct direction.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63913"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:55:50.950",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63914",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: xfrm: route MIGRATE notifications to caller's netns xfrm_send_migrate() in net/xfrm/xfrm_user.c and pfkey_s",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: xfrm: route MIGRATE notifications to caller's netns xfrm_send_migrate() in net/xfrm/xfrm_user.c and pfkey_send_migrate() in net/key/af_key.c both hardcode &init_net for the multicast that announces a successful XFRM_MSG_MIGRATE / SADB_X_MIGRATE. XFRM_MSG_MIGRATE arrives on a per-netns NETLINK_XFRM socket, and the rest of the xfrm/af_key netlink path was made netns-aware in 2008. The other 14 multicast paths in xfrm_user.c route their event using xs_net(x), xp_net(xp) or sock_net(skb->sk); only the migrate path was missed. Two consequences of the init_net hardcoding: 1. The notification (selector, old/new endpoint addresses, and the km_address) is delivered to listeners on init_net's XFRMNLGRP_MIGRATE / pfkey BROADCAST_ALL groups rather than on the issuing netns. An IKE daemon running in init_net therefore receives migration notifications originating from any other netns on the host. 2. An IKE daemon running inside a non-init netns and subscribed to its own XFRMNLGRP_MIGRATE / pfkey groups never receives the notification of its own migration. IKEv2 MOBIKE / address-update handling inside a netns is silently broken. Thread struct net through km_migrate() and the xfr",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63914"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:47:30.490",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63915",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: nfc: hci: fix out-of-bounds read in HCP header parsing Both nfc_hci_recv_from_llc() and nci_hci_data_receiv",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: nfc: hci: fix out-of-bounds read in HCP header parsing Both nfc_hci_recv_from_llc() and nci_hci_data_received_cb() read packet->header from skb->data at function entry without first checking that the buffer holds at least one byte. A malicious NFC peer can send a 0-byte HCP frame that passes through the SHDLC layer and reaches these functions, causing an out-of-bounds heap read of packet->header. The same 0-byte frame, if queued as a non-final fragment, also causes the reassembly loop to underflow msg_len to UINT_MAX, triggering skb_over_panic() when the reassembled skb is written. Fix this by adding a pskb_may_pull() check at the entry of each function before packet->header is first accessed. The existing pskb_may_pull() checks before the reassembled hcp_skb is cast to struct hcp_packet remain in place to guard the 2-byte HCP message header.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63915"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:44:59.950",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63916",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: HID: wacom: Fix OOB write in wacom_hid_set_device_mode() wacom_hid_set_device_mode() currently assumes that",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: HID: wacom: Fix OOB write in wacom_hid_set_device_mode() wacom_hid_set_device_mode() currently assumes that the HID_DG_INPUTMODE usage is always located in the first field (field[0]) of the feature report. However, a device can specify HID_DG_INPUTMODE in a different field. If HID_DG_INPUTMODE is in a field other than the first one and the first field has a report_count smaller than the usage_index of HID_DG_INPUTMODE, this leads to an out-of-bounds write to r->field[0]->value. Fix this by storing the field index of HID_DG_INPUTMODE in 'struct hid_data' during feature mapping. In wacom_hid_set_device_mode(), use this stored field index to access the correct field and add bounds checks to ensure both the field index and the value index are within valid ranges before writing.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63916"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:44:37.287",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63917",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: ip6: vti: Use ip6_tnl.net in vti6_changelink(). ip netns add ns1 ip netns add ns2 ip -n ns1 link add vti6_t",
+      "severity": "high",
+      "categories": [
+        ".NET / ASP.NET",
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: ip6: vti: Use ip6_tnl.net in vti6_changelink(). ip netns add ns1 ip netns add ns2 ip -n ns1 link add vti6_test type vti6 remote ::1 local ::2 key 7 ip -n ns1 link set vti6_test netns ns2 ip -n ns2 link set vti6_test type vti6 remote ::3 local ::4 key 9 ip netns del ns2 ip netns del ns1 [ 132.495484] ------------[ cut here ]------------ [ 132.497609] kernel BUG at net/core/dev.c:12376! Commit 61220ab34948 (\"vti6: Enable namespace changing\") dropped NETIF_F_NETNS_LOCAL from vti6 devices. A vti6 tunnel can then move through IFLA_NET_NS_FD. After the move dev_net(dev) points at the new netns while t->net stays at the creation netns. vti6_changelink() and vti6_update() still use dev_net(dev) and dev_net(t->dev). They unlink from one per netns hash and relink into another. The creation netns is left with a stale entry. cleanup_net() of that netns later walks freed memory. Reachable from an unprivileged user namespace (unshare --user --map-root-user --net). Cross tenant scope on container hosts.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63917"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:44:18.477",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63964",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: usb: typec: ucsi: ccg: reject firmware images without a ':' record header do_flash() locates the first .cya",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: usb: typec: ucsi: ccg: reject firmware images without a ':' record header do_flash() locates the first .cyacd record with p = strnchr(fw->data, fw->size, ':'); while (p < eof) { s = strnchr(p + 1, eof - p - 1, ':'); ... } If the firmware image contains no ':' byte, strnchr() returns NULL. NULL compares less than the valid kernel pointer eof, so the loop body runs and strnchr() is called with p + 1 == (void *)1 and a length of roughly (unsigned long)eof, causing a wonderful crash. The not_signed_fw fallthrough earlier in do_flash() and the chip-state branches in ccg_fw_update_needed() allow an unsigned blob to reach this loop, so a root user who can place a crafted file under /lib/firmware and write the do_flash sysfs attribute can trigger the oops. Bail out with -EINVAL when the initial strnchr() returns NULL.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63964"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:29:01.400",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63965",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: iio: pressure: bmp280: fix stack leak in bmp580 trigger handler bmp580_trigger_handler() declares its scan ",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: iio: pressure: bmp280: fix stack leak in bmp580 trigger handler bmp580_trigger_handler() declares its scan buffer on the stack without an initializer and then memcpy()s 3 bytes of 24-bit sensor data into each 4-byte __le32 field. The high byte of comp_temp and comp_press is left uninitialized, and the channel storagebits is 32, so two bytes of stack are pushed to userspace per scan. This is a regression from when the buffer lived in the private data, the move to a stack-local struct dropped the implicit zeroing. bme280_trigger_handler() was fixed up to handle this bug, but this driver was not fixed because there was no padding hole, but rather a short-fill issue. Fix this all by just zero-initializing the structure on the stack.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63965"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:28:10.313",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63966",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: iio: imu: adis16550: fix stack leak in trigger handler adis16550_trigger_handler() declares the scan data a",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: iio: imu: adis16550: fix stack leak in trigger handler adis16550_trigger_handler() declares the scan data array on the stack without initializing it. The memcpy() at the bottom fills only the first 28 bytes (TEMP + 6 channels of GYRO/ACCEL data), and iio_push_to_buffers_with_timestamp() writes the s64 timestamp at the 8-byte-aligned offset 32. Bytes 28-31 remain uninitialized stack data which leaks to userspace on ever trigger. Fix this all by just zero-initializing the structure on the stack.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63966"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:25:42.190",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63967",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: iio: imu: st_lsm6dsx: fix stack leak in tagged FIFO buffer The tagged FIFO path declares iio_buff on the st",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: iio: imu: st_lsm6dsx: fix stack leak in tagged FIFO buffer The tagged FIFO path declares iio_buff on the stack with __aligned(8) but no initializer, but there is a hole in the structure, which will then leak to userspace as ST_LSM6DSX_SAMPLE_SIZE bytes (6) will be copied, but the space between that and the timestamp are not initialized. Commit c14edb4d0bdc (\"iio:imu:st_lsm6dsx Fix alignment and data leak issues\") moved the untagged FIFO path to a kzalloc'd buffer in hw->scan, but for the tagged path it only added the alignment qualifier and not the initializer :( Fix this by just zero-initializing the structure on the stack.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63967"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:25:05.780",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63968",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: ipv6: fix possible infinite loop in fib6_select_path() Found while auditing the same pattern Sashiko report",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: ipv6: fix possible infinite loop in fib6_select_path() Found while auditing the same pattern Sashiko reported in rt6_fill_node() [1]. Apply the same fix as commit f8d8ce1b515a (\"ipv6: fix possible infinite loop in fib6_info_uses_dev()\"). Writers holding tb6_lock can list_del_rcu(&first->fib6_siblings) without waiting for RCU readers; first->fib6_siblings.next then still points into the old ring and this softirq-side walker never reaches &first->fib6_siblings as its terminator. fib6_purge_rt() always WRITE_ONCE()s first->fib6_nsiblings to 0 before list_del_rcu(), so an inside-loop check is a reliable detach signal. [1] https://sashiko.dev/#/patchset/20260526020227.4857-1-jiayuan.chen%40linux.dev",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63968"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T17:58:44Z",
+      "source_updated_at": "2026-10-30T17:21:59.687",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -131953,8 +131983,9 @@
       "title": "FacturaScripts vulnerable to Reflected Cross-Site Scripting (XSS) via Cookie Manipulation",
       "severity": "low",
       "categories": [
-        "PHP",
-        "Application dependencies"
+        "Application dependencies",
+        "JavaScript / TypeScript",
+        "PHP"
       ],
       "published": "2026-05-07",
       "updated": "2026-10-30",
@@ -131994,8 +132025,8 @@
       "title": "FacturaScripts Vulnerable to Unstripped Image Metadata (EXIF) Leakage via Library Module File Upload/Download",
       "severity": "medium",
       "categories": [
-        "PHP",
-        "Application dependencies"
+        "Application dependencies",
+        "PHP"
       ],
       "published": "2026-05-07",
       "updated": "2026-10-30",
@@ -137796,37 +137827,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.11772,
-      "epss_percentile": 0.96066,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2025-7624",
       "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
@@ -137855,6 +137855,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.10514,
       "epss_percentile": 0.95752,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.11772,
+      "epss_percentile": 0.96066,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -158260,85 +158291,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T16:57:29Z",
-      "last_attempt": "2026-10-30T16:57:29Z",
-      "items_processed": 326,
+      "last_success": "2026-10-30T17:58:44Z",
+      "last_attempt": "2026-10-30T17:58:44Z",
+      "items_processed": 325,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T16:57:29Z",
-      "last_attempt": "2026-10-30T16:57:29Z",
+      "last_success": "2026-10-30T17:58:44Z",
+      "last_attempt": "2026-10-30T17:58:44Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T16:57:29Z",
-      "last_attempt": "2026-10-30T16:57:29Z",
-      "items_processed": 1857,
+      "last_success": "2026-10-30T17:58:44Z",
+      "last_attempt": "2026-10-30T17:58:44Z",
+      "items_processed": 1872,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T16:57:29Z",
-      "last_attempt": "2026-10-30T16:57:29Z",
+      "last_success": "2026-10-30T17:58:44Z",
+      "last_attempt": "2026-10-30T17:58:44Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T16:57:29Z",
-      "last_attempt": "2026-10-30T16:57:29Z",
+      "last_success": "2026-10-30T17:58:44Z",
+      "last_attempt": "2026-10-30T17:58:44Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T16:57:29Z",
-      "last_attempt": "2026-10-30T16:57:29Z",
+      "last_success": "2026-10-30T17:58:44Z",
+      "last_attempt": "2026-10-30T17:58:44Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T16:57:29Z",
-      "last_attempt": "2026-10-30T16:57:29Z",
+      "last_success": "2026-10-30T17:58:44Z",
+      "last_attempt": "2026-10-30T17:58:44Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T16:57:29Z",
-      "last_attempt": "2026-10-30T16:57:29Z",
+      "last_success": "2026-10-30T17:58:44Z",
+      "last_attempt": "2026-10-30T17:58:44Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T16:57:29Z",
-      "last_attempt": "2026-10-30T16:57:29Z",
+      "last_success": "2026-10-30T17:58:44Z",
+      "last_attempt": "2026-10-30T17:58:44Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T16:57:29Z",
-      "last_attempt": "2026-10-30T16:57:29Z",
+      "last_success": "2026-10-30T17:58:44Z",
+      "last_attempt": "2026-10-30T17:58:44Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T16:57:29Z",
-      "last_attempt": "2026-10-30T16:57:29Z",
+      "last_success": "2026-10-30T17:58:44Z",
+      "last_attempt": "2026-10-30T17:58:44Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T16:57:29Z",
-      "last_attempt": "2026-10-30T16:57:29Z",
+      "last_success": "2026-10-30T17:58:44Z",
+      "last_attempt": "2026-10-30T17:58:44Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -158350,7 +158381,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T16:57:29Z",
-  "last_successful_update": "2026-10-30T16:57:29Z",
+  "last_checked_at": "2026-10-30T17:58:44Z",
+  "last_successful_update": "2026-10-30T17:58:44Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
