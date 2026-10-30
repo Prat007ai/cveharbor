@@ -540,7 +540,10 @@ window.addEventListener('cveharbor:account-state',event=>{void onAccount(event)}
 async function save(form,endpoint,payload){
  if(!signedIn||!ready){status('Sign in and complete the database migration first.');return;}
  const button=form.querySelector('button[type=submit]');button.disabled=true;
- try{await call(endpoint,'POST',payload);form.reset();await load();status('Saved to your account inventory.')}
+ try{const saved=await call(endpoint,'POST',payload);form.reset();await load();
+  if(endpoint==='/customers'&&saved.id)$('inventoryCustomerSelect').value=saved.id;
+  if(endpoint==='/environments'&&saved.id)$('inventoryEnvironmentSelect').value=saved.id;
+  status('Saved to your account inventory.')}
  catch(e){status('Could not save: '+e.message)}
  finally{button.disabled=false}
 }
