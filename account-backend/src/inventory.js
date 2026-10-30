@@ -72,7 +72,7 @@ export async function inventoryRoute(req,env,user,path,data={}){
     await owned(env,'inventory_environments',user.id,environment);
     const name=required(data.name,120,'asset name');
     const assetType=required(data.asset_type||'Software',32,'asset type');
-    if(!['Server','Application','Database','Cloud Service','Network Device','Software','Other'].includes(assetType))
+    if(!['Server','WEB','Application','Database','Cloud Service','Network Device','Software','Other'].includes(assetType))
       throw new InventoryError('Invalid asset type');
     const technology=required(data.technology,120,'technology');
     const version=String(data.version||'').trim(),notes=String(data.notes||'').trim();
@@ -95,7 +95,7 @@ export async function inventoryRoute(req,env,user,path,data={}){
     const name=required(data.name,120,'asset name'),technology=required(data.technology,120,'technology');
     const assetType=required(data.asset_type||'Software',32,'asset type');
     const version=String(data.version||'').trim(),notes=String(data.notes||'').trim();
-    if(!['Server','Application','Database','Cloud Service','Network Device','Software','Other'].includes(assetType)||
+    if(!['Server','WEB','Application','Database','Cloud Service','Network Device','Software','Other'].includes(assetType)||
       version.length>80||notes.length>500)throw new InventoryError('Invalid asset details');
     await env.DB.prepare('UPDATE inventory_assets SET name=?,asset_type=?,technology=?,version=?,notes=? WHERE id=? AND user_id=?')
       .bind(name,assetType,technology,version,notes,match[2],user.id).run();
