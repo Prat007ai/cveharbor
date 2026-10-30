@@ -54,7 +54,7 @@
     </form>
     <div id="accountPageRequiredRecovery" hidden>
      <p>Save these recovery codes now. Each can be used only once.</p>
-     <pre id="accountPageRequiredRecoveryCodes" class="account-mfa-secret"></pre>
+     <ol id="accountPageRequiredRecoveryCodes" class="account-recovery-list"></ol>
      <button id="accountPageRequiredContinue" type="button" class="account-primary-button">I have saved my codes</button>
     </div>
    </section>
@@ -76,9 +76,16 @@
        <button type="submit" class="account-primary-button">Enable authenticator</button>
       </form>
      </div>
+     <button type="button" id="accountPageRecoveryRotateStart" class="account-secondary-button">Generate new recovery codes</button>
+     <form id="accountPageRecoveryRotateForm" class="account-entry-form" hidden>
+      <p>Old recovery codes will stop working. Enter a fresh code from your authenticator app to confirm.</p>
+      <label for="accountPageRecoveryRotateCode">Six digit authenticator code</label>
+      <input id="accountPageRecoveryRotateCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
+      <button type="submit" class="account-primary-button">Replace recovery codes</button>
+     </form>
      <div id="accountPageTotpRecovery" hidden>
       <p>Save these one time recovery codes now. They will not be shown again.</p>
-      <pre id="accountPageTotpRecoveryCodes" class="account-mfa-secret"></pre>
+      <ol id="accountPageTotpRecoveryCodes" class="account-recovery-list"></ol>
       <button type="button" id="accountPageTotpRecoveryDone" class="account-secondary-button">I have saved my recovery codes</button>
      </div>
     </section>
@@ -115,6 +122,6 @@
  </section>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="/account-page.js?v=totp-mfa-153"></script>
+<script src="/account-page.js?v=recovery-rotation-154"></script>
 <script src="/command-center.js?v=home-sidebar-89"></script>
 </body></html>
