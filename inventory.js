@@ -220,7 +220,7 @@ function setupPluginImport(){
  if(!form)return;
  const panel=make('section','inventory-plugin-import');
  panel.append(make('h3','','Import WordPress plugins'),
-  make('p','ops-note','Select a customer environment above, then select a local .txt file or paste one plugin per line as Plugin Name | Version | Vendor URL (optional). Each plugin is recorded separately. Existing entries with the same name are updated rather than duplicated.'));
+  make('p','ops-note','Select an environment in Step 3, then upload a TXT file or paste Plugin Name | Version | Vendor URL (optional). The import uses WordPress as the asset name unless you provide a different name in Step 3. Existing matching plugins are updated.'));
  const area=make('textarea','','');area.placeholder='Gravity Forms | 2.9.5\nYoast SEO | 24.7';
  area.rows=7;area.setAttribute('aria-label','WordPress plugin names and versions');
  const fileLabel=make('label','inventory-plugin-file-label','Select a TXT file from your computer');
@@ -258,9 +258,10 @@ function setupPluginImport(){
  const button=make('button','ops-download','Import plugins');button.type='button';
  button.addEventListener('click',async()=>{
   const environmentId=$('inventoryEnvironmentSelect').value;
-  const assetName=$('inventoryAssetName').value.trim();
+  const selectedEnv=data.environments.find(e=>e.id===environmentId);
+  const assetName=$('inventoryAssetName').value.trim()||'WordPress';
   if(!signedIn||!ready){result.textContent='Sign in to manage private inventory.';return}
-  if(!environmentId||!assetName){result.textContent='Choose an environment and enter the WordPress site asset name first.';return}
+  if(!environmentId||!selectedEnv){result.textContent='Select a customer environment in Step 3 before importing plugins.';return}
   const lines=area.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
   if(!lines.length||lines.length>150){result.textContent='Paste between 1 and 150 plugin entries.';return}
   const plugins=[];
