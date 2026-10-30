@@ -72,7 +72,7 @@ export async function inventoryRoute(req,env,user,path,data={}){
       const source=required(row.source_package,120,'source package');
       const version=required(row.installed_version,150,'installed version');
       const collected=required(row.collected_at,30,'collection date');
-      if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(collected)||Number.isNaN(Date.parse(collected)))throw new InventoryError('Use YYYY-MM-DD collection date');
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(collected)||Number.isNaN(Date.parse(collected)))throw new InventoryError('Use YYYY-MM-DD collection date');
       const key=[asset,architecture,pkg].map(x=>x.toLowerCase()).join('|');
       if(seen.has(key))throw new InventoryError('Duplicate package in upload: '+pkg);
       seen.add(key);
