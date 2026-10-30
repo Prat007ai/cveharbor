@@ -123,8 +123,8 @@ function openAssign(id){
   if(!authenticated)status.textContent='Please sign in to CVEHarbor first. You can use the account form above.';
   else if(!cloudMode)status.textContent='The updated Cloudflare Worker must be deployed before email assignments can be sent.';
   else if(!capabilities?.assignments_available)status.textContent='The D1 assignment table has not been migrated yet.';
-  else if(!capabilities?.assignment_email_enabled)status.textContent='Assignment email is disabled until the verified sender and approved organization domains are configured.';
-  else status.textContent='The recipient will be notified by email, and you can track this assignment in D1.';
+  else if(!capabilities?.assignment_email_enabled)status.textContent='Assignment email is disabled until the verified sender and delivery provider are configured.';
+  else status.textContent='An external colleague can receive the review email. You can send up to 10 assignments per hour, subject to recipient limits.';
   if(typeof modal.showModal==='function')modal.showModal();else modal.setAttribute('open','');
   $('remediationAssignEmail').focus();
 }

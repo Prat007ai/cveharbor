@@ -37,8 +37,7 @@ export async function isMigrated(env){
 }
 export function assignmentReady(env){
   return env.ASSIGNMENT_EMAIL_ENABLED==='true' && !!env.EMAIL_FROM &&
-    !!(env.ASSIGNMENT_SMTP2GO_API_KEY||env.SMTP2GO_API_KEY) &&
-    String(env.ASSIGNMENT_ALLOWED_DOMAINS||'').trim().length>0;
+    !!(env.ASSIGNMENT_SMTP2GO_API_KEY||env.SMTP2GO_API_KEY);
 }
 export async function capabilities(env){
   return reply({storage:'d1',version:2,assignments_available:await isMigrated(env),
@@ -90,15 +89,6 @@ export async function importLegacy(env,user,records){
   ).bind(user.id,item.id,item.status,item.owner,item.due,item.notes,now));
   await env.DB.batch(statements);
   return reply({saved:items.length,storage:'d1',message:'Records imported without deleting existing cloud records or assignments.'});
-}
-function domains(env){
-  return new Set(String(env.ASSIGNMENT_ALLOWED_DOMAINS||'').split(',')
-    .map(s=>s.trim().toLowerCase()).filter(s=>/^[a-z0-9.-]+\.[a-z]{2,}$/.test(s)));
-}
-function allowedRecipient(env,sender,recipient){
-  const list=domains(env);
-  return list.has(String(sender||'').split('@').pop().toLowerCase()) &&
-         list.has(String(recipient||'').split('@').pop().toLowerCase());
 }
 function safe(value){return String(value).replace(/[&<>"']/g,ch=>({
   '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
@@ -169,8 +159,6 @@ export async function assignRemediation(env,user,id,raw){
     throw new RemediationError('Enter a valid CVE ID and recipient email');
   if(!await isMigrated(env))throw new RemediationError('Assignment database migration is required',503);
   if(!assignmentReady(env))throw new RemediationError('Assignment email delivery is not enabled',503);
-  if(!allowedRecipient(env,user.email,recipient))
-    throw new RemediationError('Both the sender and recipient must use approved organization email domains',403);
   const prior=await env.DB.prepare(
     'SELECT assignee_email,state,claimed_at,last_sent_at FROM remediation_assignments WHERE user_id=? AND cve_id=?'
   ).bind(user.id,cve).first();
@@ -180,9 +168,8 @@ export async function assignRemediation(env,user,id,raw){
       message:'An assignment email was already sent to this person within the last 24 hours.'});
   if(prior?.state==='sending' && now-Number(prior.claimed_at||0)<900)
     throw new RemediationError('An assignment notification is already in progress',409);
-  // Per-sender and per-recipient windows prevent a valid account from being used
-  // as an arbitrary SMTP relay. Restrict recipient domains at the edge as well.
-  if(!await quota(env,'assignment-sender:'+user.id,3600,5))
+  // Authenticated sender and per-recipient limits protect this cross-organization notification feature.
+  if(!await quota(env,'assignment-sender:'+user.id,3600,10))
     throw new RemediationError('Hourly assignment limit reached',429);
   const enc=new TextEncoder();
   const digest=await crypto.subtle.digest('SHA-256',enc.encode(recipient));

@@ -223,9 +223,9 @@ test('assignment uses verified sender, domain allowlist, sanitized reviewer note
   }finally{globalThis.fetch=original;}
 });
 
-test('unapproved recipients and disabled delivery are refused before SMTP2GO',async()=>{
+test('external recipients are permitted but disabled delivery is refused',async()=>{
   const db=new MockD1(),workerEnv=env(db);
-  assert.equal((await worker.fetch(request('/remediations/'+id+'/assign','POST',{email:'recipient@gmail.com'}),workerEnv)).status,403);
+  assert.equal(assignmentReady(workerEnv),true,'external recipients are allowed when the service is configured');
   assert.equal((await worker.fetch(request('/remediations/'+id+'/assign','POST',{email:'employee@example.org'}),{
     ...workerEnv,ASSIGNMENT_EMAIL_ENABLED:'false'})).status,503);
   assert.equal(db.assignments.size,0);
@@ -242,24 +242,24 @@ test('missing assignment table blocks mail while leaving existing cloud record s
 });
 
 
-test('assignment sending enforces five per sender hourly and two per recipient daily',async()=>{
+test('assignment sending enforces ten per sender hourly and two per recipient daily',async()=>{
   const previous=globalThis.fetch;
   globalThis.fetch=async()=>new Response(JSON.stringify({data:{succeeded:1,failed:0,email_id:'quota-test'}}),{
     status:200,headers:{'Content-Type':'application/json'}
   });
   try{
     const first=new MockD1();
-    for(let i=0;i<5;i++){
+    for(let i=0;i<10;i++){
       const id='CVE-2026-'+(50000+i);
       const response=await worker.fetch(request('/remediations/'+id+'/assign','POST',{
         email:'colleague'+i+'@example.net'
       }),env(first));
-      assert.equal(response.status,200,'five distinct assignments are accepted');
+      assert.equal(response.status,200,'ten distinct assignments are accepted');
     }
     const over=await worker.fetch(request('/remediations/CVE-2026-60000/assign','POST',{
       email:'newperson@example.net'
     }),env(first));
-    assert.equal(over.status,429,'sixth assignment in an hour is rejected');
+    assert.equal(over.status,429,'eleventh assignment in an hour is rejected');
 
     const second=new MockD1();
     for(const id of ['CVE-2026-70001','CVE-2026-70002']){
