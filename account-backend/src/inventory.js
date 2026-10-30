@@ -131,6 +131,14 @@ export async function inventoryRoute(req,env,user,path,data={}){
     await env.DB.prepare('DELETE FROM '+table+' WHERE id=? AND user_id=?').bind(match[2],user.id).run();
     return json({removed:true});
   }
+  if(match&&req.method==='PUT'&&match[1]==='customers'){
+    await owned(env,'inventory_customers',user.id,match[2]);
+    const name=required(data.name,120,'customer name');
+    const duplicate=await env.DB.prepare('SELECT id FROM inventory_customers WHERE user_id=? AND lower(name)=lower(?) AND id<>? LIMIT 1').bind(user.id,name,match[2]).first();
+    if(duplicate)throw new InventoryError('A customer with this name already exists',409);
+    await env.DB.prepare('UPDATE inventory_customers SET name=? WHERE id=? AND user_id=?').bind(name,match[2],user.id).run();
+    return json({saved:true});
+  }
   if(match&&req.method==='PUT'&&match[1]==='assets'){
     await owned(env,'inventory_assets',user.id,match[2]);
     const name=required(data.name,120,'asset name'),technology=required(data.technology,120,'technology');
