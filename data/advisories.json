@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-30",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6081,
+  "candidate_records": 6084,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -5523,6 +5523,98 @@
       "status": "GitHub reviewed advisory",
       "first_seen_at": "2026-10-30T14:44:16Z",
       "source_updated_at": "2026-10-30T14:42:16Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119283",
+      "title": "joserfc: Unbounded JWE General JSON `recipients` Array Leads to CPU Exhaustion (DoS) via Repeated RSA Private-Key Decryption",
+      "severity": "high",
+      "categories": [
+        "Application dependencies",
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "### Summary `joserfc.jwe.decrypt_json()`, the library's public parser for JWE General JSON Serialization, accepts an attacker-controlled `recipients` array of unbounded length and performs one full private-key decryption operation (`decrypt_cek`) for **every** recipient present in the input, with no cap on recipient count. An unauthenticated network attacker who can send a JWE General JSON document to any endpoint that decrypts it with an RSA key (e.g. RSA-OAEP) can force the victim to perform an arbitrary, attacker-chosen number of RSA private-key decryption operations from a single, relatively small HTTP request. This gives the attacker a highly asymmetric CPU-exhaustion (Denial of Service) primitive: local reproduction shows request size growing linearly with recipient count (~396 bytes/recipient) while server-side CPU time grows in lock-step (near 1:1 ratio between recipient-count growth and decrypt-time growth), and the library's only documented mitigation knob, `verify_all_recipients=False`, does **not** reduce the CPU cost, since the decrypt loop attempts every recipient's `decrypt_cek()` unconditionally before that flag is ever consulted. This is CWE-400 (Uncontrolled Resource Consumption) with CVSS v3.1 Base Score 7.5 (High). ### Details `joserfc` validates and caps seve",
+      "affected": "pip: joserfc (< 1.7.5)",
+      "remediation": "joserfc: 1.7.5",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119283"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-119283"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-jpxq-7h8p-2q76"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/authlib/joserfc/security/advisories/GHSA-jpxq-7h8p-2q76"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/authlib/joserfc/commit/d6dc8df6c7609277e741069d3733e43996c1cd17"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-29T22:31:24Z",
+      "source_updated_at": "2026-10-30T14:54:20Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119284",
+      "title": "joserfc: Compact JWS size guard allocates attacker-controlled segments before rejection",
+      "severity": "medium",
+      "categories": [
+        "Application dependencies",
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "## Summary joserfc 1.7.4 defines compact-JWS header, payload, and signature limits, but calls `value.split(b\".\")` before validating them. Python `bytes.split()` copies the attacker-controlled segments, so the current guard allocates roughly one complete payload before rejecting it. ## Reproduction ```bash .venv-research/bin/python 06-practical-testing/preauth-memory-profile.py ``` The input is resident before a fork-isolated verifier runs, and every signature is invalid. | Input | Peak RSS delta | Amplification | Result | |---:|---:|---:|---| | 1 MiB | 1.11 MiB | 1.11× | size rejected | | 4 MiB | 4.04 MiB | 1.01× | size rejected | | 8 MiB | 8.04 MiB | 1.01× | size rejected | | 16 MiB | 16.04 MiB | 1.00× | size rejected | | 32 MiB | 31.74 MiB | 0.99× | size rejected | | 64 MiB | 63.80 MiB | 1.00× | size rejected | The unconstrained profile is the primary evidence: joserfc allocates an additional attacker-sized object before producing its intended `ExceededSizeError`. A separate baseline-plus-headroom stress test raises `MemoryError` when that copy cannot fit, but this report does not characterize an absolute `RLIMIT_AS` value as a realistic worker memory budget. ## Security Argument The issue is not that joserfc can prevent the transport layer from receiving a large header. The is",
+      "affected": "pip: joserfc (< 1.7.6)",
+      "remediation": "joserfc: 1.7.6",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119284"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-119284"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-9pg5-8c7x-5hfx"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/authlib/joserfc/security/advisories/GHSA-9pg5-8c7x-5hfx"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/authlib/joserfc/commit/397e04f4bbce0b94d86e31c1c003f4640af8fb39"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.9",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-29T22:31:24Z",
+      "source_updated_at": "2026-10-30T14:54:26Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -12758,72 +12850,6 @@
       "first_seen_at": "2026-10-29T22:31:24Z",
       "source_updated_at": "2026-10-29T22:14:17Z",
       "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119283",
-      "title": "joserfc: joserfc: Denial of Service via unbounded recipient processing during JWE decryption",
-      "severity": "high",
-      "categories": [
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "joserfc: joserfc: Denial of Service via unbounded recipient processing during JWE decryption",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119283"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119283"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-29T22:31:24Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119284",
-      "title": "joserfc: joserfc: Denial of Service via excessive memory allocation during JWS deserialization",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "joserfc: joserfc: Denial of Service via excessive memory allocation during JWS deserialization",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119284"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119284"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.9",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-29T22:31:24Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
       "known_exploited": false
     },
     {
@@ -62834,51 +62860,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        "Windows",
-        "Windows 11 OS",
-        "Windows Server OS"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
-        },
-        {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.09813,
-      "epss_percentile": 0.95536,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2026-102870",
       "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
       "severity": "high",
@@ -62921,6 +62902,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00906,
       "epss_percentile": 0.59766,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+        },
+        {
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.09813,
+      "epss_percentile": 0.95536,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -83481,42 +83507,6 @@
       "epss_as_of": "2026-10-30"
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60678,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -83555,6 +83545,42 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.558,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60678,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -118122,90 +118148,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-69551",
-      "title": "CVE-2026-69551 Windows DNS Server Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Use after free in Windows DNS allows an authorized attacker to execute code over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69551"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69514",
-      "title": "CVE-2026-69514 Remote Desktop Services Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Heap-based buffer overflow in Windows Remote Desktop Services allows an authorized attacker to execute code over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69514"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69621",
-      "title": "CVE-2026-69621 Role: Windows Fax Service Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-08",
-      "summary": "<p>Heap-based buffer overflow in Windows Fax Service allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69621"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-86422",
       "title": "ImageMagick before 7.1.2-30 contains a time-of-check-time-of-use vulnerability in path policy enforcement on Windows that allows attackers to bypass read or write restrictions",
       "severity": "low",
@@ -127904,6 +127846,90 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T14:51:14Z",
       "source_updated_at": "2026-10-30T14:49:06.277",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63873",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: accel/amdxdna: Fix mm_struct reference leak in aie2_populate_range() aie2_populate_range() jumps back to th",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: accel/amdxdna: Fix mm_struct reference leak in aie2_populate_range() aie2_populate_range() jumps back to the again label without calling mmput(mm), leaking a reference to the mm_struct. Add the missing mmput() before jumping to again.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63873"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:03:57Z",
+      "source_updated_at": "2026-10-30T14:57:58.523",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63874",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: net: mctp: usb: fix race between urb completion and rx_retry cancellation It's possible that sequencing bet",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: net: mctp: usb: fix race between urb completion and rx_retry cancellation It's possible that sequencing between setting ->stopped and cancelling the rx_retry work (in ndo_stop) could leave us with an urb queued: T1: ndo_stop T2: rx_retry_work ------------ ---------------- LD: ->stopped => false ST: ->stopped <= true usb_kill_urb() mctp_usb_rx_queue() usb_submit_urb() cancel_delayed_work_sync() That urb completion can then re-schedule rx_retry_work. Strenghen the sequencing between the stop (preventing another requeue) and the cancel by updating both atomically under a new rx lock. After setting ->rx_stopped, and cancelling pending work, we know that the requeue cannot occur, so all that's left is killing any pending urb.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63874"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:03:57Z",
+      "source_updated_at": "2026-10-30T14:55:31.457",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-63875",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: arm64: tlb: Flush walk cache when unsharing PMD tables When huge_pmd_unshare() is called to unshare a PMD t",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-07-19",
+      "updated": "2026-10-30",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: arm64: tlb: Flush walk cache when unsharing PMD tables When huge_pmd_unshare() is called to unshare a PMD table, the tlb_unshare_pmd_ptdesc() function sets tlb->unshared_tables=true but the aarch64 tlb_flush() only checked tlb->freed_tables to determine whether to use TLBF_NONE (vae1is, invalidates walk cache) or TLBF_NOWALKCACHE (vale1is, leaf-only). This caused the stale PMD page table entry to remain in the walk cache after unshare, potentially leading to incorrect page table walks. Fix by including unshared_tables in the check, so that when unsharing tables, TLBF_NONE is used and the walk cache is properly invalidated. Here is the detailed distinction between vae1is and vale1is: | Instruction Combination | Actual Invalidation Scope | | ------------------------ | --------------------------------------------------| | `VAE1IS` + TTL=`0` | All entries at all levels (full invalidation) | | `VAE1IS` + TTL=`2` (L2) | Non-leaf at Level 0/1 + leaf at Level 2 | | `VALE1IS` + TTL=`0` | Leaf entries at all levels (non-leaf not cleared) | | `VALE1IS` + TTL=`2` (L2) | Leaf entry at Level 2 only |",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63875"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T15:03:57Z",
+      "source_updated_at": "2026-10-30T14:57:03.330",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -157240,85 +157266,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T14:51:14Z",
-      "last_attempt": "2026-10-30T14:51:14Z",
-      "items_processed": 257,
+      "last_success": "2026-10-30T15:03:57Z",
+      "last_attempt": "2026-10-30T15:03:57Z",
+      "items_processed": 254,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T14:51:14Z",
-      "last_attempt": "2026-10-30T14:51:14Z",
+      "last_success": "2026-10-30T15:03:57Z",
+      "last_attempt": "2026-10-30T15:03:57Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T14:51:14Z",
-      "last_attempt": "2026-10-30T14:51:14Z",
-      "items_processed": 1830,
+      "last_success": "2026-10-30T15:03:57Z",
+      "last_attempt": "2026-10-30T15:03:57Z",
+      "items_processed": 1833,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T14:51:14Z",
-      "last_attempt": "2026-10-30T14:51:14Z",
+      "last_success": "2026-10-30T15:03:57Z",
+      "last_attempt": "2026-10-30T15:03:57Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:51:14Z",
-      "last_attempt": "2026-10-30T14:51:14Z",
+      "last_success": "2026-10-30T15:03:57Z",
+      "last_attempt": "2026-10-30T15:03:57Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:51:14Z",
-      "last_attempt": "2026-10-30T14:51:14Z",
+      "last_success": "2026-10-30T15:03:57Z",
+      "last_attempt": "2026-10-30T15:03:57Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:51:14Z",
-      "last_attempt": "2026-10-30T14:51:14Z",
+      "last_success": "2026-10-30T15:03:57Z",
+      "last_attempt": "2026-10-30T15:03:57Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:51:14Z",
-      "last_attempt": "2026-10-30T14:51:14Z",
+      "last_success": "2026-10-30T15:03:57Z",
+      "last_attempt": "2026-10-30T15:03:57Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T14:51:14Z",
-      "last_attempt": "2026-10-30T14:51:14Z",
+      "last_success": "2026-10-30T15:03:57Z",
+      "last_attempt": "2026-10-30T15:03:57Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T14:51:14Z",
-      "last_attempt": "2026-10-30T14:51:14Z",
+      "last_success": "2026-10-30T15:03:57Z",
+      "last_attempt": "2026-10-30T15:03:57Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T14:51:14Z",
-      "last_attempt": "2026-10-30T14:51:14Z",
+      "last_success": "2026-10-30T15:03:57Z",
+      "last_attempt": "2026-10-30T15:03:57Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T14:51:14Z",
-      "last_attempt": "2026-10-30T14:51:14Z",
+      "last_success": "2026-10-30T15:03:57Z",
+      "last_attempt": "2026-10-30T15:03:57Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -157330,7 +157356,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T14:51:14Z",
-  "last_successful_update": "2026-10-30T14:51:14Z",
+  "last_checked_at": "2026-10-30T15:03:57Z",
+  "last_successful_update": "2026-10-30T15:03:57Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
