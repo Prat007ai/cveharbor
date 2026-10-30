@@ -903,3 +903,14 @@ assert.ok(sidebarScript.includes("link.dataset.requiresAuth='true'")&&sidebarScr
 
 assert.ok(accountSecurityMarkup.includes('account-security.js?v=account-security-156'),'Account uses independent security controller');
 assert.ok(!accountSecurityMarkup.includes('id="accountPageRequest"'),'Account no longer duplicates Workspace sign in');
+
+const authRetryWorker=fs.readFileSync('account-backend/src/index.js','utf8');
+const authRetryPage=fs.readFileSync('workspace/index.html','utf8');
+const authRetryClient=fs.readFileSync('account-page.js','utf8');
+const accountStatusClient=fs.readFileSync('account-security.js','utf8');
+assert.ok(authRetryWorker.includes("retry_after:delay")&&authRetryWorker.includes("'Retry-After'"),'rate limit exposes a bounded retry time');
+assert.ok(authRetryWorker.includes("created_at+60")&&authRetryWorker.includes("'resend'"),'email resend cooldown enforced by Worker');
+assert.ok(authRetryWorker.includes("emailKey,5")&&authRetryWorker.includes("ipKey,12"),'existing hourly email and IP protections remain enabled');
+assert.ok(authRetryPage.includes('accountPageRetryMessage')&&authRetryPage.includes('accountPageResend'),'Workspace provides retry text and resend action');
+assert.ok(authRetryClient.includes('window.setInterval(update,1000)')&&authRetryClient.includes('cooldown(60)'),'browser exposes a live retry countdown');
+assert.ok(accountStatusClient.includes('Your account is signed in, but authenticator settings could not be refreshed'),'Account preserves authenticated profile on temporary MFA status errors');
