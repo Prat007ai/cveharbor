@@ -1970,3 +1970,18 @@ body.command-center-app{padding-left:74px}
 .workspace-redesign #accountPageSignedIn>.account-mfa-settings[hidden],
 .workspace-redesign #accountPageSignedIn>#accountPageLogout[hidden]{display:none!important}
 .workspace-redesign #accountPageSignedIn>.workspace-security-link{margin-top:14px}
+
+/* Branded remediation assignment confirmations */
+.cvh-small-dialog{max-width:min(460px,calc(100vw - 30px));width:100%;border:1px solid #30738c;border-radius:16px;background:#0b2539;color:#e8f7fc;box-shadow:0 22px 70px #0009;padding:0}
+.cvh-small-dialog::backdrop{background:rgba(1,10,18,.72)}
+.cvh-small-dialog .dialog-layout{padding:28px 30px;text-align:center}
+.cvh-small-dialog h2{margin:9px 0 14px;font-size:23px}
+.cvh-small-dialog .ops-note{font-size:15px;line-height:1.65;overflow-wrap:anywhere;color:#c7dce9}
+.cvh-dialog-symbol{display:flex;align-items:center;justify-content:center;width:56px;height:56px;margin:0 auto 13px;border:2px solid #56dbe4;border-radius:50%;font-size:32px;color:#70e4ec}
+.cvh-success-symbol{border-color:#42d6ad;color:#42d6ad}
+.cvh-dialog-actions{display:flex;justify-content:center;align-items:center;gap:13px;margin-top:22px;flex-wrap:wrap}
+.cvh-secondary-action{background:#123149!important;border:1px solid #47778b!important;color:#e5f8fc!important}
+.cvh-small-dialog .close-dialog{top:12px;right:12px}
+#remediationDue{color-scheme:dark;padding-right:14px}
+#remediationDue::-webkit-calendar-picker-indicator{opacity:1;cursor:pointer;filter:invert(75%) sepia(61%) saturate(456%) hue-rotate(116deg) brightness(107%);width:19px;height:19px;padding:5px;border:1px solid #49cdbf;border-radius:5px;background-color:#14384b}
+#remediationDue:focus-visible{outline:2px solid #53e0d1;outline-offset:2px}
