@@ -17,13 +17,13 @@ function signedIn(email){
  $('accountPageSignedOut').hidden=true;
  $('accountPageSignedIn').hidden=false;
  $('accountPageIdentity').textContent='Signed in as '+email;
- $('accountPageHeading').textContent='Welcome to CVEHarbor';
+ $('accountPageHeading').innerHTML='Welcome to your <span>CVEHarbor workspace</span>';
  message('Your account is connected.');
 }
 function signedOut(){
  $('accountPageSignedOut').hidden=false;
  $('accountPageSignedIn').hidden=true;
- $('accountPageHeading').textContent='Log in or create an account';
+ $('accountPageHeading').innerHTML='Access your private <span>CVEHarbor workspace</span>';
 }
 const mode=new URLSearchParams(location.search).get('mode');
 if(mode==='register')$('accountFormTitle').textContent='Create your free CVEHarbor account';
