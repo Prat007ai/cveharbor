@@ -1610,3 +1610,8 @@ body.command-center-app{padding-left:74px}
 
 .inventory-edit-customer-input{display:block;width:100%;box-sizing:border-box;min-height:43px;margin:8px 0 13px;padding:10px 12px;background:#081e2c;color:#fff;border:1px solid #4a7b8a;border-radius:8px;font:inherit}
 .inventory-edit-customer-input:focus-visible{outline:2px solid #65e6d2}
+
+#inventoryWorkspace .inventory-customer-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-left:auto;flex-wrap:wrap}
+#inventoryWorkspace .inventory-customer-actions button{min-height:36px;padding:8px 14px;border-radius:8px;font-weight:700}
+#inventoryWorkspace .inventory-customer-actions .inventory-edit-customer{background:#145c4c!important;color:#e5fff2!important;border:1px solid #289d7d!important}
+#inventoryWorkspace .inventory-customer-actions .ops-remove:not(.inventory-edit-customer){background:#682330!important;color:#ffe8ec!important;border:1px solid #b8485c!important}
