@@ -1632,3 +1632,10 @@ body.command-center-app{padding-left:74px}
 #inventoryWorkspace .inventory-customer-actions button,
 #inventoryWorkspace .inventory-environment>.ops-result-top>.inventory-record-actions button{min-height:36px;padding:8px 13px;font-size:12px;white-space:nowrap}
 @media(max-width:650px){#inventoryWorkspace .inventory-customer>.ops-result-top,#inventoryWorkspace .inventory-environment>.ops-result-top{align-items:flex-start;flex-wrap:wrap}#inventoryWorkspace .inventory-customer-actions,#inventoryWorkspace .inventory-environment>.ops-result-top>.inventory-record-actions{margin-left:auto;max-width:100%;flex-wrap:wrap}}
+
+/* Attention pulse only for installed software cards with potential matches */
+.customer-software-card.customer-software-attention{border:2px solid #df5265;background:#382331;box-shadow:0 0 0 1px #b7334855;animation:customer-cve-attention 1s ease-in-out 4}
+.customer-software-card.customer-software-attention .customer-software-count{color:#ffd1d8;font-weight:850}
+.customer-software-card.customer-software-attention:hover,.customer-software-card.customer-software-attention:focus-visible{border-color:#ff8696;background:#492938}
+@keyframes customer-cve-attention{0%,100%{border-color:#df5265;box-shadow:0 0 0 1px #b7334855}50%{border-color:#ff8494;box-shadow:0 0 22px #ed405d88;background:#542b3a}}
+@media(prefers-reduced-motion:reduce){.customer-software-card.customer-software-attention{animation:none}}

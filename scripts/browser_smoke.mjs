@@ -11,7 +11,7 @@ assert.ok(dashboardHtml.includes('customerDashMetrics')&&dashboardHtml.includes(
 assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('href="/customer-dashboard/"'),'customer dashboard accessible from workspace');
 assert.ok(fs.readFileSync('workspace/index.html','utf8').includes('href="/customer-reports/"'),'customer reports accessible from workspace');
 const html=fs.readFileSync('index.html','utf8');
-assert.ok(html.includes('styles.css?v=action-align-131'),'shared footer stylesheet cache version updated');
+assert.ok(html.includes('styles.css?v=cve-attention-132'),'shared footer stylesheet cache version updated');
 assert.ok(fs.readFileSync('styles.css','utf8').includes('width:min(1500px,calc(100% - 32px))'),'compact feed banner width is shared globally');
 // Validate every canonical page is actually emitted by the Pages build.
 const routes={
@@ -859,3 +859,5 @@ assert.equal(fs.readFileSync('inventory.js','utf8').includes("window.prompt('Env
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('inventory-record-actions'),'asset and environment actions grouped');
 
 assert.ok(fs.readFileSync('styles.css','utf8').includes('Align customer and nested environment actions'),'customer and environment button alignment style exists');
+
+assert.ok(fs.readFileSync('customer-security.js','utf8').includes("if(findings.length>0){card.classList.add('customer-software-attention')"),'software matches trigger red attention class');

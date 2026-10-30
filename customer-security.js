@@ -202,6 +202,7 @@ function visualize(groups,all){
   const {customer,asset,findings,environment}=item;
   const card=text('button','','customer-software-card');
   card.type='button';
+  if(findings.length>0){card.classList.add('customer-software-attention');card.setAttribute('aria-label',asset.technology+' has '+findings.length+' potential CVE matches. Review required.');}
   card.append(text('strong',asset.technology),text('span',customer.name+' · '+(environment?.name||'Environment')+' · '+asset.name),
    text('span','Installed '+(asset.version||'version unknown')),
    text('span',findings.length+' potential CVE '+(findings.length===1?'match':'matches'),'customer-software-count'));
