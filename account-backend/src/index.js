@@ -171,6 +171,22 @@ export default {async fetch(req,env,ctx){
    if(applied[applied.length-2]?.meta?.changes!==1)return response({error:'Enrollment already completed'},409);
    return response({enabled:true,recovery_codes:recovery,message:'Save these codes securely. Each can only be used once.'});
   }
+  if(path==='/v1/auth/totp/recovery/rotate'&&req.method==='POST'){
+   if(!env.TOTP_ENCRYPTION_KEY)return response({error:'MFA unavailable'},503);
+   const data=await body(req),code=String(data.code||''),now=Math.floor(Date.now()/1000);
+   if(!/^\d{6}$/.test(code))return response({error:'Six digit authenticator code required'},400);
+   if(!await limit(env,'totp-rotate:'+user.id,8))return response({error:'Too many attempts'},429);
+   const factor=await env.DB.prepare('SELECT encrypted_secret,last_counter FROM user_totp WHERE user_id=? AND enabled=1').bind(user.id).first();
+   if(!factor)return response({error:'MFA not enabled'},409);
+   const counter=await verifyTotp(await decryptSecret(env,factor.encrypted_secret,user.id),code);
+   if(counter<=factor.last_counter)return response({error:'Invalid or previously used authenticator code'},401);
+   const recovery=newRecoveryCodes();
+   const statements=[env.DB.prepare('UPDATE user_totp SET last_counter=? WHERE user_id=? AND last_counter<? AND enabled=1').bind(counter,user.id,counter),env.DB.prepare('DELETE FROM totp_recovery_codes WHERE user_id=?').bind(user.id)];
+   for(const item of recovery)statements.push(env.DB.prepare('INSERT INTO totp_recovery_codes(user_id,code_hash) VALUES(?,?)').bind(user.id,await hashRecovery(item,user.id)));
+   const results=await env.DB.batch(statements);
+   if(results[0]?.meta?.changes!==1)return response({error:'Authenticator code already used'},401);
+   return response({recovery_codes:recovery,message:'Previous recovery codes have been invalidated. Store these new codes securely.'});
+  }
   if(path==='/v1/customer-report-email'&&req.method==='POST'){
     const data=await body(req,3501000);
     const address=String(data.to||'').trim();
