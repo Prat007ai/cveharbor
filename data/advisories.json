@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-30",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6223,
+  "candidate_records": 6228,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -8929,8 +8929,8 @@
       "title": "AdminNeo: CSRF Token Secret Recoverable from Single Observed Token, Enabling Cross-Site Request Forgery",
       "severity": "medium",
       "categories": [
-        "PHP",
-        "Application dependencies"
+        "Application dependencies",
+        "PHP"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -8962,6 +8962,212 @@
       "status": "GitHub reviewed advisory",
       "first_seen_at": "2026-10-30T22:51:24Z",
       "source_updated_at": "2026-10-30T22:51:31Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-96634",
+      "title": "AdminNeo SQLite: multi_query Incorrect Check of Function Return Value RCE",
+      "severity": "medium",
+      "categories": [
+        "PHP",
+        "Application dependencies"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "### Summary This vulnerability is a patch bypass that exploits catastrophic backtracking in a regular expression used to filter ATTACH statements in AdminNeo's SQLite functionality. The original vulnerability (CVE-2021-43008) allowed authenticated users to create PHP files through SQLite ATTACH statements, achieving remote code execution. The patch introduced a regex filter to block ATTACH queries, but this filter is vulnerable to catastrophic backtracking. Originally reported by @zdi-disclosures in Adminer: https://github.com/vrana/adminer/security/advisories/GHSA-3582-q6xq-5vf7 ### Analysis **[Source]** sql.inc.php :: SQL import handler:47 ```php $query = get_file(\"sql_file\", true, \";\"); ``` > User uploads a malicious SQL file through the import form. The file content is read into the `$query` variable without any initial sanitization. **[Transform]** sql.inc.php :: SQL import handler:87 ```php // Query parsing loop that extracts individual SQL statements ``` > The uploaded SQL content is processed in a loop that splits it into individual queries. Each query `$query` is extracted for processing. **[Context]** sql.inc.php :: SQL import handler:65 ```php $space = \"(?:\\\\s|/\\\\*[\\s\\S]*?\\\\*/|(?:#|$line_comment)[^\\n]*\\n?|--\\r?\\n)\"; ``` > Definition of the `$space` regex pattern used i",
+      "affected": "composer: adminneo-org/adminneo (< 5.5.1)",
+      "remediation": "adminneo-org/adminneo: 5.5.1",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-p96f-p2p2-2g3h"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/adminneo-org/adminneo/security/advisories/GHSA-p96f-p2p2-2g3h"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/adminneo-org/adminneo/commit/7e5658ffb0d890cd1a6152a09e3172da85ca4b77"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/adminneo-org/adminneo/releases/tag/v5.5.1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-30T22:54:14Z",
+      "source_updated_at": "2026-10-30T22:53:11Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-96633",
+      "title": "AdminNeo SQLite Database-List Drop Arbitrary File Deletion",
+      "severity": "high",
+      "categories": [
+        "PHP",
+        "Application dependencies"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "## Summary AdminNeo allows an authenticated SQLite-mode user to delete arbitrary files writable by the PHP process through the database-list drop action. The SQLite driver validates file extensions when creating or renaming databases, but the database-list drop path passes submitted `db[]` values directly to `unlink()`. Originally reported by @slpoiuewalspoid-dotcom in Adminer: https://github.com/vrana/adminer/security/advisories/GHSA-6pg3-chwq-wgqc ## Impact An authenticated AdminNeo SQLite user with a valid CSRF token can submit an arbitrary relative file path in the database-list `db[]` field. If the PHP process can delete that path, AdminNeo unlinks it even when the file is not a SQLite database. ## Root Cause The database-list page accepts selected database names from the POST body and calls `drop_databases()`: ```php if ($_POST[\"db\"]) { queries_redirect(substr(ME, 0, -1), lang('Databases have been dropped.'), drop_databases($_POST[\"db\"])); } ``` In SQLite mode, `drop_databases()` attaches an in-memory database and unlinks each submitted path directly: ```php function drop_databases($databases): bool { Connection::get()->close(); // to unlock file, doesn't work in PDO on Windows foreach ($databases as $db) { if (!@unlink($db)) { Connection::get()->setError(lang('File exists.",
+      "affected": "composer: adminneo-org/adminneo (< 5.5.1)",
+      "remediation": "adminneo-org/adminneo: 5.5.1",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-6vfx-w7q3-42gq"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/adminneo-org/adminneo/security/advisories/GHSA-6vfx-w7q3-42gq"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/adminneo-org/adminneo/commit/26fcef2f32922629751cbea6c0bb593fbf1e957d"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/adminneo-org/adminneo/releases/tag/v5.5.1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.1",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-30T22:54:14Z",
+      "source_updated_at": "2026-10-30T22:53:01Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-96631",
+      "title": "AdminNeo has Cookie Attribute Injection via Unsanitized X-Forwarded-Prefix in Set-Cookie Headers",
+      "severity": "high",
+      "categories": [
+        "PHP",
+        "Application dependencies"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "### Summary AdminNeo versions 4.6.0 through at least 5.5.0 are vulnerable to cookie attribute injection via the `X-Forwarded-Prefix` HTTP header. An attacker who can influence this header (e.g., through a reverse proxy that forwards it from clients, an attacker-controlled upstream proxy, or a man-in-the-middle position) can inject arbitrary cookie attributes including `Domain`, `Path`, `Secure`, and `SameSite` into all `Set-Cookie` response headers emitted by AdminNeo. This allows an attacker to expand the cookie scope to an attacker-controlled domain (e.g., `Domain=.evil.com`), causing the victim's browser to send AdminNeo's `neo_sid` (session ID) and `neo_key` (database password encryption key) cookies to the attacker's server on subsequent requests. Originally reported by @retkoussa in Adminer: https://github.com/vrana/adminer/security/advisories/GHSA-c533-9qwm-8w5h ### Vulnerable Code **Root cause 1 - Unsanitized header prepended to `REQUEST_URI`** (`admin/include/bootstrap.inc.php`, lines 50–52): ```php if ($_SERVER[\"HTTP_X_FORWARDED_PREFIX\"]) { $_SERVER[\"REQUEST_URI\"] = $_SERVER[\"HTTP_X_FORWARDED_PREFIX\"] . $_SERVER[\"REQUEST_URI\"]; } ``` The client-supplied `X-Forwarded-Prefix` header is concatenated into `REQUEST_URI` with no validation or sanitization of special character",
+      "affected": "composer: adminneo-org/adminneo (>= 4.6.0, < 5.5.1)",
+      "remediation": "adminneo-org/adminneo: 5.5.1",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-79wv-8rh2-9vp2"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/adminneo-org/adminneo/security/advisories/GHSA-79wv-8rh2-9vp2"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/adminneo-org/adminneo/commit/aa6f2544a8a65cf5e8317f1a902f74181e136d64"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/adminneo-org/adminneo/releases/tag/v5.5.1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.2",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-30T22:54:14Z",
+      "source_updated_at": "2026-10-30T22:52:48Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-96632",
+      "title": "AdminNeo Vulnerable to XSS via Rogue MySQL Server Version String (CSP Nonce Bypass)",
+      "severity": "high",
+      "categories": [
+        "PHP",
+        "MySQL / MariaDB",
+        "Application dependencies"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "## Summary AdminNeo inserts the database server's version string into a `<script>` tag that carries a valid CSP nonce, without any sanitization. A rogue database server can return a crafted version string that breaks out of the JavaScript context and executes arbitrary code. Because the script tag already has a valid nonce, the browser's Content Security Policy does not block execution. No authentication is required when combined with Login CSRF. Originally reported in Adminer: https://github.com/vrana/adminer/security/advisories/GHSA-h6jr-7pr6-grgj ## Prerequisites - Target runs AdminNeo - Attacker controls a reachable MySQL server (a 80-line Python script) ## Root Cause `admin/core/Admin.php`, lines 1285-1286: ```php echo script(\"let autocompletion;\\nwindow.addEventListener('DOMContentLoaded', () => { initSyntaxHighlighting('\" . Connection::get()->getVersion() . \"', '\" . Connection::get()->getFlavor() . \"', autocompletion); });\"); ``` `script()` wraps the output in `<script nonce=\"VALID_NONCE\">`. Return value of `Connection::get()->getVersion()` is not escaped. ## Steps To Reproduce ### 1. Build the environment **Dockerfile** (AdminNeo): ```dockerfile FROM php:8.3-cli COPY adminneo.php /var/www/adminneo.php WORKDIR /var/www EXPOSE 8081 CMD [\"php\", \"-S\", \"0.0.0.0:8081\"] ``` **ro",
+      "affected": "composer: adminneo-org/adminneo (< 5.5.1)",
+      "remediation": "adminneo-org/adminneo: 5.5.1",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-rx7m-wxwq-vxr9"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/adminneo-org/adminneo/security/advisories/GHSA-rx7m-wxwq-vxr9"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/vrana/adminer/security/advisories/GHSA-h6jr-7pr6-grgj"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/adminneo-org/adminneo/commit/2c86406808bc2517efb35f5595b3a05761c2eacd"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-30T22:54:14Z",
+      "source_updated_at": "2026-10-30T22:52:23Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-96630",
+      "title": "AdminNeo: RCE via SQLite VACUUM INTO (ATTACH Blocklist Bypass)",
+      "severity": "high",
+      "categories": [
+        "PHP",
+        "Application dependencies"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "## Summary Adminer blocks `ATTACH` queries for SQLite to prevent arbitrary file creation. However, `VACUUM INTO` is not blocked and achieves the same result: writing a database file containing attacker-controlled PHP code to any path with any extension. An authenticated SQLite user can write a web shell to the web root and execute commands. Originally reported in Adminer: [GHSA-q4f2-39gr-45jh](https://github.com/vrana/adminer/security/advisories/GHSA-gmx3-g29w-77wf) ## Root Cause sql.inc.php, line 146: ```php if (DIALECT == \"sqlite\" && preg_match(\"~^$space*+ATTACH\\\\b~i\", $q, $match)) { // blocked } ``` Only `ATTACH` is in the blocklist. `VACUUM INTO` (available since SQLite 3.27.0) writes the entire database to a new file at an arbitrary path with an arbitrary extension. It is not checked. ## Steps To Reproduce ### 1. Login to SQLite 1. Open AdminNeo and select driver: **SQLite** 2. Login and create a new database (e.g., `stage.db`) ### 2. Inject PHP code and write the shell Navigate to **SQL command** and execute: ```sql CREATE TABLE \"<?php system($_GET['c']); ?>\" (i int); VACUUM INTO '/var/www/html/shell.php'; ``` The SQLite file is written to `/var/www/html/shell.php`. The table name containing `<?php` appears as raw bytes in the file. PHP's parser finds and executes it. ### 3",
+      "affected": "composer: adminneo-org/adminneo (< 5.5.1)",
+      "remediation": "adminneo-org/adminneo: 5.5.1",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-q5mp-gfjf-cf2j"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/adminneo-org/adminneo/security/advisories/GHSA-q5mp-gfjf-cf2j"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/adminneo-org/adminneo/commit/cf45efb3ac34e5e7b699cdc996f6eec2814ccda1"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/adminneo-org/adminneo/releases/tag/v5.5.1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-30T22:54:14Z",
+      "source_updated_at": "2026-10-30T22:51:38Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -68416,51 +68622,6 @@
       "epss_as_of": "2026-10-30"
     },
     {
-      "id": "CVE-2026-102870",
-      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core",
-        "Linux"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
-      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
-      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
-      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft corrected Blazor debugger security advisory",
-          "url": "https://github.com/dotnet/announcements/issues/492"
-        },
-        {
-          "label": "ASP.NET Core GHSA vendor record",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
-        },
-        {
-          "label": "Ubuntu Security Notice",
-          "url": "https://ubuntu.com/security/notices/USN-8958-1"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-25",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00906,
-      "epss_percentile": 0.59766,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2026-96951",
       "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
       "severity": "high",
@@ -68503,6 +68664,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.09813,
       "epss_percentile": 0.95536,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2026-102870",
+      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core",
+        "Linux"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
+      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
+      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
+      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "ASP.NET Core GHSA vendor record",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
+        },
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8958-1"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-25",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00906,
+      "epss_percentile": 0.59766,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -119249,146 +119455,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-69301",
-      "title": "CVE-2026-69301 Windows Win32k Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-09",
-      "summary": "<p>Stack-based buffer overflow in Windows Win32K allows an authorized attacker to elevate privileges over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69301"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69322",
-      "title": "CVE-2026-69322 Microsoft Windows Search Component Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-09",
-      "summary": "<p>Double free in Microsoft Windows Search Component allows an authorized attacker to elevate privileges over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69322"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69324",
-      "title": "CVE-2026-69324 Windows Performance Monitor Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-09",
-      "summary": "<p>Access of resource using incompatible type ('type confusion') in Windows Performance Monitor allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69324"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69340",
-      "title": "CVE-2026-69340 Windows NTFS Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-09",
-      "summary": "<p>Heap-based buffer overflow in Windows NTFS allows an authorized attacker to elevate privileges over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69340"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69385",
-      "title": "CVE-2026-69385 Windows TCP/IP Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-10-09",
-      "summary": "<p>Concurrent execution using shared resource with improper synchronization ('race condition') in Windows TCP/IP allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69385"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-96940",
       "title": "Microsoft Exchange Server SE weak authentication privilege escalation",
       "severity": "high",
@@ -138716,37 +138782,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2025-7624",
-      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
-      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
-      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.10514,
-      "epss_percentile": 0.95752,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2025-6704",
       "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
       "severity": "critical",
@@ -138775,6 +138810,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.11772,
       "epss_percentile": 0.96066,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2025-7624",
+      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
+      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
+      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.10514,
+      "epss_percentile": 0.95752,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -159237,85 +159303,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T22:51:24Z",
-      "last_attempt": "2026-10-30T22:51:24Z",
-      "items_processed": 268,
+      "last_success": "2026-10-30T22:54:14Z",
+      "last_attempt": "2026-10-30T22:54:14Z",
+      "items_processed": 272,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T22:51:24Z",
-      "last_attempt": "2026-10-30T22:51:24Z",
+      "last_success": "2026-10-30T22:54:14Z",
+      "last_attempt": "2026-10-30T22:54:14Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T22:51:24Z",
-      "last_attempt": "2026-10-30T22:51:24Z",
+      "last_success": "2026-10-30T22:54:14Z",
+      "last_attempt": "2026-10-30T22:54:14Z",
       "items_processed": 1956,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T22:51:24Z",
-      "last_attempt": "2026-10-30T22:51:24Z",
+      "last_success": "2026-10-30T22:54:14Z",
+      "last_attempt": "2026-10-30T22:54:14Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T22:51:24Z",
-      "last_attempt": "2026-10-30T22:51:24Z",
+      "last_success": "2026-10-30T22:54:14Z",
+      "last_attempt": "2026-10-30T22:54:14Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T22:51:24Z",
-      "last_attempt": "2026-10-30T22:51:24Z",
+      "last_success": "2026-10-30T22:54:14Z",
+      "last_attempt": "2026-10-30T22:54:14Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T22:51:24Z",
-      "last_attempt": "2026-10-30T22:51:24Z",
+      "last_success": "2026-10-30T22:54:14Z",
+      "last_attempt": "2026-10-30T22:54:14Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T22:51:24Z",
-      "last_attempt": "2026-10-30T22:51:24Z",
+      "last_success": "2026-10-30T22:54:14Z",
+      "last_attempt": "2026-10-30T22:54:14Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T22:51:24Z",
-      "last_attempt": "2026-10-30T22:51:24Z",
+      "last_success": "2026-10-30T22:54:14Z",
+      "last_attempt": "2026-10-30T22:54:14Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T22:51:24Z",
-      "last_attempt": "2026-10-30T22:51:24Z",
+      "last_success": "2026-10-30T22:54:14Z",
+      "last_attempt": "2026-10-30T22:54:14Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T22:51:24Z",
-      "last_attempt": "2026-10-30T22:51:24Z",
+      "last_success": "2026-10-30T22:54:14Z",
+      "last_attempt": "2026-10-30T22:54:14Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T22:51:24Z",
-      "last_attempt": "2026-10-30T22:51:24Z",
+      "last_success": "2026-10-30T22:54:14Z",
+      "last_attempt": "2026-10-30T22:54:14Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -159327,7 +159393,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T22:51:24Z",
-  "last_successful_update": "2026-10-30T22:51:24Z",
+  "last_checked_at": "2026-10-30T22:54:14Z",
+  "last_successful_update": "2026-10-30T22:54:14Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
