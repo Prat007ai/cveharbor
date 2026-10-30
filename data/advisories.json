@@ -8584,7 +8584,7 @@
       "cvss": "8.6",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T20:53:09Z",
-      "source_updated_at": "2026-10-30T20:17:11.727",
+      "source_updated_at": "2026-10-30T23:17:12.457",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -9227,6 +9227,7 @@
       "severity": "high",
       "categories": [
         "Application dependencies",
+        "JavaScript / TypeScript",
         "Linux",
         "Python / PyPI"
       ],
@@ -9273,6 +9274,7 @@
       "severity": "medium",
       "categories": [
         "Application dependencies",
+        "Linux",
         "PHP",
         "Windows"
       ],
@@ -9798,7 +9800,8 @@
       "title": "MariaDB Connector/J: LOAD DATA LOCAL INFILE file check could be satisfied by text inside quoted identifiers, letting a malicious server read client files",
       "severity": "medium",
       "categories": [
-        "MySQL / MariaDB"
+        "MySQL / MariaDB",
+        "React / Next.js"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -10094,7 +10097,8 @@
       "categories": [
         "Application dependencies",
         "Linux",
-        "Node.js / npm"
+        "Node.js / npm",
+        "React / Next.js"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -10470,8 +10474,9 @@
       "title": "@hapi/content: quadratic-time parsing of Content-Disposition parameters allows denial of service",
       "severity": "high",
       "categories": [
+        "Application dependencies",
         "Node.js / npm",
-        "Application dependencies"
+        "React / Next.js"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -10511,8 +10516,8 @@
       "title": "Forge: ASN.1 OID first arc truncation in asn1.oidToDer",
       "severity": "low",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -10552,8 +10557,8 @@
       "title": "Forge: Prototype Pollution in forge.http cookie handling via a malicious Set-Cookie",
       "severity": "medium",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -10593,8 +10598,8 @@
       "title": "Forge: Regular expression denial of service in PEM decoding (pem.decode)",
       "severity": "high",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -10634,8 +10639,8 @@
       "title": "Forge: Denial of Service via infinite loop in BigInteger.modInverse() with negative input (incomplete fix of CVE-2026-33891)",
       "severity": "low",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -10675,8 +10680,8 @@
       "title": "Forge: verifyCertificateChain() removes trusted CA certificates with the same subject from the CA store",
       "severity": "low",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -10716,8 +10721,8 @@
       "title": "Forge: AES-GCM authentication bypass via unvalidated tagLength option",
       "severity": "medium",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -10757,8 +10762,8 @@
       "title": "Forge: PKCS#12 MAC forgery and constant-key PBE via zero iteration count",
       "severity": "high",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -10798,8 +10803,8 @@
       "title": "Forge: X.509 basicConstraints bypass in verifyCertificateChain() via deprecated extension OIDs 2.5.29.10 and 2.5.29.13",
       "severity": "high",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -10839,8 +10844,8 @@
       "title": "OpenWISP Controller CA CRL REST API does not scope requests to managed organizations",
       "severity": "medium",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Python / PyPI"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -10880,8 +10885,9 @@
       "title": "signalk-server has SSRF via absolute signalk.appIcon URL in the app store icon fetcher",
       "severity": "medium",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Docker / Kubernetes",
+        "Node.js / npm"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -10921,8 +10927,8 @@
       "title": "Signal K resources API path traversal can disclose the JWT signing secret and enable remote code execution",
       "severity": "critical",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-30",
       "updated": "2026-10-30",
@@ -10954,6 +10960,144 @@
       "status": "GitHub reviewed advisory",
       "first_seen_at": "2026-10-30T23:12:01Z",
       "source_updated_at": "2026-10-30T22:57:23Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119203",
+      "title": "pypdf has possible infinite loop when hitting EOF in standard xref table during trailer search",
+      "severity": "high",
+      "categories": [
+        "Application dependencies",
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "### Impact An attacker who uses this vulnerability can craft a PDF which leads to an infinite loop. This requires opening an incomplete file without a `trailer`. ### Patches This has been fixed in [pypdf==6.21.4](https://github.com/py-pdf/pypdf/releases/tag/6.21.4). ### Workarounds If you cannot upgrade yet, consider applying the changes from PR [#4289](https://github.com/py-pdf/pypdf/pull/4289).",
+      "affected": "pip: pypdf (< 6.21.4)",
+      "remediation": "pypdf: 6.21.4",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119203"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-119203"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-5849-834g-hvw5"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/py-pdf/pypdf/security/advisories/GHSA-5849-834g-hvw5"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/py-pdf/pypdf/pull/4289"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "2026-10-30T23:13:17Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119204",
+      "title": "pypdf has possible large memory usage when parsing page tree",
+      "severity": "high",
+      "categories": [
+        "Application dependencies",
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "### Impact An attacker who uses this vulnerability can craft a PDF which leads to large memory usage. This requires parsing the page tree with many shared resources. ### Patches This has been fixed in [pypdf==6.21.4](https://github.com/py-pdf/pypdf/releases/tag/6.21.4). ### Workarounds If you cannot upgrade yet, consider applying the changes from PR [#4290](https://github.com/py-pdf/pypdf/pull/4290).",
+      "affected": "pip: pypdf (< 6.21.4)",
+      "remediation": "pypdf: 6.21.4",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119204"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-119204"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-cggf-277g-3q54"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/py-pdf/pypdf/security/advisories/GHSA-cggf-277g-3q54"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/py-pdf/pypdf/pull/4290"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "2026-10-30T23:13:02Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119205",
+      "title": "pypdf has possible infinite loop when cloning dictionaries",
+      "severity": "high",
+      "categories": [
+        "Application dependencies",
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "### Impact An attacker who uses this vulnerability can craft a PDF which leads to an infinite loop. This requires cloning/duplicating a `DictionaryObject`. ### Patches This has been fixed in [pypdf==6.21.4](https://github.com/py-pdf/pypdf/releases/tag/6.21.4). ### Workarounds If you cannot upgrade yet, consider applying the changes from PR [#4288](https://github.com/py-pdf/pypdf/pull/4288).",
+      "affected": "pip: pypdf (< 6.21.4)",
+      "remediation": "pypdf: 6.21.4",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119205"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-119205"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-mfr5-77xh-9j7h"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/py-pdf/pypdf/security/advisories/GHSA-mfr5-77xh-9j7h"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/py-pdf/pypdf/pull/4288"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-29T21:19:09Z",
+      "source_updated_at": "2026-10-30T23:12:21Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -11550,105 +11694,6 @@
       "first_seen_at": "2026-10-29T18:23:28Z",
       "source_updated_at": "2026-10-30T19:37:07.073",
       "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119203",
-      "title": "pypdf: pypdf: Denial of Service via infinite loop on crafted incomplete PDF",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-30",
-      "summary": "pypdf: pypdf: Denial of Service via infinite loop on crafted incomplete PDF",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119203"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119203"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119204",
-      "title": "pypdf: pypdf: Denial of Service via excessive memory consumption during PDF parsing",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-30",
-      "summary": "pypdf: pypdf: Denial of Service via excessive memory consumption during PDF parsing",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119204"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119204"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-119205",
-      "title": "pypdf: pypdf: Denial of Service via infinite loop during dictionary cloning",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-30",
-      "summary": "pypdf: pypdf: Denial of Service via infinite loop during dictionary cloning",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119205"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119205"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-29T21:19:09Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
       "known_exploited": false
     },
     {
@@ -90168,6 +90213,42 @@
       "epss_as_of": "2026-10-30"
     },
     {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60678,
+      "epss_as_of": "2026-10-30"
+    },
+    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -90206,42 +90287,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.558,
-      "epss_as_of": "2026-10-30"
-    },
-    {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60678,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -159866,85 +159911,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T23:12:01Z",
-      "last_attempt": "2026-10-30T23:12:01Z",
-      "items_processed": 265,
+      "last_success": "2026-10-30T23:23:28Z",
+      "last_attempt": "2026-10-30T23:23:28Z",
+      "items_processed": 264,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T23:12:01Z",
-      "last_attempt": "2026-10-30T23:12:01Z",
+      "last_success": "2026-10-30T23:23:28Z",
+      "last_attempt": "2026-10-30T23:23:28Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T23:12:01Z",
-      "last_attempt": "2026-10-30T23:12:01Z",
-      "items_processed": 1956,
+      "last_success": "2026-10-30T23:23:28Z",
+      "last_attempt": "2026-10-30T23:23:28Z",
+      "items_processed": 1954,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T23:12:01Z",
-      "last_attempt": "2026-10-30T23:12:01Z",
+      "last_success": "2026-10-30T23:23:28Z",
+      "last_attempt": "2026-10-30T23:23:28Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T23:12:01Z",
-      "last_attempt": "2026-10-30T23:12:01Z",
+      "last_success": "2026-10-30T23:23:28Z",
+      "last_attempt": "2026-10-30T23:23:28Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T23:12:01Z",
-      "last_attempt": "2026-10-30T23:12:01Z",
+      "last_success": "2026-10-30T23:23:28Z",
+      "last_attempt": "2026-10-30T23:23:28Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T23:12:01Z",
-      "last_attempt": "2026-10-30T23:12:01Z",
+      "last_success": "2026-10-30T23:23:28Z",
+      "last_attempt": "2026-10-30T23:23:28Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T23:12:01Z",
-      "last_attempt": "2026-10-30T23:12:01Z",
+      "last_success": "2026-10-30T23:23:28Z",
+      "last_attempt": "2026-10-30T23:23:28Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T23:12:01Z",
-      "last_attempt": "2026-10-30T23:12:01Z",
+      "last_success": "2026-10-30T23:23:28Z",
+      "last_attempt": "2026-10-30T23:23:28Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T23:12:01Z",
-      "last_attempt": "2026-10-30T23:12:01Z",
+      "last_success": "2026-10-30T23:23:28Z",
+      "last_attempt": "2026-10-30T23:23:28Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T23:12:01Z",
-      "last_attempt": "2026-10-30T23:12:01Z",
+      "last_success": "2026-10-30T23:23:28Z",
+      "last_attempt": "2026-10-30T23:23:28Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T23:12:01Z",
-      "last_attempt": "2026-10-30T23:12:01Z",
+      "last_success": "2026-10-30T23:23:28Z",
+      "last_attempt": "2026-10-30T23:23:28Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -159956,7 +160001,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T23:12:01Z",
-  "last_successful_update": "2026-10-30T23:12:01Z",
+  "last_checked_at": "2026-10-30T23:23:28Z",
+  "last_successful_update": "2026-10-30T23:23:28Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
