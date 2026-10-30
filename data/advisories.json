@@ -71201,42 +71201,6 @@
       "epss_as_of": "2026-10-30"
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60678,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -71275,6 +71239,42 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.558,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60678,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -141070,85 +141070,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T00:23:57Z",
-      "last_attempt": "2026-10-30T00:23:57Z",
+      "last_success": "2026-10-30T00:26:38Z",
+      "last_attempt": "2026-10-30T00:26:38Z",
       "items_processed": 295,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T00:23:57Z",
-      "last_attempt": "2026-10-30T00:23:57Z",
+      "last_success": "2026-10-30T00:26:38Z",
+      "last_attempt": "2026-10-30T00:26:38Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T00:23:57Z",
-      "last_attempt": "2026-10-30T00:23:57Z",
+      "last_success": "2026-10-30T00:26:38Z",
+      "last_attempt": "2026-10-30T00:26:38Z",
       "items_processed": 761,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T00:23:57Z",
-      "last_attempt": "2026-10-30T00:23:57Z",
+      "last_success": "2026-10-30T00:26:38Z",
+      "last_attempt": "2026-10-30T00:26:38Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T00:23:57Z",
-      "last_attempt": "2026-10-30T00:23:57Z",
+      "last_success": "2026-10-30T00:26:38Z",
+      "last_attempt": "2026-10-30T00:26:38Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T00:23:57Z",
-      "last_attempt": "2026-10-30T00:23:57Z",
+      "last_success": "2026-10-30T00:26:38Z",
+      "last_attempt": "2026-10-30T00:26:38Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T00:23:57Z",
-      "last_attempt": "2026-10-30T00:23:57Z",
+      "last_success": "2026-10-30T00:26:38Z",
+      "last_attempt": "2026-10-30T00:26:38Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T00:23:57Z",
-      "last_attempt": "2026-10-30T00:23:57Z",
+      "last_success": "2026-10-30T00:26:38Z",
+      "last_attempt": "2026-10-30T00:26:38Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T00:23:57Z",
-      "last_attempt": "2026-10-30T00:23:57Z",
+      "last_success": "2026-10-30T00:26:38Z",
+      "last_attempt": "2026-10-30T00:26:38Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T00:23:57Z",
-      "last_attempt": "2026-10-30T00:23:57Z",
+      "last_success": "2026-10-30T00:26:38Z",
+      "last_attempt": "2026-10-30T00:26:38Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T00:23:57Z",
-      "last_attempt": "2026-10-30T00:23:57Z",
+      "last_success": "2026-10-30T00:26:38Z",
+      "last_attempt": "2026-10-30T00:26:38Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T00:23:57Z",
-      "last_attempt": "2026-10-30T00:23:57Z",
+      "last_success": "2026-10-30T00:26:38Z",
+      "last_attempt": "2026-10-30T00:26:38Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -141160,7 +141160,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T00:23:57Z",
-  "last_successful_update": "2026-10-30T00:23:57Z",
+  "last_checked_at": "2026-10-30T00:26:38Z",
+  "last_successful_update": "2026-10-30T00:26:38Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
