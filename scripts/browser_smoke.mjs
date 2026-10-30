@@ -891,3 +891,12 @@ assert.ok(recoveryClient.includes("navigator.clipboard.writeText(code)"),'indivi
 assert.ok(recoveryClient.includes("'/auth/totp/recovery/rotate'"),'rotation requires a separate authenticated request');
 assert.ok(recoveryWorker.includes("'/v1/auth/totp/recovery/rotate'"),'Worker implements recovery code rotation');
 assert.ok(recoveryWorker.includes("last_counter<? AND enabled=1"),'rotation prevents reuse of an authenticator code');
+
+const workspaceMarkup=fs.readFileSync('workspace/index.html','utf8');
+const accountSecurityMarkup=fs.readFileSync('account/index.html','utf8');
+const sidebarScript=fs.readFileSync('command-center.js','utf8');
+assert.ok(workspaceMarkup.includes('accountPageRequest')&&workspaceMarkup.includes('accountPageRequiredEnroll'),'Workspace includes full email and MFA sign in');
+assert.ok(workspaceMarkup.includes('accountPageTotpVerify')&&workspaceMarkup.includes('accountPageTotpRecovery'),'Workspace retains MFA recovery functionality');
+assert.ok(workspaceMarkup.includes('workspaceAccess'),'Workspace shows authenticated destinations');
+assert.ok(accountSecurityMarkup.includes('account-settings-page')&&accountSecurityMarkup.includes('account-profile-card'),'Account focuses on profile and security');
+assert.ok(sidebarScript.includes("link.dataset.requiresAuth='true'")&&sidebarScript.includes("info?.authenticated"),'protected sidebar requires verified API session');
