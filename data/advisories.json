@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-30",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6211,
+  "candidate_records": 6216,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -955,7 +955,7 @@
     {
       "id": "CVE-2026-107306",
       "title": "Improper Neutralization of Input During Web Page Generation (\"Cross-site Scripting\") vulnerability in Drupal Menu Link Attributes allows Stored XSS",
-      "severity": "bulletin",
+      "severity": "low",
       "categories": [
         "Drupal / CMS"
       ],
@@ -973,17 +973,17 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "3.8",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T19:27:58.620",
+      "source_updated_at": "2026-10-30T21:16:49.710",
       "source_type": "nvd",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-107307",
       "title": "Incorrect Authorization vulnerability in Drupal SmartLinker AI allows Forceful Browsing",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "Drupal / CMS"
       ],
@@ -1001,17 +1001,17 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "4.3",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T19:27:58.620",
+      "source_updated_at": "2026-10-30T21:16:49.863",
       "source_type": "nvd",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-107308",
       "title": "Improper Neutralization of Input During Web Page Generation (\"Cross-site Scripting\") vulnerability in Drupal Country allows Cross-Site Scripting (XSS)",
-      "severity": "bulletin",
+      "severity": "low",
       "categories": [
         "Drupal / CMS"
       ],
@@ -1029,10 +1029,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "3.1",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T19:27:58.620",
+      "source_updated_at": "2026-10-30T21:16:50.017",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -1111,7 +1111,7 @@
     {
       "id": "CVE-2026-107311",
       "title": "Improper Check for Unusual or Exceptional Conditions vulnerability in Drupal Permissions by Term allows Forceful Browsing",
-      "severity": "bulletin",
+      "severity": "low",
       "categories": [
         "Drupal / CMS"
       ],
@@ -1129,17 +1129,17 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "3.7",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T19:27:58.620",
+      "source_updated_at": "2026-10-30T21:16:50.463",
       "source_type": "nvd",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-107312",
       "title": "Allocation of Resources Without Limits or Throttling vulnerability in Drupal Examples for Developers allows Excessive Allocation",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "Drupal / CMS"
       ],
@@ -1157,10 +1157,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "4.3",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T04:58:03Z",
-      "source_updated_at": "2026-10-30T19:27:58.620",
+      "source_updated_at": "2026-10-30T21:16:50.600",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -8457,6 +8457,146 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T20:53:09Z",
       "source_updated_at": "2026-10-30T20:17:17.843",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-62848",
+      "title": "Metalama is a Roslyn-based open-source patterns and architecture toolkit for C#",
+      "severity": "high",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "Metalama is a Roslyn-based open-source patterns and architecture toolkit for C#. From 2023.0.101-rc until 2025.1.18, 2026.0.25 and 2026.1.19, the Windows Visual Studio integration deserializes local named-pipe messages without restricting which CLR types can be instantiated. The pipe connects `devenv`, the out-of-process Roslyn code-analysis process and the `CodeLens` process, and has the predictable name `Metalama_{role}_{processId}_{hash(PackageVersion)}`. Releases from the first public 2023.0 line through 2026.0.x use Newtonsoft.Json with `TypeNameHandling.All`; the later `SerializationBinder` only remaps assembly names, and `BindToType` resolves arbitrary wire-supplied types without an allow-list. Releases 2026.1.0 through 2026.1.18 use typeless MessagePack with `TypelessObjectResolver` and likewise instantiate arbitrary types. A same-user local process able to write to the pipe can send crafted messages that lead to arbitrary code execution with confidentiality, integrity and availability impacts inside the affected Visual Studio process. Default Windows pipe ACLs limit writers to the same logged-in user, so this does not escalate privileges or cross a security boundary; command-line and MSBuild-only builds do not use the cha",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-62848"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T21:29:48Z",
+      "source_updated_at": "2026-10-30T21:17:13.957",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-62863",
+      "title": "MoLing is a computer-use and browser-use based MCP server",
+      "severity": "critical",
+      "categories": [
+        "Application dependencies"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "MoLing is a computer-use and browser-use based MCP server. Prior to 0.5.0, when MoLing runs in SSE mode using `-l`, its `/sse` and `/message` HTTP endpoints do not authenticate requests and the `mcp-go` dependency sets `Access-Control-Allow-Origin: *`. A malicious web page can open a cross-origin `EventSource` to `/sse`, including a loopback listener, and read the `endpoint` event to obtain `sessionId`. After a victim running SSE mode visits that page, the attacker can use the disclosed `sessionId` against `/message` to send unauthorized MCP tool calls. Depending on the configured tools, those calls can read or write local files, execute commands or perform other actions. Binding only to loopback does not prevent this browser-mediated attack. This issue is fixed in version 0.5.0.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-62863"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.6",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T21:29:48Z",
+      "source_updated_at": "2026-10-30T21:17:14.547",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-62864",
+      "title": "Ring is a Clojure web applications library inspired by Python's WSGI and Ruby's Rack",
+      "severity": "high",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "Ring is a Clojure web applications library inspired by Python's WSGI and Ruby's Rack. Prior to 1.15.5, `wrap-nested-params` in the `ring.middleware.nested-params` namespace uses a backtracking regular expression to match parameter names from URL query strings and HTTP request bodies. An attacker can craft a parameter name that drives quadratic O(n^2) matching work, causing regular-expression denial of service in applications using the middleware. `Ring-Defaults` users are also exposed because nested-params is enabled by default. Applications omitting the middleware do not expose this parsing path. This issue is fixed in version 1.15.5.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-62864"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T21:29:48Z",
+      "source_updated_at": "2026-10-30T21:17:14.693",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-62989",
+      "title": "Shopper is a Headless e-commerce Admin Panel",
+      "severity": "high",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "Shopper is a Headless e-commerce Admin Panel. Prior to 2.10.0, the Variants Livewire component in `packages/admin/src/Livewire/Components/Products/Form/Variants.php` exposes `DeleteAction` and `DeleteBulkAction` without server-side authorization. An authenticated staff user with `edit_products` can access `/shopper/products/{id}/edit` and obtain the signed component state even without `delete_product_variants`. The `callTableAction` and `callTableBulkAction` paths then permanently delete individual or multiple variants without checking that dedicated permission. For variant products, this can destroy the sellable catalogue and disrupt storefront product pages, cart, and checkout. This issue is fixed in version 2.10.0.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-62989"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T21:29:48Z",
+      "source_updated_at": "2026-10-30T21:17:15.997",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-62991",
+      "title": "Shopper is a Headless e-commerce Admin Panel",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-10-30",
+      "summary": "Shopper is a Headless e-commerce Admin Panel. Prior to 2.10.1, the customer detail route `/cpanel/customers/{user}/show` in `packages/admin/src/Livewire/Pages/Customers/Show.php` checks `read_customers` but looks up an arbitrary user ID without applying the `customers` role scope used by the listing. Authenticated staff holding `access_dashboard` and `read_customers` can change the user ID to retrieve administrator or staff profiles despite lacking `view_users`, which protects the separate team-management interface. The flaw exposes account profile data and permits user-ID enumeration through differing success, denial, and not-found responses. If the same role also holds `delete_customers`, `anonymizeAction()` operates on the unrestricted loaded user model and can enable destructive follow-up against non-customer accounts. This issue is fixed in version 2.10.1.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-62991"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T21:29:48Z",
+      "source_updated_at": "2026-10-30T21:17:16.310",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -31242,6 +31382,91 @@
       "epss_as_of": "2026-10-30"
     },
     {
+      "id": "CVE-2026-114620",
+      "title": "Authlib: Unvalidated request_uri fetch in JWT-secured authorization request (JAR) leading to SSRF",
+      "severity": "medium",
+      "categories": [
+        "Application dependencies",
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-30",
+      "summary": "### Summary Authlib's RFC 9101 (JAR) extension passes the attacker-controlled `request_uri` authorization parameter straight to the `get_request_object()` fetch hook with no validation, at a pre-authentication endpoint. Authlib already defines the pre-registration allowlist for this (`request_uris` client metadata and `require_request_uri_registration` server metadata) but the extension never consults it, and both docstrings instruct integrators to implement the hook as an unrestricted `requests.get(request_uri)`. Deployments following the documented pattern get an unauthenticated SSRF primitive. ### Details Verified against authlib 1.7.2 and current `main`. All line numbers below are from `authlib/oauth2/rfc9101/authorization_server.py`. The extension registers itself on the `before_get_authorization_grant` hook (lines 62-65), so it runs on every authorization request before any user or client authentication. `support_request_uri` defaults to `True` (line 58). The only gate before the sink is that `client_id` names an existing client (lines 91-103). A `client_id` is a public, non-secret identifier. The sink at line 159 forwards the raw parameter with no scheme, host, or allowlist check: ```python def _get_raw_request_object(self, request: OAuth2Request) -> str: if \"request_uri\" ",
+      "affected": "pip: authlib (>= 1.6.0, < 1.9.0)",
+      "remediation": "authlib: 1.9.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-x4rv-c3wx-4cr8"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/authlib/authlib/security/advisories/GHSA-x4rv-c3wx-4cr8"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-114620"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/authlib/authlib/pull/949"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-114620"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.4",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "2026-10-27T15:39:20Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.0029,
+      "epss_percentile": 0.21575,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2026-116672",
+      "title": "authlib: authlib: Authorization bypass via missing client token verification",
+      "severity": "high",
+      "categories": [
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-10-30",
+      "summary": "authlib: authlib: Authorization bypass via missing client token verification",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116672"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-116672"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.00274,
+      "epss_percentile": 0.19797,
+      "epss_as_of": "2026-10-30"
+    },
+    {
       "id": "CVE-2026-110816",
       "title": "qs : qs.stringify with arrayFormat 'comma' throws an uncaught TypeError on array elements carrying a non-callable own toString (DoS)",
       "severity": "medium",
@@ -31980,55 +32205,6 @@
       "known_exploited": false,
       "epss": 0.00177,
       "epss_percentile": 0.07248,
-      "epss_as_of": "2026-10-30"
-    },
-    {
-      "id": "CVE-2026-114620",
-      "title": "Authlib: Unvalidated request_uri fetch in JWT-secured authorization request (JAR) leading to SSRF",
-      "severity": "medium",
-      "categories": [
-        "Application dependencies",
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-29",
-      "summary": "### Summary Authlib's RFC 9101 (JAR) extension passes the attacker-controlled `request_uri` authorization parameter straight to the `get_request_object()` fetch hook with no validation, at a pre-authentication endpoint. Authlib already defines the pre-registration allowlist for this (`request_uris` client metadata and `require_request_uri_registration` server metadata) but the extension never consults it, and both docstrings instruct integrators to implement the hook as an unrestricted `requests.get(request_uri)`. Deployments following the documented pattern get an unauthenticated SSRF primitive. ### Details Verified against authlib 1.7.2 and current `main`. All line numbers below are from `authlib/oauth2/rfc9101/authorization_server.py`. The extension registers itself on the `before_get_authorization_grant` hook (lines 62-65), so it runs on every authorization request before any user or client authentication. `support_request_uri` defaults to `True` (line 58). The only gate before the sink is that `client_id` names an existing client (lines 91-103). A `client_id` is a public, non-secret identifier. The sink at line 159 forwards the raw parameter with no scheme, host, or allowlist check: ```python def _get_raw_request_object(self, request: OAuth2Request) -> str: if \"request_uri\" ",
-      "affected": "pip: authlib (>= 1.6.0, < 1.9.0)",
-      "remediation": "authlib: 1.9.0",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-x4rv-c3wx-4cr8"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://github.com/authlib/authlib/security/advisories/GHSA-x4rv-c3wx-4cr8"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-114620"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/authlib/authlib/pull/949"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-114620"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.4",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T15:39:20Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.0029,
-      "epss_percentile": 0.21575,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -36768,42 +36944,6 @@
       "known_exploited": false,
       "epss": 0.00242,
       "epss_percentile": 0.15356,
-      "epss_as_of": "2026-10-30"
-    },
-    {
-      "id": "CVE-2026-116672",
-      "title": "authlib: authlib: Authorization bypass via missing client token verification",
-      "severity": "high",
-      "categories": [
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "authlib: authlib: Authorization bypass via missing client token verification",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116672"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-116672"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.8",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00274,
-      "epss_percentile": 0.19797,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -54228,6 +54368,7 @@
       "title": "The A2A server component in Amazon Strands Agents SDK for Python before 1.43.0 and Amazon Strands Agents SDK for TypeScript before 1.5.0 does not properly isolate conversation",
       "severity": "high",
       "categories": [
+        "JavaScript / TypeScript",
         "Python / PyPI"
       ],
       "published": "2026-10-22",
@@ -56625,53 +56766,6 @@
       "epss_as_of": "2026-10-30"
     },
     {
-      "id": "CVE-2026-109618",
-      "title": "RCE via OOM corruption",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-30",
-      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:25Z",
-      "source_type": "php_upstream",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99998,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2026-109619",
       "title": "RCE via stale global state",
       "severity": "critical",
@@ -56716,6 +56810,53 @@
       "known_exploited": true,
       "epss": 0.99999,
       "epss_percentile": 0.99999,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2026-109618",
+      "title": "RCE via OOM corruption",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-30",
+      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:25Z",
+      "source_type": "php_upstream",
+      "known_exploited": true,
+      "epss": 0.99999,
+      "epss_percentile": 0.99998,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -57024,8 +57165,8 @@
       "title": "D365 F&O MCP Server is a Model Context Protocol server for querying Dynamics 365 Finance & Operations X++ code and metadata",
       "severity": "high",
       "categories": [
-        "Microsoft 365",
-        "Dynamics 365"
+        "Dynamics 365",
+        "Microsoft 365"
       ],
       "published": "2026-10-21",
       "updated": "2026-10-30",
@@ -88485,6 +88626,42 @@
       "epss_as_of": "2026-10-30"
     },
     {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60678,
+      "epss_as_of": "2026-10-30"
+    },
+    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -88523,42 +88700,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.558,
-      "epss_as_of": "2026-10-30"
-    },
-    {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60678,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -118951,146 +119092,6 @@
       "epss_as_of": "2026-10-30"
     },
     {
-      "id": "CVE-2026-69504",
-      "title": "CVE-2026-69504 Windows NTFS Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-30",
-      "summary": "Out-of-bounds read in Windows NTFS allows an authorized attacker to disclose information locally.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69504"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69712",
-      "title": "CVE-2026-69712 Windows Key Distribution Center Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-30",
-      "summary": "<p>Use after free in Windows Key Distribution Center allows an authorized attacker to execute code over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69712"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-70562",
-      "title": "CVE-2026-70562 Windows Audio Service Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-30",
-      "summary": "<p>Double free in Windows Audio Service allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-70562"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69288",
-      "title": "CVE-2026-69288 Windows GDI+ Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-30",
-      "summary": "Use of uninitialized resource in Windows GDI+ allows an authorized attacker to disclose information locally.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69288"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-69328",
-      "title": "CVE-2026-69328 Windows Storage Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-09-08",
-      "updated": "2026-09-30",
-      "summary": "<p>Untrusted search path in Windows Storage allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69328"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-09-08",
-      "source_type": "msrc_rss",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-85880",
       "title": "CVE-2026-85880 Windows Advanced Local Procedure Call (ALPC) Elevation of Privilege Vulnerability",
       "severity": "bulletin",
@@ -138378,37 +138379,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.11772,
-      "epss_percentile": 0.96066,
-      "epss_as_of": "2026-10-30"
-    },
-    {
       "id": "CVE-2025-7624",
       "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
@@ -138437,6 +138407,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.10514,
       "epss_percentile": 0.95752,
+      "epss_as_of": "2026-10-30"
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.11772,
+      "epss_percentile": 0.96066,
       "epss_as_of": "2026-10-30"
     },
     {
@@ -158899,85 +158900,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-30T20:53:09Z",
-      "last_attempt": "2026-10-30T20:53:09Z",
+      "last_success": "2026-10-30T21:29:48Z",
+      "last_attempt": "2026-10-30T21:29:48Z",
       "items_processed": 275,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-30T20:53:09Z",
-      "last_attempt": "2026-10-30T20:53:09Z",
+      "last_success": "2026-10-30T21:29:48Z",
+      "last_attempt": "2026-10-30T21:29:48Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-30T20:53:09Z",
-      "last_attempt": "2026-10-30T20:53:09Z",
-      "items_processed": 1947,
+      "last_success": "2026-10-30T21:29:48Z",
+      "last_attempt": "2026-10-30T21:29:48Z",
+      "items_processed": 1952,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-30T20:53:09Z",
-      "last_attempt": "2026-10-30T20:53:09Z",
+      "last_success": "2026-10-30T21:29:48Z",
+      "last_attempt": "2026-10-30T21:29:48Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-30T20:53:09Z",
-      "last_attempt": "2026-10-30T20:53:09Z",
+      "last_success": "2026-10-30T21:29:48Z",
+      "last_attempt": "2026-10-30T21:29:48Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-30T20:53:09Z",
-      "last_attempt": "2026-10-30T20:53:09Z",
+      "last_success": "2026-10-30T21:29:48Z",
+      "last_attempt": "2026-10-30T21:29:48Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-30T20:53:09Z",
-      "last_attempt": "2026-10-30T20:53:09Z",
+      "last_success": "2026-10-30T21:29:48Z",
+      "last_attempt": "2026-10-30T21:29:48Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-30T20:53:09Z",
-      "last_attempt": "2026-10-30T20:53:09Z",
+      "last_success": "2026-10-30T21:29:48Z",
+      "last_attempt": "2026-10-30T21:29:48Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-30T20:53:09Z",
-      "last_attempt": "2026-10-30T20:53:09Z",
+      "last_success": "2026-10-30T21:29:48Z",
+      "last_attempt": "2026-10-30T21:29:48Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-30T20:53:09Z",
-      "last_attempt": "2026-10-30T20:53:09Z",
+      "last_success": "2026-10-30T21:29:48Z",
+      "last_attempt": "2026-10-30T21:29:48Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-30T20:53:09Z",
-      "last_attempt": "2026-10-30T20:53:09Z",
+      "last_success": "2026-10-30T21:29:48Z",
+      "last_attempt": "2026-10-30T21:29:48Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-30T20:53:09Z",
-      "last_attempt": "2026-10-30T20:53:09Z",
+      "last_success": "2026-10-30T21:29:48Z",
+      "last_attempt": "2026-10-30T21:29:48Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -158989,7 +158990,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-30T20:53:09Z",
-  "last_successful_update": "2026-10-30T20:53:09Z",
+  "last_checked_at": "2026-10-30T21:29:48Z",
+  "last_successful_update": "2026-10-30T21:29:48Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
