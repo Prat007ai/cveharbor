@@ -1564,3 +1564,30 @@ body.command-center-app{padding-left:74px}
 #inventoryWorkspace .inventory-saved-summary{color:#a8eee0;font-size:13px;padding:8px 12px;background:#0e3445;border:1px solid #326d73;border-radius:8px;margin:8px 0 12px}
 #inventoryWorkspace .inventory-saved-summary[hidden]{display:none!important}
 #inventoryWorkspace .inventory-step-collapsed .inventory-saved-summary{margin:4px 142px 0 0;padding:0;background:transparent;border:0}
+
+/* Review and Complete customer wizard */
+#inventoryWorkspace .inventory-complete-panel{border:1px solid #356a78;border-radius:13px;background:linear-gradient(140deg,#103449,#0b2537);padding:22px;margin:18px 0;display:grid;justify-items:start;gap:10px}
+#inventoryWorkspace .inventory-complete-panel h3{margin:0;font-size:19px}
+#inventoryWorkspace .inventory-complete-panel p{margin:0}
+#inventoryWorkspace .inventory-complete-message{color:#bcdbe5;font-size:13px}
+#inventoryWorkspace .inventory-complete-success{color:#80efce;font-weight:750;padding:12px;border:1px solid #2d8e80;background:#0b393b;border-radius:8px}
+.inventory-review-overlay{position:fixed;inset:0;z-index:12000;background:#020b17da;display:grid;place-items:center;padding:16px}
+.inventory-review-dialog{width:min(780px,100%);max-height:min(85vh,850px);overflow:auto;background:#0e2a3c;color:#effaff;border:1px solid #438395;border-radius:17px;padding:24px;box-shadow:0 30px 90px #000a}
+.inventory-review-header{display:flex;align-items:center;gap:9px;color:#a0eee3;font-weight:750;font-size:13px}
+.inventory-review-icon{display:grid;place-items:center;border:1px solid #3bb9a2;background:#12635d;border-radius:50%;width:30px;height:30px;color:white}
+.inventory-review-dialog h2{font-size:25px;margin:12px 0 18px}
+.inventory-review-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.inventory-review-metric{padding:14px;background:#123b50;border:1px solid #31596d;border-radius:10px}
+.inventory-review-metric strong{display:block;font-size:23px;color:#72ead3}
+.inventory-review-metric span{display:block;font-size:11px;color:#b9d4df}
+.inventory-review-details{max-height:315px;overflow:auto;margin:18px 0;border:1px solid #355c70;border-radius:9px;padding:12px}
+.inventory-review-environment h3{font-size:15px;margin:5px 0 12px;color:#bbefe6}
+.inventory-review-environment+.inventory-review-environment{margin-top:14px;border-top:1px solid #36586c;padding-top:12px}
+.inventory-review-row{display:flex;gap:20px;justify-content:space-between;padding:7px 4px;border-top:1px solid #24495a;font-size:12px}
+.inventory-review-row span{overflow-wrap:anywhere}.inventory-review-row strong{white-space:nowrap;color:#b3eddf}
+.inventory-review-notice{color:#bbd3dd;font-size:12px;line-height:1.6}
+.inventory-review-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+.inventory-review-actions button{padding:10px 20px;border-radius:8px;min-height:40px}
+@media(max-width:600px){.inventory-review-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.inventory-review-dialog{padding:15px}.inventory-review-row{gap:8px}}
+
+#inventoryWorkspace .inventory-complete-panel[hidden]{display:none!important}
