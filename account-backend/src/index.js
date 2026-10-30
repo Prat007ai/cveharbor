@@ -75,7 +75,7 @@ export default {async fetch(req,env,ctx){
   if(path==='/v1/auth/totp/enroll'&&req.method==='POST'){
    if(!env.TOTP_ENCRYPTION_KEY)return response({error:'MFA unavailable'},503);
    const data=await body(req),pending=String(data.mfa_challenge||''),code=String(data.code||''),now=Math.floor(Date.now()/1000);
-   if(!/^[a-f0-9]{64}$/.test(pending)||!/^\\d{6}$/.test(code))return response({error:'Invalid enrollment code'},400);
+   if(!/^[a-f0-9]{64}$/.test(pending)||!/^\d{6}$/.test(code))return response({error:'Invalid enrollment code'},400);
    const ip=req.headers.get('CF-Connecting-IP')||'unknown';
    if(!await limit(env,'enroll-ip:'+await sha(ip),20)||!await limit(env,'enroll-challenge:'+await sha(pending),8))return response({error:'Too many attempts'},429);
    const pendingHash=await sha(pending);
