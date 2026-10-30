@@ -1,0 +1,15 @@
+// RFC 6238 TOTP with encrypted per-user secrets. Keep TOTP_ENCRYPTION_KEY in Worker secrets.
+const encoder=new TextEncoder();
+const bytes=hex=>Uint8Array.from(hex.match(/../g)||[],x=>parseInt(x,16));
+const hex=array=>Array.from(array,x=>x.toString(16).padStart(2,'0')).join('');
+const base32abc='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+export function base32(data){let bits=0,value=0,out='';for(const b of data){value=(value<<8)|b;bits+=8;while(bits>=5){out+=base32abc[(value>>>(bits-=5))&31]}}if(bits)out+=base32abc[(value<<(5-bits))&31];return out}
+export function unbase32(input){let bits=0,value=0,out=[];for(const ch of input.replace(/=+$/,'').toUpperCase()){const i=base32abc.indexOf(ch);if(i<0)throw Error('Invalid secret');value=(value<<5)|i;bits+=5;if(bits>=8){out.push((value>>>(bits-=8))&255)}}return new Uint8Array(out)}
+export async function totp(secret,time=Date.now()){const counter=BigInt(Math.floor(time/30000));const msg=new Uint8Array(8);new DataView(msg.buffer).setBigUint64(0,counter);const key=await crypto.subtle.importKey('raw',unbase32(secret),{name:'HMAC',hash:'SHA-1'},false,['sign']);const digest=new Uint8Array(await crypto.subtle.sign('HMAC',key,msg));const offset=digest[digest.length-1]&15;const n=((digest[offset]&127)<<24)|(digest[offset+1]<<16)|(digest[offset+2]<<8)|digest[offset+3];return String(n%1000000).padStart(6,'0')}
+export async function verifyTotp(secret,code,time=Date.now()){if(!/^\d{6}$/.test(code))return -1;const step=Math.floor(time/30000);for(let delta=-1;delta<=1;delta++){if(await totp(secret,(step+delta)*30000)===code)return step+delta}return -1}
+async function aesKey(env){if(!env.TOTP_ENCRYPTION_KEY||env.TOTP_ENCRYPTION_KEY.length<32)throw Error('MFA encryption key not configured');const raw=await crypto.subtle.digest('SHA-256',encoder.encode(env.TOTP_ENCRYPTION_KEY));return crypto.subtle.importKey('raw',raw,'AES-GCM',false,['encrypt','decrypt'])}
+export async function encryptSecret(env,secret,userId){const iv=crypto.getRandomValues(new Uint8Array(12));const key=await aesKey(env);const data=await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:encoder.encode(userId)},key,encoder.encode(secret));return hex(iv)+':'+hex(new Uint8Array(data))}
+export async function decryptSecret(env,stored,userId){const [iv,data]=String(stored).split(':');if(!/^[a-f0-9]{24}$/.test(iv||'')||!/^[a-f0-9]+$/.test(data||''))throw Error('Invalid MFA secret');const key=await aesKey(env);const raw=await crypto.subtle.decrypt({name:'AES-GCM',iv:bytes(iv),additionalData:encoder.encode(userId)},key,bytes(data));return new TextDecoder().decode(raw)}
+export function newSecret(){return base32(crypto.getRandomValues(new Uint8Array(20)))}
+export function newRecoveryCodes(){return Array.from({length:8},()=>hex(crypto.getRandomValues(new Uint8Array(8))))}
+export async function hashRecovery(code,userId){const raw=await crypto.subtle.digest('SHA-256',encoder.encode(userId+':'+code.toLowerCase().replace(/[^a-f0-9]/g,'')));return hex(new Uint8Array(raw))}
