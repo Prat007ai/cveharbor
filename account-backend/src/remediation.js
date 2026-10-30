@@ -103,43 +103,51 @@ function allowedRecipient(env,sender,recipient){
 function safe(value){return String(value).replace(/[&<>"']/g,ch=>({
   '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
 })[ch]);}
-export function renderAssignmentEmail(cve,recipient,requester){
+export function renderAssignmentEmail(cve,recipient,requester,reviewerNotes=''){
   if(!normalizeId(cve)||!emailPattern.test(recipient)||!emailPattern.test(requester))
     throw new RemediationError('Invalid assignment details');
-  const official='https://www.cve.org/CVERecord?id='+cve;
+  const notes=String(reviewerNotes||'').trim();
+  if(notes.length>1000)throw new RemediationError('Reviewer notes must be 1000 characters or fewer');
+  // Never make unsupported severity, affected product or publication date claims.
+  const official='https://www.cve.org/CVERecord?id='+encodeURIComponent(cve);
+  const nvd='https://nvd.nist.gov/vuln/detail/'+encodeURIComponent(cve);
+  const harbor='https://cveharbor.com/vulnerabilities/?cve='+encodeURIComponent(cve);
   const boards='https://learn.microsoft.com/en-us/azure/devops/boards/work-items/view-add-work-items';
-  const subject='CVEHarbor security review assigned: '+cve;
-  const lines=[
-    'Hello,','',
-    requester+' has asked you to investigate '+cve+'.',
-    'This vulnerability may affect an application, system, or customer environment your organization manages. Exposure has not been confirmed by CVEHarbor. Please review as soon as possible based on severity, known exploitation, and business impact.','',
-    'Requested actions:',
-    '1. Review the official CVE record and vendor guidance. Confirm affected products, versions, and whether any of your environments are exposed.',
-    '2. In your own Azure DevOps organization, create a work item under Boards for this CVE. Record the impacted asset or customer in your private project, priority, remediation owner, target date, and links to the original advisory.',
-    '3. Coordinate patching or mitigations with the appropriate team, test the changes, and record validation results and any accepted risk in DevOps.',
-    '4. Keep the Azure DevOps work item updated through closure and inform the person who assigned this review of the outcome.','',
-    'CVE Program: '+official,
-    'How to create an Azure DevOps work item: '+boards,'',
-    'Please do not place passwords, API keys, customer secrets, or sensitive environment details in public CVEHarbor records or external messages.','',
-    'This is a review request, not a confirmed finding in your environment. It does not create a DevOps work item automatically. If unexpected, contact '+requester+' to verify the request.','',
-    'CVEHarbor | https://cveharbor.com'
-  ];
-  const intro='<p><strong>'+safe(requester)+'</strong> has assigned a vulnerability review for <strong>'+safe(cve)+'</strong>.</p>'+
-    '<p>This vulnerability <strong>may affect</strong> an application, system or customer environment your organization manages. CVEHarbor has not confirmed exposure. Please assess urgency using verified severity and exploitation information.</p>';
+  const subject='[CVEHarbor] Vulnerability review request: '+cve;
+  const requested='A colleague has requested your review of '+cve+'. This vulnerability may affect systems you manage, but exposure in your environment has not been confirmed. Review the original advisory and determine whether the affected product and versions are present in systems you manage.';
   const actions=[
-    'Review the official record and vendor guidance. Confirm affected products and versions against your environments.',
-    'Create an Azure DevOps Boards work item in your organization. Document affected assets or customers privately along with priority, owner and target date.',
-    'Coordinate remediation or mitigation, test the fix and record validation evidence or approved risk acceptance.',
-    'Update the work item through closure and report the outcome to the requester.'
-  ].map(x=>'<li style="margin-bottom:9px;">'+safe(x)+'</li>').join('');
-  const html='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="margin:0;padding:24px 10px;background:#eff5f8;font-family:Arial, sans-serif;color:#1b3448;">'+
-    '<table role="presentation" style="margin:auto;max-width:640px;width:100%;background:#fff;border:1px solid #d6e7ec;border-radius:12px;"><tr><td style="padding:27px 26px;"><p style="color:#087c86;font-size:12px;font-weight:bold;letter-spacing:1px;">CVEHARBOR SECURITY ASSIGNMENT</p><h1 style="font-size:25px;color:#12293d;">Security review requested</h1>'+intro+
-    '<h2 style="font-size:16px;margin-top:25px;">Next steps in Azure DevOps</h2><ol style="line-height:1.7;padding-left:22px;">'+actions+'</ol>'+
-    '<p><a href="'+official+'" style="color:#007b81;">Review '+safe(cve)+' at the CVE Program</a></p>'+
-    '<p><a href="'+boards+'" style="color:#007b81;">Azure DevOps work item instructions</a></p>'+
-    '<p style="border-top:1px solid #dbe6eb;padding-top:16px;font-size:12px;color:#5b7283;line-height:1.7;">This notification is not evidence that your environment is affected and does not automatically create a DevOps ticket. Keep customer names, credentials and internal infrastructure information inside approved organizational systems. If the request is unexpected, contact the sender to verify it.</p><p style="font-size:12px;color:#5b7283;">Requested by '+safe(requester)+' through CVEHarbor.</p></td></tr></table></body></html>';
-  return {subject,text:lines.join('\n'),html};
+    'Review official vulnerability details and confirm affected products, versions and prerequisites.',
+    'Check systems and applications within your responsibility and confirm whether they are affected.',
+    'Determine the appropriate patch, mitigation or risk treatment using vendor guidance.',
+    'If work is needed, create or update a work item in your own Azure DevOps organization and tell the requester the outcome.'
+  ];
+  const links=[['Official CVE record',official],['NVD vulnerability details',nvd],['Review in CVEHarbor',harbor],['Azure DevOps work item guidance',boards]];
+  const textBody=['CVEHARBOR | VULNERABILITY REVIEW REQUEST','','Vulnerability review request: '+cve,'','Requested by: '+requester,'',requested,'',
+   'WHAT YOU NEED TO DO',...actions.map((x,i)=>(i+1)+'. '+x),'',
+   ...(notes?['NOTES FROM THE REQUESTER',notes,'']:[]),'RELATED REFERENCES',...links.map(([name,url])=>name+': '+url),'',
+   'CVEHarbor does not create a DevOps work item automatically. This is a review request, not proof of exposure. Keep customer secrets and internal environment details in your approved private systems.'];
+  const linkHtml=links.map(([name,url])=>'<li style="padding:5px 0"><a href="'+safe(url)+'" style="color:#5ce1d3">'+safe(name)+'</a></li>').join('');
+  const actionHtml=actions.map((item,i)=>'<tr><td style="width:34px;vertical-align:top;color:#46dac7;font-weight:bold;padding:8px">'+(i+1)+'.</td><td style="padding:8px;color:#dceaf3">'+safe(item)+'</td></tr>').join('');
+  const html='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>'+
+   '<body style="margin:0;padding:24px 10px;background:#071523;font-family:Arial,sans-serif;color:#e8f5fa">'+
+   '<table role="presentation" style="max-width:680px;width:100%;margin:auto;border-collapse:separate;border-spacing:0;background:#0c2438;border:1px solid #245467;border-radius:14px">'+
+   '<tr><td style="background:#071927;padding:24px 28px;border-bottom:3px solid #36c7ba"><div style="font-size:25px;font-weight:bold;color:#f3fbff">CVE<span style="color:#48dacc">Harbor</span></div><div style="font-size:10px;letter-spacing:2px;color:#9ec1d2">VULNERABILITY INTELLIGENCE</div></td></tr>'+
+   '<tr><td style="padding:26px 28px"><p style="font-size:12px;letter-spacing:2px;color:#59d7ce;font-weight:bold">VULNERABILITY REVIEW REQUEST</p>'+
+   '<h1 style="margin:8px 0 18px;font-size:26px;color:#f2f9ff">Review requested: '+safe(cve)+'</h1>'+
+   '<p style="font-size:14px;color:#c1d7e2;line-height:1.7">Hello,</p>'+
+   '<p style="font-size:14px;color:#d4e5ed;line-height:1.7">'+safe(requested)+'</p>'+
+   '<table role="presentation" style="width:100%;background:#102f45;border:1px solid #2c5568;border-radius:10px;margin:22px 0"><tr><td style="padding:18px">'+
+   '<strong style="color:#f1fbff;font-size:16px">CVE details</strong><p style="color:#b9d5e1">CVE ID: <strong>'+safe(cve)+'</strong></p>'+
+   '<p style="color:#b9d5e1;margin-bottom:0">Severity, affected software and publication details: verify using the linked official records.</p></td></tr></table>'+
+   '<h2 style="color:#f3fbff;font-size:17px">What you need to do</h2><table role="presentation" style="width:100%">'+actionHtml+'</table>'+
+   (notes?'<h2 style="color:#f3fbff;font-size:17px;margin-top:22px">Sender notes</h2><div style="background:#102f45;border:1px solid #31586a;padding:15px;border-radius:8px;white-space:pre-wrap;line-height:1.6;color:#d5e8f1">'+safe(notes)+'</div>':'')+
+   '<h2 style="color:#f3fbff;font-size:17px;margin-top:24px">Related links</h2><ul style="line-height:1.8">'+linkHtml+'</ul>'+
+   '<p><a href="'+safe(harbor)+'" style="display:block;padding:15px;text-align:center;background:#14a99c;border-radius:8px;color:#fff;font-weight:bold;text-decoration:none">Review this CVE in CVEHarbor</a></p>'+
+   '<p style="font-size:12px;line-height:1.7;color:#aac7d5;border-top:1px solid #305063;padding-top:18px">Requested by '+safe(requester)+'. No Azure DevOps work item is created automatically. Avoid including customer secrets or internal system details in email. If unexpected, verify the request with the sender.</p>'+
+   '</td></tr></table></body></html>';
+  return {subject,text:textBody.join('\\n'),html};
 }
+
 async function quota(env,key,seconds,max){
   const now=time(),cutoff=now-seconds;
   // Prune counters only after every possible 24 hour notification window.
@@ -155,6 +163,8 @@ async function quota(env,key,seconds,max){
 export async function assignRemediation(env,user,id,raw){
   const cve=normalizeId(id);
   const recipient=String(raw?.email||'').trim().toLowerCase();
+  const reviewerNotes=String(raw?.reviewer_notes||'').trim();
+  if(reviewerNotes.length>1000)throw new RemediationError('Reviewer notes must be 1000 characters or fewer');
   if(!cve||recipient.length>254||!emailPattern.test(recipient))
     throw new RemediationError('Enter a valid CVE ID and recipient email');
   if(!await isMigrated(env))throw new RemediationError('Assignment database migration is required',503);
@@ -190,7 +200,7 @@ export async function assignRemediation(env,user,id,raw){
     "WHERE remediation_assignments.state!='sending' OR remediation_assignments.claimed_at<?"
   ).bind(user.id,cve,recipient,user.email,'sending',now,now-900).run();
   if(claim.meta?.changes!==1)throw new RemediationError('An assignment is already being sent',409);
-  const report=renderAssignmentEmail(cve,recipient,user.email);
+  const report=renderAssignmentEmail(cve,recipient,user.email,reviewerNotes);
   try{
     // A separate assignment key can isolate quota and abuse monitoring.
     const senderEnv={EMAIL_FROM:env.EMAIL_FROM,SMTP2GO_API_KEY:env.SMTP2GO_API_KEY,

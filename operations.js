@@ -116,6 +116,8 @@ function openAssign(id){
   $('remediationAssignCve').value=cve;
   $('remediationAssignConfirm').checked=false;
   $('remediationAssignEmail').value='';
+  $('remediationAssignNotes').value='';
+  $('remediationAssignNotesCount').textContent='0/1000 characters';
   const status=$('remediationAssignMessage'),send=$('remediationSendAssignment');
   send.disabled=!(cloudMode&&capabilities?.assignments_available&&capabilities?.assignment_email_enabled);
   if(!authenticated)status.textContent='Please sign in to CVEHarbor first. You can use the account form above.';
@@ -126,6 +128,7 @@ function openAssign(id){
   if(typeof modal.showModal==='function')modal.showModal();else modal.setAttribute('open','');
   $('remediationAssignEmail').focus();
 }
+$('remediationAssignNotes').addEventListener('input',()=>{$('remediationAssignNotesCount').textContent=$('remediationAssignNotes').value.length+'/1000 characters'});
 window.CVEHARBOR_REMEDIATION={openAssign};
 window.addEventListener('cveharbor:assign-remediation',event=>openAssign(event.detail?.id));
 window.addEventListener('cveharbor:account-state',event=>{void accountState(event.detail||{});});
@@ -150,7 +153,7 @@ $('remediationAssignForm').addEventListener('submit',async event=>{
   if(!window.confirm('Send the '+cve+' vulnerability review request to '+email+'?'))return;
   send.disabled=true;status.textContent='Submitting the assignment request to CVEHarbor...';
   try{
-    const result=await api('/remediations/'+cve+'/assign','POST',{email});
+    const result=await api('/remediations/'+cve+'/assign','POST',{email,reviewer_notes:$('remediationAssignNotes').value.trim().slice(0,1000)});
     await refreshRecords();
     status.textContent=result.message||'Assignment saved. The email provider accepted the notification.';
     msg(cve+' assigned to '+email+'.');
