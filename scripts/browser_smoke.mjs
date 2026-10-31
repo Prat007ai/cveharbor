@@ -1063,7 +1063,7 @@ assert.match(homeHero,/Set email alerts for product end of support/,'lifecycle a
 assert.doesNotMatch(homeHero.slice(homeHero.indexOf('<section class="hero"'),homeHero.indexOf('<section id="technology"')),/38 technology groups/,'fixed technology count removed from homepage hero');
 assert.match(fs.readFileSync('styles.css','utf8'),/prefers-reduced-motion:reduce/,'reduced motion support remains');
 
-assert.ok(fs.readFileSync('index.html','utf8').includes('hero-hologram-shield'),'hero central shield graphic exists');
+assert.ok(fs.readFileSync('index.html','utf8').includes('hero-artwork'),'dedicated central shield artwork is referenced');
 assert.ok(fs.readFileSync('index.html','utf8').includes('hero-priority-chart'),'hero chart artwork exists');
 assert.ok(fs.readFileSync('styles.css','utf8').includes('hero-shield-hover'),'hero animated shield styling exists');
 
