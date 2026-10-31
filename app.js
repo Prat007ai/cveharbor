@@ -285,7 +285,9 @@
       node.setAttribute('aria-hidden','true');
       if(!slug){node.textContent=name.slice(0,2).toUpperCase()||'◇';return node}
       const img=document.createElement('img');
-      img.src='https://cdn.jsdelivr.net/npm/simple-icons@15.16.0/icons/'+slug+'.svg';
+      // Curated icon identifiers only, never a user-provided arbitrary URL.
+      // Simple Icons serves the brand's original colour when no colour override is used.
+      img.src='https://cdn.simpleicons.org/'+slug;
       img.alt='';img.loading='lazy';img.decoding='async';
       img.addEventListener('error',()=>{img.remove();node.textContent=name.slice(0,2).toUpperCase()||'◇'});
       node.append(img);return node;
