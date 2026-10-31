@@ -2148,3 +2148,32 @@ body[data-page="vulnerabilities"] .technology-redesign .technology-count-new,bod
 @media(max-width:1480px){body[data-page="vulnerabilities"] .technology-redesign .technology-intro{grid-template-columns:1fr!important}}
 @media(max-width:1300px){body[data-page="vulnerabilities"] .technology-redesign #categoryGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media(max-width:750px){body[data-page="vulnerabilities"] .technology-redesign #categoryGrid{grid-template-columns:1fr!important}body[data-page="vulnerabilities"] .technology-redesign .technology-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+
+/* Reference world globe background, drawn with lightweight CSS, not customer imagery. */
+body[data-page="vulnerabilities"] .technology-redesign{position:relative;isolation:isolate}
+body[data-page="vulnerabilities"] .technology-redesign::before{
+ content:"";position:absolute;z-index:-1;pointer-events:none;
+ width:min(51vw,890px);height:410px;top:-90px;right:0;
+ background-image:radial-gradient(circle,#39aee2 1px,transparent 1.65px);
+ background-size:7px 7px;
+ opacity:.4;
+ border-radius:50%;
+ transform:rotate(-13deg) scaleY(.73);
+ -webkit-mask-image:radial-gradient(ellipse at 48% 50%,#000 21%,transparent 72%);
+ mask-image:radial-gradient(ellipse at 48% 50%,#000 21%,transparent 72%);
+}
+body[data-page="vulnerabilities"] .technology-redesign::after{
+ content:"";position:absolute;z-index:-1;pointer-events:none;
+ width:min(42vw,690px);height:270px;top:-51px;right:5%;
+ border:1px solid #2786b241;border-radius:50%;
+ transform:rotate(-13deg) scaleY(.6);
+ box-shadow:0 0 75px #0277ab24,inset 0 0 55px #0277ab12;
+}
+body[data-page="vulnerabilities"] .technology-redesign .technology-panel-icon{background:linear-gradient(135deg,#174964,#102f4a)!important;border:1px solid #397b98!important;border-radius:12px!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-panel[data-domain="applications"] .technology-panel-icon{background:linear-gradient(140deg,#0d5b61,#0b363c)!important;color:#4beddd!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-panel[data-domain="infrastructure"] .technology-panel-icon{background:linear-gradient(140deg,#65562d,#323b33)!important;color:#ffd06b!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-panel[data-domain="data"] .technology-panel-icon{background:linear-gradient(140deg,#493472,#282449)!important;color:#c39aff!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-panel-description{font-size:12px!important;line-height:1.45!important;max-width:265px!important;color:#b4d0e2!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-panel-heading h3{font-size:17px!important}
+.technology-brand-icon img{filter:none!important;opacity:1!important;width:28px!important;height:28px!important}
+@media(max-width:750px){body[data-page="vulnerabilities"] .technology-redesign::before,body[data-page="vulnerabilities"] .technology-redesign::after{display:none}}
