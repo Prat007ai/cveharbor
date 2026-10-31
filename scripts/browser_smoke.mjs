@@ -787,8 +787,7 @@ assert.ok(fs.readFileSync('public/command-center.js','utf8').includes('command-s
 for(const route of ['index.html','account/index.html','workspace/index.html','customer-dashboard/index.html','customer-reports/index.html'])assert.match(fs.readFileSync(route,'utf8'),/\/command-center\.js\?v=[a-zA-Z0-9-]+/,'shared navigation loaded on '+route);
 assert.ok(fs.readFileSync('styles.css','utf8').includes('body.command-center-app'),'command center responsive design available');
 
-assert.ok(html.includes('hero-intelligence-network'),'hero contains visible animated security intelligence network');
-assert.ok(html.includes('hero-network-movement'),'network animation has moving signals');
+assert.ok(html.includes('hero-artwork'),'hero includes the shield and orbital intelligence illustration');
 assert.ok(fs.readFileSync('command-center.js','utf8').includes('command-sidebar-toggle'),'sidebar can expand and collapse');
 assert.ok(fs.readFileSync('styles.css','utf8').includes('prefers-reduced-motion:reduce'),'animation respects reduced motion');
 
@@ -1019,7 +1018,7 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('grid-template-columns:r
 
 // Both styled explorer assets must use the same new cache release.
 const explorerSource=fs.readFileSync('index.html','utf8');
-assert.match(explorerSource,/\/styles\.css\?v=hero-203/,'technology layout stylesheet must refresh');
+assert.match(explorerSource,/\/styles\.css\?v=homepage-214/,'technology layout stylesheet must refresh');
 assert.match(explorerSource,/\/app\.js\?v=customize-modal-199/,'technology customization script must refresh');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"\/vulnerabilities\/":\["technology-kpis"/,'live verifier checks technology explorer page');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"styles.css","app.js"/,'live verifier validates explorer JavaScript');
@@ -1065,39 +1064,15 @@ assert.match(fs.readFileSync('styles.css','utf8'),/prefers-reduced-motion:reduce
 
 assert.ok(fs.readFileSync('index.html','utf8').includes('hero-artwork'),'dedicated central shield artwork is referenced');
 assert.ok(fs.readFileSync('index.html','utf8').includes('hero-priority-chart'),'hero chart artwork exists');
-assert.ok(fs.readFileSync('styles.css','utf8').includes('hero-shield-hover'),'hero animated shield styling exists');
-
-assert.ok(fs.readFileSync('styles.css','utf8').includes('Homepage reference 202'),'wide desktop hero composition contract exists');
-assert.match(fs.readFileSync('index.html','utf8'),/styles\.css\?v=hero-203/,'current hero stylesheet cache');
-
-assert.match(fs.readFileSync('styles.css','utf8'),/Homepage composition 203/,'homepage composition overrides scoped to home');
-assert.match(fs.readFileSync('index.html','utf8'),/styles\.css\?v=hero-203/,'homepage stylesheet cache updated');
-
-// The visual reference stylesheet must be included in the published homepage without touching navigation.
-assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=213/,'homepage uses dedicated final stylesheet');
-assert.ok(fs.readFileSync('home-hero-reference.css','utf8').includes('body[data-page="home"] .hero .hero-grid'),'layout applies only to home hero');
-assert.doesNotMatch(fs.readFileSync('home-hero-reference.css','utf8'),/\.command-sidebar|\.command-nav-link/,'dedicated hero stylesheet must not modify navigation');
-assert.ok(fs.readFileSync('public/home-hero-reference.css','utf8').includes('hero-priority-card'),'hero stylesheet included in Pages build');
-
-assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=213/,'current hero stylesheet version');
-
-assert.ok(fs.readFileSync('index.html','utf8').includes('/assets/home-security-illustration.svg'),'homepage references vector shield artwork');
-assert.ok(fs.readFileSync('public/assets/home-security-illustration.svg','utf8').includes('<svg'),'vector artwork packaged in Pages build');
-
-assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=213/,'current contained hero asset');
-
-assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=213/,'responsive hero stylesheet version');
-
-assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=213/,'ultrawide stylesheet version loaded');
-
-assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=213/,'approved angled card stylesheet version');
-
-assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=213/,'unified homepage version');
-assert.ok(fs.readFileSync('home-hero-reference.css','utf8').includes('CVEHarbor unified hero 211'),'unified hero stylesheet');
-assert.doesNotMatch(fs.readFileSync('home-hero-reference.css','utf8'),/\.command-sidebar|\.command-nav-link/,'sidebar untouched');
-
-assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=213/,'current bounded hero asset');
-assert.ok(fs.readFileSync('home-hero-reference.css','utf8').includes('bounded two-column visual'),'priority card fits visual grid');
-
-assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=213/,'restored hero asset version');
-assert.ok(fs.readFileSync('home-hero-reference.css','utf8').includes('fully reveal shield and pedestal'),'shield clipping fix present');
+// Consolidated homepage styles replace the historical override layers.
+const heroCss=fs.readFileSync('home-hero-reference.css','utf8');
+assert.match(homeHero,/home-hero-reference\.css\?v=214/,'new homepage stylesheet cache version');
+assert.match(heroCss,/prefers-reduced-motion: reduce/,'hero supports reduced motion');
+assert.doesNotMatch(heroCss,/!important|\.command-sidebar|\.command-nav-link/,'hero styles avoid override stacking and navigation changes');
+assert.ok(fs.existsSync('public/assets/home-intelligence-wave.svg'),'wave artwork packaged in public build');
+assert.ok(fs.existsSync('public/assets/home-security-illustration.svg'),'shield artwork packaged in public build');
+const heroDom=new JSDOM(homeHero);
+const capabilityLinks=[...heroDom.window.document.querySelectorAll('.hero-capability')];
+assert.deepEqual(capabilityLinks.map(a=>a.querySelector('strong').textContent),['Discover','Prioritize','Track','Report','Lifecycle alerts','Customize']);
+assert.deepEqual(capabilityLinks.map(a=>a.getAttribute('href')),['/vulnerabilities/','/vulnerabilities/','/remediation/','/customer-reports/','/lifecycle/','/vulnerabilities/']);
+assert.equal(heroDom.window.document.querySelectorAll('.hero-priority-line').length,4,'all severity links preserved');
