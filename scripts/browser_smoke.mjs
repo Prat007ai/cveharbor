@@ -1019,8 +1019,8 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('grid-template-columns:r
 
 // Both styled explorer assets must use the same new cache release.
 const explorerSource=fs.readFileSync('index.html','utf8');
-assert.match(explorerSource,/\/styles\.css\?v=technology-catalogue-189/,'technology layout stylesheet must refresh');
-assert.match(explorerSource,/\/app\.js\?v=technology-catalogue-189/,'technology customization script must refresh');
+assert.match(explorerSource,/\/styles\.css\?v=explorer-logos-191/,'technology layout stylesheet must refresh');
+assert.match(explorerSource,/\/app\.js\?v=explorer-logos-191/,'technology customization script must refresh');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"\/vulnerabilities\/":\["technology-kpis"/,'live verifier checks technology explorer page');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"styles.css","app.js"/,'live verifier validates explorer JavaScript');
 
