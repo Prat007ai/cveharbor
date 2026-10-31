@@ -4,6 +4,20 @@ const fs=require('node:fs'),path=require('node:path');
 const {chromium}=require(process.env.CVEHARBOR_PLAYWRIGHT_MODULE||'playwright');
 const base=process.env.CVEHARBOR_TEST_URL||'http://127.0.0.1:8080';
 const out=process.env.CVEHARBOR_SCREENSHOTS||'/tmp/cveharbor-threat-activity-review';
+const attackPath=process.env.CVEHARBOR_ATTACK_VALIDATION_REPORT;
+let previewBody,attackValidation;
+if(attackPath){
+ attackValidation=JSON.parse(fs.readFileSync(attackPath,'utf8'));
+ assert.equal(attackValidation.mode,'live','use successful live development evidence');
+ const saved=fs.readFileSync(path.join(__dirname,'..','threat-data.js'),'utf8');
+ const current=JSON.parse(saved.slice(saved.indexOf('=')+1).trim().replace(/;$/,''));
+ const attackIds=new Set(Object.keys(attackValidation.sources));
+ current.indicators=current.indicators.filter(x=>!attackIds.has(x.source_id)).concat(attackValidation.indicators);
+ current.sources={...current.sources,...attackValidation.sources};
+ current.checked_at=attackValidation.checked_at;current.attack_export=attackValidation.attack_export;
+ previewBody='window.CVEHARBOR_THREATS='+JSON.stringify(current)+';';
+ for(const name of ['attack-scanning-current.txt','attack-scanning-current.csv','attack-scanning-current.json'])fs.copyFileSync(path.join(path.dirname(attackPath),name),path.join(__dirname,'..','public',name));
+}
 if(!['127.0.0.1','localhost'].includes(new URL(base).hostname))throw Error('Use a local test server');
 (async()=>{
  fs.mkdirSync(out,{recursive:true});
@@ -14,7 +28,10 @@ if(!['127.0.0.1','localhost'].includes(new URL(base).hostname))throw Error('Use 
    page.on('pageerror',e=>errors.push(e.message));
    await page.route('**/*',r=>{
     const req=r.request(),u=new URL(req.url());
-    if(u.origin===new URL(base).origin)return r.continue();
+    if(u.origin===new URL(base).origin){
+     if(previewBody&&u.pathname==='/threat-data.js')return r.fulfill({contentType:'text/javascript',body:previewBody});
+     return r.continue();
+    }
     if(!['GET','HEAD'].includes(req.method()))writes.push(u.pathname);
     if(u.hostname==='api.cveharbor.com'&&u.pathname==='/v1/me')return r.fulfill({contentType:'application/json',body:'{"authenticated":false}'});
     return r.abort();
@@ -62,11 +79,32 @@ if(!['127.0.0.1','localhost'].includes(new URL(base).hostname))throw Error('Use 
    await page.fill('#threatSearch','');
    await page.selectOption('#threatActivityFilter','network');
    assert.equal(await page.locator('#threatSourceFilter').inputValue(),'all');
-   assert.match(await page.locator('#threatCount').innerText(),/^0 matching IPs/);
+   assert.match(await page.locator('#threatCount').innerText(),/^(?:Preview: )?0 matching IPs/);
    assert.match(await page.locator('#geoMapSummary').innerText(),/^0 geolocated IPs/);
    assert.match(await page.locator('#geoMapStatus').innerText(),/Network ranges are not plotted/);
    await page.selectOption('#threatActivityFilter','all');
    assert.equal(await page.locator('.threat-group[open]').count(),0);
+   if(attackValidation){
+    await page.selectOption('#threatActivityFilter','attack');
+    assert.equal(await page.locator('#threatSourceFilter option').count(),7);
+    assert.equal(await page.locator('.threat-attack-export').count(),1);
+    assert.ok((await page.locator('.threat-attack-export').innerText()).includes(attackValidation.attack_export.count.toLocaleString('en-US')));
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'full-export card fits viewport');
+    await group('attack').locator('summary').evaluate(el=>scrollTo({top:el.getBoundingClientRect().top+scrollY-90,behavior:'instant'}));
+    await page.screenshot({path:path.join(out,`threats-${width}-attack-download.png`)});
+    if(width===1920){
+     for(const extension of ['txt','csv']){
+      const link=page.locator(`[data-attack-download][href$=".${extension}"]`);
+      const [download]=await Promise.all([page.waitForEvent('download'),link.click()]);
+      assert.equal(download.suggestedFilename(),`attack-scanning-current.${extension}`);
+      assert.equal(await download.failure(),null,`full ${extension} download succeeds`);
+      const received=fs.readFileSync(await download.path());
+      const expected=fs.readFileSync(path.join(path.dirname(attackPath),`attack-scanning-current.${extension}`));
+      assert.deepEqual(received,expected,'download matches the complete validated file byte for byte');
+     }
+    }
+    await page.selectOption('#threatActivityFilter','all');
+   }
    await group('malware').locator('summary').click();
    await page.waitForFunction(()=>document.querySelector('[data-activity="malware"] .threat-entry'));
    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'expanded group fits viewport');

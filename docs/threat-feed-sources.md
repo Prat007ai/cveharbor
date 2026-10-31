@@ -5,6 +5,9 @@ GitHub Actions workflow. No production indicator data was replaced with test
 fixtures. Live collection and production verification run in GitHub Actions;
 this cloud session still has separate network and secret restrictions.
 
+The blocklist.de/GreenSnow expansion and complete current-list downloads are on
+`feat/expanded-attack-feeds`, pending production review.
+
 | Source | Category | Collection |
 | --- | --- | --- |
 | [DShield / Internet Storm Center](https://isc.sans.edu/) | Limited scanning-source list | Existing `feeds.dshield.org/feeds/topips.txt` |
@@ -130,3 +133,18 @@ and commits its evidence to the development branch; it never writes main. The
 report records the code revision that was validated. Generated validation files
 are not copied into the public website. Direct local validation needs network
 access to `lists.blocklist.de` and `blocklist.greensnow.co` as well as DShield.
+
+
+The development live validation run succeeded:
+https://github.com/Prat007ai/cveharbor/actions/runs/41251261529
+It validated 17 DShield, 25,275 blocklist.de and 3,187 GreenSnow IPv4 records,
+producing 26,417 unique current export IPs. The limited preview contains 1,009
+unique attack IPs across 1,017 source reports. These are snapshot counts, not
+fixed totals or evidence of attacks on a particular customer.
+
+For a local six-feed UI preview, set `CVEHARBOR_ATTACK_VALIDATION_REPORT` to the
+absolute `data/attack-feed-validation/report.json` path when running the native
+browser test. It combines the validated attack data with the committed malware
+and network-range snapshot for local testing only, copies the actual validated
+exports into generated `public/`, and verifies TXT/CSV downloads byte for byte.
+No synthetic IP records or customer data are used in that preview.

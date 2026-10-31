@@ -116,7 +116,7 @@ console.log('PASS activity groups: collapsed default, exclusive expansion, categ
  assert.equal(d.querySelectorAll('.threat-group').length,3,'new attack feeds do not fall into Other activity');
  change(w,'threatActivityFilter','attack');
  assert.equal(d.querySelectorAll('.threat-entry').length,3);
- assert.match(d.querySelector('[data-activity="attack"] .threat-group-count').textContent,/2 IPs/,'shared attack IPs are deduplicated in the count');
+ assert.match(d.querySelector('[data-activity="attack"] .threat-group-count').textContent,/25,000 IPs in full list/,'header distinguishes the full current list from the preview');
  assert.match(d.querySelector('.threat-attack-export').textContent,/25,000 unique IPs/,'full download count is separate from preview count');
  assert.equal(d.querySelectorAll('[data-attack-download]').length,2);
  assert.ok([...d.querySelectorAll('[data-attack-download]')].every(link=>link.getAttribute('aria-disabled')==='false'));
@@ -135,6 +135,10 @@ console.log('PASS activity groups: collapsed default, exclusive expansion, categ
  assert.equal(d.querySelector('.threat-group').dataset.activity,'attack');
  change(w,'threatSourceFilter','blocklist_de');
  assert.equal(d.querySelector('.threat-group').dataset.activity,'attack');
+ change(w,'threatSearch','no-match','input');
+ assert.equal(d.querySelectorAll('.threat-group').length,0);
+ assert.equal(d.querySelectorAll('[data-attack-download]').length,2,'full-list download remains accessible when an IP is absent from the preview');
+ change(w,'threatSearch','','input');
  meta.available=false;meta.count=0;
  change(w,'threatSourceFilter','greensnow');
  assert.equal(d.querySelectorAll('[data-attack-download]').length,0);

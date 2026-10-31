@@ -628,7 +628,7 @@ button.tech-chart-link b{
 .threat-attack-export h4{margin:0 0 9px;color:#b5f5ea;font-size:15px}
 .threat-attack-export p{font-size:12px;line-height:1.7;color:#bdd9df;margin:7px 0}
 .threat-attack-export-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
-.threat-download-link{color:#b5f5ea;border:1px solid #4b9194;border-radius:7px;padding:10px 12px;text-decoration:none;font-size:12px;font-weight:750}
+.threat-download-link{display:inline-flex;align-items:center;min-height:44px;box-sizing:border-box;color:#b5f5ea;border:1px solid #4b9194;border-radius:7px;padding:10px 12px;text-decoration:none;font-size:12px;font-weight:750}
 .threat-download-link:focus-visible{outline:2px solid #7de3d5;outline-offset:3px}
 .threat-download-link[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
 .threat-group-progress{margin:0;color:#a7c3d4;font-size:12px}
