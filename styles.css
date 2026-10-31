@@ -2192,3 +2192,11 @@ body[data-page="vulnerabilities"] .technology-redesign .technology-panel-rows::-
 @keyframes cvh-new-product-glow{0%,100%{background:rgba(26,204,183,.06)}50%{background:rgba(25,222,189,.27);box-shadow:inset 0 0 16px #39e0cf35}}
 @media(prefers-reduced-motion:reduce){.technology-redesign .technology-row.technology-just-added{animation:none!important;background:#145b59!important}}
 @media(max-width:750px){body[data-page="vulnerabilities"] .technology-redesign #categoryGrid>.technology-panel{height:auto!important;max-height:740px!important}}
+
+/* Technology explorer search and customization on one balanced toolbar. */
+.technology-redesign .technology-tools{display:flex!important;flex-wrap:wrap!important;justify-content:flex-start!important;align-items:center!important;column-gap:14px!important;row-gap:10px!important}
+.technology-redesign .technology-search{flex:0 1 650px!important;width:min(100%,650px)!important;margin:0!important;min-width:240px!important}
+.technology-redesign .technology-manage-button{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;flex:0 0 auto!important;min-height:48px!important;margin:0!important;padding:0 18px!important;background:linear-gradient(135deg,#095465,#0b394e)!important;border:1px solid #318e95!important;border-radius:9px!important;color:#e0fffa!important;font-size:13px!important;font-weight:750!important;white-space:nowrap!important;cursor:pointer!important}
+.technology-redesign .technology-manage-button:hover,.technology-redesign .technology-manage-button:focus-visible{background:#116475!important;border-color:#5ce5d4!important;outline-offset:2px}
+.technology-redesign .technology-legend{margin-left:auto!important}
+@media(max-width:850px){.technology-redesign .technology-search{flex:1 1 100%!important}.technology-redesign .technology-legend{margin-left:0!important}}
