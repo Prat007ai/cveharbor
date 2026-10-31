@@ -134,3 +134,25 @@ body[data-page="home"] .hero .hero-capabilities{width:min(100% - 44px,1920px)!im
  body[data-page="home"] .hero .hero-capabilities{gap:8px!important}
  body[data-page="home"] .hero .hero-capability{padding:9px 4px!important}
 }
+
+/* Ultra-wide 209: remove the 1920px content cap while preserving proportional composition. */
+@media(min-width:1650px){
+ body[data-page="home"] .hero .hero-grid,
+ body[data-page="home"] .hero .hero-capabilities{
+   width:calc(100% - clamp(36px,3vw,96px))!important;
+   max-width:none!important;
+   margin-inline:auto!important;
+ }
+ body[data-page="home"] .hero .hero-grid{
+   grid-template-columns:minmax(0,39%) minmax(0,61%)!important;
+ }
+ body[data-page="home"] .hero .hero-visual{
+   height:clamp(470px,24vw,610px)!important;
+ }
+ body[data-page="home"] .hero .hero-hologram{
+   left:6%!important;width:44%!important;height:75%!important;
+ }
+ body[data-page="home"] .hero .hero-priority-card{
+   right:2%!important;width:43%!important;max-width:520px!important;
+ }
+}
