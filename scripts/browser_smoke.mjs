@@ -968,7 +968,7 @@ assert.ok(fs.readFileSync('account-backend/src/index.js','utf8').includes("path=
 
 const emailTestPage=fs.readFileSync('website-monitor/index.html','utf8');
 const emailTestScript=fs.readFileSync('website-monitor-page.js','utf8');
-assert.ok(emailTestPage.includes('id="webRiskEmailTest"')&&emailTestPage.includes('monitor-184'),'warning email test button is published with current script version');
+assert.ok(emailTestPage.includes('id="webRiskEmailTest"')&&emailTestPage.includes('monitor-185'),'warning email test button is published with current script version');
 assert.ok(emailTestScript.includes("warningButton.addEventListener('click'")&&emailTestScript.includes('Test warning email failed:'),'warning email test has a working click listener with visible errors');
 
 const threatDashboardHtml=fs.readFileSync('website-monitor/index.html','utf8');
@@ -979,7 +979,7 @@ assert.ok(threatDashboardJs.includes("Not checked")&&threatDashboardJs.includes(
 
 const mockupParity=fs.readFileSync('website-monitor/index.html','utf8');
 assert.ok(['monitor-sidebar','monitor-kpis','monitor-primary-grid','monitor-risk-grid','mockRecentChecks','mockCheckNow','mockSettings','mockManage'].every(item=>mockupParity.includes(item)),'monitoring mockup layout and controls are present');
-assert.ok(mockupParity.includes('website-monitor-dashboard.js?v=monitor-184'),'new monitoring dashboard script is cache versioned');
+assert.ok(mockupParity.includes('website-monitor-dashboard.js?v=monitor-185'),'new monitoring dashboard script is cache versioned');
 assert.ok(fs.readFileSync('website-monitor-dashboard.js','utf8').includes("get('/history?id='"),'threat dashboard reads account scoped check history');
 
 const navPreview=fs.readFileSync('website-monitor/index.html','utf8');
@@ -988,3 +988,6 @@ assert.ok(navPreview.includes('.monitor-kpi:nth-child(4)')&&navPreview.includes(
 
 const fixedMonitorJs=fs.readFileSync('website-monitor-page.js','utf8');
 assert.ok(fixedMonitorJs.includes('cveharbor-monitor-sites'),'monitoring site data shared with dashboard');
+
+const iconRailHtml=fs.readFileSync('website-monitor/index.html','utf8');
+assert.ok(iconRailHtml.includes('flex:0 0 86px!important')&&iconRailHtml.includes('.monitor-nav a.active::before'),'icon-only monitor sidebar includes compact rail and active indicator');
