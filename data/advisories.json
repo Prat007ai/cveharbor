@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-31",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6392,
+  "candidate_records": 6393,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -65171,53 +65171,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-109619",
-      "title": "RCE via stale global state",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-30",
-      "summary": "## Summary PHP contains various global state, such as error, session, object and extension state that is retained by a worker but points to memory owned by one request. That state must be reset before the request memory is released. Some input, configuration, session and error handling operations run before normal initialization of the next request. They inadvertently access stale state not reset by the previous request before initialization has a chance to replace it, causing a use after free. A strategically crafted heap layout can produce full remote code execution (RCE). State can survive for more than one reason. A fatal error, including one caused by memory exhaustion, can abandon an operation before it performs its matching reset. A warning or other nonfatal diagnostic can also repopulate error state after that state was already cleared during shutdown. The request heap is then freed while the worker global field still refers to it. A later operation that runs before normal request initialization can consume the stale value. Successful exploitation of this vulnerability requires both a producer and a consumer. The producer is a PHP operation that stores state owned by one request in a location PHP can access later in a subsequent request. The consumer is a subsequent PHP o",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "PHP upstream security advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-6wmf-4rv5-p3rp"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:13Z",
-      "source_type": "php_upstream",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99999,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-109618",
       "title": "RCE via OOM corruption",
       "severity": "critical",
@@ -65262,6 +65215,53 @@
       "known_exploited": true,
       "epss": 0.99999,
       "epss_percentile": 0.99998,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-109619",
+      "title": "RCE via stale global state",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-30",
+      "summary": "## Summary PHP contains various global state, such as error, session, object and extension state that is retained by a worker but points to memory owned by one request. That state must be reset before the request memory is released. Some input, configuration, session and error handling operations run before normal initialization of the next request. They inadvertently access stale state not reset by the previous request before initialization has a chance to replace it, causing a use after free. A strategically crafted heap layout can produce full remote code execution (RCE). State can survive for more than one reason. A fatal error, including one caused by memory exhaustion, can abandon an operation before it performs its matching reset. A warning or other nonfatal diagnostic can also repopulate error state after that state was already cleared during shutdown. The request heap is then freed while the worker global field still refers to it. A later operation that runs before normal request initialization can consume the stale value. Successful exploitation of this vulnerability requires both a producer and a consumer. The producer is a PHP operation that stores state owned by one request in a location PHP can access later in a subsequent request. The consumer is a subsequent PHP o",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "PHP upstream security advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-6wmf-4rv5-p3rp"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:13Z",
+      "source_type": "php_upstream",
+      "known_exploited": true,
+      "epss": 0.99999,
+      "epss_percentile": 0.99999,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -115483,6 +115483,47 @@
       "epss_as_of": "2026-10-31"
     },
     {
+      "id": "CVE-2026-102827",
+      "title": "simple-git: unsafe-operations plugin bypass via git long-option abbreviation (--receive-p/--exe) -> command execution (residual of CVE-2026-28291)",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-05",
+      "updated": "2026-10-31",
+      "summary": "simple-git's blockUnsafeOperationsPlugin blocks dangerous git options (--upload-pack/--receive-pack/--exec/...) unless the consumer opts in via unsafe:{allowUnsafePack:true}. Detection (@simple-git/argv-parser detectVulnerableFlags) matches the parsed flag NAME against literal-spelling patterns: /--(upload|receive)-pack/ (requires the literal '-pack') and the string '--exec'. But git accepts unambiguous prefix abbreviations of long options, and expandToken (token-expander.ts) returns the LITERAL token as flag.name (it uses the spec only for needsNext, never to canonicalize). So `git push --receive-p=<cmd>` parses with flag.name='--receive-p', which /--(upload|receive)-pack/ does NOT match, yet git expands --receive-p -> --receive-pack and runs <cmd> (on a local/file remote, locally). The clone side is robust (its '--u' substring rule catches every --upload* abbreviation); the push --receive-* and --exe* abbreviations have no equivalent rule and slip through. Proof of concept (latest: simple-git 3.36.0, @simple-git/argv-parser 1.1.1, default unsafe plugin ON): Gate vulnerabilityCheck: 'push --receive-pack=touch...' -> BLOCKED; 'push --receive-pa=touch...' and 'push --receive-p=touch...' -> BYPASS (empty vulns); '--exec=' BLOCKED, '--exe=' BYPASS. End-to-end via simpleGit().push():",
+      "affected": "npm: simple-git (<= 3.36.0)",
+      "remediation": "simple-git: 4.0.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-858h-whjf-mvg5"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/steveukx/git-js/security/advisories/GHSA-858h-whjf-mvg5"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-102827"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/steveukx/git-js/pull/1193"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.1",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-31T16:26:02Z",
+      "source_updated_at": "2026-10-31T16:24:12Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
       "id": "GHSA-w6gm-xv6q-cq55",
       "title": "Malicious code in echogen (PyPI)",
       "severity": "bulletin",
@@ -148784,37 +148825,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2025-7624",
-      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
-      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
-      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.10514,
-      "epss_percentile": 0.95758,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2025-6704",
       "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
       "severity": "critical",
@@ -148843,6 +148853,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.11772,
       "epss_percentile": 0.96072,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2025-7624",
+      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
+      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
+      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.10514,
+      "epss_percentile": 0.95758,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -168437,121 +168478,90 @@
       "epss": 0.11638,
       "epss_percentile": 0.96045,
       "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-0787",
-      "title": "Microsoft Windows Background Intelligent Transfer Service (BITS) Improper Privilege Management Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-01-28",
-      "summary": "Microsoft Windows BITS is vulnerable to to a privilege elevation vulnerability if it improperly handles symbolic links. An actor can exploit this vulnerability to execute arbitrary code with system-level privileges.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-01-28",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.42524,
-      "epss_percentile": 0.98705,
-      "epss_as_of": "2026-10-31"
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-31T16:16:03Z",
-      "last_attempt": "2026-10-31T16:16:03Z",
-      "items_processed": 332,
+      "last_success": "2026-10-31T16:26:02Z",
+      "last_attempt": "2026-10-31T16:26:02Z",
+      "items_processed": 333,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-31T16:16:03Z",
-      "last_attempt": "2026-10-31T16:16:03Z",
+      "last_success": "2026-10-31T16:26:02Z",
+      "last_attempt": "2026-10-31T16:26:02Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-31T16:16:03Z",
-      "last_attempt": "2026-10-31T16:16:03Z",
-      "items_processed": 427,
+      "last_success": "2026-10-31T16:26:02Z",
+      "last_attempt": "2026-10-31T16:26:02Z",
+      "items_processed": 362,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-31T16:16:03Z",
-      "last_attempt": "2026-10-31T16:16:03Z",
+      "last_success": "2026-10-31T16:26:02Z",
+      "last_attempt": "2026-10-31T16:26:02Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-31T16:16:03Z",
-      "last_attempt": "2026-10-31T16:16:03Z",
+      "last_success": "2026-10-31T16:26:02Z",
+      "last_attempt": "2026-10-31T16:26:02Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-31T16:16:03Z",
-      "last_attempt": "2026-10-31T16:16:03Z",
+      "last_success": "2026-10-31T16:26:02Z",
+      "last_attempt": "2026-10-31T16:26:02Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-31T16:16:03Z",
-      "last_attempt": "2026-10-31T16:16:03Z",
+      "last_success": "2026-10-31T16:26:02Z",
+      "last_attempt": "2026-10-31T16:26:02Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-31T16:16:03Z",
-      "last_attempt": "2026-10-31T16:16:03Z",
+      "last_success": "2026-10-31T16:26:02Z",
+      "last_attempt": "2026-10-31T16:26:02Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-31T16:16:03Z",
-      "last_attempt": "2026-10-31T16:16:03Z",
+      "last_success": "2026-10-31T16:26:02Z",
+      "last_attempt": "2026-10-31T16:26:02Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-31T16:16:03Z",
-      "last_attempt": "2026-10-31T16:16:03Z",
+      "last_success": "2026-10-31T16:26:02Z",
+      "last_attempt": "2026-10-31T16:26:02Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-31T16:16:03Z",
-      "last_attempt": "2026-10-31T16:16:03Z",
+      "last_success": "2026-10-31T16:26:02Z",
+      "last_attempt": "2026-10-31T16:26:02Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-31T16:16:03Z",
-      "last_attempt": "2026-10-31T16:16:03Z",
+      "last_success": "2026-10-31T16:26:02Z",
+      "last_attempt": "2026-10-31T16:26:02Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -168563,7 +168573,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-31T16:16:03Z",
-  "last_successful_update": "2026-10-31T16:16:03Z",
+  "last_checked_at": "2026-10-31T16:26:02Z",
+  "last_successful_update": "2026-10-31T16:26:02Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
