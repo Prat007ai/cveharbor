@@ -12,7 +12,7 @@ test('Web Risk lookup maps confirmed listings and absence separately',async()=>{
  const result=await lookupWebsiteThreat('https://example.com/',{GOOGLE_WEB_RISK_API_KEY:'test-key',DB:db},fetcher);
  assert.equal(result.status,'listed');assert.deepEqual(result.threats,['MALWARE']);
  assert.ok(seen[0].includes('threatTypes=MALWARE'));
- const empty=await lookupWebsiteThreat('https://example.com/',{GOOGLE_WEB_RISK_API_KEY:'test-key'},async()=>new Response('{}',{status:200}));
+ const empty=await lookupWebsiteThreat('https://example.com/',{GOOGLE_WEB_RISK_API_KEY:'test-key',DB:db},async()=>new Response('{}',{status:200}));
  assert.equal(empty.status,'no_known_listing');
 });
 test('missing headers are informational not a malware verdict',()=>{
