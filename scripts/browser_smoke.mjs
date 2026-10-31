@@ -1026,3 +1026,7 @@ assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"styles.css
 
 assert.match(fs.readFileSync('index.html','utf8'),/command-center\.js\?v=explorer-sidebar-190/,'current sidebar asset version required');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"command-center.js"/,'production verification checks navigation script');
+
+assert.match(fs.readFileSync('app.js','utf8'),/function productIcon\(x\)/,'technology explorer renders branded icons with a fallback');
+assert.match(fs.readFileSync('app.js','utf8'),/img\.addEventListener\('error'/,'missing brand icon falls back gracefully');
+assert.match(fs.readFileSync('index.html','utf8'),/app\.js\?v=explorer-logos-191/,'latest product icon client asset version');
