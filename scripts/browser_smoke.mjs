@@ -1011,3 +1011,8 @@ assert.doesNotMatch(checkNowClient,/sourceButton\.click\(\)/,'dashboard does not
 assert.match(checkNowClient,/if\(!response\.ok\)throw Error/,'dashboard reports API failures');
 assert.match(checkNowClient,/if\(!result\.check\)throw Error/,'dashboard validates the check response');
 assert.match(checkNowClient,/cveharbor-monitor-refresh/,'successful checks refresh account scoped history');
+
+assert.ok(fs.readFileSync('index.html','utf8').includes('technologyCustomizeStatus'),'technology customizer UI exists');
+assert.ok(fs.readFileSync('app.js','utf8').includes('/v1/technology-catalogue'),'technology catalogue is account backed');
+assert.ok(fs.readFileSync('account-backend/src/index.js','utf8').includes('user_technology_catalogue WHERE user_id=?'),'technology catalogue isolates users');
+assert.ok(fs.readFileSync('styles.css','utf8').includes('grid-template-columns:repeat(4,minmax(0,1fr))!important'),'visual reference four column layout retained');
