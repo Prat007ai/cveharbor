@@ -19,7 +19,7 @@ required={
  "/":["homepageFeatures", "marketing-story", "asset-onboarding", "findings-table", "homepage.css?v=brochure-216"],
  "/intelligence/":["overviewTitle", "techBars", "chartInsights", "feedStatus"],
  "/vulnerabilities/":["technology-kpis","technologyManageButton","technologyCustomizer","categoryGrid","command-center.js?v=brochure-216"],
- "/threats/":["threatStatus","threatSourceFilter","threatRows","geoMapSummary","Reported suspicious IPs and network ranges"],
+ "/threats/":["threatStatus","threatActivityFilter","threatGroupsTitle","threatSourceFilter","threatRows","geoMapSummary","Reported suspicious IPs and network ranges"],
  "/account/":["accountSecurityDashboard","accountSecurityRecoveryStart","account-security.js"],
  "/workspace/":["accountPageRequest","accountPageVerify","accountPageRequiredEnroll"],
  "/customer-reports/":["customerReportEmail","customerReportPrint","customerReportCsv"],

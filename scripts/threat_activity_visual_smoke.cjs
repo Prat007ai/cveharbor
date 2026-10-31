@@ -1,0 +1,80 @@
+// Native browser checks against the local site's real committed indicator snapshot.
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),path=require('node:path');
+const {chromium}=require(process.env.CVEHARBOR_PLAYWRIGHT_MODULE||'playwright');
+const base=process.env.CVEHARBOR_TEST_URL||'http://127.0.0.1:8080';
+const out=process.env.CVEHARBOR_SCREENSHOTS||'/tmp/cveharbor-threat-activity-review';
+if(!['127.0.0.1','localhost'].includes(new URL(base).hostname))throw Error('Use a local test server');
+(async()=>{
+ fs.mkdirSync(out,{recursive:true});
+ const browser=await chromium.launch({...(process.env.CVEHARBOR_CHROMIUM?{executablePath:process.env.CVEHARBOR_CHROMIUM}:{}),args:['--no-sandbox']});
+ try{
+  for(const [width,height] of [[1366,768],[1920,1080],[2560,1440],[390,844]]){
+   const page=await browser.newPage({viewport:{width,height},deviceScaleFactor:1,reducedMotion:'reduce'}),errors=[],writes=[];
+   page.on('pageerror',e=>errors.push(e.message));
+   await page.route('**/*',r=>{
+    const req=r.request(),u=new URL(req.url());
+    if(u.origin===new URL(base).origin)return r.continue();
+    if(!['GET','HEAD'].includes(req.method()))writes.push(u.pathname);
+    if(u.hostname==='api.cveharbor.com'&&u.pathname==='/v1/me')return r.fulfill({contentType:'application/json',body:'{"authenticated":false}'});
+    return r.abort();
+   });
+   await page.goto(base+'/threats/',{waitUntil:'networkidle'});
+   const group=id=>page.locator(`.threat-group[data-activity="${id}"]`);
+   assert.equal(await page.locator('.threat-group').count(),3);
+   assert.equal(await page.locator('.threat-group[open]').count(),0);
+   assert.equal(await page.locator('.threat-entry').count(),0,'closed groups do not mount hundreds of cards');
+   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no page overflow');
+   const toolbar=await page.locator('#threat-intelligence .threat-toolbar').boundingBox(),groups=await page.locator('#threatRows').boundingBox();
+   await page.screenshot({path:path.join(out,`threats-${width}-collapsed.png`),fullPage:true,clip:{x:toolbar.x,y:toolbar.y,width:toolbar.width,height:groups.y+groups.height-toolbar.y}});
+   const png=fs.readFileSync(path.join(out,`threats-${width}-collapsed.png`));
+   assert.ok(png.readUInt32BE(20)>=Math.floor(groups.y+groups.height-toolbar.y)-1,'screenshot includes all collapsed groups');
+   await group('attack').locator('summary').focus();await page.keyboard.press('Enter');
+   await page.waitForFunction(()=>document.querySelector('[data-activity="attack"] .threat-entry'));
+   assert.ok(await group('attack').evaluate(el=>el.open));
+   await page.keyboard.press('Space');
+   await page.waitForFunction(()=>!document.querySelector('[data-activity="attack"]').open);
+   await group('attack').locator('summary').click();
+   await group('malware').locator('summary').click();
+   await page.waitForFunction(()=>document.querySelector('[data-activity="malware"] .threat-entry'));
+   assert.equal(await group('attack').evaluate(el=>el.open),false);
+   assert.equal(await group('malware').locator('.threat-entry').count(),30);
+   await group('malware').locator('.threat-group-more').click();
+   assert.equal(await group('malware').locator('.threat-entry').count(),60);
+   assert.match(await page.evaluate(()=>document.activeElement.getAttribute('aria-label')),/View threat intelligence details/);
+   await page.selectOption('#threatActivityFilter','attack');
+   assert.equal(await page.locator('.threat-group').count(),1);
+   assert.equal(await page.locator('#threatSourceFilter option[value="threatfox"]').evaluate(el=>el.disabled),true);
+   await page.selectOption('#geoMapSourceFilter','dshield_scanners');
+   await page.selectOption('#threatActivityFilter','malware');
+   assert.equal(await page.locator('#geoMapSourceFilter').inputValue(),'all','activity change clears incompatible map-only filters');
+   await page.selectOption('#threatSourceFilter','threatfox');
+   await group('malware').locator('.threat-view-details').first().click();
+   assert.match(await page.locator('#threatDetailContent').innerText(),/Port \d+ · Provider confidence:/);
+   await page.keyboard.press('Escape');
+   assert.equal(await page.locator('#threatDetailDialog').evaluate(el=>el.open),false);
+   const ip=await group('malware').locator('.threat-ip').first().innerText();
+   await page.fill('#threatSearch',ip);
+   assert.ok((await page.locator('#threatRows .threat-ip').allTextContents()).every(text=>text.includes(ip)));
+   await page.fill('#threatSearch','no-match-fixture');
+   assert.equal(await page.locator('.threat-group').count(),0);
+   assert.match(await page.locator('#threatRows').innerText(),/No indicators match/);
+   await page.fill('#threatSearch','');
+   await page.selectOption('#threatActivityFilter','network');
+   assert.equal(await page.locator('#threatSourceFilter').inputValue(),'all');
+   assert.match(await page.locator('#threatCount').innerText(),/^0 matching IPs/);
+   assert.match(await page.locator('#geoMapSummary').innerText(),/^0 geolocated IPs/);
+   assert.match(await page.locator('#geoMapStatus').innerText(),/Network ranges are not plotted/);
+   await page.selectOption('#threatActivityFilter','all');
+   assert.equal(await page.locator('.threat-group[open]').count(),0);
+   await group('malware').locator('summary').click();
+   await page.waitForFunction(()=>document.querySelector('[data-activity="malware"] .threat-entry'));
+   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'expanded group fits viewport');
+   await group('malware').locator('summary').evaluate(el=>scrollTo({top:el.getBoundingClientRect().top+scrollY-90,behavior:'instant'}));
+   await page.screenshot({path:path.join(out,`threats-${width}-malware.png`)});
+   assert.deepEqual(errors,[]);assert.deepEqual(writes,[]);
+   console.log(`PASS ${width}×${height}: native keyboard accordion, exclusive groups, lazy cards, filters, search, map, detail dialog, pagination, no overflow or private writes`);
+   await page.close();
+  }
+ }finally{await browser.close()}
+})().catch(e=>{console.error(e);process.exit(1)});

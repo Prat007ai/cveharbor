@@ -125,6 +125,9 @@ threatWindow.CVEHARBOR_THREATS={
     activity:'Observed scanning and attack sources',source_url:'https://feeds.dshield.org/feeds/topips.txt',observed_at:null}]
 };
 threatWindow.eval(fs.readFileSync('threats.js','utf8'));
+const attackGroup=threatDocument.querySelector('.threat-group[data-activity="attack"]');
+assert.ok(attackGroup&&!attackGroup.open,'threat activity starts collapsed');
+attackGroup.open=true;attackGroup.dispatchEvent(new threatWindow.Event('toggle'));
 const threatButton=threatDocument.querySelector('.threat-view-details');
 assert.ok(threatButton,'threat details button is visible');
 assert.equal(threatButton.tagName,'BUTTON','threat source is not an external navigation link');
@@ -1018,9 +1021,9 @@ assert.ok(fs.readFileSync('app.js','utf8').includes('/v1/technology-catalogue'),
 assert.ok(fs.readFileSync('account-backend/src/index.js','utf8').includes('user_technology_catalogue WHERE user_id=?'),'technology catalogue isolates users');
 assert.ok(fs.readFileSync('styles.css','utf8').includes('grid-template-columns:repeat(4,minmax(0,1fr))!important'),'visual reference four column layout retained');
 
-// Both styled explorer assets must use the same new cache release.
+// Changed styles and the explorer script retain explicit cache versions.
 const explorerSource=fs.readFileSync('index.html','utf8');
-assert.match(explorerSource,/\/styles\.css\?v=brochure-216/,'technology layout stylesheet must refresh');
+assert.match(explorerSource,/\/styles\.css\?v=threat-groups-219/,'technology layout stylesheet must refresh');
 assert.match(explorerSource,/\/app\.js\?v=brochure-216/,'technology customization script must refresh');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"\/vulnerabilities\/":\["technology-kpis"/,'live verifier checks technology explorer page');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"styles.css","homepage.css","app.js"/,'live verifier validates explorer JavaScript');
