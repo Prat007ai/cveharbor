@@ -156,3 +156,31 @@ body[data-page="home"] .hero .hero-capabilities{width:min(100% - 44px,1920px)!im
    right:2%!important;width:43%!important;max-width:520px!important;
  }
 }
+
+/* Approved 210 desktop composition: closer shield and inward facing 3D card. Navigation untouched. */
+@media(min-width:1400px){
+ body[data-page="home"] .hero .hero-hologram{left:13%!important;top:10%!important;width:46%!important;height:76%!important;max-height:none!important;overflow:visible!important}
+ body[data-page="home"] .hero .hero-artwork{max-height:100%!important}
+ body[data-page="home"] .hero .hero-priority-card{
+   right:0!important;top:11%!important;width:46%!important;max-width:570px!important;
+   transform:perspective(1200px) rotateY(-9deg) rotateZ(-2deg)!important;
+   transform-origin:left center!important;
+   box-shadow:0 0 22px #15e0d055,16px 24px 45px #0008!important;
+   backface-visibility:hidden!important;
+ }
+ body[data-page="home"] .hero .pill-one{left:2%!important;top:20%!important}
+ body[data-page="home"] .hero .pill-two{left:32%!important;top:4%!important}
+ body[data-page="home"] .hero .pill-three{left:43%!important;top:38%!important}
+ body[data-page="home"] .hero .pill-four{left:2%!important;top:63%!important}
+ body[data-page="home"] .hero .pill-five{left:35%!important;top:81%!important}
+}
+@media(min-width:900px) and (max-width:1399px){
+ body[data-page="home"] .hero .hero-hologram{left:9%!important;width:48%!important}
+ body[data-page="home"] .hero .hero-priority-card{right:0!important;transform:perspective(1050px) rotateY(-6deg) rotateZ(-1deg)!important;transform-origin:left center!important}
+}
+@media(max-width:899px){
+ body[data-page="home"] .hero .hero-priority-card{transform:rotate(-1deg)!important}
+}
+@media(prefers-reduced-motion:reduce){
+ body[data-page="home"] .hero .hero-priority-card{animation:none!important}
+}
