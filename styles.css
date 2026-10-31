@@ -2333,3 +2333,39 @@ body[data-page="home"] .hero-capabilities{border-top:1px solid #14516c;padding-t
  body[data-page="home"] .hero-priority-card{width:49%!important}
  body[data-page="home"] .hero-trust-pill{font-size:10px!important}
 }
+
+/* Homepage composition 203. Only home hero elements; navigation/sidebar untouched. */
+@media(min-width:1250px){
+ body[data-page="home"] .hero{min-height:660px!important}
+ body[data-page="home"] .hero-grid{width:calc(100% - 54px)!important;max-width:none!important;grid-template-columns:minmax(0,39%) minmax(0,61%)!important;min-height:535px!important;gap:0!important;padding-top:12px!important}
+ body[data-page="home"] .hero-copy{align-self:center!important;padding:0 10px 0 0!important}
+ body[data-page="home"] .hero-copy h1{font-size:clamp(57px,4.75vw,85px)!important;line-height:1.08!important;letter-spacing:-2px!important}
+ body[data-page="home"] .hero-copy>p{font-size:16px!important;line-height:1.6!important;max-width:600px!important}
+ body[data-page="home"] .hero-visual{height:480px!important;min-height:480px!important;position:relative!important;isolation:isolate!important}
+ body[data-page="home"] .hero-intelligence-network{inset:0!important;z-index:0!important;opacity:.65!important}
+ body[data-page="home"] .hero-hologram{left:5%!important;top:10%!important;width:47%!important;height:80%!important;z-index:3!important}
+ body[data-page="home"] .hero-hologram-shield{width:47%!important;min-width:155px!important;max-width:205px!important}
+ body[data-page="home"] .hero-hologram-base{bottom:4%!important;left:8%!important;width:84%!important;height:48px!important}
+ body[data-page="home"] .hero-priority-card{right:0!important;top:6%!important;width:45%!important;max-width:470px!important;height:auto!important;min-height:355px!important;padding:20px!important;z-index:5!important;transform:rotate(-2deg)!important}
+ body[data-page="home"] .hero-priority-head strong{font-size:20px!important}
+ body[data-page="home"] .hero-priority-line{min-height:35px!important;font-size:14px!important}
+ body[data-page="home"] .hero-trust-pill{font-size:11px!important;z-index:6!important;padding:9px 12px!important}
+ body[data-page="home"] .pill-one{left:0!important;top:26%!important}
+ body[data-page="home"] .pill-two{left:24%!important;top:3%!important}
+ body[data-page="home"] .pill-three{left:31%!important;top:38%!important}
+ body[data-page="home"] .pill-four{left:1%!important;top:59%!important}
+ body[data-page="home"] .pill-five{left:29%!important;top:76%!important}
+ body[data-page="home"] .hero-capabilities{width:calc(100% - 54px)!important;max-width:none!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;margin-top:0!important;padding:24px 0 32px!important;gap:0!important}
+ body[data-page="home"] .hero-capability{min-width:0!important;padding:10px 12px!important;gap:12px!important}
+ body[data-page="home"] .hero-capability-icon{width:52px!important;height:52px!important}
+ body[data-page="home"] .hero-capability strong{font-size:16px!important}
+ body[data-page="home"] .hero-capability small{font-size:12px!important;line-height:1.45!important}
+}
+@media(max-width:1249px) and (min-width:900px){
+ body[data-page="home"] .hero-grid{grid-template-columns:1fr!important}
+ body[data-page="home"] .hero-visual{min-height:490px!important}
+ body[data-page="home"] .hero-capabilities{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(prefers-reduced-motion:reduce){
+ body[data-page="home"] .hero-hologram-shield,body[data-page="home"] .hero-hologram-orbit,body[data-page="home"] .hero-hologram-base,body[data-page="home"] .hero-priority-card{animation:none!important}
+}
