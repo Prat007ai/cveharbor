@@ -1,4 +1,4 @@
-const LIMIT=100000,WARNING=90000;
+const LIMIT=150000,WARNING=135000;
 export const usageMonth=(date=new Date())=>date.toISOString().slice(0,7);
 export async function usageReport(env,userId,month=usageMonth()){
  const total=await env.DB.prepare('SELECT reserved,warning_sent_at FROM web_risk_usage WHERE month=?').bind(month).first();
