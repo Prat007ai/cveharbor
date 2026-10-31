@@ -95,7 +95,9 @@ export async function checkSite(env,site,fetcher=fetch){
   const threat=error?{provider:'Google Web Risk',status:'not_checked',threats:[]}:await lookupWebsiteThreat(site.url,env);
   const evidence={http_headers:headers,http_findings:securityFindings,threat_intelligence:threat};
   const previous=await env.DB.prepare('SELECT http_status,security_headers FROM website_monitor_checks WHERE monitor_id=? AND user_id=? ORDER BY checked_at DESC LIMIT 1').bind(site.id,site.user_id).first();
-  const changed=previous&&((previous.http_status!==status)||(JSON.parse(previous.security_headers||'{}').http_headers?JSON.stringify(JSON.parse(previous.security_headers||'{}').http_headers)!==JSON.stringify(headers):previous.security_headers!==JSON.stringify(headers)))?1:0;
+  let previousHeaders={};
+  try{const saved=JSON.parse(previous?.security_headers||'{}');previousHeaders=saved.http_headers||saved}catch{}
+  const changed=previous&&((previous.http_status!==status)||(JSON.stringify(previousHeaders)!==JSON.stringify(headers)))?1:0;
   await env.DB.prepare('INSERT INTO website_monitor_checks(id,monitor_id,user_id,checked_at,http_status,content_type,security_headers,changed,error) VALUES(?,?,?,?,?,?,?,?,?)').bind(crypto.randomUUID(),site.id,site.user_id,checkedAt,status,contentType,JSON.stringify(evidence),changed,error).run();
   await env.DB.prepare('UPDATE website_monitors SET last_checked_at=?,last_status=?,last_error=? WHERE id=? AND user_id=?').bind(checkedAt,status,error,site.id,site.user_id).run();
   return {checked_at:checkedAt,http_status:status,content_type:contentType,security_headers:headers,http_findings:securityFindings,threat_intelligence:threat,changed:!!changed,error};
