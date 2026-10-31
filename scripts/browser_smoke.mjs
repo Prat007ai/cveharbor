@@ -1023,3 +1023,6 @@ assert.match(explorerSource,/\/styles\.css\?v=technology-catalogue-189/,'technol
 assert.match(explorerSource,/\/app\.js\?v=technology-catalogue-189/,'technology customization script must refresh');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"\/vulnerabilities\/":\["technology-kpis"/,'live verifier checks technology explorer page');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"styles.css","app.js"/,'live verifier validates explorer JavaScript');
+
+assert.match(fs.readFileSync('index.html','utf8'),/command-center\.js\?v=explorer-sidebar-190/,'current sidebar asset version required');
+assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"command-center.js"/,'production verification checks navigation script');
