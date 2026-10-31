@@ -965,3 +965,8 @@ assert.ok(!workspaceDataClient.includes("fetch('/data.js'"),'empty script is not
 assert.ok(workspaceDataClient.includes("setTimeout(start,0)"),'dashboard loads after login state is rendered');
 
 assert.ok(fs.readFileSync('account-backend/src/index.js','utf8').includes("path==='/v1/website-monitor'?await body(req):{}"),'manual website checks must not JSON parse empty POST requests');
+
+const emailTestPage=fs.readFileSync('website-monitor/index.html','utf8');
+const emailTestScript=fs.readFileSync('website-monitor-page.js','utf8');
+assert.ok(emailTestPage.includes('id="webRiskEmailTest"')&&emailTestPage.includes('monitor-178'),'warning email test button is published with current script version');
+assert.ok(emailTestScript.includes("warningButton.addEventListener('click'")&&emailTestScript.includes('Test warning email failed:'),'warning email test has a working click listener with visible errors');
