@@ -1016,3 +1016,10 @@ assert.ok(fs.readFileSync('index.html','utf8').includes('technologyCustomizeStat
 assert.ok(fs.readFileSync('app.js','utf8').includes('/v1/technology-catalogue'),'technology catalogue is account backed');
 assert.ok(fs.readFileSync('account-backend/src/index.js','utf8').includes('user_technology_catalogue WHERE user_id=?'),'technology catalogue isolates users');
 assert.ok(fs.readFileSync('styles.css','utf8').includes('grid-template-columns:repeat(4,minmax(0,1fr))!important'),'visual reference four column layout retained');
+
+// Both styled explorer assets must use the same new cache release.
+const explorerSource=fs.readFileSync('index.html','utf8');
+assert.match(explorerSource,/\/styles\.css\?v=technology-catalogue-189/,'technology layout stylesheet must refresh');
+assert.match(explorerSource,/\/app\.js\?v=technology-catalogue-189/,'technology customization script must refresh');
+assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"\/vulnerabilities\/":\["technology-kpis"/,'live verifier checks technology explorer page');
+assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"styles.css","app.js"/,'live verifier validates explorer JavaScript');
