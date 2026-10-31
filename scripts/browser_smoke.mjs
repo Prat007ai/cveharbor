@@ -968,7 +968,7 @@ assert.ok(fs.readFileSync('account-backend/src/index.js','utf8').includes("path=
 
 const emailTestPage=fs.readFileSync('website-monitor/index.html','utf8');
 const emailTestScript=fs.readFileSync('website-monitor-page.js','utf8');
-assert.ok(emailTestPage.includes('id="webRiskEmailTest"')&&emailTestPage.includes('monitor-178'),'warning email test button is published with current script version');
+assert.ok(emailTestPage.includes('id="webRiskEmailTest"')&&emailTestPage.includes('monitor-179'),'warning email test button is published with current script version');
 assert.ok(emailTestScript.includes("warningButton.addEventListener('click'")&&emailTestScript.includes('Test warning email failed:'),'warning email test has a working click listener with visible errors');
 
 const threatDashboardHtml=fs.readFileSync('website-monitor/index.html','utf8');
