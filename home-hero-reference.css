@@ -82,3 +82,55 @@ body[data-page="home"] .hero .pill-three{left:32%!important;top:38%!important}
 body[data-page="home"] .hero .pill-four{left:0!important;top:60%!important}
 body[data-page="home"] .hero .pill-five{left:29%!important;top:78%!important}
 @media(max-width:700px){body[data-page="home"] .hero .hero-hologram{width:50%!important;max-height:300px!important}body[data-page="home"] .hero .hero-artwork{max-height:300px!important}}
+
+/* Responsive hero 208. Proportional composition, no changes to navigation. */
+body[data-page="home"] .hero .hero-grid{width:min(100% - 44px,1920px)!important;max-width:1920px!important;margin-inline:auto!important}
+body[data-page="home"] .hero .hero-visual{width:100%!important;min-width:0!important}
+body[data-page="home"] .hero .hero-capabilities{width:min(100% - 44px,1920px)!important;max-width:1920px!important;margin-inline:auto!important}
+@media(min-width:1650px){
+ body[data-page="home"] .hero .hero-grid{grid-template-columns:minmax(0,40%) minmax(0,60%)!important}
+ body[data-page="home"] .hero .hero-visual{height:clamp(465px,27vw,570px)!important;min-height:0!important}
+ body[data-page="home"] .hero .hero-hologram{left:6%!important;top:10%!important;width:45%!important;height:76%!important;max-height:none!important}
+ body[data-page="home"] .hero .hero-artwork{max-height:100%!important}
+ body[data-page="home"] .hero .hero-priority-card{right:2%!important;top:13%!important;width:43%!important}
+ body[data-page="home"] .hero .pill-one{left:0!important;top:22%!important}
+ body[data-page="home"] .hero .pill-two{left:30%!important;top:4%!important}
+ body[data-page="home"] .hero .pill-three{left:35%!important;top:38%!important}
+ body[data-page="home"] .hero .pill-four{left:0!important;top:62%!important}
+ body[data-page="home"] .hero .pill-five{left:31%!important;top:80%!important}
+}
+@media(min-width:1250px) and (max-width:1649px){
+ body[data-page="home"] .hero .hero-grid{grid-template-columns:minmax(0,40%) minmax(0,60%)!important}
+ body[data-page="home"] .hero .hero-visual{height:clamp(400px,29vw,470px)!important;min-height:0!important}
+ body[data-page="home"] .hero .hero-hologram{left:4%!important;top:13%!important;width:47%!important;height:72%!important;max-height:none!important}
+ body[data-page="home"] .hero .hero-artwork{max-height:100%!important}
+ body[data-page="home"] .hero .hero-priority-card{width:44%!important;right:0!important;top:11%!important}
+}
+@media(min-width:900px) and (max-width:1249px){
+ body[data-page="home"] .hero .hero-grid{grid-template-columns:minmax(0,42%) minmax(0,58%)!important;gap:0!important}
+ body[data-page="home"] .hero .hero-copy h1{font-size:clamp(43px,4.8vw,63px)!important}
+ body[data-page="home"] .hero .hero-visual{height:420px!important;min-height:0!important}
+ body[data-page="home"] .hero .hero-hologram{left:1%!important;top:14%!important;width:49%!important;height:70%!important}
+ body[data-page="home"] .hero .hero-priority-card{width:48%!important;top:13%!important}
+ body[data-page="home"] .hero .hero-trust-pill{font-size:9px!important;padding:6px 8px!important}
+ body[data-page="home"] .hero .hero-capabilities{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(max-width:899px){
+ body[data-page="home"] .hero .hero-grid{grid-template-columns:1fr!important;gap:8px!important}
+ body[data-page="home"] .hero .hero-copy{padding:30px 0 0!important}
+ body[data-page="home"] .hero .hero-visual{height:440px!important;min-height:0!important}
+ body[data-page="home"] .hero .hero-hologram{left:2%!important;top:12%!important;width:48%!important;height:75%!important}
+ body[data-page="home"] .hero .hero-priority-card{right:0!important;top:11%!important;width:48%!important}
+ body[data-page="home"] .hero .hero-capabilities{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:560px){
+ body[data-page="home"] .hero .hero-grid,body[data-page="home"] .hero .hero-capabilities{width:calc(100% - 26px)!important}
+ body[data-page="home"] .hero .hero-visual{height:365px!important}
+ body[data-page="home"] .hero .hero-hologram{left:0!important;top:18%!important;width:48%!important;height:59%!important}
+ body[data-page="home"] .hero .hero-priority-card{width:52%!important;min-width:0!important;top:16%!important;padding:10px!important}
+ body[data-page="home"] .hero .hero-priority-head strong{font-size:13px!important}
+ body[data-page="home"] .hero .hero-priority-line{font-size:10px!important;min-height:25px!important;padding:5px!important}
+ body[data-page="home"] .hero .hero-priority-foot,body[data-page="home"] .hero .hero-priority-chart{display:none!important}
+ body[data-page="home"] .hero .hero-capabilities{gap:8px!important}
+ body[data-page="home"] .hero .hero-capability{padding:9px 4px!important}
+}
