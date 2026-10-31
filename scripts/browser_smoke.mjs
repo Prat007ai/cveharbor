@@ -797,7 +797,7 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('transform:scale(1.36)')
 
 assert.equal(html.includes('PUBLIC ADVISORY FEEDS'),false,'hero card no longer displays public advisory feeds wording');
 
-assert.ok(html.includes('Find risks faster. Prioritize fixes. Stay protected.'),'hero contains clear security value statement');
+assert.ok(html.includes('Prioritized vulnerabilities')&&html.includes('Know the risk.'),'hero contains the approved security value statement');
 assert.equal(html.includes('>REMEDIATE</text>'),false,'network badge overlap label removed');
 
 assert.ok(html.includes('<option>WEB</option>'),'WEB asset type appears in inventory form');
