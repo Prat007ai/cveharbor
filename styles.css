@@ -2109,3 +2109,42 @@ body[data-page="vulnerabilities"] .technology-redesign .technology-brand-icon im
 .technology-additional{margin:17px 0}.technology-additional .technology-panel{max-width:680px;border:1px solid #2f757c;border-radius:12px;overflow:hidden;background:#092a40}
 @media(max-width:1350px){body[data-page="vulnerabilities"] .technology-redesign .technology-intro{grid-template-columns:1fr!important}body[data-page="vulnerabilities"] .technology-redesign #categoryGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media(max-width:750px){body[data-page="vulnerabilities"] .technology-redesign #categoryGrid{grid-template-columns:1fr!important}}
+
+/* Visual contract: Explorer reference 194. Preserve the shared icon-only navigation. */
+body[data-page="vulnerabilities"]{background:#041221}
+body[data-page="vulnerabilities"] .technology-redesign{width:calc(100% - 52px)!important;max-width:none!important;padding:34px 0 60px!important;background:radial-gradient(ellipse at 70% 0%,#0a304b 0,transparent 62%)!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-intro{grid-template-columns:minmax(0,1fr) minmax(0,1.04fr)!important;gap:30px!important;align-items:center!important;margin-bottom:20px!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-intro h2{font-size:clamp(33px,2.35vw,44px)!important;line-height:1.12!important;color:#f3f8ff!important;letter-spacing:-1.2px!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-description{font-size:14px!important;line-height:1.6!important;max-width:720px!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-kpis{gap:14px!important;grid-template-columns:repeat(4,minmax(0,1fr))!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-kpi{position:relative;overflow:hidden;min-height:132px!important;padding:17px 14px 31px!important;border:1px solid #1b5573!important;border-radius:13px!important;background:linear-gradient(145deg,#0b3149,#061c2f)!important;box-shadow:0 12px 24px #0004!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-kpi:nth-child(2){border-color:#4e5948!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-kpi:nth-child(3){border-color:#256b9a!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-kpi:nth-child(4){border-color:#713e5c!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-kpi strong{font-size:28px!important;color:#fff}
+body[data-page="vulnerabilities"] .technology-redesign .technology-kpi small{font-size:12px!important}
+.technology-redesign .kpi-sparkline{position:absolute;bottom:0;left:0;right:0;height:22px;opacity:.65;background:linear-gradient(0deg,#11c5aa24,transparent);border-top:1px solid #11c5aa40;clip-path:polygon(0 72%,14% 58%,25% 78%,38% 42%,49% 62%,62% 35%,75% 65%,88% 29%,100% 50%,100% 100%,0 100%)}
+.technology-redesign .technology-kpi:nth-child(2) .kpi-sparkline{background:#a7c84439;border-top-color:#b9d454}
+.technology-redesign .technology-kpi:nth-child(3) .kpi-sparkline{background:#198edf48;border-top-color:#33a8ee}
+.technology-redesign .technology-kpi:nth-child(4) .kpi-sparkline{background:#e04a7240;border-top-color:#f45b87}
+body[data-page="vulnerabilities"] .technology-redesign .technology-tools{margin:0 0 21px!important;gap:16px!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-search{width:min(100%,760px)!important;max-width:760px!important;height:48px!important}
+body[data-page="vulnerabilities"] .technology-redesign #categoryGrid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px!important;align-items:stretch!important}
+body[data-page="vulnerabilities"] .technology-redesign #categoryGrid .technology-panel{background:linear-gradient(160deg,#092e48,#062035)!important;border-radius:13px!important;box-shadow:0 18px 38px #0004!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-panel-head{min-height:122px!important;padding:18px 14px!important;align-items:flex-start!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-panel-heading h3{font-size:16px!important;line-height:1.25!important;margin:4px 0 8px!important}
+.technology-redesign .technology-panel-description{font-size:11px!important;line-height:1.45!important;font-weight:400!important;color:#a9c8d9!important;max-width:245px;margin:0!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-panel-total{display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;min-width:47px!important;min-height:49px!important;border-radius:9px!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-panel-total strong{font-size:19px!important;line-height:1.1!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-panel-total small{font-size:10px!important;font-weight:400!important;color:#aed1df!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-panel-icon{width:50px!important;height:50px!important;min-width:50px!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-row{min-height:63px!important;grid-template-columns:38px minmax(0,1fr) auto 12px!important;gap:7px!important;padding:9px 5px!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-row-name{font-size:12px!important;line-height:1.25!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-brand-icon{width:35px!important;height:35px!important}
+.technology-brand-icon svg{width:26px;height:26px}
+.technology-brand-icon.brand-letter{background:var(--brand-color)!important;color:white!important;font-size:22px!important;font-weight:800!important}
+.technology-redesign .technology-brand-icon img{filter:none!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-count-new,body[data-page="vulnerabilities"] .technology-redesign .technology-count-all{font-size:10px!important}
+@media(max-width:1480px){body[data-page="vulnerabilities"] .technology-redesign .technology-intro{grid-template-columns:1fr!important}}
+@media(max-width:1300px){body[data-page="vulnerabilities"] .technology-redesign #categoryGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:750px){body[data-page="vulnerabilities"] .technology-redesign #categoryGrid{grid-template-columns:1fr!important}body[data-page="vulnerabilities"] .technology-redesign .technology-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
