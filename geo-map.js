@@ -20,7 +20,8 @@
   let map = null;
   let markers = null;
   function group() {
-    const selected = geoItems.filter(x => (filter.value === 'all' || x.source_id === filter.value)
+    const selected = geoItems.filter(x => (!window.CVEHARBOR_THREAT_ACTIVITY||window.CVEHARBOR_THREAT_ACTIVITY.matchesFilters(x))
+      && (filter.value === 'all' || x.source_id === filter.value)
       && (!chosen || x.geo.country === chosen));
     const countries = new Map();
     for (const x of selected) {
@@ -49,8 +50,9 @@
       ranking.append(row);
       if(chosen===g.name)row.classList.add('selected');
     }
+    const noMatches=document.getElementById('threatActivityFilter')?.value==='network'?'Network ranges are not plotted as individual hosts. Choose an IP activity type to view mapped addresses.':'No geolocated IPs match the current filters.';
     if (!window.L) {
-      status.textContent = geoItems.length ? 'The interactive map library is unavailable. Country totals are shown below.' : 'No IP geolocation is available from the current feed. Rankings will appear after the next successful collection.';
+      status.textContent = visibleCount ? 'The interactive map library is unavailable. Country totals are shown below.' : noMatches;
       return;
     }
     if (!map) {
@@ -77,8 +79,7 @@
       popup.append(heading,pre,b);
       circle.bindPopup(popup);
     }
-    status.textContent = geoItems.length ? 'Showing approximate geolocated network addresses. Click a circle or country to drill down. Drag to pan and use + or − to zoom.' :
-      'No geolocation is available in the current feed. The map will populate after a successful enrichment run.';
+    status.textContent = visibleCount ? 'Showing approximate geolocated network addresses. Click a circle or country to drill down. Drag to pan and use + or − to zoom.' : noMatches;
     if (all.length && chosen) map.setView([all[0].latitude,all[0].longitude],4);
     if (!chosen && all.length && markers.getLayers().length) {
       const bounds=window.L.featureGroup(markers.getLayers()).getBounds();
@@ -86,6 +87,7 @@
     }
     setTimeout(()=>map.invalidateSize(),50);
   }
+  window.addEventListener('cveharbor:threat-filter-change',()=>{chosen='';filter.value='all';draw();});
   filter.addEventListener('change',()=>{chosen='';draw();});
   const reset=el('geoMapReset');
   if(reset)reset.addEventListener('click',()=>{chosen='';filter.value='all';draw();});

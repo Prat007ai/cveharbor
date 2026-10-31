@@ -7,10 +7,27 @@
   const status=document.getElementById('threatStatus');
   const select=document.getElementById('threatSourceFilter');
   const search=document.getElementById('threatSearch');
+  const activity=document.getElementById('threatActivityFilter');
   const items=Array.isArray(report.indicators)?report.indicators:[];
   const sources=Object.entries(report.sources||{});
   const sourceNames={dshield_scanners:'DShield scanning',feodo_c2:'Feodo botnet C2',threatfox:'ThreatFox malware IPs',spamhaus_drop:'Spamhaus DROP ranges'};
-  let limit=150;
+  const pageSize=30,limits=new Map();
+  let openGroup=null;
+  const groups=[
+    {id:'attack',label:'Attack & scanning sources',description:'DShield reports of observed scanning and attack-source activity.'},
+    {id:'malware',label:'Malware-associated IPs',description:'Feodo botnet command-and-control and ThreatFox malware reports.'},
+    {id:'network',label:'Network ranges',description:'Spamhaus DROP listings for entire networks, rather than individual hosts.'},
+    {id:'other',label:'Other reported activity',description:'Reports from other intelligence sources.'}
+  ];
+  const categoryFor=x=>x.kind==='network'||x.source_id==='spamhaus_drop'?'network':x.source_id==='dshield_scanners'?'attack':['feodo_c2','threatfox'].includes(x.source_id)?'malware':'other';
+  const matchesFilters=x=>{
+    const q=search.value.trim().toLowerCase();
+    return (activity.value==='all'||categoryFor(x)===activity.value)&&(select.value==='all'||x.source_id===select.value)&&(!q||x.ip.includes(q)||String(x.activity||'').toLowerCase().includes(q));
+  };
+  window.CVEHARBOR_THREAT_ACTIVITY={categoryFor,matchesFilters};
+  if(items.some(x=>categoryFor(x)==='other')){
+    const option=document.createElement('option');option.value='other';option.textContent='Other reported activity';activity.append(option);
+  }
   const format=time=>time&&!Number.isNaN(new Date(time).getTime())?new Date(time).toLocaleString('en-CA',{timeZone:'America/Toronto'})+' ET':'Not recorded';
   const freshness=()=>{
     const attempt=Date.parse(report.checked_at),age=Date.now()-attempt;
@@ -30,7 +47,7 @@
     const p=document.createElement('p');
     const fetched=s.published_count??items.filter(x=>x.source_id===id).length;
     p.textContent=(sourceNames[id]||id)+': '+
-      (s.ok?fetched+' displayed of '+(s.count??fetched)+' source entries'+(s.truncated?' (limited to '+report.per_source_limit+')':''):'Unavailable; '+(s.retained_count||0)+' older reports retained')+
+      (s.ok?fetched+' available of '+(s.count??fetched)+' source entries'+(s.truncated?' (limited to '+report.per_source_limit+')':''):'Unavailable; '+(s.retained_count||0)+' older reports retained')+
       '. Last successful fetch: '+format(s.last_success||(s.ok?report.checked_at:null))+'.'+
       (s.error?' Error: '+s.error:'');
     health.append(p);
@@ -81,32 +98,86 @@
   if(close)close.addEventListener('click',()=>document.getElementById('threatDetailDialog').close());
   const dialog=document.getElementById('threatDetailDialog');
   if(dialog)dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});
+  function makeRow(x){
+    const row=make('article','');row.className='threat-entry';
+    const name=make('strong',x.ip);name.className='threat-ip';
+    const tag=make('span',x.activity);tag.className='threat-type';
+    const meta=make('div',x.source+(x.kind==='network'?' · ENTIRE NETWORK RANGE':'')+(x.stale?' · RETAINED: latest source fetch failed':'')+' · Source-reported activity · '+(x.last_seen?'Provider last seen: '+format(x.last_seen):'Last-seen time not supplied by source'));
+    meta.className='threat-meta';
+    const link=make('button','View details');link.type='button';link.className='threat-view-details';
+    link.setAttribute('aria-label','View threat intelligence details for '+x.ip);
+    link.addEventListener('click',()=>showThreatDetail(x));
+    const head=make('div','');head.className='threat-entry-head';head.append(name,tag);
+    row.append(head,meta,link);return row;
+  }
+  function fillGroup(body,group,entries,focusIndex){
+    body.replaceChildren();
+    const limit=limits.get(group.id)||pageSize,visible=entries.slice(0,limit);
+    const progress=make('p','Showing '+visible.length+' of '+entries.length+' source reports in this group.');
+    progress.className='threat-group-progress';
+    const list=make('div','');list.className='threat-list';
+    for(const x of visible)list.append(makeRow(x));
+    body.append(progress,list);
+    if(entries.length>limit){
+      const more=make('button','Show more reports');more.type='button';more.className='threat-group-more';
+      more.addEventListener('click',()=>{limits.set(group.id,limit+pageSize);fillGroup(body,group,entries,limit)});
+      body.append(more);
+    }
+    if(Number.isInteger(focusIndex))list.querySelectorAll('.threat-view-details')[focusIndex]?.focus();
+  }
   function render(){
     root.replaceChildren();
-    const filter=select.value,q=search.value.trim().toLowerCase();
-    const matching=items.filter(x=>(filter==='all'||x.source_id===filter)&&(!q||x.ip.includes(q)||x.activity.toLowerCase().includes(q)));
-    const visible=matching.slice(0,limit);
-    count.textContent=new Set(matching.filter(x=>x.kind!=='network').map(x=>x.ip)).size+' matching IPs · '+new Set(matching.filter(x=>x.kind==='network').map(x=>x.ip)).size+' network ranges · '+visible.length+' of '+matching.length+' source reports shown';
-    if(!visible.length){
-      const p=make('p','No indicators match. A missing or failed feed is not a security clearance.');
-      p.className='threat-empty';root.append(p);return;
+    const matching=items.filter(matchesFilters);
+    count.textContent=new Set(matching.filter(x=>x.kind!=='network').map(x=>x.ip)).size+' matching IPs · '+new Set(matching.filter(x=>x.kind==='network').map(x=>x.ip)).size+' network ranges · '+matching.length+' source reports';
+    if(!matching.length){
+      const p=make('p','No indicators match these filters. Try another activity type, feed or IP address.');
+      p.className='threat-empty';root.append(p);
     }
-    for(const x of visible){
-      const row=make('article','');row.className='threat-entry';
-      const name=make('strong',x.ip);name.className='threat-ip';
-      const tag=make('span',x.activity);tag.className='threat-type';
-      const meta=make('div',x.source+(x.kind==='network'?' · ENTIRE NETWORK RANGE':'')+(x.stale?' · RETAINED: latest source fetch failed':'')+' · Source-reported activity · '+(x.last_seen?'Provider last seen: '+format(x.last_seen):'Last-seen time not supplied by source'));
-      meta.className='threat-meta';
-      const link=make('button','View details');
-      link.type='button';link.className='threat-view-details';
-      link.setAttribute('aria-label','View threat intelligence details for '+x.ip);
-      link.addEventListener('click',()=>showThreatDetail(x));
-      const head=make('div','');head.className='threat-entry-head';head.append(name,tag);
-      row.append(head,meta,link);root.append(row);
+    for(const group of groups){
+      const entries=matching.filter(x=>categoryFor(x)===group.id);
+      if(!entries.length)continue;
+      const details=make('details','');details.className='threat-group';details.dataset.activity=group.id;
+      details.setAttribute('name','threat-activity');details.open=openGroup===group.id;
+      const summary=make('summary',''),chevron=make('span','›');chevron.className='threat-group-chevron';chevron.setAttribute('aria-hidden','true');
+      const label=make('span','');label.className='threat-group-label';
+      const description=make('span',group.description);description.className='threat-group-description';
+      label.append(make('strong',group.label),description);
+      const unique=new Set(entries.map(x=>x.ip)).size;
+      const total=make('span',unique+(group.id==='network'?(unique===1?' range':' ranges'):(unique===1?' IP':' IPs')));total.className='threat-group-count';
+      summary.append(chevron,label,total);
+      const body=make('div','');body.className='threat-group-body';
+      details.append(summary,body);root.append(details);
+      if(details.open)fillGroup(body,group,entries);
+      details.addEventListener('toggle',()=>{
+        if(!root.contains(details))return;
+        if(details.open){
+          openGroup=group.id;
+          for(const other of root.querySelectorAll('.threat-group[open]'))if(other!==details){other.open=false;other.querySelector('.threat-group-body').replaceChildren()}
+          if(!body.childElementCount)fillGroup(body,group,entries);
+        }else{
+          if(openGroup===group.id)openGroup=null;
+          body.replaceChildren();
+        }
+      });
     }
-    if(matching.length>limit){const more=make('button','Show more reports');more.type='button';more.className='threat-view-details';more.addEventListener('click',()=>{limit+=150;render()});root.append(more);}
+    window.dispatchEvent(new CustomEvent('cveharbor:threat-filter-change'));
   }
-  select.addEventListener('change',()=>{limit=150;render()});
-  search.addEventListener('input',()=>{limit=150;render()});
+  function filterChanged(){
+    limits.clear();
+    const matching=items.filter(matchesFilters);
+    if(activity.value!=='all')openGroup=activity.value;
+    else if(select.value!=='all')openGroup=categoryFor({source_id:select.value});
+    else if(search.value.trim()){
+      if(!matching.some(x=>categoryFor(x)===openGroup))openGroup=matching.length?categoryFor(matching[0]):null;
+    }else openGroup=null;
+    render();
+  }
+  activity.addEventListener('change',()=>{
+    select.value='all';
+    for(const option of select.options)option.disabled=option.value!=='all'&&activity.value!=='all'&&categoryFor({source_id:option.value})!==activity.value;
+    filterChanged();
+  });
+  select.addEventListener('change',filterChanged);
+  search.addEventListener('input',filterChanged);
   render();
 })();

@@ -62,7 +62,13 @@ The workflow publishes available/retained data before reporting degraded health.
 - A failed source's last successful data is retained for at most 72 hours, visibly
   marked stale. A publication older than three hours shows a stale warning.
 - Each source publishes at most 500 entries. Total parsed count and truncation
-  are visible; the page initially renders 150 reports with a Show more button.
+  are visible. Reports are grouped into attack/scanning sources (DShield),
+  malware-associated IPs (Feodo and ThreatFox), and network ranges (Spamhaus).
+  Groups start collapsed and open one at a time. An open group initially shows
+  30 source reports with a Show more button.
+- Activity, feed and IP search filters apply to both the list and map. Choosing
+  an activity clears incompatible feed filters; explicit filters or a search open
+  the matching group. Network ranges remain excluded from the host map.
 - Geolocation performs at most 20 new lookups per run with five-second timeouts,
   reusing existing cached locations. Unlocated reports remain in the list.
 - Existing firewall files are cumulative historical review templates, not a
@@ -83,3 +89,12 @@ unique totals, source filters, pagination, provider evidence, text escaping and
 network-range exclusion from map totals. Site DOM smoke and build preflight are
 also checked. Production verification checks the threats route, its frontend
 scripts and the exact published indicator snapshot against the release artifact.
+
+Native accordion and responsive layout checks are in
+`scripts/threat_activity_visual_smoke.cjs`. With a local server running, set
+`CVEHARBOR_PLAYWRIGHT_MODULE` and `CVEHARBOR_CHROMIUM` if Playwright/Chromium are
+installed outside the repository, and optionally `CVEHARBOR_SCREENSHOTS` for
+review artifacts. The script checks keyboard expansion, exclusive groups, lazy
+rendering, filters, pagination focus, map synchronization and overflow at widths
+1366, 1920, 2560 and 390. Its screenshots show the local UI using the committed
+public dataset; external requests are blocked and no account writes are sent.

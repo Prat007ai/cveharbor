@@ -609,6 +609,23 @@ button.tech-chart-link b{
 .threat-toolbar label{color:#a8c3d3;font-size:11px;font-weight:750;display:grid;gap:6px;flex:1;min-width:190px}
 .threat-toolbar input,.threat-toolbar select{background:#0b2437;color:#f0f8fc;border:1px solid #34576a;border-radius:8px;padding:11px 12px;width:100%;max-width:100%;min-width:0}
 .threat-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin-top:15px}
+.threat-groups{display:grid;gap:12px;margin-top:16px}
+.threat-group{min-width:0;border:1px solid #34576a;border-radius:11px;background:#102738;overflow:clip}
+.threat-group>summary{display:flex;align-items:center;gap:14px;padding:20px;cursor:pointer;list-style:none;min-height:78px}
+.threat-group>summary::-webkit-details-marker{display:none}
+.threat-group>summary:hover{background:#143044}
+.threat-group>summary:focus-visible{outline:2px solid #7de3d5;outline-offset:-4px}
+.threat-group[open]>summary{border-bottom:1px solid #34576a}
+.threat-group-chevron{color:#7de3d5;font-size:27px;line-height:1;flex:none}
+.threat-group[open] .threat-group-chevron{transform:rotate(90deg)}
+.threat-group-label{display:grid;gap:5px;min-width:0;flex:1}
+.threat-group-label strong{font-size:16px;color:#eaf7ff}
+.threat-group-description{color:#a7c3d4;font-size:12px;line-height:1.5}
+.threat-group-count{flex:none;color:#8be5dc;background:#173a48;border:1px solid #315c68;border-radius:7px;padding:7px 10px;font-size:12px;font-weight:750}
+.threat-group-body{padding:18px}
+.threat-group-progress{margin:0;color:#a7c3d4;font-size:12px}
+.threat-group-more{margin-top:16px;background:#153c49;color:#a5f0e5;border:1px solid #376b78;border-radius:8px;padding:11px 16px;cursor:pointer;font-weight:750}
+.threat-group-more:focus-visible{outline:2px solid #7de3d5;outline-offset:3px}
 .threat-entry{min-width:0;border:1px solid #2d5165;border-radius:10px;background:#102a3d;padding:14px;display:grid;gap:8px}
 .threat-entry-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .threat-ip{color:#eaf7ff;font-size:14px;font-family:ui-monospace,Consolas,monospace}
@@ -618,6 +635,7 @@ button.tech-chart-link b{
 .threat-empty{grid-column:1/-1;color:#a7c3d4;padding:23px;border:1px dashed #34576a;border-radius:10px}
 @media(max-width:1100px){.threat-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.threat-list{grid-template-columns:minmax(0,1fr)}.threat-toolbar{display:grid;grid-template-columns:minmax(0,1fr)}.threat-toolbar label{min-width:0}}
+@media(max-width:700px){.threat-group>summary{padding:15px;gap:10px;flex-wrap:wrap}.threat-group-label{flex-basis:calc(100% - 36px)}.threat-group-label strong{font-size:14px}.threat-group-description{font-size:11px}.threat-group-count{margin-left:25px}.threat-group-body{padding:12px}}
 
 /* Local threat source detail dialog. No navigation on the card action. */
 .threat-view-details{
