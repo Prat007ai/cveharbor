@@ -4,6 +4,7 @@ import { saveOptin, loadAlertSubscription, sendUserSample, dispatchDueDigests, u
 import { handlePublicCveLookup } from './cve-lookup.js';
 import { handler as lifecycleHandler, LifecycleError, dispatchLifecycle } from './lifecycle.js';
 import { inventoryRoute, InventoryError } from './inventory.js';
+import {route as websiteMonitorRoute,scanDue as scanWebsiteDue} from './website-monitor.js';
 import { customerScoreRoute } from './customer-score.js';
 import { pluginAdvisoryRoute } from './plugin-advisories.js';
 import { sourceRoute } from './plugin-sources.js';
@@ -243,6 +244,7 @@ export default {async fetch(req,env,ctx){
   if(path.startsWith('/v1/plugin-installation-status'))return await sourceRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/plugin-sources'))return await sourceRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
   if(path==='/v1/customer-score-history')return await customerScoreRoute(req,env,user,path,req.method==='POST'?await body(req):{});
+  if(path.startsWith('/v1/website-monitor'))return await websiteMonitorRoute(req,env,user,path,req.method==='POST'?await body(req):{});
   if(path.startsWith('/v1/plugin-monitor'))return await monitorRoute(req,env,user,path,req.method==='POST'?await body(req):{});
   if(path==='/v1/plugin-advisories'&&req.method==='GET')return await pluginAdvisoryRoute(req,env,user);
   if(path.startsWith('/v1/inventory'))return await inventoryRoute(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
@@ -300,5 +302,6 @@ export default {async fetch(req,env,ctx){
   if(env.ALERT_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchDueDigests(env));
   if(env.LIFECYCLE_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchLifecycle(env));
   if(env.PLUGIN_MONITOR_ENABLED==='true')ctx.waitUntil(scanDue(env));
+  if(env.WEBSITE_MONITOR_ENABLED==='true')ctx.waitUntil(scanWebsiteDue(env));
  }
 };
