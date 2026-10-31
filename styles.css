@@ -2214,3 +2214,45 @@ body[data-page="vulnerabilities"] .technology-redesign .technology-panel-rows::-
 .technology-signin-primary{background:#64e6d8;color:#062532!important}
 .technology-signin-secondary{border:1px solid #48879b;color:#def8ff!important;background:#12384e}
 .technology-signin-content .technology-signin-note{font-size:11px!important;color:#9bb9c8!important}
+
+/* Homepage hero 200: priority dashboard, animated network and six true capability links. */
+body[data-page="home"] .hero{position:relative;overflow:hidden;background:radial-gradient(ellipse at 65% 38%,#06384b66 0%,transparent 52%),#061524}
+body[data-page="home"] .hero-grid{min-height:550px;display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);align-items:center;gap:24px}
+body[data-page="home"] .hero-copy{position:relative;z-index:5}
+body[data-page="home"] .hero-copy h1{font-size:clamp(48px,4.4vw,81px);line-height:1.08}
+body[data-page="home"] .hero-copy h1 em{color:#61d9e5;font-style:normal}
+body[data-page="home"] .hero-visual{min-width:0;min-height:450px;position:relative}
+body[data-page="home"] .hero-intelligence-network{inset:0!important;opacity:.85}
+body[data-page="home"] .hero-priority-card{position:absolute;z-index:5;right:1%;top:11%;width:43%;min-width:270px;box-sizing:border-box;padding:23px 19px 17px;border:1px solid #4dded1;border-radius:17px;background:linear-gradient(150deg,#0b354cfa,#041b2ffa);box-shadow:0 20px 45px #0007,0 0 30px #15bdbb35;transform:rotate(-2deg);animation:hero-card-float 7s ease-in-out infinite}
+body[data-page="home"] .hero-priority-head{display:flex;align-items:center;gap:12px;color:#f1ffff;margin-bottom:19px}
+body[data-page="home"] .hero-priority-head strong{font-size:18px}
+body[data-page="home"] .hero-priority-head p{font-size:12px;line-height:1.35;margin:5px 0 0;color:#bad5e2}
+body[data-page="home"] .hero-priority-shield{display:grid;place-items:center;flex:none;width:49px;height:49px;background:#07616a;border-radius:12px;color:#79fbe8;font-size:32px}
+body[data-page="home"] .hero-priority-list{display:grid;gap:7px}
+body[data-page="home"] .hero-priority-line{display:flex;align-items:center;gap:11px;padding:11px;background:#11384f;border:1px solid #1b4e67;border-radius:9px;color:#f5ffff;text-decoration:none;font-weight:700;font-size:13px;transition:background .2s,transform .2s}
+body[data-page="home"] .hero-priority-line:hover{background:#164c68;transform:translateX(3px)}
+body[data-page="home"] .hero-priority-severity{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;font-weight:900}
+body[data-page="home"] .hero-priority-severity.critical{background:#571d38;color:#fa5474}
+body[data-page="home"] .hero-priority-severity.high{background:#643c24;color:#ff9e43}
+body[data-page="home"] .hero-priority-severity.medium{background:#5b501b;color:#ffdd46}
+body[data-page="home"] .hero-priority-severity.low{background:#0d5471;color:#42c5ff}
+body[data-page="home"] .hero-priority-chevron{margin-left:auto;color:#9bcbd8;font-size:22px}
+body[data-page="home"] .hero-priority-foot{margin-top:14px;font-size:10px;line-height:1.45;color:#a4c5d2}
+body[data-page="home"] .hero-trust-pill{position:absolute;z-index:6;left:11%;display:flex;align-items:center;gap:7px;padding:9px 11px;font-size:11px;font-weight:700;color:#e1ffff;border:1px solid #318d91;border-radius:10px;background:#0b384ccf;box-shadow:0 6px 18px #0005;animation:hero-pill-float 6s ease-in-out infinite}
+body[data-page="home"] .hero-trust-pill span{color:#6eece1}
+body[data-page="home"] .pill-one{top:19%}.hero .pill-two{top:37%;left:3%}.hero .pill-three{top:56%;left:17%}.hero .pill-four{top:71%;left:5%}.hero .pill-five{top:84%;left:27%}
+body[data-page="home"] .hero-network-rings{transform-origin:400px 200px;animation:hero-radar-spin 30s linear infinite}
+body[data-page="home"] .hero-capabilities{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;padding:12px 0 29px;position:relative;z-index:8}
+body[data-page="home"] .hero-capability{display:flex;align-items:flex-start;gap:11px;padding:12px 9px;color:#f3ffff;text-decoration:none;min-width:0;border-right:1px solid #21475a}
+body[data-page="home"] .hero-capability:last-child{border-right:0}
+body[data-page="home"] .hero-capability strong{display:block;font-size:15px;margin-bottom:6px}
+body[data-page="home"] .hero-capability small{display:block;font-size:11px;line-height:1.5;color:#b5d3e2}
+body[data-page="home"] .hero-capability-icon{display:grid;place-items:center;width:41px;height:41px;flex:none;border-radius:11px;background:#085063;color:#80f7e4;font-size:22px}
+body[data-page="home"] .hero-capability:hover .hero-capability-icon{background:#0b7785}
+@keyframes hero-card-float{0%,100%{translate:0 0}50%{translate:0 -9px}}
+@keyframes hero-pill-float{0%,100%{translate:0 0}50%{translate:0 -5px}}
+@keyframes hero-radar-spin{to{transform:rotate(360deg)}}
+@media(max-width:1400px){body[data-page="home"] .hero-capabilities{grid-template-columns:repeat(3,minmax(0,1fr))}body[data-page="home"] .hero-priority-card{right:0}}
+@media(max-width:1050px){body[data-page="home"] .hero-grid{grid-template-columns:1fr}body[data-page="home"] .hero-visual{min-height:470px}body[data-page="home"] .hero-priority-card{width:min(48%,410px)}}
+@media(max-width:700px){body[data-page="home"] .hero-copy h1{font-size:44px}body[data-page="home"] .hero-priority-card{width:60%;min-width:235px;padding:14px}body[data-page="home"] .hero-trust-pill{font-size:9px;padding:6px}body[data-page="home"] .hero-capabilities{grid-template-columns:repeat(2,minmax(0,1fr))}body[data-page="home"] .hero-capability{border-right:0}}
+@media(prefers-reduced-motion:reduce){body[data-page="home"] .hero-priority-card,body[data-page="home"] .hero-trust-pill,body[data-page="home"] .hero-network-rings{animation:none!important}body[data-page="home"] .hero-network-movement{display:none!important}}
