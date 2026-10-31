@@ -1,7 +1,10 @@
+import {reserveLookup} from './web-risk-usage.js';
 // Commercial Web Risk lookup. Optional: configure GOOGLE_WEB_RISK_API_KEY as a secret.
 // Never represent unavailable intelligence as a clean scan.
-export async function lookupWebsiteThreat(url,env,fetcher=fetch){
+export async function lookupWebsiteThreat(url,env,fetcher=fetch,userId=''){
  if(!env.GOOGLE_WEB_RISK_API_KEY)return {provider:'Google Web Risk',status:'not_configured',threats:[]};
+ const quota=await reserveLookup(env,userId);
+ if(!quota.allowed)return {provider:'Google Web Risk',status:quota.reason==='monthly_limit'?'quota_paused':'quota_unavailable',threats:[]};
  const endpoint=new URL('https://webrisk.googleapis.com/v1/uris:search');
  endpoint.searchParams.set('uri',url);
  for(const type of ['MALWARE','SOCIAL_ENGINEERING','UNWANTED_SOFTWARE'])endpoint.searchParams.append('threatTypes',type);
