@@ -285,24 +285,22 @@
       node.setAttribute('aria-hidden','true');
       // Use product-specific brand vectors rather than placeholder letter tiles.
       // For unsupported marks the existing neutral initials fallback remains.
-      const microsoftProductMarks=[
-        [/windows server|windows 11|^windows$|hyperv/i,'windows11','0078D4'],
-        [/^azure/i,'microsoftazure','0078D4'],
-        [/microsoft 365/i,'microsoft365','EA3E23'],
-        [/exchange/i,'microsoftexchange','0078D4'],
-        [/sharepoint/i,'microsoftsharepoint','038387'],
-        [/power platform/i,'microsoftpowerapps','742774'],
-        [/dynamics/i,'dynamics365','002050'],
-        [/fabric|power bi/i,'powerbi','F2C811']
+      // Local product-specific marks prevent CDN failures from collapsing Microsoft
+      // product icons into initials. These identify product families; keep names next
+      // to the graphics and do not describe them as licensed official brand artwork.
+      const msSvg=(paths)=>'<svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" focusable="false">'+paths+'</svg>';
+      const microsoftMarks=[
+        [/windows server|windows 11|^windows$|hyperv/i,msSvg('<path fill="#00A4EF" d="M2 5 14 3v12H2zm14-2L30 1v14H16zM2 17h12v12L2 27zm14 0h14v14l-14-2z"/>')],
+        [/^azure/i,msSvg('<path fill="#0078D4" d="M15 2h9L12 28H3z"/><path fill="#50B1F5" d="m18 11 11 17H13l-4-6h11z"/>')],
+        [/microsoft 365/i,msSvg('<path fill="#F35325" d="M2 2h13v13H2z"/><path fill="#81BC06" d="M17 2h13v13H17z"/><path fill="#05A6F0" d="M2 17h13v13H2z"/><path fill="#FFBA08" d="M17 17h13v13H17z"/>')],
+        [/exchange/i,msSvg('<path fill="#0078D4" d="M8 3h19a2 2 0 0 1 2 2v22a2 2 0 0 1-2 2H8z"/><path fill="#4DB8E8" d="M3 8h19v16H3z"/><path fill="#FFF" d="M8 12h11v3H11v2h7v3h-7v2h8v2H8z"/>')],
+        [/sharepoint/i,msSvg('<circle cx="19" cy="9" r="8" fill="#13B5A6"/><circle cx="22" cy="22" r="8" fill="#047D81"/><circle cx="9" cy="17" r="8" fill="#0D9B91"/><path fill="#fff" d="M5 13h10v2H8v2h6v2H8v2h7v2H5z"/>')],
+        [/power platform/i,msSvg('<path fill="#B884F0" d="M4 21 18 3h10L14 21z"/><path fill="#7A3EBA" d="M8 29 22 10h8L16 29z"/><path fill="#E5C3FF" d="M3 21h11l-5 8H3z"/>')],
+        [/dynamics/i,msSvg('<path fill="#1769C2" d="M6 2 26 15 6 30z"/><path fill="#41B0FA" d="M6 2 17 12 6 18z"/><path fill="#063A82" d="m6 18 20-3L6 30z"/>')],
+        [/fabric|power bi/i,msSvg('<rect x="3" y="17" width="6" height="12" rx="2" fill="#EAAF08"/><rect x="11" y="10" width="6" height="19" rx="2" fill="#F5C728"/><rect x="19" y="4" width="7" height="25" rx="2" fill="#FFD84F"/>')]
       ];
-      const microsoftProduct=microsoftProductMarks.find(([pattern])=>pattern.test(name));
-      if(microsoftProduct){
-        const img=document.createElement('img');
-        img.src='https://cdn.simpleicons.org/'+microsoftProduct[1]+'/'+microsoftProduct[2];
-        img.alt='';img.loading='lazy';img.decoding='async';
-        img.addEventListener('error',()=>{img.remove();node.textContent=name.slice(0,2).toUpperCase()||'◇'});
-        node.append(img);return node;
-      }
+      const microsoftMark=microsoftMarks.find(([pattern])=>pattern.test(name));
+      if(microsoftMark){node.classList.add('brand-local');node.innerHTML=microsoftMark[1];return node}
       if(!slug){node.textContent=name.slice(0,2).toUpperCase()||'◇';return node}
       const img=document.createElement('img');
       // Curated icon identifiers only, never a user-provided arbitrary URL.
