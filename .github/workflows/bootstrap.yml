@@ -215,6 +215,8 @@ jobs:
       - name: Collect public threat IP indicators
         id: threat_collect
         continue-on-error: true
+        env:
+          THREATFOX_AUTH_KEY: ${{ secrets.THREATFOX_AUTH_KEY }}
         run: python scripts/update_threats.py
       - name: Save public data safely if other commits arrived
         shell: bash
@@ -322,5 +324,5 @@ jobs:
           report=json.loads(raw.split('=',1)[1].strip().removesuffix(';'))
           if os.environ.get('THREAT_COLLECT_OUTCOME') != 'success' or report.get('mode') != 'live':
               raise SystemExit('Threat IP collection degraded: ' + str(report.get('sources')))
-          print('Both threat IP feeds fetched successfully; unchanged counts can be legitimate.')
+          print('All configured threat feeds fetched successfully; unchanged counts can be legitimate.')
           PY

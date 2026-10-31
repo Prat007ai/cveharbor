@@ -81,6 +81,7 @@ class ThreatCollectionHealthTests(unittest.TestCase):
             def __enter__(self): return self
             def __exit__(self,*args): pass
             def read(self,limit): return self.body[:limit]
+        self.requests=[]
         with tempfile.TemporaryDirectory() as tmp:
             folder=Path(tmp);out=folder/'threat-data.js';(folder/'data').mkdir()
             if previous: out.write_text('window.CVEHARBOR_THREATS = '+json.dumps(previous)+';\n')
@@ -88,13 +89,15 @@ class ThreatCollectionHealthTests(unittest.TestCase):
             (folder/'data/ip-geolocation-cache.json').write_text(json.dumps(cache))
             def fetch(request,timeout):
                 url=request.full_url
-                if 'ipwho.is' in url: raise AssertionError('Unexpected geolocation request')
+                self.requests.append(request)
+                if 'ipwho.is' in url:return Response(json.dumps({'success':True,'country':'Test','latitude':1,'longitude':1}))
                 key=next(k for k,v in mod.FEEDS.items() if v[0]==url)
                 value=feeds[key]
                 if isinstance(value,Exception): raise value
                 return Response(value)
-            with patch.object(mod,'ROOT',folder),patch.object(mod,'OUT',out),patch.object(mod,'HISTORY',folder/'data/history.json'),patch.object(mod.urllib.request,'urlopen',side_effect=fetch),patch.object(mod,'datetime') as clock:
+            with patch.object(mod,'FEEDS',{k:mod.FEEDS[k] for k in feeds}),patch.object(mod,'ROOT',folder),patch.object(mod,'OUT',out),patch.object(mod,'HISTORY',folder/'data/history.json'),patch.object(mod.urllib.request,'urlopen',side_effect=fetch),patch.object(mod,'datetime') as clock:
                 clock.now.return_value=datetime(2026,10,31,13,tzinfo=timezone.utc)
+                clock.fromisoformat.side_effect=datetime.fromisoformat
                 code=mod.collect();report=json.loads(out.read_text().split('=',1)[1].strip().removesuffix(';'))
                 history=json.loads((folder/'data/history.json').read_text())
             return code,report,history
@@ -134,8 +137,75 @@ class ThreatCollectionHealthTests(unittest.TestCase):
         self.assertEqual(second['last_successful_update'],first['last_successful_update'])
 
     def test_truncation_is_explicit(self):
-        code,report,_=self.collect_fixture({'dshield_scanners':'\n'.join('8.8.0.'+str(i) for i in range(1,201)),'feodo_c2':'1.1.1.1\n'})
+        code,report,_=self.collect_fixture({'dshield_scanners':'\n'.join('8.8.'+str(i//250)+'.'+str(i%250+1) for i in range(600)),'feodo_c2':'1.1.1.1\n'})
         self.assertEqual(code,0)
-        self.assertEqual(report['sources']['dshield_scanners']['count'],200)
-        self.assertEqual(report['sources']['dshield_scanners']['published_count'],150)
+        self.assertEqual(report['sources']['dshield_scanners']['count'],600)
+        self.assertEqual(report['sources']['dshield_scanners']['published_count'],500)
         self.assertTrue(report['sources']['dshield_scanners']['truncated'])
+
+class ExpandedThreatSourceTests(unittest.TestCase):
+    def setUp(self):
+        from datetime import datetime,timezone
+        self.now=datetime(2026,10,31,13,tzinfo=timezone.utc)
+
+    def test_drop_ranges_remain_ranges_and_preserve_source_evidence(self):
+        raw='{"cidr":"8.8.0.0/24","sblid":"SBL12345"}\n{"cidr":"10.0.0.0/8","sblid":"SBL12346"}\n{"type":"metadata","timestamp":1793451600}\n'
+        entries=mod.parse_source('spamhaus_drop',raw,self.now)
+        self.assertEqual(list(entries),['8.8.0.0/24'])
+        self.assertEqual(entries['8.8.0.0/24']['kind'],'network')
+        self.assertEqual(entries['8.8.0.0/24']['sbl_id'],'SBL12345')
+        self.assertIsNone(mod.public_network('0.0.0.0/0'))
+        self.assertIsNone(mod.public_network('8.8.0.1/24'))
+
+    def test_threatfox_preserves_evidence_and_expires_old_iocs(self):
+        import json
+        rows=[{'id':1,'ioc_type':'ip:port','ioc':'8.8.8.8:443','first_seen':'2026-10-30 10:00:00','last_seen':'2026-10-31 10:00:00','confidence_level':90,'malware_printable':'Test family','threat_type':'botnet_cc'},
+              {'id':2,'ioc_type':'ip:port','ioc':'8.8.8.8:8443','first_seen':'2026-10-29 10:00:00','last_seen':None,'confidence_level':80},
+              {'id':3,'ioc_type':'ip:port','ioc':'1.1.1.1:443','first_seen':'2026-08-01 10:00:00'},
+              {'id':4,'ioc_type':'domain','ioc':'example.test','first_seen':'2026-10-30 10:00:00'},
+              {'id':5,'ioc_type':'ip:port','ioc':'10.0.0.1:443','first_seen':'2026-10-30 10:00:00'}]
+        entries=mod.parse_source('threatfox',json.dumps({'query_status':'ok','data':rows}),self.now)
+        self.assertEqual(list(entries),['8.8.8.8'])
+        self.assertEqual(len(entries['8.8.8.8']['evidence']),2)
+        self.assertEqual(entries['8.8.8.8']['evidence'][0]['source_confidence'],90)
+        self.assertEqual(entries['8.8.8.8']['last_seen'],'2026-10-31T10:00:00+00:00')
+        self.assertEqual(entries['8.8.8.8']['expires_at'],'2026-11-30T10:00:00+00:00')
+        self.assertEqual(mod.parse_source('threatfox','{"query_status":"no_result"}',self.now),{})
+        with self.assertRaises(ValueError):mod.parse_source('threatfox','{"query_status":"wrong_auth_key"}',self.now)
+
+    def test_ranges_never_become_single_host_firewall_exports(self):
+        import tempfile,json
+        with tempfile.TemporaryDirectory() as tmp:
+            folder=Path(tmp)
+            report={'checked_at':self.now.isoformat(),'sources':{'spamhaus_drop':{'ok':True}},'indicators':[{'ip':'8.8.0.0/24','network':'8.8.0.0/24','kind':'network','source_id':'spamhaus_drop'}]}
+            with patch.object(mod,'ROOT',folder),patch.object(mod,'HISTORY',folder/'history.json'):mod.export_templates(report)
+            self.assertEqual(json.loads((folder/'history.json').read_text())['addresses'],{})
+            self.assertNotIn('8.8.0.0',(folder/'fortigate-suspicious-ip-initial.txt').read_text())
+
+    def test_threatfox_without_key_is_explicitly_unavailable(self):
+        import os
+        with patch.dict(os.environ,{},clear=True):
+            code,report,_=ThreatCollectionHealthTests().collect_fixture({'threatfox':OSError('must not request without key')})
+        self.assertEqual(code,1)
+        self.assertIn('THREATFOX_AUTH_KEY',report['sources']['threatfox']['error'])
+
+    def test_threatfox_uses_authenticated_post_without_publishing_the_key(self):
+        import os,json
+        fixture=ThreatCollectionHealthTests()
+        payload=json.dumps({'query_status':'ok','data':[{'id':1,'ioc_type':'ip:port','ioc':'8.8.8.8:443','first_seen':'2026-10-31 12:00:00'}]})
+        with patch.dict(os.environ,{'THREATFOX_AUTH_KEY':'unit-test-placeholder'}):
+            code,report,_=fixture.collect_fixture({'threatfox':payload})
+        self.assertEqual(code,0)
+        request=fixture.requests[0]
+        self.assertEqual(request.get_method(),'POST')
+        self.assertEqual(json.loads(request.data),{'query':'get_iocs','days':7})
+        self.assertTrue(request.get_header('Auth-key'))
+        self.assertNotIn('unit-test-placeholder',json.dumps(report))
+
+    def test_failed_source_retention_expires_after_72_hours(self):
+        fixture=ThreatCollectionHealthTests()
+        _,first,_=fixture.collect_fixture({'dshield_scanners':'8.8.8.8\n'})
+        first['sources']['dshield_scanners']['last_success']='2026-10-01T12:00:00Z'
+        code,report,_=fixture.collect_fixture({'dshield_scanners':OSError('Unavailable')},first)
+        self.assertEqual(code,1)
+        self.assertEqual(report['indicators'],[])

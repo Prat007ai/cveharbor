@@ -7,13 +7,13 @@
   if (!canvas) return;
   const status = el('geoMapStatus'), ranking = el('geoCountryRanking'), filter = el('geoMapSourceFilter');
   const summary = el('geoMapSummary');
-  const valid = x => x && Number.isFinite(x.geo?.latitude) && Number.isFinite(x.geo?.longitude) && typeof x.geo?.country === 'string' && x.geo.country.trim();
+  const valid = x => x && x.kind!=='network' && Number.isFinite(x.geo?.latitude) && Number.isFinite(x.geo?.longitude) && typeof x.geo?.country === 'string' && x.geo.country.trim();
   const geoItems = indicators.filter(valid);
   const options = [...new Set(indicators.map(x => x.source_id))];
   for (const source of options) {
     const option = document.createElement('option');
     option.value = source;
-    option.textContent = source === 'dshield_scanners' ? 'Observed scanning' : source === 'feodo_c2' ? 'Botnet C2' : source;
+    option.textContent = ({dshield_scanners:'Observed scanning',feodo_c2:'Botnet C2',threatfox:'Malware-associated IPs',spamhaus_drop:'Network ranges (not plotted)'})[source]||source;
     filter.append(option);
   }
   let chosen = '';
@@ -39,7 +39,7 @@
     const all = group();
     ranking.replaceChildren();
     const visibleCount = all.reduce((sum,g)=>sum+g.ips.length,0);
-    summary.textContent = visibleCount+' geolocated IPs across '+all.length+' countries';
+    summary.textContent = visibleCount+' geolocated IPs across '+all.length+' countries (network ranges excluded)';
     for (const g of all) {
       const row=document.createElement('button');row.type='button';row.className='geo-ranking-row';
       const name=document.createElement('span');name.textContent=g.name;
@@ -67,7 +67,7 @@
       const circle=window.L.circleMarker([g.latitude,g.longitude],{
         radius,weight:2,color:'#63ebda',fillColor:'#f08b5a',fillOpacity:0.7
       }).addTo(markers);
-      const list=g.ips.slice(0,16).map(x=>x.ip+' ('+(x.source_id==='feodo_c2'?'Botnet C2':'Scanning')+')').join('\n');
+      const list=g.ips.slice(0,16).map(x=>x.ip+' ('+(({dshield_scanners:'Scanning',feodo_c2:'Botnet C2',threatfox:'Malware IP'})[x.source_id]||x.source_id)+')').join('\n');
       const popup=document.createElement('div');
       const heading=document.createElement('strong');heading.textContent=g.name+' · '+g.ips.length+' reported IPs';
       const pre=document.createElement('pre');pre.textContent=list+(g.ips.length>16?'\nMore indicators available in the list below.':'');

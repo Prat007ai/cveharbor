@@ -3,9 +3,10 @@
 import hashlib
 import ipaddress
 import json
+import os
 import re
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -13,6 +14,8 @@ OUT=ROOT/"threat-data.js"
 FEEDS={
  "dshield_scanners":("https://feeds.dshield.org/feeds/topips.txt","SANS Internet Storm Center","Observed scanning and attack sources"),
  "feodo_c2":("https://feodotracker.abuse.ch/downloads/ipblocklist.txt","abuse.ch Feodo Tracker","Botnet command and control"),
+ "threatfox":("https://threatfox-api.abuse.ch/api/v1/","abuse.ch ThreatFox","Malware-associated IP"),
+ "spamhaus_drop":("https://www.spamhaus.org/drop/drop_v4.json","Spamhaus DROP","Reported malicious network range"),
 }
 def public_ipv4(value):
     try:
@@ -20,6 +23,89 @@ def public_ipv4(value):
         return str(address) if address.version==4 and address.is_global and not address.is_multicast and not address.is_reserved else None
     except ValueError:
         return None
+
+SOURCE_LIMIT=500
+
+def public_network(value):
+    try:
+        net=ipaddress.ip_network(value,strict=True)
+        return str(net) if net.version==4 and net.is_global and public_ipv4(str(net.network_address)) and public_ipv4(str(net.broadcast_address)) else None
+    except ValueError:
+        return None
+
+def source_time(value):
+    if not value:
+        return None
+    try:
+        date=datetime.fromisoformat(str(value).replace("Z","+00:00"))
+        return date.replace(tzinfo=date.tzinfo or timezone.utc).astimezone(timezone.utc)
+    except (ValueError,TypeError):
+        return None
+
+def parse_source(key,raw,now):
+    url,name,activity=FEEDS[key]
+    entries={}
+    def base(address,kind="ip"):
+        return {"ip":address,"kind":kind,"source":name,"source_id":key,"activity":activity,
+                "source_url":url,"observed_at":None,
+                "guidance":"Review source evidence, ownership and local allowlists before action."}
+    if key=="threatfox":
+        data=json.loads(raw)
+        if data.get("query_status")=="no_result":
+            return entries
+        if data.get("query_status")!="ok" or not isinstance(data.get("data"),list):
+            raise ValueError("ThreatFox did not return a successful IOC response")
+        for row in data["data"]:
+            if row.get("ioc_type")!="ip:port":
+                continue
+            host,sep,port=str(row.get("ioc","")).rpartition(":")
+            address=public_ipv4(host)
+            if not sep or not address or not port.isdigit() or not 1<=int(port)<=65535:
+                continue
+            first=source_time(row.get("first_seen"));last=source_time(row.get("last_seen"))
+            observed=last or first
+            if not observed or observed<now-timedelta(days=30) or observed>now+timedelta(minutes=5):
+                continue
+            entry=entries.setdefault(address,base(address))
+            confidence=row.get("confidence_level")
+            evidence={"ioc_id":str(row.get("id",""))[:40],"port":int(port),
+                      "malware":str(row.get("malware_printable") or row.get("malware") or "Unknown")[:100],
+                      "threat_type":str(row.get("threat_type") or "Malware association")[:100],
+                      "source_confidence":confidence if isinstance(confidence,(float,int)) and 0<=confidence<=100 else None,
+                      "first_seen":first.isoformat() if first else None,"last_seen":last.isoformat() if last else None}
+            entry.setdefault("evidence",[])
+            if len(entry["evidence"])<10:entry["evidence"].append(evidence)
+            if not entry.get("observed_at") or observed.isoformat()>entry["observed_at"]:
+                entry["observed_at"]=observed.isoformat()
+            if first and (not entry.get("first_seen") or first.isoformat()<entry["first_seen"]):entry["first_seen"]=first.isoformat()
+            if last and (not entry.get("last_seen") or last.isoformat()>entry["last_seen"]):entry["last_seen"]=last.isoformat()
+            entry["expires_at"]=(source_time(entry["observed_at"])+timedelta(days=30)).isoformat()
+            entry["source_url"]="https://threatfox.abuse.ch/browse.php?search=ioc%3A"+address
+        return dict(sorted(entries.items(),key=lambda pair:pair[1]["observed_at"],reverse=True))
+    if key=="spamhaus_drop":
+        # Official DROP v4 export is newline-delimited JSON, with a metadata footer.
+        records=[json.loads(line) for line in raw.splitlines() if line.strip()]
+        if not records or any(not isinstance(row,dict) for row in records):
+            raise ValueError("Invalid DROP JSON records")
+        for row in records:
+            if "cidr" not in row:
+                if row.get("type")=="metadata":continue
+                raise ValueError("Unexpected DROP record")
+            network=public_network(str(row["cidr"]))
+            if not network:continue
+            entry=base(network,"network");entry["network"]=network
+            entry["sbl_id"]=str(row.get("sblid") or "")[:50]
+            entry["source_url"]="https://www.spamhaus.org/drop/"
+            entry["guidance"]="This is an entire network range, not one host. Review Spamhaus evidence, current listing and local traffic before any range-wide action."
+            entries[network]=entry
+        if not entries:raise ValueError("No valid global IPv4 ranges in DROP")
+        return entries
+    for line in raw.splitlines():
+        if not line.strip() or line.lstrip().startswith("#"):continue
+        parts=re.split(r"[\s,;]+",line.strip());address=public_ipv4(parts[0])
+        if address:entries[address]=base(address)
+    if not entries:raise ValueError("No valid public IPv4 indicators in source")
+    return entries
 
 HISTORY=ROOT/"data"/"threat-ip-history.json"
 GROUP_NAME="Suspicious IP Block"
@@ -180,38 +266,31 @@ def collect():
     previous=read_report()
     timestamp=datetime.now(timezone.utc).isoformat()
     report={"schema_version":2,"checked_at":timestamp,"sources":{},"indicators":[],
-            "per_source_limit":150,"added_count":0,"removed_count":0}
+            "per_source_limit":SOURCE_LIMIT,"added_count":0,"removed_count":0}
     for key,(url,name,activity) in FEEDS.items():
         try:
-            request=urllib.request.Request(url,headers={"User-Agent":"CVEHarbor-ThreatIntel/1.0","Accept":"text/plain"})
+            headers={"User-Agent":"CVEHarbor-ThreatIntel/1.0","Accept":"application/json" if key in ("threatfox","spamhaus_drop") else "text/plain"}
+            payload=None
+            if key=="threatfox":
+                auth=os.environ.get("THREATFOX_AUTH_KEY")
+                if not auth:raise ValueError("THREATFOX_AUTH_KEY is not configured")
+                headers["Auth-Key"]=auth;headers["Content-Type"]="application/json"
+                payload=json.dumps({"query":"get_iocs","days":7}).encode()
+            request=urllib.request.Request(url,data=payload,headers=headers)
+            max_bytes=4_000_000 if key=="threatfox" else 700_000
             with urllib.request.urlopen(request,timeout=25) as resp:
-                body=resp.read(700_001)
+                body=resp.read(max_bytes+1)
                 modified=resp.headers.get("Last-Modified")
-            if len(body)>700_000:
-                raise ValueError("Feed larger than safety limit")
-            raw=body.decode("utf-8-sig")
-            entries={}
-            for line in raw.splitlines():
-                if not line.strip() or line.lstrip().startswith("#"):
-                    continue
-                # DShield sometimes has a first header row, followed by IP and tabular counts.
-                parts=re.split(r"[\s,;]+",line.strip())
-                ip=public_ipv4(parts[0])
-                if ip:
-                    entries[ip]={"ip":ip,"source":name,"source_id":key,
-                                 "activity":activity,"source_url":url,
-                                 "observed_at":None,
-                                 "guidance":"Review logs and local allowlists before taking action."}
-            if not entries:
-                raise ValueError("No valid public IPv4 indicators in source")
-            published=list(entries.values())[:150]
+            if len(body)>max_bytes:raise ValueError("Feed larger than safety limit")
+            entries=parse_source(key,body.decode("utf-8-sig"),datetime.now(timezone.utc))
+            published=list(entries.values())[:SOURCE_LIMIT]
             old={x["ip"] for x in previous.get("indicators",[]) if x.get("source_id")==key}
             current={x["ip"] for x in published}
             saved_source=previous.get("sources",{}).get(key,{})
             changed=current!=old
             report["indicators"].extend(published)
             report["sources"][key]={"ok":True,"count":len(entries),"published_count":len(published),
-                "truncated":len(entries)>150,"url":url,"last_attempt":timestamp,"last_success":timestamp,
+                "truncated":len(entries)>SOURCE_LIMIT,"url":url,"last_attempt":timestamp,"last_success":timestamp,
                 "last_changed_at":timestamp if changed else saved_source.get("last_changed_at"),
                 "added_count":len(current-old),"removed_count":len(old-current),
                 "body_sha256":hashlib.sha256(body).hexdigest(),"upstream_last_modified":modified}
@@ -220,8 +299,11 @@ def collect():
         except Exception as exc:
             saved_source=previous.get("sources",{}).get(key,{})
             last_success=saved_source.get("last_success") or (previous.get("checked_at") if saved_source.get("ok") else None)
+            recent=source_time(last_success)
             retained=[dict(x,stale=True) for x in previous.get("indicators",[])
-                      if x.get("source_id")==key and public_ipv4(str(x.get("ip","")))]
+                      if x.get("source_id")==key and (public_ipv4(str(x.get("ip",""))) or public_network(str(x.get("network",""))))
+                      and recent and datetime.now(timezone.utc)-recent<=timedelta(hours=72)
+                      and (not x.get("expires_at") or (source_time(x["expires_at"]) and source_time(x["expires_at"])>datetime.now(timezone.utc)))]
             report["indicators"].extend(retained)
             report["sources"][key]={"ok":False,"error":str(exc)[:160],"url":url,
                 "last_attempt":timestamp,"last_success":last_success,"retained_count":len(retained),
@@ -232,7 +314,8 @@ def collect():
     old_pairs={(x["ip"],x["source_id"]) for x in previous.get("indicators",[])}
     new_pairs={(x["ip"],x["source_id"]) for x in report["indicators"]}
     report["last_changed_at"]=timestamp if old_pairs!=new_pairs and healthy else previous.get("last_changed_at")
-    report["unique_ip_count"]=len({x["ip"] for x in report["indicators"]})
+    report["unique_ip_count"]=len({x["ip"] for x in report["indicators"] if x.get("kind")!="network"})
+    report["network_range_count"]=len({x["ip"] for x in report["indicators"] if x.get("kind")=="network"})
     report["stale_count"]=sum(bool(x.get("stale")) for x in report["indicators"])
     # Geographic attribution is approximate IP network registration data, not
     # the location of a person controlling the address. Cache to minimize API calls.
@@ -241,14 +324,17 @@ def collect():
         cache=json.loads(cache_path.read_text(encoding="utf-8")) if cache_path.exists() else {}
     except (ValueError,OSError):
         cache={}
+    geo_attempts=0
     for entry in report["indicators"]:
+        if entry.get("kind")=="network":continue
         ip=entry["ip"]
         geo=cache.get(ip) or entry.get("geo")
-        if not isinstance(geo,dict):
+        if not isinstance(geo,dict) and geo_attempts<20:
+            geo_attempts+=1
             try:
                 req=urllib.request.Request("https://ipwho.is/"+ip,
                     headers={"User-Agent":"CVEHarbor-ThreatIntel/1.0 (https://cveharbor.com)"})
-                with urllib.request.urlopen(req,timeout=8) as response:
+                with urllib.request.urlopen(req,timeout=5) as response:
                     result=json.loads(response.read(10000))
                 country=str(result.get("country") or "")[:70]
                 latitude=result.get("latitude")
@@ -265,6 +351,7 @@ def collect():
             entry["geo"]=geo
     cache_path.parent.mkdir(parents=True,exist_ok=True)
     cache_path.write_text(json.dumps(cache,sort_keys=True,indent=2)+"\n",encoding="utf-8")
+    report["geolocation_attempts"]=geo_attempts
     report["geolocated_count"]=sum(1 for x in report["indicators"] if x.get("geo"))
     report["geo_source"]="ipwho.is IP geolocation; approximate network location, not verified origin"
     report["count"]=len(report["indicators"])

@@ -255,14 +255,14 @@
     <section id="threat-intelligence" class="shell section" aria-labelledby="threatTitle">
       <div class="section-heading">
         <div><p class="eyebrow">NETWORK THREAT INTELLIGENCE</p>
-          <h2 id="threatTitle">Reported suspicious IP addresses</h2>
-          <p class="section-sub">Publicly reported scanning sources and botnet command-and-control infrastructure. Review before adding to firewall or WAF rules.</p>
+          <h2 id="threatTitle">Reported suspicious IPs and network ranges</h2>
+          <p class="section-sub">Source-reported scanning, botnet and malware infrastructure, plus listed network ranges. Review evidence before adding firewall or WAF rules.</p>
         </div><span class="result-pill" id="threatCount">Awaiting data</span>
       </div>
       <div class="threat-advisory"><strong>Important:</strong> These are third-party observations, not proof of attempted exploitation against your systems. Scanning and botnet C2 activity are different categories. Never automatically block all addresses: check source evidence, local logs, allowlists, shared-cloud ownership and age first.</div>
       <div class="threat-toolbar">
         <label>Activity source <select id="threatSourceFilter" aria-label="Filter suspicious IP by activity"><option value="all">All sources</option></select></label>
-        <label>Search IP <input id="threatSearch" type="search" placeholder="Search an IP address" aria-label="Search suspicious IP address"></label>
+        <label>Search IP <input id="threatSearch" type="search" placeholder="Search an IP address or CIDR" aria-label="Search suspicious IP address"></label>
       </div>
       <p class="technology-footnote" id="threatStatus" role="status">Threat intelligence collection has not been verified.</p>
       <div class="geo-map-panel">
@@ -422,7 +422,7 @@ MySQL | 8.0.43" aria-describedby="inventoryTechHelp"></textarea><small id="inven
     </div>
   </dialog>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script defer="" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="/malware-data.js"></script><script src="/malware.js?v=family-profiles-3"></script><script src="/threat-data.js"></script><script src="/threats.js?v=health-217-detail-popup-2"></script><script defer="" src="/geo-map.js?v=1"></script><script src="/data.js"></script><script src="/disclosure-trend.js?v=30day-1"></script><script src="/catalog.js?v=20261028a"></script><script src="/app.js?v=brochure-216"></script><script src="/workspace.js?v=d1-assignments-1"></script><script src="/lifecycle.js"></script><script src="/patch-notes.js"></script><script src="/lifecycle-monitor.js?v=multiwatch-3"></script><script src="/operations.js?v=branded-confirmation-163"></script><script src="/inventory-matching.js?v=precision-119"></script><script src="/inventory.js?v=env-dialog-130"></script><script src="/accounts.js?v=d1-assignments-1"></script>
+  <script defer="" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="/malware-data.js"></script><script src="/malware.js?v=family-profiles-3"></script><script src="/threat-data.js"></script><script src="/threats.js?v=feeds-218-detail-popup-2"></script><script defer="" src="/geo-map.js?v=feeds-218-1"></script><script src="/data.js"></script><script src="/disclosure-trend.js?v=30day-1"></script><script src="/catalog.js?v=20261028a"></script><script src="/app.js?v=brochure-216"></script><script src="/workspace.js?v=d1-assignments-1"></script><script src="/lifecycle.js"></script><script src="/patch-notes.js"></script><script src="/lifecycle-monitor.js?v=multiwatch-3"></script><script src="/operations.js?v=branded-confirmation-163"></script><script src="/inventory-matching.js?v=precision-119"></script><script src="/inventory.js?v=env-dialog-130"></script><script src="/accounts.js?v=d1-assignments-1"></script>
   <script src="/page-router.js?v=brochure-216"></script>
   <script src="/header-auth.js?v=account-navigation-1"></script>
 <script src="/command-center.js?v=brochure-216"></script>

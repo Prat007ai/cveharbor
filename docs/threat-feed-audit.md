@@ -38,7 +38,7 @@ with the selected source/search, and row limits were not explained.
 - Nonzero collector exit for partial/total failure; flag degraded collection after
   publishing the labelled fallback snapshot, so workflows do not silently pass.
 - Per-source timestamps, response hash, upstream Last-Modified when supplied,
-  added/removed counts and explicit 150-entry source truncation metadata.
+  added/removed counts and explicit source truncation metadata (now 500 entries per source).
 - Distinguish IP-set changes from timestamp/body changes. Preserve last-change
   tracking across identical runs; legacy snapshots do not invent a change time.
 - Show a warning after three hours without a fresh publication, and show feed
@@ -58,5 +58,6 @@ allow `feeds.dshield.org`, `feodotracker.abuse.ch` and `cveharbor.com`. Those do
 additions were saved in the configuration draft, preserving existing domains.
 Saving a draft does not apply it. GitHub access also needs to be restored through
 the platform's existing repository connection before fetching/publishing updates.
-Broader feed coverage is a separate decision; do not inflate counts or silently
-add unreviewed sources to make the page appear active.
+ThreatFox and Spamhaus integration details and activation requirements are in
+`docs/threat-feed-sources.md`. The 89-test result above records the initial
+health-fix checkpoint; the expanded integration passes 95 Python tests.
