@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-31",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6294,
+  "candidate_records": 6296,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -199,7 +199,7 @@
   "advisories": [
     {
       "id": "CVE-2026-77152",
-      "title": "Improper Authorization vulnerability in Drupal Field Collection for Drupal 7 allows a user with the \"edit field collections\" permission to bypass access control on the parent ",
+      "title": "Improper Authorization vulnerability in Drupal Field Collection for Drupal 7 allows a user with...",
       "severity": "medium",
       "categories": [
         "Drupal / CMS"
@@ -207,22 +207,70 @@
       "published": "2026-10-31",
       "updated": "2026-10-31",
       "summary": "Improper Authorization vulnerability in Drupal Field Collection for Drupal 7 allows a user with the \"edit field collections\" permission to bypass access control on the parent (host) entity. The access check for field collection items (field_collection_item_access()) granted edit and delete access to any user holding the \"edit field collections\" permission without verifying the user's access to the host entity. As a result, a user with \"edit field collections\" but without edit/update access to the host entity (for example a node they cannot edit) could edit or delete field collection items attached to that entity, bypassing the intended entity/node access restrictions. The fix requires access to the parent entity in addition to the field collection permission. This issue affects Field Collection for Drupal 7: version 7.x-1.0 up to and including 7.x-1.2.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-77152"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-f2vh-vxfq-92pj"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://d7es.tag1.com/security-advisories?field_project_target_id=96"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.herodevs.com/vulnerability-directory/cve-2026-77152"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "5.3",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-31T00:17:59Z",
-      "source_updated_at": "2026-10-31T00:16:51.597",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-31T00:30:42Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-111578",
+      "title": "The PDF Invoices & Packing Slips for WooCommerce WordPress plugin from 5.16.2 before 5.16.5 does...",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The PDF Invoices & Packing Slips for WooCommerce WordPress plugin from 5.16.2 before 5.16.5 does not properly escape several customer-supplied order fields — including the billing and shipping address values and the customer order note — before they are output in generated invoice and packing-slip documents, allowing unauthenticated users placing guest orders to store a malicious script that executes when a shop administrator views the document, leading to Stored Cross-Site Scripting.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111578"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-xq56-qcfx-62xr"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/ac5d0074-295d-46ee-b2ad-8bfd3ef9917b"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-30T22:18:51Z",
+      "source_updated_at": "2026-10-31T00:30:32Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -9289,34 +9337,6 @@
       "first_seen_at": "2026-10-30T21:32:29Z",
       "source_updated_at": "2026-10-30T21:32:35Z",
       "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-111578",
-      "title": "The PDF Invoices & Packing Slips for WooCommerce WordPress plugin from 5.16.2 before 5.16.5 does not properly escape several customer-supplied order fields — including the bil",
-      "severity": "high",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-30",
-      "updated": "2026-10-30",
-      "summary": "The PDF Invoices & Packing Slips for WooCommerce WordPress plugin from 5.16.2 before 5.16.5 does not properly escape several customer-supplied order fields — including the billing and shipping address values and the customer order note — before they are output in generated invoice and packing-slip documents, allowing unauthenticated users placing guest orders to store a malicious script that executes when a shop administrator views the document, leading to Stored Cross-Site Scripting.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111578"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T22:18:51Z",
-      "source_updated_at": "2026-10-30T22:16:53.880",
-      "source_type": "nvd",
       "known_exploited": false
     },
     {
@@ -72269,6 +72289,72 @@
       "epss_as_of": "2026-10-31"
     },
     {
+      "id": "CVE-2026-88137",
+      "title": "Files or directories accessible to external parties in WebDAV allows an authorized attacker to disclose information over a network.",
+      "severity": "medium",
+      "categories": [
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-31",
+      "summary": "Files or directories accessible to external parties in WebDAV allows an authorized attacker to disclose information over a network.",
+      "affected": "Products identified in NVD configurations: microsoft windows_10_1607; microsoft windows_10_1809; microsoft windows_10_21h2; microsoft windows_10_22h2; microsoft windows_11_23h2; microsoft windows_11_24h2; microsoft windows_11_25h2; microsoft windows_11_26h1; microsoft windows_11_26h2; microsoft windows_server_2012; microsoft windows_server_2016; microsoft windows_server_2019",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88137"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88137"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T00:32:31Z",
+      "source_updated_at": "2026-10-31T00:27:14.547",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-88158",
+      "title": "Out-of-bounds read in Microsoft Digest Authentication allows an authorized attacker to disclose information locally.",
+      "severity": "medium",
+      "categories": [
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-31",
+      "summary": "Out-of-bounds read in Microsoft Digest Authentication allows an authorized attacker to disclose information locally.",
+      "affected": "Products identified in NVD configurations: microsoft windows_10_1607; microsoft windows_10_1809; microsoft windows_10_21h2; microsoft windows_10_22h2; microsoft windows_11_23h2; microsoft windows_11_24h2; microsoft windows_11_25h2; microsoft windows_11_26h1; microsoft windows_11_26h2; microsoft windows_server_2012; microsoft windows_server_2016; microsoft windows_server_2019",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88158"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88158"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T00:32:31Z",
+      "source_updated_at": "2026-10-31T00:25:18.947",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-83696",
       "title": "CVE-2026-83696 Windows Cloud Files Mini Filter Driver Elevation of Privilege Vulnerability",
       "severity": "bulletin",
@@ -73048,51 +73134,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-102870",
-      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core",
-        "Linux"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
-      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
-      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
-      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft corrected Blazor debugger security advisory",
-          "url": "https://github.com/dotnet/announcements/issues/492"
-        },
-        {
-          "label": "ASP.NET Core GHSA vendor record",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
-        },
-        {
-          "label": "Ubuntu Security Notice",
-          "url": "https://ubuntu.com/security/notices/USN-8958-1"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-25",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00906,
-      "epss_percentile": 0.59814,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-96951",
       "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
       "severity": "high",
@@ -73135,6 +73176,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.09813,
       "epss_percentile": 0.95543,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-102870",
+      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core",
+        "Linux"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
+      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
+      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
+      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "ASP.NET Core GHSA vendor record",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
+        },
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8958-1"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-25",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00906,
+      "epss_percentile": 0.59814,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -93695,42 +93781,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60729,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -93769,6 +93819,42 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55856,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60729,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -167386,153 +167472,90 @@
       "epss": 0.17302,
       "epss_percentile": 0.97104,
       "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-25213",
-      "title": "WordPress File Manager Plugin Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "PHP",
-        "WordPress / Plugins"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "WordPress File Manager plugin contains a remote code execution vulnerability that allows unauthenticated users to execute PHP code and upload malicious files on a target site.",
-      "affected": "WordPress File Manager Plugin. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.97328,
-      "epss_percentile": 0.99897,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-11738",
-      "title": "WordPress Snap Creek Duplicator Plugin File Download Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "WordPress Snap Creek Duplicator plugin contains a file download vulnerability when an administrator creates a new copy of their site that allows an attacker to download the generated files from their Wordpress dashboard. This vulnerability affects Duplicator and Dulplicator Pro.",
-      "affected": "WordPress Snap Creek Duplicator Plugin. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.97822,
-      "epss_percentile": 0.99906,
-      "epss_as_of": "2026-10-31"
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-31T00:21:33Z",
-      "last_attempt": "2026-10-31T00:21:33Z",
+      "last_success": "2026-10-31T00:32:31Z",
+      "last_attempt": "2026-10-31T00:32:31Z",
       "items_processed": 264,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-31T00:21:33Z",
-      "last_attempt": "2026-10-31T00:21:33Z",
+      "last_success": "2026-10-31T00:32:31Z",
+      "last_attempt": "2026-10-31T00:32:31Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-31T00:21:33Z",
-      "last_attempt": "2026-10-31T00:21:33Z",
-      "items_processed": 1954,
+      "last_success": "2026-10-31T00:32:31Z",
+      "last_attempt": "2026-10-31T00:32:31Z",
+      "items_processed": 1956,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-31T00:21:33Z",
-      "last_attempt": "2026-10-31T00:21:33Z",
+      "last_success": "2026-10-31T00:32:31Z",
+      "last_attempt": "2026-10-31T00:32:31Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-31T00:21:33Z",
-      "last_attempt": "2026-10-31T00:21:33Z",
+      "last_success": "2026-10-31T00:32:31Z",
+      "last_attempt": "2026-10-31T00:32:31Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-31T00:21:33Z",
-      "last_attempt": "2026-10-31T00:21:33Z",
+      "last_success": "2026-10-31T00:32:31Z",
+      "last_attempt": "2026-10-31T00:32:31Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-31T00:21:33Z",
-      "last_attempt": "2026-10-31T00:21:33Z",
+      "last_success": "2026-10-31T00:32:31Z",
+      "last_attempt": "2026-10-31T00:32:31Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-31T00:21:33Z",
-      "last_attempt": "2026-10-31T00:21:33Z",
+      "last_success": "2026-10-31T00:32:31Z",
+      "last_attempt": "2026-10-31T00:32:31Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-31T00:21:33Z",
-      "last_attempt": "2026-10-31T00:21:33Z",
+      "last_success": "2026-10-31T00:32:31Z",
+      "last_attempt": "2026-10-31T00:32:31Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-31T00:21:33Z",
-      "last_attempt": "2026-10-31T00:21:33Z",
+      "last_success": "2026-10-31T00:32:31Z",
+      "last_attempt": "2026-10-31T00:32:31Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-31T00:21:33Z",
-      "last_attempt": "2026-10-31T00:21:33Z",
+      "last_success": "2026-10-31T00:32:31Z",
+      "last_attempt": "2026-10-31T00:32:31Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-31T00:21:33Z",
-      "last_attempt": "2026-10-31T00:21:33Z",
+      "last_success": "2026-10-31T00:32:31Z",
+      "last_attempt": "2026-10-31T00:32:31Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -167544,7 +167567,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-31T00:21:33Z",
-  "last_successful_update": "2026-10-31T00:21:33Z",
+  "last_checked_at": "2026-10-31T00:32:31Z",
+  "last_successful_update": "2026-10-31T00:32:31Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
