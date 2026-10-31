@@ -1,7 +1,7 @@
 (()=>{'use strict';
 const $=id=>document.getElementById(id),api='https://api.cveharbor.com/v1/website-monitor';let sites=[],selected='';
 const set=(id,text)=>{if($(id))$(id).textContent=text};
-const get=async path=>{const res=await fetch(api+path,{credentials:'include',cache:'no-store'});if(!res.ok)throw Error('Assessment unavailable');return res.json()};
+const get=async path=>{const res=await fetch(api+path,{credentials:'include',cache:'no-store'});if(!res.ok)throw Error('API returned HTTP '+res.status);return res.json()};
 const format=time=>time?new Date(time*1000).toLocaleString():'Not yet checked';
 function tableRow(values){const tr=document.createElement('tr');for(const v of values){const td=document.createElement('td');td.textContent=v;tr.append(td)}return tr}
 async function loadSite(){
@@ -33,11 +33,11 @@ async function load(){
  if(!sites.length){const option=document.createElement('option');option.textContent='No registered websites';picker.append(option);set('mockSiteName','No website registered');return}
  for(const site of sites){const o=document.createElement('option');o.value=site.id;o.textContent=site.label;picker.append(o)}
  selected=sites.some(x=>x.id===selected)?selected:sites[0].id;picker.value=selected;await loadSite();
- }catch{set('mockSiteStatus','Unable to load registered sites')}
+ }catch(error){set('mockSiteStatus','Unable to load sites: '+error.message);setTimeout(()=>void load(),5000)}
 }
 $('threatSiteSelect').addEventListener('change',event=>{selected=event.target.value;void loadSite()});
 $('mockSettings').addEventListener('click',()=>{$('mockManage').open=true;$('mockManage').scrollIntoView({behavior:'smooth',block:'start'})});
 $('mockHistory').addEventListener('click',()=>{$('mockRecentChecks').closest('.monitor-panel').scrollIntoView({behavior:'smooth',block:'start'})});
 $('mockCheckNow').addEventListener('click',async()=>{const site=sites.find(x=>x.id===selected);if(!site)return;const button=$('mockCheckNow');button.disabled=true;button.textContent='Checking...';try{const target=[...document.querySelectorAll('#monitorList .monitor-site')].find(x=>x.textContent.includes(site.url));const sourceButton=target?.querySelector('.monitor-check-button');if(sourceButton){sourceButton.click()}else{const res=await fetch(api+'/'+site.id+'/check',{method:'POST',credentials:'include'});const body=await res.json();if(!res.ok)throw Error(body.error||'Check failed')};set('mockSiteStatus','Check requested. Refreshing results.');setTimeout(()=>void load(),1500)}catch(e){set('mockSiteStatus',e.message)}finally{button.disabled=false;button.textContent='⌕ Check Now'}});
-void load();
+window.addEventListener('focus',()=>void load());void load();
 })();
