@@ -72,3 +72,13 @@ body[data-page="home"] .hero .hero-capability small{display:block;color:#b5d0e0;
  body[data-page="home"] .hero .hero-visual{overflow:hidden!important;box-sizing:border-box!important}
  body[data-page="home"] .hero .hero-priority-card{right:3%!important;width:44%!important;max-width:44%!important;box-sizing:border-box!important}
 }
+
+/* 213: fully reveal shield and pedestal, preserve bounded severity card. */
+@media(min-width:1001px){
+ body[data-page="home"] .hero .hero-visual{overflow:visible!important;min-height:500px!important;height:clamp(500px,29vw,590px)!important}
+ body[data-page="home"] .hero .hero-hologram{overflow:visible!important;height:100%!important;max-height:none!important;align-self:center!important}
+ body[data-page="home"] .hero .hero-artwork{object-fit:contain!important;max-height:100%!important}
+ body[data-page="home"] .hero .hero-priority-card{max-width:100%!important;width:91%!important;justify-self:center!important;box-sizing:border-box!important}
+ body[data-page="home"] .hero .hero-trust-pill{pointer-events:none!important}
+ body[data-page="home"] .hero .hero-capabilities{position:relative!important;z-index:15!important;background:#041525!important}
+}
