@@ -69,3 +69,16 @@ body[data-page="home"] .hero .hero-priority-chart{opacity:.6!important}
 @keyframes hero-artwork-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 @media(max-width:700px){body[data-page="home"] .hero .hero-hologram{width:62%!important;height:78%!important;top:13%!important}}
 @media(prefers-reduced-motion:reduce){body[data-page="home"] .hero .hero-artwork{animation:none!important}}
+
+/* 207 art containment: no shield or pedestal may cover the capability row. */
+body[data-page="home"] .hero .hero-visual{height:465px!important;min-height:465px!important;overflow:hidden!important;contain:layout!important}
+body[data-page="home"] .hero .hero-hologram{position:absolute!important;left:5%!important;top:10%!important;width:42%!important;height:75%!important;max-height:350px!important;overflow:hidden!important;z-index:3!important;pointer-events:none!important}
+body[data-page="home"] .hero .hero-artwork{width:100%!important;height:100%!important;max-height:350px!important;object-fit:contain!important}
+body[data-page="home"] .hero .hero-priority-card{z-index:7!important;right:0!important;top:10%!important}
+body[data-page="home"] .hero .hero-capabilities{position:relative!important;z-index:12!important;background:#041525!important;isolation:isolate!important}
+body[data-page="home"] .hero .pill-one{left:0!important;top:20%!important}
+body[data-page="home"] .hero .pill-two{left:26%!important;top:5%!important}
+body[data-page="home"] .hero .pill-three{left:32%!important;top:38%!important}
+body[data-page="home"] .hero .pill-four{left:0!important;top:60%!important}
+body[data-page="home"] .hero .pill-five{left:29%!important;top:78%!important}
+@media(max-width:700px){body[data-page="home"] .hero .hero-hologram{width:50%!important;max-height:300px!important}body[data-page="home"] .hero .hero-artwork{max-height:300px!important}}
