@@ -1093,5 +1093,5 @@ assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=2
 assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=211/,'approved angled card stylesheet version');
 
 assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=211/,'unified homepage version');
-assert.ok(fs.readFileSync('home-hero-reference.css','utf8').includes('CVH'),'unified hero stylesheet');
+assert.ok(fs.readFileSync('home-hero-reference.css','utf8').includes('CVEHarbor unified hero 211'),'unified hero stylesheet');
 assert.doesNotMatch(fs.readFileSync('home-hero-reference.css','utf8'),/\.command-sidebar|\.command-nav-link/,'sidebar untouched');
