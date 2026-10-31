@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-31",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6316,
+  "candidate_records": 6344,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -915,6 +915,7 @@
       "title": "The Meow Lightbox plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the ...",
       "severity": "high",
       "categories": [
+        "JavaScript / TypeScript",
         "WordPress / Plugins"
       ],
       "published": "2026-10-31",
@@ -1028,6 +1029,792 @@
       "first_seen_at": "2026-10-31T07:05:46Z",
       "source_updated_at": "2026-10-31T06:30:33Z",
       "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-7j62-5j84-72fv",
+      "title": "Malware in local-commander-agent",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: local-commander-agent (= 0.3.52)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-7j62-5j84-72fv"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:57:13Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-107653",
+      "title": "The SureCart – Ecommerce Made Easy For Selling Physical Products, Digital Downloads, Subscriptions, Donations, & Payments plugin for WordPress is vulnerable to Stored Cross-Si",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The SureCart – Ecommerce Made Easy For Selling Physical Products, Digital Downloads, Subscriptions, Donations, & Payments plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'comment' parameter in all versions up to, and including, 4.9.4 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Successful execution requires the injected comment to be visible on a page that loads SureCart's web-component bundle (e.g. a page containing a SureCart Buy Button block), and the comment must be auto-approved or approved by a moderator.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107653"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:32.940",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-107750",
+      "title": "The PDF Invoices & Packing Slips for WooCommerce plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'billing_address.first_name / last_name / company, c",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The PDF Invoices & Packing Slips for WooCommerce plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'billing_address.first_name / last_name / company, customer_note' parameter in all versions up to, and including, 5.16.4 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. This is an incomplete fix for CVE-2026-92244: the wp_kses() allow-list introduced in 5.16.2 correctly blocks raw-tag payloads but is bypassed by entity-encoded payloads (e.g., &lt;img onerror=…&gt;) that contain no literal angle-bracket characters and are therefore passed through unmodified before the trailing decode rematerializes them.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107750"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:33.920",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-107765",
+      "title": "The Discussion Board – WordPress Forum Plugin plugin for WordPress is vulnerable to Stored Cross-Site Scripting in versions up to, and including, 2.6.0 via the user profile We",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Discussion Board – WordPress Forum Plugin plugin for WordPress is vulnerable to Stored Cross-Site Scripting in versions up to, and including, 2.6.0 via the user profile Website (user_url) field. This is due to insufficient output escaping in the ctdb_filter_comment_author_name() callback hooked to get_comment_author_link, which interpolates the raw user_url value into a single-quoted href attribute without esc_url() or esc_attr(). This makes it possible for authenticated attackers, with subscriber-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses a Discussion Board topic containing the attacker's reply.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107765"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:34.070",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109217",
+      "title": "The PDF Invoices & Packing Slips for WooCommerce plugin for WordPress is vulnerable to Sensitive Information Exposure in all versions up to, and including, 5.16.5 via the 'inv",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The PDF Invoices & Packing Slips for WooCommerce plugin for WordPress is vulnerable to Sensitive Information Exposure in all versions up to, and including, 5.16.5 via the 'invoice_number (via document filename)' parameter. This makes it possible for unauthenticated attackers to extract another customer's complete invoice PDF — including billing identity, shipping address, private order notes, line items, prices, dates, order ID, and invoice number — delivered directly to the attacker's email as an order confirmation attachment. Exploitation requires the plugin's yearly invoice number reset option to be enabled, and the attacker's guest-checkout order must trigger a processing email within 60 seconds of a victim order that shares the same yearly-reset invoice number.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109217"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:34.220",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109220",
+      "title": "The PDF Invoice for WooCommerce + Drag and Drop Template Builder plugin for WordPress is vulnerable to PHP Object Injection in all versions up to, and including, 7.1.1 via the",
+      "severity": "critical",
+      "categories": [
+        "WordPress / Plugins",
+        "PHP"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The PDF Invoice for WooCommerce + Drag and Drop Template Builder plugin for WordPress is vulnerable to PHP Object Injection in all versions up to, and including, 7.1.1 via the 'customer_note' parameter parameter. This is due to insufficient sanitization of the customer_note checkout field, which is inlined verbatim into invoice HTML, entity-decoded back into a live tag by simplehtmldom, reassembled into raw bytes by mPDF, and passed to unserialize() in _getObjAttr without validation. This makes it possible for unauthenticated attackers to execute code on the server. An unauthenticated attacker can trigger the vulnerable code path on a default install by placing an anonymous WooCommerce checkout via the public Store API (POST /wc/store/v1/checkout) using a Direct Bank Transfer or cheque payment method, which automatically transitions the order to 'on-hold' status and fires the plugin's invoice-generation hook.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109220"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:34.367",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109386",
+      "title": "The Hustle – Email Marketing, Lead Generation, Optins, Popups plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 7.8.14.3",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Hustle – Email Marketing, Lead Generation, Optins, Popups plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 7.8.14.3. This is due to the plugin not properly verifying that a user is authorized to perform an action. This makes it possible for authenticated attackers, with custom-level access and above, to overwrite the site's active ESP integration credentials (AWeber, Constant Contact, Infusionsoft, ConvertKit, or HubSpot API keys) with attacker-controlled values — diverting all subsequent Hustle form lead submissions to the attacker's ESP tenant — and, for HubSpot, irreversibly delete the operator's OAuth token, OAuth referer, and OAuth current-page option rows. This requires the attacker to hold the plugin-granted hustle_create capability (e.g., an Editor delegated hustle_create but not hustle_edit_integrations via Hustle's Permissions tab), which allows them to load a Hustle module wizard page and obtain the hustle_provider_action nonce needed to reach the vulnerable handlers.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109386"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:34.517",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-110251",
+      "title": "The Photo Reviews for WooCommerce plugin for WordPress is vulnerable to unauthorized Media Library File Deletion in all versions up to, and including, 1.2.31",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Photo Reviews for WooCommerce plugin for WordPress is vulnerable to unauthorized Media Library File Deletion in all versions up to, and including, 1.2.31. This is due to the `delete_reviews_image()` function's `delete_comment` hook trusting attachment IDs supplied via the `wcpr_image_upload_id` POST parameter that were stored in comment meta without any ownership or capability check — `viwcpr_filter_review_image_ids()` verifies only that each submitted ID refers to an attachment post type, not that the submitter uploaded or owns it. This makes it possible for unauthenticated attackers to permanently delete any WordPress media library attachment — including its files on disk as recorded by `wp_delete_attachment()` — by embedding attacker-chosen attachment IDs into a review comment, then waiting for a moderator to remove the review or for WordPress core's `wp_scheduled_delete` cron to purge it after `EMPTY_TRASH_DAYS`. The nonce required to submit the parameter (`wcpr_image_upload`) is a shared public value printed on every product page for guest commenters and does not function as an authentication barrier, making this trivially exploitable without any account.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110251"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:34.673",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-111109",
+      "title": "The Webmention plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the Open Graph og:title meta tag of a webmention source URL in versions up to, and includi",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Webmention plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the Open Graph og:title meta tag of a webmention source URL in versions up to, and including, 5.10.1. This is due to insufficient input sanitization: Meta::add_properties() maps og:title to the Item::name property, but Item has no concrete set_name() method, so Item::__call() stores the value raw while sibling set_content()/set_summary() paths route through webmention_sanitize_html(); Item::get_content() then falls back to the raw name when content and summary are empty, and Receiver::process() explicitly removes the core wp_filter_kses / wp_filter_post_kses hooks on pre_comment_content before calling wp_new_comment(), so the payload is persisted to comment_content as-is. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page, after an administrator approves the resulting pending webmention comment. Successful exploitation additionally requires an action by an administrator — the attacker cannot trigger the vulnerability on their own.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111109"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:34.827",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-111254",
+      "title": "The W3 Total Cache plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'comment' parameter in all versions up to, and including, 2.10.7 due to insufficie",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The W3 Total Cache plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'comment' parameter in all versions up to, and including, 2.10.7 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Exploitation requires that a Pro license was previously active with REST caching enabled and has since become inactive while Disk Enhanced page caching remains configured, and that the attacker holds a previously approved commenter identity.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111254"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:34.987",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-115840",
+      "title": "The VikRentCar Car Rental Management System plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'poplink' parameter in all versions up to, and including,",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The VikRentCar Car Rental Management System plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'poplink' parameter in all versions up to, and including, 1.4.9 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. The handler requires only a WordPress nonce (vikwp_nonce), which the plugin itself emits to unauthenticated visitors on the public booking-confirmation page, allowing an attacker to obtain a valid token without any account.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115840"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:35.140",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116522",
+      "title": "The Relevanssi – A Better Search plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'comment' parameter in all versions up to, and including, 4.28.5 due",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Relevanssi – A Better Search plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'comment' parameter in all versions up to, and including, 4.28.5 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. This requires the site to have both the comment indexing and comment highlighting options enabled, and the payload only fires when a visitor reaches a singular page via a Relevanssi search-result permalink carrying the highlight query parameter.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116522"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:35.410",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116546",
+      "title": "The WP Job Portal – AI-Powered Recruitment System for Company or Job Board website plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'degreetitle' para",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The WP Job Portal – AI-Powered Recruitment System for Company or Job Board website plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'degreetitle' parameter in all versions up to, and including, 2.7.0 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with subscriber-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. The plugin's self-registration flow allows any visitor to create a Subscriber-backed Employer account, meaning this vulnerability is effectively exploitable by any user who can register on the site.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116546"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:35.563",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116548",
+      "title": "The VikRentCar Car Rental Management System plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'optionals' parameter in all versions up to, and includin",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The VikRentCar Car Rental Management System plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'optionals' parameter in all versions up to, and including, 1.4.10 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116548"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:35.717",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116557",
+      "title": "The WP Booking System - Booking Calendar plugin for WordPress is vulnerable to unauthorized modification of data due to a missing capability check on the wpbs_action_ajax_cale",
+      "severity": "critical",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The WP Booking System - Booking Calendar plugin for WordPress is vulnerable to unauthorized modification of data due to a missing capability check on the wpbs_action_ajax_calendar_remove_note() function in versions up to, and including, 2.1.0.5 This makes it possible for authenticated attackers, with Subscriber-level access and above, to delete arbitrary calendar notes belonging to any calendar.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116557"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:35.857",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118070",
+      "title": "The Welcart e-Commerce plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'gid' parameter in all versions up to, and including, 2.12.5 due to insufficie",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Welcart e-Commerce plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'gid' parameter in all versions up to, and including, 2.12.5 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. The payload is staged by an unauthenticated visitor who forges the ROBOT PAYMENT browser-return request, storing the malicious gid value in order metadata; the script then fires when an administrator opens that order in the WordPress admin panel.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118070"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:36.007",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119065",
+      "title": "The Shipping Zones by Drawing for WooCommerce plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'szbd-picked' checkout parameter in versions up to, and",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Shipping Zones by Drawing for WooCommerce plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'szbd-picked' checkout parameter in versions up to, and including, 3.3.0 The szbd_checkout_field_update_order_meta() handler stores stripslashes(sanitize_text_field($_POST['szbd-picked'])) in order meta without validating the JSON structure or restricting dangerous characters, and the szbd_show_checkout_field_admin_order_meta() handler later concatenates the decoded lat and lng values directly into a double-quoted href attribute without esc_url() or esc_attr(). This makes it possible for unauthenticated attackers, by submitting an ordinary guest-checkout order with a crafted szbd-picked JSON payload, to inject arbitrary attributes (such as onmouseover) onto the Google Maps link in the WooCommerce admin order view that will execute whenever an administrator accesses an injected order.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119065"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:36.163",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119089",
+      "title": "The ThirstyAffiliates – Affiliate Links, Link Branding, Link Tracking & Marketing Plugin plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'comment' pa",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The ThirstyAffiliates – Affiliate Links, Link Branding, Link Tracking & Marketing Plugin plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'comment' parameter in all versions up to, and including, 3.12.1 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. This vulnerability is only exploitable on block themes (such as Twenty Twenty-Five) where the Comment Content block causes comment HTML to flow through render_block, triggering the plugin's transformer. Additionally, a successful attack requires the attacker to have had one prior comment approved, after which subsequent crafted comments are auto-approved and rendered publicly.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119089"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:36.313",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119162",
+      "title": "The User Submitted Posts – Enable Users to Submit Posts from the Front End plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'user-submitted-",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The User Submitted Posts – Enable Users to Submit Posts from the Front End plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'user-submitted-content' parameter in all versions up to, and including, 20260916 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. On a default installation the submitted post is held as Pending and requires admin approval before the payload is reachable by other visitors; however, if the plugin's \"publish immediately\" option is enabled, no approval step exists and the stored payload becomes live without any moderator interaction.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119162"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:36.457",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119163",
+      "title": "The FunnelKit Automations – Email Marketing Automation and CRM for WordPress & WooCommerce plugin for WordPress is vulnerable to time-based SQL Injection via the 'bwfan_cart_i",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The FunnelKit Automations – Email Marketing Automation and CRM for WordPress & WooCommerce plugin for WordPress is vulnerable to time-based SQL Injection via the 'bwfan_cart_id' parameter in all versions up to, and including, 3.8.5.2 due to insufficient escaping on the user supplied parameter and lack of sufficient preparation on the existing SQL query. This makes it possible for unauthenticated attackers to append additional SQL queries into already existing queries that can be used to extract sensitive information from the database. Exploitation is a two-step persisted attack: an unauthenticated attacker submits a crafted bwfan_cart_id value during a guest Store API checkout (requiring only a publicly obtainable WooCommerce cart nonce), and the injection fires when a scheduled Action Scheduler job later reloads the stored meta upon order status transition out of pending, failed, or cancelled.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119163"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:36.600",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119166",
+      "title": "The Welcart e-Commerce plugin for WordPress is vulnerable to Insecure Direct Object Reference in all versions up to, and including, 2.12.5 via the 'member[ID]' parameter due t",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Welcart e-Commerce plugin for WordPress is vulnerable to Insecure Direct Object Reference in all versions up to, and including, 2.12.5 via the 'member[ID]' parameter due to missing validation on a user controlled key. This makes it possible for unauthenticated attackers to overwrite any existing Welcart shop-member account's email address and password by supplying that member's numeric ID, then authenticate as that member to achieve full account takeover. The only authentication barrier is a wp_verify_nonce() check against a nonce printed to every unauthenticated visitor on the auto-published New Enrollment Form, meaning no existing account, no WordPress login, and no non-default configuration is required to exploit this vulnerability.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119166"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:36.750",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119980",
+      "title": "The UsersWP – Front-end login form, User Registration, User Profile & Members Directory plugin for WordPress is vulnerable to unauthorized account access via Use of Predictabl",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The UsersWP – Front-end login form, User Registration, User Profile & Members Directory plugin for WordPress is vulnerable to unauthorized account access via Use of Predictable Password in all versions up to, and including, 1.2.78 The vulnerability exists because `get_dummy_user_passowrd()` derives the shared password for all 25 built-in dummy user accounts as the first 15 characters of `substr(hash('SHA256', AUTH_KEY . site_url()), 0, 25)`, while the full 25-character value of that same hash is simultaneously embedded in the hidden `uwp_register_hash` field rendered on every registration form response — reachable without authentication via both the public `/register/` page and the `wp_ajax_nopriv_uwp_ajax_register_form` AJAX handler, even when user registration is disabled. This makes it possible for unauthenticated attackers to recover the dummy user password directly from a single HTTP request and use it to authenticate as any of the 25 built-in dummy accounts (such as antawn, chynna, or kiki) through `wp-login.php`, potentially achieving privilege escalation if any dummy account holds an elevated role. Exploitation requires that an administrator has previously created dummy users via the plugin's Tools page.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119980"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:36.920",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-11396",
+      "title": "The Product Filter for WooCommerce by WBW plugin for WordPress is vulnerable to Missing Authorization / Information Disclosure in all versions up to, and including, 3.4.6 via ",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Product Filter for WooCommerce by WBW plugin for WordPress is vulnerable to Missing Authorization / Information Disclosure in all versions up to, and including, 3.4.6 via the 'filterSettings[default_query]' parameter of the 'filtersFrontend' AJAX action. The handler is registered as 'wp_ajax_nopriv_filtersFrontend' and performs no capability or nonce check; raw POST data is JSON-decoded into $filterSettings and the attacker-controlled 'default_query' array is unconditionally array_merge()'d into the WP_Query arguments, overriding the plugin's safe defaults (most notably post_status, post_type, posts_per_page, and nopaging). This makes it possible for unauthenticated attackers to enumerate non-public WooCommerce products (draft, future, pending) — including their count and rendered listing markup — and to force unbounded queries that load all products in a single request.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-11396"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:37.073",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-120019",
+      "title": "The W3 Total Cache plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'comment' parameter in all versions up to, and including, 2.10.7 due to insufficie",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The W3 Total Cache plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'comment' parameter in all versions up to, and including, 2.10.7 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. This requires HTML Minify to be enabled with the default 'mfunc' entry present in the ignored-comment stems list, and exploitation depends on the attacker predicting the md5(time()) placeholder namespace by reading the server clock via the HTTP Date response header within the applicable time window.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120019"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:37.227",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-120040",
+      "title": "The Mail logging & Catcher plugin for WordPress is vulnerable to Sensitive Information Exposure in all versions up to, and including, 2.2.0 via the 'message' parameter",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Mail logging & Catcher plugin for WordPress is vulnerable to Sensitive Information Exposure in all versions up to, and including, 2.2.0 via the 'message' parameter. This makes it possible for authenticated attackers, with subscriber-level access and above, to extract valid administrator password-reset keys from stored email logs and complete the WordPress password-reset flow to escalate privileges to administrator. Exploitation requires an administrator to have previously configured the plugin's default_view_role setting to a capability held by low-privileged users such as 'read'; on an untouched install the default of 'manage_options' restricts log access to administrators only.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120040"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:37.370",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-88942",
+      "title": "The Product Filter for WooCommerce by WBW plugin for WordPress is vulnerable to Reflected Cross-Site Scripting via 'wpf_fid' JSON Parameter in all versions up to, and includin",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Product Filter for WooCommerce by WBW plugin for WordPress is vulnerable to Reflected Cross-Site Scripting via 'wpf_fid' JSON Parameter in all versions up to, and including, 3.4.6 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that execute if they can successfully trick a user into performing an action such as clicking on a link. The vulnerability persists in versions that received the 3.4.3 patch because absint() was applied only to the getVar() read path, leaving the wpf_fid value read from the JSON-decoded filterSettings payload entirely unsanitized.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88942"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:37.540",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-89270",
+      "title": "The Popup Builder – Create highly converting, mobile friendly marketing popups",
+      "severity": "critical",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Popup Builder – Create highly converting, mobile friendly marketing popups. plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 4.4.5 This is due to the plugin not properly verifying that a user is authorized to perform an action. This makes it possible for unauthenticated attackers to trash all published popups on the site with a single unauthenticated GET request. The attack is amplified by a second flaw in SGPopup::find(), which returns false for every normally published popup when the sg_popup_preview_id parameter is present, causing the trash branch to fire against every popup on the site simultaneously.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-89270"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:37.707",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-90960",
+      "title": "The Seraphinite Accelerator plugin for WordPress is vulnerable to Sensitive Information Exposure in all versions up to, and including, 2.29.24 via the WP_Object_Cache::_getFil",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Seraphinite Accelerator plugin for WordPress is vulnerable to Sensitive Information Exposure in all versions up to, and including, 2.29.24 via the WP_Object_Cache::_getFilePath. This makes it possible for unauthenticated attackers to extract complete WordPress user records — including plaintext user_login, user_email, hashed user_pass, and user_activation_key — from predictable gzip-serialized cache files at wp-content/cache/seraphinite-accelerator/oc/g/users/g/<USER_ID>.dat.gz. This vulnerability is only exploitable when the plugin's Object Cache feature is enabled, and requires the attacker to first trigger caching of the target user record (e.g., via an unauthenticated REST API request) before retrieving the resulting cache file.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-90960"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T07:59:22Z",
+      "source_updated_at": "2026-10-31T07:16:37.993",
+      "source_type": "nvd",
       "known_exploited": false
     },
     {
@@ -11699,7 +12486,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116689"
         },
         {
@@ -62162,7 +62949,7 @@
           "url": "https://www.php.net/archive/2026.php"
         },
         {
-          "label": "Vendor advisory",
+          "label": "PHP upstream security advisory",
           "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
         },
         {
@@ -62209,7 +62996,7 @@
           "url": "https://www.php.net/archive/2026.php"
         },
         {
-          "label": "Vendor advisory",
+          "label": "PHP upstream security advisory",
           "url": "https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp"
         },
         {
@@ -73891,51 +74678,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        "Windows",
-        "Windows 11 OS",
-        "Windows Server OS"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
-        },
-        {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.09813,
-      "epss_percentile": 0.95543,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-102870",
       "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
       "severity": "high",
@@ -73978,6 +74720,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00906,
       "epss_percentile": 0.59814,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+        },
+        {
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.09813,
+      "epss_percentile": 0.95543,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -94538,42 +95325,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60729,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -94612,6 +95363,42 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55856,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60729,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -166734,959 +167521,90 @@
       "epss": 0.05431,
       "epss_percentile": 0.92704,
       "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-33742",
-      "title": "Microsoft Windows MSHTML Platform Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows MSHTML Platform contains an unspecified vulnerability that allows for remote code execution.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.59407,
-      "epss_percentile": 0.99119,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-33771",
-      "title": "Microsoft Windows Kernel Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows kernel contains an unspecified vulnerability that allows for privilege escalation.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.10172,
-      "epss_percentile": 0.95654,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-31956",
-      "title": "Microsoft Windows NTFS Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows New Technology File System (NTFS) contains an unspecified vulnerability that allows attackers to escalate privileges via a specially crafted application.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.22273,
-      "epss_percentile": 0.97679,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-31979",
-      "title": "Microsoft Windows Kernel Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows kernel contains an unspecified vulnerability that allows for privilege escalation.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.0454,
-      "epss_percentile": 0.91555,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-0938",
-      "title": "Microsoft Windows Adobe Font Manager Library Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows Adobe Font Manager Library contains an unspecified vulnerability when handling specially crafted multi-master fonts (Adobe Type 1 PostScript format) that allows for remote code execution for all systems except Windows 10. For systems running Windows 10, an attacker who successfully exploited the vulnerability could execute code in an AppContainer sandbox context with limited privileges and capabilities.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.6895,
-      "epss_percentile": 0.99348,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-17144",
-      "title": "Microsoft Exchange Server Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Exchange Server improperly validates cmdlet arguments which allow an attacker to perform remote code execution.",
-      "affected": "Microsoft Exchange Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.36514,
-      "epss_percentile": 0.9849,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-0986",
-      "title": "Microsoft Windows Kernel Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows kernel contains an unspecified vulnerability when handling objects in memory that allows attackers to escalate privileges and execute code in kernel mode.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.16405,
-      "epss_percentile": 0.96975,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-1020",
-      "title": "Microsoft Windows Adobe Font Manager Library Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows Adobe Font Manager Library contains an unspecified vulnerability when handling specially crafted multi-master fonts (Adobe Type 1 PostScript format) that allows for remote code execution for all systems except Windows 10. For systems running Windows 10, an attacker who successfully exploited the vulnerability could execute code in an AppContainer sandbox context with limited privileges and capabilities.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.65037,
-      "epss_percentile": 0.9925,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-34523",
-      "title": "Microsoft Exchange Server Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Exchange Server contains an unspecified vulnerability that allows for privilege escalation.",
-      "affected": "Microsoft Exchange Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.9999,
-      "epss_percentile": 0.99985,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2017-7269",
-      "title": "Microsoft Windows Server Buffer Overflow Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows Server OS"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows Server 2003 R2 contains a buffer overflow vulnerability in Internet Information Services (IIS) 6.0 which allows remote attackers to execute code via a long header beginning with \"If: <http://\" in a PROPFIND request.",
-      "affected": "Microsoft Internet Information Services (IIS). Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99823,
-      "epss_percentile": 0.9996,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-36948",
-      "title": "Microsoft Windows Update Medic Service Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows Update Medic Service contains an unspecified vulnerability that allows for privilege escalation.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.2327,
-      "epss_percentile": 0.97774,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-0688",
-      "title": "Microsoft Exchange Server Validation Key Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Exchange Server Validation Key fails to properly create unique keys at install time, allowing for remote code execution.",
-      "affected": "Microsoft Exchange Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99955,
-      "epss_percentile": 0.99974,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2017-0143",
-      "title": "Microsoft Windows Server Message Block (SMBv1) Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows",
-        "Windows Server OS"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows Server Message Block 1.0 (SMBv1) contains an unspecified vulnerability that allows for remote code execution.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.93307,
-      "epss_percentile": 0.99836,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-34473",
-      "title": "Microsoft Exchange Server Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Exchange Server contains an unspecified vulnerability that allows for remote code execution.",
-      "affected": "Microsoft Exchange Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99996,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-1464",
-      "title": "Microsoft Windows Spoofing Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows contains a spoofing vulnerability when Windows incorrectly validates file signatures, allowing an attacker to bypass security features and load improperly signed files.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.38946,
-      "epss_percentile": 0.98588,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-34527",
-      "title": "Microsoft Windows Print Spooler Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows Print Spooler contains an unspecified vulnerability due to the Windows Print Spooler service improperly performing privileged file operations. Successful exploitation allows an attacker to perform remote code execution with SYSTEM privileges. The vulnerability is also known under the moniker of PrintNightmare.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99792,
-      "epss_percentile": 0.99956,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-31207",
-      "title": "Microsoft Exchange Server Security Feature Bypass Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Exchange Server contains an unspecified vulnerability that allows for security feature bypass.",
-      "affected": "Microsoft Exchange Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99782,
-      "epss_percentile": 0.99955,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-1040",
-      "title": "Microsoft Hyper-V RemoteFX vGPU Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "HyperV"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Hyper-V RemoteFX vGPU contains an improper input validation vulnerability due to the host server failing to properly validate input from an authenticated user on a guest operating system. Successful exploitation allows for remote code execution on the host operating system.",
-      "affected": "Microsoft Hyper-V RemoteFX. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.07393,
-      "epss_percentile": 0.94419,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-1350",
-      "title": "Microsoft Windows DNS Server Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows DNS Servers fail to properly handle requests, allowing an attacker to perform remote code execution in the context of the Local System Account. The vulnerability is also known under the moniker of SIGRed.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.96721,
-      "epss_percentile": 0.99885,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2017-8759",
-      "title": "Microsoft .NET Framework Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        ".NET / ASP.NET"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft .NET Framework contains a remote code execution vulnerability when processing untrusted input that could allow an attacker to take control of an affected system.",
-      "affected": "Microsoft .NET Framework. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.88698,
-      "epss_percentile": 0.99774,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-36942",
-      "title": "Microsoft Windows Local Security Authority (LSA) Spoofing Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows Local Security Authority (LSA) contains a spoofing vulnerability allowing an unauthenticated attacker to call a method on the LSARPC interface and coerce the domain controller to authenticate against another server using NTLM.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.66023,
-      "epss_percentile": 0.99272,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2019-1215",
-      "title": "Microsoft Windows Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows contains an unspecified vulnerability due to the way ws2ifsl.sys (Winsock) handles objects in memory, allowing for privilege escalation. Successful exploitation allows an attacker to execute code with elevated privileges.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.19254,
-      "epss_percentile": 0.97333,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-26855",
-      "title": "Microsoft Exchange Server Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Exchange Server contains an unspecified vulnerability that allows for remote code execution. This vulnerability is part of the ProxyLogon exploit chain.",
-      "affected": "Microsoft Exchange Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99996,
-      "epss_percentile": 0.99988,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-26858",
-      "title": "Microsoft Exchange Server Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Exchange Server contains an unspecified vulnerability that allows for remote code execution. This vulnerability is part of the ProxyLogon exploit chain.",
-      "affected": "Microsoft Exchange Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.93651,
-      "epss_percentile": 0.99843,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-27065",
-      "title": "Microsoft Exchange Server Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Exchange Server contains an unspecified vulnerability that allows for remote code execution. This vulnerability is part of the ProxyLogon exploit chain.",
-      "affected": "Microsoft Exchange Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99876,
-      "epss_percentile": 0.99964,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-1675",
-      "title": "Microsoft Windows Print Spooler Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows Print Spooler contains an unspecified vulnerability that allows for remote code execution.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.85305,
-      "epss_percentile": 0.99716,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-34448",
-      "title": "Microsoft Windows Scripting Engine Memory Corruption Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows Scripting Engine contains an unspecified vulnerability that allows for memory corruption.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.40062,
-      "epss_percentile": 0.98631,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-0601",
-      "title": "Microsoft Windows CryptoAPI Spoofing Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows CryptoAPI (Crypt32.dll) contains a spoofing vulnerability in the way it validates Elliptic Curve Cryptography (ECC) certificates. An attacker could exploit the vulnerability by using a spoofed code-signing certificate to sign a malicious executable, making it appear the file was from a trusted, legitimate source. A successful exploit could also allow the attacker to conduct man-in-the-middle attacks and decrypt confidential information on user connections to the affected software. The vulnerability is also known under the moniker of CurveBall.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.89078,
-      "epss_percentile": 0.99779,
-      "epss_as_of": "2026-10-31"
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-31T07:05:46Z",
-      "last_attempt": "2026-10-31T07:05:46Z",
-      "items_processed": 270,
+      "last_success": "2026-10-31T07:59:22Z",
+      "last_attempt": "2026-10-31T07:59:22Z",
+      "items_processed": 269,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-31T07:05:46Z",
-      "last_attempt": "2026-10-31T07:05:46Z",
+      "last_success": "2026-10-31T07:59:22Z",
+      "last_attempt": "2026-10-31T07:59:22Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-31T07:05:46Z",
-      "last_attempt": "2026-10-31T07:05:46Z",
-      "items_processed": 435,
+      "last_success": "2026-10-31T07:59:22Z",
+      "last_attempt": "2026-10-31T07:59:22Z",
+      "items_processed": 450,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-31T07:05:46Z",
-      "last_attempt": "2026-10-31T07:05:46Z",
+      "last_success": "2026-10-31T07:59:22Z",
+      "last_attempt": "2026-10-31T07:59:22Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-31T07:05:46Z",
-      "last_attempt": "2026-10-31T07:05:46Z",
+      "last_success": "2026-10-31T07:59:22Z",
+      "last_attempt": "2026-10-31T07:59:22Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-31T07:05:46Z",
-      "last_attempt": "2026-10-31T07:05:46Z",
+      "last_success": "2026-10-31T07:59:22Z",
+      "last_attempt": "2026-10-31T07:59:22Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-31T07:05:46Z",
-      "last_attempt": "2026-10-31T07:05:46Z",
+      "last_success": "2026-10-31T07:59:22Z",
+      "last_attempt": "2026-10-31T07:59:22Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-31T07:05:46Z",
-      "last_attempt": "2026-10-31T07:05:46Z",
+      "last_success": "2026-10-31T07:59:22Z",
+      "last_attempt": "2026-10-31T07:59:22Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-31T07:05:46Z",
-      "last_attempt": "2026-10-31T07:05:46Z",
+      "last_success": "2026-10-31T07:59:22Z",
+      "last_attempt": "2026-10-31T07:59:22Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-31T07:05:46Z",
-      "last_attempt": "2026-10-31T07:05:46Z",
+      "last_success": "2026-10-31T07:59:22Z",
+      "last_attempt": "2026-10-31T07:59:22Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-31T07:05:46Z",
-      "last_attempt": "2026-10-31T07:05:46Z",
+      "last_success": "2026-10-31T07:59:22Z",
+      "last_attempt": "2026-10-31T07:59:22Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-31T07:05:46Z",
-      "last_attempt": "2026-10-31T07:05:46Z",
+      "last_success": "2026-10-31T07:59:22Z",
+      "last_attempt": "2026-10-31T07:59:22Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -167698,7 +167616,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-31T07:05:46Z",
-  "last_successful_update": "2026-10-31T07:05:46Z",
+  "last_checked_at": "2026-10-31T07:59:22Z",
+  "last_successful_update": "2026-10-31T07:59:22Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
