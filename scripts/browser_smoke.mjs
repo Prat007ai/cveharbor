@@ -797,7 +797,7 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('transform:scale(1.36)')
 
 assert.equal(html.includes('PUBLIC ADVISORY FEEDS'),false,'hero card no longer displays public advisory feeds wording');
 
-assert.ok(html.includes('Find risks faster. Prioritize fixes. Stay protected.'),'hero contains clear security value statement');
+assert.ok(html.includes('Prioritized vulnerabilities')&&html.includes('Know the risk.'),'hero contains the approved security value statement');
 assert.equal(html.includes('>REMEDIATE</text>'),false,'network badge overlap label removed');
 
 assert.ok(html.includes('<option>WEB</option>'),'WEB asset type appears in inventory form');
@@ -1019,7 +1019,7 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('grid-template-columns:r
 
 // Both styled explorer assets must use the same new cache release.
 const explorerSource=fs.readFileSync('index.html','utf8');
-assert.match(explorerSource,/\/styles\.css\?v=customize-modal-199/,'technology layout stylesheet must refresh');
+assert.match(explorerSource,/\/styles\.css\?v=hero-200/,'technology layout stylesheet must refresh');
 assert.match(explorerSource,/\/app\.js\?v=customize-modal-199/,'technology customization script must refresh');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"\/vulnerabilities\/":\["technology-kpis"/,'live verifier checks technology explorer page');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"styles.css","app.js"/,'live verifier validates explorer JavaScript');
@@ -1054,3 +1054,11 @@ assert.match(fs.readFileSync('index.html','utf8'),/id="technologyManageButton" c
 
 assert.ok(fs.readFileSync('index.html','utf8').includes('id="technologySignInDialog"'),'signed-out customize modal exists');
 assert.ok(fs.readFileSync('app.js','utf8').includes("technologySignInDialog').showModal()"),'signed-out visitors see a branded dialog');
+
+const homeHero=fs.readFileSync('index.html','utf8');
+assert.match(homeHero,/Know the risk\./,'approved homepage slogan retained');
+assert.match(homeHero,/hero-priority-card/,'prioritized vulnerabilities hero panel present');
+assert.match(homeHero,/hero-capabilities/,'capability navigation rendered');
+assert.match(homeHero,/Set email alerts for product end of support/,'lifecycle alerts accurately described');
+assert.doesNotMatch(homeHero.slice(homeHero.indexOf('<section class="hero"'),homeHero.indexOf('<section id="technology"')),/38 technology groups/,'fixed technology count removed from homepage hero');
+assert.match(fs.readFileSync('styles.css','utf8'),/prefers-reduced-motion:reduce/,'reduced motion support remains');
