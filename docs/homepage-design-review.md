@@ -62,3 +62,22 @@ module override; omit the Chromium override to use Playwright's installed browse
 Use the supported execution approval mechanism if the sandbox blocks local sockets
 or browser processes. Keep application manifests and lockfiles unchanged when
 installing external screenshot tooling.
+
+## Compact follow-up
+
+Branch `design/compact-homepage` reduces the desktop hero height by approximately
+30%, without changing navigation, destinations, or the six capabilities. Layout
+spacing, heading size, card density, and illustration height were adjusted in the
+existing stylesheet. Text and illustration proportions are preserved; no CSS
+scaling or clipping is used to force the section shorter.
+
+Measured heights (including capabilities):
+
+| Viewport width | Previous hero | Compact hero | Reduction |
+| --- | --- | --- | --- |
+| 1366 | 622 px | 428 px | 31% |
+| 1920 | 876 px | 597 px | 32% |
+| 2560 | 1093 px | 742 px | 32% |
+
+Compact screenshots: `/workspace/homepage-review/compact/home-{1366,1920,2560,390}.png`.
+The Playwright smoke check now enforces a 25–35% desktop height reduction.

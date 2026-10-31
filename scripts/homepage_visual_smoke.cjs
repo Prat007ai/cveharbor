@@ -47,6 +47,9 @@ if (!['127.0.0.1', 'localhost'].includes(new URL(base).hostname)) throw new Erro
           `labels do not obscure the card at ${width}`);
       }
       if (width >= 1366) {
+        const previousHeight = { 1366: 622.21875, 1920: 875.84375, 2560: 1093.3125 }[width];
+        assert.ok(layout.hero.height <= previousHeight * .75 && layout.hero.height >= previousHeight * .65,
+          `hero is approximately 30% shorter at ${width}`);
         assert.ok(layout.capabilities.every(r => Math.abs(r.top - layout.capabilities[0].top) < 1), 'six desktop columns');
         assert.ok(Math.abs(layout.buttons[0].top - layout.buttons[1].top) < 12, 'desktop buttons share a row');
         assert.equal(layout.sidebar.width, 74, 'existing collapsed sidebar width retained');

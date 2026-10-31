@@ -1066,7 +1066,7 @@ assert.ok(fs.readFileSync('index.html','utf8').includes('hero-artwork'),'dedicat
 assert.ok(fs.readFileSync('index.html','utf8').includes('hero-priority-chart'),'hero chart artwork exists');
 // Consolidated homepage styles replace the historical override layers.
 const heroCss=fs.readFileSync('home-hero-reference.css','utf8');
-assert.match(homeHero,/home-hero-reference\.css\?v=214/,'new homepage stylesheet cache version');
+assert.match(homeHero,/home-hero-reference\.css\?v=215/,'new homepage stylesheet cache version');
 assert.match(heroCss,/prefers-reduced-motion: reduce/,'hero supports reduced motion');
 assert.doesNotMatch(heroCss,/!important|\.command-sidebar|\.command-nav-link/,'hero styles avoid override stacking and navigation changes');
 assert.ok(fs.existsSync('public/assets/home-intelligence-wave.svg'),'wave artwork packaged in public build');
