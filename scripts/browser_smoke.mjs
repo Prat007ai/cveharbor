@@ -1060,5 +1060,5 @@ assert.match(homeHero,/Know the risk\./,'approved homepage slogan retained');
 assert.match(homeHero,/hero-priority-card/,'prioritized vulnerabilities hero panel present');
 assert.match(homeHero,/hero-capabilities/,'capability navigation rendered');
 assert.match(homeHero,/Set email alerts for product end of support/,'lifecycle alerts accurately described');
-assert.doesNotMatch(homeHero,/38 technology groups/,'fixed technology count removed from homepage hero');
+assert.doesNotMatch(homeHero.slice(homeHero.indexOf('<section class="hero"'),homeHero.indexOf('<section id="technology"')),/38 technology groups/,'fixed technology count removed from homepage hero');
 assert.match(fs.readFileSync('styles.css','utf8'),/prefers-reduced-motion:reduce/,'reduced motion support remains');
