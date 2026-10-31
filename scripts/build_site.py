@@ -18,7 +18,7 @@ for name in ('index.html', 'styles.css', 'homepage.css', 'app.js', 'workspace.js
     shutil.copy2(ROOT / name, OUT / name)
 (OUT / 'assets').mkdir(exist_ok=True)
 shutil.copytree(ROOT / 'assets' / 'homepage', OUT / 'assets' / 'homepage')
-for name in ('lifecycle.js','patch-notes.js','threats.js','threat-data.js','fortigate-threat-ip-objects.txt','sophos-threat-ip-api.txt','fortigate-suspicious-ip-initial.txt','fortigate-suspicious-ip-incremental.txt','sophos-suspicious-ip-initial.txt','sophos-suspicious-ip-incremental.txt'):
+for name in ('lifecycle.js','patch-notes.js','threats.js','threat-data.js','attack-scanning-current.txt','attack-scanning-current.csv','attack-scanning-current.json','fortigate-threat-ip-objects.txt','sophos-threat-ip-api.txt','fortigate-suspicious-ip-initial.txt','fortigate-suspicious-ip-incremental.txt','sophos-suspicious-ip-initial.txt','sophos-suspicious-ip-incremental.txt'):
     if (ROOT / name).exists():
         shutil.copy2(ROOT / name, OUT / name)
 # Public snapshot health report is generated on each actual feed refresh.

@@ -101,3 +101,44 @@ console.log('PASS threat health: current, failed source, stale snapshot, unique 
  dom.window.close();
 }
 console.log('PASS activity groups: collapsed default, exclusive expansion, category/feed/search filters, pagination, keyboard focus, evidence safety and map synchronization');
+
+{
+ const dom=new JSDOM(html,{url:'https://cveharbor.com/threats/',runScripts:'outside-only'});
+ const w=dom.window,timers=[];w.Date.now=()=>Date.parse(timestamp)+60000;w.setInterval=fn=>{timers.push(fn);return 1};
+ const ids=['dshield_scanners','blocklist_de','greensnow','feodo_c2','threatfox','spamhaus_drop'];
+ const sources=Object.fromEntries(ids.map(id=>[id,{ok:true,last_success:timestamp}]));
+ const indicators=ids.map((id,i)=>({ip:i===5?'8.8.0.0/24':i<2?'8.8.8.8':i===2?'1.1.1.1':'9.9.9.9',source_id:id,source:id,activity:'Fixture report',kind:i===5?'network':'ip'}));
+ const meta={generated_at:timestamp,count:25000,available:true,complete:true,sources:Object.fromEntries(ids.slice(0,3).map(id=>[id,{ok:true}]))};
+ w.CVEHARBOR_THREATS={checked_at:timestamp,sources,indicators,attack_export:meta};
+ w.eval(fs.readFileSync('threats.js','utf8'));w.eval(fs.readFileSync('geo-map.js','utf8'));
+ const d=w.document;
+ assert.equal(d.getElementById('threatSourceFilter').options.length,7);
+ assert.equal(d.querySelectorAll('.threat-group').length,3,'new attack feeds do not fall into Other activity');
+ change(w,'threatActivityFilter','attack');
+ assert.equal(d.querySelectorAll('.threat-entry').length,3);
+ assert.match(d.querySelector('[data-activity="attack"] .threat-group-count').textContent,/2 IPs/,'shared attack IPs are deduplicated in the count');
+ assert.match(d.querySelector('.threat-attack-export').textContent,/25,000 unique IPs/,'full download count is separate from preview count');
+ assert.equal(d.querySelectorAll('[data-attack-download]').length,2);
+ assert.ok([...d.querySelectorAll('[data-attack-download]')].every(link=>link.getAttribute('aria-disabled')==='false'));
+ assert.match(d.querySelector('[data-attack-download]').href,/\/attack-scanning-current\.txt$/);
+ w.Date.now=()=>Date.parse(timestamp)+4*60*60*1000;timers[0]();
+ const link=d.querySelector('[data-attack-download]'),click=new w.MouseEvent('click',{cancelable:true,bubbles:true});
+ assert.equal(link.getAttribute('aria-disabled'),'true');
+ assert.equal(link.tabIndex,-1);
+ link.dispatchEvent(click);assert.equal(click.defaultPrevented,true,'stale download is blocked for mouse and keyboard activation');
+ assert.match(d.querySelector('.threat-attack-export-status').textContent,/Downloads paused/);
+ w.Date.now=()=>Date.parse(timestamp)+60000;meta.complete=false;timers[0]();
+ assert.match(d.querySelector('.threat-attack-export-status').textContent,/unavailable and excluded/);
+ assert.equal(link.getAttribute('aria-disabled'),'false','fresh available partial export remains explicitly labelled');
+ change(w,'threatSourceFilter','greensnow');
+ assert.equal(d.querySelectorAll('.threat-entry').length,1);
+ assert.equal(d.querySelector('.threat-group').dataset.activity,'attack');
+ change(w,'threatSourceFilter','blocklist_de');
+ assert.equal(d.querySelector('.threat-group').dataset.activity,'attack');
+ meta.available=false;meta.count=0;
+ change(w,'threatSourceFilter','greensnow');
+ assert.equal(d.querySelectorAll('[data-attack-download]').length,0);
+ assert.match(d.querySelector('.threat-attack-export-status').textContent,/No current/);
+ dom.window.close();
+}
+console.log('PASS expanded attack feeds: categorization, duplicate counts, full-list downloads, partial coverage and stale/empty download guards');

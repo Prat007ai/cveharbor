@@ -8,9 +8,11 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.parse import urlsplit
 import hashlib
+import json
 import re
 import time
 import sys
+from update_threats import ATTACK_EXPORT_FILES
 
 root=Path(__file__).resolve().parents[1]
 base="https://cveharbor.com"
@@ -55,10 +57,25 @@ def verify_local_build():
     for name in ("website-monitor-demo.png", "platform-explorer.png"):
         if not (root / "public" / "assets" / "homepage" / name).is_file():
             raise RuntimeError("Missing homepage preview asset: " + name)
+    export_files=[]
+    snapshot=json.loads((root/"public"/"threat-data.js").read_text().split("=",1)[1].strip().removesuffix(";"))
+    meta=snapshot.get("attack_export")
+    if meta is not None:
+        for name in ATTACK_EXPORT_FILES:
+            if not (root/"public"/name).is_file():raise RuntimeError("Missing current attack export: "+name)
+        content=(root/"public"/ATTACK_EXPORT_FILES[0]).read_bytes()
+        if hashlib.sha256(content).hexdigest()!=meta.get("sha256"):
+            raise RuntimeError("Current attack export does not match the published snapshot")
+        if len(content.splitlines())!=meta.get("count"):
+            raise RuntimeError("Current attack export count does not match the published snapshot")
+        if json.loads((root/"public"/ATTACK_EXPORT_FILES[2]).read_text())!=meta:
+            raise RuntimeError("Current attack export status differs from the published snapshot")
+        export_files=list(ATTACK_EXPORT_FILES)
     print("PASS: Generated routes and linked assets verified before deployment")
+    return export_files
 
 
-verify_local_build()
+attack_export_files=verify_local_build()
 if "--preflight" in sys.argv:
     sys.exit(0)
 
@@ -86,6 +103,11 @@ for attempt in range(6):
         remote_threats=fetch_bytes("/threat-data.js?release="+fingerprint[:12])
         if hashlib.sha256(remote_threats).hexdigest()!=fingerprint:
             raise RuntimeError("Published threat indicators differ from this deployment's collected snapshot")
+        for name in attack_export_files:
+            local=(root/"public"/name).read_bytes()
+            fingerprint=hashlib.sha256(local).hexdigest()
+            if hashlib.sha256(fetch_bytes("/"+name+"?release="+fingerprint[:12])).hexdigest()!=fingerprint:
+                raise RuntimeError("Published current attack export differs from this deployment: "+name)
         for name in ("website-monitor-demo.png", "platform-explorer.png"):
             remote = fetch_bytes("/assets/homepage/" + name)
             local = (root / "assets" / "homepage" / name).read_bytes()

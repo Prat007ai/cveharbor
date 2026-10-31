@@ -1,0 +1,46 @@
+name: Validate public attack feed integrations
+
+on:
+  push:
+    branches-ignore: [main]
+    paths:
+      - .github/workflows/validate-attack-feeds.yml
+      - scripts/update_threats.py
+      - scripts/validate_attack_feeds.py
+      - tests/test_threats.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: attack-feed-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run regression tests
+        run: python -m unittest discover -s tests -v
+      - name: Validate live public attack feeds and full exports
+        run: python scripts/validate_attack_feeds.py
+      - name: Save development validation evidence
+        if: always() && github.ref != 'refs/heads/main'
+        env:
+          VALIDATION_BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if [ ! -f data/attack-feed-validation/report.json ]; then exit 0; fi
+          git config user.name 'cveharbor-updater[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/attack-feed-validation
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Record live development attack-feed validation'
+          git push origin HEAD:"$VALIDATION_BRANCH"

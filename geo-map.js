@@ -13,7 +13,7 @@
   for (const source of options) {
     const option = document.createElement('option');
     option.value = source;
-    option.textContent = ({dshield_scanners:'Observed scanning',feodo_c2:'Botnet C2',threatfox:'Malware-associated IPs',spamhaus_drop:'Network ranges (not plotted)'})[source]||source;
+    option.textContent = ({dshield_scanners:'DShield scanning',blocklist_de:'blocklist.de attacks',greensnow:'GreenSnow attacks/scanning',feodo_c2:'Botnet C2',threatfox:'Malware-associated IPs',spamhaus_drop:'Network ranges (not plotted)'})[source]||source;
     filter.append(option);
   }
   let chosen = '';
@@ -69,7 +69,7 @@
       const circle=window.L.circleMarker([g.latitude,g.longitude],{
         radius,weight:2,color:'#63ebda',fillColor:'#f08b5a',fillOpacity:0.7
       }).addTo(markers);
-      const list=g.ips.slice(0,16).map(x=>x.ip+' ('+(({dshield_scanners:'Scanning',feodo_c2:'Botnet C2',threatfox:'Malware IP'})[x.source_id]||x.source_id)+')').join('\n');
+      const list=g.ips.slice(0,16).map(x=>x.ip+' ('+(({dshield_scanners:'Scanning',blocklist_de:'Server attacks',greensnow:'Scanning/attacks',feodo_c2:'Botnet C2',threatfox:'Malware IP'})[x.source_id]||x.source_id)+')').join('\n');
       const popup=document.createElement('div');
       const heading=document.createElement('strong');heading.textContent=g.name+' · '+g.ips.length+' reported IPs';
       const pre=document.createElement('pre');pre.textContent=list+(g.ips.length>16?'\nMore indicators available in the list below.':'');

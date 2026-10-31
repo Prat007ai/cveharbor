@@ -101,6 +101,9 @@ class ThreatCollectionHealthTests(unittest.TestCase):
                 clock.fromtimestamp.side_effect=datetime.fromtimestamp
                 code=mod.collect();report=json.loads(out.read_text().split('=',1)[1].strip().removesuffix(';'))
                 history=json.loads((folder/'data/history.json').read_text())
+                self.attack_text=(folder/'attack-scanning-current.txt').read_text()
+                self.attack_csv=(folder/'attack-scanning-current.csv').read_text()
+                self.attack_metadata=json.loads((folder/'attack-scanning-current.json').read_text())
             return code,report,history
 
     def test_unchanged_list_preserves_change_time_but_records_a_fetch(self):
@@ -252,3 +255,72 @@ class ExpandedThreatSourceTests(unittest.TestCase):
         self.assertEqual(report['sources']['threatfox']['count'],1)
         self.assertEqual(len(report['indicators']),1)
         self.assertNotIn('padding',json.dumps(report))
+
+
+class AttackFeedExpansionTests(unittest.TestCase):
+    def test_new_plaintext_feeds_accept_unique_global_hosts_without_inventing_last_seen(self):
+        from datetime import datetime,timezone
+        body='# public list\n8.8.8.8\n1.1.1.1 # report\n8.8.8.8\n10.0.0.1\n127.0.0.1\n224.0.0.1\n2001:4860:4860::8888\n8.8.0.0/24\n8.8.4.4 junk\n'
+        for key in ('blocklist_de','greensnow'):
+            entries=mod.parse_source(key,body,datetime.now(timezone.utc))
+            self.assertEqual(set(entries),{'8.8.8.8','1.1.1.1'})
+            self.assertEqual(entries['8.8.8.8']['source_id'],key)
+            self.assertIsNone(entries['8.8.8.8']['observed_at'])
+            with self.assertRaisesRegex(ValueError,'HTML'):
+                mod.parse_source(key,'<!doctype html><html>\n8.8.8.8\n</html>',datetime.now(timezone.utc))
+            with self.assertRaisesRegex(ValueError,'No valid'):
+                mod.parse_source(key,'10.0.0.1\nnot an IP',datetime.now(timezone.utc))
+
+    def test_current_export_is_complete_beyond_preview_and_deduplicates_sources(self):
+        import csv,io,hashlib
+        fixture=ThreatCollectionHealthTests()
+        addresses=['8.8.'+str(i//250)+'.'+str(i%250+1) for i in range(600)]
+        code,report,_=fixture.collect_fixture({'dshield_scanners':'1.1.1.1','blocklist_de':'\n'.join(addresses),'greensnow':'8.8.0.1\n9.9.9.9'})
+        self.assertEqual(code,0)
+        self.assertEqual(report['sources']['blocklist_de']['published_count'],500)
+        self.assertTrue(report['sources']['blocklist_de']['truncated'])
+        self.assertEqual(report['attack_export']['count'],602)
+        self.assertTrue(report['attack_export']['complete'])
+        self.assertEqual(len(fixture.attack_text.splitlines()),602)
+        self.assertIn(addresses[-1],fixture.attack_text.splitlines())
+        self.assertNotIn(addresses[-1],{entry['ip'] for entry in report['indicators']})
+        rows=list(csv.DictReader(io.StringIO(fixture.attack_csv)))
+        self.assertEqual(len(rows),602)
+        shared=next(row for row in rows if row['IP address']=='8.8.0.1')
+        self.assertIn('blocklist.de',shared['Reporting sources'])
+        self.assertIn('GreenSnow',shared['Reporting sources'])
+        self.assertEqual(report['attack_export']['sha256'],hashlib.sha256(fixture.attack_text.encode()).hexdigest())
+        self.assertEqual(fixture.attack_metadata,report['attack_export'])
+
+    def test_current_export_excludes_failed_source_retention_and_reports_partial_coverage(self):
+        fixture=ThreatCollectionHealthTests()
+        _,previous,_=fixture.collect_fixture({'blocklist_de':'8.8.8.8','greensnow':'1.1.1.1'})
+        code,report,_=fixture.collect_fixture({'blocklist_de':OSError('Source unavailable'),'greensnow':'9.9.9.9'},previous)
+        self.assertEqual(code,1)
+        self.assertTrue(any(x['ip']=='8.8.8.8' and x.get('stale') for x in report['indicators']))
+        self.assertEqual(fixture.attack_text,'9.9.9.9\n')
+        self.assertTrue(report['attack_export']['available'])
+        self.assertFalse(report['attack_export']['complete'])
+        self.assertFalse(report['attack_export']['sources']['blocklist_de']['ok'])
+        _,failed,_=fixture.collect_fixture({'blocklist_de':OSError('Unavailable'),'greensnow':OSError('Unavailable')},report)
+        self.assertFalse(failed['attack_export']['available'])
+        self.assertEqual(failed['attack_export']['count'],0)
+        self.assertEqual(fixture.attack_text,'')
+
+    def test_current_export_replaces_prior_snapshot_and_leaves_legacy_files_untouched(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            folder=Path(tmp)
+            legacy=folder/'fortigate-threat-ip-objects.txt';legacy.write_text('Existing reviewed historical template')
+            report={'checked_at':'2026-10-31T12:00:00Z','sources':{'blocklist_de':{'ok':True,'count':1}}}
+            mod.export_attack_current(report,{'blocklist_de':{'old':{'ip':'8.8.8.8','source_id':'blocklist_de'}}},folder)
+            entries={str(i):entry for i,entry in enumerate([
+                {'ip':'1.1.1.1','source_id':'blocklist_de'},
+                {'ip':'8.8.8.8','source_id':'blocklist_de','stale':True},
+                {'ip':'9.9.9.9','source_id':'feodo_c2'},
+                {'ip':'8.8.0.0/24','source_id':'blocklist_de','kind':'network'},
+                {'ip':'10.0.0.1','source_id':'blocklist_de'}])}
+            meta=mod.export_attack_current(report,{'blocklist_de':entries,'threatfox':{'ignored':{'ip':'8.8.4.4','source_id':'threatfox'}}},folder)
+            self.assertEqual(meta['count'],1)
+            self.assertEqual((folder/'attack-scanning-current.txt').read_text(),'1.1.1.1\n')
+            self.assertEqual(legacy.read_text(),'Existing reviewed historical template')

@@ -623,6 +623,14 @@ button.tech-chart-link b{
 .threat-group-description{color:#a7c3d4;font-size:12px;line-height:1.5}
 .threat-group-count{flex:none;color:#8be5dc;background:#173a48;border:1px solid #315c68;border-radius:7px;padding:7px 10px;font-size:12px;font-weight:750}
 .threat-group-body{padding:18px}
+/* Current attack-feed exports are separate from cumulative firewall history. */
+.threat-attack-export{padding:16px;margin-bottom:18px;background:#10383f;border:1px solid #36777b;border-radius:9px}
+.threat-attack-export h4{margin:0 0 9px;color:#b5f5ea;font-size:15px}
+.threat-attack-export p{font-size:12px;line-height:1.7;color:#bdd9df;margin:7px 0}
+.threat-attack-export-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.threat-download-link{color:#b5f5ea;border:1px solid #4b9194;border-radius:7px;padding:10px 12px;text-decoration:none;font-size:12px;font-weight:750}
+.threat-download-link:focus-visible{outline:2px solid #7de3d5;outline-offset:3px}
+.threat-download-link[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
 .threat-group-progress{margin:0;color:#a7c3d4;font-size:12px}
 .threat-group-more{margin-top:16px;background:#153c49;color:#a5f0e5;border:1px solid #376b78;border-radius:8px;padding:11px 16px;cursor:pointer;font-weight:750}
 .threat-group-more:focus-visible{outline:2px solid #7de3d5;outline-offset:3px}

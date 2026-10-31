@@ -10,16 +10,16 @@
   const activity=document.getElementById('threatActivityFilter');
   const items=Array.isArray(report.indicators)?report.indicators:[];
   const sources=Object.entries(report.sources||{});
-  const sourceNames={dshield_scanners:'DShield scanning',feodo_c2:'Feodo botnet C2',threatfox:'ThreatFox malware IPs',spamhaus_drop:'Spamhaus DROP ranges'};
+  const sourceNames={dshield_scanners:'DShield scanning',blocklist_de:'blocklist.de attacks',greensnow:'GreenSnow attacks/scanning',feodo_c2:'Feodo botnet C2',threatfox:'ThreatFox malware IPs',spamhaus_drop:'Spamhaus DROP ranges'};
   const pageSize=30,limits=new Map();
   let openGroup=null;
   const groups=[
-    {id:'attack',label:'Attack & scanning sources',description:'DShield reports of observed scanning and attack-source activity.'},
+    {id:'attack',label:'Attack & scanning sources',description:'DShield, blocklist.de and GreenSnow reports of scanning, server attacks and brute-force activity.'},
     {id:'malware',label:'Malware-associated IPs',description:'Feodo botnet command-and-control and ThreatFox malware reports.'},
     {id:'network',label:'Network ranges',description:'Spamhaus DROP listings for entire networks, rather than individual hosts.'},
     {id:'other',label:'Other reported activity',description:'Reports from other intelligence sources.'}
   ];
-  const categoryFor=x=>x.kind==='network'||x.source_id==='spamhaus_drop'?'network':x.source_id==='dshield_scanners'?'attack':['feodo_c2','threatfox'].includes(x.source_id)?'malware':'other';
+  const categoryFor=x=>x.kind==='network'||x.source_id==='spamhaus_drop'?'network':['dshield_scanners','blocklist_de','greensnow'].includes(x.source_id)?'attack':['feodo_c2','threatfox'].includes(x.source_id)?'malware':'other';
   const matchesFilters=x=>{
     const q=search.value.trim().toLowerCase();
     return (activity.value==='all'||categoryFor(x)===activity.value)&&(select.value==='all'||x.source_id===select.value)&&(!q||x.ip.includes(q)||String(x.activity||'').toLowerCase().includes(q));
@@ -40,6 +40,7 @@
       (Number.isInteger(report.added_count)?report.added_count+' added / '+report.removed_count+' removed in the latest collection. ':'')+
       'An unchanged count does not establish freshness or completeness.';
     status.dataset.health=stale?'stale':healthy<sources.length?'degraded':'current';
+    refreshAttackDownloads();
   };
   freshness();setInterval(freshness,60000);
   const health=document.createElement('div');health.className='threat-source-health';
@@ -98,6 +99,37 @@
   if(close)close.addEventListener('click',()=>document.getElementById('threatDetailDialog').close());
   const dialog=document.getElementById('threatDetailDialog');
   if(dialog)dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});
+  function freshTime(value){
+    const age=Date.now()-Date.parse(value);
+    return Number.isFinite(age)&&age>=-5*60*1000&&age<=3*60*60*1000;
+  }
+  function attackDownloadReady(){return !!report.attack_export?.available&&freshTime(report.checked_at)&&freshTime(report.attack_export.generated_at)}
+  function refreshAttackDownloads(){
+    const ready=attackDownloadReady();
+    for(const link of root.querySelectorAll('[data-attack-download]')){
+      link.setAttribute('aria-disabled',String(!ready));link.tabIndex=ready?0:-1;
+    }
+    for(const message of root.querySelectorAll('.threat-attack-export-status')){
+      const meta=report.attack_export;
+      message.textContent=!meta?.available?'No current attack/scanning export is available.':!ready?'Downloads paused: this snapshot is stale. Wait for a fresh collection before using it for firewall updates.':meta.complete?'All configured attack/scanning feeds contributed to this export.':'Some attack/scanning feeds are unavailable and excluded from this export.';
+    }
+  }
+  function makeAttackExport(){
+    const meta=report.attack_export;if(!meta)return null;
+    const box=make('div','');box.className='threat-attack-export';
+    box.append(make('h4','Full current attack/scanning list'));
+    box.append(make('p',meta.count.toLocaleString('en-US')+' unique IPs. Downloads include all accepted addresses from the available attack/scanning feeds, beyond the 500-per-feed page preview. Malware reports and network ranges are excluded.'));
+    const message=make('p','');message.className='threat-attack-export-status';box.append(message);
+    if(meta.available){
+      const links=make('div','');links.className='threat-attack-export-links';
+      for(const [url,label] of [['/attack-scanning-current.txt','Download IP list'],['/attack-scanning-current.csv','Download CSV with sources']]){
+        const link=make('a',label);link.href=url;link.download=url.slice(1);link.dataset.attackDownload='true';link.className='threat-download-link';
+        link.addEventListener('click',event=>{if(!attackDownloadReady())event.preventDefault()});links.append(link);
+      }
+      box.append(links);
+    }
+    return box;
+  }
   function makeRow(x){
     const row=make('article','');row.className='threat-entry';
     const name=make('strong',x.ip);name.className='threat-ip';
@@ -117,7 +149,9 @@
     progress.className='threat-group-progress';
     const list=make('div','');list.className='threat-list';
     for(const x of visible)list.append(makeRow(x));
+    if(group.id==='attack'){const downloads=makeAttackExport();if(downloads)body.append(downloads)}
     body.append(progress,list);
+    refreshAttackDownloads();
     if(entries.length>limit){
       const more=make('button','Show more reports');more.type='button';more.className='threat-group-more';
       more.addEventListener('click',()=>{limits.set(group.id,limit+pageSize);fillGroup(body,group,entries,limit)});

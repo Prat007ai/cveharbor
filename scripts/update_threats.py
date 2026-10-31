@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Public review-only threat indicators. Never auto-block or infer customer exposure."""
 import hashlib
+import csv
+import io
 import ipaddress
 import json
 import os
@@ -13,6 +15,8 @@ ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/"threat-data.js"
 FEEDS={
  "dshield_scanners":("https://feeds.dshield.org/feeds/topips.txt","SANS Internet Storm Center","Observed scanning and attack sources"),
+ "blocklist_de":("https://lists.blocklist.de/lists/all.txt","blocklist.de","Reported server attacks and brute-force attempts"),
+ "greensnow":("https://blocklist.greensnow.co/greensnow.txt","GreenSnow","Reported scanning and attack activity"),
  "feodo_c2":("https://feodotracker.abuse.ch/downloads/ipblocklist.txt","abuse.ch Feodo Tracker","Botnet command and control"),
  "threatfox":("https://threatfox-api.abuse.ch/api/v1/","abuse.ch ThreatFox","Malware-associated IP"),
  "spamhaus_drop":("https://www.spamhaus.org/drop/drop_v4.json","Spamhaus DROP","Reported malicious network range"),
@@ -25,6 +29,11 @@ def public_ipv4(value):
         return None
 
 SOURCE_LIMIT=500
+ATTACK_SOURCE_IDS=frozenset({"dshield_scanners","blocklist_de","greensnow"})
+ATTACK_EXPORT_FILES=("attack-scanning-current.txt","attack-scanning-current.csv","attack-scanning-current.json")
+
+def feed_byte_limit(key):
+    return 32_000_000 if key=="threatfox" else 8_000_000 if key in ("blocklist_de","greensnow") else 700_000
 
 def public_network(value):
     try:
@@ -115,9 +124,14 @@ def parse_source(key,raw,now,diagnostics=None):
             entries[network]=entry
         if not entries:raise ValueError("No valid global IPv4 ranges in DROP")
         return entries
+    if key in ("blocklist_de","greensnow") and re.search(r"<!doctype\s+html|<html\b",raw[:1000],re.I):
+        raise ValueError("Expected an IP list, received an HTML page")
     for line in raw.splitlines():
         if not line.strip() or line.lstrip().startswith("#"):continue
-        parts=re.split(r"[\s,;]+",line.strip());address=public_ipv4(parts[0])
+        if key in ("blocklist_de","greensnow"):
+            address=public_ipv4(line.split("#",1)[0].strip())
+        else:
+            parts=re.split(r"[\s,;]+",line.strip());address=public_ipv4(parts[0])
         if address:entries[address]=base(address)
     if not entries:raise ValueError("No valid public IPv4 indicators in source")
     return entries
@@ -130,6 +144,42 @@ def object_name(address):
 
 def ip_order(values):
     return sorted(values,key=lambda address:int(ipaddress.ip_address(address)))
+
+def export_attack_current(report,source_entries,output_root=None):
+    """Full current successful attack feeds, independent of the browser preview cap.
+
+    This is not cumulative history and contains no malware/CIDR/retained reports.
+    Observation times are never inferred from a download or collection timestamp.
+    """
+    folder=Path(output_root) if output_root is not None else ROOT
+    folder.mkdir(parents=True,exist_ok=True)
+    addresses={}
+    configured=[key for key in FEEDS if key in ATTACK_SOURCE_IDS]
+    successful=[key for key in configured if report.get("sources",{}).get(key,{}).get("ok")]
+    for key in successful:
+        for entry in source_entries.get(key,{}).values():
+            address=public_ipv4(str(entry.get("ip") or ""))
+            if address and entry.get("source_id")==key and entry.get("kind")!="network" and not entry.get("stale"):
+                addresses.setdefault(address,set()).add(key)
+    ordered=ip_order(addresses)
+    content=("\n".join(ordered)+("\n" if ordered else "")).encode("utf-8")
+    (folder/ATTACK_EXPORT_FILES[0]).write_bytes(content)
+    csv_data=io.StringIO(newline="")
+    writer=csv.writer(csv_data)
+    writer.writerow(["IP address","Reporting sources"])
+    for address in ordered:
+        writer.writerow([address,"; ".join(FEEDS[key][1] for key in sorted(addresses[address]))])
+    (folder/ATTACK_EXPORT_FILES[1]).write_text(csv_data.getvalue(),encoding="utf-8",newline="")
+    meta={"generated_at":report.get("checked_at"),"count":len(ordered),"available":bool(ordered),
+          "complete":bool(configured) and len(successful)==len(configured),
+          "scope":"Current successful attack/scanning feeds only; review before blocking",
+          "sha256":hashlib.sha256(content).hexdigest(),
+          "sources":{key:{"name":FEEDS[key][1],"url":FEEDS[key][0],
+                          "ok":key in successful,"count":report.get("sources",{}).get(key,{}).get("count",0),
+                          "last_success":report.get("sources",{}).get(key,{}).get("last_success")}
+                     for key in configured}}
+    (folder/ATTACK_EXPORT_FILES[2]).write_text(json.dumps(meta,indent=2,sort_keys=True)+"\n",encoding="utf-8")
+    return meta
 
 def export_templates(report):
     """Append-only, review-only history. Never equate collection time with last seen.
@@ -282,6 +332,7 @@ def collect():
     timestamp=datetime.now(timezone.utc).isoformat()
     report={"schema_version":2,"checked_at":timestamp,"sources":{},"indicators":[],
             "per_source_limit":SOURCE_LIMIT,"added_count":0,"removed_count":0}
+    attack_entries={}
     for key,(url,name,activity) in FEEDS.items():
         parsing={}
         try:
@@ -295,12 +346,13 @@ def collect():
             request=urllib.request.Request(url,data=payload,headers=headers)
             # A seven-day ThreatFox response can exceed 4 MB even though only
             # 500 parsed IP reports are published. Keep download memory bounded.
-            max_bytes=32_000_000 if key=="threatfox" else 700_000
+            max_bytes=feed_byte_limit(key)
             with urllib.request.urlopen(request,timeout=25) as resp:
                 body=resp.read(max_bytes+1)
                 modified=resp.headers.get("Last-Modified")
             if len(body)>max_bytes:raise ValueError("Feed larger than safety limit")
             entries=parse_source(key,body.decode("utf-8-sig"),datetime.now(timezone.utc),parsing)
+            if key in ATTACK_SOURCE_IDS:attack_entries[key]=entries
             published=list(entries.values())[:SOURCE_LIMIT]
             old={x["ip"] for x in previous.get("indicators",[]) if x.get("source_id")==key}
             current={x["ip"] for x in published}
@@ -336,6 +388,7 @@ def collect():
     report["unique_ip_count"]=len({x["ip"] for x in report["indicators"] if x.get("kind")!="network"})
     report["network_range_count"]=len({x["ip"] for x in report["indicators"] if x.get("kind")=="network"})
     report["stale_count"]=sum(bool(x.get("stale")) for x in report["indicators"])
+    report["attack_export"]=export_attack_current(report,attack_entries)
     # Geographic attribution is approximate IP network registration data, not
     # the location of a person controlling the address. Cache to minimize API calls.
     cache_path=ROOT/"data"/"ip-geolocation-cache.json"

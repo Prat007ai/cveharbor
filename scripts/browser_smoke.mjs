@@ -1023,7 +1023,7 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('grid-template-columns:r
 
 // Changed styles and the explorer script retain explicit cache versions.
 const explorerSource=fs.readFileSync('index.html','utf8');
-assert.match(explorerSource,/\/styles\.css\?v=threat-groups-219/,'technology layout stylesheet must refresh');
+assert.match(explorerSource,/\/styles\.css\?v=attack-feeds-220/,'technology layout stylesheet must refresh');
 assert.match(explorerSource,/\/app\.js\?v=brochure-216/,'technology customization script must refresh');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"\/vulnerabilities\/":\["technology-kpis"/,'live verifier checks technology explorer page');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"styles.css","homepage.css","app.js"/,'live verifier validates explorer JavaScript');

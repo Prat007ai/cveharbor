@@ -8,6 +8,8 @@ this cloud session still has separate network and secret restrictions.
 | Source | Category | Collection |
 | --- | --- | --- |
 | [DShield / Internet Storm Center](https://isc.sans.edu/) | Limited scanning-source list | Existing `feeds.dshield.org/feeds/topips.txt` |
+| [blocklist.de](https://www.blocklist.de/en/export.html) | Reported server attacks and brute-force activity | `lists.blocklist.de/lists/all.txt` |
+| [GreenSnow](https://greensnow.co/) | Reported scanning and attack activity | `blocklist.greensnow.co/greensnow.txt` |
 | [Feodo Tracker](https://feodotracker.abuse.ch/blocklist/) | Botnet command-and-control IPs | Existing `feodotracker.abuse.ch/downloads/ipblocklist.txt` |
 | [ThreatFox](https://threatfox.abuse.ch/api/) | Malware-associated IPv4 addresses and ports | Authenticated POST to `threatfox-api.abuse.ch/api/v1/`; `get_iocs`, `days: 7` |
 | [Spamhaus DROP](https://www.spamhaus.org/drop/) | Listed IPv4 network ranges | `www.spamhaus.org/drop/drop_v4.json`, newline-delimited JSON |
@@ -62,7 +64,7 @@ The workflow publishes available/retained data before reporting degraded health.
 - A failed source's last successful data is retained for at most 72 hours, visibly
   marked stale. A publication older than three hours shows a stale warning.
 - Each source publishes at most 500 entries. Total parsed count and truncation
-  are visible. Reports are grouped into attack/scanning sources (DShield),
+  are visible. Reports are grouped into attack/scanning sources (DShield, blocklist.de and GreenSnow),
   malware-associated IPs (Feodo and ThreatFox), and network ranges (Spamhaus).
   Groups start collapsed and open one at a time. An open group initially shows
   30 source reports with a Show more button.
@@ -78,7 +80,7 @@ The workflow publishes available/retained data before reporting degraded health.
 
 ## Local validation
 
-`python3 -m unittest discover -s tests -v` passes 100 tests. Added cases cover both
+`python3 -m unittest discover -s tests -v` passes 104 tests. Added cases cover both
 new formats, observation expiry, duplicate IOC evidence, invalid/private inputs,
 missing authentication, authenticated POST construction, key exclusion from
 published data, failed-source retention expiry, CIDR export exclusion, larger
@@ -98,3 +100,33 @@ review artifacts. The script checks keyboard expansion, exclusive groups, lazy
 rendering, filters, pagination focus, map synchronization and overflow at widths
 1366, 1920, 2560 and 390. Its screenshots show the local UI using the committed
 public dataset; external requests are blocked and no account writes are sent.
+
+
+## Complete current attack/scanning downloads
+
+The page preview remains capped at 500 entries per feed. Current attack/scanning
+exports include **all** accepted public IPv4 addresses from successfully fetched
+DShield, blocklist.de and GreenSnow lists, deduplicated across those sources:
+
+- `attack-scanning-current.txt`: plain IPv4 addresses, one per line.
+- `attack-scanning-current.csv`: IP addresses with all reporting source names.
+- `attack-scanning-current.json`: generation time, source coverage, count and TXT
+  checksum. Collection timestamps are not attacker last-seen observations.
+
+These files are replaced by each current successful collection, separately from
+existing cumulative FortiGate/Sophos history. Failed-source retained indicators,
+malware reports, network ranges and private/reserved addresses are excluded.
+Partial source coverage is labelled. The UI pauses downloads when the snapshot
+or export is older than three hours; an empty export is unavailable.
+
+No firewall connection, automatic blocking, rule activation or policy replacement
+is added. Customers can review the current list against their logs and allowlists
+before using their firewall's supported IP-list import/update process.
+
+`scripts/validate_attack_feeds.py` tests the actual public feeds and exports into
+`data/attack-feed-validation/`, without production writes or API keys. The
+`Validate public attack feed integrations` development workflow runs this check
+and commits its evidence to the development branch; it never writes main. The
+report records the code revision that was validated. Generated validation files
+are not copied into the public website. Direct local validation needs network
+access to `lists.blocklist.de` and `blocklist.greensnow.co` as well as DShield.
