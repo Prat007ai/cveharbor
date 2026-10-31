@@ -968,7 +968,7 @@ assert.ok(fs.readFileSync('account-backend/src/index.js','utf8').includes("path=
 
 const emailTestPage=fs.readFileSync('website-monitor/index.html','utf8');
 const emailTestScript=fs.readFileSync('website-monitor-page.js','utf8');
-assert.ok(emailTestPage.includes('id="webRiskEmailTest"')&&emailTestPage.includes('monitor-179'),'warning email test button is published with current script version');
+assert.ok(emailTestPage.includes('id="webRiskEmailTest"')&&emailTestPage.includes('monitor-181'),'warning email test button is published with current script version');
 assert.ok(emailTestScript.includes("warningButton.addEventListener('click'")&&emailTestScript.includes('Test warning email failed:'),'warning email test has a working click listener with visible errors');
 
 const threatDashboardHtml=fs.readFileSync('website-monitor/index.html','utf8');
@@ -976,3 +976,8 @@ const threatDashboardJs=fs.readFileSync('website-monitor-page.js','utf8');
 assert.ok(['threatDashboardTitle','threatSiteSelect','threatAssessment','threatHistory','threatReputation'].every(id=>threatDashboardHtml.includes(id)),'website threat dashboard layout available');
 assert.ok(threatDashboardJs.includes('updateThreatSites(data.monitors)')&&threatDashboardJs.includes("call('/history?id='"),'threat dashboard uses live per-account site history');
 assert.ok(threatDashboardJs.includes("Not checked")&&threatDashboardJs.includes("no_known_listing"),'missing threat provider results not falsely reported clean');
+
+const mockupParity=fs.readFileSync('website-monitor/index.html','utf8');
+assert.ok(['monitor-sidebar','monitor-kpis','monitor-primary-grid','monitor-risk-grid','mockRecentChecks','mockCheckNow','mockSettings','mockManage'].every(item=>mockupParity.includes(item)),'monitoring mockup layout and controls are present');
+assert.ok(mockupParity.includes('website-monitor-dashboard.js?v=monitor-181'),'new monitoring dashboard script is cache versioned');
+assert.ok(fs.readFileSync('website-monitor-dashboard.js','utf8').includes("get('/history?id='"),'threat dashboard reads account scoped check history');
