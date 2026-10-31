@@ -1019,8 +1019,8 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('grid-template-columns:r
 
 // Both styled explorer assets must use the same new cache release.
 const explorerSource=fs.readFileSync('index.html','utf8');
-assert.match(explorerSource,/\/styles\.css\?v=explorer-globe-195/,'technology layout stylesheet must refresh');
-assert.match(explorerSource,/\/app\.js\?v=explorer-globe-195/,'technology customization script must refresh');
+assert.match(explorerSource,/\/styles\.css\?v=microsoft-marks-196/,'technology layout stylesheet must refresh');
+assert.match(explorerSource,/\/app\.js\?v=microsoft-marks-196/,'technology customization script must refresh');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"\/vulnerabilities\/":\["technology-kpis"/,'live verifier checks technology explorer page');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"styles.css","app.js"/,'live verifier validates explorer JavaScript');
 
@@ -1029,7 +1029,7 @@ assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"command-ce
 
 assert.match(fs.readFileSync('app.js','utf8'),/function productIcon\(x\)/,'technology explorer renders branded icons with a fallback');
 assert.match(fs.readFileSync('app.js','utf8'),/img\.addEventListener\('error'/,'missing brand icon falls back gracefully');
-assert.match(fs.readFileSync('index.html','utf8'),/app\.js\?v=explorer-globe-195/,'latest product icon client asset version');
+assert.match(fs.readFileSync('index.html','utf8'),/app\.js\?v=microsoft-marks-196/,'latest product icon client asset version');
 
 assert.match(fs.readFileSync('app.js','utf8'),/cdn\.simpleicons\.org/,'branded product artwork endpoint');
 assert.match(fs.readFileSync('styles.css','utf8'),/technology-brand-icon img\{filter:none!important/,'brand colours are not overridden');
@@ -1037,11 +1037,12 @@ assert.match(fs.readFileSync('styles.css','utf8'),/technology-brand-icon img\{fi
 assert.ok(fs.readFileSync('index.html','utf8').includes('id="technologyAdditional"'),'separate custom product region');
 assert.ok(fs.readFileSync('app.js','utf8').includes("if(name===customGroup){$('technologyAdditional').append(panel)"),'core four panels remain separate');
 
-assert.match(fs.readFileSync('app.js','utf8'),/microsoftProductMarks/,'Microsoft product-specific icon mappings are present');
+assert.match(fs.readFileSync('app.js','utf8'),/microsoftMarks/,'Microsoft icon mappings are present');
 assert.match(fs.readFileSync('app.js','utf8'),/technology-panel-description/,'category panel descriptions are rendered');
 assert.match(fs.readFileSync('index.html','utf8'),/kpi-sparkline/,'KPI visual accents are present');
 
-assert.match(fs.readFileSync('app.js','utf8'),/microsoftexchange/,'Exchange uses product-specific brand icon');
-assert.match(fs.readFileSync('app.js','utf8'),/microsoftsharepoint/,'SharePoint uses product-specific brand icon');
-assert.match(fs.readFileSync('app.js','utf8'),/powerbi/,'Power BI has its own icon mapping');
 assert.match(fs.readFileSync('styles.css','utf8'),/Reference world globe background/,'dotted globe decorative background available');
+
+assert.match(fs.readFileSync('app.js','utf8'),/classList.add\('brand-local'\)/,'Microsoft icons render without external images');
+assert.match(fs.readFileSync('app.js','utf8'),/\[\/exchange\/i,msSvg/,'Exchange has local product artwork');
+assert.match(fs.readFileSync('app.js','utf8'),/\[\/sharepoint\/i,msSvg/,'SharePoint has local product artwork');
