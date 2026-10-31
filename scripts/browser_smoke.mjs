@@ -1054,3 +1054,11 @@ assert.match(fs.readFileSync('index.html','utf8'),/id="technologyManageButton" c
 
 assert.ok(fs.readFileSync('index.html','utf8').includes('id="technologySignInDialog"'),'signed-out customize modal exists');
 assert.ok(fs.readFileSync('app.js','utf8').includes("technologySignInDialog').showModal()"),'signed-out visitors see a branded dialog');
+
+const homeHero=fs.readFileSync('index.html','utf8');
+assert.match(homeHero,/Know the risk\./,'approved homepage slogan retained');
+assert.match(homeHero,/hero-priority-card/,'prioritized vulnerabilities hero panel present');
+assert.match(homeHero,/hero-capabilities/,'capability navigation rendered');
+assert.match(homeHero,/Set email alerts for product end of support/,'lifecycle alerts accurately described');
+assert.doesNotMatch(homeHero,/38 technology groups/,'fixed technology count removed from homepage hero');
+assert.match(fs.readFileSync('styles.css','utf8'),/prefers-reduced-motion:reduce/,'reduced motion support remains');
