@@ -1037,7 +1037,7 @@ assert.match(fs.readFileSync('styles.css','utf8'),/technology-brand-icon img\{fi
 assert.ok(fs.readFileSync('index.html','utf8').includes('id="technologyAdditional"'),'separate custom product region');
 assert.ok(fs.readFileSync('app.js','utf8').includes("if(name===customGroup){$('technologyAdditional').append(panel)"),'core four panels remain separate');
 
-assert.match(fs.readFileSync('app.js','utf8'),/brand-microsoft/,'Microsoft logo mapping is present');
+assert.match(fs.readFileSync('app.js','utf8'),/microsoftProductMarks/,'Microsoft product-specific icon mappings are present');
 assert.match(fs.readFileSync('app.js','utf8'),/technology-panel-description/,'category panel descriptions are rendered');
 assert.match(fs.readFileSync('index.html','utf8'),/kpi-sparkline/,'KPI visual accents are present');
 
