@@ -16,7 +16,7 @@ root=Path(__file__).resolve().parents[1]
 base="https://cveharbor.com"
 routes=["/vulnerabilities/","/account/","/workspace/","/customer-reports/","/customer-dashboard/","/environments/","/website-monitor/"]
 required={
- "/vulnerabilities/":["technology-kpis","technologyManageButton","technologyCustomizer","categoryGrid"],
+ "/vulnerabilities/":["technology-kpis","technologyManageButton","technologyCustomizer","categoryGrid","command-center.js?v=explorer-sidebar-190"],
  "/account/":["accountSecurityDashboard","accountSecurityRecoveryStart","account-security.js"],
  "/workspace/":["accountPageRequest","accountPageVerify","accountPageRequiredEnroll"],
  "/customer-reports/":["customerReportEmail","customerReportPrint","customerReportCsv"],
@@ -59,7 +59,7 @@ for attempt in range(6):
             expected=(root / "public" / route.strip("/") / "index.html").read_text(encoding="utf-8")
             for marker in required[route]:
                 if marker not in html: raise RuntimeError(f"{route} missing {marker}")
-            for asset in ("styles.css","app.js","customer-security.js","inventory.js","website-monitor-page.js"):
+            for asset in ("styles.css","app.js","command-center.js","customer-security.js","inventory.js","website-monitor-page.js"):
                 m=re.search(r'/'+re.escape(asset)+r'\?v=([a-zA-Z0-9-]+)',expected)
                 if not m: continue
                 expected_url=f"/{asset}?v={m.group(1)}"
