@@ -1,7 +1,7 @@
 {
   "siteName": "CVEHarbor",
   "snapshotDate": "2026-10-31",
-  "mode": "live",
+  "mode": "partial",
   "coverage_limited": true,
   "candidate_records": 6297,
   "categories": [
@@ -212,7 +212,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-77152"
         },
         {
@@ -252,7 +252,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111578"
         },
         {
@@ -269,13 +269,13 @@
       "cvss": "7.5",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T22:18:51Z",
-      "source_updated_at": "2026-10-31T00:30:32Z",
+      "source_updated_at": "2026-10-31T03:30:27Z",
       "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-110176",
-      "title": "The File Force Download module for Drupal 7 implements hook_file_download() to add a Content-Disposition header when a file URL carries the download query parameter",
+      "title": "The File Force Download module for Drupal 7 implements hook_file_download() to add a Content...",
       "severity": "high",
       "categories": [
         "Drupal / CMS"
@@ -283,22 +283,34 @@
       "published": "2026-10-31",
       "updated": "2026-10-31",
       "summary": "The File Force Download module for Drupal 7 implements hook_file_download() to add a Content-Disposition header when a file URL carries the download query parameter. In Drupal 7, returning a non-empty header array from that hook is itself a grant of access to the file. In versions 7.1.0 through 7.1.2, the module only delegated to other modules' hook_file_download() implementations when the file was in the private scheme. For every other scheme it returned its headers without any check. An unauthenticated visitor who appended download=1 to the URL of a file in the temporary:// scheme, or in a stream wrapper supplied by another module, could retrieve the file, overriding the access checks that would otherwise have applied. Files in the public and private schemes are not affected.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110176"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-wc74-vwp5-gqfv"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://d7es.tag1.com/security-advisories/file-force-download-critical-access-bypass"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.herodevs.com/vulnerability-directory/cve-2026-110176"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "8.7",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-31T01:26:52Z",
-      "source_updated_at": "2026-10-31T01:17:05.153",
-      "source_type": "nvd",
+      "source_updated_at": "2026-10-31T03:30:32Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -318,7 +330,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119209"
         },
         {
@@ -330,7 +342,7 @@
           "url": "https://github.com/advisories/GHSA-x3rh-gjgm-fmqc"
         },
         {
-          "label": "Vendor advisory",
+          "label": "Additional advisory",
           "url": "https://github.com/py-pdf/pypdf/security/advisories/GHSA-x3rh-gjgm-fmqc"
         },
         {
@@ -892,7 +904,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107259"
         },
         {
@@ -1040,7 +1052,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107263"
         },
         {
@@ -1079,7 +1091,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107264"
         },
         {
@@ -1188,7 +1200,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107267"
         },
         {
@@ -1258,7 +1270,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107306"
         },
         {
@@ -1492,7 +1504,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107312"
         },
         {
@@ -4488,7 +4500,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96389"
         },
         {
@@ -6302,7 +6314,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119283"
         },
         {
@@ -6351,7 +6363,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119284"
         },
         {
@@ -7202,7 +7214,7 @@
           "url": "https://github.com/advisories/GHSA-93vw-w9vm-pp4x"
         },
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-9239"
         },
         {
@@ -7242,7 +7254,7 @@
           "url": "https://github.com/advisories/GHSA-j4f8-pmw5-f47j"
         },
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-97638"
         },
         {
@@ -7282,7 +7294,7 @@
           "url": "https://github.com/advisories/GHSA-gm9j-8479-wxh3"
         },
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96894"
         },
         {
@@ -7322,7 +7334,7 @@
           "url": "https://github.com/advisories/GHSA-jxc5-78m4-q5w9"
         },
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-13747"
         },
         {
@@ -7363,7 +7375,7 @@
           "url": "https://github.com/advisories/GHSA-5hr5-5vc8-hvg6"
         },
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-76012"
         },
         {
@@ -7403,7 +7415,7 @@
           "url": "https://github.com/advisories/GHSA-x95v-7hp5-9vfq"
         },
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115820"
         },
         {
@@ -7443,7 +7455,7 @@
           "url": "https://github.com/advisories/GHSA-ghfc-8854-87g3"
         },
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119113"
         },
         {
@@ -7483,7 +7495,7 @@
           "url": "https://github.com/advisories/GHSA-f269-8ph7-839v"
         },
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119619"
         },
         {
@@ -7523,7 +7535,7 @@
           "url": "https://github.com/advisories/GHSA-8px6-jx7m-vf9q"
         },
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118635"
         },
         {
@@ -7563,7 +7575,7 @@
           "url": "https://github.com/advisories/GHSA-pvrf-6wrj-9xxg"
         },
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118205"
         },
         {
@@ -7603,7 +7615,7 @@
           "url": "https://github.com/advisories/GHSA-4v84-f6r5-m2gf"
         },
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116552"
         },
         {
@@ -7643,7 +7655,7 @@
           "url": "https://github.com/advisories/GHSA-frph-g435-5hw4"
         },
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109984"
         },
         {
@@ -8739,7 +8751,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107868"
         },
         {
@@ -8775,7 +8787,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118089"
         },
         {
@@ -8811,7 +8823,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118090"
         },
         {
@@ -8847,7 +8859,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-39738"
         },
         {
@@ -8883,7 +8895,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-52710"
         },
         {
@@ -8919,7 +8931,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-62121"
         },
         {
@@ -8983,7 +8995,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-73186"
         },
         {
@@ -9019,7 +9031,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-78527"
         },
         {
@@ -9055,7 +9067,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-90888"
         },
         {
@@ -9179,7 +9191,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-78402"
         },
         {
@@ -9215,7 +9227,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-78403"
         },
         {
@@ -9741,7 +9753,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119286"
         },
         {
@@ -9791,7 +9803,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119193"
         },
         {
@@ -9836,7 +9848,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119194"
         },
         {
@@ -9885,7 +9897,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119195"
         },
         {
@@ -9934,7 +9946,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119196"
         },
         {
@@ -9983,7 +9995,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119197"
         },
         {
@@ -10032,7 +10044,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119198"
         },
         {
@@ -10077,7 +10089,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119199"
         },
         {
@@ -10121,7 +10133,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119200"
         },
         {
@@ -10166,7 +10178,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119201"
         },
         {
@@ -10211,7 +10223,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119206"
         },
         {
@@ -10260,7 +10272,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119207"
         },
         {
@@ -10309,7 +10321,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119208"
         },
         {
@@ -10357,7 +10369,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119210"
         },
         {
@@ -10400,7 +10412,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119276"
         },
         {
@@ -10443,7 +10455,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119279"
         },
         {
@@ -10487,7 +10499,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119280"
         },
         {
@@ -10534,7 +10546,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119281"
         },
         {
@@ -10580,7 +10592,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118763"
         },
         {
@@ -10970,7 +10982,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116689"
         },
         {
@@ -11019,7 +11031,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116672"
         },
         {
@@ -11592,7 +11604,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119203"
         },
         {
@@ -11641,7 +11653,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119204"
         },
         {
@@ -11690,7 +11702,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119205"
         },
         {
@@ -20738,7 +20750,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116577"
         },
         {
@@ -23629,7 +23641,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116578"
         },
         {
@@ -44334,7 +44346,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-103299"
         },
         {
@@ -58936,7 +58948,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96363"
         },
         {
@@ -58975,7 +58987,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96379"
         },
         {
@@ -59014,7 +59026,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96391"
         },
         {
@@ -61415,53 +61427,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-109619",
-      "title": "RCE via stale global state",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-30",
-      "summary": "## Summary PHP contains various global state, such as error, session, object and extension state that is retained by a worker but points to memory owned by one request. That state must be reset before the request memory is released. Some input, configuration, session and error handling operations run before normal initialization of the next request. They inadvertently access stale state not reset by the previous request before initialization has a chance to replace it, causing a use after free. A strategically crafted heap layout can produce full remote code execution (RCE). State can survive for more than one reason. A fatal error, including one caused by memory exhaustion, can abandon an operation before it performs its matching reset. A warning or other nonfatal diagnostic can also repopulate error state after that state was already cleared during shutdown. The request heap is then freed while the worker global field still refers to it. A later operation that runs before normal request initialization can consume the stale value. Successful exploitation of this vulnerability requires both a producer and a consumer. The producer is a PHP operation that stores state owned by one request in a location PHP can access later in a subsequent request. The consumer is a subsequent PHP o",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-6wmf-4rv5-p3rp"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:13Z",
-      "source_type": "php_upstream",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99999,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-109618",
       "title": "RCE via OOM corruption",
       "severity": "critical",
@@ -61480,7 +61445,7 @@
           "url": "https://www.php.net/archive/2026.php"
         },
         {
-          "label": "Vendor advisory",
+          "label": "PHP upstream security advisory",
           "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
         },
         {
@@ -61506,6 +61471,53 @@
       "known_exploited": true,
       "epss": 0.99999,
       "epss_percentile": 0.99998,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-109619",
+      "title": "RCE via stale global state",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-30",
+      "summary": "## Summary PHP contains various global state, such as error, session, object and extension state that is retained by a worker but points to memory owned by one request. That state must be reset before the request memory is released. Some input, configuration, session and error handling operations run before normal initialization of the next request. They inadvertently access stale state not reset by the previous request before initialization has a chance to replace it, causing a use after free. A strategically crafted heap layout can produce full remote code execution (RCE). State can survive for more than one reason. A fatal error, including one caused by memory exhaustion, can abandon an operation before it performs its matching reset. A warning or other nonfatal diagnostic can also repopulate error state after that state was already cleared during shutdown. The request heap is then freed while the worker global field still refers to it. A later operation that runs before normal request initialization can consume the stale value. Successful exploitation of this vulnerability requires both a producer and a consumer. The producer is a PHP operation that stores state owned by one request in a location PHP can access later in a subsequent request. The consumer is a subsequent PHP o",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "PHP upstream security advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-6wmf-4rv5-p3rp"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:13Z",
+      "source_type": "php_upstream",
+      "known_exploited": true,
+      "epss": 0.99999,
+      "epss_percentile": 0.99999,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -73162,51 +73174,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-102870",
-      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core",
-        "Linux"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
-      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
-      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
-      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft corrected Blazor debugger security advisory",
-          "url": "https://github.com/dotnet/announcements/issues/492"
-        },
-        {
-          "label": "ASP.NET Core GHSA vendor record",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
-        },
-        {
-          "label": "Ubuntu Security Notice",
-          "url": "https://ubuntu.com/security/notices/USN-8958-1"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-25",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00906,
-      "epss_percentile": 0.59814,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-96951",
       "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
       "severity": "high",
@@ -73249,6 +73216,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.09813,
       "epss_percentile": 0.95543,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-102870",
+      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core",
+        "Linux"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
+      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
+      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
+      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "ASP.NET Core GHSA vendor record",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
+        },
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8958-1"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-25",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00906,
+      "epss_percentile": 0.59814,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -144900,37 +144912,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.11772,
-      "epss_percentile": 0.96072,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2025-7624",
       "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
@@ -144959,6 +144940,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.10514,
       "epss_percentile": 0.95758,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.11772,
+      "epss_percentile": 0.96072,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -167474,85 +167486,86 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-31T02:57:34Z",
-      "last_attempt": "2026-10-31T02:57:34Z",
+      "last_success": "2026-10-31T03:55:29Z",
+      "last_attempt": "2026-10-31T03:55:29Z",
       "items_processed": 264,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-31T02:57:34Z",
-      "last_attempt": "2026-10-31T02:57:34Z",
+      "last_success": "2026-10-31T03:55:29Z",
+      "last_attempt": "2026-10-31T03:55:29Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
-      "ok": true,
+      "ok": false,
       "last_success": "2026-10-31T02:57:34Z",
-      "last_attempt": "2026-10-31T02:57:34Z",
+      "last_attempt": "2026-10-31T03:55:29Z",
       "items_processed": 489,
-      "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
+      "url": "https://services.nvd.nist.gov/rest/json/cves/2.0",
+      "error": "nvd endpoint failed: HTTPError: HTTP Error 503: Service Unavailable"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-31T02:57:34Z",
-      "last_attempt": "2026-10-31T02:57:34Z",
+      "last_success": "2026-10-31T03:55:29Z",
+      "last_attempt": "2026-10-31T03:55:29Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-31T02:57:34Z",
-      "last_attempt": "2026-10-31T02:57:34Z",
+      "last_success": "2026-10-31T03:55:29Z",
+      "last_attempt": "2026-10-31T03:55:29Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-31T02:57:34Z",
-      "last_attempt": "2026-10-31T02:57:34Z",
+      "last_success": "2026-10-31T03:55:29Z",
+      "last_attempt": "2026-10-31T03:55:29Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-31T02:57:34Z",
-      "last_attempt": "2026-10-31T02:57:34Z",
+      "last_success": "2026-10-31T03:55:29Z",
+      "last_attempt": "2026-10-31T03:55:29Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-31T02:57:34Z",
-      "last_attempt": "2026-10-31T02:57:34Z",
+      "last_success": "2026-10-31T03:55:29Z",
+      "last_attempt": "2026-10-31T03:55:29Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-31T02:57:34Z",
-      "last_attempt": "2026-10-31T02:57:34Z",
+      "last_success": "2026-10-31T03:55:29Z",
+      "last_attempt": "2026-10-31T03:55:29Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-31T02:57:34Z",
-      "last_attempt": "2026-10-31T02:57:34Z",
+      "last_success": "2026-10-31T03:55:29Z",
+      "last_attempt": "2026-10-31T03:55:29Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-31T02:57:34Z",
-      "last_attempt": "2026-10-31T02:57:34Z",
+      "last_success": "2026-10-31T03:55:29Z",
+      "last_attempt": "2026-10-31T03:55:29Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-31T02:57:34Z",
-      "last_attempt": "2026-10-31T02:57:34Z",
+      "last_success": "2026-10-31T03:55:29Z",
+      "last_attempt": "2026-10-31T03:55:29Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -167564,7 +167577,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-31T02:57:34Z",
-  "last_successful_update": "2026-10-31T02:57:34Z",
+  "last_checked_at": "2026-10-31T03:55:29Z",
+  "last_successful_update": "2026-10-31T03:55:29Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
