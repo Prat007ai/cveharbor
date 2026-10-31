@@ -991,3 +991,15 @@ assert.ok(fixedMonitorJs.includes('cveharbor-monitor-sites'),'monitoring site da
 
 const iconRailHtml=fs.readFileSync('website-monitor/index.html','utf8');
 assert.ok(iconRailHtml.includes('flex:0 0 86px!important')&&iconRailHtml.includes('.monitor-nav a.active::before'),'icon-only monitor sidebar includes compact rail and active indicator');
+
+// Website Monitoring loads the private site list once, through the controller.
+const monitorController=fs.readFileSync('website-monitor-page.js','utf8');
+const monitorDashboard=fs.readFileSync('website-monitor-dashboard.js','utf8');
+const monitorPage=fs.readFileSync('website-monitor/index.html','utf8');
+assert.match(monitorController,/cveharbor-monitor-sites/,'controller publishes loaded sites');
+assert.match(monitorController,/cveharbor-monitor-refresh/,'controller handles dashboard refresh requests');
+assert.match(monitorDashboard,/cveharbor-monitor-sites/,'dashboard consumes the shared site list');
+assert.doesNotMatch(monitorDashboard,/await get\(\)/,'dashboard does not issue a duplicate list request');
+assert.doesNotMatch(monitorDashboard,/setTimeout\(\(\)=>void load\(\),5000\)/,'dashboard does not endlessly retry a failed list request');
+assert.match(monitorPage,/website-monitor-dashboard\.js\?v=monitor-186/,'new dashboard script cache version');
+assert.match(monitorPage,/website-monitor-page\.js\?v=monitor-186/,'new controller script cache version');
