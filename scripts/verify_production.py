@@ -21,7 +21,7 @@ required={
  "/customer-reports/":["customerReportEmail","customerReportPrint","customerReportCsv"],
  "/customer-dashboard/":["customerDashStatus"],
  "/environments/":["inventoryCustomerName"],
- "/website-monitor/":["monitorForm","monitorStatus","website-monitor-page.js"]
+ "/website-monitor/":["monitorForm","monitorStatus","website-monitor-page.js","threatDashboardTitle","threatSiteSelect","threatAssessment","threatHistory"]
 }
 
 def fetch(path):
