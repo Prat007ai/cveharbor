@@ -15,6 +15,7 @@ assert.match(html,/styles\.css\?v=[a-zA-Z0-9-]+/,'versioned main stylesheet load
 assert.ok(fs.readFileSync('styles.css','utf8').includes('width:min(1500px,calc(100% - 32px))'),'compact feed banner width is shared globally');
 // Validate every canonical page is actually emitted by the Pages build.
 const routes={
+ 'intelligence':['dashboard','methodology'],
  'vulnerabilities':['technology','advisories'],
  'alerts':['securityWorkspace'],
  'threats':['threat-intelligence'],
@@ -779,7 +780,7 @@ console.log('CVEHarbor browser smoke passed: 38 categories, publication badges, 
 
 // The public build will supply separate canonical URLs while preserving
 // the existing element IDs for all legacy popup / dashboard scripts.
-assert.ok(html.includes('page-router.js?v=multipage-1'),'shared page navigation is loaded');
+assert.ok(html.includes('page-router.js?v=brochure-216'),'shared page navigation is loaded');
 assert.ok(html.includes('href="/vulnerabilities/"'),'advisories have a distinct navigation URL');
 assert.ok(html.includes('href="/lifecycle/"'),'lifecycle has a distinct navigation URL');
 
@@ -787,7 +788,7 @@ assert.ok(fs.readFileSync('public/command-center.js','utf8').includes('command-s
 for(const route of ['index.html','account/index.html','workspace/index.html','customer-dashboard/index.html','customer-reports/index.html'])assert.match(fs.readFileSync(route,'utf8'),/\/command-center\.js\?v=[a-zA-Z0-9-]+/,'shared navigation loaded on '+route);
 assert.ok(fs.readFileSync('styles.css','utf8').includes('body.command-center-app'),'command center responsive design available');
 
-assert.ok(html.includes('hero-artwork'),'hero includes the shield and orbital intelligence illustration');
+assert.ok(html.includes('platform-art'),'hero contains approved product illustration');
 assert.ok(fs.readFileSync('command-center.js','utf8').includes('command-sidebar-toggle'),'sidebar can expand and collapse');
 assert.ok(fs.readFileSync('styles.css','utf8').includes('prefers-reduced-motion:reduce'),'animation respects reduced motion');
 
@@ -796,7 +797,7 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('transform:scale(1.36)')
 
 assert.equal(html.includes('PUBLIC ADVISORY FEEDS'),false,'hero card no longer displays public advisory feeds wording');
 
-assert.ok(html.includes('Prioritized vulnerabilities')&&html.includes('Know the risk.'),'hero contains the approved security value statement');
+assert.ok(html.includes('Vulnerability intelligence')&&html.includes('Know the risk.'),'hero contains approved product and value statement');
 assert.equal(html.includes('>REMEDIATE</text>'),false,'network badge overlap label removed');
 
 assert.ok(html.includes('<option>WEB</option>'),'WEB asset type appears in inventory form');
@@ -1018,17 +1019,17 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('grid-template-columns:r
 
 // Both styled explorer assets must use the same new cache release.
 const explorerSource=fs.readFileSync('index.html','utf8');
-assert.match(explorerSource,/\/styles\.css\?v=homepage-214/,'technology layout stylesheet must refresh');
-assert.match(explorerSource,/\/app\.js\?v=customize-modal-199/,'technology customization script must refresh');
+assert.match(explorerSource,/\/styles\.css\?v=brochure-216/,'technology layout stylesheet must refresh');
+assert.match(explorerSource,/\/app\.js\?v=brochure-216/,'technology customization script must refresh');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"\/vulnerabilities\/":\["technology-kpis"/,'live verifier checks technology explorer page');
-assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"styles.css","app.js"/,'live verifier validates explorer JavaScript');
+assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"styles.css","homepage.css","app.js"/,'live verifier validates explorer JavaScript');
 
-assert.match(fs.readFileSync('index.html','utf8'),/command-center\.js\?v=explorer-sidebar-190/,'current sidebar asset version required');
+assert.match(fs.readFileSync('index.html','utf8'),/command-center\.js\?v=brochure-216/,'current sidebar asset version required');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"command-center.js"/,'production verification checks navigation script');
 
 assert.match(fs.readFileSync('app.js','utf8'),/function productIcon\(x\)/,'technology explorer renders branded icons with a fallback');
 assert.match(fs.readFileSync('app.js','utf8'),/img\.addEventListener\('error'/,'missing brand icon falls back gracefully');
-assert.match(fs.readFileSync('index.html','utf8'),/app\.js\?v=customize-modal-199/,'latest product icon client asset version');
+assert.match(fs.readFileSync('index.html','utf8'),/app\.js\?v=brochure-216/,'latest product icon client asset version');
 
 assert.match(fs.readFileSync('app.js','utf8'),/cdn\.simpleicons\.org/,'branded product artwork endpoint');
 assert.match(fs.readFileSync('styles.css','utf8'),/technology-brand-icon img\{filter:none!important/,'brand colours are not overridden');
@@ -1054,25 +1055,19 @@ assert.match(fs.readFileSync('index.html','utf8'),/id="technologyManageButton" c
 assert.ok(fs.readFileSync('index.html','utf8').includes('id="technologySignInDialog"'),'signed-out customize modal exists');
 assert.ok(fs.readFileSync('app.js','utf8').includes("technologySignInDialog').showModal()"),'signed-out visitors see a branded dialog');
 
+// Approved brochure homepage and dedicated public overview.
 const homeHero=fs.readFileSync('index.html','utf8');
+const homeDocument=new JSDOM(homeHero).window.document;
 assert.match(homeHero,/Know the risk\./,'approved homepage slogan retained');
-assert.match(homeHero,/hero-priority-card/,'prioritized vulnerabilities hero panel present');
-assert.match(homeHero,/hero-capabilities/,'capability navigation rendered');
-assert.match(homeHero,/Set email alerts for product end of support/,'lifecycle alerts accurately described');
-assert.doesNotMatch(homeHero.slice(homeHero.indexOf('<section class="hero"'),homeHero.indexOf('<section id="technology"')),/38 technology groups/,'fixed technology count removed from homepage hero');
-assert.match(fs.readFileSync('styles.css','utf8'),/prefers-reduced-motion:reduce/,'reduced motion support remains');
-
-assert.ok(fs.readFileSync('index.html','utf8').includes('hero-artwork'),'dedicated central shield artwork is referenced');
-assert.ok(fs.readFileSync('index.html','utf8').includes('hero-priority-chart'),'hero chart artwork exists');
-// Consolidated homepage styles replace the historical override layers.
-const heroCss=fs.readFileSync('home-hero-reference.css','utf8');
-assert.match(homeHero,/home-hero-reference\.css\?v=215/,'new homepage stylesheet cache version');
-assert.match(heroCss,/prefers-reduced-motion: reduce/,'hero supports reduced motion');
-assert.doesNotMatch(heroCss,/!important|\.command-sidebar|\.command-nav-link/,'hero styles avoid override stacking and navigation changes');
-assert.ok(fs.existsSync('public/assets/home-intelligence-wave.svg'),'wave artwork packaged in public build');
-assert.ok(fs.existsSync('public/assets/home-security-illustration.svg'),'shield artwork packaged in public build');
-const heroDom=new JSDOM(homeHero);
-const capabilityLinks=[...heroDom.window.document.querySelectorAll('.hero-capability')];
-assert.deepEqual(capabilityLinks.map(a=>a.querySelector('strong').textContent),['Discover','Prioritize','Track','Report','Lifecycle alerts','Customize']);
-assert.deepEqual(capabilityLinks.map(a=>a.getAttribute('href')),['/vulnerabilities/','/vulnerabilities/','/remediation/','/customer-reports/','/lifecycle/','/vulnerabilities/']);
-assert.equal(heroDom.window.document.querySelectorAll('.hero-priority-line').length,4,'all severity links preserved');
+assert.equal(homeDocument.querySelectorAll('.mosaic>.product-panel').length,4,'four top feature panels');
+assert.equal(homeDocument.querySelectorAll('.findings-table th').length,7,'all findings columns included');
+assert.equal(homeDocument.querySelectorAll('.findings-table tbody tr').length,3,'three labelled sample findings');
+assert.ok([...homeDocument.querySelectorAll('.findings-table select,.findings-table input,.findings-table button')].every(el=>el.disabled),'marketing controls cannot change private findings');
+assert.equal(homeDocument.querySelectorAll('.asset-import-paths article').length,3,'asset, package and plugin imports explained');
+assert.match(homeDocument.querySelector('.marketing-story').textContent,/Your own organisation\. Your clients\. One platform\./,'copy includes own organisation and clients');
+assert.ok(fs.existsSync('public/intelligence/index.html'),'dedicated overview is built');
+assert.ok(fs.existsSync('public/assets/homepage/website-monitor-demo.png'),'anonymised demo screen is built');
+assert.ok(fs.existsSync('public/assets/homepage/platform-explorer.png'),'public explorer preview is built');
+assert.match(fs.readFileSync('homepage.css','utf8'),/prefers-reduced-motion/,'homepage animation supports reduced motion');
+assert.doesNotMatch(fs.readFileSync('homepage.css','utf8'),/!important|\.command-sidebar|\.command-nav-link/,'homepage CSS preserves navigation styles and avoids overrides');
+assert.match(fs.readFileSync('page-router.js','utf8'),/dashboard:'\/intelligence\/'/,'legacy overview bookmarks route to the new page');

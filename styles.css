@@ -1004,7 +1004,10 @@ button.tech-chart-link b{
 
 /* Dedicated CVEHarbor pages: keep shared nodes for current popup and feed handlers. */
 body[data-page] .hero,body[data-page] main>section{display:none}
-body[data-page="home"] .hero,body[data-page="home"] #dashboard,body[data-page="home"] #methodology{display:block}
+body[data-page="home"] .hero{display:block}
+body[data-page] .marketing-story{display:none}
+body[data-page="home"] .marketing-story{display:block}
+body[data-page="intelligence"] #dashboard,body[data-page="intelligence"] #methodology{display:block}
 body[data-page="vulnerabilities"] #technology,body[data-page="vulnerabilities"] #advisories{display:block}
 body[data-page="alerts"] #securityWorkspace{display:block}
 body[data-page="threats"] #threat-intelligence{display:block}

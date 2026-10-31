@@ -166,6 +166,15 @@
   function catCount(tech){
     return advisoryIDs(items.filter(x=>(x.categories||[]).includes(tech)&&chartRecordMatches(x))).length;
   }
+  // Keep overview drill-down filters when moving to the dedicated advisory page.
+  function revealAdvisories(){
+    if(location.pathname.replace(/\/index\.html$/,'/').replace(/\/$/,'')==='/intelligence'){
+      const params=new URLSearchParams({technology:state.tech,severity:state.severity,period:state.period,scope:metricScope,group:state.group});
+      location.assign('/vulnerabilities/?'+params.toString()+'#advisories');
+      return;
+    }
+    $('advisories').scrollIntoView({behavior:'smooth',block:'start'});
+  }
   function openTechnologyAdvisories(technology,cveOnly=false,periodOverride=null){
     const recentAvailable=items.some(x=>(x.categories||[]).includes(technology)&&newlyPublished(x,30));
     const selectedPeriod=periodOverride||(recentAvailable?'published30':'all');
@@ -173,7 +182,7 @@
     metricScope=cveOnly?'cves':'all';listMode='list';visibleCount=PAGE_SIZE;tablePage=0;
     $('technologyFilter').value=technology;
     $('search').value='';$('severity').value='all';$('dateRange').value=selectedPeriod;
-    render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});
+    render();revealAdvisories();
   }
   function openTechnologyGroup(group){
     const members=technologyGroups[group]||[];
@@ -184,7 +193,7 @@
     metricScope='all';listMode='list';resetPaging();
     $('technologyFilter').value='all';
     $('search').value='';$('severity').value='all';$('dateRange').value=selectedPeriod;
-    render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});
+    render();revealAdvisories();
   }
   function renderBars(){
     const host=$('techBars');host.replaceChildren();
@@ -236,13 +245,14 @@
         button.setAttribute('aria-label','Open '+label.toLowerCase()+' in '+periodLabel);
         button.addEventListener('click',()=>{
           if(scope==='technologies'){
+            if(location.pathname.startsWith('/intelligence')){location.assign('/vulnerabilities/#technology');return;}
             $('technology').scrollIntoView({behavior:'smooth',block:'start'});return;
           }
           state.q='';state.tech='all';state.group='all';state.severity=scope==='all'?'all':scope;state.period=chartPeriod;
           metricScope='all';listMode='list';resetPaging();
           $('search').value='';$('technologyFilter').value='all';$('severity').value=state.severity;
           $('dateRange').value=state.period;
-          render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});
+          render();revealAdvisories();
         });
         metrics.append(button);
       }
@@ -357,7 +367,7 @@
       if(x.custom && addedHighlight===x.name){button.classList.add('technology-just-added');button.dataset.customProduct=x.name;}
       // Open the most recent disclosure day shown by this technology's badge.
       const openPeriod=ages.TODAY?'today':ages.YESTERDAY?'yesterday':ages['72 HOURS']?'twoDays':recent?'published30':'all';
-      button.addEventListener('click',()=>{if(x.custom){state.q=x.name;state.tech='all';state.group='all';state.period='all';$('search').value=x.name;$('dateRange').value='all';render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});}else openTechnologyAdvisories(x.name,false,openPeriod)});
+      button.addEventListener('click',()=>{if(x.custom){state.q=x.name;state.tech='all';state.group='all';state.period='all';$('search').value=x.name;$('dateRange').value='all';render();revealAdvisories();}else openTechnologyAdvisories(x.name,false,openPeriod)});
       return button;
     }
     const meta={
@@ -589,16 +599,17 @@
   $('archiveEmpty').addEventListener('click',()=>{state.period='all';$('dateRange').value='all';resetPaging();render();});
   $('clearFilters').addEventListener('click',clear);$('resetEmpty').addEventListener('click',clear);
   $('showMore').addEventListener('click',()=>{visibleCount+=PAGE_SIZE;render();});
-  $('showFewer').addEventListener('click',()=>{visibleCount=PAGE_SIZE;render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});});
+  $('showFewer').addEventListener('click',()=>{visibleCount=PAGE_SIZE;render();revealAdvisories();});
   $('cardViewBtn').addEventListener('click',()=>{listMode='cards';resetPaging();render();});
   $('listViewBtn').addEventListener('click',()=>{listMode='list';resetPaging();render();});
-  $('pagePrevious').addEventListener('click',()=>{if(tablePage>0){tablePage--;render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});}});
-  $('pageNext').addEventListener('click',()=>{if((tablePage+1)*TABLE_PAGE_SIZE<filterItems().length){tablePage++;render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});}});
+  $('pagePrevious').addEventListener('click',()=>{if(tablePage>0){tablePage--;render();revealAdvisories();}});
+  $('pageNext').addEventListener('click',()=>{if((tablePage+1)*TABLE_PAGE_SIZE<filterItems().length){tablePage++;render();revealAdvisories();}});
   document.querySelectorAll('[data-metric]').forEach(btn=>{
     btn.addEventListener('click',()=>{
       const scope=btn.dataset.metric;
       if(scope==='technologies'){
         // Every technology is already visible in the main explorer.
+        if(location.pathname.startsWith('/intelligence')){location.assign('/vulnerabilities/#technology');return;}
         $('technology').scrollIntoView({behavior:'smooth',block:'start'});
         return;
       }
@@ -606,7 +617,7 @@
       $('search').value='';$('technologyFilter').value='all';$('severity').value='all';$('dateRange').value='all';
       metricScope=scope==='all'?'cves':scope;
       listMode='list';resetPaging();render();
-      $('advisories').scrollIntoView({behavior:'smooth',block:'start'});
+      revealAdvisories();
     });
   });
   $('closeDialog').addEventListener('click',()=>$('detailDialog').close());$('detailDialog').addEventListener('click',e=>{if(e.target===$('detailDialog'))$('detailDialog').close();});
@@ -675,5 +686,16 @@
     manageButton.hidden=false;renderCategories();
   }).catch(()=>{});
   $('technologySearch').addEventListener('input',renderCategories);
+  if(location.pathname.startsWith('/vulnerabilities/')){
+    const params=new URLSearchParams(location.search);
+    const technology=params.get('technology'),severity=params.get('severity'),period=params.get('period'),scope=params.get('scope'),group=params.get('group');
+    if(technology==='all'||categories.some(c=>c.name===technology))state.tech=technology;
+    if(['all','critical','high','medium','low'].includes(severity))state.severity=severity;
+    if([...$('dateRange').options].some(o=>o.value===period))state.period=period;
+    if(['all','cves','critical','high','medium','low'].includes(scope))metricScope=scope;
+    if(group==='all'||Object.prototype.hasOwnProperty.call(technologyGroups,group))state.group=group;
+    $('technologyFilter').value=state.tech;$('severity').value=state.severity;$('dateRange').value=state.period;
+    if(params.has('scope')||params.has('technology'))listMode='list';
+  }
   renderBars();renderFocus();renderCategories();render();
 })();

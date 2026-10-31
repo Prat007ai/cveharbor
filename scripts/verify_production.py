@@ -14,9 +14,11 @@ import sys
 
 root=Path(__file__).resolve().parents[1]
 base="https://cveharbor.com"
-routes=["/vulnerabilities/","/account/","/workspace/","/customer-reports/","/customer-dashboard/","/environments/","/website-monitor/"]
+routes=["/", "/intelligence/", "/vulnerabilities/","/account/","/workspace/","/customer-reports/","/customer-dashboard/","/environments/","/website-monitor/"]
 required={
- "/vulnerabilities/":["technology-kpis","technologyManageButton","technologyCustomizer","categoryGrid","command-center.js?v=explorer-sidebar-190"],
+ "/":["homepageFeatures", "marketing-story", "asset-onboarding", "findings-table", "homepage.css?v=brochure-216"],
+ "/intelligence/":["overviewTitle", "techBars", "chartInsights", "feedStatus"],
+ "/vulnerabilities/":["technology-kpis","technologyManageButton","technologyCustomizer","categoryGrid","command-center.js?v=brochure-216"],
  "/account/":["accountSecurityDashboard","accountSecurityRecoveryStart","account-security.js"],
  "/workspace/":["accountPageRequest","accountPageVerify","accountPageRequiredEnroll"],
  "/customer-reports/":["customerReportEmail","customerReportPrint","customerReportCsv"],
@@ -25,11 +27,15 @@ required={
  "/website-monitor/":["monitorForm","monitorStatus","website-monitor-page.js","threatDashboardTitle","threatSiteSelect","threatAssessment","threatHistory"]
 }
 
-def fetch(path):
+def fetch_bytes(path):
     request=Request(base+path,headers={"User-Agent":"CVEHarbor-Production-Verifier/1.0","Cache-Control":"no-cache"})
     with urlopen(request,timeout=30) as response:
         if response.status != 200: raise RuntimeError(f"{path} returned HTTP {response.status}")
-        return response.read().decode("utf-8")
+        return response.read()
+
+def fetch(path):
+    return fetch_bytes(path).decode("utf-8")
+
 
 def verify_local_build():
     """Check generated site and linked assets before publishing."""
@@ -45,6 +51,9 @@ def verify_local_build():
             match = re.search(r'/'+re.escape(asset)+r'\?v=([a-zA-Z0-9-]+)', html)
             if match and not (root / "public" / asset).is_file():
                 raise RuntimeError(f"Generated {route} references missing asset {asset}")
+    for name in ("website-monitor-demo.png", "platform-explorer.png"):
+        if not (root / "public" / "assets" / "homepage" / name).is_file():
+            raise RuntimeError("Missing homepage preview asset: " + name)
     print("PASS: Generated routes and linked assets verified before deployment")
 
 
@@ -59,7 +68,7 @@ for attempt in range(6):
             expected=(root / "public" / route.strip("/") / "index.html").read_text(encoding="utf-8")
             for marker in required[route]:
                 if marker not in html: raise RuntimeError(f"{route} missing {marker}")
-            for asset in ("styles.css","app.js","command-center.js","customer-security.js","inventory.js","website-monitor-page.js"):
+            for asset in ("styles.css","homepage.css","app.js","command-center.js","customer-security.js","inventory.js","website-monitor-page.js"):
                 m=re.search(r'/'+re.escape(asset)+r'\?v=([a-zA-Z0-9-]+)',expected)
                 if not m: continue
                 expected_url=f"/{asset}?v={m.group(1)}"
@@ -69,6 +78,11 @@ for attempt in range(6):
                 local=(root/asset).read_text(encoding="utf-8")
                 if hashlib.sha256(remote.encode()).digest()!=hashlib.sha256(local.encode()).digest():
                     raise RuntimeError(f"{route} serves outdated {asset} content")
+        for name in ("website-monitor-demo.png", "platform-explorer.png"):
+            remote = fetch_bytes("/assets/homepage/" + name)
+            local = (root / "assets" / "homepage" / name).read_bytes()
+            if hashlib.sha256(remote).digest() != hashlib.sha256(local).digest():
+                raise RuntimeError("Homepage preview asset differs from deployed source: " + name)
         print("PASS: Production pages and linked frontend assets match deployed source")
         break
     except Exception as error:

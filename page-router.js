@@ -3,15 +3,15 @@
 // Shared DOM remains available for legacy popup and data scripts while
 // page-specific layouts are split across canonical GitHub Pages URLs.
 const map={
-  technology:'/vulnerabilities/',advisories:'/vulnerabilities/',dashboard:'/',
+  technology:'/vulnerabilities/',advisories:'/vulnerabilities/',homepageFeatures:'/',dashboard:'/intelligence/',
   securityWorkspace:'/alerts/',disclosureTrend:'/alerts/',
   'threat-intelligence':'/threats/','malware-intelligence':'/malware/',
   lifecycleMonitor:'/lifecycle/',inventoryWorkspace:'/environments/',
   operationsCentre:'/admin-tools/',patchTracker:'/admin-tools/',
   versionChecker:'/admin-tools/',firewallCentre:'/admin-tools/',
-  remediationTracker:'/remediation/',methodology:'/'
+  remediationTracker:'/remediation/',methodology:'/intelligence/'
 };
-const pages=new Set(['/','/vulnerabilities/','/alerts/','/threats/','/malware/','/lifecycle/',
+const pages=new Set(['/','/intelligence/','/vulnerabilities/','/alerts/','/threats/','/malware/','/lifecycle/',
  '/environments/','/admin-tools/','/remediation/']);
 const path=window.location.pathname.replace(/\/index\.html$/,'/');
 const page=pages.has(path)?path:'/';
@@ -22,15 +22,6 @@ if(section&&map[section]&&map[section]!==path){
  return;
 }
 document.addEventListener('click',event=>{
- // The homepage overview cards previously scrolled to a list that is now
- // located on a dedicated page. Keep the action meaningful after migration.
- if(path==='/'&&event.target.closest?.('button.metric-action,button.tech-chart-link,.chart-insight')){
-  event.preventDefault();
-  event.stopImmediatePropagation();
-  window.location.assign('/vulnerabilities/#advisories');
-  return;
- }
-
  const link=event.target.closest?.('a[href^="#"]');
  if(!link)return;
  const target=decodeURIComponent(link.getAttribute('href').slice(1));
@@ -40,7 +31,8 @@ document.addEventListener('click',event=>{
  }
 });
 const titles={
- '/':'Vulnerability Intelligence Dashboard',
+ '/':'CVEHarbor Security Intelligence',
+ '/intelligence/':'Public Intelligence Overview',
  '/vulnerabilities/':'Vulnerability Search & Technology Coverage',
  '/alerts/':'My Technology Watchlist & Security Alerts',
  '/threats/':'Threat IP Intelligence',

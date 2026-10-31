@@ -3,11 +3,12 @@ const body=document.body;
 if(!body||(!body.classList.contains('account-page')&&!body.dataset.page))return;
 body.classList.add('command-center-app');
 const groups=[
- {label:'Intelligence',items:[['Overview','/','layout-dashboard'],['Vulnerabilities','/vulnerabilities/','shield-alert'],['Threat IPs','/threats/','radar'],['Malware','/malware/','bug'],['Lifecycle','/lifecycle/','calendar-clock']]},
+ {label:'Intelligence',items:[['Home','/','home'],['Intelligence Overview','/intelligence/','layout-dashboard'],['Vulnerabilities','/vulnerabilities/','shield-alert'],['Threat IPs','/threats/','radar'],['Malware','/malware/','bug'],['Lifecycle','/lifecycle/','calendar-clock']]},
  {label:'Workspace',items:[['My Workspace','/workspace/','briefcase-business'],['Customers','/customer-dashboard/','building-2'],['Environments','/environments/','server'],['Reports','/customer-reports/','file-chart-column'],['Remediation','/remediation/','list-checks']]},
  {label:'Tools',items:[['Admin Tools','/admin-tools/','settings-2'],['Account','/account/','circle-user-round']]}
 ];
 const symbols={
+'home':'<path d="m3 10 9-7 9 7v11h-6v-7H9v7H3Z"/>',
 'layout-dashboard':'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
 'shield-alert':'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="M12 8v4m0 4h.01"/>',
 'radar':'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="m12 12 6-6"/>',

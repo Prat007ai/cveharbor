@@ -14,11 +14,10 @@ if OUT.exists():
     shutil.rmtree(OUT)
 OUT.mkdir()
 
-for name in ('index.html', 'styles.css', 'home-hero-reference.css', 'app.js', 'workspace.js', 'operations.js', 'accounts.js', 'disclosure-trend.js', 'page-router.js', 'header-auth.js', 'command-center.js', 'account-page.js', 'account-security.js', 'workspace-page.js', 'workspace-dashboard.js', 'website-monitor-page.js', 'website-monitor-dashboard.js', 'lifecycle-monitor.js', 'inventory.js', 'inventory-matching.js', 'customer-security.js', 'customer-score.js', 'malware.js', 'geo-map.js', 'malware-data.js', 'data.js', 'CNAME', 'robots.txt'):
+for name in ('index.html', 'styles.css', 'homepage.css', 'app.js', 'workspace.js', 'operations.js', 'accounts.js', 'disclosure-trend.js', 'page-router.js', 'header-auth.js', 'command-center.js', 'account-page.js', 'account-security.js', 'workspace-page.js', 'workspace-dashboard.js', 'website-monitor-page.js', 'website-monitor-dashboard.js', 'lifecycle-monitor.js', 'inventory.js', 'inventory-matching.js', 'customer-security.js', 'customer-score.js', 'malware.js', 'geo-map.js', 'malware-data.js', 'data.js', 'CNAME', 'robots.txt'):
     shutil.copy2(ROOT / name, OUT / name)
 (OUT / 'assets').mkdir(exist_ok=True)
-for name in ('home-security-illustration.svg', 'home-intelligence-wave.svg'):
-    shutil.copy2(ROOT / 'assets' / name, OUT / 'assets' / name)
+shutil.copytree(ROOT / 'assets' / 'homepage', OUT / 'assets' / 'homepage')
 for name in ('lifecycle.js','patch-notes.js','threats.js','threat-data.js','fortigate-threat-ip-objects.txt','sophos-threat-ip-api.txt','fortigate-suspicious-ip-initial.txt','fortigate-suspicious-ip-incremental.txt','sophos-suspicious-ip-initial.txt','sophos-suspicious-ip-incremental.txt'):
     if (ROOT / name).exists():
         shutil.copy2(ROOT / name, OUT / name)
@@ -69,6 +68,7 @@ for section in ('account','workspace','customer-dashboard','customer-reports'):
 # remains available to existing scripts and modal handlers; CSS scopes each
 # route's visible content. Remove the shared DOM only after script modularization.
 SECTION_PAGES = {
+    'intelligence': 'Public Intelligence Overview',
     'vulnerabilities': 'Vulnerability Search and Advisories',
     'alerts': 'My Technology Watchlist and Security Alerts',
     'threats': 'Threat IP Intelligence',
@@ -80,19 +80,19 @@ SECTION_PAGES = {
 }
 source_html = (ROOT / 'index.html').read_text(encoding='utf-8')
 home_html = source_html.replace('<body>', '<body data-page="home">', 1)
-home_html = home_html.replace('href="#advisories">Skip to advisories', 'href="#dashboard">Skip to overview', 1)
+# The homepage skip link already targets the brochure content.
 (OUT / 'index.html').write_text(home_html, encoding='utf-8')
 for section, heading in SECTION_PAGES.items():
     folder = OUT / section
     folder.mkdir(exist_ok=True)
     page = source_html.replace('<body>', f'<body data-page="{section}">', 1)
     first_section = {
-        'vulnerabilities': 'technology', 'alerts': 'securityWorkspace',
+        'intelligence': 'dashboard', 'vulnerabilities': 'technology', 'alerts': 'securityWorkspace',
         'threats': 'threat-intelligence', 'malware': 'malware-intelligence',
         'lifecycle': 'lifecycleMonitor', 'environments': 'inventoryWorkspace',
         'admin-tools': 'operationsCentre', 'remediation': 'remediationTracker',
     }[section]
-    page = page.replace('href="#advisories">Skip to advisories',
+    page = page.replace('href="#homepageFeatures">Skip to features',
                         f'href="#{first_section}">Skip to main section', 1)
     # All locally hosted scripts and images use root-relative paths on nested
     # routes so they do not resolve to /malware/data.js, etc.
