@@ -1051,7 +1051,6 @@ assert.ok(fs.readFileSync('app.js','utf8').includes('technology-just-added'),'ne
 assert.ok(fs.readFileSync('styles.css','utf8').includes('cvh-new-product-glow'),'10 second product highlighting supported');
 
 assert.match(fs.readFileSync('index.html','utf8'),/id="technologyManageButton" class="technology-manage-button"/,'customize control visible in page markup');
-assert.match(fs.readFileSync('app.js','utf8'),/if\(!catalogueSignedIn\)\{window\.location\.href='\/workspace\/'/,'signed out customize action redirects to workspace');
 
 assert.ok(fs.readFileSync('index.html','utf8').includes('id="technologySignInDialog"'),'signed-out customize modal exists');
 assert.ok(fs.readFileSync('app.js','utf8').includes("technologySignInDialog').showModal()"),'signed-out visitors see a branded dialog');
