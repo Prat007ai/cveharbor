@@ -598,7 +598,7 @@
     const r=await fetch(catalogueAPI,{credentials:'include'});
     if(!r.ok)return;
     const data=await r.json();
-    personalized={defaults:data.defaults||defaultNames,products:data.products||[]};
+    personalized={defaults:Array.isArray(data.defaults)?data.defaults:defaultNames,products:Array.isArray(data.products)?data.products:[]};
     manageButton.hidden=false;renderCategories();
   }).catch(()=>{});
   $('technologySearch').addEventListener('input',renderCategories);
