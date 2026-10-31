@@ -32,3 +32,25 @@ export async function reserveLookup(env,userId){
   return {allowed:true,month,global_used:count};
  }catch{return {allowed:false,reason:'tracking_unavailable',month}}
 }
+
+export async function sendWarningTest(env,userId,fetcher=fetch){
+ if(env.WEB_RISK_ALERT_TEST_ENABLED!=='true')return {ok:false,error:'Warning email test is disabled',status:503};
+ const recipient=String(env.WEB_RISK_BILLING_ALERT_EMAIL||'');
+ const key=env.SMTP2GO_API_KEY||env.ALERT_SMTP2GO_API_KEY;
+ if(!recipient||!key||!env.EMAIL_FROM||!env.DB)return {ok:false,error:'Email configuration unavailable',status:503};
+ const time=Math.floor(Date.now()/1000),cutoff=time-3600,rateKey='web-risk-alert-test:'+userId;
+ try{
+  const row=await env.DB.prepare('SELECT window_start,count FROM auth_rate_limits WHERE key=?').bind(rateKey).first();
+  if(row&&row.window_start>cutoff&&row.count>=1)return {ok:false,error:'Test email already requested. Try again after one hour.',status:429};
+  await env.DB.prepare('INSERT INTO auth_rate_limits(key,window_start,count) VALUES(?,?,1) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN window_start<? THEN 1 ELSE count+1 END,window_start=CASE WHEN window_start<? THEN ? ELSE window_start END').bind(rateKey,time,cutoff,cutoff,time).run();
+  const confirmation=await env.DB.prepare('SELECT count FROM auth_rate_limits WHERE key=?').bind(rateKey).first();
+  if(confirmation?.count!==1)return {ok:false,error:'Test email rate limit reached',status:429};
+  const subject='[TEST] CVEHarbor Google Web Risk 90% usage alert';
+  const message='This is a TEST of CVEHarbor Web Risk usage warning email delivery. No Google Web Risk API requests were made. No monthly usage counters were changed. In production the warning is issued at 135,000 of 150,000 monthly lookups.';
+  const response=await fetcher('https://api.smtp2go.com/v3/email/send',{method:'POST',headers:{'content-type':'application/json','X-Smtp2go-Api-Key':key},body:JSON.stringify({sender:env.EMAIL_FROM,to:[recipient],subject,text_body:message})});
+  if(!response.ok)return {ok:false,error:'Email provider rejected the request',status:502};
+  const payload=await response.json();
+  if(payload?.data?.failed>0||payload?.data?.succeeded===0)return {ok:false,error:'Email provider did not accept the message',status:502};
+  return {ok:true,recipient,provider_status:'accepted',note:'SMTP2GO accepted test email; verify actual delivery in the mailbox.'};
+ }catch{return {ok:false,error:'Email test could not be completed',status:503}}
+}
