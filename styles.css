@@ -2181,3 +2181,14 @@ body[data-page="vulnerabilities"] .technology-redesign .technology-panel-heading
 /* Locally rendered Microsoft product marks do not depend on third-party CDNs. */
 .technology-redesign .technology-brand-icon.brand-local{background:#102b43!important;display:grid!important;place-items:center!important}
 .technology-redesign .technology-brand-icon.brand-local svg{width:30px!important;height:30px!important;display:block!important;filter:none!important}
+
+/* Integrated account catalogue, four stable cards with independent scrolling. */
+body[data-page="vulnerabilities"] .technology-redesign #categoryGrid>.technology-panel{display:flex!important;flex-direction:column!important;height:min(760px,calc(100vh - 210px))!important;min-height:460px!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-panel-rows{overflow-y:auto!important;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#317891 #09263a;flex:1!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-panel-rows::-webkit-scrollbar{width:7px}
+body[data-page="vulnerabilities"] .technology-redesign .technology-panel-rows::-webkit-scrollbar-thumb{background:#317891;border-radius:8px}
+.technology-add-form select{padding:10px;background:#061827;color:#fff;border:1px solid #33617b;border-radius:8px}
+.technology-redesign .technology-row.technology-just-added{animation:cvh-new-product-glow 1.6s ease-in-out 6;outline:2px solid #41e8d1!important;outline-offset:-2px;border-radius:8px!important}
+@keyframes cvh-new-product-glow{0%,100%{background:rgba(26,204,183,.06)}50%{background:rgba(25,222,189,.27);box-shadow:inset 0 0 16px #39e0cf35}}
+@media(prefers-reduced-motion:reduce){.technology-redesign .technology-row.technology-just-added{animation:none!important;background:#145b59!important}}
+@media(max-width:750px){body[data-page="vulnerabilities"] .technology-redesign #categoryGrid>.technology-panel{height:auto!important;max-height:740px!important}}

@@ -257,9 +257,19 @@
       button.setAttribute('aria-pressed',String(selected));
     });
   }
+  const customCategoryNames={microsoft:'Microsoft & Cloud',applications:'Applications & Frameworks',infrastructure:'Infrastructure & Security',data:'Data, UI & Dependencies'};
+  const inferProductCategory=name=>{
+    const value=String(name||'').toLowerCase();
+    if(/microsoft|windows|azure|sharepoint|exchange|dynamics|power bi|fabric/.test(value))return 'microsoft';
+    if(/postgres|mysql|maria|mongo|sql|redis|database|oracle|telerik|kendo|jquery|bootstrap|android|ios/.test(value))return 'data';
+    if(/fortinet|sonicwall|sophos|veeam|vmware|hyper.?v|linux|docker|kubernetes|nginx|apache http server|firewall|aws/.test(value))return 'infrastructure';
+    if(/apache tomcat|jenkins|wordpress|drupal|php|python|node|react|angular|next.js|\.net|java|gitlab/.test(value))return 'applications';
+    return '';
+  };
+  let addedHighlight=null;
   function renderCategories(){
     const main=$('categoryGrid'),q=$('technologySearch').value.trim().toLowerCase();
-    main.replaceChildren();$('technologyAdditional').replaceChildren();
+    main.replaceChildren();
     const matches=x=>!q||(x.name+' '+(x.description||'')).toLowerCase().includes(q);
     const enabled=x=>!personalized||personalized.defaults.includes(x.name);
     let visible=0;
@@ -344,6 +354,7 @@
                     text('span','technology-count-all',`${total} total`));
       const arrow=text('span','technology-arrow','›');arrow.setAttribute('aria-hidden','true');
       button.append(icon,label,counts,arrow);
+      if(x.custom && addedHighlight===x.name){button.classList.add('technology-just-added');button.dataset.customProduct=x.name;}
       // Open the most recent disclosure day shown by this technology's badge.
       const openPeriod=ages.TODAY?'today':ages.YESTERDAY?'yesterday':ages['72 HOURS']?'twoDays':recent?'published30':'all';
       button.addEventListener('click',()=>{if(x.custom){state.q=x.name;state.tech='all';state.group='all';state.period='all';$('search').value=x.name;$('dateRange').value='all';render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});}else openTechnologyAdvisories(x.name,false,openPeriod)});
@@ -357,7 +368,8 @@
       custom:['05 / CUSTOM','My Additional Products','＋']
     };
     for(const [name,techs] of Object.entries(technologyGroups)){
-      const candidates=name===customGroup?(personalized?.products||[]).map(x=>({...x,custom:true,icon:'＋'})):techs.map(label=>categories.find(x=>x.name===label));
+      if(name===customGroup)continue;
+      const candidates=[...techs.map(label=>categories.find(x=>x.name===label)),...(personalized?.products||[]).filter(x=>(x.category||inferProductCategory(x.name)||'applications')===name).map(x=>({...x,custom:true,icon:'＋'}))];
       const matched=candidates.filter(x=>x&&matches(x)&&(x.custom||enabled(x)));
       if(!matched.length)continue;
       const panel=text('article','technology-panel','');panel.dataset.domain=name;
@@ -376,7 +388,7 @@
       head.append(glyph,label,totalBox);
       const rows=text('div','technology-panel-rows','');
       matched.forEach(x=>rows.append(makeRow(x)));
-      panel.append(head,rows);if(name===customGroup){$('technologyAdditional').append(panel)}else main.append(panel);visible+=matched.length;
+      panel.append(head,rows);main.append(panel);visible+=matched.length;
     }
     $('technologyEmpty').hidden=visible!==0;
     $('technologyTotal').textContent=String(visible);
@@ -623,7 +635,7 @@
     const list=$('technologyCustomList');list.replaceChildren();
     for(const p of draft.products){
       const row=text('div','technology-custom-item','');
-      row.append(text('span','',p.name+(p.version?' · '+p.version:'')+' · Public feed coverage not verified'));
+      row.append(text('span','',p.name+(p.version?' · '+p.version:'')+' · '+(customCategoryNames[p.category||inferProductCategory(p.name)||'applications'])+' · Public feed coverage not verified'));
       const remove=text('button','','Remove');remove.type='button';
       remove.addEventListener('click',()=>{draft.products=draft.products.filter(x=>x.name!==p.name);drawCustomizer()});
       row.append(remove);list.append(row);
@@ -635,12 +647,20 @@
   customForm.addEventListener('submit',e=>{e.preventDefault();const name=$('technologyAddName').value.trim(),version=$('technologyAddVersion').value.trim();if(!name||!draft)return;
     if(draft.products.some(x=>x.name.toLowerCase()===name.toLowerCase())){statusMessage('Product already added.');return}
     if(draft.products.length>=50){statusMessage('Maximum of 50 additional products.');return}
-    draft.products.push({name,version});customForm.reset();drawCustomizer();statusMessage('Product added to the editor. Save to apply.')
+    const category=$('technologyAddCategory').value||inferProductCategory(name)||'applications';
+    draft.products.push({name,version,category});customForm.reset();drawCustomizer();statusMessage(name+' will appear under '+customCategoryNames[category]+'. Save to apply.')
   });
   $('technologySaveButton').addEventListener('click',async()=>{if(!draft)return;statusMessage('Saving account preferences...');
     try{const r=await fetch(catalogueAPI,{method:'PUT',credentials:'include',headers:{'content-type':'application/json'},body:JSON.stringify(draft)});
       const data=await r.json();if(!r.ok)throw Error(data.error||'Unable to save');
-      personalized=JSON.parse(JSON.stringify(draft));renderCategories();statusMessage('Saved to your CVEHarbor account.');
+      const before=new Set((personalized?.products||[]).map(p=>p.name.toLowerCase()));
+      const newest=draft.products.find(p=>!before.has(p.name.toLowerCase()));
+      personalized=JSON.parse(JSON.stringify(draft));addedHighlight=newest?.name||null;renderCategories();
+      if(newest){const category=newest.category||inferProductCategory(newest.name)||'applications';statusMessage(newest.name+' added under '+customCategoryNames[category]+'. It is highlighted for 10 seconds.');
+        const row=[...document.querySelectorAll('.technology-just-added')].find(x=>x.dataset.customProduct===newest.name);
+        row?.scrollIntoView({behavior:'smooth',block:'center'});
+        setTimeout(()=>{addedHighlight=null;document.querySelectorAll('.technology-just-added').forEach(x=>x.classList.remove('technology-just-added'))},10000);
+      }else statusMessage('Saved to your CVEHarbor account.');
     }catch(e){statusMessage('Unable to save: '+e.message)}
   });
   if(typeof fetch==='function')fetch('https://api.cveharbor.com/v1/me',{credentials:'include'}).then(r=>r.ok?r.json():null).then(async me=>{
