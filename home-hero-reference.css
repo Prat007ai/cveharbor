@@ -53,3 +53,19 @@ body[data-page="home"] .hero .pill-three{pointer-events:none!important}
 body[data-page="home"] .hero .hero-hologram-shield{z-index:6!important}
 body[data-page="home"] .hero .hero-hologram-base{background:radial-gradient(ellipse,#24f9e033,transparent 68%)}
 @media(prefers-reduced-motion:reduce){body[data-page="home"] .hero .hero-hologram-shield{animation:none!important}}
+
+/* Release 206: one illustration asset replaces the competing CSS shield and pedestal. */
+body[data-page="home"] .hero .hero-hologram{left:0!important;top:4%!important;width:55%!important;height:92%!important;display:grid!important;place-items:center!important;transform:none!important;z-index:4!important}
+body[data-page="home"] .hero .hero-artwork{display:block;width:100%!important;height:100%!important;object-fit:contain;animation:hero-artwork-float 6s ease-in-out infinite;filter:drop-shadow(0 0 10px #10bdb72c)}
+body[data-page="home"] .hero .hero-intelligence-network{opacity:.18!important;pointer-events:none!important}
+body[data-page="home"] .hero .hero-network-center,body[data-page="home"] .hero .hero-network-rings{display:none!important}
+body[data-page="home"] .hero .pill-one{left:0!important;top:25%!important}
+body[data-page="home"] .hero .pill-two{left:26%!important;top:7%!important}
+body[data-page="home"] .hero .pill-three{left:36%!important;top:33%!important}
+body[data-page="home"] .hero .pill-four{left:0!important;top:60%!important}
+body[data-page="home"] .hero .pill-five{left:32%!important;top:76%!important}
+body[data-page="home"] .hero .hero-priority-card{right:0!important;top:10%!important;width:44%!important;z-index:8!important}
+body[data-page="home"] .hero .hero-priority-chart{opacity:.6!important}
+@keyframes hero-artwork-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@media(max-width:700px){body[data-page="home"] .hero .hero-hologram{width:62%!important;height:78%!important;top:13%!important}}
+@media(prefers-reduced-motion:reduce){body[data-page="home"] .hero .hero-artwork{animation:none!important}}
