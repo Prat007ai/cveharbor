@@ -1019,7 +1019,7 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('grid-template-columns:r
 
 // Both styled explorer assets must use the same new cache release.
 const explorerSource=fs.readFileSync('index.html','utf8');
-assert.match(explorerSource,/\/styles\.css\?v=hero-201/,'technology layout stylesheet must refresh');
+assert.match(explorerSource,/\/styles\.css\?v=hero-202/,'technology layout stylesheet must refresh');
 assert.match(explorerSource,/\/app\.js\?v=customize-modal-199/,'technology customization script must refresh');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"\/vulnerabilities\/":\["technology-kpis"/,'live verifier checks technology explorer page');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"styles.css","app.js"/,'live verifier validates explorer JavaScript');
@@ -1066,3 +1066,6 @@ assert.match(fs.readFileSync('styles.css','utf8'),/prefers-reduced-motion:reduce
 assert.ok(fs.readFileSync('index.html','utf8').includes('hero-hologram-shield'),'hero central shield graphic exists');
 assert.ok(fs.readFileSync('index.html','utf8').includes('hero-priority-chart'),'hero chart artwork exists');
 assert.ok(fs.readFileSync('styles.css','utf8').includes('hero-shield-hover'),'hero animated shield styling exists');
+
+assert.ok(fs.readFileSync('styles.css','utf8').includes('Homepage reference 202'),'wide desktop hero composition contract exists');
+assert.match(fs.readFileSync('index.html','utf8'),/styles\.css\?v=hero-202/,'current hero stylesheet cache');

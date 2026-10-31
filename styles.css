@@ -2283,3 +2283,53 @@ body[data-page="home"] .hero-capabilities{border-top:1px solid #14516c;padding-t
 @media(max-width:1100px){body[data-page="home"] .hero-hologram{left:7%;width:52%}body[data-page="home"] .hero-priority-card{right:0!important;width:48%!important}}
 @media(max-width:700px){body[data-page="home"] .hero-hologram{top:28%;left:0;width:54%;height:52%}body[data-page="home"] .hero-priority-card{width:55%!important;top:12%!important;padding:13px!important}body[data-page="home"] .hero-trust-pill{display:none!important}body[data-page="home"] .hero-priority-chart{display:none}body[data-page="home"] .hero-priority-foot{padding-right:0}}
 @media(prefers-reduced-motion:reduce){body[data-page="home"] .hero-hologram-shield,body[data-page="home"] .hero-hologram-orbit,body[data-page="home"] .hero-hologram-base{animation:none!important}}
+
+/* Homepage reference 202. Fix the actual composition at wide desktop viewports.
+   Keep the rail, hierarchy and content while matching the approved graphic proportions. */
+@media(min-width:1200px){
+ body[data-page="home"] .hero-grid{
+   grid-template-columns:minmax(0,42%) minmax(0,58%)!important;
+   gap:0!important;min-height:575px!important;padding-top:28px!important;
+ }
+ body[data-page="home"] .hero-copy{padding-right:26px!important}
+ body[data-page="home"] .hero-copy h1{font-size:clamp(54px,4.55vw,79px)!important;line-height:1.12!important}
+ body[data-page="home"] .hero-copy>p{max-width:590px!important;font-size:16px!important;line-height:1.65!important}
+ body[data-page="home"] .hero-visual{min-height:495px!important;height:495px!important;transform:none!important}
+ body[data-page="home"] .hero-intelligence-network{position:absolute!important;inset:0!important;opacity:.85!important}
+ body[data-page="home"] .hero-hologram{
+    width:43%!important;height:70%!important;left:6%!important;top:13%!important;
+    transform:none!important;
+ }
+ body[data-page="home"] .hero-hologram-shield{
+    width:54%!important;min-width:0!important;max-width:175px!important;
+    filter:drop-shadow(0 0 12px #48fbee) drop-shadow(0 0 22px #06c8d2)!important;
+ }
+ body[data-page="home"] .hero-hologram-base{bottom:0!important;height:38px!important;width:79%!important;left:10%!important}
+ body[data-page="home"] .hero-priority-card{
+    top:8%!important;right:1%!important;width:48%!important;
+    min-width:0!important;max-width:460px!important;
+    padding:21px 19px!important;transform:rotate(-2deg)!important;
+ }
+ body[data-page="home"] .hero-priority-head{margin-bottom:16px!important}
+ body[data-page="home"] .hero-priority-line{min-height:39px!important;padding:8px 11px!important}
+ body[data-page="home"] .hero-priority-foot{font-size:10px!important}
+ body[data-page="home"] .hero-trust-pill{font-size:11px!important;padding:9px 11px!important}
+ body[data-page="home"] .pill-one{left:2%!important;top:21%!important}
+ body[data-page="home"] .pill-two{left:29%!important;top:11%!important}
+ body[data-page="home"] .pill-three{left:31%!important;top:41%!important}
+ body[data-page="home"] .pill-four{left:1%!important;top:59%!important}
+ body[data-page="home"] .pill-five{left:29%!important;top:72%!important}
+ body[data-page="home"] .hero-capabilities{
+    display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    padding:23px 0 35px!important;gap:0!important;
+ }
+ body[data-page="home"] .hero-capability{padding:12px!important;gap:12px!important}
+ body[data-page="home"] .hero-capability-icon{width:48px!important;height:48px!important}
+ body[data-page="home"] .hero-capability strong{font-size:16px!important}
+ body[data-page="home"] .hero-capability small{font-size:12px!important;line-height:1.5!important}
+}
+@media(min-width:1200px) and (max-width:1500px){
+ body[data-page="home"] .hero-grid{grid-template-columns:minmax(0,43%) minmax(0,57%)!important}
+ body[data-page="home"] .hero-priority-card{width:49%!important}
+ body[data-page="home"] .hero-trust-pill{font-size:10px!important}
+}
