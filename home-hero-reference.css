@@ -29,3 +29,27 @@ body[data-page="home"] .hero .hero-capability small {font-size:11px!important;li
 @media(max-width:1250px){body[data-page="home"] .hero .hero-grid{grid-template-columns:1fr!important}body[data-page="home"] .hero .hero-capabilities{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
 @media(max-width:700px){body[data-page="home"] .hero .hero-priority-card{width:56%!important;padding:12px!important}body[data-page="home"] .hero .hero-trust-pill{display:none!important}body[data-page="home"] .hero .hero-capabilities{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media(prefers-reduced-motion:reduce){body[data-page="home"] .hero .hero-priority-card,body[data-page="home"] .hero .hero-hologram-shield,body[data-page="home"] .hero .hero-hologram-base{animation:none!important}}
+
+/* 205 targeted visual fixes: shield scaling, separation, card balance and capability legibility. */
+@media(min-width:1400px){
+ body[data-page="home"] .hero .hero-grid{grid-template-columns:minmax(0,39%) minmax(0,61%)!important;min-height:555px!important}
+ body[data-page="home"] .hero .hero-visual{height:520px!important;min-height:520px!important}
+ body[data-page="home"] .hero .hero-hologram{left:2%!important;top:12%!important;width:49%!important;height:74%!important}
+ body[data-page="home"] .hero .hero-hologram-shield{width:62%!important;max-width:250px!important;min-width:180px!important}
+ body[data-page="home"] .hero .hero-hologram-base{bottom:-1%!important;height:58px!important}
+ body[data-page="home"] .hero .hero-priority-card{right:0!important;top:10%!important;width:43%!important;max-width:470px!important;min-height:340px!important}
+ body[data-page="home"] .hero .hero-trust-pill{font-size:11px!important;padding:10px 12px!important}
+ body[data-page="home"] .hero .pill-one{left:-2%!important;top:20%!important}
+ body[data-page="home"] .hero .pill-two{left:29%!important;top:3%!important}
+ body[data-page="home"] .hero .pill-three{left:33%!important;top:35%!important}
+ body[data-page="home"] .hero .pill-four{left:-1%!important;top:65%!important}
+ body[data-page="home"] .hero .pill-five{left:31%!important;top:83%!important}
+ body[data-page="home"] .hero .hero-capabilities{padding:26px 0 38px!important}
+ body[data-page="home"] .hero .hero-capability-icon{width:48px!important;height:48px!important}
+ body[data-page="home"] .hero .hero-capability strong{font-size:15px!important}
+ body[data-page="home"] .hero .hero-capability small{font-size:12px!important}
+}
+body[data-page="home"] .hero .pill-three{pointer-events:none!important}
+body[data-page="home"] .hero .hero-hologram-shield{z-index:6!important}
+body[data-page="home"] .hero .hero-hologram-base{background:radial-gradient(ellipse,#24f9e033,transparent 68%)}
+@media(prefers-reduced-motion:reduce){body[data-page="home"] .hero .hero-hologram-shield{animation:none!important}}
