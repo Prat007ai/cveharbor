@@ -37,3 +37,38 @@ body[data-page="home"] .hero .hero-capability small{display:block;color:#b5d0e0;
 @media(max-width:1000px){body[data-page="home"] .hero .hero-grid{grid-template-columns:1fr}body[data-page="home"] .hero .hero-visual{height:440px}body[data-page="home"] .hero .hero-copy{padding-top:32px}body[data-page="home"] .hero .hero-capabilities{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:650px){body[data-page="home"] .hero .hero-grid,body[data-page="home"] .hero .hero-capabilities{width:calc(100% - 28px)}body[data-page="home"] .hero .hero-copy h1{font-size:43px}body[data-page="home"] .hero .hero-visual{height:340px}body[data-page="home"] .hero .hero-hologram{left:0;top:16%;width:53%;height:65%}body[data-page="home"] .hero .hero-priority-card{width:53%;top:12%;padding:10px}body[data-page="home"] .hero .hero-priority-head strong{font-size:12px}body[data-page="home"] .hero .hero-priority-line{font-size:10px;min-height:25px;padding:4px}body[data-page="home"] .hero .hero-priority-chart,body[data-page="home"] .hero .hero-priority-foot,body[data-page="home"] .hero .hero-trust-pill{display:none}body[data-page="home"] .hero .hero-capabilities{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){body[data-page="home"] .hero .hero-artwork,body[data-page="home"] .hero .hero-trust-pill{animation:none}}
+
+/* 212: bounded two-column visual. Prevents priority card clipping off viewport. */
+@media(min-width:1001px){
+ body[data-page="home"] .hero .hero-grid{width:calc(100% - 52px)!important;max-width:none!important;grid-template-columns:minmax(0,39%) minmax(0,61%)!important}
+ body[data-page="home"] .hero .hero-visual{
+   display:grid!important;grid-template-columns:minmax(0,52%) minmax(0,48%)!important;
+   align-items:center!important;width:100%!important;max-width:100%!important;
+   min-width:0!important;box-sizing:border-box!important;padding:0 16px 0 0!important;
+   overflow:hidden!important;height:clamp(410px,28vw,530px)!important;min-height:0!important;
+ }
+ body[data-page="home"] .hero .hero-hologram{
+   grid-column:1!important;grid-row:1!important;position:relative!important;
+   top:auto!important;left:auto!important;width:100%!important;height:84%!important;
+   min-width:0!important;max-height:420px!important;overflow:hidden!important;
+   transform:none!important;place-self:center!important;
+ }
+ body[data-page="home"] .hero .hero-artwork{width:100%!important;height:100%!important;max-height:100%!important;object-fit:contain!important}
+ body[data-page="home"] .hero .hero-priority-card{
+   grid-column:2!important;grid-row:1!important;position:relative!important;
+   top:auto!important;right:auto!important;left:auto!important;width:96%!important;
+   max-width:100%!important;min-width:0!important;box-sizing:border-box!important;
+   margin:0 auto 0 0!important;transform:perspective(1200px) rotateY(-4deg) rotateZ(-1deg)!important;
+   transform-origin:center!important;animation:none!important;
+ }
+ body[data-page="home"] .hero .hero-trust-pill{z-index:6!important}
+ body[data-page="home"] .hero .pill-one{left:0!important;top:25%!important}
+ body[data-page="home"] .hero .pill-two{left:27%!important;top:6%!important}
+ body[data-page="home"] .hero .pill-three{left:40%!important;top:36%!important}
+ body[data-page="home"] .hero .pill-four{left:0!important;top:66%!important}
+ body[data-page="home"] .hero .pill-five{left:30%!important;top:82%!important}
+}
+@media(max-width:1000px){
+ body[data-page="home"] .hero .hero-visual{overflow:hidden!important;box-sizing:border-box!important}
+ body[data-page="home"] .hero .hero-priority-card{right:3%!important;width:44%!important;max-width:44%!important;box-sizing:border-box!important}
+}
