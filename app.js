@@ -592,7 +592,7 @@
       personalized=JSON.parse(JSON.stringify(draft));renderCategories();statusMessage('Saved to your CVEHarbor account.');
     }catch(e){statusMessage('Unable to save: '+e.message)}
   });
-  fetch('https://api.cveharbor.com/v1/me',{credentials:'include'}).then(r=>r.ok?r.json():null).then(async me=>{
+  if(typeof fetch==='function')fetch('https://api.cveharbor.com/v1/me',{credentials:'include'}).then(r=>r.ok?r.json():null).then(async me=>{
     if(!me?.authenticated)return;
     catalogueSignedIn=true;
     const r=await fetch(catalogueAPI,{credentials:'include'});
