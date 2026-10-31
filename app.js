@@ -43,6 +43,16 @@
       status:prior.status||baseline.status,
     });
   }
+  let personalized=null;let catalogueSignedIn=false;
+  const customGroup='custom';
+  technologyGroups[customGroup]=[];
+  groupTitles[customGroup]='My Additional Products';
+  const customMatching = name => {
+    const needle=String(name||'').toLowerCase().trim();
+    if(needle.length<3)return [];
+    // Search titles/affected text only; these remain unverified investigation leads.
+    return items.filter(a=>[a.title,a.affected].some(v=>String(v||'').toLowerCase().includes(needle)));
+  };
   const items=[...records.values()].map(record=>{
     // .NET / ASP.NET is the inclusive overview. .NET Core remains a filter for
     // the modern subset, including advisories previously tagged only .NET Core.
@@ -251,9 +261,10 @@
     const main=$('categoryGrid'),q=$('technologySearch').value.trim().toLowerCase();
     main.replaceChildren();
     const matches=x=>!q||(x.name+' '+(x.description||'')).toLowerCase().includes(q);
+    const enabled=x=>!personalized||personalized.defaults.includes(x.name);
     let visible=0;
     function makeRow(x){
-      const categoryRecords=items.filter(a=>(a.categories||[]).includes(x.name));
+      const categoryRecords=x.custom?customMatching(x.name):items.filter(a=>(a.categories||[]).includes(x.name));
       const total=advisoryIDs(categoryRecords).length;
       const recent=advisoryIDs(categoryRecords.filter(a=>newlyPublished(a,30))).length;
       const ages={'TODAY':0,'YESTERDAY':0,'72 HOURS':0};
@@ -288,17 +299,19 @@
       button.append(icon,label,counts,arrow);
       // Open the most recent disclosure day shown by this technology's badge.
       const openPeriod=ages.TODAY?'today':ages.YESTERDAY?'yesterday':ages['72 HOURS']?'twoDays':recent?'published30':'all';
-      button.addEventListener('click',()=>openTechnologyAdvisories(x.name,false,openPeriod));
+      button.addEventListener('click',()=>{if(x.custom){state.q=x.name;state.tech='all';state.group='all';state.period='all';$('search').value=x.name;$('dateRange').value='all';render();$('advisories').scrollIntoView({behavior:'smooth',block:'start'});}else openTechnologyAdvisories(x.name,false,openPeriod)});
       return button;
     }
     const meta={
       microsoft:['01 / PLATFORMS','Microsoft & Cloud','▦'],
       applications:['02 / APPLICATIONS','Applications & Frameworks','⌘'],
       infrastructure:['03 / OPERATIONS','Infrastructure & Security','⬡'],
-      data:['04 / DATA & UI','Data, UI & Dependencies','◫']
+      data:['04 / DATA & UI','Data, UI & Dependencies','◫'],
+      custom:['05 / CUSTOM','My Additional Products','＋']
     };
     for(const [name,techs] of Object.entries(technologyGroups)){
-      const matched=techs.map(label=>categories.find(x=>x.name===label)).filter(x=>x&&matches(x));
+      const candidates=name===customGroup?(personalized?.products||[]).map(x=>({...x,custom:true,icon:'＋'})):techs.map(label=>categories.find(x=>x.name===label));
+      const matched=candidates.filter(x=>x&&matches(x)&&(x.custom||enabled(x)));
       if(!matched.length)continue;
       const panel=text('article','technology-panel','');panel.dataset.domain=name;
       const head=text('button','technology-panel-head','');
@@ -315,10 +328,13 @@
       panel.append(head,rows);main.append(panel);visible+=matched.length;
     }
     $('technologyEmpty').hidden=visible!==0;
-    $('technologyTotal').textContent=String(categories.length);
+    $('technologyTotal').textContent=String(visible);
+    $('technologyRecentMetric').textContent=String(advisoryIDs(items.filter(x=>newlyPublished(x,30))).length);
+    $('technologyIndexedMetric').textContent=String(advisoryIDs(items).length);
+    $('technologyCriticalMetric').textContent=String(advisoryIDs(items.filter(x=>x.severity==='critical')).length);
     $('technologySearchSummary').textContent=q
       ? `${visible} of ${categories.length} technologies match your search`
-      : `All ${categories.length} technologies are visible. Recent means first published within 30 days; total is the indexed CVE and GHSA archive. Zero indexed does not mean no vulnerabilities exist.`;
+      : `${visible} selected technologies shown. Recent means first published within 30 days. Custom product matches are unverified leads. Zero indexed does not mean secure.`;
   }
   function renderFocus(){
     const root=$('priorityList');root.replaceChildren();
@@ -535,6 +551,56 @@
     button.addEventListener('click',()=>{chartPeriod=button.dataset.chartPeriod;chartShowAll=false;renderBars();});
   });
   $('chartShowAll').addEventListener('click',()=>{chartShowAll=!chartShowAll;renderBars();});
+  // The public default catalogue remains unchanged for visitors who are not signed in.
+  // Preferences are only stored on the authenticated account and never in shared data.
+  const catalogueAPI='https://api.cveharbor.com/v1/technology-catalogue';
+  const defaultNames=categories.map(x=>x.name);
+  const manageButton=$('technologyManageButton');
+  const customizeStatus=$('technologyCustomizeStatus');
+  const customForm=$('technologyAddForm');
+  let draft=null;
+  const statusMessage=s=>{customizeStatus.textContent=s};
+  function drawCustomizer(){
+    if(!draft)return;
+    const choices=$('technologyDefaultChoices');choices.replaceChildren();
+    for(const x of categories){
+      const label=document.createElement('label'),input=document.createElement('input');
+      input.type='checkbox';input.checked=draft.defaults.includes(x.name);
+      input.addEventListener('change',()=>{draft.defaults=input.checked?[...draft.defaults,x.name]:draft.defaults.filter(n=>n!==x.name)});
+      label.append(input,text('span','',x.name));choices.append(label);
+    }
+    const list=$('technologyCustomList');list.replaceChildren();
+    for(const p of draft.products){
+      const row=text('div','technology-custom-item','');
+      row.append(text('span','',p.name+(p.version?' · '+p.version:'')+' · Public feed coverage not verified'));
+      const remove=text('button','','Remove');remove.type='button';
+      remove.addEventListener('click',()=>{draft.products=draft.products.filter(x=>x.name!==p.name);drawCustomizer()});
+      row.append(remove);list.append(row);
+    }
+  }
+  manageButton.addEventListener('click',()=>{draft=JSON.parse(JSON.stringify(personalized||{defaults:defaultNames,products:[]}));drawCustomizer();$('technologyCustomizer').hidden=false;$('technologyCustomizer').scrollIntoView({block:'start',behavior:'smooth'})});
+  $('technologyManageClose').addEventListener('click',()=>{$('technologyCustomizer').hidden=true});
+  $('technologyResetButton').addEventListener('click',()=>{draft={defaults:[...defaultNames],products:[]};drawCustomizer();statusMessage('Defaults restored in the editor. Save to apply.')});
+  customForm.addEventListener('submit',e=>{e.preventDefault();const name=$('technologyAddName').value.trim(),version=$('technologyAddVersion').value.trim();if(!name||!draft)return;
+    if(draft.products.some(x=>x.name.toLowerCase()===name.toLowerCase())){statusMessage('Product already added.');return}
+    if(draft.products.length>=50){statusMessage('Maximum of 50 additional products.');return}
+    draft.products.push({name,version});customForm.reset();drawCustomizer();statusMessage('Product added to the editor. Save to apply.')
+  });
+  $('technologySaveButton').addEventListener('click',async()=>{if(!draft)return;statusMessage('Saving account preferences...');
+    try{const r=await fetch(catalogueAPI,{method:'PUT',credentials:'include',headers:{'content-type':'application/json'},body:JSON.stringify(draft)});
+      const data=await r.json();if(!r.ok)throw Error(data.error||'Unable to save');
+      personalized=JSON.parse(JSON.stringify(draft));renderCategories();statusMessage('Saved to your CVEHarbor account.');
+    }catch(e){statusMessage('Unable to save: '+e.message)}
+  });
+  if(typeof fetch==='function')fetch('https://api.cveharbor.com/v1/me',{credentials:'include'}).then(r=>r.ok?r.json():null).then(async me=>{
+    if(!me?.authenticated)return;
+    catalogueSignedIn=true;
+    const r=await fetch(catalogueAPI,{credentials:'include'});
+    if(!r.ok)return;
+    const data=await r.json();
+    personalized={defaults:Array.isArray(data.defaults)?data.defaults:defaultNames,products:Array.isArray(data.products)?data.products:[]};
+    manageButton.hidden=false;renderCategories();
+  }).catch(()=>{});
   $('technologySearch').addEventListener('input',renderCategories);
   renderBars();renderFocus();renderCategories();render();
 })();

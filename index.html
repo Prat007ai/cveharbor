@@ -91,13 +91,18 @@
       <div class="technology-intro">
         <div><p class="eyebrow">TECHNOLOGY INTELLIGENCE</p><h2 id="categoryTitle">Explore vulnerabilities by platform</h2>
           <p class="technology-description">See which platforms have advisories first published today, yesterday or two days ago. Click a technology or section heading to explore its published vulnerabilities and available fixes.</p></div>
-        <div class="technology-total"><strong id="technologyTotal">38</strong><span>Technologies tracked</span></div>
+        <div class="technology-kpis" aria-label="Published advisory statistics">
+          <div class="technology-kpi"><span class="kpi-symbol">⬡</span><strong id="technologyTotal">38</strong><small>Technologies tracked</small></div>
+          <div class="technology-kpi"><span class="kpi-symbol">ϟ</span><strong id="technologyRecentMetric">—</strong><small>New in 30 days</small></div>
+          <div class="technology-kpi"><span class="kpi-symbol">▤</span><strong id="technologyIndexedMetric">—</strong><small>Indexed advisories</small></div>
+          <div class="technology-kpi"><span class="kpi-symbol">♢</span><strong id="technologyCriticalMetric">—</strong><small>Critical advisories</small></div>
+        </div>
       </div>
       <div class="technology-tools">
         <label class="technology-search"><span aria-hidden="true">⌕</span><input type="search" id="technologySearch" placeholder="Search technologies or products..." autocomplete="off" aria-label="Search technology categories"></label>
-        <div class="technology-legend"><span><i class="tech-legend-dot new"></i>New in 30 days</span><span><i class="tech-legend-dot all"></i>All indexed CVEs</span></div>
+        <button type="button" id="technologyManageButton" class="technology-manage-button" hidden>Customize technologies</button><div class="technology-legend"><span><i class="tech-legend-dot new"></i>New in 30 days</span><span><i class="tech-legend-dot all"></i>All indexed CVEs</span></div>
       </div>
-      <div class="category-grid" id="categoryGrid" aria-label="All 38 technology groups in four sections"></div>
+      <div class="technology-customizer" id="technologyCustomizer" hidden><div class="technology-customizer-head"><div><h3>My monitored technologies</h3><p>Choose default categories or add products to your private catalogue. Indexed results are investigation leads, not confirmed exposure.</p></div><button type="button" id="technologyManageClose" aria-label="Close customization">✕</button></div><p id="technologyCustomizeStatus" role="status"></p><div id="technologyDefaultChoices" class="technology-choice-grid"></div><form id="technologyAddForm" class="technology-add-form"><label>Product name<input id="technologyAddName" maxlength="120" required placeholder="e.g. Apache Tomcat"></label><label>Installed version (optional)<input id="technologyAddVersion" maxlength="80" placeholder="e.g. 10.1.30"></label><button type="submit">Add product</button></form><div id="technologyCustomList"></div><button type="button" id="technologySaveButton">Save my catalogue</button><button type="button" id="technologyResetButton">Restore defaults</button></div><div class="category-grid" id="categoryGrid" aria-label="All 38 technology groups in four sections"></div>
       <div class="technology-empty" id="technologyEmpty" hidden>No matching technologies. Try another name or product.</div>
       <p class="technology-footnote" id="technologySearchSummary" aria-live="polite">All 38 technology categories appear above. “New” means first published in the last 30 days; “total” includes older indexed advisories. Zero does not establish that a product is secure.</p>
     </section>

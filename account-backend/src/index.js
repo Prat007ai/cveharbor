@@ -248,6 +248,19 @@ export default {async fetch(req,env,ctx){
   if(path.startsWith('/v1/plugin-monitor'))return await monitorRoute(req,env,user,path,req.method==='POST'?await body(req):{});
   if(path==='/v1/plugin-advisories'&&req.method==='GET')return await pluginAdvisoryRoute(req,env,user);
   if(path.startsWith('/v1/inventory'))return await inventoryRoute(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
+  if(path==='/v1/technology-catalogue'&&req.method==='GET'){
+   const row=await env.DB.prepare('SELECT preferences_json FROM user_technology_catalogue WHERE user_id=?').bind(user.id).first();
+   return response(row?JSON.parse(row.preferences_json):{defaults:null,products:[]});
+  }
+  if(path==='/v1/technology-catalogue'&&req.method==='PUT'){
+   const data=await body(req),defaults=data.defaults,products=data.products;
+   if(!Array.isArray(defaults)||defaults.length>100||!Array.isArray(products)||products.length>50)return response({error:'Invalid catalogue size'},400);
+   if(defaults.some(x=>typeof x!=='string'||!x.trim()||x.length>120)||products.some(x=>!x||typeof x.name!=='string'||!x.name.trim()||x.name.length>120||typeof x.version!=='string'||x.version.length>80))return response({error:'Invalid product details'},400);
+   if(new Set(defaults.map(x=>x.toLowerCase())).size!==defaults.length||new Set(products.map(x=>x.name.toLowerCase())).size!==products.length)return response({error:'Duplicate entries'},400);
+   const payload=JSON.stringify({defaults,products});
+   await env.DB.prepare('INSERT INTO user_technology_catalogue(user_id,preferences_json,updated_at) VALUES(?,?,?) ON CONFLICT(user_id) DO UPDATE SET preferences_json=excluded.preferences_json,updated_at=excluded.updated_at').bind(user.id,payload,Math.floor(Date.now()/1000)).run();
+   return response({saved:true});
+  }
   if(path==='/v1/stack'&&req.method==='GET'){const rows=await env.DB.prepare('SELECT technology,product_version FROM user_stack WHERE user_id=? ORDER BY technology').bind(user.id).all();return response({stack:rows.results})}
   if(path==='/v1/stack'&&req.method==='PUT'){
    const data=await body(req);if(!Array.isArray(data.stack)||data.stack.length>100)return response({error:'Invalid stack'},400);
