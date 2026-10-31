@@ -2200,3 +2200,17 @@ body[data-page="vulnerabilities"] .technology-redesign .technology-panel-rows::-
 .technology-redesign .technology-manage-button:hover,.technology-redesign .technology-manage-button:focus-visible{background:#116475!important;border-color:#5ce5d4!important;outline-offset:2px}
 .technology-redesign .technology-legend{margin-left:auto!important}
 @media(max-width:850px){.technology-redesign .technology-search{flex:1 1 100%!important}.technology-redesign .technology-legend{margin-left:0!important}}
+
+/* Signed-out advanced feature introduction */
+.technology-signin-dialog{width:min(490px,calc(100vw - 34px));max-width:490px;background:#09263a;color:#edf9ff;border:1px solid #38788c;border-radius:17px;padding:0;box-shadow:0 24px 80px #000a}
+.technology-signin-dialog::backdrop{background:#010d19c9;backdrop-filter:blur(5px)}
+.technology-signin-content{position:relative;padding:34px;text-align:center}
+.technology-signin-close{position:absolute;right:14px;top:10px;border:0;background:transparent;color:#b9d6e2;font-size:27px;cursor:pointer}
+.technology-signin-icon{height:60px;width:60px;margin:0 auto 16px;display:grid;place-items:center;font-size:32px;color:#69e7d6;border:1px solid #358d91;border-radius:17px;background:#0b4850}
+.technology-signin-content h2{font-size:27px;color:#fff;margin:10px 0 14px}
+.technology-signin-content p:not(.eyebrow){font-size:14px;line-height:1.65;color:#b6d4e2}
+.technology-signin-actions{display:flex;gap:11px;justify-content:center;margin:24px 0 14px;flex-wrap:wrap}
+.technology-signin-actions a{display:inline-flex;align-items:center;justify-content:center;padding:12px 17px;border-radius:9px;text-decoration:none;font-size:13px;font-weight:750}
+.technology-signin-primary{background:#64e6d8;color:#062532!important}
+.technology-signin-secondary{border:1px solid #48879b;color:#def8ff!important;background:#12384e}
+.technology-signin-content .technology-signin-note{font-size:11px!important;color:#9bb9c8!important}
