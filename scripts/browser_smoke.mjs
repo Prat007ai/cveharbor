@@ -963,3 +963,5 @@ assert.ok(workspaceDataClient.includes("request('/inventory')"),'Workspace uses 
 assert.ok(workspaceDataClient.includes("fetch('/feed-health.json'"),'recent advisory summary uses a published JSON feed');
 assert.ok(!workspaceDataClient.includes("fetch('/data.js'"),'empty script is not treated as an advisory feed');
 assert.ok(workspaceDataClient.includes("setTimeout(start,0)"),'dashboard loads after login state is rendered');
+
+assert.ok(fs.readFileSync('account-backend/src/index.js','utf8').includes("path==='/v1/website-monitor'?await body(req):{}"),'manual website checks must not JSON parse empty POST requests');
