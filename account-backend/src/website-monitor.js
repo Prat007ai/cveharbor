@@ -1,3 +1,4 @@
+import {lookupWebsiteThreat,assessHttpHeaders} from './website-threat.js';
 // Tenant-scoped public website monitoring. Only low-impact HTTPS checks are enabled.
 const json=(value,status=200)=>new Response(JSON.stringify(value),{status,headers:{'content-type':'application/json','cache-control':'no-store','access-control-allow-origin':'https://cveharbor.com','access-control-allow-credentials':'true','vary':'Origin'}});
 const now=()=>Math.floor(Date.now()/1000);
@@ -90,11 +91,16 @@ export async function checkSite(env,site,fetcher=fetch){
    contentType=String(response.headers.get('content-type')||'').slice(0,150);
    for(const key of ['strict-transport-security','content-security-policy','x-content-type-options','referrer-policy','x-frame-options','location'])headers[key]=String(response.headers.get(key)||'').slice(0,500);
   }catch(e){error='Check failed: '+String(e.name||'network').slice(0,40)}
+  const securityFindings=assessHttpHeaders(headers,status);
+  const threat=error?{provider:'Google Web Risk',status:'not_checked',threats:[]}:await lookupWebsiteThreat(site.url,env);
+  const evidence={http_headers:headers,http_findings:securityFindings,threat_intelligence:threat};
   const previous=await env.DB.prepare('SELECT http_status,security_headers FROM website_monitor_checks WHERE monitor_id=? AND user_id=? ORDER BY checked_at DESC LIMIT 1').bind(site.id,site.user_id).first();
-  const changed=previous&&((previous.http_status!==status)||(previous.security_headers!==JSON.stringify(headers)))?1:0;
-  await env.DB.prepare('INSERT INTO website_monitor_checks(id,monitor_id,user_id,checked_at,http_status,content_type,security_headers,changed,error) VALUES(?,?,?,?,?,?,?,?,?)').bind(crypto.randomUUID(),site.id,site.user_id,checkedAt,status,contentType,JSON.stringify(headers),changed,error).run();
+  let previousHeaders={};
+  try{const saved=JSON.parse(previous?.security_headers||'{}');previousHeaders=saved.http_headers||saved}catch{}
+  const changed=previous&&((previous.http_status!==status)||(JSON.stringify(previousHeaders)!==JSON.stringify(headers)))?1:0;
+  await env.DB.prepare('INSERT INTO website_monitor_checks(id,monitor_id,user_id,checked_at,http_status,content_type,security_headers,changed,error) VALUES(?,?,?,?,?,?,?,?,?)').bind(crypto.randomUUID(),site.id,site.user_id,checkedAt,status,contentType,JSON.stringify(evidence),changed,error).run();
   await env.DB.prepare('UPDATE website_monitors SET last_checked_at=?,last_status=?,last_error=? WHERE id=? AND user_id=?').bind(checkedAt,status,error,site.id,site.user_id).run();
-  return {checked_at:checkedAt,http_status:status,content_type:contentType,security_headers:headers,changed:!!changed,error};
+  return {checked_at:checkedAt,http_status:status,content_type:contentType,security_headers:headers,http_findings:securityFindings,threat_intelligence:threat,changed:!!changed,error};
 }
 export async function scanDue(env,fetcher=fetch){
  if(env.WEBSITE_MONITOR_ENABLED!=='true'||!env.DB)return {checked:0};
