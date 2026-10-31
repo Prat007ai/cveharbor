@@ -641,7 +641,9 @@
       row.append(remove);list.append(row);
     }
   }
-  manageButton.addEventListener('click',()=>{if(!catalogueSignedIn){window.location.href='/workspace/';return}draft=JSON.parse(JSON.stringify(personalized||{defaults:defaultNames,products:[]}));drawCustomizer();$('technologyCustomizer').hidden=false;$('technologyCustomizer').scrollIntoView({block:'start',behavior:'smooth'})});
+  manageButton.addEventListener('click',()=>{if(!catalogueSignedIn){$('technologySignInDialog').showModal();return}draft=JSON.parse(JSON.stringify(personalized||{defaults:defaultNames,products:[]}));drawCustomizer();$('technologyCustomizer').hidden=false;$('technologyCustomizer').scrollIntoView({block:'start',behavior:'smooth'})});
+  $('technologySignInClose').addEventListener('click',()=>$('technologySignInDialog').close());
+  $('technologySignInDialog').addEventListener('click',event=>{if(event.target===$('technologySignInDialog'))$('technologySignInDialog').close()});
   $('technologyManageClose').addEventListener('click',()=>{$('technologyCustomizer').hidden=true});
   $('technologyResetButton').addEventListener('click',()=>{draft={defaults:[...defaultNames],products:[]};drawCustomizer();statusMessage('Defaults restored in the editor. Save to apply.')});
   customForm.addEventListener('submit',e=>{e.preventDefault();const name=$('technologyAddName').value.trim(),version=$('technologyAddVersion').value.trim();if(!name||!draft)return;
