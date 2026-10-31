@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-31",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6385,
+  "candidate_records": 6386,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -64669,53 +64669,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-109618",
-      "title": "RCE via OOM corruption",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-30",
-      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "PHP upstream security advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:25Z",
-      "source_type": "php_upstream",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99998,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-109619",
       "title": "RCE via stale global state",
       "severity": "critical",
@@ -64760,6 +64713,53 @@
       "known_exploited": true,
       "epss": 0.99999,
       "epss_percentile": 0.99999,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-109618",
+      "title": "RCE via OOM corruption",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-30",
+      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "PHP upstream security advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:25Z",
+      "source_type": "php_upstream",
+      "known_exploited": true,
+      "epss": 0.99999,
+      "epss_percentile": 0.99998,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -76416,51 +76416,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        "Windows",
-        "Windows 11 OS",
-        "Windows Server OS"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
-        },
-        {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.09813,
-      "epss_percentile": 0.95543,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-102870",
       "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
       "severity": "high",
@@ -76503,6 +76458,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00906,
       "epss_percentile": 0.59814,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+        },
+        {
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.09813,
+      "epss_percentile": 0.95543,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -97063,6 +97063,42 @@
       "epss_as_of": "2026-10-31"
     },
     {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60729,
+      "epss_as_of": "2026-10-31"
+    },
+    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -97101,42 +97137,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55856,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60729,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -140127,6 +140127,34 @@
       "epss_as_of": "2026-10-31"
     },
     {
+      "id": "CVE-2026-11332",
+      "title": "A flaw was found in ansible-core",
+      "severity": "high",
+      "categories": [
+        "Application dependencies"
+      ],
+      "published": "2026-06-05",
+      "updated": "2026-10-31",
+      "summary": "A flaw was found in ansible-core. The ansible-galaxy role install command processes dependency specifications from a role's meta/requirements.yml file. Due to improper neutralization of argument delimiters, a malicious role author can inject arbitrary git configuration flags through the src field. This allows arbitrary code execution on the machine of a user who installs the role via ansible-galaxy role install.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-11332"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-31T15:17:07Z",
+      "source_updated_at": "2026-10-31T15:16:52.567",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-54458",
       "title": "WWBN AVideo: Unauthenticated Stored DOM Cross-Site Scripting via Per-Client Metadata Broadcast in YPTSocket Plugin",
       "severity": "critical",
@@ -148254,37 +148282,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2025-7624",
-      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
-      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
-      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.10514,
-      "epss_percentile": 0.95758,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2025-6704",
       "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
       "severity": "critical",
@@ -148313,6 +148310,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.11772,
       "epss_percentile": 0.96072,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2025-7624",
+      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
+      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
+      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.10514,
+      "epss_percentile": 0.95758,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -168125,121 +168153,90 @@
       "epss": 0.81691,
       "epss_percentile": 0.99643,
       "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2018-13383",
-      "title": "Fortinet FortiOS and FortiProxy Out-of-bounds Write",
-      "severity": "bulletin",
-      "categories": [
-        "Fortinet"
-      ],
-      "published": "",
-      "updated": "2022-01-10",
-      "summary": "A heap buffer overflow in Fortinet FortiOS and FortiProxy may cause the SSL VPN web service termination for logged in users.",
-      "affected": "Fortinet FortiOS and FortiProxy. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-01-10",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.32473,
-      "epss_percentile": 0.98334,
-      "epss_as_of": "2026-10-31"
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-31T15:09:36Z",
-      "last_attempt": "2026-10-31T15:09:36Z",
+      "last_success": "2026-10-31T15:17:07Z",
+      "last_attempt": "2026-10-31T15:17:07Z",
       "items_processed": 309,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-31T15:09:36Z",
-      "last_attempt": "2026-10-31T15:09:36Z",
+      "last_success": "2026-10-31T15:17:07Z",
+      "last_attempt": "2026-10-31T15:17:07Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-31T15:09:36Z",
-      "last_attempt": "2026-10-31T15:09:36Z",
-      "items_processed": 439,
+      "last_success": "2026-10-31T15:17:07Z",
+      "last_attempt": "2026-10-31T15:17:07Z",
+      "items_processed": 440,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-31T15:09:36Z",
-      "last_attempt": "2026-10-31T15:09:36Z",
+      "last_success": "2026-10-31T15:17:07Z",
+      "last_attempt": "2026-10-31T15:17:07Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-31T15:09:36Z",
-      "last_attempt": "2026-10-31T15:09:36Z",
+      "last_success": "2026-10-31T15:17:07Z",
+      "last_attempt": "2026-10-31T15:17:07Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-31T15:09:36Z",
-      "last_attempt": "2026-10-31T15:09:36Z",
+      "last_success": "2026-10-31T15:17:07Z",
+      "last_attempt": "2026-10-31T15:17:07Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-31T15:09:36Z",
-      "last_attempt": "2026-10-31T15:09:36Z",
+      "last_success": "2026-10-31T15:17:07Z",
+      "last_attempt": "2026-10-31T15:17:07Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-31T15:09:36Z",
-      "last_attempt": "2026-10-31T15:09:36Z",
+      "last_success": "2026-10-31T15:17:07Z",
+      "last_attempt": "2026-10-31T15:17:07Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-31T15:09:36Z",
-      "last_attempt": "2026-10-31T15:09:36Z",
+      "last_success": "2026-10-31T15:17:07Z",
+      "last_attempt": "2026-10-31T15:17:07Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-31T15:09:36Z",
-      "last_attempt": "2026-10-31T15:09:36Z",
+      "last_success": "2026-10-31T15:17:07Z",
+      "last_attempt": "2026-10-31T15:17:07Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-31T15:09:36Z",
-      "last_attempt": "2026-10-31T15:09:36Z",
+      "last_success": "2026-10-31T15:17:07Z",
+      "last_attempt": "2026-10-31T15:17:07Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-31T15:09:36Z",
-      "last_attempt": "2026-10-31T15:09:36Z",
+      "last_success": "2026-10-31T15:17:07Z",
+      "last_attempt": "2026-10-31T15:17:07Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -168251,7 +168248,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-31T15:09:36Z",
-  "last_successful_update": "2026-10-31T15:09:36Z",
+  "last_checked_at": "2026-10-31T15:17:07Z",
+  "last_successful_update": "2026-10-31T15:17:07Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
