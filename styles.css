@@ -627,10 +627,13 @@ button.tech-chart-link b{
 .threat-attack-export{padding:16px;margin-bottom:18px;background:#10383f;border:1px solid #36777b;border-radius:9px}
 .threat-attack-export h4{margin:0 0 9px;color:#b5f5ea;font-size:15px}
 .threat-attack-export p{font-size:12px;line-height:1.7;color:#bdd9df;margin:7px 0}
-.threat-attack-export-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
-.threat-download-link{display:inline-flex;align-items:center;min-height:44px;box-sizing:border-box;color:#b5f5ea;border:1px solid #4b9194;border-radius:7px;padding:10px 12px;text-decoration:none;font-size:12px;font-weight:750}
-.threat-download-link:focus-visible{outline:2px solid #7de3d5;outline-offset:3px}
-.threat-download-link[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+.threat-attack-export-links{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;padding-bottom:5px}
+.threat-download-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;box-sizing:border-box;color:#062914;background:linear-gradient(180deg,#91f5ad 0%,#4cdd7e 48%,#27b960 100%);border:1px solid #8ae8a7;border-bottom-color:#147c42;border-radius:9px;padding:11px 17px;text-decoration:none;font-size:12px;font-weight:800;text-shadow:0 1px 0 #a4f1bb;box-shadow:0 5px 0 #096b37,0 9px 16px #0005,inset 0 1px 0 #ffffffb0;transition:transform .12s ease,box-shadow .12s ease,filter .12s ease}
+.threat-download-link:not([aria-disabled="true"]):hover{filter:brightness(1.06);transform:translateY(-1px);box-shadow:0 6px 0 #096b37,0 11px 18px #0006,inset 0 1px 0 #ffffffb0}
+.threat-download-link:not([aria-disabled="true"]):active{transform:translateY(4px);box-shadow:0 1px 0 #096b37,0 3px 6px #0004,inset 0 1px 2px #083b1e33}
+.threat-download-link:focus-visible{outline:3px solid #d7ffe3;outline-offset:5px}
+.threat-download-link[aria-disabled="true"]{opacity:.55;cursor:not-allowed;filter:grayscale(.65);box-shadow:none;transform:none;text-shadow:none}
+@media(prefers-reduced-motion:reduce){.threat-download-link{transition:none}.threat-download-link:not([aria-disabled="true"]):hover,.threat-download-link:not([aria-disabled="true"]):active{transform:none}}
 .threat-group-progress{margin:0;color:#a7c3d4;font-size:12px}
 .threat-group-more{margin-top:16px;background:#153c49;color:#a5f0e5;border:1px solid #376b78;border-radius:8px;padding:11px 16px;cursor:pointer;font-weight:750}
 .threat-group-more:focus-visible{outline:2px solid #7de3d5;outline-offset:3px}
