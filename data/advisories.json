@@ -23969,6 +23969,1073 @@
       "epss_as_of": "2026-10-31"
     },
     {
+      "id": "CVE-2026-99110",
+      "title": "kernel: smb: client: fix heap overflow in cifs_do_set_acl()",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "kernel: smb: client: fix heap overflow in cifs_do_set_acl()",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99110"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99110"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.00184,
+      "epss_percentile": 0.07998,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99112",
+      "title": "kernel: net/sched: cls_flower: validate mask pointer after nla_next()",
+      "severity": "medium",
+      "categories": [
+        "Linux",
+        "React / Next.js"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "kernel: net/sched: cls_flower: validate mask pointer after nla_next()",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99112"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99112"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.00174,
+      "epss_percentile": 0.06889,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99117",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: net: bridge: mcast: don't...",
+      "severity": "bulletin",
+      "categories": [
+        "Linux",
+        "React / Next.js"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: net: bridge: mcast: don't truncate the port group walk on teardown __br_multicast_disable_port_ctx() and br_multicast_del_port() walk port->mglist with hlist_for_each_entry_safe(). However, br_multicast_find_del_pg() can also delete other entries from the same list through br_multicast_fwd_src_remove() or __fwd_del_star_excl(). If such an entry is the iterator's saved next node, hlist_del_init() clears its ->next and terminates the walk early. The reproducer triggers this in both teardown walks, leaving port groups in the bridge mdb with a dangling ->key.port after del_nbp() frees the port: BUG: KASAN: slab-use-after-free in __mdb_fill_info+0x1191/0x1320 __mdb_fill_info+0x1191/0x1320 br_mdb_dump+0x594/0xe40 rtnl_mdb_dump+0x1cf/0x5d0 Use hlist_del_init_rcu() to unlink the group while preserving ->next. br_multicast_del_pg() and the teardown walks run under br->multicast_lock. The GC worker must acquire the same lock before detaching the group for destruction, so the node remains alive while the walk uses the preserved pointer. Preserving ->next means a walk can now reach a group that an earlier iteration already deleted as a side effect. That group is off mp->ports, so br_multicast_find_del_pg() would fall through",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99117"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99117"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-phhg-87vx-7j2v"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://git.kernel.org/stable/c/5a3f7a683aee56e1f15c9d53041f3236767eaae7"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://git.kernel.org/stable/c/8243d587a081e790ad96e80d48eef44d9f7ef005"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "2026-10-30T15:35:27Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00167,
+      "epss_percentile": 0.05921,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99123",
+      "title": "kernel: kernel: connection hijacking via missing packet source validation in virtio vsock",
+      "severity": "low",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "kernel: kernel: connection hijacking via missing packet source validation in virtio vsock",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99123"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99123"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.00167,
+      "epss_percentile": 0.05924,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99131",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: xfs: fix capability check in...",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: xfs: fix capability check in xfs An user reported a bug where he managed to evade group's quota by changing a file's gid to a different group id the same user belonged to, even though quotas were enforced on both gids and the file's size was big enough to exceed the quota's hardlimit. Commit eba0549bc7d1 replaced a capable() call by a has_capability_noaudit() to prevent unnecessary selinux audit messages. Turns out that both calls have slightly different semantics even though their documentation seems similar. Where in a nutshell: capable() - Tests the task's effective credentials has_ns_capability_noaudit() - Tests the task's real credentials This most of the time has no practical difference but in some cases like changing attrs (specifically group id in this case) through a NFS client this will allow the quota code to use XFS_QMOPT_FORCE_RES, effectively bypassing quota accounting checks. Using instead ns_capable_noaudit() should fix this issue and prevent selinux audit messages. This also fix the remaining calls to has_capability_noaudit()",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99131"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99131"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-5g3h-v4h7-rrh3"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://git.kernel.org/stable/c/19a1a22029ad3ae3604c763af6bd1195cb73648f"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://git.kernel.org/stable/c/7809ac0161c7c5f52ed348fb1ec683b2b454a83e"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "2026-10-30T15:35:27Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00185,
+      "epss_percentile": 0.08079,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99136",
+      "title": "kernel: kernel: Data corruption via race condition in dm-crypt",
+      "severity": "low",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "kernel: kernel: Data corruption via race condition in dm-crypt",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99136"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99136"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.00167,
+      "epss_percentile": 0.0592,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99142",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: tracing: Check operator...",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: tracing: Check operator stack capacity before pushing predicate_parse() uses the first operator stack entry before processing any opening parentheses. A push then increments top before writing. The existing check still permits that write when top already points to the last allocated entry, which can access beyond the operator stack. Reject the push when top reaches the last allocated entry.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99142"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99142"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-cx2v-gr95-582j"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://git.kernel.org/stable/c/75e894f92417390f0ef44fd350f2d3634c784876"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://git.kernel.org/stable/c/a866a8a753922cdf7710b8eb3f686dc0efc06505"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "2026-10-30T15:35:28Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00174,
+      "epss_percentile": 0.06889,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99143",
+      "title": "kernel: kernel: Denial of Service via out-of-bounds access in tracing predicate parsing",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "kernel: kernel: Denial of Service via out-of-bounds access in tracing predicate parsing",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99143"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99143"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.00167,
+      "epss_percentile": 0.05925,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99152",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: scsi: libiscsi: Validate the...",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: scsi: libiscsi: Validate the task named by a management response __iscsi_complete_pdu() fetches the task for five response types from one place and checks only that the index resolved: case ISCSI_OP_LOGOUT_RSP: case ISCSI_OP_LOGIN_RSP: case ISCSI_OP_TEXT_RSP: case ISCSI_OP_SCSI_TMFUNC_RSP: case ISCSI_OP_NOOP_IN: task = iscsi_itt_to_task(conn, hdr->itt); if (!task) return ISCSI_ERR_BAD_ITT; iscsi_itt_to_task() bounds the index against cmds_max and looks at nothing else, so a target can name any slot in the pool, including one that has never been used. task->conn is then NULL, and both iscsi_nop_out_rsp() and iscsi_complete_task() dereference it. One unsolicited NOP-In is enough; a Text Response carrying the same ITT crashes in iscsi_complete_task() instead. Require the task to be in flight and not a SCSI command, the way iscsi_itt_to_ctask() does for the command opcodes. [ 6.298634] Oops: general protection fault, probably for non-canonical address 0xdffffc000000000c: 0000 [#1] SMP KASAN NOPTI [ 6.298642] KASAN: null-ptr-deref in range [0x0000000000000060-0x0000000000000067] [ 6.298652] CPU: 1 UID: 0 PID: 111 Comm: iscsistart Not tainted 7.2.0-rc5-ISCSI1-gf5098b6bae76 #1 PREEMPT(lazy) [ 6.298654] Hardware name: QE",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99152"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-j47q-hp6h-cpw3"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://git.kernel.org/stable/c/11bffcd9cb346732eab2914ef44fe777a3f0b585"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://git.kernel.org/stable/c/55a65ef61e2775aeb18fda63bd1959fa8b41f936"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "2026-10-30T15:35:28Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.0018,
+      "epss_percentile": 0.07567,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99153",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: scsi: libiscsi: Validate the...",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: scsi: libiscsi: Validate the ITT reflected in a Reject PDU A Reject PDU carries a copy of the header it rejects, and iscsi_handle_reject() takes the ITT out of that copy to find the task to clean up: memcpy(&rejected_pdu, data, sizeof(struct iscsi_hdr)); ... task = iscsi_itt_to_task(conn, rejected_pdu.itt); That value is whatever the target put there. iscsi_itt_to_task() bounds the index against cmds_max and checks nothing else, so any task in the pool can be named, and iscsi_nop_out_rsp() then completes it. An index that has never been used gives a NULL task->conn: the pool is zeroed at session setup and conn is assigned only when a task is allocated. If the task was used and returned, iscsi_complete_task() hits its WARN_ON_ONCE(task->state == ISCSI_TASK_FREE) and the refcount underflows. An in-flight SCSI command is completed as successful - a 1 MiB read returned 1048576 with none of its buffer written and no warning. Validate the reflected ITT the way iscsi_itt_to_ctask() validates a command ITT, and require the task to be in flight and not a SCSI command. [ 6.248477] Oops: general protection fault, probably for non-canonical address 0xdffffc000000000c: 0000 [#1] SMP KASAN NOPTI [ 6.249357] KASAN: null-ptr-der",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99153"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-92v8-wfx9-6cf9"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://git.kernel.org/stable/c/7215a69b6456fda79c0935c2959045dff3fcaac8"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://git.kernel.org/stable/c/c5958c770b2a0ee492414e26b07da9164a0d1f5d"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "2026-10-30T15:35:28Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.0018,
+      "epss_percentile": 0.07567,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99154",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: scsi: libiscsi: Reject a negative task index from parse_pdu_itt A transport that implements parse_pdu_itt h",
+      "severity": "critical",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: scsi: libiscsi: Reject a negative task index from parse_pdu_itt A transport that implements parse_pdu_itt hands libiscsi an index taken from the PDU, and both lookups bound it from above only: if (i >= session->cmds_max) i and cmds_max are both int, so a negative index passes and session->cmds[i] is read from before the array. be2iscsi produces one. beiscsi_parse_pdu() assigns the raw tag, *index = (int)itt; and beiscsi_complete_pdu() forwards an unsolicited NOP-In from the hardware async ring without replacing its ITT, so the value is the target's. It also reports the session's own age rather than the one in the tag, which leaves the age comparison in iscsi_verify_itt() with nothing to reject. Bound the index from below in both lookups.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99154"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "2026-10-31T13:17:57.807",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00172,
+      "epss_percentile": 0.06642,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99156",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: scsi: st: Fix use-after-free race between st_remove() and st_open() st_remove() drops the probe reference o",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: scsi: st: Fix use-after-free race between st_remove() and st_open() st_remove() drops the probe reference on the scsi_tape with kref_put() and only afterwards removes its index from st_index_idr. If that was the last reference, scsi_tape_release() frees the structure while it is still published in the idr. scsi_tape_get(), called from st_open(), looks up the tape in st_index_idr and takes a reference under st_ref_mutex and st_index_lock. remove_cdevs() does not wait for opens that are already past chrdev_open(), so an open that is blocked on st_ref_mutex while st_remove() holds it can take the mutex as soon as st_remove() drops it, find the freed tpnt in the idr and call kref_get() on it: BUG: KASAN: slab-use-after-free in st_open Write of size 4 ... st_open (drivers/scsi/st.c:254 drivers/scsi/st.c:1291) chrdev_open ... Freed by task ...: kfree st_remove (drivers/scsi/st.c:4512) Remove the index from the idr before dropping the reference, all under st_ref_mutex. A concurrent scsi_tape_get() now either runs first and holds a valid reference that keeps the tape alive, or runs afterwards and finds nothing, so st_open() fails with -ENXIO. This restores the ordering st",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99156"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "2026-10-31T13:17:57.963",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00172,
+      "epss_percentile": 0.06641,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99163",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: tracing/histograms: Reject...",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: tracing/histograms: Reject non-stacktrace fields for synthetic stacktrace fields In check_synth_field(), when a synthetic event field is a stacktrace (field->is_stack) and the histogram field is not a \"long[\" stacktrace array, validation falls through to the generic size and signedness comparison. Because parse_synth_field() sets a stacktrace field's type to \"__data_loc unsigned long[]\", its size is sizeof(u64) and synth_field_signed() marks it as signed. Consequently, any 8-byte signed scalar histogram field passes the fallback check, and its scalar value is subsequently dereferenced as a kernel stacktrace pointer in get_field_size() and trace_stack(). Furthermore, checking strstr(hist_field->type, \"long[\") is insufficient because tracepoint fields defined with __bitmask() or __rel_bitmask() also have type \"__data_loc unsigned long[]\" or \"__rel_loc unsigned long[]\", whilst create_hist_field() treats them as 4-byte scalar values without HIST_FIELD_FL_STACKTRACE. Propagate HIST_FIELD_FL_STACKTRACE to variable references and field variables (whilst excluding variable aliases from per-element stacktrace capture), and reject any mismatch between HIST_FIELD_FL_STACKTRACE and field->is_stack in check_synth_field().",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99163"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-8cf9-783r-h9xg"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://git.kernel.org/stable/c/1f36e4ddd05d540f363dbaa4c23042549f15b3ef"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://git.kernel.org/stable/c/a244c241593b5b38a08f0df2cb43c26574efbdcb"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "2026-10-30T15:35:32Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00172,
+      "epss_percentile": 0.0664,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99167",
+      "title": "kernel: net/sched: fix use-after-free in __tcf_action_put()",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "kernel: net/sched: fix use-after-free in __tcf_action_put()",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99167"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99167"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.00172,
+      "epss_percentile": 0.06639,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99173",
+      "title": "kernel: eventfs: Free the eventfs_inode after an rcu grace period too",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "kernel: eventfs: Free the eventfs_inode after an rcu grace period too",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99173"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99173"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.00167,
+      "epss_percentile": 0.05923,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99180",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: unicode: free the map after...",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: unicode: free the map after a grace period generic_ci_d_hash() and generic_ci_d_compare() read sb->s_encoding and dereference the unicode map while a pathwalk in rcu mode holds nothing but rcu_read_lock(). The filesystems that use them, ext4, f2fs and tmpfs, drop the map with utf8_unload() from ->put_super(), which runs when the last reference to the mount goes away. A lookup that is still inside such a filesystem at that point reads a freed map. With a pathwalk held up in utf8_casefold_hash() while the last reference to a casefolded tmpfs goes away: BUG: KASAN: slab-use-after-free in utf8nlookup+0x74c/0x950 Read of size 8 at addr ff110001030fe658 by task walker/98 Call Trace: <TASK> utf8nlookup+0x74c/0x950 utf8byte+0x160/0x1560 utf8_casefold_hash+0x167/0x230 generic_ci_d_hash+0xdd/0x1c0 link_path_walk+0x11ad/0x1d30 path_lookupat+0x63/0xb00 filename_lookup+0x1f1/0x5b0 vfs_statx+0xd7/0x3b0 [...] Allocated by task 94: __kmalloc_cache_noprof+0x249/0x560 utf8_load+0x4e/0x570 shmem_parse_opt_casefold.isra.0+0x92/0x270 [...] Freed by task 97: kfree+0x1db/0x5b0 shmem_put_super+0x72/0x170 generic_shutdown_super+0x14c/0x530 kill_anon_super+0x3a/0x60 deactivate_locked_super+0x9c/0xf0 cleanup_mnt+0x9f/0x130 So far that has ",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99180"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-vcmx-2wrh-m3mj"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://git.kernel.org/stable/c/2b54d3c971a1e5df3c9b0bcc10311ae6c29e79d8"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://git.kernel.org/stable/c/6560c3d9a6925e3747d9ad8463e16010c31ba715"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "2026-10-30T15:35:34Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00172,
+      "epss_percentile": 0.06643,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99203",
+      "title": "kernel: pipe: preserve existing fasync readers on writer setup failure",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "kernel: pipe: preserve existing fasync readers on writer setup failure",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99203"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99203"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.0016,
+      "epss_percentile": 0.05221,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99212",
+      "title": "kernel: net/rds: don't let the rdma_cm destroy an id RDS still owns on route failure",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "kernel: net/rds: don't let the rdma_cm destroy an id RDS still owns on route failure",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99212"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99212"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.0016,
+      "epss_percentile": 0.05222,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99213",
+      "title": "kernel: vsock: treat TCP_CLOSING as once-established",
+      "severity": "medium",
+      "categories": [
+        "Linux",
+        "React / Next.js"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "kernel: vsock: treat TCP_CLOSING as once-established",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99213"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99213"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.0016,
+      "epss_percentile": 0.05222,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99216",
+      "title": "kernel: Drivers: hv: Don't reset VMBus connection state on error/exit paths",
+      "severity": "medium",
+      "categories": [
+        "HyperV",
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "kernel: Drivers: hv: Don't reset VMBus connection state on error/exit paths",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99216"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99216"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.0016,
+      "epss_percentile": 0.05223,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99107",
+      "title": "kernel: ntfs: fix incorrect MFT record pointer passed to ntfs_attr_record_resize",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "kernel: ntfs: fix incorrect MFT record pointer passed to ntfs_attr_record_resize",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99107"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99107"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.00156,
+      "epss_percentile": 0.04722,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99109",
+      "title": "kernel: smb: client: reject SetEA requests that do not fit the request buffer",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "kernel: smb: client: reject SetEA requests that do not fit the request buffer",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99109"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99109"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.00163,
+      "epss_percentile": 0.05492,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99116",
+      "title": "kernel: net: psp: do not inherit the Rx association on clone",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "kernel: net: psp: do not inherit the Rx association on clone",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99116"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99116"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.00174,
+      "epss_percentile": 0.06888,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99122",
+      "title": "kernel: kernel: Denial of Service via unvalidated packet source in VMCI sockets",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "kernel: kernel: Denial of Service via unvalidated packet source in VMCI sockets",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99122"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99122"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.00167,
+      "epss_percentile": 0.05928,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99148",
+      "title": "kernel: kernel: amdgpu: memory corruption via premature eviction fence detachment",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "kernel: kernel: amdgpu: memory corruption via premature eviction fence detachment",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99148"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99148"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.00167,
+      "epss_percentile": 0.05921,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99164",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: spi: imx: fix slab corruption from undersized DMA bounce buffers Since commit faa8e404ad8e (\"spi: imx: supp",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: spi: imx: fix slab corruption from undersized DMA bounce buffers Since commit faa8e404ad8e (\"spi: imx: support dynamic burst length for ECSPI DMA mode\"), the driver allocates its private DMA TX/RX buffers with kzalloc(dma_len), where dma_len is only rounded up to 4 bytes, but maps, syncs and unmaps them with DMA_CACHE_ALIGNED_LEN(dma_len), i.e. rounded up to the cache line size. As a result, the DMA API operates on memory beyond the end of the allocation. This was observed on a custom i.MX8MP platform with an mcp251xfd CAN controller under heavy RPMSG load, as a series of refcount_t warnings triggered from rpmsg_recv_done() in virtio_rpmsg_bus: refcount_t: addition on 0; use-after-free. refcount_t: underflow; use-after-free. refcount_t: saturated; leaking memory. Leading finally to an \"Unable to handle kernel paging request\" oops. Reproducing this problem took between 30 minutes and roughly 30 hours under the same workload. Hardware watchpoints on the refcount of a struct rpmsg_endpoint showed it was overwritten from 2 to 1 by __pi_memcpy_generic() in the irq/155-spi2.0 thread. Additionally it was found that a \"normal\" rpmsg_recv_done() took 11µs +/-2µs from its k",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99164"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "2026-10-31T13:17:58.290",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00163,
+      "epss_percentile": 0.05493,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99170",
+      "title": "kernel: namespace: a mount that copy_tree() leaves out can't take over a lock",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "kernel: namespace: a mount that copy_tree() leaves out can't take over a lock",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99170"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99170"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.00163,
+      "epss_percentile": 0.05493,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99177",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: KVM: SEV: Fix page dirtying in sev_gmem_post_populate() set_page_dirty() requires that the caller holds som",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: KVM: SEV: Fix page dirtying in sev_gmem_post_populate() set_page_dirty() requires that the caller holds some kind of lock to ensure that the page's mapping does not concurrently go away. That is not the case for a random page we got from get_user_pages_fast(), so use set_page_dirty_lock(). [sean: tag for stable]",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99177"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "2026-10-31T13:17:58.880",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00156,
+      "epss_percentile": 0.04722,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99185",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: firewire: core: fix race condition in split transaction handling For a split transaction, either fw_core_ha",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-10-31",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: firewire: core: fix race condition in split transaction handling For a split transaction, either fw_core_handle_response() or split_transaction_timeout_callback() may manipulate the same transaction entry in the pending transaction list. The return value of timer_delete() is used to determine which function handles the entry. If the transaction is a split transaction and timer_delete() returns zero, the timeout callback may already be running. In this case, the response handler must leave the entry in the list for the timeout callback to remove. A previous code refactoring broke this behavior, introducing a race condition in which both functions could process the same transaction. This could lead to a use-after-free on the transaction initiator side. Fix the regression by ensuring that the response handler does not process the transaction when timer_delete() returns zero. The timeout callback is responsible for removing the entry from the pending transaction list.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99185"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T11:52:17Z",
+      "source_updated_at": "2026-10-31T13:17:59.157",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00156,
+      "epss_percentile": 0.0472,
+      "epss_as_of": "2026-10-31"
+    },
+    {
       "id": "CVE-2026-99100",
       "title": "kernel: wifi: p54: validate firmware record lengths",
       "severity": "medium",
@@ -24109,77 +25176,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-99110",
-      "title": "kernel: smb: client: fix heap overflow in cifs_do_set_acl()",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "kernel: smb: client: fix heap overflow in cifs_do_set_acl()",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99110"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99110"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00184,
-      "epss_percentile": 0.07998,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2026-99112",
-      "title": "kernel: net/sched: cls_flower: validate mask pointer after nla_next()",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "React / Next.js"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "kernel: net/sched: cls_flower: validate mask pointer after nla_next()",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99112"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99112"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00174,
-      "epss_percentile": 0.06889,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-99113",
       "title": "kernel: ksmbd: zero the FS_OBJECT_ID_INFORMATION buffer before filling it in",
       "severity": "medium",
@@ -24288,54 +25284,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-99117",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: net: bridge: mcast: don't...",
-      "severity": "bulletin",
-      "categories": [
-        "Linux",
-        "React / Next.js"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: net: bridge: mcast: don't truncate the port group walk on teardown __br_multicast_disable_port_ctx() and br_multicast_del_port() walk port->mglist with hlist_for_each_entry_safe(). However, br_multicast_find_del_pg() can also delete other entries from the same list through br_multicast_fwd_src_remove() or __fwd_del_star_excl(). If such an entry is the iterator's saved next node, hlist_del_init() clears its ->next and terminates the walk early. The reproducer triggers this in both teardown walks, leaving port groups in the bridge mdb with a dangling ->key.port after del_nbp() frees the port: BUG: KASAN: slab-use-after-free in __mdb_fill_info+0x1191/0x1320 __mdb_fill_info+0x1191/0x1320 br_mdb_dump+0x594/0xe40 rtnl_mdb_dump+0x1cf/0x5d0 Use hlist_del_init_rcu() to unlink the group while preserving ->next. br_multicast_del_pg() and the teardown walks run under br->multicast_lock. The GC worker must acquire the same lock before detaching the group for destruction, so the node remains alive while the walk uses the preserved pointer. Preserving ->next means a walk can now reach a group that an earlier iteration already deleted as a side effect. That group is off mp->ports, so br_multicast_find_del_pg() would fall through",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99117"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99117"
-        },
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-phhg-87vx-7j2v"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://git.kernel.org/stable/c/5a3f7a683aee56e1f15c9d53041f3236767eaae7"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://git.kernel.org/stable/c/8243d587a081e790ad96e80d48eef44d9f7ef005"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "2026-10-30T15:35:27Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00167,
-      "epss_percentile": 0.05921,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-99118",
       "title": "In the Linux kernel, the following vulnerability has been resolved: drm/i915/dmc: Harden DMC...",
       "severity": "bulletin",
@@ -24428,41 +25376,6 @@
       "known_exploited": false,
       "epss": 0.00174,
       "epss_percentile": 0.0689,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2026-99123",
-      "title": "kernel: kernel: connection hijacking via missing packet source validation in virtio vsock",
-      "severity": "low",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "kernel: kernel: connection hijacking via missing packet source validation in virtio vsock",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99123"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99123"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00167,
-      "epss_percentile": 0.05924,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -24691,53 +25604,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-99131",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: xfs: fix capability check in...",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: xfs: fix capability check in xfs An user reported a bug where he managed to evade group's quota by changing a file's gid to a different group id the same user belonged to, even though quotas were enforced on both gids and the file's size was big enough to exceed the quota's hardlimit. Commit eba0549bc7d1 replaced a capable() call by a has_capability_noaudit() to prevent unnecessary selinux audit messages. Turns out that both calls have slightly different semantics even though their documentation seems similar. Where in a nutshell: capable() - Tests the task's effective credentials has_ns_capability_noaudit() - Tests the task's real credentials This most of the time has no practical difference but in some cases like changing attrs (specifically group id in this case) through a NFS client this will allow the quota code to use XFS_QMOPT_FORCE_RES, effectively bypassing quota accounting checks. Using instead ns_capable_noaudit() should fix this issue and prevent selinux audit messages. This also fix the remaining calls to has_capability_noaudit()",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99131"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99131"
-        },
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-5g3h-v4h7-rrh3"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://git.kernel.org/stable/c/19a1a22029ad3ae3604c763af6bd1195cb73648f"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://git.kernel.org/stable/c/7809ac0161c7c5f52ed348fb1ec683b2b454a83e"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "2026-10-30T15:35:27Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00185,
-      "epss_percentile": 0.08079,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-99132",
       "title": "kernel: kernel: Denial of Service via deadlock in XFS superblock buffer synchronization",
       "severity": "medium",
@@ -24878,41 +25744,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-99136",
-      "title": "kernel: kernel: Data corruption via race condition in dm-crypt",
-      "severity": "low",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "kernel: kernel: Data corruption via race condition in dm-crypt",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99136"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99136"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00167,
-      "epss_percentile": 0.0592,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-99138",
       "title": "In the Linux kernel, the following vulnerability has been resolved: tcp: fix use-after-free in...",
       "severity": "bulletin",
@@ -25030,88 +25861,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-99142",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: tracing: Check operator...",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: tracing: Check operator stack capacity before pushing predicate_parse() uses the first operator stack entry before processing any opening parentheses. A push then increments top before writing. The existing check still permits that write when top already points to the last allocated entry, which can access beyond the operator stack. Reject the push when top reaches the last allocated entry.",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99142"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99142"
-        },
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-cx2v-gr95-582j"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://git.kernel.org/stable/c/75e894f92417390f0ef44fd350f2d3634c784876"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://git.kernel.org/stable/c/a866a8a753922cdf7710b8eb3f686dc0efc06505"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "2026-10-30T15:35:28Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00174,
-      "epss_percentile": 0.06889,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2026-99143",
-      "title": "kernel: kernel: Denial of Service via out-of-bounds access in tracing predicate parsing",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "kernel: kernel: Denial of Service via out-of-bounds access in tracing predicate parsing",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99143"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99143"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00167,
-      "epss_percentile": 0.05925,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-99147",
       "title": "kernel: kernel: Denial of Service via improper locked object handling in drm_exec",
       "severity": "medium",
@@ -25194,123 +25943,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-99152",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: scsi: libiscsi: Validate the...",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: scsi: libiscsi: Validate the task named by a management response __iscsi_complete_pdu() fetches the task for five response types from one place and checks only that the index resolved: case ISCSI_OP_LOGOUT_RSP: case ISCSI_OP_LOGIN_RSP: case ISCSI_OP_TEXT_RSP: case ISCSI_OP_SCSI_TMFUNC_RSP: case ISCSI_OP_NOOP_IN: task = iscsi_itt_to_task(conn, hdr->itt); if (!task) return ISCSI_ERR_BAD_ITT; iscsi_itt_to_task() bounds the index against cmds_max and looks at nothing else, so a target can name any slot in the pool, including one that has never been used. task->conn is then NULL, and both iscsi_nop_out_rsp() and iscsi_complete_task() dereference it. One unsolicited NOP-In is enough; a Text Response carrying the same ITT crashes in iscsi_complete_task() instead. Require the task to be in flight and not a SCSI command, the way iscsi_itt_to_ctask() does for the command opcodes. [ 6.298634] Oops: general protection fault, probably for non-canonical address 0xdffffc000000000c: 0000 [#1] SMP KASAN NOPTI [ 6.298642] KASAN: null-ptr-deref in range [0x0000000000000060-0x0000000000000067] [ 6.298652] CPU: 1 UID: 0 PID: 111 Comm: iscsistart Not tainted 7.2.0-rc5-ISCSI1-gf5098b6bae76 #1 PREEMPT(lazy) [ 6.298654] Hardware name: QE",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99152"
-        },
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-j47q-hp6h-cpw3"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://git.kernel.org/stable/c/11bffcd9cb346732eab2914ef44fe777a3f0b585"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://git.kernel.org/stable/c/55a65ef61e2775aeb18fda63bd1959fa8b41f936"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "2026-10-30T15:35:28Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.0018,
-      "epss_percentile": 0.07567,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2026-99153",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: scsi: libiscsi: Validate the...",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: scsi: libiscsi: Validate the ITT reflected in a Reject PDU A Reject PDU carries a copy of the header it rejects, and iscsi_handle_reject() takes the ITT out of that copy to find the task to clean up: memcpy(&rejected_pdu, data, sizeof(struct iscsi_hdr)); ... task = iscsi_itt_to_task(conn, rejected_pdu.itt); That value is whatever the target put there. iscsi_itt_to_task() bounds the index against cmds_max and checks nothing else, so any task in the pool can be named, and iscsi_nop_out_rsp() then completes it. An index that has never been used gives a NULL task->conn: the pool is zeroed at session setup and conn is assigned only when a task is allocated. If the task was used and returned, iscsi_complete_task() hits its WARN_ON_ONCE(task->state == ISCSI_TASK_FREE) and the refcount underflows. An in-flight SCSI command is completed as successful - a 1 MiB read returned 1048576 with none of its buffer written and no warning. Validate the reflected ITT the way iscsi_itt_to_ctask() validates a command ITT, and require the task to be in flight and not a SCSI command. [ 6.248477] Oops: general protection fault, probably for non-canonical address 0xdffffc000000000c: 0000 [#1] SMP KASAN NOPTI [ 6.249357] KASAN: null-ptr-der",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99153"
-        },
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-92v8-wfx9-6cf9"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://git.kernel.org/stable/c/7215a69b6456fda79c0935c2959045dff3fcaac8"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://git.kernel.org/stable/c/c5958c770b2a0ee492414e26b07da9164a0d1f5d"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "2026-10-30T15:35:28Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.0018,
-      "epss_percentile": 0.07567,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2026-99154",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: scsi: libiscsi: Reject a negative task index from parse_pdu_itt A transport that implements parse_pdu_itt h",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: scsi: libiscsi: Reject a negative task index from parse_pdu_itt A transport that implements parse_pdu_itt hands libiscsi an index taken from the PDU, and both lookups bound it from above only: if (i >= session->cmds_max) i and cmds_max are both int, so a negative index passes and session->cmds[i] is read from before the array. be2iscsi produces one. beiscsi_parse_pdu() assigns the raw tag, *index = (int)itt; and beiscsi_complete_pdu() forwards an unsolicited NOP-In from the hardware async ring without replacing its ITT, so the value is the target's. It also reports the session's own age rather than the one in the tag, which leaves the age comparison in iscsi_verify_itt() with nothing to reject. Bound the index from below in both lookups.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99154"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "2026-10-30T13:21:49.163",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00172,
-      "epss_percentile": 0.06642,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-99155",
       "title": "In the Linux kernel, the following vulnerability has been resolved: scsi: xen/scsifront: Check...",
       "severity": "bulletin",
@@ -25351,37 +25983,6 @@
       "known_exploited": false,
       "epss": 0.0018,
       "epss_percentile": 0.07567,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2026-99156",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: scsi: st: Fix use-after-free race between st_remove() and st_open() st_remove() drops the probe reference o",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: scsi: st: Fix use-after-free race between st_remove() and st_open() st_remove() drops the probe reference on the scsi_tape with kref_put() and only afterwards removes its index from st_index_idr. If that was the last reference, scsi_tape_release() frees the structure while it is still published in the idr. scsi_tape_get(), called from st_open(), looks up the tape in st_index_idr and takes a reference under st_ref_mutex and st_index_lock. remove_cdevs() does not wait for opens that are already past chrdev_open(), so an open that is blocked on st_ref_mutex while st_remove() holds it can take the mutex as soon as st_remove() drops it, find the freed tpnt in the idr and call kref_get() on it: BUG: KASAN: slab-use-after-free in st_open Write of size 4 ... st_open (drivers/scsi/st.c:254 drivers/scsi/st.c:1291) chrdev_open ... Freed by task ...: kfree st_remove (drivers/scsi/st.c:4512) Remove the index from the idr before dropping the reference, all under st_ref_mutex. A concurrent scsi_tape_get() now either runs first and holds a valid reference that keeps the tape alive, or runs afterwards and finds nothing, so st_open() fails with -ENXIO. This restores the ordering st",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99156"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "2026-10-30T13:21:49.400",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00172,
-      "epss_percentile": 0.06641,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -25578,49 +26179,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-99163",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: tracing/histograms: Reject...",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: tracing/histograms: Reject non-stacktrace fields for synthetic stacktrace fields In check_synth_field(), when a synthetic event field is a stacktrace (field->is_stack) and the histogram field is not a \"long[\" stacktrace array, validation falls through to the generic size and signedness comparison. Because parse_synth_field() sets a stacktrace field's type to \"__data_loc unsigned long[]\", its size is sizeof(u64) and synth_field_signed() marks it as signed. Consequently, any 8-byte signed scalar histogram field passes the fallback check, and its scalar value is subsequently dereferenced as a kernel stacktrace pointer in get_field_size() and trace_stack(). Furthermore, checking strstr(hist_field->type, \"long[\") is insufficient because tracepoint fields defined with __bitmask() or __rel_bitmask() also have type \"__data_loc unsigned long[]\" or \"__rel_loc unsigned long[]\", whilst create_hist_field() treats them as 4-byte scalar values without HIST_FIELD_FL_STACKTRACE. Propagate HIST_FIELD_FL_STACKTRACE to variable references and field variables (whilst excluding variable aliases from per-element stacktrace capture), and reject any mismatch between HIST_FIELD_FL_STACKTRACE and field->is_stack in check_synth_field().",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99163"
-        },
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-8cf9-783r-h9xg"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://git.kernel.org/stable/c/1f36e4ddd05d540f363dbaa4c23042549f15b3ef"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://git.kernel.org/stable/c/a244c241593b5b38a08f0df2cb43c26574efbdcb"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "2026-10-30T15:35:32Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00172,
-      "epss_percentile": 0.0664,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-99165",
       "title": "In the Linux kernel, the following vulnerability has been resolved: sctp: revalidate output...",
       "severity": "bulletin",
@@ -25701,41 +26259,6 @@
       "first_seen_at": "2026-10-28T11:52:17Z",
       "source_updated_at": "2026-10-30T15:35:34Z",
       "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00172,
-      "epss_percentile": 0.06639,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2026-99167",
-      "title": "kernel: net/sched: fix use-after-free in __tcf_action_put()",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "kernel: net/sched: fix use-after-free in __tcf_action_put()",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99167"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99167"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
       "known_exploited": false,
       "epss": 0.00172,
       "epss_percentile": 0.06639,
@@ -25833,41 +26356,6 @@
       "known_exploited": false,
       "epss": 0.00172,
       "epss_percentile": 0.06642,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2026-99173",
-      "title": "kernel: eventfs: Free the eventfs_inode after an rcu grace period too",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "kernel: eventfs: Free the eventfs_inode after an rcu grace period too",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99173"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99173"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00167,
-      "epss_percentile": 0.05923,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -26091,49 +26579,6 @@
       "known_exploited": false,
       "epss": 0.00172,
       "epss_percentile": 0.06644,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2026-99180",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: unicode: free the map after...",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: unicode: free the map after a grace period generic_ci_d_hash() and generic_ci_d_compare() read sb->s_encoding and dereference the unicode map while a pathwalk in rcu mode holds nothing but rcu_read_lock(). The filesystems that use them, ext4, f2fs and tmpfs, drop the map with utf8_unload() from ->put_super(), which runs when the last reference to the mount goes away. A lookup that is still inside such a filesystem at that point reads a freed map. With a pathwalk held up in utf8_casefold_hash() while the last reference to a casefolded tmpfs goes away: BUG: KASAN: slab-use-after-free in utf8nlookup+0x74c/0x950 Read of size 8 at addr ff110001030fe658 by task walker/98 Call Trace: <TASK> utf8nlookup+0x74c/0x950 utf8byte+0x160/0x1560 utf8_casefold_hash+0x167/0x230 generic_ci_d_hash+0xdd/0x1c0 link_path_walk+0x11ad/0x1d30 path_lookupat+0x63/0xb00 filename_lookup+0x1f1/0x5b0 vfs_statx+0xd7/0x3b0 [...] Allocated by task 94: __kmalloc_cache_noprof+0x249/0x560 utf8_load+0x4e/0x570 shmem_parse_opt_casefold.isra.0+0x92/0x270 [...] Freed by task 97: kfree+0x1db/0x5b0 shmem_put_super+0x72/0x170 generic_shutdown_super+0x14c/0x530 kill_anon_super+0x3a/0x60 deactivate_locked_super+0x9c/0xf0 cleanup_mnt+0x9f/0x130 So far that has ",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99180"
-        },
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-vcmx-2wrh-m3mj"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://git.kernel.org/stable/c/2b54d3c971a1e5df3c9b0bcc10311ae6c29e79d8"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://git.kernel.org/stable/c/6560c3d9a6925e3747d9ad8463e16010c31ba715"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "2026-10-30T15:35:34Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00172,
-      "epss_percentile": 0.06643,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -26467,41 +26912,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-99203",
-      "title": "kernel: pipe: preserve existing fasync readers on writer setup failure",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "kernel: pipe: preserve existing fasync readers on writer setup failure",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99203"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99203"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.0016,
-      "epss_percentile": 0.05221,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-99204",
       "title": "In the Linux kernel, the following vulnerability has been resolved: ocfs2/dlm: Protect the...",
       "severity": "bulletin",
@@ -26619,77 +27029,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-99212",
-      "title": "kernel: net/rds: don't let the rdma_cm destroy an id RDS still owns on route failure",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "kernel: net/rds: don't let the rdma_cm destroy an id RDS still owns on route failure",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99212"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99212"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.0016,
-      "epss_percentile": 0.05222,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2026-99213",
-      "title": "kernel: vsock: treat TCP_CLOSING as once-established",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "React / Next.js"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "kernel: vsock: treat TCP_CLOSING as once-established",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99213"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99213"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.0016,
-      "epss_percentile": 0.05222,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-99214",
       "title": "kernel: drm/vc4: hdmi: Move packet RAM enable to PM runtime",
       "severity": "low",
@@ -26722,42 +27061,6 @@
       "known_exploited": false,
       "epss": 0.00155,
       "epss_percentile": 0.0463,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2026-99216",
-      "title": "kernel: Drivers: hv: Don't reset VMBus connection state on error/exit paths",
-      "severity": "medium",
-      "categories": [
-        "HyperV",
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-30",
-      "summary": "kernel: Drivers: hv: Don't reset VMBus connection state on error/exit paths",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99216"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99216"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.0016,
-      "epss_percentile": 0.05223,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -31961,41 +32264,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-99107",
-      "title": "kernel: ntfs: fix incorrect MFT record pointer passed to ntfs_attr_record_resize",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "kernel: ntfs: fix incorrect MFT record pointer passed to ntfs_attr_record_resize",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99107"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99107"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00156,
-      "epss_percentile": 0.04722,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-99108",
       "title": "kernel: ntfs: fix FITRIM range alignment",
       "severity": "medium",
@@ -32031,41 +32299,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-99109",
-      "title": "kernel: smb: client: reject SetEA requests that do not fit the request buffer",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "kernel: smb: client: reject SetEA requests that do not fit the request buffer",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99109"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99109"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00163,
-      "epss_percentile": 0.05492,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-99111",
       "title": "kernel: smb: client: fix data corruption with concurrent writes and O_TRUNC",
       "severity": "low",
@@ -32098,41 +32331,6 @@
       "known_exploited": false,
       "epss": 0.00167,
       "epss_percentile": 0.05925,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2026-99116",
-      "title": "kernel: net: psp: do not inherit the Rx association on clone",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "kernel: net: psp: do not inherit the Rx association on clone",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99116"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99116"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00174,
-      "epss_percentile": 0.06888,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -32205,41 +32403,6 @@
       "known_exploited": false,
       "epss": 0.00174,
       "epss_percentile": 0.06888,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2026-99122",
-      "title": "kernel: kernel: Denial of Service via unvalidated packet source in VMCI sockets",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "kernel: kernel: Denial of Service via unvalidated packet source in VMCI sockets",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99122"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99122"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00167,
-      "epss_percentile": 0.05928,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -32488,41 +32651,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-99148",
-      "title": "kernel: kernel: amdgpu: memory corruption via premature eviction fence detachment",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "kernel: kernel: amdgpu: memory corruption via premature eviction fence detachment",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99148"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99148"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00167,
-      "epss_percentile": 0.05921,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-99149",
       "title": "kernel: kernel: amdgpu: Denial of Service via resource leak in amdgpu_gem_userptr_ioctl",
       "severity": "low",
@@ -32624,37 +32752,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-99164",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: spi: imx: fix slab corruption from undersized DMA bounce buffers Since commit faa8e404ad8e (\"spi: imx: supp",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: spi: imx: fix slab corruption from undersized DMA bounce buffers Since commit faa8e404ad8e (\"spi: imx: support dynamic burst length for ECSPI DMA mode\"), the driver allocates its private DMA TX/RX buffers with kzalloc(dma_len), where dma_len is only rounded up to 4 bytes, but maps, syncs and unmaps them with DMA_CACHE_ALIGNED_LEN(dma_len), i.e. rounded up to the cache line size. As a result, the DMA API operates on memory beyond the end of the allocation. This was observed on a custom i.MX8MP platform with an mcp251xfd CAN controller under heavy RPMSG load, as a series of refcount_t warnings triggered from rpmsg_recv_done() in virtio_rpmsg_bus: refcount_t: addition on 0; use-after-free. refcount_t: underflow; use-after-free. refcount_t: saturated; leaking memory. Leading finally to an \"Unable to handle kernel paging request\" oops. Reproducing this problem took between 30 minutes and roughly 30 hours under the same workload. Hardware watchpoints on the refcount of a struct rpmsg_endpoint showed it was overwritten from 2 to 1 by __pi_memcpy_generic() in the irq/155-spi2.0 thread. Additionally it was found that a \"normal\" rpmsg_recv_done() took 11µs +/-2µs from its k",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99164"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "2026-10-28T11:17:36.760",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00163,
-      "epss_percentile": 0.05493,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-99168",
       "title": "kernel: mshv_vtl: Check per-CPU register page before mmap",
       "severity": "medium",
@@ -32690,41 +32787,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-99170",
-      "title": "kernel: namespace: a mount that copy_tree() leaves out can't take over a lock",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "kernel: namespace: a mount that copy_tree() leaves out can't take over a lock",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99170"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99170"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00163,
-      "epss_percentile": 0.05493,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-99172",
       "title": "kernel: ipc: drop the mqueue mount with kern_unmount() on setup failure",
       "severity": "low",
@@ -32757,37 +32819,6 @@
       "known_exploited": false,
       "epss": 0.00161,
       "epss_percentile": 0.05313,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2026-99177",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: KVM: SEV: Fix page dirtying in sev_gmem_post_populate() set_page_dirty() requires that the caller holds som",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: KVM: SEV: Fix page dirtying in sev_gmem_post_populate() set_page_dirty() requires that the caller holds some kind of lock to ensure that the page's mapping does not concurrently go away. That is not the case for a random page we got from get_user_pages_fast(), so use set_page_dirty_lock(). [sean: tag for stable]",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99177"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "2026-10-28T11:17:38.397",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00156,
-      "epss_percentile": 0.04722,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -32854,37 +32885,6 @@
       "known_exploited": false,
       "epss": 0.00167,
       "epss_percentile": 0.05922,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2026-99185",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: firewire: core: fix race condition in split transaction handling For a split transaction, either fw_core_ha",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: firewire: core: fix race condition in split transaction handling For a split transaction, either fw_core_handle_response() or split_transaction_timeout_callback() may manipulate the same transaction entry in the pending transaction list. The return value of timer_delete() is used to determine which function handles the entry. If the transaction is a split transaction and timer_delete() returns zero, the timeout callback may already be running. In this case, the response handler must leave the entry in the list for the timeout callback to remove. A previous code refactoring broke this behavior, introducing a race condition in which both functions could process the same transaction. This could lead to a use-after-free on the transaction initiator side. Fix the regression by ensuring that the response handler does not process the transaction when timer_delete() returns zero. The timeout callback is responsible for removing the entry from the pending transaction list.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99185"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T11:52:17Z",
-      "source_updated_at": "2026-10-28T11:17:39.377",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00156,
-      "epss_percentile": 0.0472,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -47389,6 +47389,76 @@
       "epss_as_of": "2026-10-31"
     },
     {
+      "id": "CVE-2026-99094",
+      "title": "kernel: Bluetooth: btintel_pcie: fix TX descriptor bounds check",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-26",
+      "updated": "2026-10-31",
+      "summary": "kernel: Bluetooth: btintel_pcie: fix TX descriptor bounds check",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99094"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99094"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.00164,
+      "epss_percentile": 0.05581,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-99099",
+      "title": "kernel: x86/CPU/AMD: Fix AMD TLBI Erratum #1718",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-26",
+      "updated": "2026-10-31",
+      "summary": "kernel: x86/CPU/AMD: Fix AMD TLBI Erratum #1718",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99099"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-99099"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false,
+      "epss": 0.00162,
+      "epss_percentile": 0.05379,
+      "epss_as_of": "2026-10-31"
+    },
+    {
       "id": "CVE-2026-99088",
       "title": "In the Linux kernel, the following vulnerability has been resolved: net: openvswitch: validate...",
       "severity": "bulletin",
@@ -51024,41 +51094,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-99094",
-      "title": "kernel: Bluetooth: btintel_pcie: fix TX descriptor bounds check",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-26",
-      "updated": "2026-10-26",
-      "summary": "kernel: Bluetooth: btintel_pcie: fix TX descriptor bounds check",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99094"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99094"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00164,
-      "epss_percentile": 0.05581,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-99096",
       "title": "kernel: io_uring/register: don't exempt disabled rings from task restrictions",
       "severity": "low",
@@ -51161,41 +51196,6 @@
       "known_exploited": false,
       "epss": 0.00181,
       "epss_percentile": 0.07677,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2026-99099",
-      "title": "kernel: x86/CPU/AMD: Fix AMD TLBI Erratum #1718",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-26",
-      "updated": "2026-10-26",
-      "summary": "kernel: x86/CPU/AMD: Fix AMD TLBI Erratum #1718",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99099"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-99099"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00162,
-      "epss_percentile": 0.05379,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -64669,53 +64669,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-109618",
-      "title": "RCE via OOM corruption",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-30",
-      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "PHP upstream security advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:25Z",
-      "source_type": "php_upstream",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99998,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-109619",
       "title": "RCE via stale global state",
       "severity": "critical",
@@ -64760,6 +64713,53 @@
       "known_exploited": true,
       "epss": 0.99999,
       "epss_percentile": 0.99999,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-109618",
+      "title": "RCE via OOM corruption",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-30",
+      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "PHP upstream security advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:25Z",
+      "source_type": "php_upstream",
+      "known_exploited": true,
+      "epss": 0.99999,
+      "epss_percentile": 0.99998,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -76416,51 +76416,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-102870",
-      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core",
-        "Linux"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
-      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
-      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
-      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft corrected Blazor debugger security advisory",
-          "url": "https://github.com/dotnet/announcements/issues/492"
-        },
-        {
-          "label": "ASP.NET Core GHSA vendor record",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
-        },
-        {
-          "label": "Ubuntu Security Notice",
-          "url": "https://ubuntu.com/security/notices/USN-8958-1"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-25",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00906,
-      "epss_percentile": 0.59814,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-96951",
       "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
       "severity": "high",
@@ -76503,6 +76458,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.09813,
       "epss_percentile": 0.95543,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-102870",
+      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core",
+        "Linux"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
+      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
+      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
+      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "ASP.NET Core GHSA vendor record",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
+        },
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8958-1"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-25",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00906,
+      "epss_percentile": 0.59814,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -97063,42 +97063,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60729,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -97137,6 +97101,42 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55856,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60729,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -148254,37 +148254,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.11772,
-      "epss_percentile": 0.96072,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2025-7624",
       "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
@@ -148313,6 +148282,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.10514,
       "epss_percentile": 0.95758,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.11772,
+      "epss_percentile": 0.96072,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -168152,85 +168152,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-31T12:59:33Z",
-      "last_attempt": "2026-10-31T12:59:33Z",
+      "last_success": "2026-10-31T13:48:59Z",
+      "last_attempt": "2026-10-31T13:48:59Z",
       "items_processed": 309,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-31T12:59:33Z",
-      "last_attempt": "2026-10-31T12:59:33Z",
+      "last_success": "2026-10-31T13:48:59Z",
+      "last_attempt": "2026-10-31T13:48:59Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-31T12:59:33Z",
-      "last_attempt": "2026-10-31T12:59:33Z",
-      "items_processed": 420,
+      "last_success": "2026-10-31T13:48:59Z",
+      "last_attempt": "2026-10-31T13:48:59Z",
+      "items_processed": 450,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-31T12:59:33Z",
-      "last_attempt": "2026-10-31T12:59:33Z",
+      "last_success": "2026-10-31T13:48:59Z",
+      "last_attempt": "2026-10-31T13:48:59Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-31T12:59:33Z",
-      "last_attempt": "2026-10-31T12:59:33Z",
+      "last_success": "2026-10-31T13:48:59Z",
+      "last_attempt": "2026-10-31T13:48:59Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-31T12:59:33Z",
-      "last_attempt": "2026-10-31T12:59:33Z",
+      "last_success": "2026-10-31T13:48:59Z",
+      "last_attempt": "2026-10-31T13:48:59Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-31T12:59:33Z",
-      "last_attempt": "2026-10-31T12:59:33Z",
+      "last_success": "2026-10-31T13:48:59Z",
+      "last_attempt": "2026-10-31T13:48:59Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-31T12:59:33Z",
-      "last_attempt": "2026-10-31T12:59:33Z",
+      "last_success": "2026-10-31T13:48:59Z",
+      "last_attempt": "2026-10-31T13:48:59Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-31T12:59:33Z",
-      "last_attempt": "2026-10-31T12:59:33Z",
+      "last_success": "2026-10-31T13:48:59Z",
+      "last_attempt": "2026-10-31T13:48:59Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-31T12:59:33Z",
-      "last_attempt": "2026-10-31T12:59:33Z",
+      "last_success": "2026-10-31T13:48:59Z",
+      "last_attempt": "2026-10-31T13:48:59Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-31T12:59:33Z",
-      "last_attempt": "2026-10-31T12:59:33Z",
+      "last_success": "2026-10-31T13:48:59Z",
+      "last_attempt": "2026-10-31T13:48:59Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-31T12:59:33Z",
-      "last_attempt": "2026-10-31T12:59:33Z",
+      "last_success": "2026-10-31T13:48:59Z",
+      "last_attempt": "2026-10-31T13:48:59Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -168242,7 +168242,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-31T12:59:33Z",
-  "last_successful_update": "2026-10-31T12:59:33Z",
+  "last_checked_at": "2026-10-31T13:48:59Z",
+  "last_successful_update": "2026-10-31T13:48:59Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
