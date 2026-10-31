@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 550 490" role="img" aria-label="Glowing security shield with orbital intelligence network">
+<defs>
+ <radialGradient id="a"><stop stop-color="#00e1de" stop-opacity=".24"/><stop offset="1" stop-color="#00d5d5" stop-opacity="0"/></radialGradient>
+ <linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#64fff0"/><stop offset=".55" stop-color="#0bd5d9"/><stop offset="1" stop-color="#057ba2"/></linearGradient>
+ <linearGradient id="c" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#073d51"/><stop offset="1" stop-color="#022538"/></linearGradient>
+ <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10"/></filter>
+ <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter>
+</defs>
+<ellipse cx="274" cy="251" rx="244" ry="200" fill="url(#a)"/>
+<g fill="none" stroke="#1fcfd6" stroke-width="1.15" opacity=".38">
+ <circle cx="275" cy="235" r="158"/><circle cx="275" cy="235" r="199" stroke-dasharray="4 9"/>
+ <circle cx="275" cy="235" r="117" stroke-dasharray="3 7"/>
+ <path d="M36 235H514M275 25V437" stroke-dasharray="4 9"/>
+</g>
+<g fill="#70fff1" opacity=".95"><circle cx="119" cy="237" r="4"/><circle cx="275" cy="36" r="4"/><circle cx="462" cy="159" r="4"/><circle cx="439" cy="360" r="4"/><circle cx="135" cy="116" r="4"/><circle cx="180" cy="390" r="4"/></g>
+<ellipse cx="275" cy="435" rx="204" ry="24" stroke="#44fff0" stroke-width="5" fill="none" opacity=".7" filter="url(#soft)"/>
+<ellipse cx="275" cy="435" rx="204" ry="24" stroke="#38ebef" stroke-width="1.8" fill="#006a7c" fill-opacity=".13"/>
+<ellipse cx="275" cy="430" rx="146" ry="18" stroke="#19d6e0" stroke-width="2" fill="none" opacity=".75"/>
+<ellipse cx="275" cy="426" rx="98" ry="12" stroke="#77fff2" stroke-width="2" fill="#18f6e1" fill-opacity=".18"/>
+<path d="M218 375 260 430H290L336 375" fill="#17ffed" opacity=".48" filter="url(#glow)"/>
+<path d="M275 95 376 139V250c0 74-42 127-101 158-59-31-101-84-101-158V139Z" fill="#09f7eb" opacity=".6" filter="url(#glow)"/>
+<path d="M275 95 376 139V250c0 74-42 127-101 158-59-31-101-84-101-158V139Z" fill="url(#c)" stroke="url(#b)" stroke-width="11" stroke-linejoin="round"/>
+<path d="M226 245 262 283 333 205" fill="none" stroke="#e5fff9" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+<g fill="none" stroke="#4dece6" opacity=".42"><path d="M58 234h80M408 234h94" stroke-dasharray="4 8"/><path d="M275 2v43M275 432v42" stroke-dasharray="4 8"/></g>
+</svg>
