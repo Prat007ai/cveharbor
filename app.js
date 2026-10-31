@@ -283,6 +283,20 @@
       const slug=productMarks.find(([pattern])=>pattern.test(name))?.[1];
       const node=text('span','technology-glyph technology-brand-icon','');
       node.setAttribute('aria-hidden','true');
+      // Microsoft branding requires explicit mappings rather than a nonexistent generic SVG.
+      if(/windows server|windows 11|^windows$|hyperv/i.test(name)){
+        node.classList.add('brand-windows');
+        node.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#00A4EF" d="M2 5 14 3v12H2zm14-2L30 1v14H16zM2 17h12v12L2 27zm14 0h14v14l-14-2z"/></svg>';
+        return node;
+      }
+      if(/microsoft 365/i.test(name)){
+        node.classList.add('brand-microsoft');
+        node.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#F35325" d="M2 2h13v13H2z"/><path fill="#81BC06" d="M17 2h13v13H17z"/><path fill="#05A6F0" d="M2 17h13v13H2z"/><path fill="#FFBA08" d="M17 17h13v13H17z"/></svg>';
+        return node;
+      }
+      const microsoftColors=[[/exchange/i,'#1684CE','E'],[/sharepoint/i,'#0D9B91','S'],[/power platform/i,'#7355CF','P'],[/dynamics/i,'#2166DC','D'],[/fabric|power bi/i,'#F2C811','F'],[/^azure/i,'#1685DC','A']];
+      const brand=microsoftColors.find(([pattern])=>pattern.test(name));
+      if(brand){node.classList.add('brand-letter');node.style.setProperty('--brand-color',brand[1]);node.textContent=brand[2];return node}
       if(!slug){node.textContent=name.slice(0,2).toUpperCase()||'◇';return node}
       const img=document.createElement('img');
       // Curated icon identifiers only, never a user-provided arbitrary URL.
@@ -324,7 +338,7 @@
       const counts=text('span','technology-row-counts','');
       counts.append(text('span','technology-count-new'+(recent?' has-new':''),`${recent} new`),
                     text('span','technology-count-all',`${total} total`));
-      const arrow=text('span','technology-arrow','↗');arrow.setAttribute('aria-hidden','true');
+      const arrow=text('span','technology-arrow','›');arrow.setAttribute('aria-hidden','true');
       button.append(icon,label,counts,arrow);
       // Open the most recent disclosure day shown by this technology's badge.
       const openPeriod=ages.TODAY?'today':ages.YESTERDAY?'yesterday':ages['72 HOURS']?'twoDays':recent?'published30':'all';
@@ -351,7 +365,11 @@
       const glyph=text('span','technology-panel-icon',meta[name][2]);glyph.setAttribute('aria-hidden','true');
       const label=text('div','technology-panel-heading','');
       label.append(text('span','',meta[name][0]),text('h3','',meta[name][1]));
-      head.append(glyph,label,text('span','technology-panel-total',String(matched.length).padStart(2,'0')));
+      const descriptions={microsoft:'Microsoft products, cloud platforms and enterprise services.',applications:'Development frameworks, runtimes and application platforms.',infrastructure:'Infrastructure, security, virtualization and IT operations.',data:'Databases, language runtimes, UI libraries and dependencies.',custom:'Products added to your private catalogue.'};
+      label.append(text('p','technology-panel-description',descriptions[name]||''));
+      const totalBox=text('span','technology-panel-total','');
+      totalBox.append(text('strong','',String(matched.length).padStart(2,'0')),text('small','','total'));
+      head.append(glyph,label,totalBox);
       const rows=text('div','technology-panel-rows','');
       matched.forEach(x=>rows.append(makeRow(x)));
       panel.append(head,rows);if(name===customGroup){$('technologyAdditional').append(panel)}else main.append(panel);visible+=matched.length;
