@@ -54,10 +54,37 @@ export async function route(req,env,user,path,data={}){
   return json({error:'Not found'},404);
  }catch(e){if(/no such table/i.test(String(e.message)))return json({error:'Website monitoring database migration required'},503);return json({error:'Unable to process website monitoring request'},500)}
 }
+function publicIpv4(value){
+ const parts=value.split('.');if(parts.length!==4||parts.some(p=>!/^\d{1,3}$/.test(p)||Number(p)>255))return false;
+ const a=Number(parts[0]),b=Number(parts[1]),c=Number(parts[2]);
+ return a!==0&&a!==10&&a!==127&&a<224&&!(a===169&&b===254)&&!(a===172&&b>=16&&b<=31)&&!(a===192&&b===168)&&!(a===100&&b>=64&&b<=127)&&!(a===192&&b===0&&c===0)&&!(a===192&&b===0&&c===2)&&!(a===198&&b===18)&&!(a===198&&b===19)&&!(a===198&&b===51&&c===100)&&!(a===203&&b===0&&c===113);
+}
+export function publicDnsAnswer(answer){
+ const value=String(answer.data||'').toLowerCase();
+ if(answer.type===1)return publicIpv4(value);
+ if(answer.type===28)return /^[0-9a-f:]+$/.test(value)&&value.includes(':')&&!value.startsWith('fc')&&!value.startsWith('fd')&&!value.startsWith('fe8')&&!value.startsWith('fe9')&&!value.startsWith('fea')&&!value.startsWith('feb')&&value!=='::1'&&!value.startsWith('::ffff:');
+ return true;
+}
+async function validateDns(origin){
+ const hostname=new URL(origin).hostname;
+ let found=false;
+ for(const type of ['A','AAAA']){
+  const url='https://cloudflare-dns.com/dns-query?name='+encodeURIComponent(hostname)+'&type='+type;
+  const response=await fetch(url,{headers:{accept:'application/dns-json'},signal:AbortSignal.timeout(4000)});
+  if(!response.ok)throw Error('DNS verification unavailable');
+  const data=await response.json();
+  if(data.Status!==0&&data.Status!==3)throw Error('DNS verification unavailable');
+  for(const answer of data.Answer||[]){
+   if(answer.type===1||answer.type===28){found=true;if(!publicDnsAnswer(answer))throw Error('DNS resolves to an unapproved IP range')}
+  }
+ }
+ if(!found)throw Error('No public DNS address found');
+}
 export async function checkSite(env,site,fetcher=fetch){
   const checkedAt=now();let status=null,contentType='',headers={},error='';
   try{
    const url=normalizeWebsite(site.url);
+   if(fetcher===fetch)await validateDns(url);
    const response=await fetcher(url,{method:'HEAD',redirect:'manual',signal:AbortSignal.timeout(7000),headers:{'user-agent':'CVEHarbor-SecurityMonitor/1.0'}});
    status=response.status;
    contentType=String(response.headers.get('content-type')||'').slice(0,150);
