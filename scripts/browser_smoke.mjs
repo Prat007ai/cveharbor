@@ -1019,7 +1019,7 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('grid-template-columns:r
 
 // Both styled explorer assets must use the same new cache release.
 const explorerSource=fs.readFileSync('index.html','utf8');
-assert.match(explorerSource,/\/styles\.css\?v=hero-200/,'technology layout stylesheet must refresh');
+assert.match(explorerSource,/\/styles\.css\?v=hero-201/,'technology layout stylesheet must refresh');
 assert.match(explorerSource,/\/app\.js\?v=customize-modal-199/,'technology customization script must refresh');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"\/vulnerabilities\/":\["technology-kpis"/,'live verifier checks technology explorer page');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"styles.css","app.js"/,'live verifier validates explorer JavaScript');
@@ -1062,3 +1062,7 @@ assert.match(homeHero,/hero-capabilities/,'capability navigation rendered');
 assert.match(homeHero,/Set email alerts for product end of support/,'lifecycle alerts accurately described');
 assert.doesNotMatch(homeHero.slice(homeHero.indexOf('<section class="hero"'),homeHero.indexOf('<section id="technology"')),/38 technology groups/,'fixed technology count removed from homepage hero');
 assert.match(fs.readFileSync('styles.css','utf8'),/prefers-reduced-motion:reduce/,'reduced motion support remains');
+
+assert.ok(fs.readFileSync('index.html','utf8').includes('hero-hologram-shield'),'hero central shield graphic exists');
+assert.ok(fs.readFileSync('index.html','utf8').includes('hero-priority-chart'),'hero chart artwork exists');
+assert.ok(fs.readFileSync('styles.css','utf8').includes('hero-shield-hover'),'hero animated shield styling exists');

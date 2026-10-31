@@ -2256,3 +2256,30 @@ body[data-page="home"] .hero-capability:hover .hero-capability-icon{background:#
 @media(max-width:1050px){body[data-page="home"] .hero-grid{grid-template-columns:1fr}body[data-page="home"] .hero-visual{min-height:470px}body[data-page="home"] .hero-priority-card{width:min(48%,410px)}}
 @media(max-width:700px){body[data-page="home"] .hero-copy h1{font-size:44px}body[data-page="home"] .hero-priority-card{width:60%;min-width:235px;padding:14px}body[data-page="home"] .hero-trust-pill{font-size:9px;padding:6px}body[data-page="home"] .hero-capabilities{grid-template-columns:repeat(2,minmax(0,1fr))}body[data-page="home"] .hero-capability{border-right:0}}
 @media(prefers-reduced-motion:reduce){body[data-page="home"] .hero-priority-card,body[data-page="home"] .hero-trust-pill,body[data-page="home"] .hero-network-rings{animation:none!important}body[data-page="home"] .hero-network-movement{display:none!important}}
+
+/* Homepage reference composition 201: shield, holographic pedestal, glowing card and wave. */
+body[data-page="home"] .hero{isolation:isolate}
+body[data-page="home"] .hero::after{content:"";position:absolute;bottom:36px;left:0;right:0;height:120px;pointer-events:none;z-index:1;opacity:.65;background:radial-gradient(ellipse at 70% 100%,#19dbce50 0%,transparent 60%),repeating-radial-gradient(ellipse at 65% 120%,transparent 0 13px,#20dce71d 14px 15px,transparent 16px 27px);transform:scaleY(.54)}
+body[data-page="home"] .hero-visual{min-height:495px!important;overflow:visible!important}
+body[data-page="home"] .hero-hologram{position:absolute;z-index:4;top:21%;left:7%;height:66%;width:50%;display:grid;place-items:center;pointer-events:none}
+body[data-page="home"] .hero-hologram-shield{position:relative;z-index:4;width:42%;min-width:130px;filter:drop-shadow(0 0 16px #24f7e8) drop-shadow(0 0 32px #00c6c9);animation:hero-shield-hover 5s ease-in-out infinite}
+body[data-page="home"] .hero-hologram-shield svg{width:100%;display:block}
+body[data-page="home"] .hero-hologram-orbit{position:absolute;inset:0;border:1px solid #19d9d357;border-radius:50%;transform:scaleY(.75);animation:hero-orbit-pulse 6s ease-in-out infinite}
+body[data-page="home"] .hero-hologram-orbit.orbit-inner{inset:14%;border-style:dashed;animation-delay:-2s}
+body[data-page="home"] .hero-hologram-base{position:absolute;bottom:1%;left:12%;width:76%;height:52px;border:3px solid #48f5e3;border-radius:50%;transform:scaleY(.48);box-shadow:0 0 28px #14ded8,0 0 65px #10ebd777,inset 0 0 26px #19ffef;animation:hero-base-glow 4s ease-in-out infinite}
+body[data-page="home"] .hero-priority-card{top:9%!important;right:1%!important;width:47%!important;min-width:0!important;padding:24px 20px 20px!important;border:2px solid #2be9e0!important;transform:rotate(-2deg)!important;background:linear-gradient(155deg,#0a3049f5,#04172ff5)!important;box-shadow:0 0 25px #03dbce4d,0 28px 45px #0008!important}
+body[data-page="home"] .hero-priority-card::before{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 32px #02bca62a}
+body[data-page="home"] .hero-priority-line{padding:9px 11px!important}
+body[data-page="home"] .hero-priority-chart{position:absolute;right:20px;bottom:31px;height:73px;display:flex;gap:4px;align-items:end;opacity:.7;pointer-events:none}
+body[data-page="home"] .hero-priority-chart i{width:9px;height:var(--bar-height);background:linear-gradient(0deg,#147f95,#6af9e6);box-shadow:0 0 9px #10e8d770}
+body[data-page="home"] .hero-priority-chart i:nth-child(1){--bar-height:20%}body[data-page="home"] .hero-priority-chart i:nth-child(2){--bar-height:35%}body[data-page="home"] .hero-priority-chart i:nth-child(3){--bar-height:47%}body[data-page="home"] .hero-priority-chart i:nth-child(4){--bar-height:61%}body[data-page="home"] .hero-priority-chart i:nth-child(5){--bar-height:78%}body[data-page="home"] .hero-priority-chart i:nth-child(6){--bar-height:100%}
+body[data-page="home"] .hero-priority-foot{padding-right:75px}
+body[data-page="home"] .hero-trust-pill{z-index:7;left:4%;white-space:nowrap}
+body[data-page="home"] .pill-one{top:17%;left:1%}body[data-page="home"] .pill-two{top:31%;left:11%}body[data-page="home"] .pill-three{top:48%;left:26%}body[data-page="home"] .pill-four{top:67%;left:4%}body[data-page="home"] .pill-five{top:83%;left:24%}
+body[data-page="home"] .hero-capabilities{border-top:1px solid #14516c;padding-top:18px!important}
+@keyframes hero-shield-hover{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
+@keyframes hero-orbit-pulse{0%,100%{opacity:.45;scale:1}50%{opacity:.95;scale:1.04}}
+@keyframes hero-base-glow{0%,100%{opacity:.65}50%{opacity:1}}
+@media(max-width:1100px){body[data-page="home"] .hero-hologram{left:7%;width:52%}body[data-page="home"] .hero-priority-card{right:0!important;width:48%!important}}
+@media(max-width:700px){body[data-page="home"] .hero-hologram{top:28%;left:0;width:54%;height:52%}body[data-page="home"] .hero-priority-card{width:55%!important;top:12%!important;padding:13px!important}body[data-page="home"] .hero-trust-pill{display:none!important}body[data-page="home"] .hero-priority-chart{display:none}body[data-page="home"] .hero-priority-foot{padding-right:0}}
+@media(prefers-reduced-motion:reduce){body[data-page="home"] .hero-hologram-shield,body[data-page="home"] .hero-hologram-orbit,body[data-page="home"] .hero-hologram-base{animation:none!important}}
