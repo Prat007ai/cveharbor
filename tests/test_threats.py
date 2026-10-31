@@ -189,6 +189,23 @@ class ExpandedThreatSourceTests(unittest.TestCase):
         self.assertEqual(code,1)
         self.assertIn('THREATFOX_AUTH_KEY',report['sources']['threatfox']['error'])
 
+    def test_threatfox_api_utc_timestamps_produce_ip_evidence(self):
+        import json
+        diagnostics={}
+        payload=json.dumps({'query_status':'ok','data':[{'id':42,'ioc_type':'ip:port','ioc':'8.8.8.8:443','first_seen_utc':'2026-10-30 12:00:00','last_seen_utc':'2026-10-31 10:00:00'}]})
+        entries=mod.parse_source('threatfox',payload,self.now,diagnostics)
+        self.assertEqual(entries['8.8.8.8']['first_seen'],'2026-10-30T12:00:00+00:00')
+        self.assertEqual(entries['8.8.8.8']['last_seen'],'2026-10-31T10:00:00+00:00')
+        self.assertEqual(entries['8.8.8.8']['evidence'][0]['ioc_id'],'42')
+        self.assertEqual(diagnostics['ip_port_records'],1)
+        self.assertEqual(diagnostics['missing_observation'],0)
+
+    def test_threatfox_missing_timestamp_schema_does_not_silently_publish_empty_success(self):
+        import json
+        payload=json.dumps({'query_status':'ok','data':[{'ioc_type':'ip:port','ioc':'8.8.8.8:443'}]})
+        with self.assertRaisesRegex(ValueError,'lack usable observation timestamps'):
+            mod.parse_source('threatfox',payload,self.now)
+
     def test_threatfox_uses_authenticated_post_without_publishing_the_key(self):
         import os,json
         fixture=ThreatCollectionHealthTests()

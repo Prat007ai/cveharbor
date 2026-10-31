@@ -42,7 +42,7 @@ def source_time(value):
     except (ValueError,TypeError):
         return None
 
-def parse_source(key,raw,now):
+def parse_source(key,raw,now,diagnostics=None):
     url,name,activity=FEEDS[key]
     entries={}
     def base(address,kind="ip"):
@@ -55,17 +55,22 @@ def parse_source(key,raw,now):
             return entries
         if data.get("query_status")!="ok" or not isinstance(data.get("data"),list):
             raise ValueError("ThreatFox did not return a successful IOC response")
+        stats={"provider_records":len(data["data"]),"ip_port_records":0,"missing_observation":0,"expired":0,"future_observation":0}
         for row in data["data"]:
             if row.get("ioc_type")!="ip:port":
                 continue
+            stats["ip_port_records"]+=1
             host,sep,port=str(row.get("ioc","")).rpartition(":")
             address=public_ipv4(host)
             if not sep or not address or not port.isdigit() or not 1<=int(port)<=65535:
                 continue
-            first=source_time(row.get("first_seen"));last=source_time(row.get("last_seen"))
+            # ThreatFox API v1 uses *_seen_utc; retain older aliases for saved fixtures.
+            first=source_time(row.get("first_seen_utc") or row.get("first_seen"))
+            last=source_time(row.get("last_seen_utc") or row.get("last_seen"))
             observed=last or first
-            if not observed or observed<now-timedelta(days=30) or observed>now+timedelta(minutes=5):
-                continue
+            if not observed:stats["missing_observation"]+=1;continue
+            if observed<now-timedelta(days=30):stats["expired"]+=1;continue
+            if observed>now+timedelta(minutes=5):stats["future_observation"]+=1;continue
             entry=entries.setdefault(address,base(address))
             confidence=row.get("confidence_level")
             evidence={"ioc_id":str(row.get("id",""))[:40],"port":int(port),
@@ -81,6 +86,9 @@ def parse_source(key,raw,now):
             if last and (not entry.get("last_seen") or last.isoformat()>entry["last_seen"]):entry["last_seen"]=last.isoformat()
             entry["expires_at"]=(source_time(entry["observed_at"])+timedelta(days=30)).isoformat()
             entry["source_url"]="https://threatfox.abuse.ch/browse.php?search=ioc%3A"+address
+        if diagnostics is not None:diagnostics.update(stats)
+        if stats["ip_port_records"] and not entries and stats["missing_observation"]:
+            raise ValueError("ThreatFox IP reports lack usable observation timestamps")
         return dict(sorted(entries.items(),key=lambda pair:pair[1]["observed_at"],reverse=True))
     if key=="spamhaus_drop":
         # Official DROP v4 export is newline-delimited JSON, with a metadata footer.
@@ -284,7 +292,8 @@ def collect():
                 body=resp.read(max_bytes+1)
                 modified=resp.headers.get("Last-Modified")
             if len(body)>max_bytes:raise ValueError("Feed larger than safety limit")
-            entries=parse_source(key,body.decode("utf-8-sig"),datetime.now(timezone.utc))
+            parsing={}
+            entries=parse_source(key,body.decode("utf-8-sig"),datetime.now(timezone.utc),parsing)
             published=list(entries.values())[:SOURCE_LIMIT]
             old={x["ip"] for x in previous.get("indicators",[]) if x.get("source_id")==key}
             current={x["ip"] for x in published}
@@ -295,7 +304,8 @@ def collect():
                 "truncated":len(entries)>SOURCE_LIMIT,"url":url,"last_attempt":timestamp,"last_success":timestamp,
                 "last_changed_at":timestamp if changed else saved_source.get("last_changed_at"),
                 "added_count":len(current-old),"removed_count":len(old-current),
-                "body_sha256":hashlib.sha256(body).hexdigest(),"upstream_last_modified":modified}
+                "body_sha256":hashlib.sha256(body).hexdigest(),"upstream_last_modified":modified,
+                "parsing":parsing}
             report["added_count"]+=len(current-old)
             report["removed_count"]+=len(old-current)
         except Exception as exc:

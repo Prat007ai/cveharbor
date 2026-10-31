@@ -1,8 +1,9 @@
 # Threat feed integrations
 
-Implemented on `fix/threat-feed-health`. Live access has not been validated and
-these changes have not been deployed. No production indicator data was replaced
-with test fixtures.
+Implemented on `fix/threat-feed-health` and released through the production
+GitHub Actions workflow. No production indicator data was replaced with test
+fixtures. Live collection and production verification run in GitHub Actions;
+this cloud session still has separate network and secret restrictions.
 
 | Source | Category | Collection |
 | --- | --- | --- |
@@ -11,19 +12,23 @@ with test fixtures.
 | [ThreatFox](https://threatfox.abuse.ch/api/) | Malware-associated IPv4 addresses and ports | Authenticated POST to `threatfox-api.abuse.ch/api/v1/`; `get_iocs`, `days: 7` |
 | [Spamhaus DROP](https://www.spamhaus.org/drop/) | Listed IPv4 network ranges | `www.spamhaus.org/drop/drop_v4.json`, newline-delimited JSON |
 
-The new parsers were validated against representative fixtures. The environment
-proxy returned HTTP 403 for upstream requests and documentation; current service
-availability, actual response formats, account entitlement and commercial display
-or redistribution terms still require confirmation before production activation.
-An API key alone does not establish redistribution permission.
+The initial fixture checks were followed by live collection in GitHub Actions.
+Live checks exposed a response larger than 4 MB and the provider's
+`first_seen_utc` / `last_seen_utc` field names; the collector now allows a bounded
+32 MB ThreatFox response and reads those fields. A missing timestamp schema must
+not silently turn IP reports into an empty healthy feed. Provider access does
+not independently establish commercial redistribution permission.
 
 ## Activation
 
-1. Apply the saved environment configuration draft. Required hosts are
+1. For direct validation in this cloud session, apply the saved environment
+   configuration draft. Production GitHub Actions does not depend on that draft.
+   Required hosts for this session are
    `feeds.dshield.org`, `feodotracker.abuse.ch`, `threatfox-api.abuse.ch`,
    `threatfox.abuse.ch`, `www.spamhaus.org`, and existing geolocation host
    `ipwho.is`. Production verification needs `cveharbor.com`. GitHub access must
-   be restored through the existing repository connection as well.
+   use the existing repository connection; REST API access is separately blocked
+   in the current local network policy.
 2. The repository already has `MALWAREBAZAAR_API_KEY`, confirmed by the owner's
    GitHub settings screenshot. The hourly collector uses the dedicated repository
    secret `THREATFOX_AUTH_KEY` when configured, otherwise it tries that existing
@@ -67,12 +72,14 @@ The workflow publishes available/retained data before reporting degraded health.
 
 ## Local validation
 
-`python3 -m unittest discover -s tests -v` passes 95 tests. Added cases cover both
+`python3 -m unittest discover -s tests -v` passes 98 tests. Added cases cover both
 new formats, observation expiry, duplicate IOC evidence, invalid/private inputs,
 missing authentication, authenticated POST construction, key exclusion from
-published data, failed-source retention expiry and CIDR export exclusion.
+published data, failed-source retention expiry, CIDR export exclusion, larger
+weekly responses and the provider's UTC timestamp fields.
 
 `node scripts/threat_health_smoke.mjs` covers healthy/degraded/stale publications,
 unique totals, source filters, pagination, provider evidence, text escaping and
 network-range exclusion from map totals. Site DOM smoke and build preflight are
-also checked. These checks do not substitute for live upstream validation.
+also checked. Production verification checks the threats route, its frontend
+scripts and the exact published indicator snapshot against the release artifact.

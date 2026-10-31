@@ -14,11 +14,12 @@ import sys
 
 root=Path(__file__).resolve().parents[1]
 base="https://cveharbor.com"
-routes=["/", "/intelligence/", "/vulnerabilities/","/account/","/workspace/","/customer-reports/","/customer-dashboard/","/environments/","/website-monitor/"]
+routes=["/", "/intelligence/", "/vulnerabilities/","/threats/","/account/","/workspace/","/customer-reports/","/customer-dashboard/","/environments/","/website-monitor/"]
 required={
  "/":["homepageFeatures", "marketing-story", "asset-onboarding", "findings-table", "homepage.css?v=brochure-216"],
  "/intelligence/":["overviewTitle", "techBars", "chartInsights", "feedStatus"],
  "/vulnerabilities/":["technology-kpis","technologyManageButton","technologyCustomizer","categoryGrid","command-center.js?v=brochure-216"],
+ "/threats/":["threatStatus","threatSourceFilter","threatRows","geoMapSummary","Reported suspicious IPs and network ranges"],
  "/account/":["accountSecurityDashboard","accountSecurityRecoveryStart","account-security.js"],
  "/workspace/":["accountPageRequest","accountPageVerify","accountPageRequiredEnroll"],
  "/customer-reports/":["customerReportEmail","customerReportPrint","customerReportCsv"],
@@ -47,7 +48,7 @@ def verify_local_build():
         for marker in required[route]:
             if marker not in html:
                 raise RuntimeError(f"Generated {route} missing {marker}")
-        for asset in ("styles.css", "customer-security.js", "inventory.js", "website-monitor-page.js"):
+        for asset in ("styles.css", "customer-security.js", "inventory.js", "website-monitor-page.js", "threats.js", "geo-map.js"):
             match = re.search(r'/'+re.escape(asset)+r'\?v=([a-zA-Z0-9-]+)', html)
             if match and not (root / "public" / asset).is_file():
                 raise RuntimeError(f"Generated {route} references missing asset {asset}")
@@ -68,7 +69,9 @@ for attempt in range(6):
             expected=(root / "public" / route.strip("/") / "index.html").read_text(encoding="utf-8")
             for marker in required[route]:
                 if marker not in html: raise RuntimeError(f"{route} missing {marker}")
-            for asset in ("styles.css","homepage.css","app.js","command-center.js","customer-security.js","inventory.js","website-monitor-page.js"):
+            assets=("styles.css","homepage.css","app.js","command-center.js","customer-security.js","inventory.js","website-monitor-page.js")
+            if route=="/threats/":assets+=("threats.js","geo-map.js")
+            for asset in assets:
                 m=re.search(r'/'+re.escape(asset)+r'\?v=([a-zA-Z0-9-]+)',expected)
                 if not m: continue
                 expected_url=f"/{asset}?v={m.group(1)}"
@@ -78,6 +81,11 @@ for attempt in range(6):
                 local=(root/asset).read_text(encoding="utf-8")
                 if hashlib.sha256(remote.encode()).digest()!=hashlib.sha256(local.encode()).digest():
                     raise RuntimeError(f"{route} serves outdated {asset} content")
+        local_threats=(root/"public"/"threat-data.js").read_bytes()
+        fingerprint=hashlib.sha256(local_threats).hexdigest()
+        remote_threats=fetch_bytes("/threat-data.js?release="+fingerprint[:12])
+        if hashlib.sha256(remote_threats).hexdigest()!=fingerprint:
+            raise RuntimeError("Published threat indicators differ from this deployment's collected snapshot")
         for name in ("website-monitor-demo.png", "platform-explorer.png"):
             remote = fetch_bytes("/assets/homepage/" + name)
             local = (root / "assets" / "homepage" / name).read_bytes()
