@@ -283,20 +283,26 @@
       const slug=productMarks.find(([pattern])=>pattern.test(name))?.[1];
       const node=text('span','technology-glyph technology-brand-icon','');
       node.setAttribute('aria-hidden','true');
-      // Microsoft branding requires explicit mappings rather than a nonexistent generic SVG.
-      if(/windows server|windows 11|^windows$|hyperv/i.test(name)){
-        node.classList.add('brand-windows');
-        node.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#00A4EF" d="M2 5 14 3v12H2zm14-2L30 1v14H16zM2 17h12v12L2 27zm14 0h14v14l-14-2z"/></svg>';
-        return node;
+      // Use product-specific brand vectors rather than placeholder letter tiles.
+      // For unsupported marks the existing neutral initials fallback remains.
+      const microsoftProductMarks=[
+        [/windows server|windows 11|^windows$|hyperv/i,'windows11','0078D4'],
+        [/^azure/i,'microsoftazure','0078D4'],
+        [/microsoft 365/i,'microsoft365','EA3E23'],
+        [/exchange/i,'microsoftexchange','0078D4'],
+        [/sharepoint/i,'microsoftsharepoint','038387'],
+        [/power platform/i,'microsoftpowerapps','742774'],
+        [/dynamics/i,'dynamics365','002050'],
+        [/fabric|power bi/i,'powerbi','F2C811']
+      ];
+      const microsoftProduct=microsoftProductMarks.find(([pattern])=>pattern.test(name));
+      if(microsoftProduct){
+        const img=document.createElement('img');
+        img.src='https://cdn.simpleicons.org/'+microsoftProduct[1]+'/'+microsoftProduct[2];
+        img.alt='';img.loading='lazy';img.decoding='async';
+        img.addEventListener('error',()=>{img.remove();node.textContent=name.slice(0,2).toUpperCase()||'◇'});
+        node.append(img);return node;
       }
-      if(/microsoft 365/i.test(name)){
-        node.classList.add('brand-microsoft');
-        node.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#F35325" d="M2 2h13v13H2z"/><path fill="#81BC06" d="M17 2h13v13H17z"/><path fill="#05A6F0" d="M2 17h13v13H2z"/><path fill="#FFBA08" d="M17 17h13v13H17z"/></svg>';
-        return node;
-      }
-      const microsoftColors=[[/exchange/i,'#1684CE','E'],[/sharepoint/i,'#0D9B91','S'],[/power platform/i,'#7355CF','P'],[/dynamics/i,'#2166DC','D'],[/fabric|power bi/i,'#F2C811','F'],[/^azure/i,'#1685DC','A']];
-      const brand=microsoftColors.find(([pattern])=>pattern.test(name));
-      if(brand){node.classList.add('brand-letter');node.style.setProperty('--brand-color',brand[1]);node.textContent=brand[2];return node}
       if(!slug){node.textContent=name.slice(0,2).toUpperCase()||'◇';return node}
       const img=document.createElement('img');
       // Curated icon identifiers only, never a user-provided arbitrary URL.
