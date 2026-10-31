@@ -968,7 +968,7 @@ assert.ok(fs.readFileSync('account-backend/src/index.js','utf8').includes("path=
 
 const emailTestPage=fs.readFileSync('website-monitor/index.html','utf8');
 const emailTestScript=fs.readFileSync('website-monitor-page.js','utf8');
-assert.ok(emailTestPage.includes('id="webRiskEmailTest"')&&emailTestPage.includes('monitor-181'),'warning email test button is published with current script version');
+assert.ok(emailTestPage.includes('id="webRiskEmailTest"')&&emailTestPage.includes('monitor-182'),'warning email test button is published with current script version');
 assert.ok(emailTestScript.includes("warningButton.addEventListener('click'")&&emailTestScript.includes('Test warning email failed:'),'warning email test has a working click listener with visible errors');
 
 const threatDashboardHtml=fs.readFileSync('website-monitor/index.html','utf8');
@@ -979,5 +979,9 @@ assert.ok(threatDashboardJs.includes("Not checked")&&threatDashboardJs.includes(
 
 const mockupParity=fs.readFileSync('website-monitor/index.html','utf8');
 assert.ok(['monitor-sidebar','monitor-kpis','monitor-primary-grid','monitor-risk-grid','mockRecentChecks','mockCheckNow','mockSettings','mockManage'].every(item=>mockupParity.includes(item)),'monitoring mockup layout and controls are present');
-assert.ok(mockupParity.includes('website-monitor-dashboard.js?v=monitor-181'),'new monitoring dashboard script is cache versioned');
+assert.ok(mockupParity.includes('website-monitor-dashboard.js?v=monitor-182'),'new monitoring dashboard script is cache versioned');
 assert.ok(fs.readFileSync('website-monitor-dashboard.js','utf8').includes("get('/history?id='"),'threat dashboard reads account scoped check history');
+
+const navPreview=fs.readFileSync('website-monitor/index.html','utf8');
+assert.ok((navPreview.match(/<svg aria-hidden="true"/g)||[]).length>=11,'monitoring navigation uses proper inline SVG icons');
+assert.ok(navPreview.includes('.monitor-kpi:nth-child(4)')&&navPreview.includes('.monitor-aside .monitor-panel:last-child'),'monitoring dashboard retains colorful risk cards');
