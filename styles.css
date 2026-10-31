@@ -2081,3 +2081,15 @@ body[data-page="vulnerabilities"].command-center-app .technology-row-name{font-s
 @media(min-width:1200px) and (max-width:1450px){
  body[data-page="vulnerabilities"].command-center-app .technology-redesign #categoryGrid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
 }
+
+/* Brand identities: preserve the upstream branded SVG colours. */
+.technology-redesign .technology-brand-icon img{filter:none!important;opacity:1!important;width:26px!important;height:26px!important}
+.technology-redesign .technology-brand-icon{background:#092336!important;width:36px!important;height:36px!important;flex-shrink:0}
+body[data-page="vulnerabilities"] .technology-redesign .technology-row{min-height:66px!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-row-name{font-size:13px!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-panel-head{min-height:112px!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-panel-rows{padding:12px!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-kpi{min-height:130px!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-intro h2{font-size:clamp(34px,2.65vw,46px)!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-search{min-height:48px!important}
+body[data-page="vulnerabilities"] .technology-redesign .technology-tools{margin-bottom:22px!important}
