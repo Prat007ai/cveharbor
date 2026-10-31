@@ -1,186 +1,39 @@
-/* Single source of truth for the homepage hero. Scope exclusively to home page content. */
-body[data-page="home"] .hero {isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 65% 50%,#0a3e4b55,transparent 64%),#041525}
-body[data-page="home"] .hero .hero-grid {display:grid!important;grid-template-columns:minmax(0,42%) minmax(0,58%)!important;gap:0!important;width:calc(100% - 50px)!important;max-width:none!important;min-height:500px!important;padding:12px 0 0!important;align-items:center!important}
-body[data-page="home"] .hero .hero-copy {position:relative!important;z-index:8!important;padding:5px 25px 0 0!important}
-body[data-page="home"] .hero .hero-copy h1 {font-size:clamp(54px,4.25vw,78px)!important;line-height:1.06!important;letter-spacing:-1.9px!important;margin:26px 0 21px!important}
-body[data-page="home"] .hero .hero-copy h1 em {color:#5bd9e9!important}
-body[data-page="home"] .hero .hero-copy>p {max-width:580px!important;font-size:15px!important;line-height:1.62!important;color:#bfd7e4!important}
-body[data-page="home"] .hero .hero-visual {position:relative!important;height:465px!important;min-height:465px!important;transform:none!important;overflow:visible!important;isolation:isolate!important}
-body[data-page="home"] .hero .hero-intelligence-network {inset:0!important;opacity:.55!important;z-index:0!important}
-body[data-page="home"] .hero .hero-hologram {top:15%!important;left:4%!important;width:47%!important;height:68%!important;transform:none!important;z-index:3!important}
-body[data-page="home"] .hero .hero-hologram-shield {width:49%!important;min-width:145px!important;max-width:190px!important;filter:drop-shadow(0 0 14px #3af7e6) drop-shadow(0 0 25px #04bbc7)!important}
-body[data-page="home"] .hero .hero-hologram-base {left:8%!important;bottom:0!important;width:84%!important;height:46px!important;box-shadow:0 0 18px #50f6e9,0 0 49px #06c1bb!important}
-body[data-page="home"] .hero .hero-priority-card {right:0!important;top:10%!important;width:46%!important;max-width:460px!important;min-width:0!important;min-height:310px!important;padding:18px 17px!important;transform:rotate(-2deg)!important;z-index:7!important;border:1.5px solid #26ecdf!important;box-shadow:0 0 28px #14e0d14d,0 24px 42px #0007!important}
-body[data-page="home"] .hero .hero-priority-head strong {font-size:18px!important}
-body[data-page="home"] .hero .hero-priority-line {min-height:32px!important;padding:8px 10px!important;font-size:12px!important}
-body[data-page="home"] .hero .hero-priority-chart {height:56px!important;right:13px!important;bottom:26px!important}
-body[data-page="home"] .hero .hero-priority-foot {padding-right:62px!important;font-size:9px!important}
-body[data-page="home"] .hero .hero-trust-pill {z-index:9!important;font-size:10px!important;padding:8px 11px!important;white-space:nowrap!important}
-body[data-page="home"] .hero .pill-one {left:0!important;top:17%!important}
-body[data-page="home"] .hero .pill-two {left:29%!important;top:7%!important}
-body[data-page="home"] .hero .pill-three {left:29%!important;top:42%!important}
-body[data-page="home"] .hero .pill-four {left:2%!important;top:65%!important}
-body[data-page="home"] .hero .pill-five {left:28%!important;top:81%!important}
-body[data-page="home"] .hero .hero-capabilities {display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:0!important;width:calc(100% - 50px)!important;max-width:none!important;margin:0 auto!important;padding:16px 0 28px!important;border-top:1px solid #215063!important}
-body[data-page="home"] .hero .hero-capability {padding:10px!important;gap:10px!important;min-width:0!important}
-body[data-page="home"] .hero .hero-capability-icon {width:42px!important;height:42px!important;flex:none!important}
-body[data-page="home"] .hero .hero-capability strong {font-size:14px!important}
-body[data-page="home"] .hero .hero-capability small {font-size:11px!important;line-height:1.4!important}
-@media(max-width:1250px){body[data-page="home"] .hero .hero-grid{grid-template-columns:1fr!important}body[data-page="home"] .hero .hero-capabilities{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
-@media(max-width:700px){body[data-page="home"] .hero .hero-priority-card{width:56%!important;padding:12px!important}body[data-page="home"] .hero .hero-trust-pill{display:none!important}body[data-page="home"] .hero .hero-capabilities{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
-@media(prefers-reduced-motion:reduce){body[data-page="home"] .hero .hero-priority-card,body[data-page="home"] .hero .hero-hologram-shield,body[data-page="home"] .hero .hero-hologram-base{animation:none!important}}
-
-/* 205 targeted visual fixes: shield scaling, separation, card balance and capability legibility. */
-@media(min-width:1400px){
- body[data-page="home"] .hero .hero-grid{grid-template-columns:minmax(0,39%) minmax(0,61%)!important;min-height:555px!important}
- body[data-page="home"] .hero .hero-visual{height:520px!important;min-height:520px!important}
- body[data-page="home"] .hero .hero-hologram{left:2%!important;top:12%!important;width:49%!important;height:74%!important}
- body[data-page="home"] .hero .hero-hologram-shield{width:62%!important;max-width:250px!important;min-width:180px!important}
- body[data-page="home"] .hero .hero-hologram-base{bottom:-1%!important;height:58px!important}
- body[data-page="home"] .hero .hero-priority-card{right:0!important;top:10%!important;width:43%!important;max-width:470px!important;min-height:340px!important}
- body[data-page="home"] .hero .hero-trust-pill{font-size:11px!important;padding:10px 12px!important}
- body[data-page="home"] .hero .pill-one{left:-2%!important;top:20%!important}
- body[data-page="home"] .hero .pill-two{left:29%!important;top:3%!important}
- body[data-page="home"] .hero .pill-three{left:33%!important;top:35%!important}
- body[data-page="home"] .hero .pill-four{left:-1%!important;top:65%!important}
- body[data-page="home"] .hero .pill-five{left:31%!important;top:83%!important}
- body[data-page="home"] .hero .hero-capabilities{padding:26px 0 38px!important}
- body[data-page="home"] .hero .hero-capability-icon{width:48px!important;height:48px!important}
- body[data-page="home"] .hero .hero-capability strong{font-size:15px!important}
- body[data-page="home"] .hero .hero-capability small{font-size:12px!important}
-}
-body[data-page="home"] .hero .pill-three{pointer-events:none!important}
-body[data-page="home"] .hero .hero-hologram-shield{z-index:6!important}
-body[data-page="home"] .hero .hero-hologram-base{background:radial-gradient(ellipse,#24f9e033,transparent 68%)}
-@media(prefers-reduced-motion:reduce){body[data-page="home"] .hero .hero-hologram-shield{animation:none!important}}
-
-/* Release 206: one illustration asset replaces the competing CSS shield and pedestal. */
-body[data-page="home"] .hero .hero-hologram{left:0!important;top:4%!important;width:55%!important;height:92%!important;display:grid!important;place-items:center!important;transform:none!important;z-index:4!important}
-body[data-page="home"] .hero .hero-artwork{display:block;width:100%!important;height:100%!important;object-fit:contain;animation:hero-artwork-float 6s ease-in-out infinite;filter:drop-shadow(0 0 10px #10bdb72c)}
-body[data-page="home"] .hero .hero-intelligence-network{opacity:.18!important;pointer-events:none!important}
-body[data-page="home"] .hero .hero-network-center,body[data-page="home"] .hero .hero-network-rings{display:none!important}
-body[data-page="home"] .hero .pill-one{left:0!important;top:25%!important}
-body[data-page="home"] .hero .pill-two{left:26%!important;top:7%!important}
-body[data-page="home"] .hero .pill-three{left:36%!important;top:33%!important}
-body[data-page="home"] .hero .pill-four{left:0!important;top:60%!important}
-body[data-page="home"] .hero .pill-five{left:32%!important;top:76%!important}
-body[data-page="home"] .hero .hero-priority-card{right:0!important;top:10%!important;width:44%!important;z-index:8!important}
-body[data-page="home"] .hero .hero-priority-chart{opacity:.6!important}
-@keyframes hero-artwork-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-@media(max-width:700px){body[data-page="home"] .hero .hero-hologram{width:62%!important;height:78%!important;top:13%!important}}
-@media(prefers-reduced-motion:reduce){body[data-page="home"] .hero .hero-artwork{animation:none!important}}
-
-/* 207 art containment: no shield or pedestal may cover the capability row. */
-body[data-page="home"] .hero .hero-visual{height:465px!important;min-height:465px!important;overflow:hidden!important;contain:layout!important}
-body[data-page="home"] .hero .hero-hologram{position:absolute!important;left:5%!important;top:10%!important;width:42%!important;height:75%!important;max-height:350px!important;overflow:hidden!important;z-index:3!important;pointer-events:none!important}
-body[data-page="home"] .hero .hero-artwork{width:100%!important;height:100%!important;max-height:350px!important;object-fit:contain!important}
-body[data-page="home"] .hero .hero-priority-card{z-index:7!important;right:0!important;top:10%!important}
-body[data-page="home"] .hero .hero-capabilities{position:relative!important;z-index:12!important;background:#041525!important;isolation:isolate!important}
-body[data-page="home"] .hero .pill-one{left:0!important;top:20%!important}
-body[data-page="home"] .hero .pill-two{left:26%!important;top:5%!important}
-body[data-page="home"] .hero .pill-three{left:32%!important;top:38%!important}
-body[data-page="home"] .hero .pill-four{left:0!important;top:60%!important}
-body[data-page="home"] .hero .pill-five{left:29%!important;top:78%!important}
-@media(max-width:700px){body[data-page="home"] .hero .hero-hologram{width:50%!important;max-height:300px!important}body[data-page="home"] .hero .hero-artwork{max-height:300px!important}}
-
-/* Responsive hero 208. Proportional composition, no changes to navigation. */
-body[data-page="home"] .hero .hero-grid{width:min(100% - 44px,1920px)!important;max-width:1920px!important;margin-inline:auto!important}
-body[data-page="home"] .hero .hero-visual{width:100%!important;min-width:0!important}
-body[data-page="home"] .hero .hero-capabilities{width:min(100% - 44px,1920px)!important;max-width:1920px!important;margin-inline:auto!important}
-@media(min-width:1650px){
- body[data-page="home"] .hero .hero-grid{grid-template-columns:minmax(0,40%) minmax(0,60%)!important}
- body[data-page="home"] .hero .hero-visual{height:clamp(465px,27vw,570px)!important;min-height:0!important}
- body[data-page="home"] .hero .hero-hologram{left:6%!important;top:10%!important;width:45%!important;height:76%!important;max-height:none!important}
- body[data-page="home"] .hero .hero-artwork{max-height:100%!important}
- body[data-page="home"] .hero .hero-priority-card{right:2%!important;top:13%!important;width:43%!important}
- body[data-page="home"] .hero .pill-one{left:0!important;top:22%!important}
- body[data-page="home"] .hero .pill-two{left:30%!important;top:4%!important}
- body[data-page="home"] .hero .pill-three{left:35%!important;top:38%!important}
- body[data-page="home"] .hero .pill-four{left:0!important;top:62%!important}
- body[data-page="home"] .hero .pill-five{left:31%!important;top:80%!important}
-}
-@media(min-width:1250px) and (max-width:1649px){
- body[data-page="home"] .hero .hero-grid{grid-template-columns:minmax(0,40%) minmax(0,60%)!important}
- body[data-page="home"] .hero .hero-visual{height:clamp(400px,29vw,470px)!important;min-height:0!important}
- body[data-page="home"] .hero .hero-hologram{left:4%!important;top:13%!important;width:47%!important;height:72%!important;max-height:none!important}
- body[data-page="home"] .hero .hero-artwork{max-height:100%!important}
- body[data-page="home"] .hero .hero-priority-card{width:44%!important;right:0!important;top:11%!important}
-}
-@media(min-width:900px) and (max-width:1249px){
- body[data-page="home"] .hero .hero-grid{grid-template-columns:minmax(0,42%) minmax(0,58%)!important;gap:0!important}
- body[data-page="home"] .hero .hero-copy h1{font-size:clamp(43px,4.8vw,63px)!important}
- body[data-page="home"] .hero .hero-visual{height:420px!important;min-height:0!important}
- body[data-page="home"] .hero .hero-hologram{left:1%!important;top:14%!important;width:49%!important;height:70%!important}
- body[data-page="home"] .hero .hero-priority-card{width:48%!important;top:13%!important}
- body[data-page="home"] .hero .hero-trust-pill{font-size:9px!important;padding:6px 8px!important}
- body[data-page="home"] .hero .hero-capabilities{grid-template-columns:repeat(3,minmax(0,1fr))!important}
-}
-@media(max-width:899px){
- body[data-page="home"] .hero .hero-grid{grid-template-columns:1fr!important;gap:8px!important}
- body[data-page="home"] .hero .hero-copy{padding:30px 0 0!important}
- body[data-page="home"] .hero .hero-visual{height:440px!important;min-height:0!important}
- body[data-page="home"] .hero .hero-hologram{left:2%!important;top:12%!important;width:48%!important;height:75%!important}
- body[data-page="home"] .hero .hero-priority-card{right:0!important;top:11%!important;width:48%!important}
- body[data-page="home"] .hero .hero-capabilities{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-}
-@media(max-width:560px){
- body[data-page="home"] .hero .hero-grid,body[data-page="home"] .hero .hero-capabilities{width:calc(100% - 26px)!important}
- body[data-page="home"] .hero .hero-visual{height:365px!important}
- body[data-page="home"] .hero .hero-hologram{left:0!important;top:18%!important;width:48%!important;height:59%!important}
- body[data-page="home"] .hero .hero-priority-card{width:52%!important;min-width:0!important;top:16%!important;padding:10px!important}
- body[data-page="home"] .hero .hero-priority-head strong{font-size:13px!important}
- body[data-page="home"] .hero .hero-priority-line{font-size:10px!important;min-height:25px!important;padding:5px!important}
- body[data-page="home"] .hero .hero-priority-foot,body[data-page="home"] .hero .hero-priority-chart{display:none!important}
- body[data-page="home"] .hero .hero-capabilities{gap:8px!important}
- body[data-page="home"] .hero .hero-capability{padding:9px 4px!important}
-}
-
-/* Ultra-wide 209: remove the 1920px content cap while preserving proportional composition. */
-@media(min-width:1650px){
- body[data-page="home"] .hero .hero-grid,
- body[data-page="home"] .hero .hero-capabilities{
-   width:calc(100% - clamp(36px,3vw,96px))!important;
-   max-width:none!important;
-   margin-inline:auto!important;
- }
- body[data-page="home"] .hero .hero-grid{
-   grid-template-columns:minmax(0,39%) minmax(0,61%)!important;
- }
- body[data-page="home"] .hero .hero-visual{
-   height:clamp(470px,24vw,610px)!important;
- }
- body[data-page="home"] .hero .hero-hologram{
-   left:6%!important;width:44%!important;height:75%!important;
- }
- body[data-page="home"] .hero .hero-priority-card{
-   right:2%!important;width:43%!important;max-width:520px!important;
- }
-}
-
-/* Approved 210 desktop composition: closer shield and inward facing 3D card. Navigation untouched. */
-@media(min-width:1400px){
- body[data-page="home"] .hero .hero-hologram{left:13%!important;top:10%!important;width:46%!important;height:76%!important;max-height:none!important;overflow:visible!important}
- body[data-page="home"] .hero .hero-artwork{max-height:100%!important}
- body[data-page="home"] .hero .hero-priority-card{
-   right:0!important;top:11%!important;width:46%!important;max-width:570px!important;
-   transform:perspective(1200px) rotateY(-9deg) rotateZ(-2deg)!important;
-   transform-origin:left center!important;
-   box-shadow:0 0 22px #15e0d055,16px 24px 45px #0008!important;
-   backface-visibility:hidden!important;
- }
- body[data-page="home"] .hero .pill-one{left:2%!important;top:20%!important}
- body[data-page="home"] .hero .pill-two{left:32%!important;top:4%!important}
- body[data-page="home"] .hero .pill-three{left:43%!important;top:38%!important}
- body[data-page="home"] .hero .pill-four{left:2%!important;top:63%!important}
- body[data-page="home"] .hero .pill-five{left:35%!important;top:81%!important}
-}
-@media(min-width:900px) and (max-width:1399px){
- body[data-page="home"] .hero .hero-hologram{left:9%!important;width:48%!important}
- body[data-page="home"] .hero .hero-priority-card{right:0!important;transform:perspective(1050px) rotateY(-6deg) rotateZ(-1deg)!important;transform-origin:left center!important}
-}
-@media(max-width:899px){
- body[data-page="home"] .hero .hero-priority-card{transform:rotate(-1deg)!important}
-}
-@media(prefers-reduced-motion:reduce){
- body[data-page="home"] .hero .hero-priority-card{animation:none!important}
-}
+/* CVEHarbor unified hero 211. No sidebar or global navigation selectors. */
+body[data-page="home"] .hero{position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 67% 55%,#083b4b 0%,#061b2d 45%,#041222 100%)}
+body[data-page="home"] .hero .hero-grid{display:grid;grid-template-columns:minmax(0,39%) minmax(0,61%);align-items:center;gap:0;width:calc(100% - clamp(32px,4vw,100px));max-width:2200px;margin:auto;min-height:555px}
+body[data-page="home"] .hero .hero-copy{position:relative;z-index:4;padding:28px 20px 12px 0}
+body[data-page="home"] .hero .hero-copy h1{font-size:clamp(49px,4.2vw,82px);line-height:1.07;letter-spacing:-1.6px;margin:25px 0}
+body[data-page="home"] .hero .hero-copy h1 em{font-style:normal;color:#59d7e5}
+body[data-page="home"] .hero .hero-copy>p{max-width:570px;font-size:clamp(14px,1.05vw,17px);line-height:1.58;color:#bbd4e4}
+body[data-page="home"] .hero .hero-visual{position:relative;width:100%;height:500px;min-height:0;isolation:isolate;overflow:visible;transform:none}
+body[data-page="home"] .hero .hero-intelligence-network{position:absolute;inset:0;opacity:.32;z-index:0;pointer-events:none}
+body[data-page="home"] .hero .hero-network-center,body[data-page="home"] .hero .hero-network-rings{display:none}
+body[data-page="home"] .hero .hero-hologram{position:absolute;left:4%;top:12%;width:49%;height:76%;max-height:none;overflow:visible;z-index:2;display:grid;place-items:center;pointer-events:none;transform:none}
+body[data-page="home"] .hero .hero-artwork{width:100%;height:100%;max-height:100%;object-fit:contain;display:block;filter:drop-shadow(0 0 12px #14dec14d);animation:cvh-art-float 7s ease-in-out infinite}
+body[data-page="home"] .hero .hero-priority-card{position:absolute;right:1%;top:12%;width:45%;max-width:none;min-width:0;min-height:0;box-sizing:border-box;padding:20px 18px;z-index:5;border:2px solid #32e9df;border-radius:18px;background:linear-gradient(145deg,#0b3148f8,#031a30f8);box-shadow:0 0 24px #1ef2dd55,0 20px 40px #0008;transform:perspective(1200px) rotateY(-6deg) rotateZ(-2deg);transform-origin:left center;animation:none}
+body[data-page="home"] .hero .hero-priority-head{display:flex;gap:12px;align-items:center;margin-bottom:15px}
+body[data-page="home"] .hero .hero-priority-head strong{font-size:clamp(14px,1.15vw,20px)}
+body[data-page="home"] .hero .hero-priority-head p{font-size:11px;margin:4px 0 0}
+body[data-page="home"] .hero .hero-priority-list{display:grid;gap:7px}
+body[data-page="home"] .hero .hero-priority-line{display:flex;align-items:center;gap:9px;min-height:36px;padding:7px 10px;border-radius:9px;background:#123b50;color:#f0feff;text-decoration:none;font-size:12px}
+body[data-page="home"] .hero .hero-priority-severity{flex:none}
+body[data-page="home"] .hero .hero-priority-foot{font-size:9px;color:#a7cbd8;padding-right:70px}
+body[data-page="home"] .hero .hero-priority-chart{height:55px;right:14px;bottom:24px;opacity:.65}
+body[data-page="home"] .hero .hero-trust-pill{position:absolute;z-index:6;display:flex;align-items:center;gap:5px;background:#0b3449eb;border:1px solid #3b9b9f;color:#dcffff;border-radius:9px;padding:8px 10px;font-size:10px;font-weight:700;white-space:nowrap;animation:cvh-pill-float 6s ease-in-out infinite}
+body[data-page="home"] .hero .pill-one{left:0;top:22%}
+body[data-page="home"] .hero .pill-two{left:31%;top:4%}
+body[data-page="home"] .hero .pill-three{left:36%;top:41%}
+body[data-page="home"] .hero .pill-four{left:0;top:64%}
+body[data-page="home"] .hero .pill-five{left:31%;top:81%}
+body[data-page="home"] .hero .hero-capabilities{position:relative;z-index:8;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));width:calc(100% - clamp(32px,4vw,100px));max-width:2200px;margin:0 auto;padding:20px 0 34px;gap:0;border-top:1px solid #1a5266;background:transparent}
+body[data-page="home"] .hero .hero-capability{display:flex;align-items:flex-start;gap:10px;min-width:0;padding:9px 12px;border-right:1px solid #205065;text-decoration:none;color:#f1ffff}
+body[data-page="home"] .hero .hero-capability:last-child{border-right:0}
+body[data-page="home"] .hero .hero-capability-icon{flex:none;width:42px;height:42px;display:grid;place-items:center;background:#085568;border-radius:10px;color:#87f9e9;font-size:21px}
+body[data-page="home"] .hero .hero-capability strong{display:block;font-size:14px;margin-bottom:5px}
+body[data-page="home"] .hero .hero-capability small{display:block;color:#b5d0e0;font-size:11px;line-height:1.45}
+@keyframes cvh-art-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes cvh-pill-float{0%,100%{translate:0 0}50%{translate:0 -4px}}
+@media(max-width:1450px){body[data-page="home"] .hero .hero-grid{grid-template-columns:minmax(0,40%) minmax(0,60%)}body[data-page="home"] .hero .hero-visual{height:430px}body[data-page="home"] .hero .hero-trust-pill{font-size:9px;padding:6px 8px}body[data-page="home"] .hero .hero-capabilities{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:1000px){body[data-page="home"] .hero .hero-grid{grid-template-columns:1fr}body[data-page="home"] .hero .hero-visual{height:440px}body[data-page="home"] .hero .hero-copy{padding-top:32px}body[data-page="home"] .hero .hero-capabilities{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:650px){body[data-page="home"] .hero .hero-grid,body[data-page="home"] .hero .hero-capabilities{width:calc(100% - 28px)}body[data-page="home"] .hero .hero-copy h1{font-size:43px}body[data-page="home"] .hero .hero-visual{height:340px}body[data-page="home"] .hero .hero-hologram{left:0;top:16%;width:53%;height:65%}body[data-page="home"] .hero .hero-priority-card{width:53%;top:12%;padding:10px}body[data-page="home"] .hero .hero-priority-head strong{font-size:12px}body[data-page="home"] .hero .hero-priority-line{font-size:10px;min-height:25px;padding:4px}body[data-page="home"] .hero .hero-priority-chart,body[data-page="home"] .hero .hero-priority-foot,body[data-page="home"] .hero .hero-trust-pill{display:none}body[data-page="home"] .hero .hero-capabilities{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){body[data-page="home"] .hero .hero-artwork,body[data-page="home"] .hero .hero-trust-pill{animation:none}}
