@@ -2177,3 +2177,7 @@ body[data-page="vulnerabilities"] .technology-redesign .technology-panel-descrip
 body[data-page="vulnerabilities"] .technology-redesign .technology-panel-heading h3{font-size:17px!important}
 .technology-brand-icon img{filter:none!important;opacity:1!important;width:28px!important;height:28px!important}
 @media(max-width:750px){body[data-page="vulnerabilities"] .technology-redesign::before,body[data-page="vulnerabilities"] .technology-redesign::after{display:none}}
+
+/* Locally rendered Microsoft product marks do not depend on third-party CDNs. */
+.technology-redesign .technology-brand-icon.brand-local{background:#102b43!important;display:grid!important;place-items:center!important}
+.technology-redesign .technology-brand-icon.brand-local svg{width:30px!important;height:30px!important;display:block!important;filter:none!important}
