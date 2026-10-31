@@ -98,6 +98,7 @@ class ThreatCollectionHealthTests(unittest.TestCase):
             with patch.object(mod,'FEEDS',{k:mod.FEEDS[k] for k in feeds}),patch.object(mod,'ROOT',folder),patch.object(mod,'OUT',out),patch.object(mod,'HISTORY',folder/'data/history.json'),patch.object(mod.urllib.request,'urlopen',side_effect=fetch),patch.object(mod,'datetime') as clock:
                 clock.now.return_value=datetime(2026,10,31,13,tzinfo=timezone.utc)
                 clock.fromisoformat.side_effect=datetime.fromisoformat
+                clock.fromtimestamp.side_effect=datetime.fromtimestamp
                 code=mod.collect();report=json.loads(out.read_text().split('=',1)[1].strip().removesuffix(';'))
                 history=json.loads((folder/'data/history.json').read_text())
             return code,report,history
@@ -199,6 +200,21 @@ class ExpandedThreatSourceTests(unittest.TestCase):
         self.assertEqual(entries['8.8.8.8']['evidence'][0]['ioc_id'],'42')
         self.assertEqual(diagnostics['ip_port_records'],1)
         self.assertEqual(diagnostics['missing_observation'],0)
+
+    def test_threatfox_unix_observations_work_in_the_collector(self):
+        import json,os
+        payload=json.dumps({'query_status':'ok','data':[{'id':42,'ioc_type':'ip:port','ioc':'8.8.8.8:443','first_seen':int(self.now.timestamp())-86400,'last_seen':int(self.now.timestamp())-3600}]})
+        with patch.dict(os.environ,{'THREATFOX_AUTH_KEY':'unit-test-placeholder'}):
+            code,report,_=ThreatCollectionHealthTests().collect_fixture({'threatfox':payload})
+        self.assertEqual(code,0)
+        self.assertEqual(report['sources']['threatfox']['count'],1)
+        self.assertEqual(report['indicators'][0]['last_seen'],'2026-10-31T12:00:00+00:00')
+
+    def test_source_dates_support_unix_seconds_milliseconds_and_iso(self):
+        epoch=int(self.now.timestamp())
+        for value in (epoch,str(epoch),str(epoch*1000),self.now.isoformat(),'2026-10-31 13:00:00 UTC'):
+            self.assertEqual(mod.source_time(value),self.now)
+        for value in ('invalid',True,float('inf')):self.assertIsNone(mod.source_time(value))
 
     def test_threatfox_missing_timestamp_schema_does_not_silently_publish_empty_success(self):
         import json

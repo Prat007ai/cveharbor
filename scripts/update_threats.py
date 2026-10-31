@@ -37,9 +37,14 @@ def source_time(value):
     if not value:
         return None
     try:
-        date=datetime.fromisoformat(str(value).replace("Z","+00:00"))
+        text=str(value).strip()
+        if not isinstance(value,bool) and (isinstance(value,(int,float)) or re.fullmatch(r"\d{9,13}(?:\.\d+)?",text)):
+            seconds=float(value)
+            if seconds>100_000_000_000:seconds/=1000
+            return datetime.fromtimestamp(seconds,timezone.utc)
+        date=datetime.fromisoformat(text.replace("Z","+00:00").removesuffix(" UTC"))
         return date.replace(tzinfo=date.tzinfo or timezone.utc).astimezone(timezone.utc)
-    except (ValueError,TypeError):
+    except (ValueError,TypeError,OverflowError,OSError):
         return None
 
 def parse_source(key,raw,now,diagnostics=None):
@@ -60,11 +65,13 @@ def parse_source(key,raw,now,diagnostics=None):
             if row.get("ioc_type")!="ip:port":
                 continue
             stats["ip_port_records"]+=1
+            if "observation_fields" not in stats:
+                stats["observation_fields"]={k:str(v)[:64] for k,v in row.items() if "seen" in k.lower() and isinstance(v,(str,int,float,type(None)))}
             host,sep,port=str(row.get("ioc","")).rpartition(":")
             address=public_ipv4(host)
             if not sep or not address or not port.isdigit() or not 1<=int(port)<=65535:
                 continue
-            # ThreatFox API v1 uses *_seen_utc; retain older aliases for saved fixtures.
+            # Accept UTC date fields and Unix-valued observation aliases.
             first=source_time(row.get("first_seen_utc") or row.get("first_seen"))
             last=source_time(row.get("last_seen_utc") or row.get("last_seen"))
             observed=last or first
@@ -276,6 +283,7 @@ def collect():
     report={"schema_version":2,"checked_at":timestamp,"sources":{},"indicators":[],
             "per_source_limit":SOURCE_LIMIT,"added_count":0,"removed_count":0}
     for key,(url,name,activity) in FEEDS.items():
+        parsing={}
         try:
             headers={"User-Agent":"CVEHarbor-ThreatIntel/1.0","Accept":"application/json" if key in ("threatfox","spamhaus_drop") else "text/plain"}
             payload=None
@@ -292,7 +300,6 @@ def collect():
                 body=resp.read(max_bytes+1)
                 modified=resp.headers.get("Last-Modified")
             if len(body)>max_bytes:raise ValueError("Feed larger than safety limit")
-            parsing={}
             entries=parse_source(key,body.decode("utf-8-sig"),datetime.now(timezone.utc),parsing)
             published=list(entries.values())[:SOURCE_LIMIT]
             old={x["ip"] for x in previous.get("indicators",[]) if x.get("source_id")==key}
@@ -319,7 +326,7 @@ def collect():
             report["indicators"].extend(retained)
             report["sources"][key]={"ok":False,"error":str(exc)[:160],"url":url,
                 "last_attempt":timestamp,"last_success":last_success,"retained_count":len(retained),
-                "last_changed_at":saved_source.get("last_changed_at")}
+                "last_changed_at":saved_source.get("last_changed_at"),"parsing":parsing}
     healthy=sum(bool(x.get("ok")) for x in report["sources"].values())
     report["mode"]="live" if healthy==len(FEEDS) else "partial" if healthy else "failed"
     report["last_successful_update"]=timestamp if healthy==len(FEEDS) else previous.get("last_successful_update")

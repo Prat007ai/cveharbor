@@ -14,8 +14,8 @@ this cloud session still has separate network and secret restrictions.
 
 The initial fixture checks were followed by live collection in GitHub Actions.
 Live checks exposed a response larger than 4 MB and the provider's
-`first_seen_utc` / `last_seen_utc` field names; the collector now allows a bounded
-32 MB ThreatFox response and reads those fields. A missing timestamp schema must
+multiple observation timestamp representations; the collector now allows a
+bounded 32 MB ThreatFox response and supports UTC date strings and Unix times. A missing timestamp schema must
 not silently turn IP reports into an empty healthy feed. Provider access does
 not independently establish commercial redistribution permission.
 
@@ -72,11 +72,11 @@ The workflow publishes available/retained data before reporting degraded health.
 
 ## Local validation
 
-`python3 -m unittest discover -s tests -v` passes 98 tests. Added cases cover both
+`python3 -m unittest discover -s tests -v` passes 100 tests. Added cases cover both
 new formats, observation expiry, duplicate IOC evidence, invalid/private inputs,
 missing authentication, authenticated POST construction, key exclusion from
 published data, failed-source retention expiry, CIDR export exclusion, larger
-weekly responses and the provider's UTC timestamp fields.
+weekly responses, UTC timestamp fields and Unix observation times.
 
 `node scripts/threat_health_smoke.mjs` covers healthy/degraded/stale publications,
 unique totals, source filters, pagination, provider evidence, text escaping and
