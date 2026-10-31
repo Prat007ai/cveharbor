@@ -8,7 +8,7 @@
   <meta property="og:title" content="CVEHarbor | Know the risk. Find the fix.">
   <meta property="og:description" content="Vulnerability advisories, severity dashboards, affected versions, vendor sources and remediation guidance.">
   <title>CVEHarbor | Vulnerability Intelligence</title>
-  <link rel="stylesheet" href="/styles.css?v=explorer-brand-192">
+  <link rel="stylesheet" href="/styles.css?v=explorer-reference-193">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
@@ -103,7 +103,7 @@
         <button type="button" id="technologyManageButton" class="technology-manage-button" hidden>Customize technologies</button><div class="technology-legend"><span><i class="tech-legend-dot new"></i>New in 30 days</span><span><i class="tech-legend-dot all"></i>All indexed CVEs</span></div>
       </div>
       <div class="technology-customizer" id="technologyCustomizer" hidden><div class="technology-customizer-head"><div><h3>My monitored technologies</h3><p>Choose default categories or add products to your private catalogue. Indexed results are investigation leads, not confirmed exposure.</p></div><button type="button" id="technologyManageClose" aria-label="Close customization">✕</button></div><p id="technologyCustomizeStatus" role="status"></p><div id="technologyDefaultChoices" class="technology-choice-grid"></div><form id="technologyAddForm" class="technology-add-form"><label>Product name<input id="technologyAddName" maxlength="120" required placeholder="e.g. Apache Tomcat"></label><label>Installed version (optional)<input id="technologyAddVersion" maxlength="80" placeholder="e.g. 10.1.30"></label><button type="submit">Add product</button></form><div id="technologyCustomList"></div><button type="button" id="technologySaveButton">Save my catalogue</button><button type="button" id="technologyResetButton">Restore defaults</button></div><div class="category-grid" id="categoryGrid" aria-label="All 38 technology groups in four sections"></div>
-      <div class="technology-empty" id="technologyEmpty" hidden>No matching technologies. Try another name or product.</div>
+      <div id="technologyAdditional" class="technology-additional" aria-label="My additional products"></div><div class="technology-empty" id="technologyEmpty" hidden>No matching technologies. Try another name or product.</div>
       <p class="technology-footnote" id="technologySearchSummary" aria-live="polite">All 38 technology categories appear above. “New” means first published in the last 30 days; “total” includes older indexed advisories. Zero does not establish that a product is secure.</p>
     </section>
     <section id="securityWorkspace" class="shell section" aria-labelledby="workspaceTitle">
@@ -437,7 +437,7 @@
     </div>
   </dialog>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="/malware-data.js"></script><script src="/malware.js?v=family-profiles-3"></script><script src="/threat-data.js"></script><script src="/threats.js?v=detail-popup-2"></script><script defer src="/geo-map.js?v=1"></script><script src="/data.js"></script><script src="/disclosure-trend.js?v=30day-1"></script><script src="/catalog.js?v=20261028a"></script><script src="/app.js?v=explorer-brand-192"></script><script src="/workspace.js?v=d1-assignments-1"></script><script src="/lifecycle.js"></script><script src="/patch-notes.js"></script><script src="/lifecycle-monitor.js?v=multiwatch-3"></script><script src="/operations.js?v=branded-confirmation-163"></script><script src="/inventory-matching.js?v=precision-119"></script><script src="/inventory.js?v=env-dialog-130"></script><script src="/accounts.js?v=d1-assignments-1"></script>
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="/malware-data.js"></script><script src="/malware.js?v=family-profiles-3"></script><script src="/threat-data.js"></script><script src="/threats.js?v=detail-popup-2"></script><script defer src="/geo-map.js?v=1"></script><script src="/data.js"></script><script src="/disclosure-trend.js?v=30day-1"></script><script src="/catalog.js?v=20261028a"></script><script src="/app.js?v=explorer-reference-193"></script><script src="/workspace.js?v=d1-assignments-1"></script><script src="/lifecycle.js"></script><script src="/patch-notes.js"></script><script src="/lifecycle-monitor.js?v=multiwatch-3"></script><script src="/operations.js?v=branded-confirmation-163"></script><script src="/inventory-matching.js?v=precision-119"></script><script src="/inventory.js?v=env-dialog-130"></script><script src="/accounts.js?v=d1-assignments-1"></script>
   <script src="/page-router.js?v=multipage-1"></script>
   <script src="/header-auth.js?v=account-navigation-1"></script>
 <script src="/command-center.js?v=explorer-sidebar-190"></script></body>

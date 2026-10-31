@@ -259,7 +259,7 @@
   }
   function renderCategories(){
     const main=$('categoryGrid'),q=$('technologySearch').value.trim().toLowerCase();
-    main.replaceChildren();
+    main.replaceChildren();$('technologyAdditional').replaceChildren();
     const matches=x=>!q||(x.name+' '+(x.description||'')).toLowerCase().includes(q);
     const enabled=x=>!personalized||personalized.defaults.includes(x.name);
     let visible=0;
@@ -354,7 +354,7 @@
       head.append(glyph,label,text('span','technology-panel-total',String(matched.length).padStart(2,'0')));
       const rows=text('div','technology-panel-rows','');
       matched.forEach(x=>rows.append(makeRow(x)));
-      panel.append(head,rows);main.append(panel);visible+=matched.length;
+      panel.append(head,rows);if(name===customGroup){$('technologyAdditional').append(panel)}else main.append(panel);visible+=matched.length;
     }
     $('technologyEmpty').hidden=visible!==0;
     $('technologyTotal').textContent=String(visible);
