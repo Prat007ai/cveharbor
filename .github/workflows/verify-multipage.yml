@@ -39,7 +39,7 @@ jobs:
               '/environments/': 'data-page="environments"',
               '/admin-tools/': 'data-page="admin-tools"',
               '/remediation/': 'data-page="remediation"',
-              '/account/': 'accountPageRequest',
+              '/account/': 'accountSecurityDashboard',
               '/workspace/': 'workspaceAccess',
           }
           for attempt in range(1, 16):

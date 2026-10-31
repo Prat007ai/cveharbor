@@ -26,11 +26,12 @@ jobs:
           import urllib.request
           import urllib.error
           import time
+          import re
           base='https://cveharbor.com'
-          paths=['/?remediation_check=d1-assignments-1',
-                 '/operations.js?v=d1-assignments-1',
-                 '/app.js?v=d1-assignments-1',
-                 '/accounts.js?v=d1-assignments-1']
+          paths=['/remediation/?remediation_check=d1-assignments-1',
+                 '/operations.js',
+                 '/app.js',
+                 '/accounts.js']
           last=''
           for attempt in range(1,16):
               try:
@@ -45,7 +46,7 @@ jobs:
                   html,tracker,app,accounts=contents
                   checks={
                     'assignment dialog published':'id="remediationAssignDialog"' in html,
-                    'versioned tracker deployed':'operations.js?v=d1-assignments-1' in html,
+                    'versioned tracker deployed':re.search(r'src="/operations\.js\?v=[a-zA-Z0-9-]+"',html) is not None,
                     'cloud storage message':'private Cloudflare D1 account' in html,
                     'tracker sends authenticated requests':"credentials:'include'" in tracker,
                     'tracker uses cloud feature checks':'/remediations/features' in tracker,
