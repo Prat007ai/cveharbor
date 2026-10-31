@@ -1074,25 +1074,29 @@ assert.match(fs.readFileSync('styles.css','utf8'),/Homepage composition 203/,'ho
 assert.match(fs.readFileSync('index.html','utf8'),/styles\.css\?v=hero-203/,'homepage stylesheet cache updated');
 
 // The visual reference stylesheet must be included in the published homepage without touching navigation.
-assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=210/,'homepage uses dedicated final stylesheet');
+assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=211/,'homepage uses dedicated final stylesheet');
 assert.ok(fs.readFileSync('home-hero-reference.css','utf8').includes('body[data-page="home"] .hero .hero-grid'),'layout applies only to home hero');
 assert.doesNotMatch(fs.readFileSync('home-hero-reference.css','utf8'),/\.command-sidebar|\.command-nav-link/,'dedicated hero stylesheet must not modify navigation');
 assert.ok(fs.readFileSync('public/home-hero-reference.css','utf8').includes('hero-priority-card'),'hero stylesheet included in Pages build');
 
-assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=210/,'current hero stylesheet version');
+assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=211/,'current hero stylesheet version');
 assert.ok(fs.readFileSync('home-hero-reference.css','utf8').includes('205 targeted visual fixes'),'hero visual changes included');
 
 assert.ok(fs.readFileSync('index.html','utf8').includes('/assets/home-security-illustration.svg'),'homepage references vector shield artwork');
 assert.ok(fs.readFileSync('public/assets/home-security-illustration.svg','utf8').includes('<svg'),'vector artwork packaged in Pages build');
 
-assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=210/,'current contained hero asset');
+assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=211/,'current contained hero asset');
 assert.ok(fs.readFileSync('home-hero-reference.css','utf8').includes('207 art containment'),'artwork boundaries defined');
 
-assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=210/,'responsive hero stylesheet version');
+assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=211/,'responsive hero stylesheet version');
 assert.ok(fs.readFileSync('home-hero-reference.css','utf8').includes('Responsive hero 208'),'responsive breakpoints are included');
 
-assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=210/,'ultrawide stylesheet version loaded');
+assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=211/,'ultrawide stylesheet version loaded');
 assert.ok(fs.readFileSync('home-hero-reference.css','utf8').includes('Ultra-wide 209'),'ultrawide layout present');
 
-assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=210/,'approved angled card stylesheet version');
+assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=211/,'approved angled card stylesheet version');
 assert.ok(fs.readFileSync('home-hero-reference.css','utf8').includes('rotateY(-9deg)'),'desktop card faces shield');
+
+assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=211/,'unified homepage version');
+assert.ok(fs.readFileSync('home-hero-reference.css','utf8').includes('CVH'),'unified hero stylesheet');
+assert.doesNotMatch(fs.readFileSync('home-hero-reference.css','utf8'),/\.command-sidebar|\.command-nav-link/,'sidebar untouched');
