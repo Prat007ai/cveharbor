@@ -40,7 +40,19 @@ function displaySites(list){
 $('threatSiteSelect').addEventListener('change',event=>{selected=event.target.value;void loadSite()});
 $('mockSettings').addEventListener('click',()=>{$('mockManage').open=true;$('mockManage').scrollIntoView({behavior:'smooth',block:'start'})});
 $('mockHistory').addEventListener('click',()=>{$('mockRecentChecks').closest('.monitor-panel').scrollIntoView({behavior:'smooth',block:'start'})});
-$('mockCheckNow').addEventListener('click',async()=>{const site=sites.find(x=>x.id===selected);if(!site)return;const button=$('mockCheckNow');button.disabled=true;button.textContent='Checking...';try{const target=[...document.querySelectorAll('#monitorList .monitor-site')].find(x=>x.textContent.includes(site.url));const sourceButton=target?.querySelector('.monitor-check-button');if(sourceButton){sourceButton.click()}else{const res=await fetch(api+'/'+site.id+'/check',{method:'POST',credentials:'include'});const body=await res.json();if(!res.ok)throw Error(body.error||'Check failed')};set('mockSiteStatus','Check requested. Refreshing results.');setTimeout(()=>window.dispatchEvent(new Event('cveharbor-monitor-refresh')),1500)}catch(e){set('mockSiteStatus',e.message)}finally{button.disabled=false;button.textContent='⌕ Check Now'}});
+$('mockCheckNow').addEventListener('click',async()=>{
+ const site=sites.find(x=>x.id===selected);if(!site)return;
+ const button=$('mockCheckNow');button.disabled=true;button.textContent='Checking...';
+ try{
+  const response=await fetch(api+'/'+encodeURIComponent(site.id)+'/check',{method:'POST',credentials:'include'});
+  const result=await response.json();
+  if(!response.ok)throw Error(result.error||'Website check failed (HTTP '+response.status+')');
+  if(!result.check)throw Error('Website check response was incomplete');
+  set('mockSiteStatus',result.check.error||('Website check completed: '+(result.check.http_status?'HTTP '+result.check.http_status:'No HTTPS response')));
+  window.dispatchEvent(new Event('cveharbor-monitor-refresh'));
+ }catch(error){set('mockSiteStatus','Check failed: '+error.message)}
+ finally{button.disabled=false;button.textContent='⌕ Check Now'}
+});
 window.addEventListener('cveharbor-monitor-sites',event=>{
  if(Array.isArray(event.detail))displaySites(event.detail);
 });
