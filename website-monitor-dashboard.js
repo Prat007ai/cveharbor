@@ -27,17 +27,23 @@ async function loadSite(){
   }
  }catch{tbody.append(tableRow(['—','CVEHarbor','Unavailable','Unable to load assessment history']))}
 }
-async function load(){
- try{const response=await get();sites=response.monitors||[];set('mockSiteCount',sites.length+' registered website(s)');
+// The legacy controller is the single owner of the authenticated website-list request.
+// The dashboard consumes its account-scoped result instead of making a competing request.
+function displaySites(list){
+ sites=list;set('mockSiteCount',list.length+' registered website(s)');
  const picker=$('threatSiteSelect');picker.replaceChildren();
- if(!sites.length){const option=document.createElement('option');option.textContent='No registered websites';picker.append(option);set('mockSiteName','No website registered');return}
- for(const site of sites){const o=document.createElement('option');o.value=site.id;o.textContent=site.label;picker.append(o)}
- selected=sites.some(x=>x.id===selected)?selected:sites[0].id;picker.value=selected;await loadSite();
- }catch(error){set('mockSiteStatus','Unable to load sites: '+error.message);setTimeout(()=>void load(),5000)}
+ if(!list.length){const option=document.createElement('option');option.textContent='No registered websites';picker.append(option);selected='';set('mockSiteName','No website registered');set('mockSiteStatus','No registered websites');return}
+ for(const item of list){const option=document.createElement('option');option.value=item.id;option.textContent=item.label;picker.append(option)}
+ selected=list.some(x=>x.id===selected)?selected:list[0].id;picker.value=selected;
+ void loadSite();
 }
 $('threatSiteSelect').addEventListener('change',event=>{selected=event.target.value;void loadSite()});
 $('mockSettings').addEventListener('click',()=>{$('mockManage').open=true;$('mockManage').scrollIntoView({behavior:'smooth',block:'start'})});
 $('mockHistory').addEventListener('click',()=>{$('mockRecentChecks').closest('.monitor-panel').scrollIntoView({behavior:'smooth',block:'start'})});
-$('mockCheckNow').addEventListener('click',async()=>{const site=sites.find(x=>x.id===selected);if(!site)return;const button=$('mockCheckNow');button.disabled=true;button.textContent='Checking...';try{const target=[...document.querySelectorAll('#monitorList .monitor-site')].find(x=>x.textContent.includes(site.url));const sourceButton=target?.querySelector('.monitor-check-button');if(sourceButton){sourceButton.click()}else{const res=await fetch(api+'/'+site.id+'/check',{method:'POST',credentials:'include'});const body=await res.json();if(!res.ok)throw Error(body.error||'Check failed')};set('mockSiteStatus','Check requested. Refreshing results.');setTimeout(()=>void load(),1500)}catch(e){set('mockSiteStatus',e.message)}finally{button.disabled=false;button.textContent='⌕ Check Now'}});
-window.addEventListener('cveharbor-monitor-sites',event=>{const list=event.detail;if(!Array.isArray(list))return;sites=list;set('mockSiteCount',list.length+' registered website(s)');const picker=$('threatSiteSelect');picker.replaceChildren();for(const item of list){const option=document.createElement('option');option.value=item.id;option.textContent=item.label;picker.append(option)}selected=list.some(x=>x.id===selected)?selected:list[0]?.id||'';picker.value=selected;if(selected)void loadSite()});window.addEventListener('focus',()=>void load());void load();
+$('mockCheckNow').addEventListener('click',async()=>{const site=sites.find(x=>x.id===selected);if(!site)return;const button=$('mockCheckNow');button.disabled=true;button.textContent='Checking...';try{const target=[...document.querySelectorAll('#monitorList .monitor-site')].find(x=>x.textContent.includes(site.url));const sourceButton=target?.querySelector('.monitor-check-button');if(sourceButton){sourceButton.click()}else{const res=await fetch(api+'/'+site.id+'/check',{method:'POST',credentials:'include'});const body=await res.json();if(!res.ok)throw Error(body.error||'Check failed')};set('mockSiteStatus','Check requested. Refreshing results.');setTimeout(()=>window.dispatchEvent(new Event('cveharbor-monitor-refresh')),1500)}catch(e){set('mockSiteStatus',e.message)}finally{button.disabled=false;button.textContent='⌕ Check Now'}});
+window.addEventListener('cveharbor-monitor-sites',event=>{
+ if(Array.isArray(event.detail))displaySites(event.detail);
+});
+window.addEventListener('focus',()=>window.dispatchEvent(new Event('cveharbor-monitor-refresh')));
+
 })();
