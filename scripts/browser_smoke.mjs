@@ -1001,5 +1001,13 @@ assert.match(monitorController,/cveharbor-monitor-refresh/,'controller handles d
 assert.match(monitorDashboard,/cveharbor-monitor-sites/,'dashboard consumes the shared site list');
 assert.doesNotMatch(monitorDashboard,/await get\(\)/,'dashboard does not issue a duplicate list request');
 assert.doesNotMatch(monitorDashboard,/setTimeout\(\(\)=>void load\(\),5000\)/,'dashboard does not endlessly retry a failed list request');
-assert.match(monitorPage,/website-monitor-dashboard\.js\?v=monitor-186/,'new dashboard script cache version');
-assert.match(monitorPage,/website-monitor-page\.js\?v=monitor-186/,'new controller script cache version');
+assert.match(monitorPage,/website-monitor-dashboard\.js\?v=monitor-187/,'new dashboard script cache version');
+assert.match(monitorPage,/website-monitor-page\.js\?v=monitor-187/,'new controller script cache version');
+
+// The primary dashboard must await the real Worker response rather than clicking a hidden button.
+const checkNowClient=fs.readFileSync('website-monitor-dashboard.js','utf8');
+assert.match(checkNowClient,/await fetch\(api\+'\/'\+encodeURIComponent\(site.id\)\+'\/check'/,'dashboard checks via the authenticated Worker route');
+assert.doesNotMatch(checkNowClient,/sourceButton\.click\(\)/,'dashboard does not claim success from hidden button clicks');
+assert.match(checkNowClient,/if\(!response\.ok\)throw Error/,'dashboard reports API failures');
+assert.match(checkNowClient,/if\(!result\.check\)throw Error/,'dashboard validates the check response');
+assert.match(checkNowClient,/cveharbor-monitor-refresh/,'successful checks refresh account scoped history');
