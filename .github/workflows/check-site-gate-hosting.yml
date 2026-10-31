@@ -21,6 +21,7 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SITE_GATE_PASSWORD: ${{ secrets.SITE_GATE_PASSWORD }}
         run: python scripts/check_site_gate_hosting.py
       - name: Save non-secret diagnostic evidence on this development branch
         env:

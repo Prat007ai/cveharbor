@@ -26,6 +26,16 @@ def cloudflare(path):
 
 def main():
     report={"checked_at":datetime.now(timezone.utc).isoformat(),"source_revision":os.environ.get("GITHUB_SHA"),"dns":{}}
+    password=os.environ.get("SITE_GATE_PASSWORD","")
+    report["site_gate_password_configured"]=len(password)>=16 and "\n" not in password and "\r" not in password
+    identity=cloudflare("/user/tokens/verify")
+    report["credential_identity"]={k:v for k,v in identity.items() if k!="result"}
+    if identity.get("ok"):
+        token_id=identity.get("result",{}).get("id")
+        report["credential_identity"].update({k:identity.get("result",{}).get(k) for k in ("id","status")})
+        if token_id:
+            metadata=cloudflare("/user/tokens/"+token_id)
+            if metadata.get("ok"):report["credential_identity"]["name"]=metadata.get("result",{}).get("name")
     for name in ("cveharbor.com","www.cveharbor.com","api.cveharbor.com"):
         try:report["dns"][name]=sorted({row[4][0] for row in socket.getaddrinfo(name,443,type=socket.SOCK_STREAM)})
         except OSError as exc:report["dns"][name]={"error":type(exc).__name__}
