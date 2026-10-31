@@ -1,5 +1,5 @@
 import {lookupWebsiteThreat,assessHttpHeaders} from './website-threat.js';
-import {usageReport} from './web-risk-usage.js';
+import {usageReport,sendWarningTest} from './web-risk-usage.js';
 // Tenant-scoped public website monitoring. Only low-impact HTTPS checks are enabled.
 const json=(value,status=200)=>new Response(JSON.stringify(value),{status,headers:{'content-type':'application/json','cache-control':'no-store','access-control-allow-origin':'https://cveharbor.com','access-control-allow-credentials':'true','vary':'Origin'}});
 const now=()=>Math.floor(Date.now()/1000);
@@ -13,6 +13,7 @@ export function normalizeWebsite(input){
 export async function route(req,env,user,path,data={}){
  if(!env.DB)return json({error:'Storage unavailable'},503);
  try{
+  if(path==='/v1/website-monitor/test-warning-email'&&req.method==='POST'){const result=await sendWarningTest(env,user.id);return json(result,result.ok?200:result.status)}
   if(path==='/v1/website-monitor/web-risk-usage'&&req.method==='GET')return json(await usageReport(env,user.id));
   if(path==='/v1/website-monitor/status'&&req.method==='GET'){
    await env.DB.prepare('SELECT id FROM website_monitors LIMIT 1').first();
