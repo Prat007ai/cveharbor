@@ -310,7 +310,7 @@
       custom:['05 / CUSTOM','My Additional Products','＋']
     };
     for(const [name,techs] of Object.entries(technologyGroups)){
-      const candidates=name===custom?(personalized?.products||[]).map(x=>({...x,custom:true,icon:'＋'})):techs.map(label=>categories.find(x=>x.name===label));
+      const candidates=name===customGroup?(personalized?.products||[]).map(x=>({...x,custom:true,icon:'＋'})):techs.map(label=>categories.find(x=>x.name===label));
       const matched=candidates.filter(x=>x&&matches(x)&&(x.custom||enabled(x)));
       if(!matched.length)continue;
       const panel=text('article','technology-panel','');panel.dataset.domain=name;
