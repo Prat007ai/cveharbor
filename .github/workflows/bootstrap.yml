@@ -216,7 +216,9 @@ jobs:
         id: threat_collect
         continue-on-error: true
         env:
-          THREATFOX_AUTH_KEY: ${{ secrets.THREATFOX_AUTH_KEY }}
+          # Reuse the existing abuse.ch key unless a dedicated ThreatFox key is set.
+          # Provider authorization is still checked by the ThreatFox response.
+          THREATFOX_AUTH_KEY: ${{ secrets.THREATFOX_AUTH_KEY || secrets.MALWAREBAZAAR_API_KEY }}
         run: python scripts/update_threats.py
       - name: Save public data safely if other commits arrived
         shell: bash

@@ -24,11 +24,16 @@ An API key alone does not establish redistribution permission.
    `threatfox.abuse.ch`, `www.spamhaus.org`, and existing geolocation host
    `ipwho.is`. Production verification needs `cveharbor.com`. GitHub access must
    be restored through the existing repository connection as well.
-2. Obtain a ThreatFox key with appropriate service entitlement. Store it securely
-   as environment secret `THREATFOX_AUTH_KEY` for local validation, and as the
-   repository Actions secret `THREATFOX_AUTH_KEY` for the hourly collector. The
-   environment draft declares the secret requirement but does not supply a key
-   or synchronize GitHub secrets. Never put the key in chat, source or browser JS.
+2. The repository already has `MALWAREBAZAAR_API_KEY`, confirmed by the owner's
+   GitHub settings screenshot. The hourly collector uses the dedicated repository
+   secret `THREATFOX_AUTH_KEY` when configured, otherwise it tries that existing
+   abuse.ch key. No new key or duplicated GitHub secret is required just to try
+   the integration. Successful ThreatFox authorization must still be verified;
+   the secret's name or existence does not establish service entitlement. A
+   dedicated ThreatFox key remains available if needed. For local validation,
+   securely bind the appropriate key as environment secret `THREATFOX_AUTH_KEY`.
+   The environment draft declares that requirement but does not supply a key or
+   synchronize GitHub secrets. Never put the key in chat, source or browser JS.
 3. Validate real responses into a temporary directory before changing published
    data. Confirm upstream terms for CVEHarbor's commercial use and public output.
 4. Review the branch against current main, then publish code through the normal
