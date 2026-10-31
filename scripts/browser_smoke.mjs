@@ -131,6 +131,7 @@ assert.equal(threatButton.tagName,'BUTTON','threat source is not an external nav
 threatButton.click();
 assert.match(threatDocument.getElementById('threatDetailContent').textContent,/8.8.8.8/);
 assert.match(threatDocument.getElementById('threatDetailContent').textContent,/Not supplied by this feed/);
+threatWindow.close();
 
 const workspaceWindow=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'}).window;
 workspaceWindow.CVEHARBOR_DATA=window.CVEHARBOR_DATA;

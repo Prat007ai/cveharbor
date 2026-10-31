@@ -2121,3 +2121,7 @@ body[data-page="vulnerabilities"] .technology-redesign .technology-panel-rows::-
 .technology-signin-primary{background:#64e6d8;color:#062532!important}
 .technology-signin-secondary{border:1px solid #48879b;color:#def8ff!important;background:#12384e}
 .technology-signin-content .technology-signin-note{font-size:11px!important;color:#9bb9c8!important}
+
+/* Threat freshness is distinct from upstream list size. */
+#threatStatus[data-health="stale"],#threatStatus[data-health="degraded"]{padding:13px;border:1px solid #ba8754;border-radius:8px;background:#402f20;color:#ffe0b5}
+.threat-source-health{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 20px}.threat-source-health p{flex:1;min-width:240px;margin:0;padding:12px;border:1px solid #355369;border-radius:7px;background:#102738;color:#bcd6e4;font-size:12px;line-height:1.6}

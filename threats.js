@@ -9,10 +9,31 @@
   const search=document.getElementById('threatSearch');
   const items=Array.isArray(report.indicators)?report.indicators:[];
   const sources=Object.entries(report.sources||{});
-  count.textContent=items.length+' observed indicators';
-  const healthy=sources.filter(([,s])=>s.ok).length;
-  const checked=report.checked_at ? new Date(report.checked_at) : null;
-  status.textContent=(checked&&!Number.isNaN(checked.getTime())?'Collected '+checked.toLocaleString('en-CA',{timeZone:'America/Toronto'})+' ET. ':'No successful collection yet. ')+healthy+' of '+sources.length+' sources responded. IPs are third-party reports, not evidence of attacks on your network.';
+  const format=time=>time&&!Number.isNaN(new Date(time).getTime())?new Date(time).toLocaleString('en-CA',{timeZone:'America/Toronto'})+' ET':'Not recorded';
+  const freshness=()=>{
+    const attempt=Date.parse(report.checked_at),age=Date.now()-attempt;
+    const stale=!Number.isFinite(attempt)||age>3*60*60*1000||age< -5*60*1000;
+    const healthy=sources.filter(([,s])=>s.ok).length;
+    const warning=stale?'STALE SNAPSHOT — latest publication is over 3 hours old or its timestamp is invalid. ':healthy<sources.length?'FEED FAILURE — some results may be retained from an earlier successful fetch. ':'';
+    status.textContent=warning+'Last collection attempt: '+format(report.checked_at)+'. '+healthy+' of '+sources.length+' sources responded. '+
+      'Coverage: DShield top scanning sources and Feodo botnet C2 only; not a complete list of malicious IPs. '+
+      (report.last_changed_at?'Displayed IP list last changed: '+format(report.last_changed_at)+'. ':'List-change time was not recorded in this snapshot. ')+
+      (Number.isInteger(report.added_count)?report.added_count+' added / '+report.removed_count+' removed in the latest collection. ':'')+
+      'An unchanged count does not establish freshness or completeness.';
+    status.dataset.health=stale?'stale':healthy<sources.length?'degraded':'current';
+  };
+  freshness();setInterval(freshness,60000);
+  const health=document.createElement('div');health.className='threat-source-health';
+  for(const [id,s] of sources){
+    const p=document.createElement('p');
+    const fetched=s.published_count??items.filter(x=>x.source_id===id).length;
+    p.textContent=(id==='dshield_scanners'?'DShield top IPs':'Feodo botnet C2')+': '+
+      (s.ok?fetched+' displayed of '+(s.count??fetched)+' source entries'+(s.truncated?' (limited to '+report.per_source_limit+')':''):'Unavailable; '+(s.retained_count||0)+' older reports retained')+
+      '. Last successful fetch: '+format(s.last_success||(s.ok?report.checked_at:null))+'.'+
+      (s.error?' Error: '+s.error:'');
+    health.append(p);
+  }
+  status.after(health);
   for(const [id,s] of sources){
     const option=document.createElement('option');
     option.value=id;
@@ -34,7 +55,7 @@
       ['Intelligence source',x.source],
       ['Reported activity',x.activity],
       ['Source category',x.source_id==='dshield_scanners'?'Observed scanning or attack source':x.source_id==='feodo_c2'?'Botnet command and control':'Third party report'],
-      ['CVEHarbor collection time',report.checked_at ? new Date(report.checked_at).toLocaleString('en-CA',{timeZone:'America/Toronto'})+' ET':'Not available'],
+      ['Last successful source fetch',format(report.sources?.[x.source_id]?.last_success||(report.sources?.[x.source_id]?.ok?report.checked_at:null))],
       ['Source reported last seen',x.observed_at || 'Not supplied by this feed'],
       ['Confidence / block status','Not independently validated. Manual review recommended']
     ];
@@ -57,7 +78,9 @@
   function render(){
     root.replaceChildren();
     const filter=select.value,q=search.value.trim().toLowerCase();
-    const visible=items.filter(x=>(filter==='all'||x.source_id===filter)&&(!q||x.ip.includes(q)||x.activity.toLowerCase().includes(q))).slice(0,150);
+    const matching=items.filter(x=>(filter==='all'||x.source_id===filter)&&(!q||x.ip.includes(q)||x.activity.toLowerCase().includes(q)));
+    const visible=matching.slice(0,150);
+    count.textContent=new Set(matching.map(x=>x.ip)).size+' matching IPs · '+visible.length+' of '+matching.length+' source reports shown';
     if(!visible.length){
       const p=make('p','No indicators match. A missing or failed feed is not a security clearance.');
       p.className='threat-empty';root.append(p);return;
@@ -66,7 +89,7 @@
       const row=make('article','');row.className='threat-entry';
       const name=make('strong',x.ip);name.className='threat-ip';
       const tag=make('span',x.activity);tag.className='threat-type';
-      const meta=make('div',x.source+' · Source-reported activity · No verified last-seen timestamp');
+      const meta=make('div',x.source+(x.stale?' · RETAINED: latest source fetch failed':'')+' · Source-reported activity · No verified last-seen timestamp');
       meta.className='threat-meta';
       const link=make('button','View details');
       link.type='button';link.className='threat-view-details';

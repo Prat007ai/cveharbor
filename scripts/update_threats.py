@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Public review-only threat indicators. Never auto-block or infer customer exposure."""
+import hashlib
 import ipaddress
 import json
 import re
@@ -167,13 +168,25 @@ def export_templates(report):
         fortinet_file(all_ips,False),encoding="utf-8")
     (ROOT/"sophos-threat-ip-api.txt").write_text(sophos_file(all_ips,True),encoding="utf-8")
 
+def read_report():
+    try:
+        raw=OUT.read_text(encoding="utf-8")
+        value=json.loads(raw.split("=",1)[1].strip().removesuffix(";"))
+        return value if isinstance(value,dict) and isinstance(value.get("indicators"),list) else {}
+    except (OSError,ValueError,IndexError):
+        return {}
+
 def collect():
-    report={"checked_at":datetime.now(timezone.utc).isoformat(),"sources":{},"indicators":[]}
+    previous=read_report()
+    timestamp=datetime.now(timezone.utc).isoformat()
+    report={"schema_version":2,"checked_at":timestamp,"sources":{},"indicators":[],
+            "per_source_limit":150,"added_count":0,"removed_count":0}
     for key,(url,name,activity) in FEEDS.items():
         try:
             request=urllib.request.Request(url,headers={"User-Agent":"CVEHarbor-ThreatIntel/1.0","Accept":"text/plain"})
             with urllib.request.urlopen(request,timeout=25) as resp:
                 body=resp.read(700_001)
+                modified=resp.headers.get("Last-Modified")
             if len(body)>700_000:
                 raise ValueError("Feed larger than safety limit")
             raw=body.decode("utf-8-sig")
@@ -191,10 +204,36 @@ def collect():
                                  "guidance":"Review logs and local allowlists before taking action."}
             if not entries:
                 raise ValueError("No valid public IPv4 indicators in source")
-            report["indicators"].extend(list(entries.values())[:150])
-            report["sources"][key]={"ok":True,"count":len(entries),"url":url}
+            published=list(entries.values())[:150]
+            old={x["ip"] for x in previous.get("indicators",[]) if x.get("source_id")==key}
+            current={x["ip"] for x in published}
+            saved_source=previous.get("sources",{}).get(key,{})
+            changed=current!=old
+            report["indicators"].extend(published)
+            report["sources"][key]={"ok":True,"count":len(entries),"published_count":len(published),
+                "truncated":len(entries)>150,"url":url,"last_attempt":timestamp,"last_success":timestamp,
+                "last_changed_at":timestamp if changed else saved_source.get("last_changed_at"),
+                "added_count":len(current-old),"removed_count":len(old-current),
+                "body_sha256":hashlib.sha256(body).hexdigest(),"upstream_last_modified":modified}
+            report["added_count"]+=len(current-old)
+            report["removed_count"]+=len(old-current)
         except Exception as exc:
-            report["sources"][key]={"ok":False,"error":str(exc)[:160],"url":url}
+            saved_source=previous.get("sources",{}).get(key,{})
+            last_success=saved_source.get("last_success") or (previous.get("checked_at") if saved_source.get("ok") else None)
+            retained=[dict(x,stale=True) for x in previous.get("indicators",[])
+                      if x.get("source_id")==key and public_ipv4(str(x.get("ip","")))]
+            report["indicators"].extend(retained)
+            report["sources"][key]={"ok":False,"error":str(exc)[:160],"url":url,
+                "last_attempt":timestamp,"last_success":last_success,"retained_count":len(retained),
+                "last_changed_at":saved_source.get("last_changed_at")}
+    healthy=sum(bool(x.get("ok")) for x in report["sources"].values())
+    report["mode"]="live" if healthy==len(FEEDS) else "partial" if healthy else "failed"
+    report["last_successful_update"]=timestamp if healthy==len(FEEDS) else previous.get("last_successful_update")
+    old_pairs={(x["ip"],x["source_id"]) for x in previous.get("indicators",[])}
+    new_pairs={(x["ip"],x["source_id"]) for x in report["indicators"]}
+    report["last_changed_at"]=timestamp if old_pairs!=new_pairs and healthy else previous.get("last_changed_at")
+    report["unique_ip_count"]=len({x["ip"] for x in report["indicators"]})
+    report["stale_count"]=sum(bool(x.get("stale")) for x in report["indicators"])
     # Geographic attribution is approximate IP network registration data, not
     # the location of a person controlling the address. Cache to minimize API calls.
     cache_path=ROOT/"data"/"ip-geolocation-cache.json"
@@ -204,7 +243,7 @@ def collect():
         cache={}
     for entry in report["indicators"]:
         ip=entry["ip"]
-        geo=cache.get(ip)
+        geo=cache.get(ip) or entry.get("geo")
         if not isinstance(geo,dict):
             try:
                 req=urllib.request.Request("https://ipwho.is/"+ip,
@@ -233,7 +272,7 @@ def collect():
     # Never make source first-seen or the collection timestamp look like attacker last-seen evidence.
     OUT.write_text("window.CVEHARBOR_THREATS = "+json.dumps(report,separators=(",",":")).replace("</","<\\/")+";\n",encoding="utf-8")
     print("Threat IP feeds:",{k:v.get("count",v.get("error")) for k,v in report["sources"].items()})
-    return 0 if report["count"] else 1
+    return 0 if report["mode"]=="live" else 1
 
 if __name__=="__main__":
     raise SystemExit(collect())

@@ -125,7 +125,7 @@ jobs:
       - name: Install DOM smoke test dependency
         run: npm install --no-save --no-package-lock jsdom@26
       - name: Exercise site interactions
-        run: node scripts/browser_smoke.mjs && node scripts/customer_security_smoke.mjs && node scripts/customer_score_smoke.mjs
+        run: node scripts/browser_smoke.mjs && node scripts/threat_health_smoke.mjs && node scripts/customer_security_smoke.mjs && node scripts/customer_score_smoke.mjs
 
   restore:
     name: Restore site files
@@ -197,7 +197,7 @@ jobs:
         run: npm install --no-save --no-package-lock jsdom@26
       - name: Exercise site interactions
         if: github.event_name == 'push'
-        run: node scripts/browser_smoke.mjs && node scripts/customer_security_smoke.mjs && node scripts/customer_score_smoke.mjs
+        run: node scripts/browser_smoke.mjs && node scripts/threat_health_smoke.mjs && node scripts/customer_security_smoke.mjs && node scripts/customer_score_smoke.mjs
       - name: Fetch advisories
         id: collect
         continue-on-error: true
@@ -308,3 +308,19 @@ jobs:
         run: |
           echo 'Source collection failed; do not assume this dashboard is current.' >&2
           exit 1
+
+      - name: Flag incomplete threat IP collection
+        if: always() && steps.threat_collect.outcome != 'skipped'
+        env:
+          THREAT_COLLECT_OUTCOME: ${{ steps.threat_collect.outcome }}
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import os
+          raw=Path('threat-data.js').read_text()
+          report=json.loads(raw.split('=',1)[1].strip().removesuffix(';'))
+          if os.environ.get('THREAT_COLLECT_OUTCOME') != 'success' or report.get('mode') != 'live':
+              raise SystemExit('Threat IP collection degraded: ' + str(report.get('sources')))
+          print('Both threat IP feeds fetched successfully; unchanged counts can be legitimate.')
+          PY
