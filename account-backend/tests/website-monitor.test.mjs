@@ -27,3 +27,10 @@ test('single HEAD request captures an HTTP response without following redirects'
  assert.equal(calls[0].options.redirect,'manual');
  assert.ok(queries.some(x=>x.sql.includes('INSERT INTO website_monitor_checks')));
 });
+
+test('rejects private DNS responses',async()=>{
+ const {publicDnsAnswer}=await import('../src/website-monitor.js');
+ for(const ip of ['127.0.0.1','10.2.3.4','192.168.1.5','172.16.0.2','169.254.0.1','100.64.0.1'])assert.equal(publicDnsAnswer({type:1,data:ip}),false);
+ assert.equal(publicDnsAnswer({type:1,data:'8.8.8.8'}),true);
+ assert.equal(publicDnsAnswer({type:28,data:'::1'}),false);
+});
