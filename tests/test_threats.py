@@ -209,3 +209,13 @@ class ExpandedThreatSourceTests(unittest.TestCase):
         code,report,_=fixture.collect_fixture({'dshield_scanners':OSError('Unavailable')},first)
         self.assertEqual(code,1)
         self.assertEqual(report['indicators'],[])
+
+    def test_threatfox_accepts_weekly_response_larger_than_four_megabytes(self):
+        import os,json
+        payload=json.dumps({'query_status':'ok','data':[{'id':1,'ioc_type':'ip:port','ioc':'8.8.8.8:443','first_seen':'2026-10-31 12:00:00'}], 'padding':'x'*4_100_000})
+        with patch.dict(os.environ,{'THREATFOX_AUTH_KEY':'unit-test-placeholder'}):
+            code,report,_=ThreatCollectionHealthTests().collect_fixture({'threatfox':payload})
+        self.assertEqual(code,0)
+        self.assertEqual(report['sources']['threatfox']['count'],1)
+        self.assertEqual(len(report['indicators']),1)
+        self.assertNotIn('padding',json.dumps(report))

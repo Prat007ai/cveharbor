@@ -277,7 +277,9 @@ def collect():
                 headers["Auth-Key"]=auth;headers["Content-Type"]="application/json"
                 payload=json.dumps({"query":"get_iocs","days":7}).encode()
             request=urllib.request.Request(url,data=payload,headers=headers)
-            max_bytes=4_000_000 if key=="threatfox" else 700_000
+            # A seven-day ThreatFox response can exceed 4 MB even though only
+            # 500 parsed IP reports are published. Keep download memory bounded.
+            max_bytes=32_000_000 if key=="threatfox" else 700_000
             with urllib.request.urlopen(request,timeout=25) as resp:
                 body=resp.read(max_bytes+1)
                 modified=resp.headers.get("Last-Modified")
