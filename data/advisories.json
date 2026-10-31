@@ -3,7 +3,7 @@
   "snapshotDate": "2026-10-31",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6297,
+  "candidate_records": 6316,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -310,6 +310,723 @@
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-31T01:26:52Z",
       "source_updated_at": "2026-10-31T03:30:32Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-92294",
+      "title": "The Spectra Gutenberg Blocks – Website Builder for the Block Editor plugin for WordPress is...",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Spectra Gutenberg Blocks – Website Builder for the Block Editor plugin for WordPress is vulnerable to limited file deletion due to insufficient file path validation in the '__construct' function in all versions up to, and including, 2.20.4 This makes it possible for unauthenticated attackers to delete theme files on the server.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-2mm6-8x3p-cx55"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-92294"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/ultimate-addons-for-gutenberg/tags/2.19.21/classes/class-uagb-fse-fonts-compatibility.php#L101"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/ultimate-addons-for-gutenberg/tags/2.19.21/classes/class-uagb-fse-fonts-compatibility.php#L584"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:35Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119977",
+      "title": "WordPress Core is vulnerable to Remote Code Execution in versions 4.7 through 7.1.3. This is due...",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "WordPress Core is vulnerable to Remote Code Execution in versions 4.7 through 7.1.3. This is due to predictable, web-accessible staging paths used during full-package core upgrades. This makes it possible for unauthenticated attackers to execute code on the server during the upgrade window.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-p6jj-qrp3-7m4g"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119977"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://core.trac.wordpress.org/browser/tags/7.1.3/src/wp-admin/includes/class-core-upgrader.php#L162"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://core.trac.wordpress.org/browser/tags/7.1.3/src/wp-admin/includes/class-wp-upgrader.php#L378"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.1",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:35Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-94361",
+      "title": "The Payable Payment Gateway for WooCommerce WordPress plugin before 1.3.1 does not verify the...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Payable Payment Gateway for WooCommerce WordPress plugin before 1.3.1 does not verify the authenticity of an incoming payment notification before marking a WooCommerce order paid or failed, allowing unauthenticated attackers to change the payment status of any order in the store regardless of the payment method it was placed with.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-x7hw-7xvr-75fq"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-94361"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/1c6a831e-2d14-4c73-8a9e-d28d9262f626"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-82214",
+      "title": "The Quick Event Manager WordPress plugin before 9.19 does not verify the status or type of the...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Quick Event Manager WordPress plugin before 9.19 does not verify the status or type of the requested post before returning its details through a calendar export, allowing unauthenticated users to read the content of draft and private posts.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-8883-4cxp-cmxm"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-82214"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/b3ccecb9-4544-4944-a31a-f5aed7dcc95e"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118638",
+      "title": "The Mapster WP Maps WordPress plugin before 2.0.6 does not perform any authorization check on a...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Mapster WP Maps WordPress plugin before 2.0.6 does not perform any authorization check on a REST API route that writes post data, allowing unauthenticated attackers to overwrite the title of arbitrary posts, create arbitrary published posts, and overwrite the Mapster WP Maps WordPress plugin before 2.0.6's stored settings.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-gwmh-v933-p43v"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118638"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/3d3004f1-46f1-479d-bae6-754e56d3aa7e"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118629",
+      "title": "The All-in-One Video Gallery WordPress plugin before 5.0.0 does not check a video's publication...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The All-in-One Video Gallery WordPress plugin before 5.0.0 does not check a video's publication status before rendering it on its player page, allowing unauthenticated users to view the title and source URLs of private, draft, pending, scheduled and trashed videos by their ID.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-59cf-vpf5-j3cx"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118629"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/a17559f9-f2d6-434f-8dd0-db4d1d9766d2"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116520",
+      "title": "The PPWP – Password Protect Pages plugin for WordPress is vulnerable to Stored Cross-Site...",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The PPWP – Password Protect Pages plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'comment / shortcode attribute desc_below_form (and placeholder as the marker-smuggling helper)' parameter in all versions up to, and including, 1.9.26 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. This is exploitable by unauthenticated attackers because WordPress's comment_content filter leaves bare shortcode text (containing no HTML tags) untouched, and the comment_whitelist setting auto-approves subsequent comments from a previously approved name and email without administrator intervention.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-7x9h-cjm5-x9fc"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116520"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/password-protect-page/tags/1.9.26/includes/services/class-ppw-shortcode.php#L202"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/password-protect-page/tags/1.9.26/includes/services/class-ppw-shortcode.php#L587"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116563",
+      "title": "The Photo Gallery, Sliders, Proofing and Themes – NextGEN Gallery plugin for WordPress is...",
+      "severity": "medium",
+      "categories": [
+        "React / Next.js",
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Photo Gallery, Sliders, Proofing and Themes – NextGEN Gallery plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'comment' parameter in all versions up to, and including, 4.5.4 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Exploitation requires the site to have Shutter or Shutter Reloaded selected as the active lightbox, and the injected comment must be approved through WordPress's standard moderation workflow before the payload is rendered to other visitors.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-mmc9-9v24-7pg8"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116563"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/nextgen-gallery/tags/4.5.4/static/Lightbox/shutter/nextgen_shutter.js#L120"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/nextgen-gallery/tags/4.5.4/static/Lightbox/shutter/shutter.js#L197"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.4",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118438",
+      "title": "The Firelight Lightbox WordPress plugin before 2.3.24 does not properly escape image attribute...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Firelight Lightbox WordPress plugin before 2.3.24 does not properly escape image attribute values before processing them in the browser, which could allow users with contributor-level access and above to inject arbitrary web scripts that execute when another user views or previews the affected content.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-wm86-p7cw-7wvq"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118438"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/ddf2cb3f-3aa6-4994-8682-cdb2f4fc086e"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118185",
+      "title": "The Security Optimizer WordPress plugin before 1.6.9 does not limit the number of two-factor...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Security Optimizer WordPress plugin before 1.6.9 does not limit the number of two-factor authentication codes that can be submitted for a pending login, allowing an attacker who already knows a user's password to brute force the second factor and take over the account.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-9wr6-gc4g-7v5m"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118185"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/253fe868-0e85-496f-8b01-a8b5107db217"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118184",
+      "title": "The Premium Packages WordPress plugin before 7.2.2 does not prevent unauthenticated visitors...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Premium Packages WordPress plugin before 7.2.2 does not prevent unauthenticated visitors from overwriting the stored price of items in their shopping cart, allowing them to create orders for any product at an arbitrary total of their choosing.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-jmxw-pjw9-552f"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118184"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/38c4d58a-20a3-4309-ace7-5b567257c80e"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-110042",
+      "title": "The Payment Forms for Paystack WordPress plugin before 4.0.6 does not properly restrict access to...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Payment Forms for Paystack WordPress plugin before 4.0.6 does not properly restrict access to a page that displays its stored configuration, allowing users with the Contributor role and above to view secret payment-gateway API credentials, both the live and test secret keys, which grant full access to the site owner's payment account.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-999r-c647-2rx8"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110042"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/49c8fecd-b944-4290-af2f-57a3d4cb06e1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118437",
+      "title": "The BuddyForms WordPress plugin before 2.10.1 does not properly verify ownership before deleting...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The BuddyForms WordPress plugin before 2.10.1 does not properly verify ownership before deleting guest-uploaded attachments, allowing unauthenticated attackers to permanently delete media files uploaded by other unauthenticated visitors.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-8m6g-3645-wc49"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118437"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/20a483cf-7003-4d5a-9abb-afcc3f985ee4"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-110808",
+      "title": "The Essential Addons for Elementor WordPress plugin before 6.8.8 does not correctly restrict who...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Essential Addons for Elementor WordPress plugin before 6.8.8 does not correctly restrict who may set the role assigned to accounts created through its registration form, allowing authenticated users with Author-level access and above to cause newly registered accounts, including those created by unauthenticated visitors through the public registration form, to be granted a higher role such as Editor. This is an incomplete fix of CVE-2026-5193: the role-validation control added in 6.6.0 can be circumvented by a lower-privileged user, so versions 6.6.0 through 6.8.7 remain affected even on sites that are patched against that advisory.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-g69p-96gc-gv86"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110808"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/aea51ee6-e1cd-4110-8d07-76cf8f87b2e4"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118043",
+      "title": "The Bulk Media Register WordPress plugin before 2.01 does not properly validate a user-supplied...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Bulk Media Register WordPress plugin before 2.01 does not properly validate a user-supplied path before moving a file on the server, allowing users with the Author role to move or rename arbitrary files, including outside the WordPress root, which can defeat directory-level access controls and disclose protected files.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-fxjq-44vq-hwjg"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118043"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/bcb6cb6b-d1bc-4c92-8c3b-4ad48348a2b1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109997",
+      "title": "The Ninja Forms – Contact Form Builder with Calculators, Quizzes, Signatures & AI Form Builder...",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Ninja Forms – Contact Form Builder with Calculators, Quizzes, Signatures & AI Form Builder plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'formData.extra' parameter in all versions up to, and including, 3.15.5 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. The nf_ajax_submit endpoint issues a valid nonce to any requester on failure, effectively neutralizing the nonce check and making exploitation trivially achievable in a single unauthenticated request.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-6x82-24xh-w634"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109997"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/ninja-forms/tags/3.15.5/includes/AJAX/Controllers/Submission.php#L428"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/ninja-forms/tags/3.15.5/includes/AJAX/Controllers/Submission.php#L52"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-109234",
+      "title": "The Meow Lightbox plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the ...",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The Meow Lightbox plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'post_content (bbPress reply body)' parameter in all versions up to, and including, 5.6.4 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. This requires the administrator to have enabled Output Buffering, the HtmlDomParser engine, and Aggressive Resolve, as well as a stored-HTML submission surface (such as bbPress anonymous replies) whose kses allow-list preserves img attributes; given these preconditions, a one-shot unauthenticated submission can execute arbitrary JavaScript in the context of any user who views the affected page.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-vv6j-8xxc-xhcc"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109234"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/meow-lightbox/tags/5.6.2/classes/core.php#L1115"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/meow-lightbox/tags/5.6.2/classes/core.php#L1142"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-101326",
+      "title": "The The Ninja Forms – Contact Form Builder with Calculators, Quizzes, Signatures & AI Form...",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The The Ninja Forms – Contact Form Builder with Calculators, Quizzes, Signatures & AI Form Builder plugin for WordPress is vulnerable to arbitrary shortcode execution in all versions up to, and including, 3.15.5 This is due to the software allowing users to execute an action that does not properly validate a value before running do_shortcode. This makes it possible for authenticated attackers, with subscriber-level access and above, to execute arbitrary shortcodes. Exploitation requires that an administrator has configured at least one Ninja Forms field with its Default Value set to the {wp:user_display_name} merge tag on a publicly accessible page; a Subscriber need only set their display_name to a shortcode string via their profile and then visit that page.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-wqc3-pwvg-9wvc"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-101326"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/ninja-forms/tags/3.15.4/includes/Abstracts/MergeTags.php#L94"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/ninja-forms/tags/3.15.4/includes/Config/MergeTagsWP.php#L128"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.4",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-100155",
+      "title": "The The Ninja Forms – Contact Form Builder with Calculators, Quizzes, Signatures & AI Form...",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-10-31",
+      "summary": "The The Ninja Forms – Contact Form Builder with Calculators, Quizzes, Signatures & AI Form Builder plugin for WordPress is vulnerable to arbitrary shortcode execution in all versions up to, and including, 3.15.5 This is due to the software allowing users to execute an action that does not properly validate a value before running do_shortcode. This makes it possible for unauthenticated attackers to execute arbitrary shortcodes.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-pqjx-p6p5-mv3f"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-100155"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/ninja-forms/tags/3.15.4/includes/AJAX/Controllers/Submission.php#L52"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/ninja-forms/tags/3.15.4/includes/AJAX/Controllers/Submission.php#L60"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:33Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -144912,37 +145629,6 @@
       "epss_as_of": "2026-10-31"
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.11772,
-      "epss_percentile": 0.96072,
-      "epss_as_of": "2026-10-31"
-    },
-    {
       "id": "CVE-2025-7624",
       "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
@@ -144971,6 +145657,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.10514,
       "epss_percentile": 0.95758,
+      "epss_as_of": "2026-10-31"
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.11772,
+      "epss_percentile": 0.96072,
       "epss_as_of": "2026-10-31"
     },
     {
@@ -166886,685 +167603,90 @@
       "epss": 0.89078,
       "epss_percentile": 0.99779,
       "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2019-0604",
-      "title": "Microsoft SharePoint Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365",
-        "SharePoint / SharePoint Server"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft SharePoint fails to check the source markup of an application package. An attacker who successfully exploits the vulnerability could run remote code in the context of the SharePoint application pool and the SharePoint server farm account.",
-      "affected": "Microsoft SharePoint. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99913,
-      "epss_percentile": 0.99968,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-0646",
-      "title": "Microsoft .NET Framework Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        ".NET / ASP.NET"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft .NET Framework contains an improper input validation vulnerability that allows for remote code execution.",
-      "affected": "Microsoft .NET Framework. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99222,
-      "epss_percentile": 0.99935,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-26857",
-      "title": "Microsoft Exchange Server Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Exchange Server contains an unspecified vulnerability that allows for remote code execution. This vulnerability is part of the ProxyLogon exploit chain.",
-      "affected": "Microsoft Exchange Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.95762,
-      "epss_percentile": 0.99871,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-1147",
-      "title": "Microsoft .NET Framework, SharePoint, and Visual Studio Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        ".NET / ASP.NET",
-        "Microsoft 365",
-        "SharePoint / SharePoint Server"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft .NET Framework, Microsoft SharePoint, and Visual Studio contain a remote code execution vulnerability when the software fails to check the source markup of XML file input. Successful exploitation allows an attacker to execute code in the context of the process responsible for deserialization of the XML content.",
-      "affected": "Microsoft .NET Framework, SharePoint, Visual Studio. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.95804,
-      "epss_percentile": 0.99872,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2019-1214",
-      "title": "Microsoft Windows Privilege Common Log File System (CLFS) Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows Common Log File System (CLFS) driver improperly handles objects in memory which can allow for privilege escalation.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.01419,
-      "epss_percentile": 0.72784,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2019-0863",
-      "title": "Microsoft Windows Error Reporting (WER) Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows Error Reporting (WER) contains a privilege escalation vulnerability due to the way it handles files, allowing for code execution in kernel mode.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.05207,
-      "epss_percentile": 0.92483,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-36955",
-      "title": "Microsoft Windows Common Log File System (CLFS) Driver Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Microsoft Windows Common Log File System (CLFS) driver contains an unspecified vulnerability that allows for privilege escalation.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.04071,
-      "epss_percentile": 0.90669,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2019-18935",
-      "title": "Progress Telerik UI for ASP.NET AJAX Deserialization of Untrusted Data Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        ".NET / ASP.NET",
-        "Progress Telerik"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Progress Telerik UI for ASP.NET AJAX contains a deserialization of untrusted data vulnerability through RadAsyncUpload which leads to code execution on the server in the context of the w3wp.exe process.",
-      "affected": "Progress Telerik UI for ASP.NET AJAX. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99737,
-      "epss_percentile": 0.99954,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-12271",
-      "title": "Sophos SFOS SQL Injection Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Sophos Firewall operating system (SFOS) firmware contains a SQL injection vulnerability when configured with either the administration (HTTPS) service or the User Portal is exposed on the WAN zone. Successful exploitation may cause remote code execution to exfiltrate usernames and hashed passwords for the local device admin(s), portal admins, and user accounts used for remote access (but not external Active Directory or LDAP passwords).",
-      "affected": "Sophos SFOS. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.42434,
-      "epss_percentile": 0.98702,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2017-9248",
-      "title": "Progress Telerik UI for ASP.NET AJAX and Sitefinity Cryptographic Weakness Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        ".NET / ASP.NET",
-        "Progress Telerik",
-        "Sitefinity"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "Progress Telerik UI for ASP.NET AJAX and Sitefinity have a cryptographic weakness in Telerik.Web.UI.dll that can be exploited to disclose encryption keys (Telerik.Web.UI.DialogParametersEncryptionKey and/or the MachineKey), perform cross-site-scripting (XSS) attacks, compromise the ASP.NET ViewState, and/or upload and download files.",
-      "affected": "Progress ASP.NET AJAX and Sitefinity. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.75098,
-      "epss_percentile": 0.99508,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2019-16759",
-      "title": "vBulletin PHP Module Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "PHP"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "The PHP module within vBulletin contains an unspecified vulnerability that allows for remote code execution via the widgetConfig[code] parameter in an ajax/render/widget_php routestring request.",
-      "affected": "vBulletin vBulletin. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99728,
-      "epss_percentile": 0.99953,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-17496",
-      "title": "vBulletin PHP Module Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "PHP"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "The PHP module within vBulletin contains an unspecified vulnerability that allows for remote code execution via crafted subWidgets data in an ajax/render/widget_tabbedcontainer_tab_panel request. This CVE ID resolves an incomplete patch for CVE-2019-16759.",
-      "affected": "vBulletin vBulletin. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.87478,
-      "epss_percentile": 0.99756,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2019-5544",
-      "title": "VMware ESXi and Horizon DaaS OpenSLP Heap-Based Buffer Overflow Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "VMware ESXi and Horizon Desktop as a Service (DaaS) OpenSLP contains a heap-based buffer overflow vulnerability that allows an attacker with network access to port 427 to overwrite the heap of the OpenSLP service to perform remote code execution.",
-      "affected": "VMware VMware ESXi and Horizon DaaS. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.98129,
-      "epss_percentile": 0.99913,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-3992",
-      "title": "VMware ESXi OpenSLP Use-After-Free Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "VMware ESXi OpenSLP contains a use-after-free vulnerability that allows an attacker residing in the management network with access to port 427 to perform remote code execution.",
-      "affected": "VMware ESXi. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.83015,
-      "epss_percentile": 0.99673,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-3950",
-      "title": "VMware Multiple Products Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "VMware Fusion, Remote Console (VMRC) for Mac, and Horizon Client for Mac contain a privilege escalation vulnerability due to improper use of setuid binaries that allows attackers to escalate privileges to root.",
-      "affected": "VMware Multiple Products. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.07254,
-      "epss_percentile": 0.94334,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-22005",
-      "title": "VMware vCenter Server File Upload Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "VMware vCenter Server contains a file upload vulnerability in the Analytics service that allows a user with network access to port 443 to execute code.",
-      "affected": "VMware vCenter Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99997,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2020-3952",
-      "title": "VMware vCenter Server Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "VMware vCenter Server contains an information disclosure vulnerability in the VMware Directory Service (vmdir) when the Platform Services Controller (PSC) does not correctly implement access controls. Successful exploitation allows an attacker with network access to port 389 to extract sensitive information.",
-      "affected": "VMware vCenter Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.90384,
-      "epss_percentile": 0.99799,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-21972",
-      "title": "VMware vCenter Server Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "VMware vCenter Server vSphere Client contains a remote code execution vulnerability in a vCenter Server plugin which allows an attacker with network access to port 443 to execute commands with unrestricted privileges on the underlying operating system.",
-      "affected": "VMware vCenter Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99865,
-      "epss_percentile": 0.99962,
-      "epss_as_of": "2026-10-31"
-    },
-    {
-      "id": "CVE-2021-21985",
-      "title": "VMware vCenter Server Improper Input Validation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2021-11-03",
-      "summary": "VMware vSphere Client contains an improper input validation vulnerability in the Virtual SAN Health Check plug-in, which is enabled by default in vCenter Server, which allows for remote code execution.",
-      "affected": "VMware vCenter Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2021-11-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99992,
-      "epss_as_of": "2026-10-31"
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-10-31T05:51:38Z",
-      "last_attempt": "2026-10-31T05:51:38Z",
-      "items_processed": 264,
+      "last_success": "2026-10-31T07:05:46Z",
+      "last_attempt": "2026-10-31T07:05:46Z",
+      "items_processed": 270,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-10-31T05:51:38Z",
-      "last_attempt": "2026-10-31T05:51:38Z",
+      "last_success": "2026-10-31T07:05:46Z",
+      "last_attempt": "2026-10-31T07:05:46Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-10-31T05:51:38Z",
-      "last_attempt": "2026-10-31T05:51:38Z",
-      "items_processed": 453,
+      "last_success": "2026-10-31T07:05:46Z",
+      "last_attempt": "2026-10-31T07:05:46Z",
+      "items_processed": 435,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-10-31T05:51:38Z",
-      "last_attempt": "2026-10-31T05:51:38Z",
+      "last_success": "2026-10-31T07:05:46Z",
+      "last_attempt": "2026-10-31T07:05:46Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-10-31T05:51:38Z",
-      "last_attempt": "2026-10-31T05:51:38Z",
+      "last_success": "2026-10-31T07:05:46Z",
+      "last_attempt": "2026-10-31T07:05:46Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-10-31T05:51:38Z",
-      "last_attempt": "2026-10-31T05:51:38Z",
+      "last_success": "2026-10-31T07:05:46Z",
+      "last_attempt": "2026-10-31T07:05:46Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-10-31T05:51:38Z",
-      "last_attempt": "2026-10-31T05:51:38Z",
+      "last_success": "2026-10-31T07:05:46Z",
+      "last_attempt": "2026-10-31T07:05:46Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-10-31T05:51:38Z",
-      "last_attempt": "2026-10-31T05:51:38Z",
+      "last_success": "2026-10-31T07:05:46Z",
+      "last_attempt": "2026-10-31T07:05:46Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-10-31T05:51:38Z",
-      "last_attempt": "2026-10-31T05:51:38Z",
+      "last_success": "2026-10-31T07:05:46Z",
+      "last_attempt": "2026-10-31T07:05:46Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-10-31T05:51:38Z",
-      "last_attempt": "2026-10-31T05:51:38Z",
+      "last_success": "2026-10-31T07:05:46Z",
+      "last_attempt": "2026-10-31T07:05:46Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-10-31T05:51:38Z",
-      "last_attempt": "2026-10-31T05:51:38Z",
+      "last_success": "2026-10-31T07:05:46Z",
+      "last_attempt": "2026-10-31T07:05:46Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-10-31T05:51:38Z",
-      "last_attempt": "2026-10-31T05:51:38Z",
+      "last_success": "2026-10-31T07:05:46Z",
+      "last_attempt": "2026-10-31T07:05:46Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -167576,7 +167698,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-10-31T05:51:38Z",
-  "last_successful_update": "2026-10-31T05:51:38Z",
+  "last_checked_at": "2026-10-31T07:05:46Z",
+  "last_successful_update": "2026-10-31T07:05:46Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
