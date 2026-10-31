@@ -263,6 +263,33 @@
     const matches=x=>!q||(x.name+' '+(x.description||'')).toLowerCase().includes(q);
     const enabled=x=>!personalized||personalized.defaults.includes(x.name);
     let visible=0;
+    // Curated product mark lookup. Unknown customer products receive a neutral initial badge.
+    // Never construct image URLs from untrusted customer supplied names or domains.
+    const productMarks=[
+      [/windows server|windows 11|^windows$|hyperv/i,'windows11'],[/^azure|microsoft fabric/i,'microsoftazure'],
+      [/microsoft 365|exchange|sharepoint|power platform|dynamics 365/i,'microsoft'],
+      [/^\.net|asp\.net/i,'dotnet'],[/wordpress/i,'wordpress'],[/^php$/i,'php'],[/python|pypi/i,'python'],
+      [/angular/i,'angular'],[/react|next\.js/i,'react'],[/javascript|typescript/i,'javascript'],
+      [/node\.js|npm/i,'nodedotjs'],[/linux/i,'linux'],[/fortinet/i,'fortinet'],[/sophos/i,'sophos'],
+      [/vmware/i,'vmware'],[/veeam/i,'veeam'],[/docker|kubernetes/i,'docker'],[/^aws$/i,'amazonaws'],
+      [/^sql server/i,'microsoftsqlserver'],[/mysql|mariadb/i,'mysql'],[/mongo/i,'mongodb'],
+      [/telerik|kendo/i,'progress'],[/sitefinity/i,'progress'],[/jquery|bootstrap/i,'bootstrap'],
+      [/ios|android/i,'android'],[/apache tomcat/i,'apachetomcat'],[/postgresql/i,'postgresql'],
+      [/jenkins/i,'jenkins'],[/nginx/i,'nginx'],[/redis/i,'redis'],[/sonicwall/i,'sonicwall'],
+      [/drupal/i,'drupal'],[/gitlab/i,'gitlab'],[/grafana/i,'grafana'],[/elastic/i,'elastic'],
+    ];
+    function productIcon(x){
+      const name=String(x.name||'');
+      const slug=productMarks.find(([pattern])=>pattern.test(name))?.[1];
+      const node=text('span','technology-glyph technology-brand-icon','');
+      node.setAttribute('aria-hidden','true');
+      if(!slug){node.textContent=name.slice(0,2).toUpperCase()||'◇';return node}
+      const img=document.createElement('img');
+      img.src='https://cdn.jsdelivr.net/npm/simple-icons@15.16.0/icons/'+slug+'.svg';
+      img.alt='';img.loading='lazy';img.decoding='async';
+      img.addEventListener('error',()=>{img.remove();node.textContent=name.slice(0,2).toUpperCase()||'◇'});
+      node.append(img);return node;
+    }
     function makeRow(x){
       const categoryRecords=x.custom?customMatching(x.name):items.filter(a=>(a.categories||[]).includes(x.name));
       const total=advisoryIDs(categoryRecords).length;
@@ -279,7 +306,7 @@
       const button=document.createElement('button');
       button.type='button';button.className='technology-row';
       button.setAttribute('aria-label',`View ${x.name}: ${ages.TODAY} published today, ${ages.YESTERDAY} yesterday, ${ages['72 HOURS']} two days ago, ${recent} new in 30 days, ${total} total`);
-      const icon=text('span','technology-glyph',x.icon||'◇');icon.setAttribute('aria-hidden','true');
+      const icon=productIcon(x);
       const label=text('span','technology-row-main','');
       const freshness=text('span','technology-row-fresh','');
       for(const [age,cls,display] of [['TODAY','today','Today'],['YESTERDAY','yesterday','Yesterday'],['72 HOURS','two-days','2 days ago']]){
