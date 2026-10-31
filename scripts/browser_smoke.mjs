@@ -1074,7 +1074,10 @@ assert.match(fs.readFileSync('styles.css','utf8'),/Homepage composition 203/,'ho
 assert.match(fs.readFileSync('index.html','utf8'),/styles\.css\?v=hero-203/,'homepage stylesheet cache updated');
 
 // The visual reference stylesheet must be included in the published homepage without touching navigation.
-assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=204/,'homepage uses dedicated final stylesheet');
+assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=205/,'homepage uses dedicated final stylesheet');
 assert.ok(fs.readFileSync('home-hero-reference.css','utf8').includes('body[data-page="home"] .hero .hero-grid'),'layout applies only to home hero');
 assert.doesNotMatch(fs.readFileSync('home-hero-reference.css','utf8'),/\.command-sidebar|\.command-nav-link/,'dedicated hero stylesheet must not modify navigation');
 assert.ok(fs.readFileSync('public/home-hero-reference.css','utf8').includes('hero-priority-card'),'hero stylesheet included in Pages build');
+
+assert.match(fs.readFileSync('index.html','utf8'),/home-hero-reference\.css\?v=205/,'current hero stylesheet version');
+assert.ok(fs.readFileSync('home-hero-reference.css','utf8').includes('205 targeted visual fixes'),'hero visual changes included');
