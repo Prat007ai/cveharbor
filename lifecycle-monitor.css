@@ -55,7 +55,7 @@ body[data-page="lifecycle"] .page-section-intro{display:none!important}
 @media(max-width:600px){#lifecycleMonitor .data-panel{padding:16px}.lifecycle-metric{padding:12px;gap:9px}.lifecycle-metric strong{font-size:22px}.lifecycle-metric>span{display:none}#lifecycleMonitor .ops-form,.monitor-type-options{grid-template-columns:1fr}#lifecycleMonitor .lifecycle-source-row{grid-template-columns:36px minmax(0,1fr)}#lifecycleMonitor .lifecycle-source-row button{grid-column:2;grid-row:auto;justify-self:start}.lifecycle-product-mark{width:34px;height:38px}}
 /* Reference layout: compact workspace, bounded width, real milestone graphics. */
 body[data-page="lifecycle"]{background:#031421;background-image:radial-gradient(ellipse at 80% 10%,#06426355,transparent 45%);}
-#lifecycleMonitor{max-width:1540px;margin:0 auto;padding-top:25px;padding-bottom:30px;font-size:12px}
+#lifecycleMonitor{max-width:none;margin:0 auto;padding-top:25px;padding-bottom:30px;font-size:12px}
 #lifecycleMonitor .section-heading{max-width:70%;min-height:115px;margin:0 0 15px;display:block}
 #lifecycleMonitor .section-heading h1{font-size:34px;line-height:1.2;letter-spacing:-.8px;margin:6px 0 7px}
 #lifecycleMonitor .eyebrow{font-size:12px;margin:0 0 7px}
@@ -100,9 +100,9 @@ body[data-page="lifecycle"]{background:#031421;background-image:radial-gradient(
 #lifecycleMonitor .monitor-state-tag{font-size:9px;padding:2px 7px;margin:4px 0}#lifecycleMonitor .lifecycle-prefs-form{border-top:1px solid #204657;padding-top:10px;grid-template-columns:1fr auto;align-items:end}.lifecycle-prefs-form input[type=checkbox]{margin-right:6px}#lifecycleMonitor .lifecycle-prefs-form .ops-span{font-weight:600;color:#e3f2fa}
 #lifecycleMonitor #lifecycleDeliveryState{font-size:9px;line-height:1.45;margin:8px 0 0}
 #lifecycleMonitor .lifecycle-watch-queue{padding:10px;border:1px solid #266177;border-radius:8px;font-size:11px}
-@media(min-width:761px){body[data-page="lifecycle"].command-center-app{padding-left:90px}body[data-page="lifecycle"] .command-sidebar{width:90px;background:linear-gradient(#041827,#021320);gap:16px;padding:12px 8px}body[data-page="lifecycle"] .command-nav-link{width:72px;height:auto;min-height:51px;display:flex;flex-direction:column;justify-content:center;gap:5px;padding:7px 1px}body[data-page="lifecycle"] .command-nav-link span{position:static;opacity:1;visibility:visible;transform:none;white-space:normal;text-align:center;font-size:9px;line-height:1.2;background:none;border:0;padding:0;pointer-events:none}body[data-page="lifecycle"] .command-nav-section{display:none}body[data-page="lifecycle"] .command-sidebar-toggle{display:none}body[data-page="lifecycle"] .site-header{background:#031725;border-bottom:1px solid #15384c}body[data-page="lifecycle"] .topbar{min-height:64px;max-width:1540px}body[data-page="lifecycle"] .topnav{display:none}body[data-page="lifecycle"] .brand-type{font-size:23px}body[data-page="lifecycle"] .brand-type small{font-size:9px}.lifecycle-header-search{display:flex;align-items:center;max-width:435px;flex:1;margin:0 auto}.lifecycle-header-search input{width:100%;background:#052236;border:1px solid #24556d;border-radius:7px;color:#cbe6f1;padding:10px 13px;font-size:11px}}
+@media(min-width:761px){body[data-page="lifecycle"].command-center-app{padding-left:90px}body[data-page="lifecycle"] .command-sidebar{width:90px;background:linear-gradient(#041827,#021320);gap:16px;padding:12px 8px}body[data-page="lifecycle"] .command-nav-link{width:72px;height:auto;min-height:51px;display:flex;flex-direction:column;justify-content:center;gap:5px;padding:7px 1px}body[data-page="lifecycle"] .command-nav-link span{position:static;opacity:1;visibility:visible;transform:none;white-space:normal;text-align:center;font-size:9px;line-height:1.2;background:none;border:0;padding:0;pointer-events:none}body[data-page="lifecycle"] .command-nav-section{display:none}body[data-page="lifecycle"] .command-sidebar-toggle{display:none}body[data-page="lifecycle"] .site-header{background:#031725;border-bottom:1px solid #15384c}body[data-page="lifecycle"] .topbar{min-height:64px;max-width:none}body[data-page="lifecycle"] .topnav{display:none}body[data-page="lifecycle"] .brand-type{font-size:23px}body[data-page="lifecycle"] .brand-type small{font-size:9px}.lifecycle-header-search{display:flex;align-items:center;max-width:435px;flex:1;margin:0 auto}.lifecycle-header-search input{width:100%;background:#052236;border:1px solid #24556d;border-radius:7px;color:#cbe6f1;padding:10px 13px;font-size:11px}}
 @media(max-width:1400px) and (min-width:1051px){#lifecycleMonitor .lifecycle-grid{grid-template-columns:minmax(0,1.6fr) 400px;gap:16px}#lifecycleMonitor .lifecycle-source-row{grid-template-columns:38px minmax(150px,1fr) 125px 100px;gap:8px}.lifecycle-timeline{display:none}#lifecycleMonitor .lifecycle-product-mark svg{width:36px}.lifecycle-ring{width:52px;height:52px}#lifecycleMonitor .lifecycle-metrics{width:70%}#lifecycleMonitor .section-heading h1{font-size:30px}.lifecycle-hero-steps{min-width:250px}.lifecycle-header-search{max-width:320px}}
-@media(max-width:1050px){#lifecycleMonitor{max-width:850px}#lifecycleMonitor .section-heading{max-width:100%;min-height:0}#lifecycleMonitor .lifecycle-hero-art{display:none}#lifecycleMonitor .lifecycle-metrics{width:100%;grid-template-columns:repeat(4,1fr)}#lifecycleMonitor .lifecycle-grid{grid-template-columns:1fr}#lifecycleMonitor .lifecycle-source-row{grid-template-columns:40px minmax(160px,1fr) 140px 125px}.lifecycle-timeline{display:none}.lifecycle-header-search{max-width:250px}.lifecycle-public-results{max-height:394px}}
+@media(max-width:1050px){#lifecycleMonitor{max-width:none}#lifecycleMonitor .section-heading{max-width:100%;min-height:0}#lifecycleMonitor .lifecycle-hero-art{display:none}#lifecycleMonitor .lifecycle-metrics{width:100%;grid-template-columns:repeat(4,1fr)}#lifecycleMonitor .lifecycle-grid{grid-template-columns:1fr}#lifecycleMonitor .lifecycle-source-row{grid-template-columns:40px minmax(160px,1fr) 140px 125px}.lifecycle-timeline{display:none}.lifecycle-header-search{max-width:250px}.lifecycle-public-results{max-height:394px}}
 @media(max-width:650px){#lifecycleMonitor{padding-top:18px}#lifecycleMonitor .section-heading h1{font-size:26px}#lifecycleMonitor .lifecycle-metrics{grid-template-columns:repeat(2,1fr)}#lifecycleMonitor .lifecycle-source-row{grid-template-columns:38px minmax(0,1fr) 100px;padding:10px 8px;gap:8px}#lifecycleMonitor .lifecycle-source-row button{grid-column:2/4;justify-self:end}.lifecycle-countdown{gap:0;justify-content:center}.lifecycle-countdown-label{display:none}.lifecycle-ring{width:54px;height:54px}.lifecycle-search-row .result-pill{display:none}#lifecycleMonitor .ops-form{grid-template-columns:1fr 1fr}#lifecycleMonitor .data-panel{padding:14px}.lifecycle-filter-tabs button{padding:7px}.lifecycle-header-search{display:none}.lifecycle-source-footer{margin:12px -14px -14px}.lifecycle-selected-heading{flex-wrap:wrap}}
 #lifecycleMonitor .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 #lifecycleMonitor .lifecycle-search-row .lifecycle-field{margin:0;display:block}
@@ -122,3 +122,57 @@ body[data-page="lifecycle"]{background:#031421;background-image:radial-gradient(
 #lifecycleMonitor #lifecycleUserStatus{font-size:9px!important;margin-bottom:0!important}
 @media(max-width:760px){body[data-page="lifecycle"] .site-header{height:auto;min-height:94px}body[data-page="lifecycle"] .topbar{height:auto;min-height:94px;padding:9px 0;gap:8px}body[data-page="lifecycle"] .header-account-actions{margin-left:auto}body[data-page="lifecycle"] .brand-type{font-size:21px}body[data-page="lifecycle"] .header-account-user{display:none}}
 #lifecycleMonitor #lifecycleWatches .ops-result:before{content:attr(data-product-mark);width:30px;height:30px;border:1px solid #4babc6;border-radius:50%;background:#075379;font:24px/29px Georgia,serif;text-align:center;color:#edfaff}
+
+/* Fluid lifecycle shell: the outer gutters stay small on every monitor. */
+body[data-page="lifecycle"]{--lifecycle-gutter:clamp(14px,1.4vw,40px);--lifecycle-gap:clamp(16px,1.3vw,28px)}
+body[data-page="lifecycle"] #lifecycleMonitor,
+body[data-page="lifecycle"] .topbar,
+body[data-page="lifecycle"] .footer>.shell{width:calc(100% - var(--lifecycle-gutter)*2);max-width:none;margin-left:auto;margin-right:auto}
+body[data-page="lifecycle"] .footer-status{padding-left:0;padding-right:0}
+#lifecycleMonitor .lifecycle-grid{gap:var(--lifecycle-gap)}
+#lifecycleMonitor .data-panel,#lifecycleMonitor .lifecycle-product-copy{min-width:0}
+#lifecycleMonitor .lifecycle-product-copy strong{overflow-wrap:anywhere}
+#lifecycleMonitor .lifecycle-hero-art{right:0;max-width:1100px}
+#lifecycleMonitor .lifecycle-public-results{max-height:clamp(394px,calc(100vh - 440px),900px)}
+#lifecycleMonitor .lifecycle-save-actions{flex-wrap:wrap}
+#lifecycleMonitor .lifecycle-source-row{min-width:0}
+#lifecycleMonitor .lifecycle-source-row button{max-width:100%}
+#lifecycleMonitor .lifecycle-timeline-track i{transform:translateX(-50%)}
+#lifecycleMonitor #lifecycleWatches .ops-link{margin-left:6px}
+@media(min-width:1700px){
+ #lifecycleMonitor .lifecycle-grid{grid-template-columns:minmax(0,1fr) clamp(460px,30vw,900px)}
+ #lifecycleMonitor .lifecycle-metrics{width:calc(100% - clamp(460px,30vw,900px) - var(--lifecycle-gap))}
+ #lifecycleMonitor .lifecycle-hero-steps{width:clamp(350px,28vw,850px)}
+ #lifecycleMonitor .lifecycle-source-row{grid-template-columns:48px minmax(0,1fr) 170px 175px 140px;gap:14px}
+ #lifecycleMonitor .data-panel{padding:20px}
+ #lifecycleMonitor .lifecycle-source-footer{margin:12px -20px -20px;padding:14px 20px}
+}
+@media(min-width:2300px){
+ #lifecycleMonitor .lifecycle-public-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-content:start}
+ #lifecycleMonitor .lifecycle-source-row{grid-template-columns:38px minmax(0,1fr) 126px 116px 100px;gap:8px;margin:0;min-height:112px;padding:12px 10px}
+ #lifecycleMonitor .lifecycle-product-mark,#lifecycleMonitor .lifecycle-product-mark svg{width:38px}
+ #lifecycleMonitor .lifecycle-ring{width:54px;height:54px}
+ #lifecycleMonitor .lifecycle-countdown{gap:6px}
+ #lifecycleMonitor .lifecycle-timeline{padding-left:8px}
+}
+@media(min-width:3100px){
+ #lifecycleMonitor .lifecycle-source-row{grid-template-columns:48px minmax(0,1fr) 165px 165px 135px;gap:12px}
+ #lifecycleMonitor .lifecycle-product-mark,#lifecycleMonitor .lifecycle-product-mark svg{width:45px}
+ #lifecycleMonitor .lifecycle-ring{width:62px;height:62px}
+ #lifecycleMonitor .lifecycle-source-row strong{font-size:15px}
+ #lifecycleMonitor .lifecycle-source-row .ops-note{font-size:12px}
+}
+@media(min-width:761px) and (max-width:1100px){
+ body[data-page="lifecycle"] .lifecycle-header-search{display:none}
+ body[data-page="lifecycle"] .topbar{flex-wrap:nowrap;gap:12px}
+}
+@media(max-width:650px){
+ #lifecycleMonitor .lifecycle-public-results{max-height:580px}
+ #lifecycleMonitor .lifecycle-source-row{grid-template-columns:32px minmax(0,1fr) 66px}
+ #lifecycleMonitor .lifecycle-product-mark,#lifecycleMonitor .lifecycle-product-mark svg{width:32px}
+ #lifecycleMonitor .lifecycle-private .ops-form{grid-template-columns:1fr}
+ #lifecycleMonitor .ops-span{grid-column:1/-1}
+ #lifecycleMonitor .lifecycle-prefs-form{grid-template-columns:minmax(0,1fr) auto!important}
+ #lifecycleMonitor .lifecycle-search-row{gap:8px}
+ #lifecycleMonitor .lifecycle-save-actions{gap:8px}
+}
