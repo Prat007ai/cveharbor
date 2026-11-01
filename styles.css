@@ -2239,3 +2239,187 @@ body.account-page #customerReports .customer-dash-toolbar{display:grid;grid-temp
  :is(#customerReports,#customerDashboard) .customer-table-scroll .customer-vulnerability-table{min-width:1080px}
  :is(#customerReports,#customerDashboard) .customer-severity-badge{white-space:nowrap}
 }
+
+/* Report composition follows the customer review mockup. All rules are scoped;
+   the shared sidebar, dashboard editors and print document retain their styles. */
+@media screen{
+ body.customer-report-page{background:#031623;color:#d9e8f1}
+ body.customer-report-page .site-header{display:none}
+ body.customer-report-page #customerReports{padding-top:8px;padding-bottom:24px;max-width:none}
+ #customerReports .customer-report-breadcrumb{margin-bottom:9px;font-size:11px;line-height:1.2}
+ #customerReports .customer-report-heading{align-items:flex-start;gap:20px;flex-wrap:nowrap}
+ #customerReports .customer-report-heading h1{font-size:26px;line-height:1.25;letter-spacing:-.5px;margin:0 0 4px}
+ #customerReports .customer-report-heading .section-sub{font-size:12px;line-height:1.5;color:#bcd0dd}
+ body.customer-report-page #customerReports .customer-report-actions{gap:10px;flex-wrap:nowrap;min-width:0;width:auto;margin-top:0}
+ body.customer-report-page #customerReports .customer-report-actions button{gap:7px;height:34px;min-height:34px;padding:0 10px;font-size:11px;border-radius:4px;background:#062d36;color:#8cf2dd;border-color:#076871;box-shadow:inset 0 0 12px #16c9b80b}
+ #customerReports .customer-report-icon{display:inline-flex;align-items:center;justify-content:center;flex:none;color:inherit}
+ #customerReports .customer-report-icon svg{width:19px;height:19px}
+ #customerReports #customerDashStatus{font-size:11px;margin:8px 0}
+ #customerReports #customerDashStatus[data-ready=true]{position:absolute;width:1px;height:1px;padding:0;margin:-1px;clip-path:inset(50%);overflow:hidden;white-space:nowrap}
+ #customerReports .customer-report-selection{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin:12px 0 14px}
+ body.customer-report-page #customerReports .customer-dash-toolbar{display:grid;grid-template-columns:1.1fr 1fr;gap:14px;flex:0 1 63%;max-width:none;margin:0}
+ #customerReports .customer-dash-toolbar label{font-size:11px;gap:3px;color:#c4dce5;min-width:0}
+ #customerReports .customer-dash-toolbar select{width:100%;height:34px;min-height:34px;padding:5px 9px;font-size:12px;border:1px solid #116070;border-radius:4px;background:#031e2d;color:#e3eef4}
+ #customerReportSourceControls{display:flex;align-items:center;gap:12px;flex-shrink:0;font-size:11px}
+ #customerReportSourceControls label{display:flex;align-items:center;gap:8px}
+ #customerReportSourceControls select,#customerReportSourceControls button{font:inherit;color:#c8edf0;background:#052431;border:1px solid #17606d;border-radius:4px;height:34px;padding:5px 10px}
+ #customerReportSourceControls select{min-width:135px}
+ #customerReportSourceControls button{color:#9ddbd8;font-weight:600;cursor:pointer}
+ #customerReportSourceControls button:disabled{opacity:.5;cursor:wait}
+ #customerReports .customer-report-top{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:12px;align-items:stretch}
+ #customerReportIntelligence .cvie-panel{margin:0;padding:11px 12px 8px;height:100%;border:1px solid #124b5d;border-radius:5px;background:#031d2b;box-sizing:border-box}
+ #customerReportIntelligence .cvie-panel-head{display:block;font-size:13px;line-height:1.3}
+ #customerReportIntelligence .cvie-panel-head>div{min-width:0}
+ #customerReportIntelligence .cvie-panel-head strong{font-weight:700;color:#f0f5f9}
+ #customerReportIntelligence .cvie-caption{font-size:10px;line-height:1.4;margin:4px 0;color:#a4c2d1}
+ #customerReportIntelligence .cvie-source-grid{gap:9px;margin-top:9px;grid-template-columns:repeat(3,minmax(0,1fr))}
+ #customerReportIntelligence .cvie-source{position:relative;display:grid;grid-template-columns:32px minmax(0,1fr);align-content:start;column-gap:8px;row-gap:4px;min-height:110px;padding:10px 9px 9px;border:1px solid #124957;border-left:2px solid #21caba;border-radius:7px;background:#042330;font-size:11px;line-height:1.35;overflow-wrap:anywhere}
+ #customerReportIntelligence .cvie-source>.customer-report-icon{grid-column:1;grid-row:1 / span 3;width:32px;height:36px;border:1px solid #0876a2;background:#043a59;border-radius:7px;color:#39cfff}
+ #customerReportIntelligence .cvie-source[data-source=cisa_kev]>.customer-report-icon{color:#65efd1;background:#005044;border-color:#08826f}
+ #customerReportIntelligence .cvie-source[data-source=cve_program]>.customer-report-icon{color:#66c7f9;background:#073252;border-color:#12577a;border-radius:50%}
+ #customerReportIntelligence .cvie-source>:not(.customer-report-icon){grid-column:2;min-width:0}
+ #customerReportIntelligence .cvie-source>strong{font-size:11px;color:#e8f2f7}
+ #customerReportIntelligence .cvie-source>span:not(.customer-report-icon){color:#8bbdcc}
+ #customerReportIntelligence .cvie-source.current>span:not(.customer-report-icon){color:#26dec6}
+ #customerReportIntelligence .cvie-source small{font-size:10px;line-height:1.35}
+ #customerReportIntelligence .cvie-source progress{grid-column:1 / -1;height:5px;margin:4px 0 0}
+ #customerReportIntelligence .cvie-source:is(.pending,.catching_up,.verifying_products){border-left-color:#4d9fc3}
+ #customerReportIntelligence .cvie-source:is(.stale,.unavailable,.rate_limited,.setup_required){border-left-color:#e6ae4c}
+ #customerReportIntelligence .cvie-status{font-size:10px;line-height:1.4;margin:7px 0 0;color:#abd0db}
+ #customerReportIntelligence .customer-report-source-scope{color:#83a8bb}
+ #customerReportIntelligence .cvie-scan-details>summary{font-size:11px;color:#9de2df;padding:5px 0 0}
+ #customerReportIntelligence .cvie-scan-details[open]>summary{padding-bottom:8px}
+ #customerReportIntelligence .cvie-product-statuses{margin-top:5px}
+ #customerReportAssessment .customer-security-score-panel{height:100%;border:1px solid #155366;border-radius:5px;background:#031d2b;box-shadow:none}
+ #customerReportAssessment .customer-security-score-panel[data-attention=critical]{border-color:#9a364a}
+ #customerReportAssessment .customer-security-score-panel[data-attention=high]{border-color:#946923}
+ #customerReportAssessment .customer-score-header{padding:10px 12px;display:flex;flex-direction:column;gap:5px}
+ #customerReportAssessment .customer-score-heading{margin:0;gap:5px;flex-wrap:wrap;align-items:center}
+ #customerReportAssessment .customer-score-title{font-size:13px;line-height:1.35;letter-spacing:0}
+ #customerReportAssessment .customer-attention-badge{font-size:10px;padding:2px 7px;line-height:1.3;margin:0;border-radius:4px}
+ #customerReportAssessment .customer-score-overview{gap:24px;align-items:center;justify-content:flex-start}
+ #customerReportAssessment .customer-score-seal{position:relative;isolation:isolate;width:114px;height:114px;flex-basis:114px;border:0;outline:0;box-shadow:none;background:conic-gradient(var(--seal) var(--score-sweep),#17415b 0);color:#80efdd}
+ #customerReportAssessment .customer-score-seal::before{content:"";position:absolute;inset:9px;border-radius:50%;background:#031d2b;z-index:-1}
+ #customerReportAssessment [data-tier=unknown] .customer-score-seal{background:conic-gradient(#3c6b81 0 100%);color:#b8d5e0}
+ #customerReportAssessment .customer-score-seal-number{font-size:27px;line-height:1.1;font-weight:750}
+ #customerReportAssessment .customer-score-seal small{font-size:9px;letter-spacing:0;margin-top:2px}
+ #customerReportAssessment .customer-score-ring-rating{font-size:9px;line-height:1.2;text-align:center;max-width:82px;margin-top:5px;color:#c8e8eb}
+ #customerReportAssessment .customer-score-legend{flex:1;max-width:240px;min-width:0}
+ #customerReportAssessment .customer-score-legend-caption{display:block;font-size:9px;color:#9bbccc;margin-bottom:5px}
+ #customerReportAssessment .customer-score-legend-row{display:flex;justify-content:space-between;gap:10px;font-size:12px;line-height:1.8;color:#c4d9e5}
+ #customerReportAssessment .customer-score-legend-row span{display:flex;align-items:center;gap:8px}
+ #customerReportAssessment .customer-score-legend-row span:before{content:"";width:11px;height:11px;border-radius:50%;background:#5187ad;flex:none}
+ #customerReportAssessment .customer-score-legend-row[data-level=critical] span:before{background:#ee2154}
+ #customerReportAssessment .customer-score-legend-row[data-level=high] span:before{background:#ffb321}
+ #customerReportAssessment .customer-score-legend-row[data-level=medium] span:before{background:#dce1e3}
+ #customerReportAssessment .customer-score-legend-row strong{font-weight:600;color:#e0eff5}
+ #customerReportAssessment .customer-score-report-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11px;color:#b7cfdb}
+ #customerReportAssessment .customer-score-report-meta strong{color:#80dcd0;font-weight:600}
+ #customerReportAssessment [data-confidence=low] strong{color:#edc482}
+ #customerReportAssessment .customer-score-hint{font-size:10px;margin:0;color:#83d9d2}
+ #customerReportAssessment .customer-score-expanded{padding:5px 12px 12px}
+ #customerReports .customer-report{margin-top:12px}
+ #customerReports .customer-report>h2{font-size:16px;line-height:1.3;letter-spacing:-.15px;margin:14px 0 7px}
+ #customerReports .customer-report>h2:first-of-type{margin-top:0}
+ #customerReports .customer-report-summary{gap:14px}
+ #customerReports .customer-report-summary .customer-dash-metric{display:grid;grid-template-columns:42px minmax(0,1fr);grid-template-rows:auto auto;column-gap:17px;row-gap:0;padding:9px 14px;min-height:62px;border-radius:5px;background:#0c2638;align-content:center}
+ #customerReports .customer-report-summary .customer-report-icon{grid-row:1 / span 2;width:42px;height:42px;border-radius:6px;background:#1c3e55;border:1px solid #345a70;color:#cee0e9}
+ #customerReports .customer-report-summary .customer-report-icon svg{width:23px;height:23px}
+ #customerReports .customer-report-summary strong{font-size:18px;line-height:1.3;color:inherit}
+ #customerReports .customer-report-summary span:not(.customer-report-icon){font-size:12px;line-height:1.3;color:#d2e2eb}
+ #customerReports .customer-dash-metric[data-kind=critical]{background:linear-gradient(110deg,#351a2c,#201b2a);border-color:#541e38;color:#ffbccb}
+ #customerReports .customer-dash-metric[data-kind=critical] .customer-report-icon{background:#77172e;border-color:#9a2844;color:#ffabb9}
+ #customerReports .customer-dash-metric[data-kind=high]{background:linear-gradient(110deg,#30291c,#242520);border-color:#574427;color:#ffc650}
+ #customerReports .customer-dash-metric[data-kind=high] .customer-report-icon{background:#704600;border-color:#926316;color:#ffd766}
+ #customerReports .customer-dash-metric[data-kind=other]{background:linear-gradient(110deg,#06283e,#062237);border-color:#10435b;color:#c8e4fa}
+ #customerReports .customer-dash-metric[data-kind=other] .customer-report-icon{background:#063960;border-color:#0f5381;color:#7ad8ff}
+ #customerReports .customer-report-caveat{font-size:10px;line-height:1.4;color:#88acbd;margin:5px 0 0}
+ #customerReports .customer-finding-filters{gap:6px;margin:0 0 8px}
+ #customerReports .customer-finding-filter{background:#042331;border:1px solid #09606d;border-radius:4px;padding:4px 10px;min-height:28px;font-size:12px;line-height:1.4;color:#c4dde7}
+ #customerReports .customer-finding-filter[aria-pressed=true]{background:#18bcb6;color:#00232b;border-color:#16bdb7;font-weight:700}
+ #customerReports .customer-table-scroll{border-color:#124556;border-radius:4px}
+ #customerReports .customer-table-scroll .customer-report-table{min-width:760px;border:0;border-collapse:collapse;table-layout:fixed}
+ #customerReports .customer-table-scroll .customer-vulnerability-table{min-width:920px}
+ #customerReports .customer-report-table th{background:#052c3d;border-color:#103d4e;font-size:12px;line-height:1.3;padding:5px 12px;font-weight:500;vertical-align:middle}
+ #customerReports .customer-report-table td{font-size:12px;line-height:1.35;padding:5px 12px;vertical-align:middle;background:#031a28;border-color:#103648}
+ #customerReports .customer-vulnerability-table th:nth-child(1){width:12%}
+ #customerReports .customer-vulnerability-table th:nth-child(2){width:10%}
+ #customerReports .customer-vulnerability-table th:nth-child(3){width:9%}
+ #customerReports .customer-vulnerability-table th:nth-child(4){width:17%}
+ #customerReports .customer-vulnerability-table th:nth-child(5){width:25%}
+ #customerReports .customer-vulnerability-table th:nth-child(6){width:15%}
+ #customerReports .customer-vulnerability-table th:nth-child(7){width:12%}
+ #customerReports .customer-report-sort{font-weight:500}
+ #customerReports .customer-report-sort-indicator{font-size:9px;color:#72b3c2}
+ #customerReports .customer-report-cell-primary,#customerReports .customer-report-cell-summary{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ #customerReports .customer-report-cell-secondary{display:block;font-size:10px;color:#88aabb;overflow-wrap:anywhere}
+ #customerReports .customer-ticket-reference{padding:0;border:0;background:transparent;border-radius:0;color:#cde2ed;font-size:12px}
+ #customerReports .customer-ticket-history{gap:4px}
+ #customerReports :is(.customer-status-badge,.customer-severity-badge,.customer-attention-badge){margin:0;padding:2px 8px;font-size:11px;line-height:1.3;border-radius:4px}
+ #customerReports .customer-status-badge{display:inline-block;min-width:118px}
+ #customerReports .customer-severity-badge{text-transform:capitalize}
+ #customerReports .customer-report-software th:nth-child(1){width:24%}
+ #customerReports .customer-report-software th:nth-child(2){width:19%}
+ #customerReports .customer-report-software th:nth-child(3){width:20%}
+ #customerReports .customer-report-software th:nth-child(4){width:23%}
+ #customerReports .customer-report-software th:nth-child(5){width:14%}
+ #customerReports .customer-report-software td{padding-top:6px;padding-bottom:6px}
+ #customerReports .customer-report-section{margin:0;border:1px solid #175166;border-radius:0;background:#031e2d}
+ #customerReports .customer-table-scroll+.customer-report-section{margin-top:12px;border-radius:4px 4px 0 0}
+ #customerReports .customer-report-section+.customer-report-section{border-top:0}
+ #customerReports .customer-report-section-toggle{display:flex;align-items:center;gap:10px;padding:5px 12px;min-height:32px;font-size:12px;line-height:1.5;list-style:none}
+ #customerReports .customer-report-section-toggle::-webkit-details-marker{display:none}
+ #customerReports .customer-report-section-toggle:before{content:"";width:0;height:0;border:4px solid transparent;border-left:6px solid #4de6d2;border-right:0;flex:none}
+ #customerReports .customer-report-section[open]>.customer-report-section-toggle:before{transform:rotate(90deg)}
+ #customerReports .customer-report-section-toggle:after{content:"›";color:#69ddda;font-size:21px;line-height:1}
+ #customerReports .customer-section-count{float:none;flex:none;margin:0 0 0 auto;padding:1px 8px;border-radius:5px;color:#c5e8f7;font-size:10px;line-height:1.5}
+ #customerReports .customer-section-count[data-level=critical]{border-color:#b72f50;background:#5b172b;color:#ffd2dc}
+ #customerReports .customer-section-count:is([data-level=high],[data-level=pending]){border-color:#93631b;background:#392a0b;color:#ffd177}
+ #customerReports .customer-report>h2:has(+.customer-report-details){display:none}
+ #customerReports .customer-report-details{grid-template-columns:auto repeat(4,minmax(0,1fr));gap:5px 28px;padding:10px 16px;margin-top:12px;border:1px solid #16475a;border-radius:5px;background:#031e2d;align-items:start}
+ #customerReports .customer-report-details h2{font-size:13px;line-height:1.4;margin:0;grid-row:1 / span 2;align-self:center;letter-spacing:0}
+ #customerReports .customer-report-details small{font-size:10px;margin:0 0 2px;line-height:1.4}
+ #customerReports .customer-report-details strong{font-size:12px;font-weight:500;line-height:1.4}
+ #customerReports .customer-report-footnote{grid-column:2 / -1;font-size:9px;line-height:1.4;margin:0;color:#86aabb}
+}
+@media screen and (max-width:1200px){
+ #customerReports .customer-report-heading{flex-wrap:wrap;gap:10px}
+ #customerReports .customer-report-top{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}
+ #customerReportIntelligence .cvie-source{grid-template-columns:minmax(0,1fr);padding:8px;min-height:145px}
+ #customerReportIntelligence .cvie-source>.customer-report-icon{grid-column:1;grid-row:auto;width:28px;height:28px}
+ #customerReportIntelligence .cvie-source>:not(.customer-report-icon){grid-column:1}
+ #customerReportAssessment .customer-score-overview{gap:14px}
+ #customerReports .customer-report-details{gap:8px 16px}
+}
+@media screen and (max-width:950px){
+ #customerReports .customer-report-top{grid-template-columns:minmax(0,1fr)}
+ #customerReports .customer-report-selection{flex-wrap:wrap;gap:10px}
+ body.customer-report-page #customerReports .customer-dash-toolbar{flex-basis:100%}
+ #customerReportSourceControls{margin-left:auto}
+ #customerReportIntelligence .cvie-source{grid-template-columns:32px minmax(0,1fr);min-height:110px}
+ #customerReportIntelligence .cvie-source>.customer-report-icon{grid-column:1;grid-row:1 / span 3}
+ #customerReportIntelligence .cvie-source>:not(.customer-report-icon){grid-column:2}
+ #customerReportAssessment .customer-score-legend{max-width:none}
+ #customerReports .customer-report-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ #customerReports .customer-report-details{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #customerReports .customer-report-details h2{grid-column:1 / -1;grid-row:auto}
+ #customerReports .customer-report-footnote{grid-column:1 / -1}
+}
+@media screen and (max-width:600px){
+ #customerReports .customer-report-heading h1{font-size:23px}
+ body.customer-report-page #customerReports .customer-report-actions{flex-wrap:wrap;gap:7px;width:100%}
+ body.customer-report-page #customerReports .customer-report-actions button{flex:1 1 auto;min-height:40px}
+ body.customer-report-page #customerReports .customer-dash-toolbar{grid-template-columns:minmax(0,1fr);gap:8px}
+ #customerReports .customer-dash-toolbar select{height:40px}
+ #customerReportSourceControls{width:100%;justify-content:space-between;gap:7px}
+ #customerReportSourceControls :is(select,button){height:40px}
+ #customerReportIntelligence .cvie-source-grid{grid-template-columns:minmax(0,1fr)}
+ #customerReportIntelligence .cvie-source{min-height:0;padding:9px 10px;column-gap:11px}
+ #customerReports .customer-report-summary .customer-dash-metric{grid-template-columns:30px minmax(0,1fr);column-gap:9px;padding:9px}
+ #customerReports .customer-report-summary .customer-report-icon{width:30px;height:34px}
+ #customerReports .customer-report-summary span:not(.customer-report-icon){font-size:11px}
+ #customerReports .customer-report-section-toggle{flex-wrap:wrap;gap:5px 8px;padding:8px;min-height:40px;font-size:11px}
+ #customerReports .customer-section-count{font-size:9px}
+ #customerReports .customer-report-section-toggle:after{display:none}
+ #customerReports .customer-report>h2{font-size:14px}
+}

@@ -129,7 +129,14 @@ function renderFindings(root,issues,readOnly){
   for(const value of existing)history.append(text('span',value,'customer-ticket-reference'));
   if(!existing.length)history.append(text('span',ticketReady?'—':'Unavailable'));
   ticketCell.append(history);
-  if(readOnly){cell.append(statusBadge(findingStatusReady?statusFor(i):'Status unavailable'));continue}
+  if(readOnly){
+   cell.append(statusBadge(findingStatusReady?statusFor(i):'Status unavailable'));
+   const asset=text('span',i.technology+' '+(i.version||'Unknown')+' · '+(i.asset?.name||'Asset'),'customer-report-cell-primary');
+   asset.title=asset.textContent+' · '+(i.environment?.name||'');row.cells[3].replaceChildren(asset);
+   const description=text('span',shortSummary(i),'customer-report-cell-summary');
+   description.title=String(i.summary||i.title||'');row.cells[4].replaceChildren(description);
+   continue;
+  }
   const select=text('select','','customer-finding-status-select');
   select.setAttribute('aria-label','Fix status for '+i.id+' on '+(i.asset?.name||'asset'));
   for(const value of statusOptions)option(select,value,value);
@@ -159,6 +166,7 @@ function invalidateSession(){
  for(const id of ['customerReportBody','customerReportAssessment','customerDashboardCves','customerSoftwareVisual','customerDashboardPlugins','customerDashRows','customerDashFindings','customerDashboardAssessment'])$(id)?.replaceChildren();
  for(const id of ['customerReportPrint','customerReportEmail','customerReportCsv'])if($(id))$(id).disabled=true;
  document.querySelectorAll('.customer-email-overlay').forEach(el=>el.remove());
+ delete $('customerDashStatus').dataset.ready;
  $('customerDashStatus').textContent='Your session changed. Reload and sign in to load authorized customer records.';
 }
 async function refreshSavedFindings(){
@@ -241,7 +249,7 @@ function environments(){
  option(select,'All environments','');
  for(const env of inventory.environments.filter(e=>!customer||e.customer_id===customer)){
   const customerName=inventory.customers.find(c=>c.id===env.customer_id)?.name||'Customer';
-  option(select,customerName+' / '+env.name+' ('+env.kind+')',env.id);
+  option(select,(reporting?'':customerName+' / ')+env.name+' ('+env.kind+')',env.id);
  }
  if([...select.options].some(x=>x.value===previous))select.value=previous;
 }
@@ -495,6 +503,7 @@ function enableFindingSort(tableElement){
   const th=tableElement.tHead.rows[0].cells[index];
   const button=text('button',key,'customer-report-sort');button.type='button';
   const selected=findingSort.key===key;
+  if(reporting&&key==='Vulnerability Fix Status')button.textContent='Fix status';
   button.append(text('span',selected?(findingSort.direction==='asc'?' ▲':' ▼'):' ⇅','customer-report-sort-indicator'));
   th.replaceChildren(button);
   th.setAttribute('aria-sort',selected?(findingSort.direction==='asc'?'ascending':'descending'):'none');
@@ -536,12 +545,34 @@ function renderScorePanel(root,customer,scope,stats){
  circle.textContent=assessment.score===null?'—':String(assessment.score);
  seal.append(circle,text('small',assessment.score===null?'NO SCORE':'OUT OF 100'));
  const summaryDetails=text('div','','customer-score-summary');
- summaryDetails.append(text('strong',rating,'customer-score-rating'),
-  text('span','Assessment confidence: '+assessment.confidence,'customer-score-meta'),
-  text('span','Monitoring coverage: '+assessment.coverage+'%','customer-score-meta'),
-  text('span','View score breakdown and history','customer-score-hint'));
- overview.append(seal,summaryDetails);
- header.append(headingWrap,overview);
+ if(reporting){
+  headingWrap.querySelector('.customer-score-version').remove();
+  const attentionLabel=headingWrap.querySelector('.customer-attention-badge');
+  if(attentionLabel){attentionLabel.title=attentionLabel.textContent;attentionLabel.textContent='⚠ Attention Required'}
+  seal.style.setProperty('--score-sweep',(assessment.score??0)*3.6+'deg');
+  seal.append(text('span',rating,'customer-score-ring-rating'));
+  const legend=text('div','','customer-score-legend');
+  legend.append(text('small','Unresolved potential matches','customer-score-legend-caption'));
+  const unresolved=stats.issues.filter(i=>!closedStatus(statusFor(i)));
+  for(const level of ['Critical','High','Medium','Low','Unknown']){
+   const count=unresolved.filter(i=>normalize(i.severity)===normalize(level)).length;
+   if(level==='Unknown'&&!count)continue;
+   const row=text('div','','customer-score-legend-row');row.dataset.level=normalize(level);
+   row.append(text('span',level),text('strong',count));legend.append(row);
+  }
+  overview.append(seal,legend);
+  const metadata=text('div','','customer-score-report-meta');
+  for(const [label,value] of [['Assessment confidence',assessment.confidence],['Monitoring coverage',assessment.coverage+'%']]){
+   const item=text('span',label+': ');item.append(text('strong',value));if(label==='Assessment confidence')item.dataset.confidence=normalize(value);metadata.append(item);
+  }
+  header.append(headingWrap,overview,metadata,text('span','View score breakdown and history ›','customer-score-hint'));
+ }else{
+  summaryDetails.append(text('strong',rating,'customer-score-rating'),
+   text('span','Assessment confidence: '+assessment.confidence,'customer-score-meta'),
+   text('span','Monitoring coverage: '+assessment.coverage+'%','customer-score-meta'),
+   text('span','View score breakdown and history','customer-score-hint'));
+  overview.append(seal,summaryDetails);header.append(headingWrap,overview);
+ }
  card.append(header);
  const contentBox=text('div','','customer-score-expanded');
  contentBox.append(text('p',assessment.explanation,'ops-note'));
@@ -819,6 +850,59 @@ function renderPluginMonitoring(root,stats){
  }
  else root.append(reportSection('WordPress Plugin Monitoring'),text('p','Not applicable: no WordPress plugins are recorded in this scope.','ops-note'));
 }
+
+// Presentation only: move the engine's existing controls with their listeners intact.
+// CVIE owns all source data, polling, progress, and product coverage behaviour.
+function layoutReportIntelligence(){
+ const panel=document.querySelector('#customerReports > .cvie-panel');
+ if(!panel)return;
+ $('customerReportIntelligence').append(panel);
+ const controls=$('customerReportSourceControls');
+ for(const [id,icon] of [['customerReportPrint','pdf'],['customerReportEmail','email'],['customerReportCsv','csv']])$(id).prepend(reportIcon(icon));
+ let scanPresentationInitialized=false;
+ const arrange=()=>{
+  const head=panel.querySelector('.cvie-panel-head');
+  const history=head?.querySelector('label'),refresh=head?.querySelector('button');
+  if(history&&refresh)controls.replaceChildren(history,refresh);
+  const title=head?.querySelector('strong');if(title)title.textContent='CVEHarbor – Vulnerability Intelligence Engine';
+  const sources=[...panel.querySelectorAll('.cvie-source')],sourceOrder={nvd:0,cisa_kev:1,cve_program:2};
+  for(const source of sources){
+   const label=source.querySelector('strong')?.textContent;
+   const id=window.CVEHARBOR_CVIE.evidence.sources?.find(s=>(s.label||s.id)===label)?.id||'';
+   source.dataset.source=id;
+   if(!source.querySelector('.customer-report-icon'))source.prepend(reportIcon({nvd:'nvd',cisa_kev:'shield',cve_program:'refresh'}[id]||'total'));
+  }
+  panel.querySelector('.cvie-source-grid')?.append(...sources.sort((a,b)=>(sourceOrder[a.dataset.source]??3)-(sourceOrder[b.dataset.source]??3)));
+  const caption=head?.querySelector('.cvie-caption');
+  if(caption&&!caption.querySelector('.customer-report-source-scope'))caption.append(text('span',' Shared source index.','customer-report-source-scope'));
+  const scan=panel.querySelector('.cvie-scan-details');
+  // Keep the initial report compact even during a scan. Users can expand the
+  // unchanged live progress view; subsequent redraws retain their choice.
+  if(scan&&!scanPresentationInitialized){scan.open=false;scanPresentationInitialized=true}
+ };
+ arrange();
+ // Direct children are replaced on CVIE redraw. Do not observe our own decorations.
+ new MutationObserver(arrange).observe(panel,{childList:true});
+}
+function reportIcon(name){
+ const paths={
+  pdf:'M14 2H6v20h12V6l-4-4Z M14 2v5h4 M8 17v-5h3v3H8 M14 12v5',
+  email:'M3 5h18v14H3Z M3 5l9 8 9-8',
+  csv:'M4 3h16v18H4Z M4 8h16 M4 13h16 M4 17h16 M9 3v18',
+  critical:'M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z M4 21v-3a8 5 0 0 1 16 0v3',
+  high:'M9 5H5v16h14V5h-4 M9 3h6v4H9Z M9 11h6 M9 15h6',
+  other:'M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z M4 21v-3a8 5 0 0 1 16 0v3',
+  total:'M7 3h10l3 3v15H7Z M7 7H4v12 M10 10h7 M10 14h7 M10 18h5',
+  nvd:'M3 4h7v16H3Z M14 4h7v16h-7Z M5 8h3 M16 8h3 M5 12h3 M16 12h3',
+  shield:'m12 2 8 4v6c0 5-8 10-8 10S4 17 4 12V6Z M12 7v6 M12 16v1',
+  refresh:'M20 7a9 9 0 0 0-15-2L2 8 M2 3v5h5 M4 17a9 9 0 0 0 15 2l3-3 M22 21v-5h-5'
+ };
+ const wrap=text('span','','customer-report-icon');wrap.setAttribute('aria-hidden','true');
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+ svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('fill','none');svg.setAttribute('stroke','currentColor');svg.setAttribute('stroke-width','1.6');svg.setAttribute('stroke-linecap','round');svg.setAttribute('stroke-linejoin','round');
+ const path=document.createElementNS(svg.namespaceURI,'path');path.setAttribute('d',paths[name]||paths.total);svg.append(path);wrap.append(svg);return wrap;
+}
+
 function drawReport(){
  if(reportPrinting){reportRedrawPending=true;return}
  const id=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
@@ -837,9 +921,9 @@ function drawReport(){
  const summary=text('div','','customer-report-summary');
  const high=stats.issues.filter(i=>normalize(i.severity)==='high').length;
  for(const [label,count,kind] of [['Critical findings',stats.critical,'critical'],['High findings',high,'high'],['Other findings',stats.total-stats.critical-high,'other'],['Total potential matches',stats.total,'total']]){
-  const card=metric(label,count);card.dataset.kind=kind;summary.append(card);
+  const card=metric(label,count);card.dataset.kind=kind;card.prepend(reportIcon(kind));summary.append(card);
  }
- root.append(summary,text('p','Findings are potential asset–CVE matches, not confirmed vulnerabilities. Validate affected versions and configurations against vendor evidence.','ops-note'));
+ root.append(summary,text('p','Potential asset–CVE matches, not confirmed vulnerabilities. Verify applicability against vendor evidence.','ops-note customer-report-caveat'));
  if(stats.limited)root.append(text('p','The existing matching limit was reached. Counts and exports describe the available results only; narrow the environment for a more complete review.','ops-note'));
  root.append(reportSection('CVE Findings (Read Only)'));
  renderFindings(root,stats.issues,true);
@@ -847,6 +931,7 @@ function drawReport(){
  const software=table(['Software / Technology','Installed version','Environment','Vulnerability attention','Fix status'],stats.assets.map(a=>[
   a.technology+' · '+a.name,a.version||'Unknown',stats.environments.find(e=>e.id===a.environment_id)?.name||'','',''
  ]));
+ software.classList.add('customer-report-software');
  for(const [index,asset] of stats.assets.entries()){
   const issues=stats.issues.filter(i=>i.asset_id===asset.id),row=software.tBodies[0].rows[index];
   row.cells[3].append(attentionBadge(issues));
@@ -880,13 +965,20 @@ function drawReport(){
  // End the final accordion before the report metadata.
  root.append(reportSection('Report details'));
  const details=text('div','','customer-report-details');
+ details.append(text('h2','Report details'));
  for(const [label,value] of [['Generated on',date],['Customer',customer.name],['Environment',scope],['Report type','Customer Security Review']]){
   const item=text('div');item.append(text('small',label),text('strong',value));details.append(item);
  }
- root.append(details,text('p','Customer confidential. This read only view reflects recorded status at generation. Saved PDF files preserve the generated contents; full historical reports are not archived by this service.','ops-note'));
+ details.append(text('p','Customer confidential. Recorded status at generation; saved PDFs preserve their contents. Full report archives are not available.','ops-note customer-report-footnote'));
+ root.append(details);
  collapseReportSections(root);
  const counts={'Recorded Technology Inventory':stats.assets.length+' recorded entries','Vulnerabilities Requiring Verification':stats.total+' potential matches','WordPress Plugin Monitoring':stats.assets.filter(a=>a.technology.startsWith('WordPress Plugin: ')).length+' recorded plugins','CVE Findings':stats.issues.filter(i=>!closedStatus(statusFor(i))).length+' unresolved','Advisory Evidence and References':references.size+' references'};
- for(const panel of root.querySelectorAll('.customer-report-section'))panel.querySelector('summary').append(text('span',counts[panel.dataset.section],'customer-section-count'));
+ for(const panel of root.querySelectorAll('.customer-report-section')){
+  const count=text('span',counts[panel.dataset.section],'customer-section-count');
+  if(panel.dataset.section==='CVE Findings'){const attention=findingAttention(stats.issues);count.dataset.level=attention.critical?'critical':attention.high?'high':'neutral'}
+  if(panel.dataset.section==='Vulnerabilities Requiring Verification'&&stats.total)count.dataset.level='pending';
+  panel.querySelector('summary').append(count);
+ }
 }
 
 function csvReport(){
@@ -937,7 +1029,7 @@ async function init(){
    $('customerDashFilter').value=requested;environments();
   }
   await refreshPluginFindings(false);
-  if(reporting){const panel=document.querySelector('#customerReports > .cvie-panel');if(panel)$('customerReportIntelligence').append(panel)}
+  if(reporting)layoutReportIntelligence();
   const draw=redraw;customerReady=true;draw();
   $('customerDashFilter').addEventListener('change',()=>{environments();draw()});
   $('customerDashEnvironment').addEventListener('change',draw);
@@ -1009,6 +1101,7 @@ async function init(){
     actions.append(cancel,send);dialog.append(addressLabel,fileLabel,confirmation,message,actions);shade.append(dialog);document.body.append(shade);address.focus();
    });
   }
+  $('customerDashStatus').dataset.ready='true';
   $('customerDashStatus').textContent=inventory.customers.length+' customer records loaded privately. Advisory matching is preliminary.';
   window.addEventListener('focus',()=>{if(customerReady)void refreshSavedFindings().then(redraw).catch(()=>{})});
  }catch(e){$('customerDashLogin').hidden=false;$('customerDashStatus').textContent=(e.status===404||e.status===503)?'Customer inventory backend is not active. The D1 migration and updated Cloudflare Worker must be deployed.':'Could not reach account data. Please sign in or check the service. '+e.message}
