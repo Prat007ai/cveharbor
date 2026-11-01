@@ -3,10 +3,11 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {DB} from '../account-backend/tests/helpers/d1.mjs';
-import {subscribeProducts,cvieRoute} from '../account-backend/src/cvie.js';
+import {subscribeProducts,cvieRoute,runCvieStep} from '../account-backend/src/cvie.js';
 import {coveragePlan,coverageMetadata} from '../account-backend/src/product-coverage.js';
 const {chromium}=await import(process.env.CVIE_PLAYWRIGHT_MODULE||'playwright');
 const env={DB:new DB()},prefs={defaults:null,products:[{name:'PHP'},{name:'Linux',cpe:'cpe:2.3:o:linux:linux_kernel:*:*:*:*:*:*:*:*'},{name:'Sample Stack',vendor:'Example'}]};
+await env.DB.prepare('INSERT INTO user_technology_catalogue VALUES(?,?,0)').bind('a',JSON.stringify(prefs)).run();
 await subscribeProducts(env,'a',prefs.products);
 for(const p of (await env.DB.prepare('SELECT * FROM cvie_products').all()).results){
  if(p.cpe)await env.DB.prepare("UPDATE cvie_products SET status='ready',cursor_json=?,last_success_at=?,recent_complete_at=?,history_complete_at=? WHERE id=?").bind(JSON.stringify(coverageMetadata(coveragePlan(p))),Date.now(),Date.now(),Date.now(),p.id).run();
@@ -25,7 +26,6 @@ try{
   if(request.method()==='OPTIONS')return send({},204);
   if(url.pathname==='/v1/me')return send({authenticated:true,email:'reviewer@example.test'});
   if(url.pathname==='/v1/technology-catalogue')return send(prefs);
-  if(url.pathname==='/v1/cvie/sync')return send({ready:true},202);
   if(url.pathname.startsWith('/v1/cvie')){
    const data=request.postData()?JSON.parse(request.postData()):{};
    const response=await cvieRoute(new Request(request.url(),{method:request.method()}),env,{id:'a'},null,data);
@@ -55,7 +55,20 @@ try{
  const chooser=page.getByRole('combobox',{name:'Product identity for Sample Stack'});
  await chooser.selectOption('cpe:2.3:a:example:sample_stack:*:*:*:*:*:*:*:*');
  await page.waitForFunction(()=>window.CVEHARBOR_CVIE.products.some(p=>p.name==='Sample Stack'&&p.status==='queued'&&p.coverage.kind==='product'));
+ await runCvieStep(env,()=>Response.json({startIndex:0,totalResults:0,vulnerabilities:[]}),Date.now());
+ const saved=JSON.stringify((await env.DB.prepare('SELECT * FROM cvie_products ORDER BY id').all()).results);
+ let navigationWrites=0;const prepare=env.DB.prepare.bind(env.DB);
+ env.DB.prepare=sql=>{if(/^(INSERT|UPDATE|DELETE)/i.test(sql.trim()))navigationWrites++;return prepare(sql);};
+ for(const path of ['/customer-dashboard/','/customer-reports/','/vulnerabilities/']){
+  await page.goto('http://127.0.0.1:8080'+path,{waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>window.CVEHARBOR_CVIE?.products.length===3&&!window.CVEHARBOR_CVIE.loading);
+  assert.equal(await page.locator('.cvie-panel:visible .cvie-source').count(),3,'source status is available on '+path);
+  const progress=await page.evaluate(()=>window.CVEHARBOR_CVIE.products.find(p=>p.name==='Sample Stack').progress.windows_complete);
+  assert.equal(progress,1,'saved scan position survives '+path);
+  assert.equal(JSON.stringify((await env.DB.prepare('SELECT * FROM cvie_products ORDER BY id').all()).results),saved,'navigation retains the exact saved job on '+path);
+ }
+ assert.equal(navigationWrites,0,'dashboard, reports and explorer visits perform no scan or subscription writes');
  assert.deepEqual(errors,[]);
- fs.writeFileSync(directory+'/verification.json',JSON.stringify({ok:true,widths:[390,1366,1920,2560],scope:'Actual backend coverage handlers with isolated account and synthetic check states; no production/customer data',checks:['broad category limited to selected member','source family displayed','coverage expansion survives polling','pending disclosure verification does not imply zero vulnerabilities','custom product selection follows shared engine','responsive layout','no browser errors']},null,2)+'\n');
+ fs.writeFileSync(directory+'/verification.json',JSON.stringify({ok:true,widths:[390,1366,1920,2560],scope:'Actual backend coverage handlers with isolated account and synthetic check states; no production/customer data',checks:['broad category limited to selected member','source family displayed','coverage expansion survives polling','pending disclosure verification does not imply zero vulnerabilities','custom product selection follows shared engine','dashboard and reports navigation preserve saved progress with zero job/subscription writes','responsive layout','no browser errors']},null,2)+'\n');
  console.log('PASS Chromium shared CVIE coverage: exact/member/custom states, persistent coverage details, honest pending copy and responsive layout.');
 }finally{await browser.close();}
