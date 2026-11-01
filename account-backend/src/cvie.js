@@ -318,7 +318,7 @@ function savedProgress(p,now){
 async function productSourceHealth(env,products,now){
  const evidence=await sourceHealth(env,now),attempted=products.map(p=>p.last_success_at).filter(Boolean);
  evidence.sources.unshift({id:'nvd',label:'NVD product history',url:'https://nvd.nist.gov/',
-  status:!products.length?'no_products':products.every(p=>p.status==='needs_identity')?'needs_identity':products.some(p=>p.status==='retrying')?'unavailable':products.some(p=>p.stale&&p.status==='ready')?'stale':products.some(p=>p.status!=='ready')?'scanning':'current',
+  status:!products.length?'no_products':products.some(p=>p.status==='retrying')?'unavailable':products.some(p=>['queued','scanning'].includes(p.status))?'scanning':products.some(p=>p.status==='needs_identity')?'needs_identity':products.some(p=>p.stale&&p.status==='ready')?'stale':'current',
   last_success_at:attempted.length?Math.min(...attempted):null});
  return evidence;
 }
@@ -385,3 +385,4 @@ export async function cvieRoute(req,env,user,ctx,data={}){
  }
  return json({error:'CVIE endpoint not found'},404);
 }
+

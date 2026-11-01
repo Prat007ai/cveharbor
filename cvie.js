@@ -108,7 +108,7 @@ function draw(){
   select.addEventListener('change',()=>{months=Number(select.value);void refresh();});label.append(select);
   const button=node('button','Refresh status');button.type='button';button.disabled=busy;button.addEventListener('click',()=>void refresh());
   header.append(title,label,button);panel.append(header);
-  const sourceLabels={current:'Checked',scanning:'Scanning',needs_identity:'Waiting for product selection',catching_up:'Indexing disclosures',verifying_products:'Verifying product applicability',pending:'Waiting for first check',stale:'Check overdue',unavailable:'Source unavailable',rate_limited:'Rate limited · retry scheduled',setup_required:'Setup required',no_products:'Add a product'};
+  const sourceLabels={current:'Checked',scanning:'Product history check in progress',needs_identity:'Some products need an exact identity',catching_up:'Shared disclosure indexing in progress',verifying_products:'Shared applicability verification in progress',pending:'Waiting for first check',stale:'Check overdue',unavailable:'Source unavailable',rate_limited:'Rate limited · retry scheduled',setup_required:'Setup required',no_products:'Add a product'};
   const sourceGrid=node('div','','cvie-source-grid');
   for(const s of evidence.sources||[]){
    const card=node('div','','cvie-source '+s.status);
@@ -116,7 +116,8 @@ function draw(){
    card.append(node('small',s.last_success_at?'Checked '+new Date(s.last_success_at).toLocaleString():'No successful check yet'));
    if(s.publisher_at)card.append(node('small','Publisher update: '+new Date(s.publisher_at).toLocaleString()));
    if(s.coverage_start_at)card.append(node('small','Original disclosure feed coverage starts: '+new Date(s.coverage_start_at).toLocaleString()));
-   if(s.pending_records)card.append(node('small',s.pending_records+' records awaiting verification'));
+   if(s.pending_records)card.append(node('small',s.pending_records+' public records awaiting shared background verification'));
+   if(s.id!=='nvd')card.append(node('small','Shared source queue for all accounts. Opening a page does not restart it.'));
    if(s.status==='rate_limited'&&s.retry_at)card.append(node('small','Retry after '+new Date(s.retry_at).toLocaleString()));
    if(s.error)card.append(node('small',s.error));sourceGrid.append(card);
    if(!error&&['scanning','catching_up','verifying_products'].includes(s.status)){
@@ -126,7 +127,7 @@ function draw(){
   if(sourceGrid.children.length)panel.append(sourceGrid);
   const active=products.filter(p=>['queued','scanning','retrying'].includes(p.status));
   const attention=(evidence.sources||[]).some(s=>['pending','stale','unavailable','rate_limited','setup_required','catching_up','verifying_products'].includes(s.status));
-  const message=error||(busy?(checkingProgress?'Updating scan status...':'Loading '+months+'-month results...'):!ready?'Preparing CVIE...':!products.length?'Add a product or register an asset to start CVIE.':attention?'Some sources are still being verified or need attention. Available results are shown below; check each source status.':products.some(p=>p.status==='needs_identity')?'Some products need an exact identity before CVIE can scan. Expand product status to choose.':products.some(p=>p.status==='retrying')?'A source check is unavailable. Saved results remain available; CVIE will retry automatically.':products.some(p=>p.status==='ready'&&p.stale)?'Some source checks are overdue. Saved results remain available while CVIE refreshes them.':active.length?active.length+' product'+(active.length===1?' is':'s are')+' being prepared. Results appear as source pages finish.':'Product checks complete. Review the source and installed version before acting.');
+  const message=error||(busy?(checkingProgress?'Updating scan status...':'Loading '+months+'-month results...'):!ready?'Preparing CVIE...':!products.length?'Add a product or register an asset to start CVIE.':products.some(p=>p.status==='needs_identity')?'Some products need an exact identity. Expand product status to choose; saved results for resolved products remain available.':attention?'Shared sources are being verified or need attention. Saved results remain available; check each source status.':products.some(p=>p.status==='retrying')?'A source check is unavailable. Saved results remain available; CVIE will retry automatically.':products.some(p=>p.status==='ready'&&p.stale)?'Some source checks are overdue. Saved results remain available while CVIE refreshes them.':active.length?active.length+' product'+(active.length===1?' is':'s are')+' being prepared. Results appear as source pages finish.':'Product checks complete. Review the source and installed version before acting.');
   const status=node('p',message,'cvie-status');status.setAttribute('role','status');panel.append(status);
   const list=node('div','','cvie-product-statuses');
   for(const p of products){
@@ -214,3 +215,4 @@ window.addEventListener('cveharbor:account-state',event=>{
 document.addEventListener('visibilitychange',()=>{clearTimeout(timer);if(document.visibilityState==='visible'&&signedIn)void refresh(false,true);});
 if(typeof fetch==='function')void refresh(true);
 })();
+
