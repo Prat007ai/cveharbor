@@ -1,0 +1,39 @@
+name: Verify CVIE development branch without deployment
+on:
+  push:
+    branches: [feat/cvie-product-intelligence]
+    paths: ['account-backend/**','cvie.js','cvie.css','app.js','inventory*.js','customer-security.js','index.html','scripts/**','.github/workflows/verify-cvie.yml']
+permissions:
+  contents: write
+concurrency:
+  group: cvie-development-verification
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test persistent CVIE scans and existing account behavior
+        working-directory: account-backend
+        run: npm test
+      - name: Build and verify website
+        run: python scripts/build_site.py && python scripts/verify_production.py --preflight
+      - name: Read a public NVD product history page
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: python scripts/probe_cvie_sources.py
+      - name: Record non-secret provider compatibility evidence
+        run: |
+          git config user.name 'cveharbor-updater[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/cvie-provider-check.json
+          git commit -m 'Record read-only CVIE provider compatibility check'
+          git push origin HEAD:feat/cvie-product-intelligence
+      - name: Require a successful live provider check
+        run: python -c "import json; assert json.load(open('data/cvie-provider-check.json'))['ok'], 'Live NVD verification failed; inspect compatibility evidence'"

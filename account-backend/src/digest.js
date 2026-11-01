@@ -41,7 +41,9 @@ export function selectDigest(records, selectedTechnologies, severityPreference, 
     if (!['critical', 'high'].includes(record.severity)) continue;
     if (severityPreference !== 'high' && record.severity !== 'critical') continue;
     if (!recent(record, minDate)) continue;
-    const matches = verifiedCategories(record).filter(x => selected.has(x) && !(x === 'WordPress / Plugins' && falseWordPressMatch(record)));
+    const matches = verifiedCategories(record).filter(x => !(x === 'WordPress / Plugins' && falseWordPressMatch(record)))
+      .map(x=>record.source_type==='cvie_nvd'?[...selected].find(name=>name.trim().toLowerCase()===x.trim().toLowerCase())||x:x)
+      .filter(x => selected.has(x));
     if (!matches.length) continue;
     const revision = revisionOf(record);
     if (lastSent.has(record.id) && lastSent.get(record.id) >= revision) continue;

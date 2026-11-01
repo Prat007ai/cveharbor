@@ -80,9 +80,10 @@ function candidate(asset,cve){
  const product=norm(asset.technology);
  if(!product||!/^(CVE-\d{4}-\d{4,}|GHSA-[a-z0-9-]+)$/i.test(String(cve.id||'')))return null;
  if(/rejected|withdrawn/i.test(String(cve.status||'')))return null;
+ const cvie=cve.source_type==='cvie_nvd'&&(cve.cvie_products||[]).some(name=>norm(name)===product);
  const tags=(cve.categories||[]).map(norm);
- if(!(product.startsWith('wordpress plugin:')?tags.includes('wordpress / plugins'):(categories[product]||[product]).some(t=>tags.includes(norm(t)))))return null;
- if(!preciseProductMatch(asset,cve))return null;
+ if(!cvie&&!(product.startsWith('wordpress plugin:')?tags.includes('wordpress / plugins'):(categories[product]||[product]).some(t=>tags.includes(norm(t)))))return null;
+ if(!cvie&&!preciseProductMatch(asset,cve))return null;
  // An OS release alone cannot establish exposure to arbitrary application
  // packages (Redis, curl, OpenSSL, etc). Require actual package inventory.
  if(['debian','debian linux','ubuntu','ubuntu linux'].includes(product))return null;
@@ -91,13 +92,21 @@ function candidate(asset,cve){
  let comparisonDetail='No reliable version comparison available from this advisory text.';
  // Generic PHP category advisories with no runtime fixed-version evidence
  // remain research leads, not customer-specific vulnerability findings.
- if(product==='php'&&!phpVendorFixes[cve.id]){
+ if(!cvie&&product==='php'&&!phpVendorFixes[cve.id]){
   const text=String(cve.affected||'');
   if(!/\bphp\s+(?:before|prior to|earlier than|through|up to)\s+(?:version\s+)?\d+\.\d+/i.test(text))return null;
  }
  const vendorAssessment=phpVendorAssessment(product,version,cve);
  if(vendorAssessment?.exclude)return null;
  if(vendorAssessment){level=vendorAssessment.level;evidence=vendorAssessment.evidence;comparisonDetail=vendorAssessment.comparison_detail;}
+ if(cvie){
+  const families=(cve.cvie_identities||[]).filter(x=>norm(x.name)===product).map(x=>x.cpe.split(':').slice(0,5).join(':'));
+  const result=cvieVersionAssessment(version,(cve.affected_cpes||[]).filter(x=>families.includes(String(x.criteria).split(':').slice(0,5).join(':'))));
+  if(result==='outside')return null;
+  level=result==='within'?'version_review':'category';
+  evidence=result==='within'?'CVIE product identity and numeric NVD version range match. Verify vendor prerequisites and deployment before treating this as exposure.':'CVIE matched the NVD affected product identity. Installed-version applicability still needs verification.';
+  comparisonDetail=result==='within'?'Installed '+version+' is within a structured NVD CPE range. Complex configuration prerequisites are not evaluated.':'No unambiguous supported numeric comparison is available. Review the original advisory.';
+ }
  const distroAsset=['debian','debian linux','ubuntu','ubuntu linux'].includes(product);
  if(distroAsset){
   evidence='Distribution advisory candidate only. OS release does not identify the installed source package or Debian backported revision. Verify package name, Debian suite and installed package version in the security tracker.';
@@ -107,7 +116,7 @@ function candidate(asset,cve){
  // Only evaluate a single unambiguous numeric range associated with the named product.
  // Any qualifiers or complex ranges remain category-only candidates.
  const mentions=affected.toLowerCase().includes(product);
- if(!vendorAssessment&&!distroAsset&&mentions&&numeric(version)&&!/\b(except|unless|only when|requires|if configured)\b/i.test(affected)){
+ if(!cvie&&!vendorAssessment&&!distroAsset&&mentions&&numeric(version)&&!/\b(except|unless|only when|requires|if configured)\b/i.test(affected)){
   const ranges=[...affected.matchAll(/\b(before|prior to|earlier than|through|up to)\s+(?:version\s+)?(\d+(?:\.\d+){1,3})\b/gi)];
   if(ranges.length===1){
    const comparison=compare(version,ranges[0][2]);
@@ -132,6 +141,25 @@ function candidate(asset,cve){
  source_label:String((cve.sources||[]).find(s=>String(s.url||'').startsWith('https://'))?.label||'Original advisory'),
  source_url:(cve.sources||[]).map(s=>String(s.url||'')).find(url=>url.startsWith('https://'))||''};
 }
+function cvieVersionAssessment(version,ranges){
+ if(!numeric(version)||!ranges.length)return 'unknown';
+ let unknown=false;
+ for(const range of ranges){
+  let outside=false,uncertain=false,hasBound=false;
+  const exact=String(range.criteria||'').split(':')[5];
+  if(exact&&exact!=='*'&&exact!=='-'){
+   hasBound=true;const c=compare(version,exact);if(c===null)uncertain=true;else if(c!==0)outside=true;
+  }
+  for(const [field,kind] of [['versionStartIncluding','>='],['versionStartExcluding','>'],['versionEndIncluding','<='],['versionEndExcluding','<']]){
+   if(!range[field])continue;hasBound=true;
+   const c=compare(version,range[field]);if(c===null){uncertain=true;continue;}
+   if(kind==='>='&&c<0||kind==='>'&&c<=0||kind==='<='&&c>0||kind==='<'&&c>=0)outside=true;
+  }
+  if(!outside&&!uncertain&&hasBound)return 'within';
+  if(!outside&&(uncertain||!hasBound))unknown=true;
+ }
+ return unknown?'unknown':'outside';
+}
 function evaluate(assets,advisories,limit=150){
  const items=[],seen=new Set();
  for(const asset of assets||[])for(const advisory of advisories||[]){
@@ -144,5 +172,5 @@ function evaluate(assets,advisories,limit=150){
   Number(b.level==='version_review')-Number(a.level==='version_review')||a.id.localeCompare(b.id));
  return {items:items.slice(0,limit),total:items.length,limited:items.length>limit};
 }
-root.CVEHARBOR_INVENTORY_MATCH={candidate,evaluate,compare};
+root.CVEHARBOR_INVENTORY_MATCH={candidate,evaluate,compare,cvieVersionAssessment};
 })(window);

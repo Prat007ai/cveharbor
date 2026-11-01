@@ -1,0 +1,8 @@
+.cvie-panel{margin:18px 0;padding:20px;border:1px solid #285160;border-radius:12px;background:#102637;color:#d9edf3}
+.cvie-panel[hidden]{display:none}.cvie-panel-head{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.cvie-panel-head>div{flex:1;min-width:230px}
+.cvie-panel select,.cvie-panel button{font:inherit;color:#e1f5fa;background:#16384a;border:1px solid #397082;border-radius:7px;padding:9px 12px}.cvie-panel button{cursor:pointer}
+.cvie-panel button:disabled{opacity:.6;cursor:wait}.cvie-caption,.cvie-product-status small{font-size:.83rem;color:#a3c1ce;margin:6px 0}.cvie-status{color:#8ee8d3;line-height:1.5}
+.cvie-panel summary{cursor:pointer;padding:8px 0}.cvie-product-statuses{max-height:330px;overflow:auto}.cvie-product-status{display:flex;align-items:center;flex-wrap:wrap;gap:8px 20px;padding:13px 0;border-top:1px solid #254654}
+.cvie-product-status strong{min-width:180px}.cvie-product-status small{flex-basis:100%}.cvie-state{font-size:.87rem}.cvie-state.retrying,.cvie-state.needs_identity{color:#f2cc81}
+.technology-row .cvie-row-state{display:block;font-size:.72rem;color:#8ee8d3;white-space:normal;line-height:1.4}.technology-row .cvie-row-state.retrying{color:#f2cc81}
+@media(max-width:700px){.cvie-panel{padding:14px}.cvie-panel-head{gap:10px}.cvie-product-status select{max-width:100%}}

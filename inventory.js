@@ -47,7 +47,8 @@ function renderMatches(){
  const chosen=$('inventoryMatchCustomer').value;
  const environments=new Set(data.environments.filter(e=>!chosen||e.customer_id===chosen).map(e=>e.id));
  const assets=data.assets.filter(a=>environments.has(a.environment_id));
- const advisories=[...(feed.advisories||[]),...(catalog.advisories||[])];
+ const baseline=[...(feed.advisories||[]),...(catalog.advisories||[])];
+ const advisories=window.CVEHARBOR_CVIE?window.CVEHARBOR_CVIE.merge(baseline):baseline;
  const matches=engine.evaluate(assets,advisories,150);
  $('inventoryMatchCount').textContent=matches.total+' potential matches';
  if(!matches.total){panel.append(make('p','ops-note','No category matches found in the current limited index. This does not establish that customer assets are secure.'));return;}
@@ -816,6 +817,7 @@ async function onAccount(event){
  }catch(e){status('Unable to load inventory: '+e.message)}
 }
 window.addEventListener('cveharbor:account-state',event=>{void onAccount(event)});
+window.addEventListener('cvie:updated',event=>{if(event.detail?.recordsChanged)renderMatches();});
 async function save(form,endpoint,payload){
  if(!signedIn||!ready){status('Sign in and complete the database migration first.');return;}
  const button=form.querySelector('button[type=submit]');button.disabled=true;

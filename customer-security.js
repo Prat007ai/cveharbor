@@ -3,7 +3,7 @@
 const $=id=>document.getElementById(id);
 if(!$('customerDashStatus'))return;
 const reporting=!!$('customerReportBody');
-let inventory={customers:[],environments:[],assets:[]},records=[];
+let inventory={customers:[],environments:[],assets:[]},records=[],customerReady=false;
 let pluginFindings=[],pluginChecks={},pluginMonitorRows={};
 let pluginInstallationReady=false,pluginInstallationStatuses=new Map();
 const pluginSlugOverrides={'yoast seo':'wordpress-seo','wp file manager':'wp-file-manager','wps hide login':'wps-hide-login','autoptimize':'autoptimize','wp mail smtp':'wp-mail-smtp','advanced editor tools':'tinymce-advanced','addtoany share buttons':'add-to-any','events manager':'events-manager','wp store locator':'wp-store-locator','wpbakery page builder':'js_composer'};
@@ -110,7 +110,7 @@ const advisories=()=>{
  const result=new Map();
  for(const source of [window.CVEHARBOR_DATA?.advisories,window.CVEHARBOR_CATALOG?.advisories])
   for(const record of source||[])if(record?.id&&!result.has(record.id))result.set(record.id,record);
- return [...result.values()];
+ return window.CVEHARBOR_CVIE?window.CVEHARBOR_CVIE.merge([...result.values()]):[...result.values()];
 };
 function compute(customerId,environmentId=''){
  const environments=inventory.environments.filter(e=>e.customer_id===customerId&&(!environmentId||e.id===environmentId));
@@ -797,7 +797,7 @@ async function init(){
   if(inventory.customers.some(c=>c.id===requested)){
    $('customerDashFilter').value=requested;environments();
   }
-  const draw=reporting?drawReport:drawDashboard;draw();
+  const draw=reporting?drawReport:drawDashboard;customerReady=true;draw();
   $('customerDashFilter').addEventListener('change',()=>{environments();draw()});
   $('customerDashEnvironment').addEventListener('change',draw);
   if(reporting){
@@ -869,5 +869,6 @@ async function init(){
   void refreshPluginFindings();
  }catch(e){$('customerDashLogin').hidden=false;$('customerDashStatus').textContent=(e.status===404||e.status===503)?'Customer inventory backend is not active. The D1 migration and updated Cloudflare Worker must be deployed.':'Could not reach account data. Please sign in or check the service. '+e.message}
 }
+window.addEventListener('cvie:updated',event=>{if(!event.detail?.recordsChanged)return;records=advisories();if(customerReady)(reporting?drawReport:drawDashboard)();});
 void init();
 })();

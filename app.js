@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const state = { q: '', severity: 'all', tech: 'all', group: 'all', period: 'published30' };
+  const state = { q: '', severity: 'all', tech: 'all', group: 'all', period: 'published3m' };
   const PAGE_SIZE = 10;
   const TABLE_PAGE_SIZE = 25;
   const isCVE = x => /^CVE-\d{4}-\d+$/i.test(x.id);
@@ -49,11 +49,9 @@
   groupTitles[customGroup]='My Additional Products';
   const customMatching = name => {
     const needle=String(name||'').toLowerCase().trim();
-    if(needle.length<3)return [];
-    // Search titles/affected text only; these remain unverified investigation leads.
-    return items.filter(a=>[a.title,a.affected].some(v=>String(v||'').toLowerCase().includes(needle)));
+    return items.filter(a=>(a.cvie_products||[]).some(p=>p.toLowerCase().trim()===needle));
   };
-  const items=[...records.values()].map(record=>{
+  let items=[...records.values()].map(record=>{
     // .NET / ASP.NET is the inclusive overview. .NET Core remains a filter for
     // the modern subset, including advisories previously tagged only .NET Core.
     if((record.categories||[]).includes('.NET Core') && !(record.categories||[]).includes('.NET / ASP.NET'))
@@ -61,6 +59,18 @@
     return record;
   }).sort((a,b)=>String(b.published||'').localeCompare(String(a.published||'')) || String(b.updated||'').localeCompare(String(a.updated||'')));
   const $ = id => document.getElementById(id);
+  const baseItems=items.slice();
+  const monthCutoff=months=>{const now=new Date(),day=now.getUTCDate();now.setUTCDate(1);now.setUTCMonth(now.getUTCMonth()-months);now.setUTCDate(Math.min(day,new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+1,0)).getUTCDate()));return now.getTime();};
+  const inMonths=(record,months)=>{const date=Date.parse(record.published||'');return Number.isFinite(date)&&date>=monthCutoff(months)&&date<=Date.now();};
+  window.addEventListener('cvie:updated',event=>{
+    items=window.CVEHARBOR_CVIE.merge(baseItems);
+    const names=(window.CVEHARBOR_CVIE.products||[]).map(p=>p.name);
+    for(const option of [...$('technologyFilter').options])if(option.dataset.cvie)option.remove();
+    for(const name of names)if(!categories.some(c=>c.name===name)){const option=document.createElement('option');option.value=name;option.textContent=name;option.dataset.cvie='true';$('technologyFilter').append(option);}
+    if(state.period==='published3m'||state.period==='published12m'){state.period=window.CVEHARBOR_CVIE.months===12?'published12m':'published3m';$('dateRange').value=state.period;}
+    if([...$('technologyFilter').options].some(o=>o.value===state.tech))$('technologyFilter').value=state.tech;else state.tech='all';
+    if(event.detail?.recordsChanged)render();else renderCategories();
+  });
   const cveIDs = rows => [...new Set(rows.filter(x => /^CVE-\d{4}-\d+$/i.test(x.id)).map(x => x.id))];
   const advisoryIDs = rows => [...new Set(rows.filter(x=>x&&x.id).map(x=>x.id))];
   // Publication date means original disclosure. A routine vendor/NVD metadata
@@ -107,6 +117,8 @@
   const recentRevision = (record,days=7) => recentDate(record.updated,days);
   const periodMatches = record => {
     if(state.period==='all') return true;
+    if(state.period==='published3m')return inMonths(record,3);
+    if(state.period==='published12m')return inMonths(record,12);
     if(state.period==='today') return matchesDisclosureDay(record,'TODAY');
     if(state.period==='yesterday') return matchesDisclosureDay(record,'YESTERDAY');
     if(state.period==='twoDays') return matchesDisclosureDay(record,'72 HOURS');
@@ -177,7 +189,7 @@
   }
   function openTechnologyAdvisories(technology,cveOnly=false,periodOverride=null){
     const recentAvailable=items.some(x=>(x.categories||[]).includes(technology)&&newlyPublished(x,30));
-    const selectedPeriod=periodOverride||(recentAvailable?'published30':'all');
+    const selectedPeriod=periodOverride||(window.CVEHARBOR_CVIE?.months===12?'published12m':'published3m');
     state.tech=technology;state.group='all';state.q='';state.severity='all';state.period=selectedPeriod;
     metricScope=cveOnly?'cves':'all';listMode='list';visibleCount=PAGE_SIZE;tablePage=0;
     $('technologyFilter').value=technology;
@@ -300,7 +312,8 @@
     ];
     function productIcon(x){
       const name=String(x.name||'');
-      const slug=productMarks.find(([pattern])=>pattern.test(name))?.[1];
+      const resolvedSlug=window.CVEHARBOR_CVIE?.product(name)?.icon_slug;
+      const slug=resolvedSlug&&/^[a-z0-9]+$/.test(resolvedSlug)?resolvedSlug:productMarks.find(([pattern])=>pattern.test(name))?.[1];
       const node=text('span','technology-glyph technology-brand-icon','');
       node.setAttribute('aria-hidden','true');
       // Use product-specific brand vectors rather than placeholder letter tiles.
@@ -331,7 +344,8 @@
       node.append(img);return node;
     }
     function makeRow(x){
-      const categoryRecords=x.custom?customMatching(x.name):items.filter(a=>(a.categories||[]).includes(x.name));
+      const horizon=window.CVEHARBOR_CVIE?.months||3;
+      const categoryRecords=(x.custom?customMatching(x.name):items.filter(a=>(a.categories||[]).includes(x.name))).filter(a=>inMonths(a,horizon));
       const total=advisoryIDs(categoryRecords).length;
       const recent=advisoryIDs(categoryRecords.filter(a=>newlyPublished(a,30))).length;
       const ages={'TODAY':0,'YESTERDAY':0,'72 HOURS':0};
@@ -359,15 +373,17 @@
         freshness.append(text('span','technology-age-muted',latest?'Latest '+fmtDate(latest):'No dated advisories'));
       }
       label.append(text('span','technology-row-name',x.name),freshness);
+      const scan=window.CVEHARBOR_CVIE?.product(x.name);
+      if(scan)label.append(text('span','cvie-row-state '+scan.status,window.CVEHARBOR_CVIE.statusFor(scan)));
       const counts=text('span','technology-row-counts','');
       counts.append(text('span','technology-count-new'+(recent?' has-new':''),`${recent} new`),
-                    text('span','technology-count-all',`${total} total`));
+                    text('span','technology-count-all',`${scan&&!(horizon===12?scan.history_complete_at:scan.recent_complete_at)&&!total?'—':total} / ${horizon} months`));
       const arrow=text('span','technology-arrow','›');arrow.setAttribute('aria-hidden','true');
       button.append(icon,label,counts,arrow);
       if(x.custom && addedHighlight===x.name){button.classList.add('technology-just-added');button.dataset.customProduct=x.name;}
       // Open the most recent disclosure day shown by this technology's badge.
-      const openPeriod=ages.TODAY?'today':ages.YESTERDAY?'yesterday':ages['72 HOURS']?'twoDays':recent?'published30':'all';
-      button.addEventListener('click',()=>{if(x.custom){state.q=x.name;state.tech='all';state.group='all';state.period='all';$('search').value=x.name;$('dateRange').value='all';render();revealAdvisories();}else openTechnologyAdvisories(x.name,false,openPeriod)});
+      const openPeriod=horizon===12?'published12m':'published3m';
+      button.addEventListener('click',()=>openTechnologyAdvisories(scan?.name||x.name,false,openPeriod));
       return button;
     }
     const meta={
@@ -379,7 +395,9 @@
     };
     for(const [name,techs] of Object.entries(technologyGroups)){
       if(name===customGroup)continue;
-      const candidates=[...techs.map(label=>categories.find(x=>x.name===label)),...(personalized?.products||[]).filter(x=>(x.category||inferProductCategory(x.name)||'applications')===name).map(x=>({...x,custom:true,icon:'＋'}))];
+      const additional=new Map((personalized?.products||[]).map(x=>[x.name.toLowerCase(),x]));
+      for(const p of window.CVEHARBOR_CVIE?.products||[])if(!additional.has(p.name.toLowerCase())&&!categories.some(x=>x.name===p.name))additional.set(p.name.toLowerCase(),p);
+      const candidates=[...techs.map(label=>categories.find(x=>x.name===label)),...[...additional.values()].filter(x=>(x.category||inferProductCategory(x.name)||'applications')===name).map(x=>({...x,custom:true,icon:'＋'}))];
       const matched=candidates.filter(x=>x&&matches(x)&&(x.custom||enabled(x)));
       if(!matched.length)continue;
       const panel=text('article','technology-panel','');panel.dataset.domain=name;
@@ -407,7 +425,7 @@
     $('technologyCriticalMetric').textContent=String(advisoryIDs(items.filter(x=>x.severity==='critical')).length);
     $('technologySearchSummary').textContent=q
       ? `${visible} of ${categories.length} technologies match your search`
-      : `${visible} selected technologies shown. Recent means first published within 30 days. Custom product matches are unverified leads. Zero indexed does not mean secure.`;
+      : `${visible} technologies shown. History covers the last ${window.CVEHARBOR_CVIE?.months||3} months. CVIE checks affected product identities for your registered products. Public category totals are limited to the shared index. Zero results do not mean secure.`;
   }
   function renderFocus(){
     const root=$('priorityList');root.replaceChildren();
@@ -468,7 +486,7 @@
     $('cardViewBtn').setAttribute('aria-pressed',String(!full));
     $('listViewBtn').setAttribute('aria-pressed',String(full));
     const descriptions={all:'Latest indexed advisories',cves:'All indexed CVEs',critical:'Critical CVEs',high:'High severity CVEs'};
-    const periodNames={today:'originally published today',yesterday:'originally published yesterday',twoDays:'originally published two days ago',published7:'new in the last 7 days',published30:'new in the last 30 days',updated7:'updated in the last 7 days',all:'from the indexed archive'};
+    const periodNames={published3m:'published in the last 3 months',published12m:'published in the last 12 months',today:'originally published today',yesterday:'originally published yesterday',twoDays:'originally published two days ago',published7:'new in the last 7 days',published30:'new in the last 30 days',updated7:'updated in the last 7 days',all:'from the indexed archive'};
     const title = state.group!=='all'?groupTitles[state.group]+' advisories':state.tech!=='all'?state.tech+(metricScope==='cves'?' CVEs':' advisories'):(descriptions[metricScope]||descriptions.all);
     $('listContext').textContent=title+' · '+periodNames[state.period];
     const pages=Math.max(1,Math.ceil(selected.length/TABLE_PAGE_SIZE));
@@ -589,13 +607,13 @@
   });
   function resetPaging(){visibleCount=PAGE_SIZE;tablePage=0;}
   function clear(){
-    state.q='';state.tech='all';state.group='all';state.severity='all';state.period='published30';metricScope='all';resetPaging();
-    $('search').value='';$('technologyFilter').value='all';$('severity').value='all';$('dateRange').value='published30';render();
+    state.q='';state.tech='all';state.group='all';state.severity='all';state.period='published3m';metricScope='all';resetPaging();
+    $('search').value='';$('technologyFilter').value='all';$('severity').value='all';$('dateRange').value='published3m';void window.CVEHARBOR_CVIE?.setMonths(3);render();
   }
   $('search').addEventListener('input',e=>{state.q=e.target.value.trim().toLowerCase();resetPaging();render();});
   $('technologyFilter').addEventListener('change',e=>{state.tech=e.target.value;state.group='all';metricScope='all';resetPaging();render();});
   $('severity').addEventListener('change',e=>{state.severity=e.target.value;metricScope='all';resetPaging();render();});
-  $('dateRange').addEventListener('change',e=>{state.period=e.target.value;resetPaging();render();});
+  $('dateRange').addEventListener('change',e=>{state.period=e.target.value;if(['published3m','published12m'].includes(state.period))void window.CVEHARBOR_CVIE?.setMonths(state.period==='published12m'?12:3);resetPaging();render();});
   $('archiveEmpty').addEventListener('click',()=>{state.period='all';$('dateRange').value='all';resetPaging();render();});
   $('clearFilters').addEventListener('click',clear);$('resetEmpty').addEventListener('click',clear);
   $('showMore').addEventListener('click',()=>{visibleCount+=PAGE_SIZE;render();});
@@ -632,7 +650,7 @@
   const manageButton=$('technologyManageButton');
   const customizeStatus=$('technologyCustomizeStatus');
   const customForm=$('technologyAddForm');
-  let draft=null;
+  let draft=null,catalogueSaving=false;
   const statusMessage=s=>{customizeStatus.textContent=s};
   function drawCustomizer(){
     if(!draft)return;
@@ -646,7 +664,7 @@
     const list=$('technologyCustomList');list.replaceChildren();
     for(const p of draft.products){
       const row=text('div','technology-custom-item','');
-      row.append(text('span','',p.name+(p.version?' · '+p.version:'')+' · '+(customCategoryNames[p.category||inferProductCategory(p.name)||'applications'])+' · Public feed coverage not verified'));
+      row.append(text('span','',p.name+(p.version?' · '+p.version:'')+' · '+(customCategoryNames[p.category||inferProductCategory(p.name)||'applications'])+' · '+(window.CVEHARBOR_CVIE?.product(p.name)?window.CVEHARBOR_CVIE.statusFor(window.CVEHARBOR_CVIE.product(p.name)):'CVIE starts after saving')));
       const remove=text('button','','Remove');remove.type='button';
       remove.addEventListener('click',()=>{draft.products=draft.products.filter(x=>x.name!==p.name);drawCustomizer()});
       row.append(remove);list.append(row);
@@ -657,25 +675,29 @@
   $('technologySignInDialog').addEventListener('click',event=>{if(event.target===$('technologySignInDialog'))$('technologySignInDialog').close()});
   $('technologyManageClose').addEventListener('click',()=>{$('technologyCustomizer').hidden=true});
   $('technologyResetButton').addEventListener('click',()=>{draft={defaults:[...defaultNames],products:[]};drawCustomizer();statusMessage('Defaults restored in the editor. Save to apply.')});
-  customForm.addEventListener('submit',e=>{e.preventDefault();const name=$('technologyAddName').value.trim(),version=$('technologyAddVersion').value.trim();if(!name||!draft)return;
+  customForm.addEventListener('submit',async e=>{e.preventDefault();const name=$('technologyAddName').value.trim(),version=$('technologyAddVersion').value.trim();if(!name||!draft||catalogueSaving)return;
     if(draft.products.some(x=>x.name.toLowerCase()===name.toLowerCase())){statusMessage('Product already added.');return}
     if(draft.products.length>=50){statusMessage('Maximum of 50 additional products.');return}
     const category=$('technologyAddCategory').value||inferProductCategory(name)||'applications';
-    draft.products.push({name,version,category});customForm.reset();drawCustomizer();statusMessage(name+' will appear under '+customCategoryNames[category]+'. Save to apply.')
+    const vendor=$('technologyAddVendor')?.value.trim()||'',cpe=$('technologyAddCpe')?.value.trim()||'';
+    draft.products.push({name,version,category,vendor,cpe});customForm.reset();drawCustomizer();await saveCatalogue();
   });
-  $('technologySaveButton').addEventListener('click',async()=>{if(!draft)return;statusMessage('Saving account preferences...');
+  async function saveCatalogue(){if(!draft||catalogueSaving)return;catalogueSaving=true;$('technologySaveButton').disabled=true;customForm.querySelector('button[type="submit"]').disabled=true;statusMessage('Saving product and preparing CVIE...');
     try{const r=await fetch(catalogueAPI,{method:'PUT',credentials:'include',headers:{'content-type':'application/json'},body:JSON.stringify(draft)});
       const data=await r.json();if(!r.ok)throw Error(data.error||'Unable to save');
       const before=new Set((personalized?.products||[]).map(p=>p.name.toLowerCase()));
       const newest=draft.products.find(p=>!before.has(p.name.toLowerCase()));
       personalized=JSON.parse(JSON.stringify(draft));addedHighlight=newest?.name||null;renderCategories();
-      if(newest){const category=newest.category||inferProductCategory(newest.name)||'applications';statusMessage(newest.name+' added under '+customCategoryNames[category]+'. It is highlighted for 10 seconds.');
+      void window.CVEHARBOR_CVIE?.refresh(true);
+      if(newest){const category=newest.category||inferProductCategory(newest.name)||'applications';statusMessage(newest.name+' added under '+customCategoryNames[category]+'. '+(data.cvie?.ready?'CVIE is scanning and preparing the current vulnerabilities.':data.cvie?.message||'CVIE service setup is pending; the product is safely saved.'));
         const row=[...document.querySelectorAll('.technology-just-added')].find(x=>x.dataset.customProduct===newest.name);
         row?.scrollIntoView({behavior:'smooth',block:'center'});
         setTimeout(()=>{addedHighlight=null;document.querySelectorAll('.technology-just-added').forEach(x=>x.classList.remove('technology-just-added'))},10000);
       }else statusMessage('Saved to your CVEHarbor account.');
     }catch(e){statusMessage('Unable to save: '+e.message)}
-  });
+    finally{catalogueSaving=false;$('technologySaveButton').disabled=false;customForm.querySelector('button[type="submit"]').disabled=false;}
+  }
+  $('technologySaveButton').addEventListener('click',()=>void saveCatalogue());
   if(typeof fetch==='function')fetch('https://api.cveharbor.com/v1/me',{credentials:'include'}).then(r=>r.ok?r.json():null).then(async me=>{
     if(!me?.authenticated)return;
     catalogueSignedIn=true;

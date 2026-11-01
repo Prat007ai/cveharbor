@@ -95,9 +95,9 @@ assert.ok(php,'PHP category exists');
 assert.match(php.textContent,/Today 3/,'recent publication badge');
 php.click();
 assert.equal($('technologyFilter').value,'PHP','category filter');
-assert.equal($('dateRange').value,'today','click shows newest disclosure day');
+assert.equal($('dateRange').value,'published3m','category opens the default three-month history');
 assert.equal($('advisoryTableWrap').hidden,false,'list opens');
-assert.equal(document.querySelectorAll('#advisoryTableBody tr').length,3,'today records');
+assert.equal(document.querySelectorAll('#advisoryTableBody tr').length,12,'three-month category history');
 
 $('dateRange').value='all';
 $('dateRange').dispatchEvent(new window.Event('change'));
@@ -260,7 +260,7 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('file.size>65536'),'pl
 assert.ok(fs.readFileSync('inventory.js','utf8').includes('plugin-sources/'),'plugin source URLs can be saved and verified');
 assert.ok(fs.readFileSync('inventory.js','utf8').includes("Technology | Version"),'technology version entry format is validated');
 
-assert.ok(html.includes('inventory.js?v=env-dialog-130'),'public build references account inventory client');
+assert.ok(html.includes('inventory.js?v=cvie-1'),'public build references the CVIE inventory client');
 const inventoryDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 inventoryDom.window.eval(fs.readFileSync('inventory.js','utf8'));
 const picker=inventoryDom.window.document.querySelector('.inventory-plugin-import:not(.inventory-bulk-import):not(.inventory-package-import) input[type=file]');
@@ -1024,7 +1024,7 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('grid-template-columns:r
 // Changed styles and the explorer script retain explicit cache versions.
 const explorerSource=fs.readFileSync('index.html','utf8');
 assert.match(explorerSource,/\/styles\.css\?v=attack-feeds-220/,'technology layout stylesheet must refresh');
-assert.match(explorerSource,/\/app\.js\?v=brochure-216/,'technology customization script must refresh');
+assert.match(explorerSource,/\/app\.js\?v=cvie-1/,'technology customization script must refresh');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"\/vulnerabilities\/":\["technology-kpis"/,'live verifier checks technology explorer page');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"styles.css","homepage.css","app.js"/,'live verifier validates explorer JavaScript');
 
@@ -1033,7 +1033,7 @@ assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"command-ce
 
 assert.match(fs.readFileSync('app.js','utf8'),/function productIcon\(x\)/,'technology explorer renders branded icons with a fallback');
 assert.match(fs.readFileSync('app.js','utf8'),/img\.addEventListener\('error'/,'missing brand icon falls back gracefully');
-assert.match(fs.readFileSync('index.html','utf8'),/app\.js\?v=brochure-216/,'latest product icon client asset version');
+assert.match(fs.readFileSync('index.html','utf8'),/app\.js\?v=cvie-1/,'latest product icon client asset version');
 
 assert.match(fs.readFileSync('app.js','utf8'),/cdn\.simpleicons\.org/,'branded product artwork endpoint');
 assert.match(fs.readFileSync('styles.css','utf8'),/technology-brand-icon img\{filter:none!important/,'brand colours are not overridden');

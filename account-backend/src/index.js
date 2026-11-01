@@ -2,6 +2,8 @@
 import {newSecret,totp,verifyTotp,encryptSecret,decryptSecret,newRecoveryCodes,hashRecovery} from './totp.js';
 import { saveOptin, loadAlertSubscription, sendUserSample, dispatchDueDigests, unsubscribe } from './delivery.js';
 import { handlePublicCveLookup } from './cve-lookup.js';
+import {cvieRoute,subscribeProducts,syncAccountProducts,runCvieStep,dispatchCvie,CvieError} from './cvie.js';
+import {productCpe,normalizeName} from './product-identity.js';
 import { handler as lifecycleHandler, LifecycleError, dispatchLifecycle } from './lifecycle.js';
 import { inventoryRoute, InventoryError } from './inventory.js';
 import {route as websiteMonitorRoute,scanDue as scanWebsiteDue} from './website-monitor.js';
@@ -247,7 +249,12 @@ export default {async fetch(req,env,ctx){
   if(path.startsWith('/v1/website-monitor'))return await websiteMonitorRoute(req,env,user,path,req.method==='POST'&&path==='/v1/website-monitor'?await body(req):{});
   if(path.startsWith('/v1/plugin-monitor'))return await monitorRoute(req,env,user,path,req.method==='POST'?await body(req):{});
   if(path==='/v1/plugin-advisories'&&req.method==='GET')return await pluginAdvisoryRoute(req,env,user);
-  if(path.startsWith('/v1/inventory'))return await inventoryRoute(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
+  if(path.startsWith('/v1/cvie'))return await cvieRoute(req,env,user,ctx,req.method==='PUT'||req.method==='POST'?await body(req):{});
+  if(path.startsWith('/v1/inventory')){
+   const result=await inventoryRoute(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
+   if(result.ok&&['POST','PUT','DELETE'].includes(req.method))ctx?.waitUntil(syncAccountProducts(env,user.id).then(()=>runCvieStep(env,fetch,Date.now(),user.id)).catch(()=>console.warn('CVIE inventory synchronization will retry on the next account sync')));
+   return result;
+  }
   if(path==='/v1/technology-catalogue'&&req.method==='GET'){
    const row=await env.DB.prepare('SELECT preferences_json FROM user_technology_catalogue WHERE user_id=?').bind(user.id).first();
    return response(row?JSON.parse(row.preferences_json):{defaults:null,products:[]});
@@ -256,10 +263,12 @@ export default {async fetch(req,env,ctx){
    const data=await body(req),defaults=data.defaults,products=data.products;
    if(!Array.isArray(defaults)||defaults.length>100||!Array.isArray(products)||products.length>50)return response({error:'Invalid catalogue size'},400);
    if(defaults.some(x=>typeof x!=='string'||!x.trim()||x.length>120)||products.some(x=>!x||typeof x.name!=='string'||!x.name.trim()||x.name.length>120||typeof x.version!=='string'||x.version.length>80))return response({error:'Invalid product details'},400);
-   if(new Set(defaults.map(x=>x.toLowerCase())).size!==defaults.length||new Set(products.map(x=>x.name.toLowerCase())).size!==products.length)return response({error:'Duplicate entries'},400);
+   if(new Set(defaults.map(normalizeName)).size!==defaults.length||new Set(products.map(x=>normalizeName(x.name))).size!==products.length)return response({error:'Duplicate entries'},400);
+   if(products.some(x=>x.vendor!==undefined&&(typeof x.vendor!=='string'||x.vendor.length>100)||x.cpe&&!productCpe(x.cpe)))return response({error:'Invalid vendor or product CPE'},400);
    const payload=JSON.stringify({defaults,products});
    await env.DB.prepare('INSERT INTO user_technology_catalogue(user_id,preferences_json,updated_at) VALUES(?,?,?) ON CONFLICT(user_id) DO UPDATE SET preferences_json=excluded.preferences_json,updated_at=excluded.updated_at').bind(user.id,payload,Math.floor(Date.now()/1000)).run();
-   return response({saved:true});
+   try{const cvie=await subscribeProducts(env,user.id,products,'catalogue');if(cvie.ready)ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id));return response({saved:true,cvie:{...cvie,status:cvie.ready?'queued':'setup_required'}});}
+   catch{return response({saved:true,cvie:{ready:false,status:'sync_required',message:'Catalogue saved. CVIE synchronization will retry from the intelligence panel.'}});}
   }
   if(path==='/v1/stack'&&req.method==='GET'){const rows=await env.DB.prepare('SELECT technology,product_version FROM user_stack WHERE user_id=? ORDER BY technology').bind(user.id).all();return response({stack:rows.results})}
   if(path==='/v1/stack'&&req.method==='PUT'){
@@ -267,7 +276,9 @@ export default {async fetch(req,env,ctx){
    const rows=data.stack.map(x=>({technology:String(x.technology||'').trim().slice(0,120),product_version:String(x.product_version||'').trim().slice(0,80)}));
    if(rows.some(x=>!x.technology))return response({error:'Invalid technology'},400);
    const ops=[env.DB.prepare('DELETE FROM user_stack WHERE user_id=?').bind(user.id),...rows.map(x=>env.DB.prepare('INSERT INTO user_stack(user_id,technology,product_version) VALUES(?,?,?)').bind(user.id,x.technology,x.product_version))];
-   await env.DB.batch(ops);return response({saved:rows.length});
+   await env.DB.batch(ops);
+   ctx?.waitUntil(syncAccountProducts(env,user.id).then(()=>runCvieStep(env,fetch,Date.now(),user.id)).catch(()=>console.warn('CVIE watchlist synchronization will retry on the next account sync')));
+   return response({saved:rows.length});
   }
   if(path==='/v1/remediations/features'&&req.method==='GET')return await capabilities(env);
   if(path==='/v1/remediations'&&req.method==='GET')return await listRemediations(env,user);
@@ -309,9 +320,10 @@ export default {async fetch(req,env,ctx){
    await env.DB.prepare('DELETE FROM users WHERE id=?').bind(user.id).run();return response({deleted:true},200,{'Set-Cookie':setCookie('',0)});
   }
   return response({error:'Not found'},404);
- }catch(error){if(error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
+ }catch(error){if(error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
+  if(_event.cron==='*/5 * * * *'){ctx.waitUntil(dispatchCvie(env));return;}
   if(env.ALERT_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchDueDigests(env));
   if(env.LIFECYCLE_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchLifecycle(env));
   if(env.PLUGIN_MONITOR_ENABLED==='true')ctx.waitUntil(scanDue(env));
