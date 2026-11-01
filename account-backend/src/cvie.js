@@ -4,7 +4,7 @@ import {normalizeName,productCpe,cpeFamily,knownIdentity,logoFor,identityCandida
 import {queueRelevantKev} from './cvie-evidence.js';
 import {combinedPage,combinedCounts,evidenceContext,sourceHealth,withdrawnIds,excludedProductCves} from './cvie-records.js';
 import {isHyperV,hyperVHosts,hyperVHost,hyperVHelp,hyperVStatement} from './hyperv.js';
-import {dotnetProfile,dotnetFamilies} from './dotnet.js';
+import {dotnetProfile,dotnetFamilies,dotnetFamilyLabel} from './dotnet.js';
 import {disclosureCandidatesStatement} from './cvie-evidence.js';
 const ORIGIN='https://cveharbor.com',DAY=86400000;
 const iso=value=>new Date(value).toISOString();
@@ -101,7 +101,7 @@ export function normalizeNvd(cve,product){
  return {id:cve.id,kind:'cve',title:summary.slice(0,180),summary,published:iso(published),updated:cve.lastModified||cve.published,
   severity,cvss,known_exploited:Boolean(cve.cisaExploitAdd),status:cve.vulnStatus||'NVD indexed CVE',source_type:'cvie_nvd',
   categories:[product.name],cvie_products:[product.name],cvie_identities:[...new Set(matches.map(m=>cpeFamily(m.criteria)))].map(cpe=>({name:product.name,cpe})),affected_cpes:matches,
-  affected:matches.map(m=>product.name+' '+[m.versionStartIncluding&&'>= '+m.versionStartIncluding,m.versionStartExcluding&&'> '+m.versionStartExcluding,m.versionEndIncluding&&'<= '+m.versionEndIncluding,m.versionEndExcluding&&'< '+m.versionEndExcluding].filter(Boolean).join(', ')).join('; '),
+  affected:matches.map(m=>(dotnetProfile(product)?dotnetFamilyLabel(m.criteria):product.name)+' '+[m.versionStartIncluding&&'>= '+m.versionStartIncluding,m.versionStartExcluding&&'> '+m.versionStartExcluding,m.versionEndIncluding&&'<= '+m.versionEndIncluding,m.versionEndExcluding&&'< '+m.versionEndExcluding].filter(Boolean).join(', ')).join('; '),
   remediation:'Review the linked vendor advisory for affected versions, prerequisites and the appropriate fix.',sources,
   action:'Confirm the installed version and deployment prerequisites before remediation.',
   exploitation:cve.cisaExploitAdd?'Listed in CISA KEV':'No exploitation claim made by CVIE'};

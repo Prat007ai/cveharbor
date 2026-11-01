@@ -3,6 +3,7 @@
 import {normalizeName,vendorKey,productCpe} from './product-identity.js';
 const cpe=name=>['cpe','2.3','a','microsoft',name,...Array(8).fill('*')].join(':');
 const families=['.net','asp.net_core','.net_core','.net_core_sdk'].map(cpe);
+export const dotnetFamilyLabel=value=>({'.net':'Microsoft .NET','asp.net_core':'Microsoft ASP.NET Core','.net_core':'Microsoft .NET Core','.net_core_sdk':'Microsoft .NET Core SDK'}[String(value).split(':')[4]]||'Microsoft .NET');
 export const DOTNET_PROFILE='microsoft-modern-dotnet-v1';
 export const DOTNET_FAMILY='profile:microsoft:modern_dotnet';
 export function dotnetProfile(product){

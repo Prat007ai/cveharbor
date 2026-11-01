@@ -53,6 +53,38 @@ handlers and public advisory samples at 390, 1366, 1920 and 2560 pixels.
 
 ### General product scans
 
+The existing **.NET Core** explorer category means modern .NET, ASP.NET Core,
+legacy .NET Core and SDKs. NVD's `.net_core` family only covers the older releases
+through 3.1. CVIE therefore checks the separately verified Microsoft `.net`,
+`asp.net_core`, `.net_core` and `.net_core_sdk` families. All recent family and
+disclosure-discovery pages must finish before the three-month NVD history is
+marked complete; each of the five date windows covers every work type.
+
+The `.NET` and `ASP.NET Core` NVD keyword queries discover public CVE identifiers
+even before NVD has CPE analysis. Keywords never establish a finding. Those IDs
+enter the shared original-disclosure queue, where the existing fixed CVE Program
+URLs are fetched and Microsoft affected-product labels are checked. Versioned
+runtime, SDK and platform-qualified labels remain intact in the displayed source
+evidence. Legacy .NET Framework, third-party NuGet applications, Visual Studio
+and separate add-on packages are not folded into Core from summary text alone.
+Group-level CNA version conditions remain review-only rather than guessed
+numeric installed-version exclusions. Existing cached CNA labels work without
+reindexing; new ingestion and old rows follow the same affected-label rules.
+
+Old legacy-only `.NET Core` jobs are requeued once on authenticated CVIE access
+or their next scheduled scan. The profile marker survives completion in the
+cursor metadata. Coverage timestamps reset while saved evidence, customer
+inventory, review statuses and tickets remain. The API and interface display the
+checked family coverage. A completed zero-match message describes that identity
+scope; pending original-disclosure verification is stated separately. Shared
+public keyword categories cannot inflate registered Core findings or digests.
+
+The development-only `.NET` verification workflow exercises a real twelve-month
+scan and confirms that recent Microsoft disclosures awaiting NVD CPE analysis
+are discovered and displayed after original-product verification. Its runtime
+diagnosis reads only aggregate status and public CPE identifiers for the reported
+`.NET Core` label, without account IDs, inventory or customer records.
+
 - **Queued / scanning:** shown immediately after the product is saved. CVIE
   prepares the most recent three months first, then backfills the remaining
   history. Closing the page does not cancel the durable database job.

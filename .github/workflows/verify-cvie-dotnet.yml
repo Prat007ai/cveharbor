@@ -2,7 +2,7 @@ name: Verify Microsoft .NET identity without deployment
 on:
   push:
     branches: [fix/cvie-dotnet-history]
-    paths: ['account-backend/**','cvie.js','scripts/*dotnet*.mjs','.github/workflows/verify-cvie-dotnet.yml']
+    paths: ['account-backend/**','cvie.js','scripts/*dotnet*.mjs','scripts/cvie_client_smoke.mjs','.github/workflows/verify-cvie-dotnet.yml']
 permissions:
   contents: write
 concurrency:
@@ -25,6 +25,14 @@ jobs:
         run: node scripts/probe_dotnet_directory.mjs
       - name: Verify account behavior and .NET regression cases
         run: npm test --prefix account-backend && node account-backend/tests/cvie-dotnet.test.mjs
+      - name: Verify website build and shared interaction behavior
+        run: |
+          python scripts/build_site.py
+          python scripts/verify_production.py --preflight
+          npm install --no-save --no-package-lock jsdom@26
+          node scripts/browser_smoke.mjs
+          node scripts/customer_security_smoke.mjs
+          node scripts/cvie_client_smoke.mjs
       - name: Verify real modern .NET history and original Microsoft disclosures
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}

@@ -4,12 +4,12 @@ import fs from 'node:fs';
 import {JSDOM} from 'jsdom';
 const dom=new JSDOM('<div id="cvieExplorer"></div>',{url:'https://cveharbor.com/vulnerabilities/',runScripts:'outside-only'});
 const w=dom.window;w.AbortSignal=globalThis.AbortSignal;
-let owner='a',held=null,holdNext=false,failPages=false,wrongPage=false,cycle=false,excluded=[],componentProducts=[],extraRecords=[];
+let owner='a',held=null,holdNext=false,failPages=false,wrongPage=false,cycle=false,excluded=[],componentProducts=[],extraRecords=[],evidenceSources=[];
 const record=who=>({id:who==='a'?'CVE-2026-12345':'CVE-2026-54321',summary:'Synthetic private '+who,categories:['Apache Tomcat'],cvie_products:['Apache Tomcat'],source_type:'cvie_combined'});
 w.fetch=async url=>{
  const parsed=new URL(url),who=owner;
  if(parsed.pathname.endsWith('/sync'))return Response.json({ready:true}, {status:202});
- if(parsed.pathname==='/v1/cvie')return Response.json({ready:true,account_id:who,products:[{id:who,name:'Apache Tomcat',status:'ready',progress:{},recent_count:1,history_count:1},...componentProducts],evidence:{sources:[]},excluded_product_cves:excluded});
+ if(parsed.pathname==='/v1/cvie')return Response.json({ready:true,account_id:who,products:[{id:who,name:'Apache Tomcat',status:'ready',progress:{},recent_count:1,history_count:1},...componentProducts],evidence:{sources:evidenceSources},excluded_product_cves:excluded});
  if(parsed.pathname.endsWith('/advisories')){
   if(failPages)throw Error('Simulated page failure');
   const body={account_id:wrongPage?'a':who,advisories:[record(who),...extraRecords],next:cycle?(parsed.searchParams.get('after')==='A'?'B':'A'):null};wrongPage=false;
@@ -52,5 +52,11 @@ try{
  extraRecords=[{...broad,categories:['HyperV'],cvie_products:['HyperV'],source_type:'cvie_combined',title:'Windows Hyper-V verified source fixture'}];
  await client.refresh();scoped=client.merge([broad]).find(r=>r.id===broad.id);
  assert.ok(scoped.categories.includes('HyperV'),'verified host-scoped evidence restores its category');
+ const emptyProduct={id:'net',name:'.NET Core',status:'ready',component_scope:'modern_dotnet',recent_count:0,history_count:0,recent_complete_at:Date.now(),history_complete_at:Date.now(),stale:false};
+ componentProducts=[emptyProduct];evidenceSources=[{id:'cve_program',status:'catching_up'}];await client.refresh();
+ assert.match(client.statusFor(emptyProduct),/original disclosure checks pending/,'a completed NVD check never implies that unfinished Microsoft verification found no vulnerabilities');
+ evidenceSources=[{id:'cve_program',status:'current'}];await client.refresh();
+ assert.match(client.statusFor(emptyProduct),/checked product identity/,'a zero result describes the checked identity scope');
+ assert.doesNotMatch(client.statusFor(emptyProduct),/No published advisories found/);
  console.log('PASS CVIE client: late responses, logout, account changes, failed pagination, cyclic cursors and product-specific public-snapshot corrections.');
 }finally{dom.window.close();}

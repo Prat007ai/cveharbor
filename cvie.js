@@ -42,7 +42,8 @@ function statusFor(p){
  const count=months===12?p.history_count:p.recent_count;
  const complete=months===12?p.history_complete_at:p.recent_complete_at;
  const older=months===12?p.older_kev_history_count:p.older_kev_recent_count;
- return (complete?(count?count+' advisories · last '+months+' months':'No advisories matched the checked product identity in '+months+' months'):'Preparing '+months+'-month history')+(older?' · '+older+' older KEV-listed':'');
+ const disclosurePending=(evidence.sources||[]).some(s=>s.id==='cve_program'&&s.status!=='current');
+ return (complete?(count?count+' advisories · last '+months+' months':disclosurePending?'No verified matches available yet · original disclosure checks pending':'No advisories matched the checked product identity in '+months+' months'):'Preparing '+months+'-month history')+(older?' · '+older+' older KEV-listed':'');
 }
 function scanProgress(p){
  if(p.status==='needs_identity')return null;

@@ -4,7 +4,7 @@ import {isHyperV,hyperVHost,hyperVStatementSql} from './hyperv.js';
 import {dotnetProfile,dotnetAffectedSql,DOTNET_FAMILY} from './dotnet.js';
 const q=(db,sql,...args)=>db.prepare(sql).bind(...args);
 const DAY=86400000;
-function affectedDescription(rows,name){
+function affectedDescription(rows,name,preserveLabel=false){
  return rows.map(row=>{
   const versions=(row.versions||[]).filter(v=>v.status==='affected').map(v=>{
    const parts=[];
@@ -12,7 +12,7 @@ function affectedDescription(rows,name){
    if(v.lessThan)parts.push('< '+v.lessThan);if(v.lessThanOrEqual)parts.push('<= '+v.lessThanOrEqual);
    if(v.changes?.length)parts.push('(additional source conditions apply)');return parts.join(', ')||'version range not specified';
   });
-  return name+': '+(versions.join('; ')||'consult the original affected-version statement')+(row.defaultStatus==='affected'?' (other versions may also be affected; check source exceptions)':'');
+  return (preserveLabel?String(row.product||name):name)+': '+(versions.join('; ')||'consult the original affected-version statement')+(row.defaultStatus==='affected'?' (other versions may also be affected; check source exceptions)':'');
  }).join('\n').slice(0,4000);
 }
 export function cnaRanges(rows,cpe,name){
@@ -49,7 +49,7 @@ export function reconcileRecord(nvd,cna,affected,product,kev,checks,now,cutoff){
  if(cna?.cvss_label_conflict)conflicts.push('The source severity label differs from its numeric CVSS score. CVIE uses the numeric score.');
  if(cna&&nvd&&cna.cvss!==null&&nvd.cvss!==null&&cna.cvss!==nvd.cvss)conflicts.push((cna.cvss_provider||'CVE Program / CNA')+' and NVD publish different severity scores. CVIE displays the CVE Program score.');
  record.affected_cpes=cna?(ranges.length?ranges:[{criteria:product.cpe,cvie_product_key:product.name,comparison_unsupported:true}]):nvd?.affected_cpes||[];
- record.affected=cna?affectedDescription(affected,product.name):nvd?.affected||'';
+ record.affected=cna?affectedDescription(affected,product.name,Boolean(dotnetProfile(product))):nvd?.affected||'';
  record.cna_affected=cna?affected:undefined;
  record.source_type='cvie_combined';record.categories=[product.name];record.cvie_products=[product.name];record.cvie_identities=nvd?.cvie_identities||[{name:product.name,cpe:product.cpe}];
  const revisions=[nvd?.updated,cna?.updated,kev?.dateAdded].filter(value=>Number.isFinite(Date.parse(value)));

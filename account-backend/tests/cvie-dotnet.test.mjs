@@ -82,7 +82,7 @@ check('an awaiting-analysis CVE is discovered, then displayed only after Microso
  assert.equal((await combinedPage(e,'a',cutoff)).advisories.length,0,'a name search alone is never a vulnerability match');
  await ingestDisclosures(e,()=>Response.json(cna()),NOW+36000);
  const page=await combinedPage(e,'a',cutoff);assert.equal(page.advisories.length,1);assert.equal(page.advisories[0].provenance[0].source,'cve_program');
- assert.ok(page.advisories[0].affected.includes('.NET Core'));
+ assert.ok(page.advisories[0].affected.includes('.NET 10.0 runtime'),'the original affected product is retained rather than relabelled as all Core versions');
  assert.ok(page.advisories[0].affected_cpes.every(r=>r.comparison_unsupported),'group-level vendor conditions never become a guessed installed-version exclusion');
 });
 check('existing Microsoft disclosure labels work across versions/platforms without reindexing or NVD CPE analysis',async()=>{
