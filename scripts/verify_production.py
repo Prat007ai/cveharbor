@@ -13,6 +13,9 @@ import re
 import time
 import sys
 from update_threats import ATTACK_EXPORT_FILES
+from site_gate_client import install_site_auth
+
+install_site_auth()
 
 root=Path(__file__).resolve().parents[1]
 base="https://cveharbor.com"

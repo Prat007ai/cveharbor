@@ -26,6 +26,7 @@ def cloudflare(path):
 
 def main():
     report={"checked_at":datetime.now(timezone.utc).isoformat(),"source_revision":os.environ.get("GITHUB_SHA"),"dns":{}}
+    report["credential_source"]=os.environ.get("SITE_GATE_TOKEN_SOURCE","existing_deployment")
     password=os.environ.get("SITE_GATE_PASSWORD","")
     report["site_gate_password_configured"]=len(password)>=16 and "\n" not in password and "\r" not in password
     identity=cloudflare("/user/tokens/verify")

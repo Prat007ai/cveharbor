@@ -1,0 +1,23 @@
+{
+  "name": "cveharbor-site",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-28",
+  "workers_dev": false,
+  "preview_urls": false,
+  "keep_vars": true,
+  "assets": {
+    "directory": "../public",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "vars": {
+    "SITE_GATE_ENABLED": "true",
+    "SITE_GATE_USERNAME": "cveharbor"
+  },
+  "routes": [
+    {"pattern": "cveharbor.com/*", "zone_name": "cveharbor.com"},
+    {"pattern": "www.cveharbor.com/*", "zone_name": "cveharbor.com"}
+  ]
+}

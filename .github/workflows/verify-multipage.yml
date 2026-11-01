@@ -20,10 +20,18 @@ jobs:
   verify-pages:
     name: Verify all canonical page URLs and shared modal scripts
     runs-on: ubuntu-latest
+    env:
+      SITE_GATE_USERNAME: cveharbor
+      SITE_GATE_PASSWORD: ${{ secrets.SITE_GATE_PASSWORD }}
     steps:
-      - name: Check production GitHub Pages routes
+      - uses: actions/checkout@v4
+      - name: Check production frontend routes
         run: |
           python - <<'PY'
+          import sys
+          sys.path.insert(0, 'scripts')
+          from site_gate_client import install_site_auth
+          install_site_auth()
           import time
           import urllib.request
 

@@ -19,10 +19,18 @@ jobs:
   verify:
     name: Check published D1 tracker UI and assignment actions
     runs-on: ubuntu-latest
+    env:
+      SITE_GATE_USERNAME: cveharbor
+      SITE_GATE_PASSWORD: ${{ secrets.SITE_GATE_PASSWORD }}
     steps:
-      - name: Confirm GitHub Pages serves new tracker and assignment dialog
+      - uses: actions/checkout@v4
+      - name: Confirm frontend serves new tracker and assignment dialog
         run: |
           python - <<'PY'
+          import sys
+          sys.path.insert(0, 'scripts')
+          from site_gate_client import install_site_auth
+          install_site_auth()
           import urllib.request
           import urllib.error
           import time
@@ -55,7 +63,7 @@ jobs:
                     'old watchlist remains intact':'id="accountSaveStack"' in html
                   }
                   if all(checks.values()):
-                      print('PASS: production GitHub Pages contains the account-based remediation tracker UI')
+                      print('PASS: production frontend contains the account-based remediation tracker UI')
                       for name,good in checks.items():print(name,good)
                       break
                   last=', '.join(name for name,good in checks.items() if not good)

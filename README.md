@@ -5,7 +5,7 @@ CVEHarbor is a public vulnerability **advisory index** with 38 technology groups
 ## Release status
 
 - The website, browser-side search/filtering, data normalization and hourly publishing workflow are implemented in this package.
-- The site is published through GitHub Pages. Each GitHub Actions run should be checked for publication and upstream feed health.
+- The prepared temporary development gate serves the frontend through Cloudflare Worker Assets, with browser-native username/password protection. See [temporary access setup](docs/temporary-site-gate.md). Activation and upstream feed health must be verified in GitHub Actions.
 - No connected account or secret is included here.
 - The live site uses the personal `Prat007ai/cveharbor` GitHub repository and `cveharbor.com` DNS.
 - The collector relies on external feeds, which have their own delays and outages. An hourly schedule is a **target collection cadence**, not guaranteed immediate advisory publication.

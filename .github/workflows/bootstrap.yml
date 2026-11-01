@@ -4,6 +4,11 @@ on:
   push:
     paths:
       - .github/workflows/bootstrap.yml
+      - site-gate/**
+      - scripts/deploy_site_gate.py
+      - scripts/disable_public_pages_origin.py
+      - scripts/site_gate_client.py
+      - tests/test_site_gate_deployment.py
       - index.html
       - styles.css
       - homepage.css
@@ -49,6 +54,11 @@ on:
   pull_request:
     paths:
       - .github/workflows/bootstrap.yml
+      - site-gate/**
+      - scripts/deploy_site_gate.py
+      - scripts/disable_public_pages_origin.py
+      - scripts/site_gate_client.py
+      - tests/test_site_gate_deployment.py
       - index.html
       - styles.css
       - homepage.css
@@ -113,7 +123,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Unit and integration tests
-        run: python -m unittest discover -s tests -v && python -m py_compile scripts/update_malware.py
+        run: python -m unittest discover -s tests -v && python -m py_compile scripts/update_malware.py && node --test site-gate/tests/*.test.mjs
       - name: Validate JavaScript
         run: node --check app.js && node --check data.js && node --check accounts.js && node --check account-page.js && node --check account-security.js && node --check workspace-page.js && node --check workspace-dashboard.js && node --check website-monitor-page.js && node --check website-monitor-dashboard.js && node --check account-backend/src/website-monitor.js && node --check account-backend/src/website-threat.js && node --check account-backend/src/web-risk-usage.js && node --check customer-security.js && node --check header-auth.js && node --check page-router.js && node --check operations.js && node --check disclosure-trend.js && node --check lifecycle-monitor.js && node --check inventory.js && node --check inventory-matching.js && node --check geo-map.js && node --check malware.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js && node --check account-backend/src/remediation.js && node --check account-backend/src/inventory.js && node --check account-backend/src/lifecycle.js
       - name: Test digest matching and email rendering
@@ -176,8 +186,11 @@ jobs:
     if: (github.ref == 'refs/heads/main') && (github.event_name == 'push' || github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true))
     runs-on: ubuntu-latest
     environment:
-      name: github-pages
+      name: cloudflare-site-production
       url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      SITE_GATE_USERNAME: cveharbor
+      SITE_GATE_PASSWORD: ${{ secrets.SITE_GATE_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -187,7 +200,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Unit tests
-        run: python -m unittest discover -s tests -v && python -m py_compile scripts/update_malware.py
+        run: python -m unittest discover -s tests -v && python -m py_compile scripts/update_malware.py && node --test site-gate/tests/*.test.mjs
       - name: Validate browser JavaScript
         run: node --check app.js && node --check data.js && node --check accounts.js && node --check account-page.js && node --check account-security.js && node --check workspace-page.js && node --check workspace-dashboard.js && node --check website-monitor-page.js && node --check website-monitor-dashboard.js && node --check account-backend/src/website-monitor.js && node --check account-backend/src/website-threat.js && node --check account-backend/src/web-risk-usage.js && node --check customer-security.js && node --check header-auth.js && node --check page-router.js && node --check operations.js && node --check disclosure-trend.js && node --check lifecycle-monitor.js && node --check inventory.js && node --check inventory-matching.js && node --check geo-map.js && node --check malware.js && node --check account-backend/src/index.js && node --check account-backend/src/digest.js && node --check account-backend/src/delivery.js && node --check account-backend/src/remediation.js && node --check account-backend/src/inventory.js && node --check account-backend/src/lifecycle.js
       - name: Test digest matching and email rendering
@@ -285,17 +298,22 @@ jobs:
         run: python scripts/build_site.py && test -f public/disclosure-trend.js
       - name: Validate generated pages before deployment
         run: python scripts/verify_production.py --preflight
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/setup-node@v4
         with:
-          path: public
-      - name: Deploy to GitHub Pages
+          node-version: '22'
+      - name: Deploy protected frontend without changing the account API
         id: deployment
-        uses: actions/deploy-pages@v4
-      - name: Verify public production pages and published assets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_SITE_API_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
+        run: python scripts/deploy_site_gate.py
+      - name: Verify authenticated production pages and published assets
         run: python scripts/verify_production.py
+      - name: Close the old public Pages origin after protected-site verification
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/disable_public_pages_origin.py
       - name: Flag incomplete source collection
         if: always() && steps.collect.outcome == 'success'
         run: |

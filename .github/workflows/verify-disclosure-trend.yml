@@ -18,10 +18,18 @@ jobs:
   live-disclosure-trend:
     name: Verify published chart and real advisory feed
     runs-on: ubuntu-latest
+    env:
+      SITE_GATE_USERNAME: cveharbor
+      SITE_GATE_PASSWORD: ${{ secrets.SITE_GATE_PASSWORD }}
     steps:
-      - name: Wait for GitHub Pages and check live disclosure data
+      - uses: actions/checkout@v4
+      - name: Wait for frontend and check live disclosure data
         run: |
           python - <<'PY'
+          import sys
+          sys.path.insert(0, 'scripts')
+          from site_gate_client import install_site_auth
+          install_site_auth()
           import json
           import re
           import time

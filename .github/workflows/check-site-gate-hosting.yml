@@ -5,6 +5,11 @@ on:
     paths:
       - .github/workflows/check-site-gate-hosting.yml
       - scripts/check_site_gate_hosting.py
+      - site-gate/**
+      - scripts/deploy_site_gate.py
+      - scripts/disable_public_pages_origin.py
+      - scripts/site_gate_client.py
+      - tests/test_site_gate_deployment.py
 permissions:
   contents: write
 jobs:
@@ -17,11 +22,21 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test the site gate and existing application
+        run: python -m unittest discover -s tests -v && node --test site-gate/tests/*.test.mjs
+      - name: Build and validate the protected frontend package
+        env:
+          WRANGLER_SEND_METRICS: 'false'
+        run: python scripts/build_site.py && python scripts/verify_production.py --preflight && npx --yes wrangler@4.156.0 deploy --config site-gate/wrangler.json --dry-run
       - name: Read domain and hosting configuration
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_SITE_API_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           SITE_GATE_PASSWORD: ${{ secrets.SITE_GATE_PASSWORD }}
+          SITE_GATE_TOKEN_SOURCE: ${{ secrets.CLOUDFLARE_SITE_API_TOKEN != '' && 'dedicated_frontend' || 'existing_deployment' }}
         run: python scripts/check_site_gate_hosting.py
       - name: Save non-secret diagnostic evidence on this development branch
         env:
