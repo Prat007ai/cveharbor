@@ -12,7 +12,12 @@ async function query(body){
  return result.result;
 }
 const DB={prepare(sql){let params=[];const statement={sql,get params(){return params;},bind(...values){params=values;return statement;},async all(){return (await query({sql,params}))[0];},async first(){return (await statement.all()).results[0]||null;},async run(){return (await query({sql,params}))[0];}};return statement;},
- async batch(statements){return query(statements.map(s=>({sql:s.sql,params:s.params})));}};
+ async batch(statements){
+  // The public REST API accepts one SQL string. Reuse one JSON parameter in
+  // every statement so values stay bound, including quotes and private labels.
+  const sql=statements.map((s,i)=>{let n=0;const bound=s.sql.replace(/'(?:''|[^'])*'|"(?:""|[^"])*"|--[^\n]*|\/\*[\s\S]*?\*\/|\?/g,token=>token==='?'?`json_extract(?1,'$[${i}][${n++}]')`:token);if(n!==s.params.length)throw Error('Unsupported batch parameters');return bound;}).join(';\n');
+  return query({sql,params:[JSON.stringify(statements.map(s=>s.params))]});
+ }};
 const env={DB,CVIE_SHARED_SCANS_ENABLED:'true'};
 try{
  stage='verify transactional D1 REST batch transport';
