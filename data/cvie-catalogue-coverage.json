@@ -1,0 +1,393 @@
+{
+  "checked_at": "2026-11-01T15:47:25.456Z",
+  "scope": "Coverage semantics for every public catalogue category; this does not assert that every member product has been exhaustively mapped",
+  "categories": [
+    {
+      "name": "Windows Server OS",
+      "description": "Microsoft Windows Server, server components and OS security updates",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Windows 11 OS",
+      "description": "Windows 11 releases, security updates, desktop operating system vulnerabilities",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": ".NET / ASP.NET",
+      "description": "All .NET security advisories: classic .NET Framework and ASP.NET, plus modern .NET and ASP.NET Core. Select .NET Core for the modern subset.",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": ".NET Core",
+      "description": "Modern .NET, .NET Core, ASP.NET Core, Blazor, CoreCLR and SDKs",
+      "kind": "reviewed_group",
+      "requires_exact_members": false,
+      "verified_families": [
+        "cpe:2.3:a:microsoft:.net:*:*:*:*:*:*:*:*",
+        "cpe:2.3:a:microsoft:asp.net_core:*:*:*:*:*:*:*:*",
+        "cpe:2.3:a:microsoft:.net_core:*:*:*:*:*:*:*:*",
+        "cpe:2.3:a:microsoft:.net_core_sdk:*:*:*:*:*:*:*:*"
+      ],
+      "notes": [
+        "Coverage is limited to the listed source identities. Related products and future renames require verified mappings."
+      ]
+    },
+    {
+      "name": "WordPress / Plugins",
+      "description": "WordPress core, themes, plugins and WooCommerce",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Linux",
+      "description": "Linux kernel, Ubuntu, Debian, Red Hat, CentOS, AlmaLinux, Rocky Linux and system components",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "PHP",
+      "description": "PHP runtimes and extensions",
+      "kind": "product",
+      "requires_exact_members": false,
+      "verified_families": [
+        "cpe:2.3:a:php:php:*:*:*:*:*:*:*:*"
+      ],
+      "notes": [
+        "Coverage is limited to the listed source identities. Related products and future renames require verified mappings."
+      ]
+    },
+    {
+      "name": "Python / PyPI",
+      "description": "Python runtime and package dependencies",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Azure",
+      "description": "Azure platform, identity and hosted workloads",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Microsoft 365",
+      "description": "Microsoft 365, Exchange and Entra",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Exchange SE",
+      "description": "Microsoft Exchange Server Subscription Edition and applicable security updates",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "SQL Server",
+      "description": "Microsoft SQL Server and Azure SQL",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "MySQL / MariaDB",
+      "description": "MySQL, MariaDB and associated connectors",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Fortinet",
+      "description": "FortiGate, FortiOS and Fortinet products",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Sophos Firewall",
+      "description": "Sophos Firewall SFOS, XG and XGS appliances, security advisories and hotfixes",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "VMware",
+      "description": "vSphere, ESXi and related virtualization",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Veeam Backup & Replication",
+      "description": "Veeam backup servers, restore services, management components and managed agents",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "HyperV",
+      "description": "Microsoft Hyper V hypervisor, integration services and virtualization components",
+      "kind": "host_component",
+      "requires_exact_members": false,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Docker / Kubernetes",
+      "description": "Container runtime, images and Kubernetes",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Progress Telerik",
+      "description": "Telerik UI for ASP.NET AJAX, Kendo UI, Telerik components and related libraries",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Sitefinity",
+      "description": "Progress Sitefinity CMS, Sitefinity Next.js SDK and associated web components",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Angular",
+      "description": "Angular framework, Angular SSR and first party Angular packages",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "React / Next.js",
+      "description": "React, React Server Components, Next.js and React application frameworks",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "JavaScript / TypeScript",
+      "description": "JavaScript, TypeScript and named JavaScript tooling vulnerabilities",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "jQuery / Bootstrap",
+      "description": "jQuery, Bootstrap and related front end packages",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Kendo UI",
+      "description": "Progress Kendo UI for jQuery, Angular and KendoReact",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "SharePoint / SharePoint Server",
+      "description": "SharePoint Server security updates and SharePoint Online advisories",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Microsoft Power Platform",
+      "description": "Power Apps, Power Automate, Power Pages and Dataverse; many SaaS fixes are provider managed",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Dynamics 365",
+      "description": "Dynamics 365 CRM and relevant integrations; SaaS patches are provider managed",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Microsoft Fabric / Power BI",
+      "description": "Power BI, Fabric workloads and clients; cloud services are provider managed",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Azure AI / AI SDK",
+      "description": "Azure OpenAI, Azure AI services, AI SDKs and associated packages",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "NoSQL / MongoDB",
+      "description": "NoSQL database technologies including MongoDB and application drivers; deployment use not verified",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "AWS",
+      "description": "Amazon Web Services cloud resources and SDKs",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "iOS / Android",
+      "description": "iOS, Android, mobile SDKs and app frameworks",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Node.js / npm",
+      "description": "Node.js, npm and JavaScript packages",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Drupal / CMS",
+      "description": "Drupal, DNN, Kentico and Umbraco content management systems",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Application dependencies",
+      "description": "Composer, NuGet, npm, PyPI and third party libraries",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    },
+    {
+      "name": "Windows",
+      "description": "Windows desktop, client systems and Windows advisories without confirmed server applicability",
+      "kind": "collection",
+      "requires_exact_members": true,
+      "verified_families": [],
+      "notes": [
+        "Choose an exact vendor/product identity before CVIE can establish product coverage."
+      ]
+    }
+  ]
+}

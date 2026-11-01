@@ -1,0 +1,93 @@
+{
+  "checked_at": "2026-11-01T15:47:25.456Z",
+  "ok": true,
+  "scope": "Same generic CVIE scan and original-disclosure verification for Apache Tomcat, PHP and WordPress; disposable database; no production writes",
+  "products": [
+    {
+      "name": "Apache Tomcat",
+      "coverage": {
+        "kind": "product",
+        "label": "apache / tomcat",
+        "families": [
+          "cpe:2.3:a:apache:tomcat:*:*:*:*:*:*:*:*"
+        ],
+        "identities": [
+          {
+            "cpe": "cpe:2.3:a:apache:tomcat:*:*:*:*:*:*:*:*",
+            "label": "apache / tomcat"
+          }
+        ],
+        "discovery_terms": [
+          "tomcat"
+        ],
+        "notes": [
+          "Coverage is limited to the listed source identities. Related products and future renames require verified mappings."
+        ],
+        "limited": false,
+        "version": "cvie-product-coverage-v1",
+        "discovery_limited": false
+      },
+      "recent_count": 10,
+      "verified_original": "CVE-2026-73180"
+    },
+    {
+      "name": "PHP",
+      "coverage": {
+        "kind": "product",
+        "label": "php / php",
+        "families": [
+          "cpe:2.3:a:php:php:*:*:*:*:*:*:*:*"
+        ],
+        "identities": [
+          {
+            "cpe": "cpe:2.3:a:php:php:*:*:*:*:*:*:*:*",
+            "label": "php / php"
+          }
+        ],
+        "discovery_terms": [
+          "php"
+        ],
+        "notes": [
+          "Coverage is limited to the listed source identities. Related products and future renames require verified mappings.",
+          "Additional disclosure discovery reached its per-window limit. Saved matches remain available; original disclosure history is not exhaustive."
+        ],
+        "limited": true,
+        "version": "cvie-product-coverage-v1",
+        "discovery_limited": true
+      },
+      "recent_count": 13,
+      "verified_original": "CVE-2026-109619"
+    },
+    {
+      "name": "WordPress",
+      "coverage": {
+        "kind": "product",
+        "label": "wordpress / wordpress",
+        "families": [
+          "cpe:2.3:a:wordpress:wordpress:*:*:*:*:*:*:*:*"
+        ],
+        "identities": [
+          {
+            "cpe": "cpe:2.3:a:wordpress:wordpress:*:*:*:*:*:*:*:*",
+            "label": "wordpress / wordpress"
+          }
+        ],
+        "discovery_terms": [
+          "wordpress"
+        ],
+        "notes": [
+          "Coverage is limited to the listed source identities. Related products and future renames require verified mappings.",
+          "Additional disclosure discovery reached its per-window limit. Saved matches remain available; original disclosure history is not exhaustive."
+        ],
+        "limited": true,
+        "version": "cvie-product-coverage-v1",
+        "discovery_limited": true
+      },
+      "recent_count": 1,
+      "verified_original": "CVE-2026-87902"
+    }
+  ],
+  "requests": 10,
+  "catalogue_categories": 38,
+  "collections_requiring_members": 35
+}
