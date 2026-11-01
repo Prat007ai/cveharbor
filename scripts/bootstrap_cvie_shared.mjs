@@ -3,6 +3,7 @@
 // aliases, account identifiers, SQL parameters or credentials.
 import {reconcileSharedScopes,seedSharedHistory} from '../account-backend/src/shared-scopes.js';
 import {normalizeNvd} from '../account-backend/src/cvie.js';
+import {restBatch} from './cvie_rest_batch.mjs';
 const database='46710e51-7ca4-4571-b89c-921b9969de0b';
 let stage='initialization';
 async function query(body){
@@ -13,10 +14,7 @@ async function query(body){
 }
 const DB={prepare(sql){let params=[];const statement={sql,get params(){return params;},bind(...values){params=values;return statement;},async all(){return (await query({sql,params}))[0];},async first(){return (await statement.all()).results[0]||null;},async run(){return (await query({sql,params}))[0];}};return statement;},
  async batch(statements){
-  // The public REST API accepts one SQL string. Reuse one JSON parameter in
-  // every statement so values stay bound, including quotes and private labels.
-  const sql=statements.map((s,i)=>{let n=0;const bound=s.sql.replace(/'(?:''|[^'])*'|"(?:""|[^"])*"|--[^\n]*|\/\*[\s\S]*?\*\/|\?/g,token=>token==='?'?`json_extract(?1,'$[${i}][${n++}]')`:token);if(n!==s.params.length)throw Error('Unsupported batch parameters');return bound;}).join(';\n');
-  return query({sql,params:[JSON.stringify(statements.map(s=>s.params))]});
+  return query(restBatch(statements));
  }};
 const env={DB,CVIE_SHARED_SCANS_ENABLED:'true'};
 try{

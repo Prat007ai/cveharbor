@@ -2,7 +2,7 @@ name: Verify CVIE queries against production D1 without customer data
 on:
   push:
     branches: [fix/cvie-status-d1, fix/cvie-navigation-resume, perf/cvie-read-usage, feat/cvie-shared-product-scans]
-    paths: ['account-backend/**', 'cvie.js', 'app.js', 'scripts/cvie_client_smoke.mjs', 'scripts/cvie_polling_smoke.mjs', 'scripts/probe_cvie_shared.mjs', 'scripts/bootstrap_cvie_shared.mjs', 'scripts/verify_cvie_d1.mjs', '.github/workflows/verify-cvie-d1.yml']
+    paths: ['account-backend/**', 'cvie.js', 'app.js', 'scripts/cvie_client_smoke.mjs', 'scripts/cvie_polling_smoke.mjs', 'scripts/probe_cvie_shared.mjs', 'scripts/bootstrap_cvie_shared.mjs', 'scripts/cvie_rest_batch.mjs', 'scripts/cvie_rest_batch.test.mjs', 'scripts/verify_cvie_d1.mjs', '.github/workflows/verify-cvie-d1.yml']
 permissions:
   contents: write
 jobs:
@@ -32,7 +32,7 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: node scripts/bootstrap_cvie_shared.mjs --preflight
+        run: node scripts/cvie_rest_batch.test.mjs && node scripts/bootstrap_cvie_shared.mjs --preflight
       - name: Verify one real provider page is reused by two isolated accounts
         if: github.ref_name == 'feat/cvie-shared-product-scans'
         id: shared_provider

@@ -13,6 +13,8 @@ on:
       - 'scripts/verify_cvie_production.py'
       - 'scripts/verify_cvie_d1.mjs'
       - 'scripts/bootstrap_cvie_shared.mjs'
+      - 'scripts/cvie_rest_batch.mjs'
+      - 'scripts/cvie_rest_batch.test.mjs'
       - 'scripts/worker_release_mode.mjs'
       - 'scripts/worker_release_smoke.mjs'
       - 'scripts/verify_software_history_d1.mjs'
@@ -43,7 +45,7 @@ jobs:
         run: node scripts/worker_release_smoke.mjs && node scripts/worker_release_mode.mjs
       - name: Verify account backend
         working-directory: account-backend
-        run: npm test && node --check src/index.js && node --check src/plugin-advisories.js
+        run: npm test && node ../scripts/cvie_rest_batch.test.mjs && node --check src/index.js && node --check src/plugin-advisories.js
       - name: Confirm deployment credentials
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -138,3 +140,4 @@ jobs:
         run: |
           node scripts/verify_software_history_d1.mjs
           node --input-type=module -e "const r=await fetch('https://api.cveharbor.com/v1/inventory/software-history?customer_id=00000000-0000-4000-8000-000000000001');if(r.status!==401)throw Error('History endpoint must require authentication');console.log('PASS: unauthenticated history access rejected');"
+
