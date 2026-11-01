@@ -1,3 +1,4 @@
+import {catalogueProducts,catalogueRevision} from './catalogue-selection.js';
 // CVEHarbor account API with opt-in vulnerability digest support.
 import {newSecret,totp,verifyTotp,encryptSecret,decryptSecret,newRecoveryCodes,hashRecovery} from './totp.js';
 import { saveOptin, loadAlertSubscription, sendUserSample, dispatchDueDigests, unsubscribe } from './delivery.js';
@@ -267,7 +268,7 @@ export default {async fetch(req,env,ctx){
   }
   if(path==='/v1/technology-catalogue'&&req.method==='GET'){
    const row=await env.DB.prepare('SELECT preferences_json FROM user_technology_catalogue WHERE user_id=?').bind(user.id).first();
-   return response(row?JSON.parse(row.preferences_json):{defaults:null,products:[]});
+   return response({...row?JSON.parse(row.preferences_json):{defaults:null,products:[]},revision:await catalogueRevision(row?.preferences_json??null)});
   }
   if(path==='/v1/technology-catalogue'&&req.method==='PUT'){
    const data=await body(req),defaults=data.defaults,products=data.products;
@@ -275,10 +276,19 @@ export default {async fetch(req,env,ctx){
    if(defaults.some(x=>typeof x!=='string'||!x.trim()||x.length>120)||products.some(x=>!x||typeof x.name!=='string'||!x.name.trim()||x.name.length>120||typeof x.version!=='string'||x.version.length>80))return response({error:'Invalid product details'},400);
    if(new Set(defaults.map(normalizeName)).size!==defaults.length||new Set(products.map(x=>normalizeName(x.name))).size!==products.length)return response({error:'Duplicate entries'},400);
    if(products.some(x=>x.vendor!==undefined&&(typeof x.vendor!=='string'||x.vendor.length>100)||x.cpe&&!productCpe(x.cpe)))return response({error:'Invalid vendor or product CPE'},400);
-   const payload=JSON.stringify({defaults,products});
-   await env.DB.prepare('INSERT INTO user_technology_catalogue(user_id,preferences_json,updated_at) VALUES(?,?,?) ON CONFLICT(user_id) DO UPDATE SET preferences_json=excluded.preferences_json,updated_at=excluded.updated_at').bind(user.id,payload,Math.floor(Date.now()/1000)).run();
-   try{const cvie=await subscribeProducts(env,user.id,products,'catalogue');if(cvie.ready)ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id));return response({saved:true,cvie:{...cvie,status:cvie.ready?'queued':'setup_required'}});}
-   catch{return response({saved:true,cvie:{ready:false,status:'sync_required',message:'Catalogue saved. CVIE synchronization will retry from the intelligence panel.'}});}
+   const selected=catalogueProducts({defaults,products});
+   const payload=JSON.stringify({defaults,products,selection_keys:selected.map(p=>normalizeName(p.name))});
+   if(payload.length>18000)return response({error:'Catalogue is too large'},400);
+   const prior=await env.DB.prepare('SELECT preferences_json FROM user_technology_catalogue WHERE user_id=?').bind(user.id).first();
+   const revision=await catalogueRevision(prior?.preferences_json??null);
+   if(data.revision!==undefined&&data.revision!==revision)return response({error:'Your catalogue changed in another tab. Reload the saved catalogue before editing again.'},409);
+   if(prior?.preferences_json===payload)return response({saved:true,unchanged:true,revision,cvie:{status:'unchanged'}});
+   const saved=prior?await env.DB.prepare('UPDATE user_technology_catalogue SET preferences_json=?,updated_at=? WHERE user_id=? AND preferences_json=?').bind(payload,Math.floor(Date.now()/1000),user.id,prior.preferences_json).run():
+    await env.DB.prepare('INSERT OR IGNORE INTO user_technology_catalogue(user_id,preferences_json,updated_at) VALUES(?,?,?)').bind(user.id,payload,Math.floor(Date.now()/1000)).run();
+   if(saved.meta.changes!==1)return response({error:'Your catalogue changed while saving. Reload the saved catalogue and try again.'},409);
+   const nextRevision=await catalogueRevision(payload);
+   try{const cvie=await subscribeProducts(env,user.id,selected,'catalogue',payload);if(cvie.changed)ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id,'catalogue'));return response({saved:true,revision:nextRevision,cvie:{...cvie,status:cvie.ready?'updated':'setup_required'}});}
+   catch{return response({saved:true,revision:nextRevision,cvie:{ready:false,status:'sync_required',message:'Catalogue saved. CVIE synchronization will retry from the intelligence panel.'}});}
   }
   if(path==='/v1/stack'&&req.method==='GET'){const rows=await env.DB.prepare('SELECT technology,product_version FROM user_stack WHERE user_id=? ORDER BY technology').bind(user.id).all();return response({stack:rows.results})}
   if(path==='/v1/stack'&&req.method==='PUT'){
@@ -342,3 +352,4 @@ export default {async fetch(req,env,ctx){
   if(env.WEBSITE_MONITOR_ENABLED==='true')ctx.waitUntil(scanWebsiteDue(env));
  }
 };
+

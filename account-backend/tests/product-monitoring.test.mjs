@@ -97,3 +97,40 @@ test('custom source URLs remain unverified and are never fetched; unknown milest
  const state=await (await api(e)).json();assert.equal(state.watches[0].verified,null);
  assert.doesNotMatch(JSON.stringify(await all(e,'lifecycle_monitor_products')),/Private custom service|vendor\.example/);
 });
+test('one unsupported branch cannot block another customer watching a valid branch',async()=>{
+ const e=env();await watch(e);await watch(e,'b',{cycle:'99.0',installed_version:'99.0.1'});
+ let calls=0;const result=await checkSubscribedSources(e,()=>{calls++;return Response.json(feed());},NOW);
+ assert.equal(calls,1);assert.equal(result.checked,1);assert.equal(result.failed,1);assert.equal((await all(e,'lifecycle_monitor_notifications')).length,1);
+ const products=await all(e,'lifecycle_monitor_products');assert.ok(products.find(p=>p.branch==='99.0').verification_error);assert.equal(products.find(p=>p.branch==='8.0').verification_error,'');
+});
+test('replaced source lease fences stale provider responses before events or verified state can be written',async()=>{
+ const e=env();await watch(e);
+ await checkSubscribedSources(e,async()=>{await q(e.DB,"UPDATE lifecycle_monitor_sources SET lease_token='replacement' WHERE id='dotnet'").run();return Response.json(feed());},NOW);
+ assert.equal((await all(e,'lifecycle_monitor_state')).length,0);assert.equal((await all(e,'lifecycle_monitor_notifications')).length,0);
+});
+test('schema retry preserves subscriptions, verified history and existing lifecycle preferences',async()=>{
+ const e=env();await watch(e);await checkSubscribedSources(e,()=>Response.json(feed()),NOW);const state=await all(e,'lifecycle_monitor_state'),settings=await all(e,'lifecycle_watch_settings');
+ e.DB.sql.exec(fs.readFileSync(new URL('../migrations/0023_lifecycle_monitoring.sql',import.meta.url),'utf8'));
+ assert.deepEqual(await all(e,'lifecycle_monitor_state'),state);assert.deepEqual(await all(e,'lifecycle_watch_settings'),settings);assert.deepEqual(e.DB.sql.prepare('PRAGMA foreign_key_check').all(),[]);
+});
+test('a stale submitting job is held, rather than resent after Worker restart',async()=>{
+ const e=env();await watch(e);await checkSubscribedSources(e,()=>Response.json(feed()),NOW);
+ await q(e.DB,"INSERT INTO lifecycle_monitor_messages(id,user_id,recipient,slot,state,created_at,lease_until) VALUES('crashed','a','a@example.test','digest:old','submitting',?,?)",NOW,NOW+1).run();
+ await q(e.DB,"UPDATE lifecycle_monitor_notifications SET state='queued',message_id='crashed'").run();
+ let sent=0;await dispatchMonitorMail(e,()=>{sent++;throw Error('Must not send');},NOW+86400000);
+ assert.equal(sent,0);assert.equal((await all(e,'lifecycle_monitor_messages'))[0].state,'submission_unknown');
+});
+test('security events use immediate slots while ordinary updates remain daily',async()=>{
+ const e=env();await watch(e,'a',{delivery_mode:'immediate_security'});await checkSubscribedSources(e,()=>Response.json(feed()),NOW);
+ let sends=0;const send=()=>{sends++;return Response.json({data:{succeeded:1,failed:0,email_id:'immediate-'+sends}});};
+ await dispatchMonitorMail(e,send,NOW);assert.equal(sends,1);
+ await q(e.DB,'UPDATE lifecycle_monitor_sources SET next_due_at=0').run();await checkSubscribedSources(e,()=>Response.json(feed('8.0.12')),NOW+3600000);await dispatchMonitorMail(e,send,NOW+3600000);assert.equal(sends,2,'another verified security event is not blocked by an earlier digest');
+});
+test('daily reminders do not flood past thresholds and unchanged daily runs do not duplicate notification records',async()=>{
+ const e=env();await watch(e,'a',{alert_types:['security_support']});
+ await q(e.DB,"UPDATE lifecycle_watch_settings SET notice_days='[90,30,14,7]'").run();
+ await checkSubscribedSources(e,()=>Response.json(feed()),NOW);const first=await all(e,'lifecycle_monitor_notifications');assert.equal(first.length,1);
+ const ev=(await all(e,'lifecycle_monitor_events')).find(ev=>ev.id===first[0].event_id);assert.equal(JSON.parse(ev.record_json).threshold,14);
+ await q(e.DB,'UPDATE lifecycle_monitor_sources SET next_due_at=0').run();await checkSubscribedSources(e,()=>Response.json(feed()),NOW+86400000);assert.equal((await all(e,'lifecycle_monitor_notifications')).length,1);
+ await q(e.DB,'UPDATE lifecycle_monitor_sources SET next_due_at=0').run();await checkSubscribedSources(e,()=>Response.json(feed()),NOW+3*86400000);assert.equal((await all(e,'lifecycle_monitor_notifications')).length,2,'only the next threshold generates another notification');
+});

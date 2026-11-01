@@ -132,3 +132,5 @@ execFileSync(process.execPath,['--test',fileURLToPath(new URL('./customer_report
 execFileSync(process.execPath,[fileURLToPath(new URL('./software_upgrade_smoke.mjs',import.meta.url))],{stdio:'inherit'});
 
 execFileSync(process.execPath,['scripts/customer_finding_details_smoke.mjs'],{stdio:'inherit'});
+
+execFileSync(process.execPath,['scripts/catalogue_scope_smoke.mjs'],{stdio:'inherit'});

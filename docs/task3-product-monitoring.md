@@ -29,7 +29,7 @@ The enhanced scheduler reuses the existing hourly UTC trigger, selects up to fou
 |---|---|---|
 | .NET runtime | Microsoft-maintained [release index](https://github.com/dotnet/core/blob/main/release-notes/releases-index.json), stable channel, latest runtime release, explicit security flag, published date, security support deadline | SDK feature bands, .NET Framework, edition-specific/custom entitlements are not inferred |
 | WordPress core | [Official stable-check endpoint](https://api.wordpress.org/core/stable-check/1.0/) with branch-filtered numeric release selection | The feed does not prove a security fix, publication date or support deadline; these stay unclassified/unknown |
-| PHP | [Official releases JSON](https://www.php.net/releases/?json&version=all&max=100), branch maintenance versions and explicit security tags | Support dates require a separately validated official adapter; publication parsing/coverage validated by live probe |
+| PHP | [Official releases JSON](https://www.php.net/releases/?json&version=8.4&max=1), branch maintenance versions and explicit security tags | Support dates require a separately validated official adapter; publication parsing/coverage validated by live probe |
 | Windows Server/Client | Official [Windows release health](https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information) and [Microsoft Lifecycle](https://learn.microsoft.com/lifecycle/) investigated | Windows Updates Graph API/edition mapping and permissions need review; no automatic HTML-scraped dates |
 | SQL Server/SharePoint | [SQL lifecycle](https://learn.microsoft.com/en-us/lifecycle/products/sql-server-2022), Microsoft Lifecycle and existing public publisher notes investigated | CU/GDR/edition applicability and independent mainstream/extended milestones need an adapter; no claim of active monitoring |
 | WordPress plugins | Existing plugin-monitor and official plugin metadata logic retained | Not silently enrolled in the new lifecycle workflow; plugin-specific security feed and applicability review pending |
@@ -51,11 +51,11 @@ A D1 transactional outbox avoids adding paid Queues. Unique message/notification
 
 ## Health, costs and operations
 
-Authenticated account history includes event reason, original URL, installed version, provider ID, attempts and submitted/delivered timestamps. An explicit admin allowlist can inspect aggregate source health, run outcomes, backlog and sanitized delivery logs. The last completed hourly run must be recent before the UI reports Monitoring Active. Unknown/missing sources, absent schema or inactive scheduling never appear as healthy. Watch changes are audited.
+Authenticated account history includes event reason, original URL, installed version, provider ID, attempts and submitted/delivered timestamps. The existing hourly GitHub publication workflow also runs a read-only watchdog for stopped scheduling, stale sources, aged backlogs and failure rates once activation is approved. This independent job fails for attention conditions, so configured repository Actions failure notifications can alert without SMTP2GO. No new Cron resource is provisioned. An explicit admin allowlist can inspect aggregate source health, run outcomes, backlog and sanitized delivery logs. The last completed hourly run must be recent before the UI reports Monitoring Active. Unknown/missing sources, absent schema or inactive scheduling never appear as healthy. Watch changes are audited.
 
-Run telemetry collects D1 meta rows_read/rows_written where provided; claim/final telemetry statements themselves are excluded. A missing metadata value is not a billing measurement. External failure notifications are a rollout dependency: use existing GitHub Actions failure notifications or an independent uptime monitor to poll authenticated health; do not rely on SMTP2GO for SMTP2GO-outage alerts. This implementation exposes attention states, not a falsely claimed configured external pager. Approval is required before wiring a new external monitor or messaging channel.
+Run telemetry collects D1 meta rows_read/rows_written where provided; claim/final telemetry statements themselves are excluded. A missing metadata value is not a billing measurement. Repository Actions failure-notification settings must still be verified by an administrator; a workflow failure is not proof that an administrator received an alert. A separate authenticated uptime monitor remains an optional rollout dependency. Do not rely on SMTP2GO for SMTP2GO-outage alerts; no Slack/email account configuration is silently changed.
 
-Planning example, not a quote: 50 customers × 20 watches = 1,000 subscriptions. Three shared structured endpoints checked daily means about 90 vendor requests/month, not 30,000 customer-product fetches. Source leases/results are about six source-row updates/day, hourly run claims/completion about 48/day, and unchanged product state has zero rewrites. Daily per-watch relevance checks can still read roughly 30,000 watch rows/month plus indexes, digest/history/authorization reads; notification writes depend on actual new events and reminders. Fifty daily digest messages imply at most about 1,500/month, plus verified immediate-security and approved test mail; unchanged/no-event days send none. SMTP2GO's actual plan/usage and Cloudflare's current included allowances must be verified in the account before activation. No paid resources or pricing assumptions are applied.
+Planning example, not a quote: 50 customers × 20 watches = 1,000 subscriptions. Three shared structured endpoints checked daily means about 90 vendor requests/month (two global endpoints plus one PHP branch endpoint), not 30,000 customer-product fetches. Source leases/results are about six source-row updates/day, hourly run claims/completion about 48/day, and unchanged product state has zero rewrites. Daily per-watch relevance checks can still read roughly 30,000–60,000 watch rows/month plus indexes, digest/history/authorization reads; notification writes depend on actual new events and reminders. Fifty daily digest messages imply at most about 1,500/month, plus verified immediate-security and approved test mail; unchanged/no-event days send none. SMTP2GO's actual plan/usage and Cloudflare's current included allowances must be verified in the account before activation. No paid resources or pricing assumptions are applied.
 
 ## Safe rollout and rollback requiring approval
 
@@ -68,3 +68,45 @@ Planning example, not a quote: 50 customers × 20 watches = 1,000 subscriptions.
 7. Roll back operationally by setting checks/delivery/test flags false, pause pending processing, retain the outbox/provider IDs and reconcile submitting/unknown messages. Redeploy the prior Worker/frontend if needed. Keep the additive schema and audit/history; never drop tables containing provider correlation as a first rollback action. The optional rollback script is for an empty development schema only and refuses populated tables.
 
 Completion evidence and remaining gaps are recorded in the PR/CI and final report. Live account configuration and a deployed schema must not be marked verified merely because source code exists.
+
+## Observed development evidence
+
+The first branch CI run passed all backend/UI checks. Read-only production metadata confirmed only the three legacy lifecycle tables, EMAIL_FROM=alerts@cveharbor.com, encrypted SMTP2GO_API_KEY and TOTP_ENCRYPTION_KEY bindings, and no enhanced checks/delivery activation flags. No secret values were read. .NET and WordPress live probes passed. The first PHP endpoint rejected version=all; it was corrected to a fixed vendor endpoint per subscribed numeric branch and is re-probed before release.
+
+The approved SMTP2GO test workflow completed with status **not_run**: no existing SMTP2GO key was bound to CI. Neither approved address was emailed. The production encrypted Worker key was not extracted. Live acceptance, provider message IDs and actual delivery remain unverified; mocked acceptance/webhook tests are not substituted for this evidence. Authorizing test recipients does not make a credential available.
+
+The concurrent catalogue-scope changes on main through 67ff94e105f3def2b55ef9af11a9a0397923dad0 were integrated before release. Authentication/CVIE routes, root script versions and both inventory/catalogue release classification paths were retained. The combined local backend suite has 25 test files, with 17 dedicated monitoring scenarios. Python includes four independent-watchdog checks (116 total).
+
+The production code-only guard records schema names, activation flags, sender, secret binding names and Cron schedules before deployment and asserts they are identical afterwards. It also verifies the new private status route rejects unauthenticated requests. No new monitoring migration is executed by this release.
+
+## Changed-file manifest
+
+* `.github/workflows/bootstrap.yml`
+* `.github/workflows/deploy-worker-code.yml`
+* `.github/workflows/test-product-monitoring-email.yml`
+* `.github/workflows/verify-product-monitoring.yml`
+* `account-backend/migrations/0023_lifecycle_monitoring.sql`
+* `account-backend/src/index.js`
+* `account-backend/src/lifecycle.js`
+* `account-backend/src/monitor-engine.js`
+* `account-backend/src/monitor-mail.js`
+* `account-backend/src/monitor-sources.js`
+* `account-backend/src/monitoring.js`
+* `account-backend/tests/product-monitoring.test.mjs`
+* `docs/task3-product-monitoring.md`
+* `index.html`
+* `lifecycle-monitor.css`
+* `lifecycle-monitor.js`
+* `product-monitoring.js`
+* `scripts/browser_smoke.mjs`
+* `scripts/build_site.py`
+* `scripts/check_product_monitor_health.py`
+* `scripts/probe_monitor_sources.mjs`
+* `scripts/product_monitoring_smoke.mjs`
+* `scripts/rollback_monitoring_dev.py`
+* `scripts/test_monitor_smtp2go.mjs`
+* `scripts/verify_monitoring_inactive.mjs`
+* `scripts/verify_production.py`
+* `scripts/worker_release_mode.mjs`
+* `scripts/worker_release_smoke.mjs`
+* `tests/test_product_monitor_health.py`

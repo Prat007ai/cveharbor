@@ -19,7 +19,6 @@ jobs:
       - run: npm install --no-save --no-package-lock jsdom@26
       - run: python scripts/build_site.py && node scripts/browser_smoke.mjs && node scripts/product_monitoring_smoke.mjs && node scripts/worker_release_smoke.mjs
       - name: Probe only the reviewed vendor endpoints, without subscriptions or email
-        continue-on-error: true
         run: node scripts/probe_monitor_sources.mjs
       - name: Inspect deployed binding names, flags and schema metadata only
         if: github.event_name == 'push'

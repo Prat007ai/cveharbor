@@ -262,6 +262,7 @@ function updateActions(){
  $('lifecycleWatchSave').disabled=!signed||!ready;
  $('lifecyclePrefsSave').disabled=!signed||!ready;
  if($('lifecycleSaveAll'))$('lifecycleSaveAll').disabled=!signed||!ready||!queued.length;
+ for(const option of $('lifecycleLead').options)option.disabled=!enhanced&&['7','14'].includes(option.value);
  // Preferences can be explored without sign in; saving requires an account.
 }
 function renderUser(){
@@ -292,6 +293,7 @@ function renderUser(){
   if(watch.last_attempt_at)div.append(make('p','ops-note','Last attempt: '+new Date(watch.last_attempt_at).toLocaleString()));
   if(watch.last_success_at)div.append(make('p','ops-note','Last verified source check: '+new Date(watch.last_success_at).toLocaleString()));
   if(watch.next_due_at)div.append(make('p','ops-note','Next due check: '+new Date(watch.next_due_at).toLocaleString()));
+  if(watch.last_notification_at)div.append(make('p','ops-note','Last alert: '+new Date(watch.last_notification_at).toLocaleString()+' · '+watch.last_alert_kind+' · '+watch.last_delivery_state));
   if(watch.verified)div.append(make('p','ops-note','Official branch release: '+watch.verified.version+' · Publication date: '+(watch.verified.published||'Not published')));
   if(watch.verification_error||watch.source_error)div.append(make('p','ops-note',watch.verification_error||watch.source_error));
   if(enhanced&&watch.monitoring_status){

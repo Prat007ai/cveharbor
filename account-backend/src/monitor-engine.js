@@ -1,4 +1,4 @@
-import {DAY,SOURCE_REGISTRY,normalizeVendor,fetchVendor,compareVersions,sameBranch} from './monitor-sources.js';
+import {DAY,approvedSource,normalizeVendor,fetchVendor,compareVersions,sameBranch} from './monitor-sources.js';
 export const q=(db,sql,...args)=>db.prepare(sql).bind(...args);
 export const sha=async value=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)))].map(n=>n.toString(16).padStart(2,'0')).join('');
 export const json=(value,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'no-store','Access-Control-Allow-Origin':'https://cveharbor.com','Access-Control-Allow-Credentials':'true','Vary':'Origin'}});
@@ -70,7 +70,7 @@ export async function checkSubscribedSources(env,fetcher=fetch,now=Date.now()){
   const token=crypto.randomUUID(),lease=now+180000;
   if((await q(env.DB,'UPDATE lifecycle_monitor_sources SET lease_until=?,lease_token=?,last_attempt_at=? WHERE id=? AND lease_until<?',lease,token,now,source.id,now).run()).meta.changes!==1)continue;
   try{
-   if(!SOURCE_REGISTRY[source.id]||SOURCE_REGISTRY[source.id].url!==source.url)throw Error('Unapproved source configuration');
+   if(!approvedSource(source))throw Error('Unapproved source configuration');
    const raw=await fetchVendor(source,fetcher);
    if(!await q(env.DB,'SELECT 1 FROM lifecycle_monitor_sources WHERE id=? AND lease_token=? AND lease_until=?',source.id,token,lease).first())continue;
    const products=(await q(env.DB,`SELECT p.* FROM lifecycle_monitor_products p WHERE p.source_id=? AND EXISTS(SELECT 1 FROM lifecycle_watch_settings s

@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS lifecycle_monitor_notifications (
 );
 CREATE INDEX IF NOT EXISTS lifecycle_monitor_notifications_due ON lifecycle_monitor_notifications(state,due_at,user_id);
 CREATE INDEX IF NOT EXISTS lifecycle_monitor_notifications_owner ON lifecycle_monitor_notifications(user_id,created_at);
+CREATE INDEX IF NOT EXISTS lifecycle_monitor_notifications_watch ON lifecycle_monitor_notifications(user_id,watch_id,created_at);
 CREATE TABLE IF NOT EXISTS lifecycle_monitor_delivery_events (
  id TEXT PRIMARY KEY, message_id TEXT NOT NULL REFERENCES lifecycle_monitor_messages(id),
  event TEXT NOT NULL, happened_at INTEGER NOT NULL, received_at INTEGER NOT NULL,

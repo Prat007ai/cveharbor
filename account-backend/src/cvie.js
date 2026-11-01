@@ -1,3 +1,4 @@
+import {catalogueProducts,activeSubscription} from './catalogue-selection.js';
 // CVIE: durable, account-scoped product identity resolution and NVD history.
 // Every external URL is fixed here. Customer hosts/versions are never scanned or sent.
 import {normalizeName,productCpe,cpeFamily,knownIdentity,logoFor,identityCandidates,vendorKey} from './product-identity.js';
@@ -30,7 +31,7 @@ export async function cvieReady(env){
    FROM cvie_provider_budget WHERE provider='nvd'`).first();return row?.provider==='nvd';
  }catch{return false;}
 }
-export async function subscribeProducts(env,userId,products,origin='catalogue'){
+export async function subscribeProducts(env,userId,products,origin='catalogue',expectedCatalogue=null){
  if(!await cvieReady(env))return {ready:false};
  if(!['catalogue','inventory','stack'].includes(origin))throw new CvieError('Invalid product source');
  const normalized=new Map();
@@ -51,6 +52,9 @@ export async function subscribeProducts(env,userId,products,origin='catalogue'){
  const ids=new Map(existing.map(x=>[x.name_key,x.id]));
  const other=(await query(env.DB,'SELECT DISTINCT p.name_key FROM cvie_products p JOIN cvie_subscriptions s ON p.id=s.product_id WHERE s.user_id=? AND s.origin<>?',userId,origin).all()).results||[];
  if(new Set([...other.map(x=>x.name_key),...normalized.keys()]).size>500)throw new CvieError('CVIE product capacity reached; remove unused products before adding more',409);
+ const guard=origin==='catalogue'&&expectedCatalogue!==null;
+ const guardSql=guard?' AND EXISTS(SELECT 1 FROM user_technology_catalogue WHERE user_id=? AND preferences_json=?)':'';
+ const guarded=(sql,...args)=>query(env.DB,sql+guardSql,...args,...(guard?[userId,expectedCatalogue]:[]));
  const statements=[],inserts=[],changes=[];
  for(const [key,p] of normalized){
   const id=ids.get(key)||crypto.randomUUID();ids.set(key,id);
@@ -60,12 +64,12 @@ export async function subscribeProducts(env,userId,products,origin='catalogue'){
    changes.push({id,cpe:p.explicitCpe?p.cpe:knownIdentity(p.name,p.vendor)?.cpe||'',vendor:p.vendorProvided?p.vendor:prior.vendor});
   }
  }
- if(inserts.length)statements.push(query(env.DB,`INSERT OR IGNORE INTO cvie_products(id,user_id,name_key,name,vendor,cpe)
-  SELECT json_extract(value,'$.id'),?,json_extract(value,'$.key'),json_extract(value,'$.name'),json_extract(value,'$.vendor'),json_extract(value,'$.cpe') FROM json_each(?)`,userId,JSON.stringify(inserts)));
+ if(inserts.length)statements.push(guarded(`INSERT OR IGNORE INTO cvie_products(id,user_id,name_key,name,vendor,cpe)
+  SELECT json_extract(value,'$.id'),?,json_extract(value,'$.key'),json_extract(value,'$.name'),json_extract(value,'$.vendor'),json_extract(value,'$.cpe') FROM json_each(?) WHERE 1=1`,userId,JSON.stringify(inserts)));
  if(changes.length){
   const payload=JSON.stringify(changes);
-  statements.push(query(env.DB,"DELETE FROM cvie_advisories WHERE product_id IN(SELECT json_extract(value,'$.id') FROM json_each(?))",payload));
-  statements.push(query(env.DB,`UPDATE cvie_products SET
+  statements.push(guarded("DELETE FROM cvie_advisories WHERE product_id IN(SELECT json_extract(value,'$.id') FROM json_each(?))",payload));
+  statements.push(guarded(`UPDATE cvie_products SET
    cpe=(SELECT json_extract(value,'$.cpe') FROM json_each(?) WHERE json_extract(value,'$.id')=cvie_products.id),
    vendor=(SELECT json_extract(value,'$.vendor') FROM json_each(?) WHERE json_extract(value,'$.id')=cvie_products.id),
    status='queued',cursor_json='{}',candidates_json='[]',recent_complete_at=NULL,history_complete_at=NULL,last_success_at=NULL,next_attempt_at=0,lease_until=0,error=''
@@ -73,25 +77,33 @@ export async function subscribeProducts(env,userId,products,origin='catalogue'){
  }
  const desired=new Set([...normalized.keys()].map(key=>ids.get(key))),current=new Set(subscribed.map(s=>s.product_id));
  const added=[...desired].filter(id=>!current.has(id)),removed=[...current].filter(id=>!desired.has(id));
- if(removed.length)statements.push(query(env.DB,'DELETE FROM cvie_subscriptions WHERE user_id=? AND origin=? AND product_id IN(SELECT value FROM json_each(?))',userId,origin,JSON.stringify(removed)));
- if(added.length)statements.push(query(env.DB,'INSERT OR IGNORE INTO cvie_subscriptions(user_id,product_id,origin) SELECT ?,value,? FROM json_each(?)',userId,origin,JSON.stringify(added)));
- if(removed.length)statements.push(query(env.DB,'DELETE FROM cvie_products WHERE user_id=? AND NOT EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=cvie_products.id)',userId));
+ if(removed.length)statements.push(guarded('DELETE FROM cvie_subscriptions WHERE user_id=? AND origin=? AND product_id IN(SELECT value FROM json_each(?))',userId,origin,JSON.stringify(removed)));
+ if(added.length)statements.push(guarded('INSERT OR IGNORE INTO cvie_subscriptions(user_id,product_id,origin) SELECT ?,value,? FROM json_each(?) WHERE 1=1',userId,origin,JSON.stringify(added)));
+ // Retain historical evidence; revoke only obsolete private work's commit lease.
+ if(removed.length)statements.push(guarded(`UPDATE cvie_products SET lease_until=0,cursor_json=json_remove(cursor_json,'$.active_scan') WHERE user_id=? AND lease_until<>0 AND NOT ${activeSubscription('cvie_products')}`,userId));
  // Set-based JSON bindings keep bulk imports within D1's per-invocation query budget.
- if(statements.length)await env.DB.batch(statements);
+ const applied=statements.length?await env.DB.batch(statements):[];
+ if(guard&&statements.length&&!applied.some(r=>r.meta.changes))return {ready:true,queued:0,changed:false};
  const updatedIds=new Set([...inserts,...changes].map(p=>p.id));
  const relevant=[...normalized.entries()].filter(([key])=>updatedIds.has(ids.get(key))).map(([,p])=>p);
  if(relevant.length)await queueRelevantKev(env,relevant);
  if(updatedIds.size&&sharedScans(env))await reconcileSharedScopes(env,userId);
  return {ready:true,queued:updatedIds.size,changed:statements.length>0};
 }
-export async function syncAccountProducts(env,userId){
- const catalogue=await query(env.DB,'SELECT preferences_json FROM user_technology_catalogue WHERE user_id=?',userId).first();
- const inventory=await query(env.DB,'SELECT DISTINCT technology FROM inventory_assets WHERE user_id=?',userId).all();
- const stack=await query(env.DB,'SELECT technology FROM user_stack WHERE user_id=?',userId).all();
+export async function syncAccountProducts(env,userId,scope='all'){
  const results=[];
- results.push(await subscribeProducts(env,userId,JSON.parse(catalogue?.preferences_json||'{}').products||[],'catalogue'));
- results.push(await subscribeProducts(env,userId,(inventory.results||[]).map(x=>({name:x.technology})),'inventory'));
- results.push(await subscribeProducts(env,userId,(stack.results||[]).map(x=>({name:x.technology})),'stack'));
+ if(scope==='all'||scope==='catalogue'){
+  const catalogue=await query(env.DB,'SELECT preferences_json FROM user_technology_catalogue WHERE user_id=?',userId).first();
+  results.push(await subscribeProducts(env,userId,catalogueProducts(JSON.parse(catalogue?.preferences_json||'{}')),'catalogue',catalogue?.preferences_json??null));
+ }
+ if(scope==='all'||scope==='inventory'){
+  const inventory=await query(env.DB,'SELECT DISTINCT technology FROM inventory_assets WHERE user_id=?',userId).all();
+  results.push(await subscribeProducts(env,userId,(inventory.results||[]).map(x=>({name:x.technology})),'inventory'));
+ }
+ if(scope==='all'||scope==='stack'){
+  const stack=await query(env.DB,'SELECT technology FROM user_stack WHERE user_id=?',userId).all();
+  results.push(await subscribeProducts(env,userId,(stack.results||[]).map(x=>({name:x.technology})),'stack'));
+ }
  const shared=await reconcileSharedScopes(env,userId);
  return {ready:results.every(r=>r.ready),changed:results.some(r=>r.changed)||shared.linked>0,queued:results.reduce((n,r)=>n+(r.queued||0),0)};
 }
@@ -172,18 +184,18 @@ async function requestNvd(env,path,params,fetcher){
  return data;
 }
 // One resumable page per invocation. Leases and provider slots survive restarts and concurrent pollers.
-export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
+export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null,scope='all'){
  if(!await cvieReady(env))return {ready:false};
  const shared=sharedScans(env);
  let product=await query(env.DB,`SELECT p.* ${shared?`,${publicIdentityProof()} AS public_identity_verified`:''} FROM cvie_products p ${shared?`JOIN cvie_product_scopes m ON ${validScopeLink()}`:''} WHERE p.status<>'needs_identity' AND p.next_attempt_at<=? AND p.lease_until<?
   ${shared?"AND m.scope_id IS NULL AND NOT EXISTS(SELECT 1 FROM cvie_shared_seeds x WHERE x.product_id=p.id)":''}
-  AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) ${userId?'AND p.user_id=?':''}
+  AND ${activeSubscription('p',scope)} ${userId?'AND p.user_id=?':''}
   ORDER BY CASE WHEN p.recent_complete_at IS NULL THEN 0 WHEN p.history_complete_at IS NULL THEN 1 ELSE 2 END,p.next_attempt_at,COALESCE(p.last_attempt_at,0),p.id LIMIT 1`,now,now,...(userId?[userId]:[])).first();
  let sharedJob=false;
  if(shared){
   const candidate=await query(env.DB,`SELECT j.* FROM cvie_shared_scopes j WHERE (j.seed_state='pending' OR j.next_attempt_at<=?) AND j.lease_until<?
    AND EXISTS(SELECT 1 FROM cvie_product_scopes m JOIN cvie_products p ON ${validScopeLink()} WHERE m.scope_id=j.id
-    AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) ${userId?'AND p.user_id=?':''})
+    AND ${activeSubscription('p',scope)} ${userId?'AND p.user_id=?':''})
    ORDER BY CASE WHEN j.seed_state='pending' THEN -1 WHEN j.recent_complete_at IS NULL THEN 0 WHEN j.history_complete_at IS NULL THEN 1 ELSE 2 END,j.next_attempt_at,COALESCE(j.last_attempt_at,0),j.id LIMIT 1`,now,now,...(userId?[userId]:[])).first();
   const rank=p=>[p.seed_state==='pending'?-1:p.recent_complete_at==null?0:p.history_complete_at==null?1:2,p.last_attempt_at||0];
   if(candidate&&(!product||rank(candidate)[0]<rank(product)[0]||rank(candidate)[0]===rank(product)[0]&&rank(candidate)[1]<=rank(product)[1])){product=candidate;sharedJob=true;}
@@ -204,8 +216,11 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
  const owner=crypto.randomUUID();
  if((await query(env.DB,`UPDATE ${jobs} SET lease_until=?,status=?,last_attempt_at=?,cursor_json=json_set(cursor_json,'$.active_scan',?) WHERE id=? AND lease_until<?`,lease,'scanning',now,owner,product.id,now).run()).meta.changes!==1)return {busy:true};
  try{
+  const stillSelected=async()=>sharedJob||Boolean(await query(env.DB,`SELECT id FROM cvie_products p WHERE id=? AND ${activeSubscription()}`,product.id).first());
+  if(!await stillSelected())return {cancelled:true};
   if(shared&&!sharedJob&&product.cpe&&await sharedDescriptor(product)){
    const data=await requestNvd(env,'cpes',{cpeMatchString:product.cpe,resultsPerPage:1},fetcher);
+   if(!await stillSelected())return {cancelled:true};
    if(!Array.isArray(data.products)||!Number.isSafeInteger(data.totalResults)||data.totalResults<0)throw new ProviderError('NVD product identity verification returned an incomplete response.');
    const choices=identityCandidates(data,{vendor:product.cpe.split(':')[3]});
    if(data.products.some(item=>cpeFamily(item.cpe?.cpeName)===product.cpe)&&!choices.some(c=>c.cpe===product.cpe))choices.push({cpe:product.cpe,label:product.cpe.split(':').slice(3,5).join(' / ').replaceAll('_',' ')});
@@ -219,6 +234,7 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
   if(!product.cpe){
    const cursor=JSON.parse(product.cursor_json||'{}'),index=cursor.directory_index||0;
    const data=await requestNvd(env,'cpes',{keywordSearch:[product.vendor,product.name].filter(Boolean).join(' '),startIndex:index,resultsPerPage:500},fetcher);
+   if(!await stillSelected())return {cancelled:true};
    if(!Array.isArray(data.products)||!Number.isSafeInteger(data.totalResults)||data.totalResults<0||
     (data.startIndex??0)!==index||!data.products.length&&index<data.totalResults)throw new ProviderError('NVD product directory response is incomplete');
    const candidates=[...new Map([...JSON.parse(product.candidates_json||'[]'),...identityCandidates(data,product)].map(c=>[c.cpe,c])).values()];
@@ -239,6 +255,7 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
   }
   const window=cursor.windows[cursor.position];
    const data=await requestNvd(env,'cves',{...(window.disclosures?{keywordSearch:window.disclosures,keywordExactMatch:''}:{virtualMatchString:window.cpe||product.cpe}),...(isHyperV(product)?{keywordSearch:'Windows Hyper-V',keywordExactMatch:''}:{}),pubStartDate:iso(window.start),pubEndDate:iso(window.end),startIndex:window.index,resultsPerPage:50},fetcher);
+  if(!await stillSelected())return {cancelled:true};
   if(!Array.isArray(data.vulnerabilities)||!Number.isSafeInteger(data.totalResults)||data.totalResults<0||data.startIndex!==window.index||
      (!data.vulnerabilities.length&&window.index<data.totalResults)||data.vulnerabilities.some(entry=>!/^CVE-\d{4}-\d{4,10}$/i.test(entry?.cve?.id||'')||!Number.isFinite(Date.parse(entry.cve.published))||Date.parse(entry.cve.published)<window.start||Date.parse(entry.cve.published)>window.end))throw new ProviderError('NVD returned an incomplete page; CVIE has not marked this scan complete.');
   const statements=[],pageRecords=[];
@@ -300,10 +317,10 @@ export async function loadCvieDigest(env,userId,now=Date.now(),selected=null){
  const recent=iso(now-30*DAY);
  const result=await query(env.DB,`SELECT a.record_json FROM cvie_advisories a JOIN cvie_products p ON p.id=a.product_id
   WHERE p.user_id=? AND a.published>=? AND (a.published>=? OR json_extract(a.record_json,'$.updated')>=?)
-  AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id)
+  AND ${activeSubscription()}
   ORDER BY json_extract(a.record_json,'$.known_exploited') DESC,
    CASE json_extract(a.record_json,'$.severity') WHEN 'critical' THEN 0 WHEN 'high' THEN 1 ELSE 2 END,a.published DESC LIMIT 1001`,userId,iso(monthsAgo(now,12)),recent,recent).all();
- const pending=await query(env.DB,"SELECT id FROM cvie_products p WHERE user_id=? AND (status<>'ready' OR last_success_at<?) AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) LIMIT 1",userId,now-24*3600000).first();
+ const pending=await query(env.DB,`SELECT id FROM cvie_products p WHERE user_id=? AND (status<>'ready' OR last_success_at<?) AND ${activeSubscription()} LIMIT 1`,userId,now-24*3600000).first();
  return {records:(result.results||[]).slice(0,1000).map(row=>JSON.parse(row.record_json)),degraded:Boolean(pending),coverageLimited:(result.results||[]).length>1000};
 }
 function savedProgress(p,now){
@@ -324,21 +341,22 @@ async function productSourceHealth(env,products,now){
 }
 export async function cvieRoute(req,env,user,ctx,data={}){
  if(!await cvieReady(env))return json({ready:false,error:'CVIE database setup is required. Your saved products and inventory are unchanged.'},503);
- const url=new URL(req.url),path=url.pathname;
+ const url=new URL(req.url),path=url.pathname,scope=url.searchParams.get('scope')||'all';
+ if(!['all','catalogue','inventory','stack'].includes(scope))throw new CvieError('Invalid product scope');
  if(path==='/v1/cvie/sync'&&req.method==='POST'){
-  const sync=await syncAccountProducts(env,user.id);
-  if(sync.changed)ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id));
+  const sync=await syncAccountProducts(env,user.id,scope);
+  if(sync.changed)ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id,scope));
   return json({...sync,status:sync.changed?'updated':'unchanged'},sync.changed?202:200);
  }
  if(path==='/v1/cvie/progress'&&req.method==='GET'){
   const now=Date.now();
- const rows=(await query(env.DB,ownedProductSql(env),user.id).all()).results||[];
+ const rows=(await query(env.DB,ownedProductSql(env,'p.*',scope),user.id).all()).results||[];
   const products=rows.map(overlaySharedProduct).map(p=>savedProgress(p,now));
   return json({ready:true,account_id:user.id,products,evidence:await productSourceHealth(env,products,now)});
  }
  const identity=/^\/v1\/cvie\/products\/([a-f0-9-]{36})\/identity$/.exec(path);
  if(identity&&req.method==='PUT'){
-  const product=await query(env.DB,'SELECT * FROM cvie_products WHERE id=? AND user_id=?',identity[1],user.id).first();
+  const product=await query(env.DB,`SELECT p.* FROM cvie_products p WHERE p.id=? AND p.user_id=? AND ${activeSubscription('p',scope)}`,identity[1],user.id).first();
   if(!product)throw new CvieError('Product not found',404);
   if(product.status!=='needs_identity')throw new CvieError('This product identity is already being scanned',409);
   const cpe=productCpe(data.cpe);
@@ -346,18 +364,18 @@ export async function cvieRoute(req,env,user,ctx,data={}){
   if(isHyperV(product)&&!hyperVHost(cpe))throw new CvieError('Select the Microsoft Windows host running Hyper-V');
   await query(env.DB,"UPDATE cvie_products SET cpe=?,status='queued',cursor_json='{}',error='',next_attempt_at=0 WHERE id=? AND user_id=?",cpe,product.id,user.id).run();
   if(sharedScans(env))await reconcileSharedScopes(env,user.id);
-  ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id));return json({queued:true},202);
+  ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id,scope));return json({queued:true},202);
  }
  if(path==='/v1/cvie'&&req.method==='GET'){
   const now=Date.now();
-  const loadProducts=async()=>sharedScans(env)?{results:(await query(env.DB,ownedProductSql(env),user.id).all()).results.map(overlaySharedProduct)}:query(env.DB,`SELECT p.*,
+  const loadProducts=async()=>sharedScans(env)?{results:(await query(env.DB,ownedProductSql(env,'p.*',scope),user.id).all()).results.map(overlaySharedProduct)}:query(env.DB,`SELECT p.*,
    (SELECT COUNT(*) FROM cvie_advisories a WHERE a.product_id=p.id AND a.published>=?) AS recent_count,
    (SELECT COUNT(*) FROM cvie_advisories a WHERE a.product_id=p.id AND a.published>=?) AS history_count
-   FROM cvie_products p WHERE p.user_id=? AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) ORDER BY p.name`,iso(monthsAgo(now,3)),iso(monthsAgo(now,12)),user.id).all();
+   FROM cvie_products p WHERE p.user_id=? AND ${activeSubscription('p',scope)} ORDER BY p.name`,iso(monthsAgo(now,3)),iso(monthsAgo(now,12)),user.id).all();
   let result=await loadProducts();
   const repairedHyperV=await prepareHyperVHosts(env,user.id,result.results||[]),repairedCoverage=await prepareProductCoverage(env,user.id,result.results||[]);
   if(repairedHyperV||repairedCoverage)result=await loadProducts();
-  const evidenceCtx=await evidenceContext(env,user.id),counts=evidenceCtx?await combinedCounts(env,user.id,iso(monthsAgo(now,3)),iso(monthsAgo(now,12)),now,evidenceCtx):null;
+  const evidenceCtx=await evidenceContext(env,user.id,scope),counts=evidenceCtx?await combinedCounts(env,user.id,iso(monthsAgo(now,3)),iso(monthsAgo(now,12)),now,evidenceCtx):null;
   const products=(result.results||[]).map(p=>{
    return {...savedProgress(p,now),icon_slug:logoFor(p.name,p.cpe),
     component_scope:coveragePlan(p).component||'verified_product',coverage:coverageSummary(p),identity_label:coveragePlan(p).label,
@@ -374,11 +392,11 @@ export async function cvieRoute(req,env,user,ctx,data={}){
   const months=Number(url.searchParams.get('months')||3),after=url.searchParams.get('after')||'';
   if(![3,12].includes(months)||after.length>100)throw new CvieError('Choose a 3 or 12 month history');
   const product=url.searchParams.get('product')||'';
-  const combined=await combinedPage(env,user.id,iso(monthsAgo(Date.now(),months)),after,product);
+  const combined=await combinedPage(env,user.id,iso(monthsAgo(Date.now(),months)),after,product,Date.now(),await evidenceContext(env,user.id,scope));
   if(combined)return json({ready:true,account_id:user.id,months,...combined});
   const rows=(await query(env.DB,`SELECT a.product_id,a.cve_id,a.record_json FROM cvie_advisories a JOIN cvie_products p ON p.id=a.product_id
    WHERE p.user_id=? AND a.published>=? AND a.published<=? AND (a.product_id||'/'||a.cve_id)>?
-   AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) ${product?'AND p.id=?':''}
+   AND ${activeSubscription('p',scope)} ${product?'AND p.id=?':''}
    ORDER BY a.product_id,a.cve_id LIMIT 101`,user.id,iso(monthsAgo(Date.now(),months)),iso(Date.now()),after,...(product?[product]:[])).all()).results||[];
   const page=rows.slice(0,100),last=page.at(-1);
   return json({ready:true,account_id:user.id,months,advisories:page.map(row=>JSON.parse(row.record_json)),next:rows.length>100?last.product_id+'/'+last.cve_id:null});

@@ -324,6 +324,11 @@ jobs:
         run: python scripts/deploy_site_gate.py
       - name: Verify authenticated production pages and published assets
         run: python scripts/verify_production.py
+      - name: Independently inspect approved product monitoring without sending email
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: python scripts/check_product_monitor_health.py
       - name: Close the old public Pages origin after protected-site verification
         id: origin
         env:

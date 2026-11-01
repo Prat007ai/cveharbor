@@ -27,7 +27,10 @@ export async function monitoringHandler(req,env,user,path,data={},now=Date.now()
  if(!await monitorReady(env))throw new MonitorError('Monitoring Not Yet Active: schema and activation await approval. Existing saved lifecycle preferences are preserved.',503);
  if(path==='/v1/monitoring'&&req.method==='GET'){
   const rows=(await q(env.DB,`SELECT w.*,s.status AS monitoring_status,s.alert_types,s.notice_days,s.delivery_mode,s.extended_entitled,s.consented_at,
-   p.edition,p.official_url,p.source_id,p.branch,p.verification_error,x.last_attempt_at,x.last_success_at,x.next_due_at,x.error AS source_error,v.record_json
+   p.edition,p.official_url,p.source_id,p.branch,p.verification_error,x.last_attempt_at,x.last_success_at,x.next_due_at,x.error AS source_error,v.record_json,
+   (SELECT MAX(n.created_at) FROM lifecycle_monitor_notifications n WHERE n.user_id=w.user_id AND n.watch_id=w.id) AS last_notification_at,
+   (SELECT CASE WHEN n.state='suppressed' THEN 'suppressed' ELSE COALESCE(m.state,n.state) END FROM lifecycle_monitor_notifications n LEFT JOIN lifecycle_monitor_messages m ON m.id=n.message_id WHERE n.user_id=w.user_id AND n.watch_id=w.id ORDER BY n.created_at DESC LIMIT 1) AS last_delivery_state,
+   (SELECT e.kind FROM lifecycle_monitor_notifications n JOIN lifecycle_monitor_events e ON e.id=n.event_id WHERE n.user_id=w.user_id AND n.watch_id=w.id ORDER BY n.created_at DESC LIMIT 1) AS last_alert_kind
    FROM lifecycle_watches w LEFT JOIN lifecycle_watch_settings s ON s.user_id=w.user_id AND s.watch_id=w.id
    LEFT JOIN lifecycle_monitor_products p ON p.id=s.product_id LEFT JOIN lifecycle_monitor_sources x ON x.id=p.source_id
    LEFT JOIN lifecycle_monitor_state v ON v.product_id=p.id WHERE w.user_id=? ORDER BY w.product,w.cycle LIMIT 100`,user.id).all()).results||[];
@@ -60,7 +63,7 @@ export async function monitoringHandler(req,env,user,path,data={},now=Date.now()
    p.id=await sha(p.source_id?p.id:JSON.stringify([user.id,w.product,w.cycle,w.custom_source_url]));
    if(p.source)statements.push(q(env.DB,'INSERT OR IGNORE INTO lifecycle_monitor_sources(id,adapter,url) VALUES(?,?,?)',p.source_id,p.source.adapter,p.source.url));
    statements.push(q(env.DB,'INSERT OR IGNORE INTO lifecycle_monitor_products(id,source_id,slug,name,vendor,branch,edition,official_url) VALUES(?,?,?,?,?,?,?,?)',p.id,p.source_id,p.source_id?p.slug:'unverified-'+p.id,p.name,p.vendor,p.branch,p.edition,p.official_url),
-    q(env.DB,'INSERT INTO lifecycle_watches(user_id,id,product,slug,cycle,installed_version,custom_eol_date,custom_source_url,created_at) VALUES(?,?,?,?,?,?,?,?,?)',user.id,id,w.product,w.slug,w.cycle,w.installed_version,'',w.custom_source_url,Math.floor(now/1000)),
+    q(env.DB,'INSERT INTO lifecycle_watches(user_id,id,product,slug,cycle,installed_version,custom_eol_date,custom_source_url,created_at) SELECT ?,?,?,?,?,?,?,?,? WHERE (SELECT COUNT(*) FROM lifecycle_watches WHERE user_id=?)<100',user.id,id,w.product,w.slug,w.cycle,w.installed_version,'',w.custom_source_url,Math.floor(now/1000),user.id),
     q(env.DB,'INSERT INTO lifecycle_watch_settings(user_id,watch_id,product_id,status,alert_types,notice_days,delivery_mode,extended_entitled,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?)',user.id,id,p.id,s.status,s.alert_types,s.notice_days,s.delivery_mode,s.extended_entitled,now,now),audit(env,user,id,'watch_created',now));
   }
   await env.DB.batch(statements);return json({saved:true,ids,count:ids.length,message:'Watch saved. Monitoring and delivery status are shown separately; saving does not activate infrastructure or email.'},201);
@@ -95,7 +98,8 @@ export async function monitoringHandler(req,env,user,path,data={},now=Date.now()
   const rows=(await q(env.DB,`SELECT n.id,n.created_at,n.installed_version,n.state AS notification_state,e.kind,e.record_json,m.state AS delivery_state,m.provider_id,m.submitted_at,m.delivered_at,m.attempts,m.detail
    FROM lifecycle_monitor_notifications n JOIN lifecycle_monitor_events e ON e.id=n.event_id LEFT JOIN lifecycle_monitor_messages m ON m.id=n.message_id
    WHERE n.user_id=? ORDER BY n.created_at DESC LIMIT 100`,user.id).all()).results||[];
-  return json({history:rows.map(r=>({...r,record_json:undefined,event:JSON.parse(r.record_json)}))});
+  const tests=(await q(env.DB,"SELECT id,created_at,state AS delivery_state,provider_id,submitted_at,delivered_at,attempts,detail FROM lifecycle_monitor_messages WHERE user_id=? AND slot LIKE 'test:%' ORDER BY created_at DESC LIMIT 20",user.id).all()).results||[];
+  return json({history:[...rows.map(r=>({...r,record_json:undefined,event:JSON.parse(r.record_json)})),...tests.map(r=>({...r,kind:'test',event:{product:'SMTP2GO test message',branch:'approved test',source_url:'https://developers.smtp2go.com/docs/send-an-email'}}))].sort((a,b)=>b.created_at-a.created_at).slice(0,100)});
  }
  if(path==='/v1/monitoring/admin'&&req.method==='GET'){
   if(!monitorAdmin(env,user))throw new MonitorError('Administrator permission required',403);
@@ -110,6 +114,7 @@ export async function monitoringHandler(req,env,user,path,data={},now=Date.now()
   const approved=String(env.PRODUCT_MONITOR_TEST_RECIPIENTS||'').toLowerCase().split(',').map(s=>s.trim());
   const recipient=String(data.recipient||user.email).toLowerCase();
   if(!approved.includes(recipient)||recipient!==user.email.toLowerCase()&&!monitorAdmin(env,user))throw new MonitorError('Use an approved recipient owned by your account or an authorized administrator',403);
+  if(await q(env.DB,'SELECT 1 FROM lifecycle_monitor_suppressions WHERE recipient_hash=?',await sha(recipient)).first())throw new MonitorError('This recipient is suppressed; resolve the suppression with the provider before testing',409);
   const recent=await q(env.DB,"SELECT COUNT(*) AS n FROM lifecycle_monitor_messages WHERE user_id=? AND slot LIKE 'test:%' AND created_at>?",user.id,now-3600000).first();if(recent.n>=2)throw new MonitorError('Limit of two tests per hour',429);
   const id=crypto.randomUUID(),record={product:'SMTP2GO connection',branch:'test',version:'',source_url:'https://developers.smtp2go.com/docs/send-an-email'};
   await q(env.DB,"INSERT INTO lifecycle_monitor_messages(id,user_id,recipient,slot,state,attempts,created_at,lease_until) VALUES(?,?,?,?,'submitting',1,?,?)",id,user.id,recipient,'test:'+id,now,now+120000).run();
