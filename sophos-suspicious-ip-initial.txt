@@ -1,7 +1,7 @@
-CVEHarbor Threat IP Intelligence | 2026-11-01T00:15:28.225288+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-01T00:22:21.791844+00:00
 Permanent logical group: Suspicious IP Block
-Cumulative indexed IPs: 1575
-New since prior published snapshot: 53
+Cumulative indexed IPs: 1577
+New since prior published snapshot: 2
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 No rules or policies are created or enabled. No old IPs are removed.
@@ -3998,6 +3998,12 @@ No firewall rule is created or activated.
       <IPAddress>102.64.221.235</IPAddress>
     </IPHost>
     <IPHost>
+      <Name>CVEH_102_68_122_11</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>102.68.122.11</IPAddress>
+    </IPHost>
+    <IPHost>
       <Name>CVEH_102_88_137_80</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
@@ -7934,6 +7940,12 @@ No firewall rule is created or activated.
       <IPAddress>185.173.145.123</IPAddress>
     </IPHost>
     <IPHost>
+      <Name>CVEH_185_177_72_13</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>185.177.72.13</IPAddress>
+    </IPHost>
+    <IPHost>
       <Name>CVEH_185_177_72_17</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
@@ -10142,6 +10154,7 @@ No firewall rule is created or activated.
         <Host>CVEH_102_64_153_20</Host>
         <Host>CVEH_102_64_154_14</Host>
         <Host>CVEH_102_64_221_235</Host>
+        <Host>CVEH_102_68_122_11</Host>
         <Host>CVEH_102_88_137_80</Host>
         <Host>CVEH_102_88_137_145</Host>
         <Host>CVEH_102_88_137_213</Host>
@@ -10798,6 +10811,7 @@ No firewall rule is created or activated.
         <Host>CVEH_185_173_38_165</Host>
         <Host>CVEH_185_173_39_100</Host>
         <Host>CVEH_185_173_145_123</Host>
+        <Host>CVEH_185_177_72_13</Host>
         <Host>CVEH_185_177_72_17</Host>
         <Host>CVEH_185_177_72_23</Host>
         <Host>CVEH_185_177_72_29</Host>
