@@ -1,6 +1,6 @@
 {
-  "checked_at": "2026-10-31T23:53:21.035190+00:00",
-  "source_revision": "5402df3991b82fff0508ccfef754f1a514723eb9",
+  "checked_at": "2026-11-01T00:18:19.872789+00:00",
+  "source_revision": "0016cf880dffbaf1c84d497ad87c51b1cd338879",
   "dns": {
     "cveharbor.com": [
       "185.199.108.153",
@@ -25,10 +25,11 @@
       "2606:4700:3031::ac43:961d"
     ]
   },
-  "site_gate_password_configured": false,
+  "credential_source": "dedicated_frontend",
+  "site_gate_password_configured": true,
   "credential_identity": {
     "ok": true,
-    "id": "3a416a975aa2c8e1ef5186b7749f66f9",
+    "id": "79bdda7b9c732d884c5adec789178d58",
     "status": "active"
   },
   "nameservers": [
@@ -45,13 +46,49 @@
       "status": "active",
       "account_matches": true,
       "dns_access": {
-        "ok": false,
-        "http_status": 403
+        "ok": true
       },
+      "frontend_records": [
+        {
+          "id": "7721e768610274143cb3b2e6b90300d1",
+          "type": "A",
+          "name": "cveharbor.com",
+          "content": "185.199.108.153",
+          "proxied": false
+        },
+        {
+          "id": "9a9e63e1745d125d3d47a95bcda763ac",
+          "type": "A",
+          "name": "cveharbor.com",
+          "content": "185.199.109.153",
+          "proxied": false
+        },
+        {
+          "id": "74dc7c6c5fca9c1d633592a054f0ad20",
+          "type": "A",
+          "name": "cveharbor.com",
+          "content": "185.199.111.153",
+          "proxied": false
+        },
+        {
+          "id": "43a9ff0b60c3c9ecb5232bbf40425987",
+          "type": "A",
+          "name": "cveharbor.com",
+          "content": "185.199.110.153",
+          "proxied": false
+        },
+        {
+          "id": "e626d1d8090250af6980af578aabc0a1",
+          "type": "CNAME",
+          "name": "www.cveharbor.com",
+          "content": "prat007ai.github.io",
+          "proxied": false
+        }
+      ],
       "route_access": {
-        "ok": false,
-        "http_status": 403
-      }
+        "ok": true
+      },
+      "frontend_routes": []
     }
   ]
 }
