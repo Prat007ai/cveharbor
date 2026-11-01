@@ -1049,7 +1049,7 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('grid-template-columns:r
 // Changed styles and the explorer script retain explicit cache versions.
 const explorerSource=fs.readFileSync('index.html','utf8');
 assert.match(explorerSource,/\/styles\.css\?v=finding-details-1/,'technology layout stylesheet must refresh');
-assert.match(explorerSource,/\/app\.js\?v=finding-details-1/,'interactive explorer script must refresh');
+assert.match(explorerSource,/\/app\.js\?v=catalogue-scope-1/,'interactive explorer script must refresh');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"\/vulnerabilities\/":\["technology-kpis"/,'live verifier checks technology explorer page');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"styles.css","homepage.css","app.js"/,'live verifier validates explorer JavaScript');
 
@@ -1058,7 +1058,7 @@ assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"command-ce
 
 assert.match(fs.readFileSync('app.js','utf8'),/function productIcon\(x\)/,'technology explorer renders branded icons with a fallback');
 assert.match(fs.readFileSync('app.js','utf8'),/img\.addEventListener\('error'/,'missing brand icon falls back gracefully');
-assert.match(fs.readFileSync('index.html','utf8'),/app\.js\?v=finding-details-1/,'latest product icon client asset version');
+assert.match(fs.readFileSync('index.html','utf8'),/app\.js\?v=catalogue-scope-1/,'latest product icon client asset version');
 
 assert.match(fs.readFileSync('app.js','utf8'),/cdn\.simpleicons\.org/,'branded product artwork endpoint');
 assert.match(fs.readFileSync('styles.css','utf8'),/technology-brand-icon img\{filter:none!important/,'brand colours are not overridden');

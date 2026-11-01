@@ -1,3 +1,4 @@
+import {activeSubscription} from './catalogue-selection.js';
 // Shared tables contain public source identities/history only. The separate
 // product bridge and seed cursor are private and always joined through an owner.
 import {coveragePlan,coverageMetadata,COVERAGE_VERSION} from './product-coverage.js';
@@ -25,12 +26,12 @@ export async function sharedDescriptor(product){
  const canonical={name:plan.profile?'.NET Core':plan.component?'HyperV':plan.families[0].split(':').slice(3,5).join(' / ').replaceAll('_',' '),vendor:plan.primary.split(':')[3],cpe:plan.primary};
  return {id,signature,...canonical};
 }
-export function ownedProductSql(env,select='p.*'){
- if(!sharedScans(env))return `SELECT ${select} FROM cvie_products p WHERE p.user_id=? AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) ORDER BY p.name`;
+export function ownedProductSql(env,select='p.*',scope='all'){
+ if(!sharedScans(env))return `SELECT ${select} FROM cvie_products p WHERE p.user_id=? AND ${activeSubscription('p',scope)} ORDER BY p.name`;
  const fields=['status','cursor_json','scan_started_at','last_attempt_at','last_success_at','recent_complete_at','history_complete_at','next_attempt_at','error'];
  return `SELECT ${select},j.id AS shared_scope_id,j.seed_state AS shared_seed_state,${fields.map(k=>`j.${k} AS shared_${k}`).join(',')}
   FROM cvie_products p LEFT JOIN cvie_product_scopes m ON ${validScopeLink()} LEFT JOIN cvie_shared_scopes j ON j.id=m.scope_id
-  WHERE p.user_id=? AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) ORDER BY p.name`;
+  WHERE p.user_id=? AND ${activeSubscription('p',scope)} ORDER BY p.name`;
 }
 export function overlaySharedProduct(row){
  if(!row.shared_scope_id)return row;
@@ -56,7 +57,7 @@ export async function reconcileSharedScopes(env,userId=null,now=Date.now(),limit
  if(!sharedScans(env))return {linked:0};
  const rows=(await q(env.DB,`SELECT p.*,${publicIdentityProof()} AS public_identity_verified FROM cvie_products p LEFT JOIN cvie_product_scopes m ON ${validScopeLink()}
   WHERE (m.product_id IS NULL OR (m.scope_id IS NULL AND m.candidate_scope_id IS NOT NULL AND ${publicIdentityProof()}))
-  AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) ${userId?'AND p.user_id=?':''}
+  AND ${activeSubscription()} ${userId?'AND p.user_id=?':''}
   ORDER BY p.history_complete_at DESC,p.last_success_at DESC,p.id LIMIT ?`,...(userId?[userId]:[]),limit).all()).results||[];
  if(!rows.length)return {linked:0};
  const entries=await Promise.all(rows.map(async p=>({p,d:await sharedDescriptor(p)}))),unique=new Map();
@@ -66,7 +67,7 @@ export async function reconcileSharedScopes(env,userId=null,now=Date.now(),limit
  const missing=[...unique.values()].filter(d=>d.trusted&&!existing.has(d.id));
  // Choose compatible existing history, without copying private aliases into it.
  const donorRows=missing.length?(await q(env.DB,`SELECT p.* FROM cvie_products p WHERE p.cpe IN(SELECT value FROM json_each(?))
-  AND p.last_success_at IS NOT NULL AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id)
+  AND p.last_success_at IS NOT NULL AND ${activeSubscription()}
   ORDER BY p.history_complete_at DESC,p.recent_complete_at DESC,p.last_success_at DESC LIMIT 500`,JSON.stringify([...new Set(missing.map(d=>d.cpe))])).all()).results:[];
  const donors=new Map();
  const score=p=>[readCursor(p.cursor_json).coverage_signature===coveragePlan(p).signature?1:0,p.history_complete_at?1:0,p.recent_complete_at?1:0,p.last_success_at||0];

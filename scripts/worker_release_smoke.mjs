@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {inventoryOnly} from './worker_release_mode.mjs';
+import {inventoryOnly,catalogueOnly} from './worker_release_mode.mjs';
 import {verifyHistory} from './verify_software_history_d1.mjs';
 const inventory='account-backend/src/inventory.js';
 assert.equal(inventoryOnly([inventory,'customer-security.js']),true);
@@ -25,3 +25,6 @@ try{
  await assert.rejects(()=>verifyHistory(DB),/definition differs/);
  console.log('PASS: inventory-only release classification and SELECT-only schema/reader preflight');
 }finally{sql.close()}
+
+assert.equal(catalogueOnly(['account-backend/src/catalogue-selection.js','account-backend/src/cvie.js']),true);
+assert.equal(catalogueOnly(['account-backend/src/catalogue-selection.js','account-backend/migrations/0022_cvie_shared_scans.sql']),false);
