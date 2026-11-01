@@ -1,5 +1,6 @@
 // Reconcile authoritative evidence by CVE ID, retaining source-specific provenance.
 import {evidenceReady,productFamilies,productLabels,SOURCE_URLS} from './cvie-evidence.js';
+import {isHyperV,hyperVHost,hyperVStatementSql} from './hyperv.js';
 const q=(db,sql,...args)=>db.prepare(sql).bind(...args);
 const DAY=86400000;
 function affectedDescription(rows,name){
@@ -88,21 +89,29 @@ export async function sourceHealth(env,now=Date.now()){
 export async function evidenceContext(env,userId){
  if(!await evidenceReady(env))return null;
  const products=(await q(env.DB,`SELECT p.* FROM cvie_products p WHERE p.user_id=? AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id)`,userId).all()).results||[];
- const families=products.flatMap(p=>productFamilies(p).map(key=>({product_id:p.id,key,labels:productLabels(p)})));
+ const families=products.flatMap(p=>{
+  const scope=isHyperV(p)?'windows_hyperv':'';
+  const keys=scope&&!hyperVHost(p.cpe)?['scope:windows_hyperv']:productFamilies(p);
+  return keys.map(key=>({product_id:p.id,key,labels:productLabels(p),scope}));
+ });
  const sources=(await env.DB.prepare('SELECT * FROM cvie_sources').all()).results||[];
  return {products,families:JSON.stringify(families),sources:Object.fromEntries(sources.map(s=>[s.id,s]))};
 }
 // SQL keyset pagination limits both public evidence and private data to the requested page.
 function familiesCte(){return `WITH families AS (
- SELECT json_extract(value,'$.product_id') AS product_id,json_extract(value,'$.key') AS family_key,json_extract(value,'$.labels') AS labels FROM json_each(?)
+ SELECT json_extract(value,'$.product_id') AS product_id,json_extract(value,'$.key') AS family_key,json_extract(value,'$.labels') AS labels,COALESCE(json_extract(value,'$.scope'),'') AS scope FROM json_each(?)
 ), verified_matches AS (
  SELECT DISTINCT f.product_id,d.cve_id,d.applicability,d.affected_json FROM families f JOIN cvie_disclosure_products d ON d.family_key=f.family_key
- WHERE substr(f.family_key,1,4)='cpe:' OR EXISTS(SELECT 1 FROM json_each(d.affected_json) a
-  WHERE lower(replace(replace(json_extract(a.value,'$.product'),' ',''),'_','')) IN(SELECT value FROM json_each(f.labels)))
+ WHERE (substr(f.family_key,1,4)='cpe:' OR EXISTS(SELECT 1 FROM json_each(d.affected_json) a
+  WHERE lower(replace(replace(json_extract(a.value,'$.product'),' ',''),'_','')) IN(SELECT value FROM json_each(f.labels))))
+ AND (f.scope<>'windows_hyperv' OR EXISTS(SELECT 1 FROM cvie_disclosures c WHERE c.cve_id=d.cve_id AND ${hyperVStatementSql('c.record_json')}))
 ) `;}
 function unifiedCte(){return familiesCte()+`, links AS (
  SELECT a.product_id,a.cve_id FROM cvie_advisories a JOIN cvie_products p ON p.id=a.product_id
  WHERE p.user_id=? AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id)
+ AND (NOT EXISTS(SELECT 1 FROM families f WHERE f.product_id=p.id AND f.scope='windows_hyperv')
+  OR (EXISTS(SELECT 1 FROM families f WHERE f.product_id=p.id AND f.family_key='cpe:'||p.cpe) AND ${hyperVStatementSql('a.record_json')}
+   AND NOT EXISTS(SELECT 1 FROM cvie_disclosures c WHERE c.cve_id=a.cve_id AND c.state='PUBLISHED' AND NOT ${hyperVStatementSql('c.record_json')})))
  UNION SELECT product_id,cve_id FROM verified_matches
 ), unified AS (
  SELECT l.product_id,l.cve_id,COALESCE(CASE WHEN EXISTS(SELECT 1 FROM verified_matches m

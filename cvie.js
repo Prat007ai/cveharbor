@@ -121,9 +121,10 @@ function draw(){
    const progress=scanProgress(p);if(progress)row.append(progress);
    if(p.last_success_at)row.append(node('small','Last successful source page: '+new Date(p.last_success_at).toLocaleString()));
    if(p.error)row.append(node('small',p.error));
+   if(p.identity_label)row.append(node('small','Checking: '+p.identity_label));
    if(p.candidates?.length){
     const choose=node('select');choose.setAttribute('aria-label','Product identity for '+p.name);
-    choose.append(node('option','Select the correct vendor and product'));
+    choose.append(node('option',p.identity_prompt||'Select the correct vendor and product'));
     for(const item of p.candidates){const o=node('option',item.label);o.value=item.cpe;choose.append(o);}
     choose.options[0].value='';
     choose.addEventListener('change',async()=>{if(!choose.value)return;choose.disabled=true;try{await request('/products/'+p.id+'/identity',{method:'PUT',body:JSON.stringify({cpe:choose.value})});await refresh();}catch(e){error=e.message;notify();}});

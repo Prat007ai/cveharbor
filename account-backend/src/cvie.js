@@ -3,6 +3,7 @@
 import {normalizeName,productCpe,cpeFamily,knownIdentity,logoFor,identityCandidates} from './product-identity.js';
 import {queueRelevantKev} from './cvie-evidence.js';
 import {combinedPage,combinedCounts,evidenceContext,sourceHealth,withdrawnIds,excludedProductCves} from './cvie-records.js';
+import {isHyperV,hyperVHosts,hyperVHost,hyperVHelp,hyperVStatement} from './hyperv.js';
 const ORIGIN='https://cveharbor.com',DAY=86400000;
 const iso=value=>new Date(value).toISOString();
 const query=(db,sql,...args)=>db.prepare(sql).bind(...args);
@@ -92,6 +93,7 @@ export function normalizeNvd(cve,product){
  const score=metric?.baseScore,cvss=typeof score==='number'&&Number.isFinite(score)&&score>=0&&score<=10?score:null;
  const severity=cvss===null?'unrated':cvss>=9?'critical':cvss>=7?'high':cvss>=4?'medium':'low';
  const summary=String(cve.descriptions?.find(x=>x.lang==='en')?.value||cve.descriptions?.[0]?.value||'See the source advisory for details.').slice(0,12000);
+ if(isHyperV(product)&&(!hyperVHost(product.cpe)||!hyperVStatement({summary})))return null;
  const sources=[{label:'NVD CVE record',url:'https://nvd.nist.gov/vuln/detail/'+cve.id}];
  for(const ref of cve.references||[]){try{const url=new URL(ref.url);if(url.protocol==='https:'&&!url.username&&!url.password&&sources.length<12)sources.push({label:(ref.tags||[]).includes('Vendor Advisory')?'Vendor advisory':'Source reference',url:url.href});}catch{}}
  return {id:cve.id,kind:'cve',title:summary.slice(0,180),summary,published:iso(published),updated:cve.lastModified||cve.published,
@@ -101,6 +103,23 @@ export function normalizeNvd(cve,product){
   remediation:'Review the linked vendor advisory for affected versions, prerequisites and the appropriate fix.',sources,
   action:'Confirm the installed version and deployment prerequisites before remediation.',
   exploitation:cve.cisaExploitAdd?'Listed in CISA KEV':'No exploitation claim made by CVIE'};
+}
+async function prepareHyperVHosts(env,userId,products){
+ const candidates=JSON.stringify(hyperVHosts());
+ const repairs=products.filter(p=>isHyperV(p)&&!hyperVHost(p.cpe)&&
+  (p.cpe||p.status!=='needs_identity'||p.candidates_json!==candidates)).map(p=>({id:p.id,cpe:p.cpe,candidates:p.candidates_json}));
+ if(!repairs.length)return false;
+ // Repair only this account's unresolved/invalid component identities. A host chosen
+ // concurrently wins; valid existing Microsoft host selections are preserved.
+ const result=await env.DB.batch([
+  query(env.DB,`UPDATE cvie_products SET cpe='',status='needs_identity',candidates_json=?,cursor_json='{}',
+   recent_complete_at=NULL,history_complete_at=NULL,last_success_at=NULL,next_attempt_at=0,lease_until=0,error=?
+   WHERE user_id=? AND EXISTS(SELECT 1 FROM json_each(?) r WHERE json_extract(r.value,'$.id')=cvie_products.id
+    AND json_extract(r.value,'$.cpe')=cvie_products.cpe AND json_extract(r.value,'$.candidates')=cvie_products.candidates_json)`,candidates,hyperVHelp,userId,JSON.stringify(repairs)),
+  query(env.DB,`DELETE FROM cvie_advisories WHERE product_id IN(SELECT id FROM cvie_products WHERE user_id=? AND cpe=''
+   AND status='needs_identity' AND candidates_json=? AND id IN(SELECT json_extract(value,'$.id') FROM json_each(?)))`,userId,candidates,JSON.stringify(repairs)),
+ ]);
+ return result[0].meta.changes>0;
 }
 class ProviderError extends Error{constructor(message,delay=60000){super(message);this.delay=delay;}}
 async function requestNvd(env,path,params,fetcher){
@@ -123,6 +142,9 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
   AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) ${userId?'AND p.user_id=?':''}
   ORDER BY CASE WHEN p.recent_complete_at IS NULL THEN 0 WHEN p.history_complete_at IS NULL THEN 1 ELSE 2 END,p.next_attempt_at,COALESCE(p.last_attempt_at,0),p.id LIMIT 1`,now,now,...(userId?[userId]:[])).first();
  if(!product)return {idle:true};
+ if(isHyperV(product)&&!hyperVHost(product.cpe)){
+  await prepareHyperVHosts(env,product.user_id,[product]);return {resolved:false};
+ }
  const budget=await query(env.DB,'UPDATE cvie_provider_budget SET next_request_at=? WHERE provider=? AND next_request_at<=?',now+(env.NVD_API_KEY?1000:6500),'nvd',now).run();
  if(budget.meta.changes!==1)return {waiting:true};
  const lease=now+120000;
@@ -140,7 +162,7 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
   let cursor=JSON.parse(product.cursor_json||'{}');
   if(!cursor.windows?.length){cursor={generation:crypto.randomUUID(),anchor:now,windows:scanWindows(now),position:0};}
   const window=cursor.windows[cursor.position];
-   const data=await requestNvd(env,'cves',{virtualMatchString:product.cpe,pubStartDate:iso(window.start),pubEndDate:iso(window.end),startIndex:window.index,resultsPerPage:50},fetcher);
+   const data=await requestNvd(env,'cves',{virtualMatchString:product.cpe,...(isHyperV(product)?{keywordSearch:'Windows Hyper-V',keywordExactMatch:''}:{}),pubStartDate:iso(window.start),pubEndDate:iso(window.end),startIndex:window.index,resultsPerPage:50},fetcher);
   if(!Array.isArray(data.vulnerabilities)||!Number.isSafeInteger(data.totalResults)||data.totalResults<0||data.startIndex!==window.index||
      (!data.vulnerabilities.length&&window.index<data.totalResults)||data.vulnerabilities.some(entry=>!/^CVE-\d{4}-\d{4,10}$/i.test(entry?.cve?.id||'')||!Number.isFinite(Date.parse(entry.cve.published))||Date.parse(entry.cve.published)<window.start||Date.parse(entry.cve.published)>window.end))throw new ProviderError('NVD returned an incomplete page; CVIE has not marked this scan complete.');
   const statements=[],pageRecords=[];
@@ -216,19 +238,23 @@ export async function cvieRoute(req,env,user,ctx,data={}){
   if(product.status!=='needs_identity')throw new CvieError('This product identity is already being scanned',409);
   const cpe=productCpe(data.cpe);
   if(!cpe||!JSON.parse(product.candidates_json).some(x=>x.cpe===cpe))throw new CvieError('Select an identity returned by the product directory');
+  if(isHyperV(product)&&!hyperVHost(cpe))throw new CvieError('Select the Microsoft Windows host running Hyper-V');
   await query(env.DB,"UPDATE cvie_products SET cpe=?,status='queued',cursor_json='{}',error='',next_attempt_at=0 WHERE id=? AND user_id=?",cpe,product.id,user.id).run();
   ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id));return json({queued:true},202);
  }
  if(path==='/v1/cvie'&&req.method==='GET'){
   const now=Date.now();
-  const result=await query(env.DB,`SELECT p.*,
+  const loadProducts=()=>query(env.DB,`SELECT p.*,
    (SELECT COUNT(*) FROM cvie_advisories a WHERE a.product_id=p.id AND a.published>=?) AS recent_count,
    (SELECT COUNT(*) FROM cvie_advisories a WHERE a.product_id=p.id AND a.published>=?) AS history_count
    FROM cvie_products p WHERE p.user_id=? AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) ORDER BY p.name`,iso(monthsAgo(now,3)),iso(monthsAgo(now,12)),user.id).all();
+  let result=await loadProducts();
+  if(await prepareHyperVHosts(env,user.id,result.results||[]))result=await loadProducts();
   const evidenceCtx=await evidenceContext(env,user.id),counts=evidenceCtx?await combinedCounts(env,user.id,iso(monthsAgo(now,3)),iso(monthsAgo(now,12)),now,evidenceCtx):null;
   const products=(result.results||[]).map(p=>{
    const cursor=JSON.parse(p.cursor_json||'{}'),window=cursor.windows?.[cursor.position];
    return {id:p.id,name:p.name,vendor:p.vendor,cpe:p.cpe,status:p.status,error:p.error,icon_slug:logoFor(p.name,p.cpe),
+    ...(isHyperV(p)?{identity_prompt:'Select the Windows host for Hyper-V',identity_label:hyperVHost(p.cpe)?.label||''}:{}),
     recent_count:counts?(counts.find(c=>c.product_id===p.id)?.recent_count||0):p.recent_count,history_count:counts?(counts.find(c=>c.product_id===p.id)?.history_count||0):p.history_count,
     older_kev_recent_count:counts?.find(c=>c.product_id===p.id)?.older_kev_recent_count||0,older_kev_history_count:counts?.find(c=>c.product_id===p.id)?.older_kev_history_count||0,
     last_success_at:p.last_success_at,recent_complete_at:p.recent_complete_at,

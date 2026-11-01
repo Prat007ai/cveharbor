@@ -355,7 +355,7 @@
     // Curated product mark lookup. Unknown customer products receive a neutral initial badge.
     // Never construct image URLs from untrusted customer supplied names or domains.
     const productMarks=[
-      [/windows server|windows 11|^windows$|hyperv/i,'windows11'],[/^azure|microsoft fabric/i,'microsoftazure'],
+      [/windows server|windows 11|^windows$|hyper[\s-]?v/i,'windows11'],[/^azure|microsoft fabric/i,'microsoftazure'],
       [/microsoft 365|exchange|sharepoint|power platform|dynamics 365/i,'microsoft'],
       [/^\.net|asp\.net/i,'dotnet'],[/wordpress/i,'wordpress'],[/^php$/i,'php'],[/python|pypi/i,'python'],
       [/angular/i,'angular'],[/react|next\.js/i,'react'],[/javascript|typescript/i,'javascript'],
@@ -380,7 +380,7 @@
       // to the graphics and do not describe them as licensed official brand artwork.
       const msSvg=(paths)=>'<svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" focusable="false">'+paths+'</svg>';
       const microsoftMarks=[
-        [/windows server|windows 11|^windows$|hyperv/i,msSvg('<path fill="#00A4EF" d="M2 5 14 3v12H2zm14-2L30 1v14H16zM2 17h12v12L2 27zm14 0h14v14l-14-2z"/>')],
+        [/windows server|windows 11|^windows$|hyper[\s-]?v/i,msSvg('<path fill="#00A4EF" d="M2 5 14 3v12H2zm14-2L30 1v14H16zM2 17h12v12L2 27zm14 0h14v14l-14-2z"/>')],
         [/^azure/i,msSvg('<path fill="#0078D4" d="M15 2h9L12 28H3z"/><path fill="#50B1F5" d="m18 11 11 17H13l-4-6h11z"/>')],
         [/microsoft 365/i,msSvg('<path fill="#F35325" d="M2 2h13v13H2z"/><path fill="#81BC06" d="M17 2h13v13H17z"/><path fill="#05A6F0" d="M2 17h13v13H2z"/><path fill="#FFBA08" d="M17 17h13v13H17z"/>')],
         [/exchange/i,msSvg('<path fill="#0078D4" d="M8 3h19a2 2 0 0 1 2 2v22a2 2 0 0 1-2 2H8z"/><path fill="#4DB8E8" d="M3 8h19v16H3z"/><path fill="#FFF" d="M8 12h11v3H11v2h7v3h-7v2h8v2H8z"/>')],

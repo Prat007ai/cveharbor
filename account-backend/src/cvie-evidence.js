@@ -2,6 +2,7 @@
 // URLs from provider content are never fetched: all request destinations are fixed.
 import {cveMirrorUrl,simplifyCve,normalizeCveId} from './cve-lookup.js';
 import {cpeFamily,vendorKey} from './product-identity.js';
+import {isHyperV,hyperVHostNames} from './hyperv.js';
 const q=(db,sql,...args)=>db.prepare(sql).bind(...args);
 const DAY=86400000;
 const validAddedDate=(value,now)=>{
@@ -23,7 +24,7 @@ export const wordKey=value=>String(value||'').normalize('NFKC').toLowerCase().re
 export const productLabel=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[\s_]/g,'');
 export function productLabels(product){
  const parts=String(product.cpe||'').split(':');
- return [...new Set((parts.length===13?[parts[4],parts[3]+parts[4]]:[product.name]).map(productLabel))];
+ return [...new Set([...(parts.length===13?[parts[4],parts[3]+parts[4]]:[product.name]),...(isHyperV(product)?hyperVHostNames(product.cpe):[])].map(productLabel))];
 }
 function jsonChunks(values,max=800000){
  const chunks=[];let items=[],size=2;
@@ -41,7 +42,8 @@ export function productFamilies(product){
   return vendor&&name?['name:'+vendor+':'+name]:[];
  }
  const vendor=vendorKey(parts[3]),name=wordKey(parts[4]);
- return [...new Set(['cpe:'+product.cpe,'name:'+vendor+':'+name,'name:'+vendor+':'+wordKey(parts[3]+parts[4]),'name:'+vendor+':'+wordKey(product.name)])];
+ return [...new Set(['cpe:'+product.cpe,'name:'+vendor+':'+name,'name:'+vendor+':'+wordKey(parts[3]+parts[4]),'name:'+vendor+':'+wordKey(product.name),
+  ...(isHyperV(product)?hyperVHostNames(product.cpe).map(label=>'name:'+vendor+':'+wordKey(label)):[])])];
 }
 export function affectedFamilies(affected){
  const cpes=(affected.cpes||[]).map(cpeFamily).filter(Boolean);
@@ -144,6 +146,7 @@ export function relevantKev(kev,products){
  // Broad KEV product labels are used only to prioritize original-record lookups.
  return products.some(p=>{
   const parts=String(p.cpe||'').split(':');if(vendorKey(parts[3]||p.vendor)!==vendor)return false;
+  if(isHyperV(p)&&['hyperv','windowshyperv'].includes(name))return true;
   return [wordKey(parts[4]),wordKey(p.name)].filter(Boolean).some(value=>value===name||value.startsWith(name)||name===vendor+value);
  });
 }

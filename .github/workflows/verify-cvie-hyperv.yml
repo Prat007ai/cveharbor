@@ -2,7 +2,7 @@ name: Verify Microsoft Hyper-V identity without deployment
 on:
   push:
     branches: [fix/cvie-hyperv-identity]
-    paths: ['account-backend/**','scripts/probe_hyperv_directory.mjs','.github/workflows/verify-cvie-hyperv.yml']
+    paths: ['account-backend/**','app.js','cvie.js','scripts/probe*hyperv*.mjs','.github/workflows/verify-cvie-hyperv.yml']
 permissions:
   contents: write
 concurrency:
@@ -16,18 +16,24 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Verify account behavior and Hyper-V regression cases
+        run: npm test --prefix account-backend && node account-backend/tests/cvie-hyperv.test.mjs
       - name: Check authoritative public Hyper-V product identities
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: node scripts/probe_hyperv_directory.mjs
+      - name: Verify real Hyper-V host selection, NVD history and original Microsoft disclosures
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: node scripts/probe_cvie_hyperv.mjs
       - name: Record non-secret directory evidence
         env:
           CVIE_CHECK_BRANCH: ${{ github.ref_name }}
         run: |
           git config user.name 'cveharbor-updater[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/cvie-hyperv-directory-check.json
+          git add data/cvie-hyperv-directory-check.json data/cvie-hyperv-check.json
           git commit -m 'Record public Microsoft Hyper-V directory evidence'
           git push origin "HEAD:$CVIE_CHECK_BRANCH"
       - name: Require a successful directory check
-        run: node -e "if(!require('./data/cvie-hyperv-directory-check.json').ok)process.exit(1)"
+        run: node -e "for(const file of ['cvie-hyperv-directory-check','cvie-hyperv-check'])if(!require('./data/'+file+'.json').ok)process.exit(1)"
