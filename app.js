@@ -63,8 +63,9 @@
   const monthCutoff=months=>{const now=new Date(),day=now.getUTCDate();now.setUTCDate(1);now.setUTCMonth(now.getUTCMonth()-months);now.setUTCDate(Math.min(day,new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+1,0)).getUTCDate()));return now.getTime();};
   const inMonths=(record,months)=>{const date=Date.parse(record.published||'');return Number.isFinite(date)&&date>=monthCutoff(months)&&date<=Date.now();};
   const handleCvieUpdate=event=>{
-    if(!window.CVEHARBOR_CVIE.signedIn){personalized=null;catalogueSignedIn=false;}
+    if(window.CVEHARBOR_CVIE.sessionKnown&&!window.CVEHARBOR_CVIE.signedIn){personalized=null;catalogueSignedIn=false;}
     items=window.CVEHARBOR_CVIE.merge(baseItems);
+    if(personalized){const names=new Set([...personalized.defaults,...personalized.products.filter(p=>p.enabled!==false).map(p=>p.name)].map(n=>n.toLowerCase()));items=items.filter(r=>[...(r.categories||[]),...(r.cvie_products||[])].some(n=>names.has(n.toLowerCase())));}
     const names=(window.CVEHARBOR_CVIE.products||[]).map(p=>p.name);
     for(const option of [...$('technologyFilter').options])if(option.dataset.cvie)option.remove();
     for(const name of names)if(!categories.some(c=>c.name===name)){const option=document.createElement('option');option.value=name;option.textContent=name;option.dataset.cvie='true';$('technologyFilter').append(option);}
@@ -452,8 +453,8 @@
     };
     for(const [name,techs] of Object.entries(technologyGroups)){
       if(name===customGroup)continue;
-      const additional=new Map((personalized?.products||[]).map(x=>[x.name.toLowerCase(),x]));
-      for(const p of window.CVEHARBOR_CVIE?.products||[])if(!additional.has(p.name.toLowerCase())&&!categories.some(x=>x.name===p.name))additional.set(p.name.toLowerCase(),p);
+      const additional=new Map((personalized?.products||[]).filter(x=>x.enabled!==false).map(x=>[x.name.toLowerCase(),x]));
+      // Inventory/watchlist registrations must never become catalogue selections.
       const candidates=[...[...additional.values()].filter(x=>(x.category||inferProductCategory(x.name)||'applications')===name).map(x=>({...x,custom:true,icon:'＋'})),...techs.map(label=>categories.find(x=>x.name===label))];
       const matched=candidates.filter(x=>x&&matches(x)&&(x.custom||enabled(x)));
       groupCounts[name]=matched.length;
@@ -477,6 +478,7 @@
       panel.append(head,rows);main.append(panel);visible+=matched.length;
     }
     $('technologyEmpty').hidden=visible!==0;
+    $('technologyEmpty').textContent=personalized&&!personalized.defaults.length&&!personalized.products.some(p=>p.enabled!==false)?'No technologies selected. Customize technologies to choose your catalogue. Shared sources and inventory monitoring continue independently.':'No matching technologies. Try another name or product.';
     main.setAttribute('aria-label',visible+' technologies by group');
     $('technologyTotal').textContent=String(visible);
     $('technologyRecentMetric').textContent=String(advisoryIDs(items.filter(x=>newlyPublished(x,30))).length);
@@ -693,7 +695,8 @@
   const manageButton=$('technologyManageButton');
   const customizeStatus=$('technologyCustomizeStatus');
   const customForm=$('technologyAddForm');
-  let draft=null,catalogueSaving=false;
+  let draft=null,catalogueSaving=false,catalogueRevision,catalogueEpoch=0;
+  const catalogueChanges=typeof BroadcastChannel==='function'?new BroadcastChannel('cveharbor-catalogue-changed'):null;
   const statusMessage=s=>{customizeStatus.textContent=s};
   function drawCustomizer(){
     if(!draft)return;
@@ -701,12 +704,13 @@
     for(const x of categories){
       const label=document.createElement('label'),input=document.createElement('input');
       input.type='checkbox';input.checked=draft.defaults.includes(x.name);
-      input.addEventListener('change',()=>{draft.defaults=input.checked?[...draft.defaults,x.name]:draft.defaults.filter(n=>n!==x.name)});
+      input.addEventListener('change',()=>{draft.defaults=input.checked?[...new Set([...draft.defaults,x.name])]:draft.defaults.filter(n=>n!==x.name)});
       label.append(input,text('span','',x.name));choices.append(label);
     }
     const list=$('technologyCustomList');list.replaceChildren();
     for(const p of draft.products){
       const row=text('div','technology-custom-item','');
+      const selected=document.createElement('input');selected.type='checkbox';selected.checked=p.enabled!==false;selected.setAttribute('aria-label','Monitor '+p.name);selected.addEventListener('change',()=>{p.enabled=selected.checked});row.append(selected);
       row.append(text('span','',p.name+(p.version?' · '+p.version:'')+' · '+(customCategoryNames[p.category||inferProductCategory(p.name)||'applications'])+' · '+(window.CVEHARBOR_CVIE?.product(p.name)?window.CVEHARBOR_CVIE.statusFor(window.CVEHARBOR_CVIE.product(p.name)):'CVIE starts after saving')));
       const remove=text('button','','Remove');remove.type='button';
       remove.addEventListener('click',()=>{draft.products=draft.products.filter(x=>x.name!==p.name);drawCustomizer()});
@@ -725,32 +729,53 @@
     const vendor=$('technologyAddVendor')?.value.trim()||'',cpe=$('technologyAddCpe')?.value.trim()||'';
     draft.products.push({name,version,category,vendor,cpe});customForm.reset();drawCustomizer();await saveCatalogue();
   });
-  async function saveCatalogue(){if(!draft||catalogueSaving)return;catalogueSaving=true;$('technologySaveButton').disabled=true;customForm.querySelector('button[type="submit"]').disabled=true;statusMessage('Saving product and preparing CVIE...');
-    try{const r=await fetch(catalogueAPI,{method:'PUT',credentials:'include',headers:{'content-type':'application/json'},body:JSON.stringify(draft)});
-      const data=await r.json();if(!r.ok)throw Error(data.error||'Unable to save');
+  async function saveCatalogue(){if(!draft||catalogueSaving)return;catalogueSaving=true;$('technologySaveButton').disabled=true;customForm.querySelector('button[type="submit"]').disabled=true;statusMessage('Saving catalogue...');const submitted=JSON.parse(JSON.stringify(draft)),epoch=catalogueEpoch;
+    $('technologyDefaultChoices').querySelectorAll('input').forEach(el=>el.disabled=true);$('technologyCustomList').querySelectorAll('input,button').forEach(el=>el.disabled=true);$('technologyResetButton').disabled=true;
+    try{const r=await fetch(catalogueAPI,{method:'PUT',credentials:'include',headers:{'content-type':'application/json'},body:JSON.stringify({...submitted,revision:catalogueRevision})});
+      const data=await r.json();if(epoch!==catalogueEpoch)return;if(!r.ok||data.saved!==true)throw Error(data.error||'Unable to confirm the catalogue save');
       const before=new Set((personalized?.products||[]).map(p=>p.name.toLowerCase()));
-      const newest=draft.products.find(p=>!before.has(p.name.toLowerCase()));
-      personalized=JSON.parse(JSON.stringify(draft));addedHighlight=newest?.name||null;renderCategories();
+      const newest=submitted.products.find(p=>!before.has(p.name.toLowerCase()));
+      personalized=submitted;catalogueRevision=data.revision;addedHighlight=newest?.name||null;applyPersonalized();
+      window.CVEHARBOR_CVIE?.applyCatalogue?.(personalized);catalogueChanges?.postMessage({changed:true});
       // The catalogue save already registers changed products on the server.
-      void window.CVEHARBOR_CVIE?.refresh();
-      if(newest){const category=newest.category||inferProductCategory(newest.name)||'applications';statusMessage(newest.name+' added under '+customCategoryNames[category]+'. '+(data.cvie?.ready?'CVIE is scanning and preparing the current vulnerabilities.':data.cvie?.message||'CVIE service setup is pending; the product is safely saved.'));
+      // applyCatalogue invalidates old responses before refreshing the saved scope.
+      if(newest){const category=newest.category||inferProductCategory(newest.name)||'applications';statusMessage(newest.name+' added under '+customCategoryNames[category]+'. '+(data.cvie?.ready?'The selected product is registered for CVIE checks.':data.cvie?.message||'CVIE service setup is pending; the product is safely saved.'));
         const row=[...document.querySelectorAll('.technology-just-added')].find(x=>x.dataset.customProduct===newest.name);
         row?.scrollIntoView({behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth',block:'center'});
         setTimeout(()=>{addedHighlight=null;document.querySelectorAll('.technology-just-added').forEach(x=>x.classList.remove('technology-just-added'))},10000);
-      }else statusMessage('Saved to your CVEHarbor account.');
+      }else statusMessage(data.cvie?.status==='sync_required'?data.cvie.message:'Saved to your CVEHarbor account. '+(personalized.defaults.length+personalized.products.filter(p=>p.enabled!==false).length)+' technologies selected.');
     }catch(e){statusMessage('Unable to save: '+e.message)}
-    finally{catalogueSaving=false;$('technologySaveButton').disabled=false;customForm.querySelector('button[type="submit"]').disabled=false;}
+    finally{catalogueSaving=false;$('technologySaveButton').disabled=false;customForm.querySelector('button[type="submit"]').disabled=false;$('technologyResetButton').disabled=false;drawCustomizer();}
   }
   $('technologySaveButton').addEventListener('click',()=>void saveCatalogue());
-  if(typeof fetch==='function')fetch('https://api.cveharbor.com/v1/me',{credentials:'include'}).then(r=>r.ok?r.json():null).then(async me=>{
-    if(!me?.authenticated)return;
-    catalogueSignedIn=true;
-    const r=await fetch(catalogueAPI,{credentials:'include'});
-    if(!r.ok)return;
-    const data=await r.json();
-    personalized={defaults:Array.isArray(data.defaults)?data.defaults:defaultNames,products:Array.isArray(data.products)?data.products:[]};
-    manageButton.hidden=false;renderCategories();
-  }).catch(()=>{});
+  function applyPersonalized(){
+    const allowed=new Set([...(personalized?.defaults||[]),...(personalized?.products||[]).filter(p=>p.enabled!==false).map(p=>p.name)].map(n=>n.toLowerCase()));
+    items=(window.CVEHARBOR_CVIE?.merge(baseItems)||baseItems).filter(r=>!personalized||[...(r.categories||[]),...(r.cvie_products||[])].some(n=>allowed.has(n.toLowerCase())));
+    for(const option of $('technologyFilter').options){option.hidden=option.value!=='all'&&!!personalized&&!allowed.has(option.value.toLowerCase());option.disabled=option.hidden}
+    if(personalized&&state.tech!=='all'&&!allowed.has(state.tech.toLowerCase())){state.tech='all';$('technologyFilter').value='all'}
+    renderCategories();renderBars();renderFocus();render();
+  }
+  async function loadCatalogue(){
+    const epoch=++catalogueEpoch;
+    try{
+      const me=await fetch('https://api.cveharbor.com/v1/me',{credentials:'include'}).then(r=>r.ok?r.json():null);
+      if(epoch!==catalogueEpoch)return;
+      if(!me?.authenticated){catalogueSignedIn=false;personalized=null;catalogueRevision=undefined;applyPersonalized();return}
+      catalogueSignedIn=true;
+      const r=await fetch(catalogueAPI,{credentials:'include'});if(!r.ok)throw Error('Unable to load your saved catalogue.');
+      const data=await r.json();if(epoch!==catalogueEpoch)return;
+      personalized={defaults:Array.isArray(data.defaults)?data.defaults:defaultNames,products:Array.isArray(data.products)?data.products:[]};catalogueRevision=data.revision;
+      manageButton.hidden=false;applyPersonalized();window.CVEHARBOR_CVIE?.applyCatalogue?.(personalized);
+    }catch(e){if(epoch===catalogueEpoch)statusMessage(e.message)}
+  }
+  if(typeof fetch==='function')void loadCatalogue();
+  window.addEventListener('cveharbor:account-state',event=>{
+    catalogueEpoch++;
+    if(!event.detail?.authenticated){catalogueSignedIn=false;personalized=null;draft=null;catalogueRevision=undefined;$('technologyCustomizer').hidden=true;applyPersonalized();}
+    else void loadCatalogue();
+  });
+  window.addEventListener('focus',()=>{if(!catalogueSaving)void loadCatalogue()});
+  if(catalogueChanges)catalogueChanges.onmessage=event=>{if(event.data?.changed&&!catalogueSaving)void loadCatalogue()};
   $('technologySearch').addEventListener('input',renderCategories);
   if(location.pathname.startsWith('/vulnerabilities/')){
     const params=new URLSearchParams(location.search);

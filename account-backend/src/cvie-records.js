@@ -93,9 +93,9 @@ async function loadSourceHealth(env,now){
   retry_at:row.record_retry_at||row.next_attempt_at,
  }))};
 }
-export async function evidenceContext(env,userId){
+export async function evidenceContext(env,userId,scope='all'){
  if(!await evidenceReady(env))return null;
- const products=((await q(env.DB,ownedProductSql(env),userId).all()).results||[]).map(overlaySharedProduct);
+ const products=((await q(env.DB,ownedProductSql(env,'p.*',scope),userId).all()).results||[]).map(overlaySharedProduct);
  const families=products.flatMap(p=>{
   const scope=isHyperV(p)?'windows_hyperv':'';
   const keys=scope&&!hyperVHost(p.cpe)?['scope:windows_hyperv']:productFamilies(p);
