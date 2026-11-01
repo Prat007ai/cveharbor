@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-01",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6398,
+  "candidate_records": 6403,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -276,6 +276,186 @@
       "status": "GitHub malware advisory",
       "first_seen_at": "2026-11-01T04:00:47Z",
       "source_updated_at": "2026-11-01T03:30:23Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118168",
+      "title": "The MapPress WordPress plugin before 2.97.15 does not restrict which user's data its front-end...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "The MapPress WordPress plugin before 2.97.15 does not restrict which user's data its front-end map embed handler renders, allowing unauthenticated visitors to retrieve the email address and display name of any user on the site by enumerating user IDs.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-wfgm-582m-23r9"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118168"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/ce9f0060-1054-41ca-9543-1508547aab27"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-01T07:14:08Z",
+      "source_updated_at": "2026-11-01T06:30:28Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-107343",
+      "title": "The Kali Forms — Contact Form & Drag-and-Drop Builder WordPress plugin before 2.4.30 does not...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "The Kali Forms — Contact Form & Drag-and-Drop Builder WordPress plugin before 2.4.30 does not perform a capability check on its test-email handler, relying only on a nonce that is available to any logged-in user, so a low-privileged user such as a Subscriber can make the site send email to an arbitrary recipient with a spoofed sender address.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-r3f9-h5m2-87ch"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107343"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/75a86686-ce21-4ba6-bf39-74aacf5ca4a9"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-01T07:14:08Z",
+      "source_updated_at": "2026-11-01T06:30:28Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-113481",
+      "title": "The Media Library Assistant WordPress plugin before 3.44 does not check that the requesting user...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "The Media Library Assistant WordPress plugin before 3.44 does not check that the requesting user is allowed to view a post before disclosing which taxonomy terms are assigned to it, allowing any authenticated user, such as a subscriber, to learn the term assignments of private attachments and posts.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-hqj9-3pgq-546r"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-113481"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/7b11d80d-1e90-4437-b5a5-483e8fd345d7"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-01T07:14:08Z",
+      "source_updated_at": "2026-11-01T06:30:28Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-107342",
+      "title": "The Kali Forms — Contact Form & Drag-and-Drop Builder WordPress plugin before 2.4.30 does not...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "The Kali Forms — Contact Form & Drag-and-Drop Builder WordPress plugin before 2.4.30 does not perform a capability check when its test-email handler resolves and returns a user's email address, relying only on a nonce that is available to any logged-in user, allowing authenticated users with minimal privileges (Subscriber and above) to disclose the email address of any registered user, including administrators.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-3h5r-7p7q-xv68"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107342"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/b315203f-0755-4c33-9335-88f788cb1fd7"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-01T07:14:08Z",
+      "source_updated_at": "2026-11-01T06:30:28Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-113482",
+      "title": "The Media Library Assistant WordPress plugin before 3.44 does not escape one of its shortcode...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "The Media Library Assistant WordPress plugin before 3.44 does not escape one of its shortcode attributes before outputting it in an attribute of generated links, allowing users with the Contributor role and above to perform Stored Cross-Site Scripting attacks.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-894j-4953-62g7"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-113482"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/b01e935e-94ea-4993-8e49-2882f594bd54"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-01T07:14:08Z",
+      "source_updated_at": "2026-11-01T06:30:28Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -168943,245 +169123,90 @@
       "epss": 0.34651,
       "epss_percentile": 0.98421,
       "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2010-0232",
-      "title": "Microsoft Windows Kernel Exception Handler Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "The kernel in Microsoft Windows, when access to 16-bit applications is enabled on a 32-bit x86 platform, does not properly validate certain BIOS calls, which allows local users to gain privileges.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.28735,
-      "epss_percentile": 0.98141,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2009-1123",
-      "title": "Microsoft Windows Improper Input Validation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "The kernel in Microsoft Windows does not properly validate changes to unspecified kernel objects, which allows local users to gain privileges via a crafted application.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.04878,
-      "epss_percentile": 0.92061,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2004-0210",
-      "title": "Microsoft Windows Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A privilege elevation vulnerability exists in the POSIX subsystem. This vulnerability could allow a logged on user to take complete control of the system.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.07214,
-      "epss_percentile": 0.94317,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2002-0367",
-      "title": "Microsoft Windows Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "smss.exe debugging subsystem in Microsoft Windows does not properly authenticate programs that connect to other programs, which allows local users to gain administrator or SYSTEM privileges.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.04919,
-      "epss_percentile": 0.92117,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2014-6352",
-      "title": "Microsoft Windows Code Injection Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-02-25",
-      "summary": "Microsoft Windows allow remote attackers to execute arbitrary code via a crafted OLE object.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-02-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.77485,
-      "epss_percentile": 0.9956,
-      "epss_as_of": "2026-11-01"
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-01T05:55:24Z",
-      "last_attempt": "2026-11-01T05:55:24Z",
-      "items_processed": 308,
+      "last_success": "2026-11-01T07:14:08Z",
+      "last_attempt": "2026-11-01T07:14:08Z",
+      "items_processed": 304,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-01T05:55:24Z",
-      "last_attempt": "2026-11-01T05:55:24Z",
+      "last_success": "2026-11-01T07:14:08Z",
+      "last_attempt": "2026-11-01T07:14:08Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-01T05:55:24Z",
-      "last_attempt": "2026-11-01T05:55:24Z",
-      "items_processed": 187,
+      "last_success": "2026-11-01T07:14:08Z",
+      "last_attempt": "2026-11-01T07:14:08Z",
+      "items_processed": 173,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-01T05:55:24Z",
-      "last_attempt": "2026-11-01T05:55:24Z",
+      "last_success": "2026-11-01T07:14:08Z",
+      "last_attempt": "2026-11-01T07:14:08Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-01T05:55:24Z",
-      "last_attempt": "2026-11-01T05:55:24Z",
+      "last_success": "2026-11-01T07:14:08Z",
+      "last_attempt": "2026-11-01T07:14:08Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-01T05:55:24Z",
-      "last_attempt": "2026-11-01T05:55:24Z",
+      "last_success": "2026-11-01T07:14:08Z",
+      "last_attempt": "2026-11-01T07:14:08Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-01T05:55:24Z",
-      "last_attempt": "2026-11-01T05:55:24Z",
+      "last_success": "2026-11-01T07:14:08Z",
+      "last_attempt": "2026-11-01T07:14:08Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-01T05:55:24Z",
-      "last_attempt": "2026-11-01T05:55:24Z",
+      "last_success": "2026-11-01T07:14:08Z",
+      "last_attempt": "2026-11-01T07:14:08Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-01T05:55:24Z",
-      "last_attempt": "2026-11-01T05:55:24Z",
+      "last_success": "2026-11-01T07:14:08Z",
+      "last_attempt": "2026-11-01T07:14:08Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-01T05:55:24Z",
-      "last_attempt": "2026-11-01T05:55:24Z",
+      "last_success": "2026-11-01T07:14:08Z",
+      "last_attempt": "2026-11-01T07:14:08Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-01T05:55:24Z",
-      "last_attempt": "2026-11-01T05:55:24Z",
+      "last_success": "2026-11-01T07:14:08Z",
+      "last_attempt": "2026-11-01T07:14:08Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-01T05:55:24Z",
-      "last_attempt": "2026-11-01T05:55:24Z",
+      "last_success": "2026-11-01T07:14:08Z",
+      "last_attempt": "2026-11-01T07:14:08Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -169193,7 +169218,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-01T05:55:24Z",
-  "last_successful_update": "2026-11-01T05:55:24Z",
+  "last_checked_at": "2026-11-01T07:14:08Z",
+  "last_successful_update": "2026-11-01T07:14:08Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
