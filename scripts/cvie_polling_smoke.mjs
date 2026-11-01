@@ -29,10 +29,11 @@ try{
  await tick();assert.equal(calls.progress,1);assert.equal(calls.state,1);assert.equal(calls.advisories,1,'unchanged progress does not reload results');
  summary='Corrected original source text';await tick();
  assert.equal(calls.advisories,2);assert.equal(client.records[0].summary,summary,'CNA-only changes are checked within the sixty-second result interval');
+ assert.equal(calls.progress,1,'a full refresh that is already due skips the redundant progress request');
  lastSuccess++;await tick();assert.equal(calls.advisories,3,'a saved scan page refreshes results at the next progress poll');
  const queued=[...timers.values()][0];visibility='hidden';w.document.dispatchEvent(new w.Event('visibilitychange'));
  assert.equal(timers.size,0);const before=JSON.stringify(calls);queued.fn();await Promise.resolve();assert.equal(JSON.stringify(calls),before,'a hidden-tab race does not issue another request');
- visibility='visible';w.document.dispatchEvent(new w.Event('visibilitychange'));await until(()=>!client.loading);assert.equal(calls.progress,4);
+ visibility='visible';w.document.dispatchEvent(new w.Event('visibilitychange'));await until(()=>!client.loading);assert.equal(calls.progress,3);
  owner='b';await tick();assert.equal(client.records.length,1);assert.equal(client.records[0].id,'CVE-2026-54321','progress responses cannot retain another account cache');
  unauthorized=true;await tick();assert.equal(client.signedIn,false);assert.equal(client.records.length,0);assert.equal(timers.size,0,'revoked sessions stop all polling');
  assert.equal(w.localStorage.length,0);assert.equal(w.sessionStorage.length,0,'private findings are never persisted in browser storage');

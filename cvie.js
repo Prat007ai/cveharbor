@@ -163,11 +163,13 @@ const identitySignature=rows=>JSON.stringify(rows.map(p=>[p.id,p.name,p.vendor,p
 const resultSignature=rows=>JSON.stringify(rows.map(p=>[p.id,p.status,p.last_success_at,p.recent_complete_at,p.history_complete_at]));
 async function refresh(sync=false,progressOnly=false){
  if(progressOnly&&document.visibilityState==='hidden')return;
- if(busy){pending=true;pendingSync=pendingSync||sync;return;}busy=true;checkingProgress=progressOnly&&ready;clearTimeout(timer);draw();
+ if(busy){pending=true;pendingSync=pendingSync||sync;return;}
+ const lightweight=progressOnly&&ready&&recordsMonths===months&&lastFullAt&&Date.now()-lastFullAt<RESULT_MAX_AGE;
+ busy=true;checkingProgress=Boolean(lightweight);clearTimeout(timer);draw();
  const requestedMonths=months;
  try{
   if(sync)await request('/sync',{method:'POST',body:'{}'});
-  if(progressOnly&&ready){
+  if(lightweight){
    const recovering=Boolean(error);
    const state=await request('/progress');
    if(accountId&&accountId!==state.account_id){clearPrivate();notify();}
