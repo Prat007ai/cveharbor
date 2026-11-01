@@ -173,8 +173,10 @@ export async function excludedProductCves(env,userId,context=null){
    WHERE a.product_id=m.product_id AND a.cve_id=m.cve_id AND a.applicability='affected') ORDER BY m.cve_id,m.product_id`,ctx.families).all()).results||[];
  return rows.map(row=>({id:row.cve_id,product:ctx.products.find(p=>p.id===row.product_id).name}));
 }
-export function mergeDigestEvidence(base,extra,withdrawn=[],excluded=[]){
+export function mergeDigestEvidence(base,extra,withdrawn=[],excluded=[],componentProducts=[]){
  const removed=new Set(withdrawn),result=new Map();
+ const normalize=value=>String(value).normalize('NFKC').trim().toLowerCase(),verified=new Map();
+ for(const r of extra){if(!verified.has(r.id))verified.set(r.id,new Set());for(const name of r.cvie_products||[])verified.get(r.id).add(normalize(name));}
  const exclusions=new Map();for(const {id,product} of excluded){if(!exclusions.has(id))exclusions.set(id,[]);exclusions.get(id).push(product);}
  for(const record of [...base,...extra]){
   if(removed.has(record.id))continue;
@@ -186,8 +188,7 @@ export function mergeDigestEvidence(base,extra,withdrawn=[],excluded=[]){
    affected_cpes:[...(prior.affected_cpes||[]),...(record.affected_cpes||[])]});
  }
  return [...result.values()].map(record=>{
-  const names=exclusions.get(record.id)||[];if(!names.length)return record;
-  const normalize=value=>String(value).normalize('NFKC').trim().toLowerCase();
+  const names=[...new Set([...(exclusions.get(record.id)||[]),...componentProducts.filter(name=>!verified.get(record.id)?.has(normalize(name)))])];if(!names.length)return record;
   return {...record,cvie_excluded_products:names,categories:(record.categories||[]).filter(name=>!names.some(product=>normalize(product)===normalize(name)))};
  });
 }

@@ -17,6 +17,42 @@ vulnerable or a finding has been resolved.
 
 ## Scan behavior
 
+### Windows Hyper-V
+
+`HyperV`, `Hyper-V`, `Hyper V`, `Windows Hyper-V` and `Microsoft Hyper-V` are
+recognized as the Microsoft Windows component. A raw `HyperV` NVD directory
+search also returns unrelated HyperView/hypervisor products. Live NVD checks
+confirm that current Windows Hyper-V advisories use affected Windows host CPEs,
+rather than a separate generic Hyper-V family. The engine therefore asks for the
+Windows host (for example, **Microsoft Windows Server 2022 · Hyper-V**).
+The current host choices are verified against actual NVD affected configurations
+in `data/cvie-hyperv-directory-check.json`; new host families require validation
+before adding them to `account-backend/src/hyperv.js`.
+
+History requests combine that host's affected CPE with the `Windows Hyper-V`
+component query. NVD normalization independently checks both conditions. Original
+CNA disclosures must identify the same Microsoft Windows host and explicitly
+name Windows Hyper-V; Windows client `Version` and Server Core labels are
+recognized. Unrelated Windows components, Linux guest drivers and third-party
+hypervisors do not become Hyper-V matches. CISA still supplies exploitation
+evidence by CVE ID. The installed Windows build, features and prerequisites need
+review against the linked Microsoft advisory.
+
+Old unresolved Hyper-V choices are repaired when that account opens CVIE; an
+invalid earlier selection is returned to host selection and its derived cache
+is removed. Valid host selections survive account/inventory sync. Repairs fence
+old in-flight responses and preserve inventory, review decisions and tickets.
+Shared keyword categories cannot supply additional unverified host matches in
+the explorer, inventory reports or opt-in email digests.
+
+`scripts/probe_cvie_hyperv.mjs` verifies host selection, a real 12-month NVD scan,
+original Microsoft disclosures and KEV in disposable SQLite. The development
+workflow records only public-source evidence and does not deploy. The separate
+Chromium smoke script captures the real interface using isolated account
+handlers and public advisory samples at 390, 1366, 1920 and 2560 pixels.
+
+### General product scans
+
 - **Queued / scanning:** shown immediately after the product is saved. CVIE
   prepares the most recent three months first, then backfills the remaining
   history. Closing the page does not cancel the durable database job.

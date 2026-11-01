@@ -214,7 +214,7 @@ export async function loadCvieDigest(env,userId,now=Date.now(),selected=null){
   const cutoff=iso(monthsAgo(now,12));let after='',records=[];
   do{const page=await combinedPage(env,userId,cutoff,after,'',now,ctx);records.push(...page.advisories);after=page.next||'';}while(after&&records.length<1000);
   const health=await sourceHealth(env,now);
-  return {records,withdrawn_ids:await withdrawnIds(env),excluded_product_cves:await excludedProductCves(env,userId,ctx),degraded:health.sources.some(s=>s.status!=='current')||ctx.products.some(p=>p.status!=='ready'||!p.last_success_at||now-p.last_success_at>DAY),coverageLimited:Boolean(after)};
+  return {records,withdrawn_ids:await withdrawnIds(env),excluded_product_cves:await excludedProductCves(env,userId,ctx),component_products:ctx.products.filter(isHyperV).map(p=>p.name),degraded:health.sources.some(s=>s.status!=='current')||ctx.products.some(p=>p.status!=='ready'||!p.last_success_at||now-p.last_success_at>DAY),coverageLimited:Boolean(after)};
  }
  const recent=iso(now-30*DAY);
  const result=await query(env.DB,`SELECT a.record_json FROM cvie_advisories a JOIN cvie_products p ON p.id=a.product_id
@@ -254,7 +254,7 @@ export async function cvieRoute(req,env,user,ctx,data={}){
   const products=(result.results||[]).map(p=>{
    const cursor=JSON.parse(p.cursor_json||'{}'),window=cursor.windows?.[cursor.position];
    return {id:p.id,name:p.name,vendor:p.vendor,cpe:p.cpe,status:p.status,error:p.error,icon_slug:logoFor(p.name,p.cpe),
-    ...(isHyperV(p)?{identity_prompt:'Select the Windows host for Hyper-V',identity_label:hyperVHost(p.cpe)?.label||''}:{}),
+    ...(isHyperV(p)?{component_scope:'windows_hyperv',identity_prompt:'Select the Windows host for Hyper-V',identity_label:hyperVHost(p.cpe)?.label||''}:{}),
     recent_count:counts?(counts.find(c=>c.product_id===p.id)?.recent_count||0):p.recent_count,history_count:counts?(counts.find(c=>c.product_id===p.id)?.history_count||0):p.history_count,
     older_kev_recent_count:counts?.find(c=>c.product_id===p.id)?.older_kev_recent_count||0,older_kev_history_count:counts?.find(c=>c.product_id===p.id)?.older_kev_history_count||0,
     last_success_at:p.last_success_at,recent_complete_at:p.recent_complete_at,
@@ -265,7 +265,7 @@ export async function cvieRoute(req,env,user,ctx,data={}){
   const evidence=await sourceHealth(env,now),withdrawn=await withdrawnIds(env);
   const attempted=products.map(p=>p.last_success_at).filter(Boolean);
   evidence.sources.unshift({id:'nvd',label:'NVD product history',url:'https://nvd.nist.gov/',
-   status:!products.length?'no_products':products.some(p=>p.status==='retrying')?'unavailable':products.some(p=>p.stale&&p.status==='ready')?'stale':products.some(p=>p.status!=='ready')?'scanning':'current',
+   status:!products.length?'no_products':products.every(p=>p.status==='needs_identity')?'needs_identity':products.some(p=>p.status==='retrying')?'unavailable':products.some(p=>p.stale&&p.status==='ready')?'stale':products.some(p=>p.status!=='ready')?'scanning':'current',
    last_success_at:attempted.length?Math.min(...attempted):null});
   ctx?.waitUntil(runCvieStep(env,fetch,now,user.id));return json({ready:true,engine:'CVIE',account_id:user.id,products,evidence,withdrawn_ids:withdrawn,excluded_product_cves:await excludedProductCves(env,user.id,evidenceCtx),default_months:3});
  }

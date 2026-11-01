@@ -11,6 +11,8 @@ const node=(tag,value,cls)=>{const el=document.createElement(tag);if(value)el.te
 const normalize=value=>String(value||'').normalize('NFKC').trim().toLowerCase().replace(/\s+/g,' ');
 function merge(base=[]){
  const result=new Map();
+ const scopes=products.filter(p=>p.component_scope).map(p=>p.name),verified=new Map();
+ for(const r of records){if(!verified.has(r.id))verified.set(r.id,new Set());for(const name of r.cvie_products||[])verified.get(r.id).add(normalize(name));}
  for(const record of [...base,...records]){
   if(withdrawn.has(record.id))continue;
   const prior=result.get(record.id);
@@ -23,7 +25,8 @@ function merge(base=[]){
    affected_cpes:[...(prior.affected_cpes||[]),...(record.affected_cpes||[])],sources:[...source.values()]});
  }
  return [...result.values()].map(record=>{
-  const names=excluded.filter(item=>item.id===record.id).map(item=>item.product);
+  // Shared keyword categories cannot establish which Windows host is affected.
+  const names=[...new Set([...excluded.filter(item=>item.id===record.id).map(item=>item.product),...scopes.filter(name=>!verified.get(record.id)?.has(normalize(name)))])];
   if(!names.length)return record;
   return {...record,cvie_excluded_products:names,categories:(record.categories||[]).filter(name=>!names.some(product=>normalize(product)===normalize(name)))};
  });
@@ -95,7 +98,7 @@ function draw(){
   select.addEventListener('change',()=>{months=Number(select.value);void refresh();});label.append(select);
   const button=node('button','Refresh status');button.type='button';button.disabled=busy;button.addEventListener('click',()=>void refresh(true));
   header.append(title,label,button);panel.append(header);
-  const sourceLabels={current:'Checked',scanning:'Scanning',catching_up:'Indexing disclosures',verifying_products:'Verifying product applicability',pending:'Waiting for first check',stale:'Check overdue',unavailable:'Source unavailable',rate_limited:'Rate limited · retry scheduled',setup_required:'Setup required',no_products:'Add a product'};
+  const sourceLabels={current:'Checked',scanning:'Scanning',needs_identity:'Waiting for product selection',catching_up:'Indexing disclosures',verifying_products:'Verifying product applicability',pending:'Waiting for first check',stale:'Check overdue',unavailable:'Source unavailable',rate_limited:'Rate limited · retry scheduled',setup_required:'Setup required',no_products:'Add a product'};
   const sourceGrid=node('div','','cvie-source-grid');
   for(const s of evidence.sources||[]){
    const card=node('div','','cvie-source '+s.status);

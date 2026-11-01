@@ -2,7 +2,7 @@ name: Verify Microsoft Hyper-V identity without deployment
 on:
   push:
     branches: [fix/cvie-hyperv-identity]
-    paths: ['account-backend/**','app.js','cvie.js','scripts/probe*hyperv*.mjs','.github/workflows/verify-cvie-hyperv.yml']
+    paths: ['account-backend/**','app.js','cvie.js','scripts/*hyperv*.mjs','scripts/cvie_client_smoke.mjs','.github/workflows/verify-cvie-hyperv.yml']
 permissions:
   contents: write
 concurrency:
@@ -18,6 +18,17 @@ jobs:
           node-version: '22'
       - name: Verify account behavior and Hyper-V regression cases
         run: npm test --prefix account-backend && node account-backend/tests/cvie-hyperv.test.mjs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify website build and shared matching behavior
+        run: |
+          python scripts/build_site.py
+          python scripts/verify_production.py --preflight
+          npm install --no-save --no-package-lock jsdom@26
+          node scripts/browser_smoke.mjs
+          node scripts/customer_security_smoke.mjs
+          node scripts/cvie_client_smoke.mjs
       - name: Check authoritative public Hyper-V product identities
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}

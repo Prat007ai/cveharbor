@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import {DB} from './helpers/d1.mjs';
 import {subscribeProducts,runCvieStep,cvieRoute,normalizeNvd,loadCvieDigest} from '../src/cvie.js';
 import {ingestDisclosures} from '../src/cvie-evidence.js';
-import {combinedPage,combinedCounts} from '../src/cvie-records.js';
+import {combinedPage,combinedCounts,mergeDigestEvidence} from '../src/cvie-records.js';
 import {isHyperV,hyperVHosts,hyperVHost,hyperVStatement} from '../src/hyperv.js';
 const NOW=Date.parse('2026-11-01T12:00:00Z'),cutoff='2026-08-01T00:00:00Z';
 const host=hyperVHosts().find(x=>x.label.includes('Server 2022')).cpe;
@@ -60,6 +60,8 @@ check('opening CVIE repairs old choices once and keeps repairs private to the ac
  assert.ok(unchanged<30,'subsequent polls do not repeatedly reset or rewrite the product');
  assert.equal((await select(e)).status,202);
  const p=(await state(e)).products[0];assert.equal(p.cpe,host);assert.equal(p.status,'queued');assert.match(p.identity_label,/Server 2022/);
+ await subscribeProducts(e,'a',[{name:'HyperV'}],'inventory');await subscribeProducts(e,'a',[{name:'HyperV'}]);
+ assert.equal((await state(e)).products[0].cpe,host,'catalogue and inventory sync retain the chosen Windows host');
 });
 check('legacy unrelated selections cannot be submitted and invalid cached identities are cleared',async()=>{
  const e=env(),bad='cpe:2.3:o:citrix:hypervisor:*:*:*:*:*:*:*:*';await subscribeProducts(e,'a',[{name:'HyperV'}]);
@@ -108,6 +110,15 @@ check('Windows client Version labels and Server Core labels reconcile with their
 check('unresolved Hyper-V cannot inherit Windows disclosures before a host has been selected',async()=>{
  const e=env();await subscribeProducts(e,'a',[{name:'HyperV',vendor:'Microsoft'}]);await store(e,cna());
  assert.equal((await combinedPage(e,'a',cutoff)).advisories.length,0);
+});
+check('shared keyword categories cannot enter host-scoped Hyper-V email results',async()=>{
+ const e=env();await subscribeProducts(e,'a',[{name:'HyperV',cpe:host}]);
+ const intelligence=await loadCvieDigest(e,'a',NOW);assert.deepEqual(intelligence.component_products,['HyperV']);
+ const base=[{id:'CVE-2026-12345',categories:['HyperV','Linux']},{id:'CVE-2026-12346',categories:['HyperV']}];
+ const verified={id:'CVE-2026-12346',categories:['HyperV'],cvie_products:['HyperV']};
+ const result=mergeDigestEvidence(base,[verified],[],[],intelligence.component_products);
+ assert.deepEqual(result[0].categories,['Linux']);assert.deepEqual(result[0].cvie_excluded_products,['HyperV']);
+ assert.deepEqual(result[1].categories,['HyperV']);
 });
 check('stale broad Windows caches and a corrected CNA component cannot leak into Hyper-V results',async()=>{
  const e=env();await subscribeProducts(e,'a',[{name:'HyperV',cpe:host},{name:'Windows Server 2022'}]);

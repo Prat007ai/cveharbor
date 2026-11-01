@@ -4,15 +4,15 @@ import fs from 'node:fs';
 import {JSDOM} from 'jsdom';
 const dom=new JSDOM('<div id="cvieExplorer"></div>',{url:'https://cveharbor.com/vulnerabilities/',runScripts:'outside-only'});
 const w=dom.window;w.AbortSignal=globalThis.AbortSignal;
-let owner='a',held=null,holdNext=false,failPages=false,wrongPage=false,cycle=false,excluded=[];
+let owner='a',held=null,holdNext=false,failPages=false,wrongPage=false,cycle=false,excluded=[],componentProducts=[],extraRecords=[];
 const record=who=>({id:who==='a'?'CVE-2026-12345':'CVE-2026-54321',summary:'Synthetic private '+who,categories:['Apache Tomcat'],cvie_products:['Apache Tomcat'],source_type:'cvie_combined'});
 w.fetch=async url=>{
  const parsed=new URL(url),who=owner;
  if(parsed.pathname.endsWith('/sync'))return Response.json({ready:true}, {status:202});
- if(parsed.pathname==='/v1/cvie')return Response.json({ready:true,account_id:who,products:[{id:who,name:'Apache Tomcat',status:'ready',progress:{},recent_count:1,history_count:1}],evidence:{sources:[]},excluded_product_cves:excluded});
+ if(parsed.pathname==='/v1/cvie')return Response.json({ready:true,account_id:who,products:[{id:who,name:'Apache Tomcat',status:'ready',progress:{},recent_count:1,history_count:1},...componentProducts],evidence:{sources:[]},excluded_product_cves:excluded});
  if(parsed.pathname.endsWith('/advisories')){
   if(failPages)throw Error('Simulated page failure');
-  const body={account_id:wrongPage?'a':who,advisories:[record(who)],next:cycle?(parsed.searchParams.get('after')==='A'?'B':'A'):null};wrongPage=false;
+  const body={account_id:wrongPage?'a':who,advisories:[record(who),...extraRecords],next:cycle?(parsed.searchParams.get('after')==='A'?'B':'A'):null};wrongPage=false;
   if(holdNext){holdNext=false;return new Promise(resolve=>{held=()=>resolve(Response.json(body));});}
   return Response.json(body);
  }
@@ -43,5 +43,14 @@ try{
  const merged=client.merge([stale]);w.eval(fs.readFileSync('inventory-matching.js','utf8'));
  assert.equal(w.CVEHARBOR_INVENTORY_MATCH.candidate({id:'asset',technology:'WordPress',version:'5.0'},merged.find(r=>r.id===stale.id)),null,'a product correction suppresses stale public-snapshot findings');
  assert.equal(client.merge([stale]).length,2,'a product-specific correction does not erase the whole global CVE record');
+ componentProducts=[{id:'h',name:'HyperV',component_scope:'windows_hyperv',status:'needs_identity'}];
+ await client.refresh();
+ const broad={id:'CVE-2026-77777',categories:['HyperV','Linux'],title:'Linux Hyper-V guest driver advisory'};
+ let scoped=client.merge([broad]).find(r=>r.id===broad.id);
+ assert.deepEqual([...scoped.categories],['Linux'],'the shared index cannot supply an unverified Windows host match');
+ assert.equal(w.CVEHARBOR_INVENTORY_MATCH.candidate({id:'h',technology:'HyperV',version:'10.0'},scoped),null);
+ extraRecords=[{...broad,categories:['HyperV'],cvie_products:['HyperV'],source_type:'cvie_combined',title:'Windows Hyper-V verified source fixture'}];
+ await client.refresh();scoped=client.merge([broad]).find(r=>r.id===broad.id);
+ assert.ok(scoped.categories.includes('HyperV'),'verified host-scoped evidence restores its category');
  console.log('PASS CVIE client: late responses, logout, account changes, failed pagination, cyclic cursors and product-specific public-snapshot corrections.');
 }finally{dom.window.close();}
