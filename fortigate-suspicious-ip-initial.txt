@@ -1,6 +1,6 @@
-# CVEHarbor Threat IP Intelligence | 2026-11-01T22:47:54.198614+00:00
+# CVEHarbor Threat IP Intelligence | 2026-11-01T22:51:31.219230+00:00
 # Permanent logical group: Suspicious IP Block
-# Cumulative indexed IPs: 2434
+# Cumulative indexed IPs: 2436
 # New since prior published snapshot: 2
 # REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 # Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
@@ -6884,6 +6884,9 @@ config firewall address
     edit "CVEH_216_180_246_29"
         set subnet 216.180.246.29 255.255.255.255
     next
+    edit "CVEH_216_180_246_31"
+        set subnet 216.180.246.31 255.255.255.255
+    next
     edit "CVEH_216_180_246_32"
         set subnet 216.180.246.32 255.255.255.255
     next
@@ -7069,6 +7072,9 @@ config firewall address
     next
     edit "CVEH_216_180_246_157"
         set subnet 216.180.246.157 255.255.255.255
+    next
+    edit "CVEH_216_180_246_158"
+        set subnet 216.180.246.158 255.255.255.255
     next
     edit "CVEH_216_180_246_159"
         set subnet 216.180.246.159 255.255.255.255
@@ -9610,6 +9616,7 @@ config firewall addrgrp
         append member "CVEH_216_180_246_23"
         append member "CVEH_216_180_246_24"
         append member "CVEH_216_180_246_29"
+        append member "CVEH_216_180_246_31"
         append member "CVEH_216_180_246_32"
         append member "CVEH_216_180_246_34"
         append member "CVEH_216_180_246_35"
@@ -9672,6 +9679,7 @@ config firewall addrgrp
         append member "CVEH_216_180_246_154"
         append member "CVEH_216_180_246_155"
         append member "CVEH_216_180_246_157"
+        append member "CVEH_216_180_246_158"
         append member "CVEH_216_180_246_159"
         append member "CVEH_216_180_246_160"
         append member "CVEH_216_180_246_162"

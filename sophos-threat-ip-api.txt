@@ -1,6 +1,6 @@
-CVEHarbor Threat IP Intelligence | 2026-11-01T22:47:54.198614+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-01T22:51:31.219230+00:00
 Permanent logical group: Suspicious IP Block
-Cumulative indexed IPs: 2434
+Cumulative indexed IPs: 2436
 New since prior published snapshot: 2
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
@@ -13766,6 +13766,12 @@ No firewall rule is created or activated.
       <IPAddress>216.180.246.29</IPAddress>
     </IPHost>
     <IPHost>
+      <Name>CVEH_216_180_246_31</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>216.180.246.31</IPAddress>
+    </IPHost>
+    <IPHost>
       <Name>CVEH_216_180_246_32</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
@@ -14136,6 +14142,12 @@ No firewall rule is created or activated.
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
       <IPAddress>216.180.246.157</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_216_180_246_158</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>216.180.246.158</IPAddress>
     </IPHost>
     <IPHost>
       <Name>CVEH_216_180_246_159</Name>
@@ -16924,6 +16936,7 @@ No firewall rule is created or activated.
         <Host>CVEH_216_180_246_23</Host>
         <Host>CVEH_216_180_246_24</Host>
         <Host>CVEH_216_180_246_29</Host>
+        <Host>CVEH_216_180_246_31</Host>
         <Host>CVEH_216_180_246_32</Host>
         <Host>CVEH_216_180_246_34</Host>
         <Host>CVEH_216_180_246_35</Host>
@@ -16986,6 +16999,7 @@ No firewall rule is created or activated.
         <Host>CVEH_216_180_246_154</Host>
         <Host>CVEH_216_180_246_155</Host>
         <Host>CVEH_216_180_246_157</Host>
+        <Host>CVEH_216_180_246_158</Host>
         <Host>CVEH_216_180_246_159</Host>
         <Host>CVEH_216_180_246_160</Host>
         <Host>CVEH_216_180_246_162</Host>
