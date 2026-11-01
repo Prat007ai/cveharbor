@@ -27,3 +27,13 @@ const totals=await DB.prepare(`SELECT COUNT(*) AS registered_products,
  FROM cvie_products p`).first();
 const preferences=await DB.prepare("SELECT COUNT(*) AS saved_catalogues,SUM(json_array_length(preferences_json,'$.defaults')) AS checked_builtin_technologies FROM user_technology_catalogue").first();
 console.log(JSON.stringify({ok:true,read_only:true,queries,rows_read:reads,rows_written:writes,totals,preferences}));
+
+// Bounded diagnostics for the public product family reported in the bug; no account identifiers.
+const directory=await DB.prepare(`SELECT status,COUNT(*) AS products,MIN(json_array_length(candidates_json)) AS min_choices,MAX(json_array_length(candidates_json)) AS max_choices,
+ SUM(CASE WHEN lease_until>unixepoch()*1000 THEN 1 ELSE 0 END) AS active_leases,
+ SUM(CASE WHEN next_attempt_at>unixepoch()*1000 THEN 1 ELSE 0 END) AS delayed_products,
+ SUM(CASE WHEN EXISTS(SELECT 1 FROM cvie_product_scopes m WHERE m.product_id=p.id AND m.scope_id IS NULL AND m.source_name=p.name AND m.source_cpe=p.cpe AND m.source_vendor=p.vendor) THEN 1 ELSE 0 END) AS directory_scope_links
+ FROM cvie_products p WHERE name_key='windows server os' GROUP BY status`).all();
+console.log(JSON.stringify({read_only:true,windows_server_directory:directory.results,rows_written:writes}));
+
+console.log(JSON.stringify({read_only:true,nvd_budget:await DB.prepare("SELECT MAX(0,next_request_at-unixepoch()*1000) AS wait_ms FROM cvie_provider_budget WHERE provider='nvd'").first(),rows_written:writes}));

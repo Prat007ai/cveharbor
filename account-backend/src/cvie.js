@@ -296,10 +296,17 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null,s
 // A chooser can finish a small directory lookup promptly without running CVE history.
 // The existing lease and global provider budget still govern every page.
 export async function runIdentityLookup(env,userId,scope,productId,fetcher=fetch,pause=ms=>new Promise(resolve=>setTimeout(resolve,ms))){
- for(let page=0;page<3;page++){
+ const started=Date.now();let pages=0;
+ for(let attempt=0;attempt<6&&pages<3&&Date.now()-started<20000;attempt++){
   const result=await runCvieStep(env,fetcher,Date.now(),userId,scope,productId);
+  if(result.waiting){
+   const budget=await query(env.DB,"SELECT next_request_at FROM cvie_provider_budget WHERE provider='nvd'").first();
+   const delay=Math.max(100,Number(budget?.next_request_at||0)-Date.now()+100);
+   if(delay>7000||Date.now()-started+delay>=20000)break;
+   await pause(delay);continue;
+  }
   if(result.directory_complete!==false)break;
-  if(page<2)await pause(env.NVD_API_KEY?1050:6600);
+  pages++;if(pages<3)await pause(env.NVD_API_KEY?1050:6600);
  }
 }
 export async function dispatchCvie(env){
@@ -364,27 +371,37 @@ export async function cvieRoute(req,env,user,ctx,data={}){
   return json({ready:true,account_id:user.id,products,evidence:await productSourceHealth(env,products,now)});
  }
  const options=/^\/v1\/cvie\/products\/([a-f0-9-]{36})\/identity-options$/.exec(path);
- if(options&&req.method==='POST'){
+ if(options&&['GET','POST'].includes(req.method)){
   const product=await query(env.DB,`SELECT p.* FROM cvie_products p WHERE p.id=? AND p.user_id=? AND ${activeSubscription('p',scope)}`,options[1],user.id).first();
   if(!product)throw new CvieError('Product not found',404);
-  if(product.cpe||product.status!=='needs_identity')return json({status:'unchanged'});
+  const snapshot=()=>({id:product.id,status:product.status,cpe:product.cpe,error:product.error,candidates:product.cpe?[]:JSON.parse(product.candidates_json||'[]'),
+   directory_complete:JSON.parse(product.cursor_json||'{}').directory_complete===true,directory_limited:JSON.parse(product.cursor_json||'{}').directory_limited===true,
+   retry_at:product.next_attempt_at,lease_until:product.lease_until});
+  if(req.method==='GET')return json(snapshot());
+  if(product.cpe)return json(snapshot());
+  if(['queued','scanning'].includes(product.status)||product.status==='retrying'&&product.next_attempt_at<=Date.now()){
+   ctx?.waitUntil(runIdentityLookup(env,user.id,scope,product.id));return json(snapshot(),202);
+  }
+  if(product.status==='retrying'&&product.next_attempt_at>Date.now())return json(snapshot());
   const cursor=JSON.parse(product.cursor_json||'{}'),search=directorySearch(product);
-  if(cursor.directory_query===search&&!data.retry)return json({status:'unchanged'});
+  if(product.status==='needs_identity'&&cursor.directory_query===search&&!data.retry)return json(snapshot());
   if(data.retry&&product.last_attempt_at&&Date.now()-product.last_attempt_at<60000)throw new CvieError('Please wait a minute before retrying the product directory.',429);
   const result=await query(env.DB,`UPDATE cvie_products SET status='queued',candidates_json='[]',cursor_json=?,next_attempt_at=0,lease_until=0,error=''
-   WHERE id=? AND user_id=? AND status='needs_identity' AND cpe='' AND cursor_json=? AND ${activeSubscription('cvie_products',scope)}`,JSON.stringify({directory_query:search}),product.id,user.id,product.cursor_json).run();
+   WHERE id=? AND user_id=? AND status IN('needs_identity','retrying') AND cpe='' AND cursor_json=? AND ${activeSubscription('cvie_products',scope)}`,JSON.stringify({directory_query:search}),product.id,user.id,product.cursor_json).run();
   if(result.meta.changes)ctx?.waitUntil(runIdentityLookup(env,user.id,scope,product.id));
-  return json({status:result.meta.changes?'queued':'unchanged'},result.meta.changes?202:200);
+  return json(result.meta.changes?{...snapshot(),status:'queued',candidates:[],directory_complete:false,directory_limited:false,error:''}:snapshot(),result.meta.changes?202:200);
  }
  const identity=/^\/v1\/cvie\/products\/([a-f0-9-]{36})\/identity$/.exec(path);
  if(identity&&req.method==='PUT'){
   const product=await query(env.DB,`SELECT p.* FROM cvie_products p WHERE p.id=? AND p.user_id=? AND ${activeSubscription('p',scope)}`,identity[1],user.id).first();
   if(!product)throw new CvieError('Product not found',404);
-  if(product.status!=='needs_identity'&&!(product.status==='scanning'&&!product.cpe))throw new CvieError('This product identity is already being scanned',409);
+  if(product.status!=='needs_identity'&&!(['queued','scanning','retrying'].includes(product.status)&&!product.cpe))throw new CvieError('This product identity is already being scanned',409);
   const cpe=productCpe(data.cpe);
   if(!cpe||!JSON.parse(product.candidates_json).some(x=>x.cpe===cpe))throw new CvieError('Select an identity returned by the product directory');
   if(isHyperV(product)&&!hyperVHost(cpe))throw new CvieError('Select the Microsoft Windows host running Hyper-V');
-  await query(env.DB,"UPDATE cvie_products SET cpe=?,status='queued',cursor_json='{}',candidates_json='[]',lease_until=0,error='',next_attempt_at=0 WHERE id=? AND user_id=?",cpe,product.id,user.id).run();
+  const saved=await query(env.DB,`UPDATE cvie_products SET cpe=?,status='queued',cursor_json='{}',candidates_json='[]',lease_until=0,error='',next_attempt_at=0
+   WHERE id=? AND user_id=? AND cpe=? AND candidates_json=? AND ${activeSubscription('cvie_products',scope)}`,cpe,product.id,user.id,product.cpe,product.candidates_json).run();
+  if(!saved.meta.changes)throw new CvieError('The product changed while you were choosing. Refresh options and try again.',409);
   if(sharedScans(env))await reconcileSharedScopes(env,user.id);
   ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id,scope));return json({queued:true},202);
  }

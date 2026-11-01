@@ -52,17 +52,27 @@ try{
  assert.deepEqual((await page.locator('#cvieExplorer .cvie-product-status > strong').allTextContents()).sort(),['.NET Core','Windows Server OS']);
  // Actual API chooser and card removal, with synthetic provider-directory records.
  const family=name=>'cpe:2.3:o:microsoft:'+name+':*:*:*:*:*:*:*:*';
- const options=identityCandidates({products:['windows_server_2025','windows_server_2022','windows_server_2012_r2'].map(name=>({cpe:{cpeName:family(name)}}))},{name:'Windows Server OS'});
- env.DB.sql.prepare("UPDATE cvie_products SET status='needs_identity',candidates_json=?,cursor_json=? WHERE name='Windows Server OS'").run(JSON.stringify(options),JSON.stringify({directory_query:'Microsoft Windows Server',directory_complete:true}));
+ const options=identityCandidates({products:['windows_server_2025','windows_server_2022','windows_server_2019'].map(name=>({cpe:{cpeName:family(name)}}))},{name:'Windows Server OS'});
+ // Start with zero stored candidates and a busy provider budget, matching the production failure.
+ env.DB.sql.prepare("UPDATE cvie_products SET status='queued',candidates_json='[]',cursor_json='{}' WHERE name='Windows Server OS'").run();
+ env.CVIE_SHARED_SCANS_ENABLED='true';env.NVD_API_KEY='synthetic-key';
+ env.DB.sql.prepare('UPDATE cvie_provider_budget SET next_request_at=?').run(Date.now()+500);
+ let directoryCalls=0;
+ globalThis.fetch=async url=>{const u=new URL(url);assert.ok(u.pathname.includes('/cpes/'),'chooser must not request vulnerability history');directoryCalls++;return Response.json({startIndex:0,totalResults:3,products:options.map(p=>({cpe:{cpeName:p.cpe}}))})};
  await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
  await page.locator('.technology-row').filter({hasText:'Windows Server OS'}).getByRole('button',{name:'Choose the exact product',exact:true}).click();
+ await page.getByRole('searchbox',{name:'Search product identities'}).fill('windows server 2019');
  await page.waitForSelector('.cvie-identity-options input');
+ assert.equal(directoryCalls,1);assert.match(await page.locator('.cvie-identity-options').innerText(),/2019/);
+ await page.getByRole('searchbox',{name:'Search product identities'}).fill('');
+ env.DB.sql.exec('UPDATE cvie_provider_budget SET next_request_at=9999999999999');
  assert.equal(await page.locator('.cvie-identity-options input').count(),3);
  await page.getByRole('searchbox',{name:'Search product identities'}).fill('2025');assert.equal(await page.locator('.cvie-identity-options input').count(),1);
  await page.locator('.cvie-identity-options input').check();
  await page.screenshot({path:directory+'/identity-dialog.png'});
  await page.getByRole('button',{name:'Use selected product',exact:true}).click();await page.waitForFunction(()=>!document.querySelector('.cvie-identity-dialog').open);
  assert.equal(env.DB.sql.prepare("SELECT cpe FROM cvie_products WHERE name='Windows Server OS'").get().cpe,family('windows_server_2025'));
+ await page.waitForFunction(()=>!window.CVEHARBOR_CVIE.loading&&window.CVEHARBOR_CVIE.product('Windows Server OS')?.cpe);
  const remove=page.getByRole('button',{name:'Remove Windows Server OS from my catalogue',exact:true});
  await remove.focus();assert.equal(await remove.evaluate(el=>getComputedStyle(el).opacity),'1');
  failSave=true;await remove.click();await page.waitForFunction(()=>document.getElementById('technologyActionStatus').textContent.includes('Unable to save'));assert.equal(await page.locator('.technology-row').count(),2);failSave=false;

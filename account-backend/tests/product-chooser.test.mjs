@@ -47,3 +47,23 @@ test('on-demand lookup finishes up to three pages without running other products
  },async()=>{env.DB.sql.exec('UPDATE cvie_provider_budget SET next_request_at=0')});
  assert.equal(calls,3);assert.equal(env.DB.sql.prepare("SELECT last_attempt_at FROM cvie_products WHERE name='WordPress'").get().last_attempt_at,null);
 });
+
+test('an initially empty chooser survives a busy provider budget and a previously queued lookup',async()=>{
+ const env={DB:new DB(),CVIE_SHARED_SCANS_ENABLED:'true'};
+ await subscribeProducts(env,'a',[{name:'Windows Server OS'}]);
+ const p=env.DB.sql.prepare("SELECT * FROM cvie_products WHERE name='Windows Server OS'").get();
+ env.DB.sql.prepare('UPDATE cvie_provider_budget SET next_request_at=?').run(Date.now()+500);
+ let pauses=0,calls=0;
+ await runIdentityLookup(env,'a','catalogue',p.id,async()=>{calls++;return Response.json({startIndex:0,totalResults:1,products:[{cpe:{cpeName:cpe('windows_server_2019')}}]})},async delay=>{assert.ok(delay<=7000);pauses++;env.DB.sql.exec('UPDATE cvie_provider_budget SET next_request_at=0')});
+ assert.equal(pauses,1);assert.equal(calls,1);
+ const request=method=>new Request('https://api.cveharbor.com/v1/cvie/products/'+p.id+'/identity-options?scope=catalogue',{method});
+ const before=env.DB.sql.prepare('SELECT total_changes() n').get().n;
+ const choices=await (await cvieRoute(request('GET'),env,{id:'a'})).json();
+ assert.equal(choices.candidates.length,1);assert.equal(choices.candidates[0].cpe,cpe('windows_server_2019'));
+ assert.equal(env.DB.sql.prepare('SELECT total_changes() n').get().n,before,'option polling makes no database writes');
+ await assert.rejects(()=>cvieRoute(request('GET'),env,{id:'b'}),/Product not found/);
+ env.DB.sql.prepare("UPDATE cvie_products SET status='queued',candidates_json='[]',cursor_json='{}' WHERE id=?").run(p.id);
+ env.DB.sql.exec('UPDATE cvie_provider_budget SET next_request_at=9999999999999');
+ const pending=[];await cvieRoute(request('POST'),env,{id:'a'},{waitUntil:promise=>pending.push(promise)},{});
+ assert.equal(pending.length,1,'reopening resumes previously queued work');await Promise.all(pending);
+});
