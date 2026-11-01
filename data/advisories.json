@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-01",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6410,
+  "candidate_records": 6417,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -510,7 +510,7 @@
       "published": "2026-11-01",
       "updated": "2026-11-01",
       "summary": "## Source: amazon-inspector (0ca6e88317dac5ec524d2dc6ec4b2af7934e2213569ed7c8a757e59edb45b0c3) The package presents itself as 'Privacy Pass client primitives' but ships no cryptographic functionality. Its only runtime effect is a data-exfiltration beacon. setup.py invokes a `_report()` routine during build/install that collects hostname, username, current working directory, argv, the parent process command line read from /proc/<ppid>/cmdline, and environment variable names and values matching credential-related prefixes (AWS_, GITHUB_, PIP_, and others), then POSTs the JSON payload to the hardcoded bare-IP endpoint http://85.190.112.236:8881/b/<nonce> over plain HTTP. privacypass_py/__init__.py repeats the same beacon at module top level, calling `_report('import')` on every `import privacypass_py` with an expanded prefix list (CLOUDFLARE_, SUPERTOKENS, HOME, USER, PATH) and an additional `secretish_names` list filtered by substrings KEY/SECRET/TOKEN/PASS/CRED/PRIVATE/SEED/MNEMONIC/SIGNATURE/COOKIE/SESSION/AUTH, sent to http://85.190.112.236:8881/f/<nonce>. The import-time path fires outside pip build isolation. The name and description function as cover for a package whose only shipped code is the beacon. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source",
-      "affected": "pip: privacypass-py (= 0.1.101)",
+      "affected": "pip: privacypass-py (= 0.1.101); pip: privacypass-py (= 0.1.99); pip: privacypass-py (= 0.1.100)",
       "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
@@ -525,6 +525,10 @@
         {
           "label": "Additional advisory",
           "url": "https://pypi.org/project/privacypass-py/0.1.101"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://bad-packages.kam193.eu/pypi/package/privacypass-py"
         }
       ],
       "exploitation": "Malicious software distribution advisory; investigate exposure",
@@ -532,7 +536,7 @@
       "cvss": null,
       "status": "GitHub malware advisory",
       "first_seen_at": "2026-11-01T09:55:22Z",
-      "source_updated_at": "2026-11-01T09:30:33Z",
+      "source_updated_at": "2026-11-01T12:31:29Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -669,6 +673,214 @@
       "first_seen_at": "2026-11-01T10:51:14Z",
       "source_updated_at": "2026-11-01T10:18:35.893",
       "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-120226",
+      "title": "A security vulnerability has been detected in Hangzhou Xiongmai Technology P2PAPI.dll 1.3.3.32 on...",
+      "severity": "low",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "A security vulnerability has been detected in Hangzhou Xiongmai Technology P2PAPI.dll 1.3.3.32 on Windows. Affected by this issue is the function P2PAPI_Connect of the component P2P SDK. Such manipulation of the argument input as part of String leads to buffer overflow. An attack has to be approached locally. The exploit has been disclosed publicly and may be used. The vendor was contacted early about this disclosure but did not respond in any way.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-g8f3-phxq-9ggc"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120226"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://gist.github.com/Ishanoshada/a47d24d77dd03f34c7f324491b59edac"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://vuldb.com/cve/CVE-2026-120226"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "3.3",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-01T13:00:44Z",
+      "source_updated_at": "2026-11-01T12:30:29Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-120217",
+      "title": "loguru: loguru: Denial of Service via inefficient regular expression complexity",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "loguru: loguru: Denial of Service via inefficient regular expression complexity",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-120217"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-11-01T13:00:44Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-120247",
+      "title": "ffmpeg: ffmpeg: Information disclosure via uninitialized heap memory in Huffyuv decoder",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "ffmpeg: ffmpeg: Information disclosure via uninitialized heap memory in Huffyuv decoder",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-120247"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-11-01T13:00:44Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-120246",
+      "title": "ffmpeg: ffmpeg: Information disclosure via uninitialized palette entries in CDXL decoder",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "ffmpeg: ffmpeg: Information disclosure via uninitialized palette entries in CDXL decoder",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-120246"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-11-01T13:00:44Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-120244",
+      "title": "ffmpeg: ffmpeg: Information disclosure via truncated PCX image",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "ffmpeg: ffmpeg: Information disclosure via truncated PCX image",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-120244"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-11-01T13:00:44Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-120245",
+      "title": "ffmpeg: ffmpeg: Information disclosure via crafted Sun Raster image",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "ffmpeg: ffmpeg: Information disclosure via crafted Sun Raster image",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-120245"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-11-01T13:00:44Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-120243",
+      "title": "ffmpeg: ffmpeg: information disclosure via crafted Go2Meeting stream",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "ffmpeg: ffmpeg: information disclosure via crafted Go2Meeting stream",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-120243"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-11-01T13:00:44Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
       "known_exploited": false
     },
     {
@@ -66259,53 +66471,6 @@
       "epss_as_of": "2026-11-01"
     },
     {
-      "id": "CVE-2026-109618",
-      "title": "RCE via OOM corruption",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-30",
-      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "PHP upstream security advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:25Z",
-      "source_type": "php_upstream",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99998,
-      "epss_as_of": "2026-11-01"
-    },
-    {
       "id": "CVE-2026-109619",
       "title": "RCE via stale global state",
       "severity": "critical",
@@ -66350,6 +66515,53 @@
       "known_exploited": true,
       "epss": 0.99999,
       "epss_percentile": 0.99999,
+      "epss_as_of": "2026-11-01"
+    },
+    {
+      "id": "CVE-2026-109618",
+      "title": "RCE via OOM corruption",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-30",
+      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "PHP upstream security advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:25Z",
+      "source_type": "php_upstream",
+      "known_exploited": true,
+      "epss": 0.99999,
+      "epss_percentile": 0.99998,
       "epss_as_of": "2026-11-01"
     },
     {
@@ -98770,42 +98982,6 @@
       "epss_as_of": "2026-11-01"
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60769,
-      "epss_as_of": "2026-11-01"
-    },
-    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -98844,6 +99020,42 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55906,
+      "epss_as_of": "2026-11-01"
+    },
+    {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60769,
       "epss_as_of": "2026-11-01"
     },
     {
@@ -149953,37 +150165,6 @@
       "epss_as_of": "2026-11-01"
     },
     {
-      "id": "CVE-2025-7624",
-      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
-      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
-      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.10514,
-      "epss_percentile": 0.95765,
-      "epss_as_of": "2026-11-01"
-    },
-    {
       "id": "CVE-2025-6704",
       "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
       "severity": "critical",
@@ -150012,6 +150193,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.11772,
       "epss_percentile": 0.96077,
+      "epss_as_of": "2026-11-01"
+    },
+    {
+      "id": "CVE-2025-7624",
+      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
+      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
+      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.10514,
+      "epss_percentile": 0.95765,
       "epss_as_of": "2026-11-01"
     },
     {
@@ -168929,307 +169141,90 @@
       "epss": 0.70354,
       "epss_percentile": 0.99385,
       "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2017-6663",
-      "title": "Cisco IOS Software and Cisco IOS XE Software Denial-of-Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A vulnerability in the Autonomic Networking feature of Cisco IOS Software and Cisco IOS XE Software could allow an unauthenticated, adjacent attacker to cause autonomic nodes of an affected system to reload, resulting in denial-of-service (DoS).",
-      "affected": "Cisco IOS and IOS XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.02117,
-      "epss_percentile": 0.81847,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2017-6627",
-      "title": "Cisco IOS Software and Cisco IOS XE Software UDP Packet Processing Denial-of-Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A vulnerability in the UDP processing code of Cisco IOS and IOS XE could allow an unauthenticated, remote attacker to cause the input queue of an affected system to hold UDP packets, causing an interface queue wedge and denial of service.",
-      "affected": "Cisco IOS and IOS XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.06158,
-      "epss_percentile": 0.93478,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2017-12319",
-      "title": "Cisco IOS XE Software Ethernet Virtual Private Network Border Gateway Protocol Denial-of-Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A vulnerability in the Border Gateway Protocol (BGP) over an Ethernet Virtual Private Network (EVPN) for Cisco IOS XE Software could allow an unauthenticated, remote attacker to cause the device to reload, resulting in a denial of service (DoS) condition, or potentially corrupt the BGP routing table, which could result in network instability.",
-      "affected": "Cisco IOS XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.05243,
-      "epss_percentile": 0.92532,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2017-12240",
-      "title": "Cisco IOS and IOS XE Software DHCP Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "The Dynamic Host Configuration Protocol (DHCP) relay subsystem of Cisco IOS and Cisco IOS XE Software contains a vulnerability that could allow an unauthenticated, remote attacker to execute arbitrary code and gain full control of an affected system.",
-      "affected": "Cisco IOS and IOS XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.13773,
-      "epss_percentile": 0.96514,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2017-12237",
-      "title": "Cisco IOS and IOS XE Software Internet Key Exchange Denial-of-Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A vulnerability in the Internet Key Exchange Version 2 (IKEv2) module of Cisco IOS and Cisco IOS XE could allow an unauthenticated, remote attacker to cause high CPU utilization, traceback messages, or a reload of an affected device that leads to a denial of service.",
-      "affected": "Cisco IOS and IOS XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.0707,
-      "epss_percentile": 0.94214,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2017-12235",
-      "title": "Cisco IOS Software for Cisco Industrial Ethernet Switches PROFINET Denial-of-Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A vulnerability in the implementation of the PROFINET Discovery and Configuration Protocol (PN-DCP) for Cisco IOS could allow an unauthenticated, remote attacker to cause an affected device to reload, resulting in a denial of service.",
-      "affected": "Cisco IOS software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.0707,
-      "epss_percentile": 0.94214,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2017-12234",
-      "title": "Cisco IOS Software Common Industrial Protocol Request Denial-of-Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "There is a vulnerability in the implementation of the Common Industrial Protocol (CIP) feature in Cisco IOS could allow an unauthenticated, remote attacker to cause an affected device to reload, resulting in a denial of service.",
-      "affected": "Cisco IOS software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.0707,
-      "epss_percentile": 0.94215,
-      "epss_as_of": "2026-11-01"
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-01T11:46:30Z",
-      "last_attempt": "2026-11-01T11:46:30Z",
-      "items_processed": 301,
+      "last_success": "2026-11-01T13:00:44Z",
+      "last_attempt": "2026-11-01T13:00:44Z",
+      "items_processed": 296,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-01T11:46:30Z",
-      "last_attempt": "2026-11-01T11:46:30Z",
+      "last_success": "2026-11-01T13:00:44Z",
+      "last_attempt": "2026-11-01T13:00:44Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-01T11:46:30Z",
-      "last_attempt": "2026-11-01T11:46:30Z",
-      "items_processed": 164,
+      "last_success": "2026-11-01T13:00:44Z",
+      "last_attempt": "2026-11-01T13:00:44Z",
+      "items_processed": 163,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-01T11:46:30Z",
-      "last_attempt": "2026-11-01T11:46:30Z",
+      "last_success": "2026-11-01T13:00:44Z",
+      "last_attempt": "2026-11-01T13:00:44Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-01T11:46:30Z",
-      "last_attempt": "2026-11-01T11:46:30Z",
+      "last_success": "2026-11-01T13:00:44Z",
+      "last_attempt": "2026-11-01T13:00:44Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-01T11:46:30Z",
-      "last_attempt": "2026-11-01T11:46:30Z",
+      "last_success": "2026-11-01T13:00:44Z",
+      "last_attempt": "2026-11-01T13:00:44Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-01T11:46:30Z",
-      "last_attempt": "2026-11-01T11:46:30Z",
+      "last_success": "2026-11-01T13:00:44Z",
+      "last_attempt": "2026-11-01T13:00:44Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-01T11:46:30Z",
-      "last_attempt": "2026-11-01T11:46:30Z",
+      "last_success": "2026-11-01T13:00:44Z",
+      "last_attempt": "2026-11-01T13:00:44Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-01T11:46:30Z",
-      "last_attempt": "2026-11-01T11:46:30Z",
+      "last_success": "2026-11-01T13:00:44Z",
+      "last_attempt": "2026-11-01T13:00:44Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-01T11:46:30Z",
-      "last_attempt": "2026-11-01T11:46:30Z",
+      "last_success": "2026-11-01T13:00:44Z",
+      "last_attempt": "2026-11-01T13:00:44Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-01T11:46:30Z",
-      "last_attempt": "2026-11-01T11:46:30Z",
+      "last_success": "2026-11-01T13:00:44Z",
+      "last_attempt": "2026-11-01T13:00:44Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-01T11:46:30Z",
-      "last_attempt": "2026-11-01T11:46:30Z",
+      "last_success": "2026-11-01T13:00:44Z",
+      "last_attempt": "2026-11-01T13:00:44Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -169241,7 +169236,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-01T11:46:30Z",
-  "last_successful_update": "2026-11-01T11:46:30Z",
+  "last_checked_at": "2026-11-01T13:00:44Z",
+  "last_successful_update": "2026-11-01T13:00:44Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
