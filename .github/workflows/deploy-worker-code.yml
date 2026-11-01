@@ -168,3 +168,15 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: node scripts/verify_monitoring_inactive.mjs --after
+
+      - name: Reconcile only the two owner-approved SMTP2GO tests
+        if: steps.mode.outputs.monitor_code_only == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: python scripts/report_approved_monitor_tests.py
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.mode.outputs.monitor_code_only == 'true'
+        with:
+          name: approved-worker-monitor-tests
+          path: work/approved-monitor-tests.json

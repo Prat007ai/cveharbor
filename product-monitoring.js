@@ -17,7 +17,7 @@ function activation(){
  const node=$('productMonitorActivation'),health=state.scheduler||state.flags.scheduler||{};
  const operating=state.enhanced&&health.operating;
  node.classList.toggle('is-operating',!!operating);
- node.textContent=operating?'Scheduled product monitoring is operating'+(state.flags.delivery_enabled?' · email delivery enabled':' · email delivery not enabled'):'Monitoring Not Yet Active · '+(!state.enhanced?'Enhanced backend setup awaits approval. Existing preferences remain saved.':health.enabled?'No recent successful scheduled run has been verified.':'Scheduled checks await approved activation.');
+ node.textContent=operating?'Scheduled product monitoring is operating'+(state.flags.delivery_enabled?' · email delivery enabled':' · email delivery not enabled'):'Monitoring Not Yet Active · '+(!state.enhanced?'Scheduled checks and email are not enabled.':health.enabled?'No recent successful scheduled run has been verified.':'Scheduled checks await approved activation.');
  $('productMonitorRecipient').textContent=state.recipient||'Sign in to view your verified recipient';
  $('productMonitorTest').disabled=!state.enhanced||!state.flags.test_allowed;
  const admin=root.querySelector('[data-monitor-tab="admin"]');admin.hidden=!state.flags.admin;
@@ -47,5 +47,9 @@ $('productMonitorHistoryRefresh').addEventListener('click',()=>void history());$
 $('productMonitorTest').addEventListener('click',async()=>{const button=$('productMonitorTest'),result=$('productMonitorTestResult');button.disabled=true;try{const r=await request('/test-email',{method:'POST',body:JSON.stringify({})});result.textContent='SMTP2GO accepted test '+r.provider_id+'. Delivery is not yet confirmed; check Delivery History.';}catch(error){result.textContent=error.message;}finally{button.disabled=!state.flags.test_allowed;}});
 window.addEventListener('lifecycle:loaded',event=>{state=event.detail;metrics();activation();if(activeTab==='history')void history();});
 window.addEventListener('cveharbor:account-state',()=>{epoch++;state={watches:[],enhanced:false,flags:{}};$('productMonitorHistory').replaceChildren();$('productMonitorHealth').replaceChildren();metrics();activation();});
+if(document.body.dataset.page==='lifecycle'){
+ const header=document.querySelector('.topbar'),search=make('form',undefined,'lifecycle-header-search'),input=make('input');input.type='search';input.placeholder='⌕  Search products, vendors, CVEs…';input.setAttribute('aria-label','Search CVEHarbor');search.append(input);search.addEventListener('submit',event=>{event.preventDefault();const query=input.value.trim();if(/^CVE-/i.test(query)){location.href='/vulnerabilities/?q='+encodeURIComponent(query)}else{$('lifecyclePublicSearch').value=query;$('lifecyclePublicSearch').dispatchEvent(new Event('input'));$('lifecyclePublicSearch').focus();}});header?.insertBefore(search,header.querySelector('.header-account-actions'));
+}
+$('lifecycleViewAll')?.addEventListener('click',()=>{$('lifecyclePublicSearch').value='';root.querySelector('#lifecycleDirectoryFilters button')?.click();$('lifecyclePublicSearch').dispatchEvent(new Event('input'));$('lifecyclePublicSearch').focus();});
 metrics();activation();
 })();

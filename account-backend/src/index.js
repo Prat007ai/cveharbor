@@ -1,3 +1,4 @@
+import {approvedTest} from './monitor-approved-test.js';
 import {catalogueProducts,catalogueRevision} from './catalogue-selection.js';
 // CVEHarbor account API with opt-in vulnerability digest support.
 import {newSecret,totp,verifyTotp,encryptSecret,decryptSecret,newRecoveryCodes,hashRecovery} from './totp.js';
@@ -343,7 +344,7 @@ export default {async fetch(req,env,ctx){
  }catch(error){if(error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
-  if(_event.cron==='* * * * *'){ctx.waitUntil(dispatchEvidence(env));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}
+  if(_event.cron==='* * * * *'){ctx.waitUntil(approvedTest(env));ctx.waitUntil(dispatchEvidence(env));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}
   if(_event.cron==='*/5 * * * *'){ctx.waitUntil(dispatchCvie(env));return;}
   if(env.ALERT_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchDueDigests(env));
   if(env.LIFECYCLE_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchLifecycle(env));

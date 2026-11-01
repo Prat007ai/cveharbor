@@ -33,3 +33,5 @@ assert.equal(catalogueOnly(['account-backend/src/catalogue-selection.js','accoun
 assert.equal(monitorCodeOnly(['account-backend/src/monitoring.js','account-backend/src/index.js','account-backend/migrations/0023_lifecycle_monitoring.sql','index.html']),true);
 assert.equal(monitorCodeOnly(['account-backend/src/monitoring.js','account-backend/src/cvie.js']),false);
 assert.equal(monitorCodeOnly(['account-backend/src/index.js']),false);
+
+assert.equal(monitorCodeOnly(['account-backend/src/index.js','account-backend/src/monitor-approved-test.js','account-backend/tests/monitor-approved-test.test.mjs']),true);

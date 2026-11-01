@@ -70,6 +70,7 @@ def build():
                  "support_date":support if isinstance(support,str) else None,
                  "latest":str(row.get("latest") or "")[:80],
                  "latest_release_date":str(row.get("latestReleaseDate") or "")[:40],
+                 "release_date":str(row.get("releaseDate") or "")[:40],
                  "url":"https://endoflife.date/"+slug})
         except Exception as exc:
             result["errors"].append({"product":slug,"reason":str(exc)[:120]})

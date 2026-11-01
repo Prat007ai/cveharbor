@@ -34,7 +34,7 @@ try{
  owner='b';auth('b@example.test');await until(()=>d.getElementById('lifecycleWatchCount').textContent==='0 monitored');assert.doesNotMatch(d.getElementById('lifecycleWatches').textContent,/8.0.9/);
  auth('',false);assert.equal(d.getElementById('lifecycleWatchSave').disabled,true);assert.equal(d.getElementById('productMonitorHistory').textContent,'');
  provisioned=false;owner='a';auth('a@example.test');await until(()=>d.getElementById('lifecycleUserStatus').textContent.includes('loaded'));
- assert.match(d.getElementById('productMonitorActivation').textContent,/setup awaits approval/,'legacy saved preferences do not claim active monitoring');
+ assert.match(d.getElementById('productMonitorActivation').textContent,/checks and email are not enabled/,'legacy saved preferences do not claim active monitoring');
  assert.ok(d.getElementById('lifecyclePublished').textContent.includes('.NET'),'reference directory remains available');
  assert.ok(fs.readFileSync('lifecycle-monitor.css','utf8').includes('body[data-page="lifecycle"]'),'styles are scoped to the lifecycle workspace');
  console.log('PASS product monitoring UI: watch persistence, account isolation, saved alert options, truthful activation, history, test gating and reference directory.');

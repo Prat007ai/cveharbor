@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="/cvie.css?v=cvie-1">
 <link rel="stylesheet" href="/homepage.css?v=brochure-216">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="/lifecycle-monitor.css?v=product-monitor-1">
+<link rel="stylesheet" href="/lifecycle-monitor.css?v=product-monitor-2">
 </head>
 <body>
   <a class="skip-link" href="#homepageFeatures">Skip to features</a>
@@ -314,55 +314,57 @@ MySQL | 8.0.43" aria-describedby="inventoryTechHelp"></textarea><small id="inven
       <p class="technology-footnote">Private inventory is scoped to your signed in account. CVEHarbor does not scan these assets. Verify actual affected versions and vendor advisories before assigning remediation. Do not store credentials or confidential customer infrastructure details here.</p>
     </section>
     <section id="lifecycleMonitor" class="shell section" aria-labelledby="lifecycleMonitorTitle">
-      <div class="section-heading"><div><p class="eyebrow">LIFECYCLE AND PATCH INTELLIGENCE</p><h1 id="lifecycleMonitorTitle">End of Support &amp; Patch Watch</h1><p class="section-sub">Monitor Microsoft server and client operating systems, SQL Server, SharePoint, .NET, CMS products, PHP and Linux. Add other products with a verified lifecycle date. Data reflects public source coverage and may differ by edition or extended support agreement.</p></div><span class="result-pill">Lifecycle monitoring</span></div>
-      <div class="lifecycle-hero-art" aria-hidden="true"><div class="lifecycle-orbit"></div><svg viewBox="0 0 200 180" fill="none"><path d="M100 10 160 36v52c0 40-30 65-60 82-30-17-60-42-60-82V36Z" stroke="currentColor" stroke-width="3"/><rect x="65" y="58" width="70" height="60" rx="8" stroke="currentColor" stroke-width="3"/><path d="M65 78h70M83 47v24m34-24v24m-36 40 13 12 26-31" stroke="currentColor" stroke-width="3"/></svg><span>Track support</span><span>Monitor releases</span><span>Receive verified alerts</span></div>
+      <div class="section-heading"><div><p class="eyebrow">LIFECYCLE AND PATCH INTELLIGENCE</p><h1 id="lifecycleMonitorTitle">End of Support &amp; Patch Watch</h1><p class="section-sub">Monitor Microsoft server and client operating systems, SQL Server, SharePoint, .NET, CMS products, PHP, Linux and more.<br>Track published support dates and patch releases from source-backed product information.</p></div></div>
+      <div class="lifecycle-hero-art" aria-hidden="true"><img src="/assets/lifecycle-orbit.svg" alt=""><div class="lifecycle-hero-steps"><span><b>▣</b>Track<small>End of support dates</small></span><span><b>✓</b>Monitor<small>Patch releases</small></span><span><b>♧</b>Get alerts<small>Verified changes</small></span></div></div>
       <div id="lifecycleMetrics" class="lifecycle-metrics" aria-label="Lifecycle data overview"></div>
       <div class="lifecycle-grid">
         <article class="data-panel ops-panel lifecycle-directory">
-          <h3>Published support dates and release information</h3>
-          <p class="ops-note">Search the indexed product directory, including products not predefined in CVEHarbor. Open a product or release to view support dates and versions in an on-site popup. External sources are linked at the bottom.</p>
-          <label class="lifecycle-field">Search product or release<input id="lifecyclePublicSearch" type="search" placeholder="Search 500+ products, e.g. VMware, Veeam, Apache..."></label>
-          <div id="lifecycleDirectoryFilters" class="lifecycle-filter-tabs" aria-label="Product category"></div><p id="lifecycleFreshness" class="ops-note" role="status"></p>
+          <h3><span class="lifecycle-heading-icon" aria-hidden="true">▣</span>Published support dates and release information</h3>
+          <p class="ops-note">Search the indexed product directory to view support dates, releases and source information.</p>
+          <div class="lifecycle-search-row"><label class="lifecycle-field"><span class="sr-only">Search product or release</span><input id="lifecyclePublicSearch" type="search" placeholder="Search products (e.g. Windows Server, SQL Server, SharePoint…)"></label><span id="lifecycleDirectoryCount" class="result-pill"></span><button id="lifecycleViewAll" class="ops-download" type="button">View all →</button></div>
+          <div id="lifecycleDirectoryFilters" class="lifecycle-filter-tabs" aria-label="Product category"></div>
           <div id="lifecyclePublished" class="ops-results lifecycle-public-results"></div>
           <p id="lifecycleSearchStatus" class="ops-note" role="status"></p>
-          <p class="ops-note">Sources: <a href="https://endoflife.date/" target="_blank" rel="noopener noreferrer">endoflife.date</a>, which aggregates vendor lifecycle information. Verify Microsoft products using <a href="https://learn.microsoft.com/lifecycle/" target="_blank" rel="noopener noreferrer">Microsoft Lifecycle</a> and patches using <a href="https://msrc.microsoft.com/update-guide" target="_blank" rel="noopener noreferrer">MSRC</a>. Custom products require a user verified date. For Sitefinity versions and updates, review the <a href="https://www.progress.com/sitefinity-cms/release-timeline" target="_blank" rel="noopener noreferrer">official Progress release timeline</a>. A published release timeline is not a confirmed end of support date.</p>
+          <details class="lifecycle-source-footer"><summary>ⓘ &nbsp; Data sources and scope</summary><p id="lifecycleFreshness" class="ops-note" role="status"></p><p class="ops-note">Directory: <a href="https://endoflife.date/" target="_blank" rel="noopener noreferrer">endoflife.date</a>. Confirm product editions and terms with <a href="https://learn.microsoft.com/lifecycle/" target="_blank" rel="noopener noreferrer">Microsoft Lifecycle</a> or the original vendor. Unknown dates remain unknown; extended support can require entitlement.</p></details>
         </article>
         <article class="data-panel ops-panel lifecycle-private">
-          <h3>My product monitoring preferences</h3>
-          <p id="productMonitorActivation" class="monitor-activation" role="status">Monitoring Not Yet Active · Checking backend availability</p>
-          <nav class="monitor-tabs" aria-label="My product monitoring"><button type="button" data-monitor-tab="watchlist" aria-pressed="true">My watchlist</button><button type="button" data-monitor-tab="settings" aria-pressed="false">Alert Settings</button><button type="button" data-monitor-tab="history" aria-pressed="false">Delivery History</button><button type="button" data-monitor-tab="admin" aria-pressed="false" hidden>Operations</button></nav>
+          <h3><span class="lifecycle-heading-icon" aria-hidden="true">⚙</span>My product monitoring preferences</h3><p class="ops-note lifecycle-private-intro">Save lifecycle watches for specific products and releases.</p>
           <div data-monitor-view="watchlist">
-          <p id="lifecycleUserStatus" class="ops-note" role="status">Sign in to manage lifecycle watches.</p>
           <form id="lifecycleWatchForm" class="ops-form">
-            <label>Monitored product<select id="lifecycleProduct" class="lifecycle-auth-control"><option value="">Choose a product</option></select></label>
-            <label>Release / edition cycle<select id="lifecycleCycle" class="lifecycle-auth-control"><option value="">Choose release</option></select></label><label>Edition (optional)<input id="lifecycleEdition" maxlength="80" placeholder="Leave blank for the default product"></label><label>Release branch if not listed<input id="lifecycleManualBranch" maxlength="80" placeholder="Vendor branch, e.g. 8.0"></label><label>Installed version / build<input id="lifecycleInstalled" class="lifecycle-auth-control" maxlength="80" placeholder="Example: 8.0.31"></label>
-            <p class="ops-note ops-span">For a custom product, provide its official source. Unsupported sources require verification before automated monitoring can start. No support date is inferred.</p>
-            <label>Custom product name<input id="lifecycleCustomName" class="lifecycle-auth-control" maxlength="120" placeholder="Additional software or appliance"></label>
-            <label>Custom release<input id="lifecycleCustomCycle" class="lifecycle-auth-control" maxlength="80" placeholder="Version or release"></label>
+            <label>Product<select id="lifecycleProduct" class="lifecycle-auth-control"><option value="">Choose a product</option></select></label>
+            <label>Release / edition cycle<select id="lifecycleCycle" class="lifecycle-auth-control"><option value="">Choose release</option></select></label><label class="ops-span">Installed version / build (optional)<input id="lifecycleInstalled" class="lifecycle-auth-control" maxlength="80" placeholder="Example: 8.0.31"></label>
+            
+            <label>Custom product name (optional)<input id="lifecycleCustomName" class="lifecycle-auth-control" maxlength="120" placeholder="Additional software or appliance"></label>
+            <label>Custom release (optional)<input id="lifecycleCustomCycle" class="lifecycle-auth-control" maxlength="80" placeholder="Version or release"></label>
             <label>Reference support date (optional)<input id="lifecycleCustomDate" type="date" class="lifecycle-auth-control"></label>
             <label>Official lifecycle source URL<input id="lifecycleCustomSource" type="url" class="lifecycle-auth-control" maxlength="500" placeholder="https://vendor.example/support"></label>
-            <button id="lifecycleWatchQueue" type="button" class="ops-download">Add product to my list</button>
-            <button id="lifecycleWatchSave" type="submit" class="ops-download lifecycle-auth-control">Save this product</button>
-            <div class="ops-span lifecycle-watch-queue"><strong>My selected software</strong><span id="lifecycleQueueCount" class="ops-tag">0 selected</span><div id="lifecycleQueueItems" class="ops-results"></div><button id="lifecycleSaveAll" type="button" class="ops-download" disabled="">Save all selected products</button><p class="ops-note">Build a list first. Saving and email notifications require sign in and the Cloudflare account database. Your current selection stays in this browser tab until saved.</p></div>
+            <details class="ops-span lifecycle-advanced"><summary>Edition and unlisted release branch</summary><div class="ops-form"><label>Edition (optional)<input id="lifecycleEdition" maxlength="80" placeholder="Leave blank for the default product"></label><label>Release branch if not listed<input id="lifecycleManualBranch" maxlength="80" placeholder="Vendor branch, e.g. 8.0"></label></div></details>
+            <div class="ops-span lifecycle-save-actions"><button id="lifecycleWatchQueue" type="button" class="ops-download">Add product to my list</button>
+            <button id="lifecycleWatchSave" type="submit" class="ops-download lifecycle-auth-control">Save this product</button></div>
+            <div class="ops-span lifecycle-watch-queue"><strong>Unsaved selections</strong><span id="lifecycleQueueCount" class="ops-tag">0 selected</span><div id="lifecycleQueueItems" class="ops-results"></div><button id="lifecycleSaveAll" type="button" class="ops-download" disabled="">Save all selected products</button><p class="ops-note">Selections are saved to your account when you choose Save all.</p></div>
           </form>
-          <span id="lifecycleWatchCount" class="ops-tag">0 monitored</span>
+          <div class="lifecycle-selected-heading"><h4>My selected products</h4><span id="lifecycleWatchCount" class="ops-tag">0 monitored</span></div>
           <div id="lifecycleWatches" class="ops-results"></div>
+          <form id="lifecyclePreferencesForm" class="ops-form lifecycle-prefs-form">
+            <label class="ops-span"><span><input id="lifecycleEmailOptin" class="lifecycle-auth-control" type="checkbox"> Alert settings · Email lifecycle reminders</span></label>
+            <label>Advance warning<select id="lifecycleLead" class="lifecycle-auth-control"><option value="7">7 days</option><option value="14">14 days</option><option value="30">30 days</option><option value="60">60 days</option><option value="90" selected="">90 days</option><option value="180">180 days</option></select></label>
+            <button id="lifecyclePrefsSave" type="submit" class="ops-download lifecycle-auth-control">Save settings</button>
+          </form>
           </div><div data-monitor-view="settings" hidden>
           <p class="ops-note">The verified sign-in email is the notification recipient. Additional recipients require separate authorization and verification.</p><p id="productMonitorRecipient" class="ops-tag">Sign in to view your recipient</p>
           <fieldset id="productMonitorTypes" class="monitor-type-options"><legend>Default alert types (Save settings applies to your saved watches)</legend>
           <label><input type="checkbox" value="stable"> Stable releases</label><label><input type="checkbox" value="maintenance" checked> Branch maintenance updates</label><label><input type="checkbox" value="security" checked> Verified security patches</label><label><input type="checkbox" value="critical"> Verified critical advisories</label><label><input type="checkbox" value="lifecycle_change" checked> Lifecycle date changes</label><label><input type="checkbox" value="mainstream" checked> Mainstream support</label><label><input type="checkbox" value="extended"> Extended support (entitlement required)</label><label><input type="checkbox" value="security_support" checked> Security support</label><label><input type="checkbox" value="eol" checked> End of life</label>
           </fieldset><label class="lifecycle-field">Delivery preference<select id="productMonitorCadence"><option value="daily">Daily digest · 08:00 UTC delivery window</option><option value="immediate_security">Immediate verified security updates; daily for other events</option></select></label>
           <p class="ops-note">Only classifications published by a supported official source generate security or critical alerts. Other information remains Needs Review.</p>
-          <form id="lifecyclePreferencesForm" class="ops-form lifecycle-prefs-form">
-            <label class="ops-span"><span><input id="lifecycleEmailOptin" class="lifecycle-auth-control" type="checkbox"> Email me when a monitored release is approaching or has reached its published end of support date</span></label>
-            <label>Advance warning<select id="lifecycleLead" class="lifecycle-auth-control"><option value="7">7 days</option><option value="14">14 days</option><option value="30">30 days</option><option value="60">60 days</option><option value="90" selected="">90 days</option><option value="180">180 days</option></select></label>
-            <button id="lifecyclePrefsSave" type="submit" class="ops-download lifecycle-auth-control">Save lifecycle alert settings</button>
-          </form>
+
           <button id="productMonitorTest" type="button" class="ops-download" disabled>Send Test Email</button><p id="productMonitorTestResult" class="ops-note" role="status">Test delivery requires an approved recipient and enabled test configuration.</p>
           </div><div data-monitor-view="history" hidden><h4>Notification delivery history</h4><p class="ops-note">Submitted means accepted by SMTP2GO. Delivered means the recipient mail server acknowledged it; inbox placement is not guaranteed.</p><button id="productMonitorHistoryRefresh" type="button" class="ops-download">Refresh delivery history</button><div id="productMonitorHistory" class="monitor-history" role="status">Sign in to view your private history.</div></div>
           <div data-monitor-view="admin" hidden><h4>Monitoring operations</h4><button id="productMonitorHealthRefresh" type="button" class="ops-download">Refresh health</button><div id="productMonitorHealth" class="monitor-history"></div></div>
+          <p id="productMonitorActivation" class="monitor-activation" role="status">Monitoring Not Yet Active · Checking backend availability</p>
+          <nav class="monitor-tabs" aria-label="My product monitoring"><button type="button" data-monitor-tab="watchlist" aria-pressed="true">My watchlist</button><button type="button" data-monitor-tab="settings" aria-pressed="false">Alert Settings</button><button type="button" data-monitor-tab="history" aria-pressed="false">Delivery History</button><button type="button" data-monitor-tab="admin" aria-pressed="false" hidden>Operations</button></nav>
+          <p id="lifecycleUserStatus" class="ops-note" role="status">Sign in to manage lifecycle watches.</p>
           <p id="lifecycleDeliveryState" class="ops-note">Scheduled lifecycle notifications must be activated separately.</p>
-          <p class="ops-note">Lifecycle notifications are separate from urgent CVE notifications. A missing support date is unknown rather than supported. No automatic patch deployment is performed.</p>
+          
         </article>
       </div>
     </section>
@@ -441,7 +443,7 @@ MySQL | 8.0.43" aria-describedby="inventoryTechHelp"></textarea><small id="inven
     </div>
   </dialog>
   <dialog id="detailDialog" class="detail-dialog" aria-label="Vulnerability detail"><div class="dialog-layout"><button type="button" id="closeDialog" class="close-dialog" aria-label="Close vulnerability details">×</button><div id="dialogContent"></div></div></dialog>
-  <script defer="" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="/malware-data.js"></script><script src="/malware.js?v=family-profiles-3"></script><script src="/threat-data.js"></script><script src="/threats.js?v=attack-feeds-220"></script><script defer="" src="/geo-map.js?v=attack-feeds-220"></script><script src="/data.js"></script><script src="/disclosure-trend.js?v=30day-1"></script><script src="/catalog.js?v=20261028a"></script><script src="/cvie.js?v=catalogue-scope-1"></script><script src="/advisory-details.js?v=finding-details-1"></script><script src="/app.js?v=catalogue-scope-1"></script><script src="/workspace.js?v=d1-assignments-1"></script><script src="/lifecycle.js"></script><script src="/patch-notes.js"></script><script src="/lifecycle-monitor.js?v=product-monitor-1"></script><script src="/product-monitoring.js?v=product-monitor-1"></script><script src="/operations.js?v=branded-confirmation-163"></script><script src="/inventory-matching.js?v=upgrade-history-1"></script><script src="/inventory.js?v=upgrade-history-1"></script><script src="/accounts.js?v=d1-assignments-1"></script>
+  <script defer="" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="/malware-data.js"></script><script src="/malware.js?v=family-profiles-3"></script><script src="/threat-data.js"></script><script src="/threats.js?v=attack-feeds-220"></script><script defer="" src="/geo-map.js?v=attack-feeds-220"></script><script src="/data.js"></script><script src="/disclosure-trend.js?v=30day-1"></script><script src="/catalog.js?v=20261028a"></script><script src="/cvie.js?v=catalogue-scope-1"></script><script src="/advisory-details.js?v=finding-details-1"></script><script src="/app.js?v=catalogue-scope-1"></script><script src="/workspace.js?v=d1-assignments-1"></script><script src="/lifecycle.js"></script><script src="/patch-notes.js"></script><script src="/lifecycle-monitor.js?v=product-monitor-2"></script><script src="/product-monitoring.js?v=product-monitor-2"></script><script src="/operations.js?v=branded-confirmation-163"></script><script src="/inventory-matching.js?v=upgrade-history-1"></script><script src="/inventory.js?v=upgrade-history-1"></script><script src="/accounts.js?v=d1-assignments-1"></script>
   <script src="/page-router.js?v=brochure-216"></script>
   <script src="/header-auth.js?v=account-navigation-1"></script>
 <script src="/command-center.js?v=brochure-216"></script>
