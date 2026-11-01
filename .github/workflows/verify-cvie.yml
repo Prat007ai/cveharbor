@@ -24,6 +24,14 @@ jobs:
         run: npm test
       - name: Build and verify website
         run: python scripts/build_site.py && python scripts/verify_production.py --preflight
+      - name: Run existing data and browser interaction checks
+        run: |
+          python -m unittest discover -s tests
+          npm install --no-save --no-package-lock jsdom@26
+          node scripts/browser_smoke.mjs
+          node scripts/customer_security_smoke.mjs
+          node scripts/customer_score_smoke.mjs
+          node scripts/threat_health_smoke.mjs
       - name: Backfill a public product through actual CVIE in a disposable database
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}

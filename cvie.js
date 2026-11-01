@@ -60,7 +60,7 @@ function draw(){
   const button=node('button','Refresh status');button.type='button';button.disabled=busy;button.addEventListener('click',()=>void refresh(true));
   header.append(title,label,button);panel.append(header);
   const active=products.filter(p=>['queued','scanning','retrying'].includes(p.status));
-  const message=error||(!ready?'Preparing CVIE...':!products.length?'Add a product or register an asset to start CVIE.':products.some(p=>p.status==='needs_identity')?'Some products need an exact identity before CVIE can scan. Expand product status to choose.':active.length?active.length+' product'+(active.length===1?' is':'s are')+' being prepared. Results appear as source pages finish.':'Product checks complete. Review the source and installed version before acting.');
+  const message=error||(busy?'Loading '+months+'-month results...':!ready?'Preparing CVIE...':!products.length?'Add a product or register an asset to start CVIE.':products.some(p=>p.status==='needs_identity')?'Some products need an exact identity before CVIE can scan. Expand product status to choose.':products.some(p=>p.status==='retrying')?'A source check is unavailable. Saved results remain available; CVIE will retry automatically.':products.some(p=>p.status==='ready'&&p.stale)?'Some source checks are overdue. Saved results remain available while CVIE refreshes them.':active.length?active.length+' product'+(active.length===1?' is':'s are')+' being prepared. Results appear as source pages finish.':'Product checks complete. Review the source and installed version before acting.');
   const status=node('p',message,'cvie-status');status.setAttribute('role','status');panel.append(status);
   const list=node('div','','cvie-product-statuses');
   for(const p of products){
@@ -79,8 +79,7 @@ function draw(){
    }
    list.append(row);
   }
-  if(products.length){const details=node('details');details.append(node('summary','Product scan status ('+products.length+')'),list);panel.append(details);}
-  panel.append(node('p','Coverage: NVD affected-product records published in the selected period. A completed check with no results does not establish that a product is secure.','cvie-caption'));
+  if(products.length){const details=node('details');details.append(node('summary','Product scan status ('+products.length+')'),list,node('p','Coverage: NVD affected-product records published in the selected period. A completed check with no results does not establish that a product is secure.','cvie-caption'));panel.append(details);}
  }
 }
 async function refresh(sync=false){
@@ -104,7 +103,7 @@ async function refresh(sync=false){
   else if(signedIn)timer=setTimeout(()=>void refresh(),products.some(p=>['queued','scanning'].includes(p.status))?8000:60000);
  }
 }
-window.CVEHARBOR_CVIE={get products(){return products;},get records(){return merge();},get months(){return months;},get ready(){return ready;},get signedIn(){return signedIn;},merge,refresh,statusFor,
+window.CVEHARBOR_CVIE={get products(){return products;},get records(){return merge();},get months(){return months;},get ready(){return ready;},get signedIn(){return signedIn;},get loading(){return busy;},merge,refresh,statusFor,
  setMonths:value=>{if(![3,12].includes(Number(value)))throw Error('Select 3 or 12 months');months=Number(value);return refresh();},
  product:name=>products.find(p=>normalize(p.name)===normalize(name))};
 mount();

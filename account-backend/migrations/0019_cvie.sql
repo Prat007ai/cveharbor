@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS cvie_products (
   name TEXT NOT NULL,
   vendor TEXT NOT NULL DEFAULT '',
   cpe TEXT NOT NULL DEFAULT '',
-  status TEXT NOT NULL DEFAULT 'queued',
+  status TEXT NOT NULL DEFAULT 'queued' CHECK(status IN ('queued','scanning','needs_identity','retrying','ready')),
   candidates_json TEXT NOT NULL DEFAULT '[]',
   cursor_json TEXT NOT NULL DEFAULT '{}',
   scan_started_at INTEGER,

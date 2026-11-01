@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
 import {DB} from './helpers/d1.mjs';
 import {cvieReady,subscribeProducts,syncAccountProducts,runCvieStep,cvieRoute,normalizeNvd,monthsAgo,scanWindows,loadCvieDigest} from '../src/cvie.js';
 import {knownIdentity,productCpe,logoFor} from '../src/product-identity.js';
@@ -41,6 +43,15 @@ test('normalization requires vulnerable affected-product CPE evidence and exclud
  assert.equal(normalizeNvd({...cve(),configurations:[]},product),null);
  assert.equal(normalizeNvd({...cve(),vulnStatus:'Rejected'},product),null);
  const other=cve();other.configurations[0].nodes[0].cpeMatch[0].vulnerable=false;assert.equal(normalizeNvd(other,product),null);
+});
+test('inventory matching checks the correct product family and excludes patched numeric versions',()=>{
+ const window={};vm.runInNewContext(fs.readFileSync(new URL('../../inventory-matching.js',import.meta.url),'utf8'),{window});
+ const record=normalizeNvd(cve(),{name:'Apache Tomcat',cpe}),asset={id:'asset',technology:'Apache Tomcat',version:'10.1.20'};
+ assert.equal(window.CVEHARBOR_INVENTORY_MATCH.candidate(asset,record).level,'version_review');
+ assert.equal(window.CVEHARBOR_INVENTORY_MATCH.candidate({...asset,version:'10.1.30'},record),null);
+ assert.equal(window.CVEHARBOR_INVENTORY_MATCH.candidate({...asset,version:'10.1.20-vendor-build'},record).level,'category');
+ const combined={...record,affected_cpes:[...record.affected_cpes,{criteria:cpe.replace(':tomcat:',':other_product:'),versionEndExcluding:'99.0.0'}]};
+ assert.equal(window.CVEHARBOR_INVENTORY_MATCH.candidate({...asset,version:'10.1.30'},combined),null,'another product range cannot make this product vulnerable');
 });
 test('subscription changes are private, idempotent, and inventory/catalogue share one job per product',async()=>{
  const e=env();await subscribeProducts(e,'a',[{name:'Apache Tomcat'},{name:' apache tomcat '}]);
@@ -91,6 +102,11 @@ test('rate limits back off globally and never claim a failed source window was c
  await runCvieStep(e,async()=>new Response('Slow down',{status:429,headers:{'Retry-After':'120'}}),NOW);
  const p=await first(e);assert.equal(p.last_success_at,null);assert.equal(p.recent_complete_at,null);assert.ok(p.next_attempt_at>=NOW+120000);
  let calls=0;await runCvieStep(e,async()=>{calls++;return Response.json({});},NOW+7000);assert.equal(calls,0);
+});
+test('an incomplete empty provider page is retried rather than reported as zero vulnerabilities',async()=>{
+ const e=env();await subscribeProducts(e,'a',[{name:'Apache Tomcat'}]);
+ await runCvieStep(e,async()=>Response.json({startIndex:0,totalResults:10,vulnerabilities:[]}),NOW);
+ const p=await first(e);assert.equal(p.status,'retrying');assert.equal(p.recent_complete_at,null);assert.equal(p.last_success_at,null);
 });
 test('parallel workers cannot consume two NVD requests in the same provider slot',async()=>{
  const e=env();await subscribeProducts(e,'a',[{name:'Apache Tomcat'},{name:'PHP'}]);let calls=0;
@@ -148,4 +164,11 @@ test('a missing additive migration reports setup required rather than breaking e
  const e={DB:{prepare(){throw Error('no such table')}}};assert.equal(await cvieReady(e),false);
  assert.equal((await cvieRoute(new Request('https://api.cveharbor.com/v1/cvie'),e,{id:'a'})).status,503);
  assert.equal((await subscribeProducts(e,'a',[{name:'Apache Tomcat'}])).ready,false);
+});
+test('account deletion removes private CVIE jobs and records without deleting the provider budget',async()=>{
+ const e=env();await subscribeProducts(e,'a',[{name:'Apache Tomcat'}]);await runCvieStep(e,provider([cve()]),NOW);
+ e.DB.sql.exec("DELETE FROM users WHERE id='a'");
+ assert.equal((await rows(e,'SELECT * FROM cvie_products')).length,0);
+ assert.equal((await rows(e,'SELECT * FROM cvie_advisories')).length,0);
+ assert.equal((await rows(e,'SELECT * FROM cvie_provider_budget')).length,1);
 });

@@ -17,6 +17,7 @@ const id='11111111-1111-4111-8111-111111111111';
 const inventory={customers:[{id:'c1',name:'Example Organization'}],environments:[{id:'e1',customer_id:'c1',name:'Production',kind:'Production'}],
  assets:[{id:'asset1',environment_id:'e1',name:'Application Server',asset_type:'Server',technology:product.name,version:'10.1.20'}]};
 const directory=process.env.CVIE_SCREENSHOTS||'/workspace/cvie-review';fs.mkdirSync(directory,{recursive:true});
+const colours=fs.existsSync('/tmp/cvie-icons/colours.json')?JSON.parse(fs.readFileSync('/tmp/cvie-icons/colours.json','utf8')):{};
 const browser=await chromium.launch({headless:true,executablePath:process.env.CVIE_CHROMIUM_PATH||undefined,args:['--no-sandbox']});
 try{
  const context=await browser.newContext({viewport:{width:1920,height:1080},reducedMotion:'reduce',serviceWorkers:'block'});
@@ -26,7 +27,11 @@ try{
   if(url.hostname==='cdn.simpleicons.org'){
    const slug=url.pathname.slice(1).split('/')[0];
    const path=(process.env.CVIE_ICON_DIRECTORY||'/tmp/cvie-icons/svg')+'/'+slug+'.svg';
-   if(/^[a-z0-9]+$/.test(slug)&&fs.existsSync(path))return route.fulfill({contentType:'image/svg+xml',body:fs.readFileSync(path)});
+   if(/^[a-z0-9]+$/.test(slug)&&fs.existsSync(path)){
+    let svg=fs.readFileSync(path,'utf8');
+    if(/^[A-Fa-f0-9]{6}$/.test(colours[slug]||''))svg=svg.replace('<svg ','<svg fill="#'+colours[slug]+'" ');
+    return route.fulfill({contentType:'image/svg+xml',body:svg});
+   }
    return route.abort();
   }
   if(url.hostname!=='api.cveharbor.com')return route.abort();
@@ -77,6 +82,7 @@ try{
  await page.waitForFunction(()=>window.CVEHARBOR_CVIE.records.length>0);
  assert.equal(await page.locator('#dateRange').inputValue(),'published3m');
  const row=page.getByRole('button',{name:/^View Apache Tomcat:/});
+ assert.match(await row.innerText(),new RegExp(recent.length+' advisories'),'the product row updates immediately when its scan completes');
  assert.ok(await row.locator('img').count(),'registered product logo is automatically displayed');
  await row.click();
  assert.equal(await page.locator('#technologyFilter').inputValue(),product.name);
@@ -89,11 +95,12 @@ try{
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'no horizontal page overflow at '+width);
  }
  await page.setViewportSize({width:1920,height:1080});
- await page.locator('#cvieExplorer select').selectOption('12');
- await page.waitForFunction(count=>window.CVEHARBOR_CVIE.months===12&&window.CVEHARBOR_CVIE.records.length===count,all.length);
+ const historyResponse=page.waitForResponse(response=>response.url().includes('/cvie/advisories?months=12'));
+ await page.locator('#cvieExplorer select').selectOption('12');await historyResponse;
+ await page.waitForFunction(count=>window.CVEHARBOR_CVIE.months===12&&!window.CVEHARBOR_CVIE.loading&&window.CVEHARBOR_CVIE.records.length===count,all.length);
  assert.ok(requests.some(r=>r.path==='/v1/cvie/advisories'&&r.months==='12'),'12-month selection requests the longer source history');
  assert.equal(await page.locator('#dateRange').inputValue(),'published12m');
- await page.locator('#advisories').scrollIntoViewIfNeeded();
+ await page.evaluate(()=>window.scrollTo(0,document.getElementById('advisories').getBoundingClientRect().top+window.scrollY-90));
  await page.screenshot({path:directory+'/CVIE-history-12-months.png'});
  await page.setViewportSize({width:390,height:844});await page.evaluate(()=>window.scrollTo(0,0));
  await page.screenshot({path:directory+'/CVIE-mobile.png'});
@@ -102,6 +109,7 @@ try{
  await page.setViewportSize({width:1920,height:1080});
  await page.goto(base+'/customer-reports/?customer=c1',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>window.CVEHARBOR_CVIE?.records.length>0&&document.getElementById('customerReportBody')?.textContent.includes('Apache Tomcat'));
+ await page.locator('#customerReportBody summary').filter({hasText:'CVE Findings'}).click();
  assert.match(await page.locator('#customerReportBody').innerText(),/CVE-\d{4}-\d+/,'CVIE findings appear in the real report renderer');
  authenticated=false;await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
  assert.equal(await page.evaluate(()=>window.CVEHARBOR_CVIE.records.length),0,'private CVIE results clear when the account session expires');

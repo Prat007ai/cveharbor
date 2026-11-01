@@ -62,7 +62,7 @@
   const baseItems=items.slice();
   const monthCutoff=months=>{const now=new Date(),day=now.getUTCDate();now.setUTCDate(1);now.setUTCMonth(now.getUTCMonth()-months);now.setUTCDate(Math.min(day,new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+1,0)).getUTCDate()));return now.getTime();};
   const inMonths=(record,months)=>{const date=Date.parse(record.published||'');return Number.isFinite(date)&&date>=monthCutoff(months)&&date<=Date.now();};
-  window.addEventListener('cvie:updated',event=>{
+  const handleCvieUpdate=event=>{
     if(!window.CVEHARBOR_CVIE.signedIn){personalized=null;catalogueSignedIn=false;}
     items=window.CVEHARBOR_CVIE.merge(baseItems);
     const names=(window.CVEHARBOR_CVIE.products||[]).map(p=>p.name);
@@ -70,8 +70,10 @@
     for(const name of names)if(!categories.some(c=>c.name===name)){const option=document.createElement('option');option.value=name;option.textContent=name;option.dataset.cvie='true';$('technologyFilter').append(option);}
     if(state.period==='published3m'||state.period==='published12m'){state.period=window.CVEHARBOR_CVIE.months===12?'published12m':'published3m';$('dateRange').value=state.period;}
     if([...$('technologyFilter').options].some(o=>o.value===state.tech))$('technologyFilter').value=state.tech;else state.tech='all';
-    if(event.detail?.recordsChanged)render();else renderCategories();
-  });
+    renderCategories();
+    if(event.detail?.recordsChanged){renderBars();renderFocus();render();}
+  };
+  window.addEventListener('cvie:updated',handleCvieUpdate);
   const cveIDs = rows => [...new Set(rows.filter(x => /^CVE-\d{4}-\d+$/i.test(x.id)).map(x => x.id))];
   const advisoryIDs = rows => [...new Set(rows.filter(x=>x&&x.id).map(x=>x.id))];
   // Publication date means original disclosure. A routine vendor/NVD metadata
@@ -186,7 +188,7 @@
       location.assign('/vulnerabilities/?'+params.toString()+'#advisories');
       return;
     }
-    $('advisories').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+    $('advisories').scrollIntoView({behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth',block:'start'});
   }
   function openTechnologyAdvisories(technology,cveOnly=false,periodOverride=null){
     const recentAvailable=items.some(x=>(x.categories||[]).includes(technology)&&newlyPublished(x,30));
@@ -259,7 +261,7 @@
         button.addEventListener('click',()=>{
           if(scope==='technologies'){
             if(location.pathname.startsWith('/intelligence')){location.assign('/vulnerabilities/#technology');return;}
-            $('technology').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return;
+            $('technology').scrollIntoView({behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth',block:'start'});return;
           }
           state.q='';state.tech='all';state.group='all';state.severity=scope==='all'?'all':scope;state.period=chartPeriod;
           metricScope='all';listMode='list';resetPaging();
@@ -375,7 +377,7 @@
       }
       label.append(text('span','technology-row-name',x.name),freshness);
       const scan=window.CVEHARBOR_CVIE?.product(x.name);
-      if(scan)label.append(text('span','cvie-row-state '+scan.status,window.CVEHARBOR_CVIE.statusFor(scan)));
+      if(scan){label.append(text('span','cvie-row-state '+scan.status,window.CVEHARBOR_CVIE.statusFor(scan)));button.setAttribute('aria-label',`View ${x.name}: ${window.CVEHARBOR_CVIE.statusFor(scan)}`);}
       const counts=text('span','technology-row-counts','');
       counts.append(text('span','technology-count-new'+(recent?' has-new':''),`${recent} new`),
                     text('span','technology-count-all',`${scan&&!(horizon===12?scan.history_complete_at:scan.recent_complete_at)&&!total?'—':total} / ${horizon} months`));
@@ -398,7 +400,7 @@
       if(name===customGroup)continue;
       const additional=new Map((personalized?.products||[]).map(x=>[x.name.toLowerCase(),x]));
       for(const p of window.CVEHARBOR_CVIE?.products||[])if(!additional.has(p.name.toLowerCase())&&!categories.some(x=>x.name===p.name))additional.set(p.name.toLowerCase(),p);
-      const candidates=[...techs.map(label=>categories.find(x=>x.name===label)),...[...additional.values()].filter(x=>(x.category||inferProductCategory(x.name)||'applications')===name).map(x=>({...x,custom:true,icon:'＋'}))];
+      const candidates=[...[...additional.values()].filter(x=>(x.category||inferProductCategory(x.name)||'applications')===name).map(x=>({...x,custom:true,icon:'＋'})),...techs.map(label=>categories.find(x=>x.name===label))];
       const matched=candidates.filter(x=>x&&matches(x)&&(x.custom||enabled(x)));
       if(!matched.length)continue;
       const panel=text('article','technology-panel','');panel.dataset.domain=name;
@@ -629,7 +631,7 @@
       if(scope==='technologies'){
         // Every technology is already visible in the main explorer.
         if(location.pathname.startsWith('/intelligence')){location.assign('/vulnerabilities/#technology');return;}
-        $('technology').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+        $('technology').scrollIntoView({behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth',block:'start'});
         return;
       }
       state.q='';state.tech='all';state.group='all';state.severity='all';state.period='all';
@@ -671,7 +673,7 @@
       row.append(remove);list.append(row);
     }
   }
-  manageButton.addEventListener('click',()=>{if(!catalogueSignedIn){$('technologySignInDialog').showModal();return}draft=JSON.parse(JSON.stringify(personalized||{defaults:defaultNames,products:[]}));drawCustomizer();$('technologyCustomizer').hidden=false;$('technologyCustomizer').scrollIntoView({block:'start',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})});
+  manageButton.addEventListener('click',()=>{if(!catalogueSignedIn){$('technologySignInDialog').showModal();return}draft=JSON.parse(JSON.stringify(personalized||{defaults:defaultNames,products:[]}));drawCustomizer();$('technologyCustomizer').hidden=false;$('technologyCustomizer').scrollIntoView({block:'start',behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth'})});
   $('technologySignInClose').addEventListener('click',()=>$('technologySignInDialog').close());
   $('technologySignInDialog').addEventListener('click',event=>{if(event.target===$('technologySignInDialog'))$('technologySignInDialog').close()});
   $('technologyManageClose').addEventListener('click',()=>{$('technologyCustomizer').hidden=true});
@@ -692,7 +694,7 @@
       void window.CVEHARBOR_CVIE?.refresh(true);
       if(newest){const category=newest.category||inferProductCategory(newest.name)||'applications';statusMessage(newest.name+' added under '+customCategoryNames[category]+'. '+(data.cvie?.ready?'CVIE is scanning and preparing the current vulnerabilities.':data.cvie?.message||'CVIE service setup is pending; the product is safely saved.'));
         const row=[...document.querySelectorAll('.technology-just-added')].find(x=>x.dataset.customProduct===newest.name);
-        row?.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});
+        row?.scrollIntoView({behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth',block:'center'});
         setTimeout(()=>{addedHighlight=null;document.querySelectorAll('.technology-just-added').forEach(x=>x.classList.remove('technology-just-added'))},10000);
       }else statusMessage('Saved to your CVEHarbor account.');
     }catch(e){statusMessage('Unable to save: '+e.message)}
@@ -721,4 +723,5 @@
     if(params.has('scope')||params.has('technology'))listMode='list';
   }
   renderBars();renderFocus();renderCategories();render();
+  if(window.CVEHARBOR_CVIE?.ready)handleCvieUpdate({detail:{recordsChanged:true}});
 })();
