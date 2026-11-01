@@ -39,8 +39,10 @@ that verification is the old public GitHub Pages origin disabled, preventing
 direct-origin access around the website gate. Pages-write permission is retained
 solely for that cleanup. No full-site public Pages artifact is uploaded.
 
-The read-only `Check temporary site gate hosting` development workflow reports
-token permissions and password readiness as booleans, without secret values.
+The development activation workflow checks hosting, deploys the requested gate,
+and verifies private access before retiring Pages. It records redacted step
+results on its development branch so deployment failures can be diagnosed
+without revealing passwords or API tokens.
 
 ## Removing the gate when ready
 
