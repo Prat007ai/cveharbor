@@ -20,7 +20,7 @@ const products=[
  recent_count:0,history_count:0,recent_complete_at:Date.now(),history_complete_at:Date.now(),error:''}));
 const families=products.flatMap(p=>productFamilies(p).map(key=>({product_id:p.id,key,labels:productLabels(p),raw_labels:coveragePlan(p).families.flatMap(cpe=>rawProductLabels({...p,cpe})),scope:isHyperV(p)?'windows_hyperv':''})));
 const database='46710e51-7ca4-4571-b89c-921b9969de0b';
-let queries=0;
+let queries=0,rowsRead=0,rowsWritten=0;
 const DB={prepare(sql){
  if(!/^\s*(SELECT|WITH|PRAGMA table_info)/i.test(sql))throw Error('Diagnostic permits read-only statements only');
  let params=[];
@@ -32,13 +32,18 @@ const DB={prepare(sql){
    const message=JSON.stringify(data.errors||data.result?.[0]?.error||{http:response.status});
    throw Error(message.slice(0,1500));
   }
+  rowsRead+=data.result[0].meta?.rows_read||0;rowsWritten+=data.result[0].meta?.rows_written||0;
   return {results:data.result[0].results};
  },async first(){return (await statement.all()).results[0]||null;}};return statement;
 }};
 const env={DB},now=Date.now(),recent=new Date(now-92*864e5).toISOString(),history=new Date(now-366*864e5).toISOString();
 const ctx={products,families:JSON.stringify(families),sources:{}};
 const report={checked_at:new Date(now).toISOString(),read_only:true,synthetic_products:true,checks:[]};
-async function check(stage,fn){try{await fn();report.checks.push({stage,ok:true});}catch(error){report.checks.push({stage,ok:false,error:error.message});}}
+async function check(stage,fn){
+ const before={queries,rowsRead,rowsWritten};let error;
+ try{await fn();}catch(caught){error=caught.message;}
+ report.checks.push({stage,ok:!error,...(error?{error}:{}),statements:queries-before.queries,rows_read:rowsRead-before.rowsRead,rows_written:rowsWritten-before.rowsWritten});
+}
 await check('source schema',async()=>{const rows=(await DB.prepare('PRAGMA table_info(cvie_sources)').all()).results;report.source_columns=rows.map(r=>r.name);});
 await check('saved scan JSON integrity',async()=>{report.invalid_scan_json=await DB.prepare('SELECT COUNT(*) AS invalid FROM cvie_products WHERE NOT json_valid(cursor_json)').first();});
 await check('source status',()=>sourceHealth(env));
@@ -60,6 +65,16 @@ await check('status handler and all three engine cards',async()=>{
  assert.equal(state.products.length,products.length);
  assert.deepEqual(state.evidence.sources.map(s=>s.id).sort(),['cisa_kev','cve_program','nvd']);
  assert.ok(state.products.every(p=>p.progress&&p.status));
+});
+await check('lightweight progress handler and account-scoped products',async()=>{
+ const response=await cvieRoute(new Request('https://api.cveharbor.com/v1/cvie/progress'),statusEnv,{id:userId});
+ assert.equal(response.status,200);const state=await response.json();
+ assert.equal(state.products.length,products.length);assert.ok(state.products.every(p=>p.progress&&!('recent_count' in p)));
+ assert.deepEqual(state.evidence.sources.map(s=>s.id).sort(),['cisa_kev','cve_program','nvd']);
+});
+await check('progress SELECT on real D1 for a nonexistent synthetic account',async()=>{
+ const response=await cvieRoute(new Request('https://api.cveharbor.com/v1/cvie/progress'),env,{id:userId});
+ assert.equal(response.status,200);assert.deepEqual((await response.json()).products,[]);
 });
 report.ok=report.checks.every(c=>c.ok);report.queries=queries;
 await writeFile(new URL('../data/cvie-d1-check.json',import.meta.url),JSON.stringify(report,null,2)+'\n');

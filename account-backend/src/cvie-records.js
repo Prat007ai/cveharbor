@@ -3,6 +3,7 @@ import {evidenceReady,productFamilies,productLabels,SOURCE_URLS} from './cvie-ev
 import {isHyperV,hyperVHost,hyperVStatementSql} from './hyperv.js';
 import {dotnetProfile} from './dotnet.js';
 import {rawProductLabels,coveragePlan,versionedLabelSql,cnaCoverageAdapters} from './product-coverage.js';
+import {publicSourceStatus} from './public-source-status-cache.js';
 const q=(db,sql,...args)=>db.prepare(sql).bind(...args);
 const DAY=86400000;
 function affectedDescription(rows,name,preserveLabel=false){
@@ -75,6 +76,9 @@ export function reconcileRecord(nvd,cna,affected,product,kev,checks,now,cutoff){
  record.source_conflicts=conflicts;record.sources=[...references.values()];return record;
 }
 export async function sourceHealth(env,now=Date.now()){
+ return publicSourceStatus(env,now,()=>loadSourceHealth(env,now));
+}
+async function loadSourceHealth(env,now){
  if(!await evidenceReady(env))return {ready:false,sources:[{id:'cve_program',label:'CVE Program / original disclosures',status:'setup_required'},{id:'cisa_kev',label:'CISA KEV',status:'setup_required'}]};
  const rows=(await env.DB.prepare('SELECT * FROM cvie_sources ORDER BY id').all()).results||[];
  const pending=await env.DB.prepare(`SELECT COUNT(*) AS total,SUM(CASE WHEN priority<=1 THEN 1 ELSE 0 END) AS current,

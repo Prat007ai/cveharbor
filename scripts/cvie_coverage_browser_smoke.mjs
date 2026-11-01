@@ -15,6 +15,7 @@ for(const p of (await env.DB.prepare('SELECT * FROM cvie_products').all()).resul
 }
 const directory=process.env.CVIE_SCREENSHOTS||'/workspace/cvie-coverage-review';fs.mkdirSync(directory,{recursive:true});
 const browser=await chromium.launch({headless:true,executablePath:process.env.CVIE_CHROMIUM_PATH||undefined,args:['--no-sandbox']});
+const reads={state:0,progress:0,advisories:0};
 try{
  const context=await browser.newContext({viewport:{width:1920,height:1080},reducedMotion:'reduce',serviceWorkers:'block'});
  await context.route('**/*',async route=>{
@@ -27,6 +28,9 @@ try{
   if(url.pathname==='/v1/me')return send({authenticated:true,email:'reviewer@example.test'});
   if(url.pathname==='/v1/technology-catalogue')return send(prefs);
   if(url.pathname.startsWith('/v1/cvie')){
+   if(url.pathname==='/v1/cvie')reads.state++;
+   if(url.pathname==='/v1/cvie/progress')reads.progress++;
+   if(url.pathname==='/v1/cvie/advisories')reads.advisories++;
    const data=request.postData()?JSON.parse(request.postData()):{};
    const response=await cvieRoute(new Request(request.url(),{method:request.method()}),env,{id:'a'},null,data);
    return send(await response.json(),response.status);
@@ -68,6 +72,14 @@ try{
   assert.equal(JSON.stringify((await env.DB.prepare('SELECT * FROM cvie_products ORDER BY id').all()).results),saved,'navigation retains the exact saved job on '+path);
  }
  assert.equal(navigationWrites,0,'dashboard, reports and explorer visits perform no scan or subscription writes');
+ const beforePoll={...reads};
+ await page.evaluate(()=>document.dispatchEvent(new Event('visibilitychange')));
+ await page.waitForFunction(()=>!window.CVEHARBOR_CVIE.loading);
+ assert.equal(reads.progress,beforePoll.progress+1);assert.equal(reads.state,beforePoll.state);assert.equal(reads.advisories,beforePoll.advisories,'unchanged progress never reloads result pages');
+ await runCvieStep(env,()=>Response.json({startIndex:0,totalResults:0,vulnerabilities:[]}),Date.now()+7000);
+ await page.evaluate(()=>document.dispatchEvent(new Event('visibilitychange')));
+ await page.waitForFunction(()=>!window.CVEHARBOR_CVIE.loading);
+ assert.ok(reads.state>beforePoll.state,'an advanced saved scan refreshes the complete snapshot');
  assert.deepEqual(errors,[]);
  fs.writeFileSync(directory+'/verification.json',JSON.stringify({ok:true,widths:[390,1366,1920,2560],scope:'Actual backend coverage handlers with isolated account and synthetic check states; no production/customer data',checks:['broad category limited to selected member','source family displayed','coverage expansion survives polling','pending disclosure verification does not imply zero vulnerabilities','custom product selection follows shared engine','dashboard and reports navigation preserve saved progress with zero job/subscription writes','responsive layout','no browser errors']},null,2)+'\n');
  console.log('PASS Chromium shared CVIE coverage: exact/member/custom states, persistent coverage details, honest pending copy and responsive layout.');

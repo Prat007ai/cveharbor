@@ -6,6 +6,8 @@ const panels=[];
 let lastSignature='';
 let evidence={sources:[]},withdrawn=new Set();
 let excluded=[],accountId='',accountEmail='',authEpoch=0;
+let lastFullAt=0,recordsMonths=0;
+const ACTIVE_POLL=30000,IDLE_POLL=60000,RESULT_MAX_AGE=60000;
 class SessionChanged extends Error{}
 const node=(tag,value,cls)=>{const el=document.createElement(tag);if(value)el.textContent=value;if(cls)el.className=cls;return el;};
 const normalize=value=>String(value||'').normalize('NFKC').trim().toLowerCase().replace(/\s+/g,' ');
@@ -31,7 +33,7 @@ function merge(base=[]){
   return {...record,cvie_excluded_products:names,categories:(record.categories||[]).filter(name=>!names.some(product=>normalize(product)===normalize(name)))};
  });
 }
-function clearPrivate(){products=[];records=[];withdrawn=new Set();excluded=[];accountId='';evidence={sources:[]};ready=false;}
+function clearPrivate(){products=[];records=[];withdrawn=new Set();excluded=[];accountId='';evidence={sources:[]};ready=false;lastFullAt=0;recordsMonths=0;}
 function statusFor(p){
  if(!p)return 'Waiting for CVIE registration';
  if(p.status==='needs_identity')return 'Choose the exact product';
@@ -157,11 +159,25 @@ function draw(){
    details.append(node('summary','Product scan status ('+products.length+')'+(active.length?' · '+active.length+' in progress':'')),list,node('p','Progress updates automatically. History bars track NVD checks; original disclosures and CISA KEV verification are shown above. Scans continue if you leave this page. A completed source check does not establish that an installation is secure.','cvie-caption'));panel.append(details);}
  }
 }
-async function refresh(sync=false){
+const identitySignature=rows=>JSON.stringify(rows.map(p=>[p.id,p.name,p.vendor,p.cpe]));
+const resultSignature=rows=>JSON.stringify(rows.map(p=>[p.id,p.status,p.last_success_at,p.recent_complete_at,p.history_complete_at]));
+async function refresh(sync=false,progressOnly=false){
+ if(progressOnly&&document.visibilityState==='hidden')return;
  if(busy){pending=true;pendingSync=pendingSync||sync;return;}busy=true;clearTimeout(timer);draw();
  const requestedMonths=months;
  try{
   if(sync)await request('/sync',{method:'POST',body:'{}'});
+  if(progressOnly&&ready){
+   const recovering=Boolean(error);
+   const state=await request('/progress');
+   if(accountId&&accountId!==state.account_id){clearPrivate();notify();}
+   else if(identitySignature(products)===identitySignature(state.products||[])){
+    const changed=resultSignature(products)!==resultSignature(state.products||[]);
+    const previous=new Map(products.map(p=>[p.id,p]));
+    products=(state.products||[]).map(p=>({...previous.get(p.id),...p}));evidence=state.evidence||{sources:[]};error='';notify();
+    if(!recovering&&!changed&&recordsMonths===requestedMonths&&lastFullAt&&Date.now()-lastFullAt<RESULT_MAX_AGE)return;
+   }
+  }
   const state=await request();
   if(accountId&&accountId!==state.account_id){clearPrivate();notify();}accountId=state.account_id||'';
   products=state.products||[];ready=state.ready;evidence=state.evidence||{sources:[]};withdrawn=new Set(state.withdrawn_ids||[]);excluded=state.excluded_product_cves||[];error='';draw();
@@ -174,12 +190,12 @@ async function refresh(sync=false){
    if(page.next)visited.add(page.next);
    after=page.next||'';
   }while(after);
-  if(requestedMonths===months){records=incoming;notify();}else pending=true;
+  if(requestedMonths===months){records=incoming;recordsMonths=requestedMonths;lastFullAt=Date.now();notify();}else pending=true;
  }catch(e){if(!(e instanceof SessionChanged)){error=e.name==='TimeoutError'?'The CVIE request timed out. Saved results remain available; automatic retry is scheduled.':e.message;notify();}}
  finally{
   busy=false;draw();
   if(pending){const syncNext=pendingSync;pending=false;pendingSync=false;timer=setTimeout(()=>void refresh(syncNext),250);}
-  else if(signedIn)timer=setTimeout(()=>void refresh(),products.some(p=>['queued','scanning'].includes(p.status))?8000:60000);
+  else if(signedIn&&document.visibilityState!=='hidden')timer=setTimeout(()=>void refresh(false,true),products.some(p=>['queued','scanning'].includes(p.status))?ACTIVE_POLL:IDLE_POLL);
  }
 }
 window.CVEHARBOR_CVIE={get products(){return products;},get records(){return merge();},get evidence(){return evidence;},get months(){return months;},get ready(){return ready;},get signedIn(){return signedIn;},get loading(){return busy;},merge,refresh,statusFor,
@@ -192,6 +208,6 @@ window.addEventListener('cveharbor:account-state',event=>{
  if(!event.detail?.authenticated||email!==accountEmail){authEpoch++;clearPrivate();accountEmail=email;signedIn=!!event.detail?.authenticated;error='';notify();}
  if(event.detail?.authenticated)void refresh(true);else{pending=false;pendingSync=false;clearTimeout(timer);}
 });
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&signedIn)void refresh();});
+document.addEventListener('visibilitychange',()=>{clearTimeout(timer);if(document.visibilityState==='visible'&&signedIn)void refresh(false,true);});
 if(typeof fetch==='function')void refresh(true);
 })();

@@ -5,6 +5,7 @@ import {cpeFamily,vendorKey} from './product-identity.js';
 import {isHyperV,hyperVHostNames} from './hyperv.js';
 import {dotnetProfile,DOTNET_FAMILY} from './dotnet.js';
 import {coveragePlan} from './product-coverage.js';
+import {invalidatePublicSourceStatus} from './public-source-status-cache.js';
 const q=(db,sql,...args)=>db.prepare(sql).bind(...args);
 const DAY=86400000;
 const validAddedDate=(value,now)=>{
@@ -164,7 +165,7 @@ export async function queueRelevantKev(env,products){
  if(!products.length||!await evidenceReady(env))return;
  const rows=(await env.DB.prepare('SELECT record_json FROM cvie_kev').all()).results||[];
  const items=rows.map(row=>JSON.parse(row.record_json)).filter(k=>relevantKev(k,products)).map(k=>({id:k.cveID,revision:'',priority:0}));
- if(items.length)await queueSql(env,items).run();
+ if(items.length){await queueSql(env,items).run();invalidatePublicSourceStatus(env);}
 }
 export async function refreshEvidence(env,fetcher=fetch,now=Date.now()){
  if(!await evidenceReady(env))return {ready:false};
@@ -200,10 +201,10 @@ export async function refreshEvidence(env,fetcher=fetch,now=Date.now()){
   }
   statements.push(q(env.DB,`UPDATE cvie_sources SET status='ok',last_success_at=?,publisher_at=?,checkpoint=?,coverage_start_at=?,
    next_attempt_at=?,lease_until=0,error='',source_url=? WHERE id=? AND lease_until=?`,now,publisher,checkpoint,coverage,now+(source.id==='cisa_kev'?15:5)*60000,SOURCE_URLS[source.id],source.id,lease));
-  await env.DB.batch(statements);return {source:source.id,ok:true};
+  await env.DB.batch(statements);invalidatePublicSourceStatus(env);return {source:source.id,ok:true};
  }catch(error){
   const retry=now+(error.delay||60000);
-  await q(env.DB,"UPDATE cvie_sources SET status='unavailable',error=?,next_attempt_at=?,record_retry_at=MAX(record_retry_at,?),lease_until=0 WHERE id=? AND lease_until=?",String(error.message).slice(0,220),retry,source.id==='cve_program'&&error.throttled?retry:0,source.id,lease).run();return {source:source.id,ok:false};
+  await q(env.DB,"UPDATE cvie_sources SET status='unavailable',error=?,next_attempt_at=?,record_retry_at=MAX(record_retry_at,?),lease_until=0 WHERE id=? AND lease_until=?",String(error.message).slice(0,220),retry,source.id==='cve_program'&&error.throttled?retry:0,source.id,lease).run();invalidatePublicSourceStatus(env);return {source:source.id,ok:false};
  }
 }
 export async function ingestDisclosures(env,fetcher=fetch,now=Date.now(),limit=15){
@@ -247,7 +248,7 @@ export async function ingestDisclosures(env,fetcher=fetch,now=Date.now(),limit=1
    error=COALESCE((SELECT json_extract(value,'$.error') FROM json_each(?) WHERE json_extract(value,'$.id')=cvie_disclosure_queue.cve_id),'A newer revision is queued')
    WHERE cve_id IN(SELECT value FROM json_each(?)) AND lease_until=?`,now,JSON.stringify(failures),JSON.stringify(failures),ids,lease));
  if(throttledUntil)statements.push(q(env.DB,"UPDATE cvie_sources SET record_retry_at=MAX(record_retry_at,?) WHERE id='cve_program'",throttledUntil));
- await env.DB.batch(statements);return {processed:successes.length,failed:failures.length};
+ await env.DB.batch(statements);invalidatePublicSourceStatus(env);return {processed:successes.length,failed:failures.length};
 }
 export async function dispatchEvidence(env){
  // Separate minute tick keeps this source-ingestion budget independent of NVD backfills.

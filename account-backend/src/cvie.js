@@ -270,6 +270,21 @@ export async function loadCvieDigest(env,userId,now=Date.now(),selected=null){
  const pending=await query(env.DB,"SELECT id FROM cvie_products p WHERE user_id=? AND (status<>'ready' OR last_success_at<?) AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) LIMIT 1",userId,now-24*3600000).first();
  return {records:(result.results||[]).slice(0,1000).map(row=>JSON.parse(row.record_json)),degraded:Boolean(pending),coverageLimited:(result.results||[]).length>1000};
 }
+function savedProgress(p,now){
+ const cursor=JSON.parse(p.cursor_json||'{}'),window=cursor.windows?.[cursor.position];
+ return {id:p.id,name:p.name,vendor:p.vendor,cpe:p.cpe,status:p.status,error:p.error,
+  last_success_at:p.last_success_at,recent_complete_at:p.recent_complete_at,history_complete_at:p.history_complete_at,
+  next_attempt_at:p.next_attempt_at,stale:!p.last_success_at||now-p.last_success_at>24*3600000,
+  progress:{windows_complete:cursor.position||0,windows_total:cursor.windows?.length||0,records_checked:window?.index||0,
+   records_in_window:window?.total??null,directory_checked:cursor.directory_index||0,directory_total:cursor.directory_total||0}};
+}
+async function productSourceHealth(env,products,now){
+ const evidence=await sourceHealth(env,now),attempted=products.map(p=>p.last_success_at).filter(Boolean);
+ evidence.sources.unshift({id:'nvd',label:'NVD product history',url:'https://nvd.nist.gov/',
+  status:!products.length?'no_products':products.every(p=>p.status==='needs_identity')?'needs_identity':products.some(p=>p.status==='retrying')?'unavailable':products.some(p=>p.stale&&p.status==='ready')?'stale':products.some(p=>p.status!=='ready')?'scanning':'current',
+  last_success_at:attempted.length?Math.min(...attempted):null});
+ return evidence;
+}
 export async function cvieRoute(req,env,user,ctx,data={}){
  if(!await cvieReady(env))return json({ready:false,error:'CVIE database setup is required. Your saved products and inventory are unchanged.'},503);
  const url=new URL(req.url),path=url.pathname;
@@ -277,6 +292,13 @@ export async function cvieRoute(req,env,user,ctx,data={}){
   const sync=await syncAccountProducts(env,user.id);
   if(sync.changed)ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id));
   return json({...sync,status:sync.changed?'updated':'unchanged'},sync.changed?202:200);
+ }
+ if(path==='/v1/cvie/progress'&&req.method==='GET'){
+  const now=Date.now();
+  const rows=(await query(env.DB,`SELECT p.* FROM cvie_products p WHERE p.user_id=?
+   AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) ORDER BY p.name`,user.id).all()).results||[];
+  const products=rows.map(p=>savedProgress(p,now));
+  return json({ready:true,account_id:user.id,products,evidence:await productSourceHealth(env,products,now)});
  }
  const identity=/^\/v1\/cvie\/products\/([a-f0-9-]{36})\/identity$/.exec(path);
  if(identity&&req.method==='PUT'){
@@ -300,23 +322,15 @@ export async function cvieRoute(req,env,user,ctx,data={}){
   if(repairedHyperV||repairedCoverage)result=await loadProducts();
   const evidenceCtx=await evidenceContext(env,user.id),counts=evidenceCtx?await combinedCounts(env,user.id,iso(monthsAgo(now,3)),iso(monthsAgo(now,12)),now,evidenceCtx):null;
   const products=(result.results||[]).map(p=>{
-   const cursor=JSON.parse(p.cursor_json||'{}'),window=cursor.windows?.[cursor.position];
-   return {id:p.id,name:p.name,vendor:p.vendor,cpe:p.cpe,status:p.status,error:p.error,icon_slug:logoFor(p.name,p.cpe),
+   return {...savedProgress(p,now),icon_slug:logoFor(p.name,p.cpe),
     component_scope:coveragePlan(p).component||'verified_product',coverage:coverageSummary(p),identity_label:coveragePlan(p).label,
     ...(isHyperV(p)?{component_scope:'windows_hyperv',identity_prompt:'Select the Windows host for Hyper-V',identity_label:hyperVHost(p.cpe)?.label||''}:{}),
     ...(coveragePlan(p).profile?{component_scope:'modern_dotnet'}:{}),
     recent_count:counts?(counts.find(c=>c.product_id===p.id)?.recent_count||0):p.recent_count,history_count:counts?(counts.find(c=>c.product_id===p.id)?.history_count||0):p.history_count,
     older_kev_recent_count:counts?.find(c=>c.product_id===p.id)?.older_kev_recent_count||0,older_kev_history_count:counts?.find(c=>c.product_id===p.id)?.older_kev_history_count||0,
-    last_success_at:p.last_success_at,recent_complete_at:p.recent_complete_at,
-    history_complete_at:p.history_complete_at,next_attempt_at:p.next_attempt_at,stale:!p.last_success_at||now-p.last_success_at>24*3600000,
-    progress:{windows_complete:cursor.position||0,windows_total:cursor.windows?.length||0,records_checked:window?.index||0,records_in_window:window?.total??null,directory_checked:cursor.directory_index||0,directory_total:cursor.directory_total||0},
     candidates:p.status==='needs_identity'?JSON.parse(p.candidates_json):[]};
   });
-  const evidence=await sourceHealth(env,now),withdrawn=await withdrawnIds(env);
-  const attempted=products.map(p=>p.last_success_at).filter(Boolean);
-  evidence.sources.unshift({id:'nvd',label:'NVD product history',url:'https://nvd.nist.gov/',
-   status:!products.length?'no_products':products.every(p=>p.status==='needs_identity')?'needs_identity':products.some(p=>p.status==='retrying')?'unavailable':products.some(p=>p.stale&&p.status==='ready')?'stale':products.some(p=>p.status!=='ready')?'scanning':'current',
-   last_success_at:attempted.length?Math.min(...attempted):null});
+  const evidence=await productSourceHealth(env,products,now),withdrawn=await withdrawnIds(env);
   return json({ready:true,engine:'CVIE',account_id:user.id,products,evidence,withdrawn_ids:withdrawn,excluded_product_cves:await excludedProductCves(env,user.id,evidenceCtx),default_months:3});
  }
  if(path==='/v1/cvie/advisories'&&req.method==='GET'){
