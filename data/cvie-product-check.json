@@ -1,0 +1,54 @@
+{
+  "checked_at": "2026-11-01T03:29:49.029Z",
+  "ok": true,
+  "scope": "NVD recent-history integration for four real product families; disposable account/database",
+  "products": [
+    {
+      "name": "Apache Tomcat",
+      "cpe": "cpe:2.3:a:apache:tomcat:*:*:*:*:*:*:*:*",
+      "status": "scanning",
+      "recent_complete_at": 1793503811968,
+      "matched_advisories": 10,
+      "sample_ids": [
+        "CVE-2026-65182",
+        "CVE-2026-65183",
+        "CVE-2026-65637"
+      ]
+    },
+    {
+      "name": "PHP",
+      "cpe": "cpe:2.3:a:php:php:*:*:*:*:*:*:*:*",
+      "status": "scanning",
+      "recent_complete_at": 1793503796476,
+      "matched_advisories": 13,
+      "sample_ids": [
+        "CVE-2025-1218",
+        "CVE-2025-14181",
+        "CVE-2026-109618"
+      ]
+    },
+    {
+      "name": "Windows Server 2022",
+      "cpe": "cpe:2.3:o:microsoft:windows_server_2022:*:*:*:*:*:*:*:*",
+      "status": "scanning",
+      "recent_complete_at": 1793504072789,
+      "matched_advisories": 1789,
+      "sample_ids": [
+        "CVE-2026-100201",
+        "CVE-2026-100202",
+        "CVE-2026-100203"
+      ]
+    },
+    {
+      "name": "WordPress",
+      "cpe": "cpe:2.3:a:wordpress:wordpress:*:*:*:*:*:*:*:*",
+      "status": "scanning",
+      "recent_complete_at": 1793503804355,
+      "matched_advisories": 1,
+      "sample_ids": [
+        "CVE-2026-87902"
+      ]
+    }
+  ],
+  "requests": 39
+}

@@ -1,11 +1,11 @@
 {
-  "checked_at": "2026-11-01T02:40:03.845Z",
+  "checked_at": "2026-11-01T03:29:15.338Z",
   "provider": "NVD",
   "engine": "CVIE",
   "operation": "isolated NVD + original CNA + CISA KEV integration; no production writes",
   "ok": true,
   "pages_checked": 5,
-  "nvd_checked_at": 1793500834446,
+  "nvd_checked_at": 1793503786424,
   "status": "ready",
   "cpe": "cpe:2.3:a:apache:tomcat:*:*:*:*:*:*:*:*",
   "advisories": [
@@ -18,6 +18,8 @@
       "updated": "2025-10-29T11:49:44.413Z",
       "severity": "critical",
       "cvss": 10,
+      "cvss_provider": "CVE Program / ADP",
+      "cvss_label_conflict": false,
       "remediation": "Review the original vendor advisory for affected versions and the appropriate fix.",
       "action": "Verify the installed product, version and prerequisites against the original advisory.",
       "status": "Published CNA disclosure",
@@ -36,7 +38,7 @@
           "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
         }
       ],
-      "severity_source": "CVE Program / CNA",
+      "severity_source": "CVE Program / ADP",
       "affected_cpes": [
         {
           "vulnerable": true,
@@ -65,6 +67,12 @@
           "cvie_product_key": "Apache Tomcat",
           "versionEndIncluding": "8.5.100",
           "versionStartIncluding": "8.5.0"
+        },
+        {
+          "vulnerable": true,
+          "criteria": "cpe:2.3:a:apache:tomcat:*:*:*:*:*:*:*:*",
+          "cvie_product_key": "Apache Tomcat",
+          "comparison_unsupported": true
         }
       ],
       "affected": "Apache Tomcat: >= 11.0.0-M1, <= 11.0.2; >= 10.1.0-M1, <= 10.1.34; >= 9.0.0.M1, <= 9.0.98; >= 8.5.0, <= 8.5.100",
@@ -125,19 +133,20 @@
           "cpe": "cpe:2.3:a:apache:tomcat:*:*:*:*:*:*:*:*"
         }
       ],
+      "source_updated_at": "2025-10-29T11:49:44.413Z",
       "known_exploited": true,
-      "kev_verified_at": 1793500834976,
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "cve_program",
           "url": "https://www.cve.org/CVERecord?id=CVE-2025-24813",
-          "checked_at": 1793500835404,
+          "checked_at": 1793503788657,
           "updated": "2025-10-29T11:49:44.413Z"
         },
         {
           "source": "cisa_kev",
           "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
-          "checked_at": 1793500834976,
+          "checked_at": 1793503786994,
           "updated": "2025-04-01"
         }
       ],
@@ -149,6 +158,7 @@
       "retained_exploited": true,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -578,19 +588,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500819890,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503771257,
+      "source_updated_at": "2026-06-17T09:57:06.780Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-66614",
-          "checked_at": 1793500819890,
+          "checked_at": 1793503771257,
           "updated": "2026-06-17T09:57:06.780"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -970,19 +982,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500819890,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503771257,
+      "source_updated_at": "2026-06-17T10:23:30.013Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-24733",
-          "checked_at": 1793500819890,
+          "checked_at": 1793503771257,
           "updated": "2026-06-17T10:23:30.013"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -1317,19 +1331,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500819890,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503771257,
+      "source_updated_at": "2026-07-15T14:17:21.530Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-24734",
-          "checked_at": 1793500819890,
+          "checked_at": 1793503771257,
           "updated": "2026-07-15T14:17:21.530"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -1394,19 +1410,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500819890,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503771257,
+      "source_updated_at": "2026-10-26T21:10:00.170Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-24880",
-          "checked_at": 1793500819890,
+          "checked_at": 1793503771257,
           "updated": "2026-10-26T21:10:00.170"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -1496,19 +1514,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500819890,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503771257,
+      "source_updated_at": "2026-10-26T22:10:00.163Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-25854",
-          "checked_at": 1793500819890,
+          "checked_at": 1793503771257,
           "updated": "2026-10-26T22:10:00.163"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -1573,19 +1593,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500819890,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503771257,
+      "source_updated_at": "2026-10-26T21:10:00.170Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-29129",
-          "checked_at": 1793500819890,
+          "checked_at": 1793503771257,
           "updated": "2026-10-26T21:10:00.170"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -1725,19 +1747,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500819890,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503771257,
+      "source_updated_at": "2026-10-26T21:10:00.170Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-29145",
-          "checked_at": 1793500819890,
+          "checked_at": 1793503771257,
           "updated": "2026-10-26T21:10:00.170"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -1856,19 +1880,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500819890,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503771257,
+      "source_updated_at": "2026-10-26T22:10:00.163Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-29146",
-          "checked_at": 1793500819890,
+          "checked_at": 1793503771257,
           "updated": "2026-10-26T22:10:00.163"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -1933,19 +1959,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500819890,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503771257,
+      "source_updated_at": "2026-10-26T21:10:00.170Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-32990",
-          "checked_at": 1793500819890,
+          "checked_at": 1793503771257,
           "updated": "2026-10-26T21:10:00.170"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -2010,19 +2038,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500819890,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503771257,
+      "source_updated_at": "2026-10-26T21:10:00.170Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-34483",
-          "checked_at": 1793500819890,
+          "checked_at": 1793503771257,
           "updated": "2026-10-26T21:10:00.170"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -2125,19 +2155,20 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "Confirmed exploitation: included in the CISA KEV catalogue",
-      "nvd_checked_at": 1793500819890,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503771257,
+      "source_updated_at": "2026-10-26T22:10:00.163Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-34486",
-          "checked_at": 1793500819890,
+          "checked_at": 1793503771257,
           "updated": "2026-10-26T22:10:00.163"
         },
         {
           "source": "cisa_kev",
           "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
-          "checked_at": 1793500834976,
+          "checked_at": 1793503786994,
           "updated": "2026-08-04"
         }
       ],
@@ -2148,6 +2179,7 @@
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": true,
+      "disclosure_verification_stale": false,
       "evidence_status": "A source update is awaiting verification",
       "source_conflicts": []
     },
@@ -2212,19 +2244,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500819890,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503771257,
+      "source_updated_at": "2026-10-26T21:10:00.170Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-34487",
-          "checked_at": 1793500819890,
+          "checked_at": 1793503771257,
           "updated": "2026-10-26T21:10:00.170"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -2354,19 +2388,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500819890,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503771257,
+      "source_updated_at": "2026-10-26T21:10:00.170Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-34500",
-          "checked_at": 1793500819890,
+          "checked_at": 1793503771257,
           "updated": "2026-10-26T21:10:00.170"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -2452,19 +2488,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500811404,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503763795,
+      "source_updated_at": "2026-10-26T18:10:00.173Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-41284",
-          "checked_at": 1793500811404,
+          "checked_at": 1793503763795,
           "updated": "2026-10-26T18:10:00.173"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -2543,19 +2581,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500811404,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503763795,
+      "source_updated_at": "2026-10-26T18:10:00.173Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-41293",
-          "checked_at": 1793500811404,
+          "checked_at": 1793503763795,
           "updated": "2026-10-26T18:10:00.173"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -2634,19 +2674,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500811404,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503763795,
+      "source_updated_at": "2026-10-26T18:10:00.173Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-42498",
-          "checked_at": 1793500811404,
+          "checked_at": 1793503763795,
           "updated": "2026-10-26T18:10:00.173"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -2725,19 +2767,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500811404,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503763795,
+      "source_updated_at": "2026-10-26T00:10:00.150Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-43512",
-          "checked_at": 1793500811404,
+          "checked_at": 1793503763795,
           "updated": "2026-10-26T00:10:00.150"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -2816,19 +2860,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500811404,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503763795,
+      "source_updated_at": "2026-10-26T18:10:00.173Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-43513",
-          "checked_at": 1793500811404,
+          "checked_at": 1793503763795,
           "updated": "2026-10-26T18:10:00.173"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -2907,19 +2953,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500811404,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503763795,
+      "source_updated_at": "2026-10-26T18:10:00.173Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-43514",
-          "checked_at": 1793500811404,
+          "checked_at": 1793503763795,
           "updated": "2026-10-26T18:10:00.173"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -2998,19 +3046,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500811404,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503763795,
+      "source_updated_at": "2026-10-26T18:10:00.173Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-43515",
-          "checked_at": 1793500811404,
+          "checked_at": 1793503763795,
           "updated": "2026-10-26T18:10:00.173"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -3088,19 +3138,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500811404,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503763795,
+      "source_updated_at": "2026-10-25T21:10:00.770Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-50229",
-          "checked_at": 1793500811404,
+          "checked_at": 1793503763795,
           "updated": "2026-10-25T21:10:00.770"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -3172,19 +3224,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500811404,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503763795,
+      "source_updated_at": "2026-10-25T21:10:00.770Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-53404",
-          "checked_at": 1793500811404,
+          "checked_at": 1793503763795,
           "updated": "2026-10-25T21:10:00.770"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -3249,19 +3303,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500811404,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503763795,
+      "source_updated_at": "2026-10-25T21:10:00.770Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-53434",
-          "checked_at": 1793500811404,
+          "checked_at": 1793503763795,
           "updated": "2026-10-25T21:10:00.770"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -3325,19 +3381,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500811404,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503763795,
+      "source_updated_at": "2026-10-25T21:10:00.770Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-55276",
-          "checked_at": 1793500811404,
+          "checked_at": 1793503763795,
           "updated": "2026-10-25T21:10:00.770"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -3401,19 +3459,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500811404,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503763795,
+      "source_updated_at": "2026-10-25T21:10:00.770Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-55955",
-          "checked_at": 1793500811404,
+          "checked_at": 1793503763795,
           "updated": "2026-10-25T21:10:00.770"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -3477,19 +3537,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500811404,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503763795,
+      "source_updated_at": "2026-10-25T21:10:00.770Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-55956",
-          "checked_at": 1793500811404,
+          "checked_at": 1793503763795,
           "updated": "2026-10-25T21:10:00.770"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -3553,19 +3615,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500811404,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503763795,
+      "source_updated_at": "2026-10-25T21:10:00.770Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-55957",
-          "checked_at": 1793500811404,
+          "checked_at": 1793503763795,
           "updated": "2026-10-25T21:10:00.770"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -3643,19 +3707,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500811404,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503763795,
+      "source_updated_at": "2026-07-14T16:57:31.103Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-59083",
-          "checked_at": 1793500811404,
+          "checked_at": 1793503763795,
           "updated": "2026-07-14T16:57:31.103"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -3734,19 +3800,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500811404,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503763795,
+      "source_updated_at": "2026-10-24T21:10:00.130Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-59084",
-          "checked_at": 1793500811404,
+          "checked_at": 1793503763795,
           "updated": "2026-10-24T21:10:00.130"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -3818,19 +3886,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500803848,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503755340,
+      "source_updated_at": "2026-08-27T15:27:26.040Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-65182",
-          "checked_at": 1793500803848,
+          "checked_at": 1793503755340,
           "updated": "2026-08-27T15:27:26.040"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -3895,19 +3965,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500803848,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503755340,
+      "source_updated_at": "2026-08-27T15:26:04.837Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-65183",
-          "checked_at": 1793500803848,
+          "checked_at": 1793503755340,
           "updated": "2026-08-27T15:26:04.837"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -3972,19 +4044,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500803848,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503755340,
+      "source_updated_at": "2026-08-27T15:19:42.247Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-65637",
-          "checked_at": 1793500803848,
+          "checked_at": 1793503755340,
           "updated": "2026-08-27T15:19:42.247"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -4056,19 +4130,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500803848,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503755340,
+      "source_updated_at": "2026-08-27T15:17:49.277Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-65905",
-          "checked_at": 1793500803848,
+          "checked_at": 1793503755340,
           "updated": "2026-08-27T15:17:49.277"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -4133,19 +4209,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500803848,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503755340,
+      "source_updated_at": "2026-08-27T15:17:08.267Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-65927",
-          "checked_at": 1793500803848,
+          "checked_at": 1793503755340,
           "updated": "2026-08-27T15:17:08.267"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -4245,19 +4323,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500811404,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503763795,
+      "source_updated_at": "2026-10-24T13:10:00.147Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-66299",
-          "checked_at": 1793500811404,
+          "checked_at": 1793503763795,
           "updated": "2026-10-24T13:10:00.147"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -4329,19 +4409,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500803848,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503755340,
+      "source_updated_at": "2026-08-27T15:16:11.953Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-66422",
-          "checked_at": 1793500803848,
+          "checked_at": 1793503755340,
           "updated": "2026-08-27T15:16:11.953"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -4413,19 +4495,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500803848,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503755340,
+      "source_updated_at": "2026-08-27T15:15:02.453Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-68525",
-          "checked_at": 1793500803848,
+          "checked_at": 1793503755340,
           "updated": "2026-08-27T15:15:02.453"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -4497,19 +4581,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500803848,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503755340,
+      "source_updated_at": "2026-09-21T12:17:17.257Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-68569",
-          "checked_at": 1793500803848,
+          "checked_at": 1793503755340,
           "updated": "2026-09-21T12:17:17.257"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -4574,19 +4660,21 @@
       ],
       "action": "Confirm the installed version and deployment prerequisites before remediation.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500803848,
-      "kev_verified_at": 1793500834976,
+      "nvd_checked_at": 1793503755340,
+      "source_updated_at": "2026-08-27T13:02:31.670Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-68763",
-          "checked_at": 1793500803848,
+          "checked_at": 1793503755340,
           "updated": "2026-08-27T13:02:31.670"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     },
@@ -4619,36 +4707,31 @@
           "vulnerable": true,
           "criteria": "cpe:2.3:a:apache:tomcat:*:*:*:*:*:*:*:*",
           "cvie_product_key": "Apache Tomcat",
-          "versionEndIncluding": "11.0.24",
-          "versionStartIncluding": "11.0.0-M1"
+          "comparison_unsupported": true
         },
         {
           "vulnerable": true,
           "criteria": "cpe:2.3:a:apache:tomcat:*:*:*:*:*:*:*:*",
           "cvie_product_key": "Apache Tomcat",
-          "versionEndIncluding": "10.1.57",
-          "versionStartIncluding": "10.1.0-M1"
+          "comparison_unsupported": true
         },
         {
           "vulnerable": true,
           "criteria": "cpe:2.3:a:apache:tomcat:*:*:*:*:*:*:*:*",
           "cvie_product_key": "Apache Tomcat",
-          "versionEndIncluding": "9.0.120",
-          "versionStartIncluding": "9.0.0.M1"
+          "comparison_unsupported": true
         },
         {
           "vulnerable": true,
           "criteria": "cpe:2.3:a:apache:tomcat:*:*:*:*:*:*:*:*",
           "cvie_product_key": "Apache Tomcat",
-          "versionEndIncluding": "8.5.100",
-          "versionStartIncluding": "8.5.0"
+          "comparison_unsupported": true
         },
         {
           "vulnerable": true,
           "criteria": "cpe:2.3:a:apache:tomcat:*:*:*:*:*:*:*:*",
           "cvie_product_key": "Apache Tomcat",
-          "versionEndIncluding": "7.0.109",
-          "versionStartIncluding": "7.0.43"
+          "comparison_unsupported": true
         }
       ],
       "affected": "Apache Tomcat: >= 11.0.0-M1, <= 11.0.24; >= 10.1.0-M1, <= 10.1.57; >= 9.0.0.M1, <= 9.0.120; >= 8.5.0, <= 8.5.100; >= 7.0.43, <= 7.0.109",
@@ -4669,8 +4752,10 @@
       ],
       "action": "Verify the installed product, version and prerequisites against the original advisory.",
       "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
-      "nvd_checked_at": 1793500803848,
-      "severity_source": "CVE Program / CNA",
+      "nvd_checked_at": 1793503755340,
+      "cvss_provider": "CVE Program / ADP",
+      "cvss_label_conflict": false,
+      "severity_source": "CVE Program / ADP",
       "cna_affected": [
         {
           "vendor": "Apache Software Foundation",
@@ -4716,24 +4801,26 @@
           "defaultStatus": "unaffected"
         }
       ],
-      "kev_verified_at": 1793500834976,
+      "source_updated_at": "2026-08-27T12:40:56.270Z",
+      "kev_verified_at": 1793503786994,
       "provenance": [
         {
           "source": "nvd",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-73180",
-          "checked_at": 1793500803848,
+          "checked_at": 1793503755340,
           "updated": "2026-08-27T12:40:56.270"
         },
         {
           "source": "cve_program",
           "url": "https://www.cve.org/CVERecord?id=CVE-2026-73180",
-          "checked_at": 1793500835404,
+          "checked_at": 1793503788657,
           "updated": "2026-08-26T18:35:13.414Z"
         }
       ],
       "retained_exploited": false,
       "exploitation_verification_stale": false,
       "verification_pending": false,
+      "disclosure_verification_stale": false,
       "evidence_status": "Source-backed evidence",
       "source_conflicts": []
     }
@@ -4742,7 +4829,7 @@
   "recent_count": 10,
   "evidence": {
     "ready": true,
-    "pending_records": 4452,
+    "pending_records": 4453,
     "failed_records": 0,
     "sources": [
       {
@@ -4750,26 +4837,26 @@
         "label": "CISA KEV",
         "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
         "status": "verifying_products",
-        "last_attempt_at": 1793500834976,
-        "last_success_at": 1793500834976,
+        "last_attempt_at": 1793503786994,
+        "last_success_at": 1793503786994,
         "publisher_at": 1793379765366,
         "coverage_start_at": null,
         "pending_records": 6,
         "error": "",
-        "retry_at": 1793501734976
+        "retry_at": 1793504686994
       },
       {
         "id": "cve_program",
         "label": "CVE Program / original disclosures",
         "url": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/deltaLog.json",
         "status": "catching_up",
-        "last_attempt_at": 1793500835240,
-        "last_success_at": 1793500835240,
-        "publisher_at": 1793497631263,
-        "coverage_start_at": 1793414278823,
-        "pending_records": 2697,
+        "last_attempt_at": 1793503787089,
+        "last_success_at": 1793503787089,
+        "publisher_at": 1793503029247,
+        "coverage_start_at": 1793416509482,
+        "pending_records": 2698,
         "error": "",
-        "retry_at": 1793501135240
+        "retry_at": 1793504087089
       }
     ]
   },

@@ -1,0 +1,33 @@
+{
+  "checked_at": "2026-11-01T03:34:33Z",
+  "ok": true,
+  "scope": "Read-only production public feed metadata; no customer records queried",
+  "sources": [
+    {
+      "id": "cisa_kev",
+      "status": "ok",
+      "last_attempt_at": 1793503690543,
+      "last_success_at": 1793503690543,
+      "publisher_at": 1793379765366,
+      "coverage_start_at": null,
+      "error": ""
+    },
+    {
+      "id": "cve_program",
+      "status": "ok",
+      "last_attempt_at": 1793504049869,
+      "last_success_at": 1793504049869,
+      "publisher_at": 1793504008943,
+      "coverage_start_at": 1793414636064,
+      "error": ""
+    }
+  ],
+  "counts": {
+    "kev_records": 1766,
+    "disclosures": 195,
+    "pending_records": 4260,
+    "retrying_records": 0
+  },
+  "retry_examples": [],
+  "indexing_complete": false
+}
