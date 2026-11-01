@@ -49,12 +49,20 @@ export function coverageSummary(product){
 // A source may append a release number to an exact product label. Keep the
 // boundary and punctuation: AB is not A.B; MySQL is not MySQL Connector.
 export function versionedLabelSql(row,labels){
- const text=`lower(trim(replace(json_extract(${row},'$.product'),'_',' ')))`;
- const suffix=`ltrim(substr(${text},length(label.value)+1))`,release=`substr(${suffix},1,instr(${suffix}||' ',' ')-1)`;
- const bound=key=>`lower(COALESCE(json_extract(v.value,'$.${key}'),''))`;
- const versionMatches=['version','lessThan','lessThanOrEqual'].map(key=>`(${bound(key)}=${release} OR substr(${bound(key)},1,length(${release})+1)=${release}||'.' OR substr(${bound(key)},1,length(${release})+1)=${release}||'-')`).join(' OR ');
- return `EXISTS(SELECT 1 FROM json_each(${labels}) label WHERE ${text}=label.value OR (
-  substr(${text},1,length(label.value))=label.value AND substr(${text},length(label.value)+1,1)=' '
-  AND substr(${suffix},1,1) GLOB '[0-9]' AND EXISTS(SELECT 1 FROM json_each(json_extract(${row},'$.versions')) v WHERE ${versionMatches})))`;
+ // D1 limits expression depth to 100. Materialize each transformation so SQLite
+ // cannot inline repeated release parsing into every version-bound comparison.
+ return `EXISTS(WITH product_label AS MATERIALIZED (
+   SELECT lower(trim(replace(json_extract(${row},'$.product'),'_',' '))) AS product_text
+  ), label_suffixes AS MATERIALIZED (
+   SELECT label.value AS label,product_text,ltrim(substr(product_text,length(label.value)+1)) AS suffix
+   FROM product_label,json_each(${labels}) label
+  ), label_releases AS MATERIALIZED (
+   SELECT *,substr(suffix,1,instr(suffix||' ',' ')-1) AS release FROM label_suffixes
+  ) SELECT 1 FROM label_releases WHERE product_text=label OR (
+   substr(product_text,1,length(label))=label AND substr(product_text,length(label)+1,1)=' '
+   AND substr(suffix,1,1) GLOB '[0-9]' AND EXISTS(
+    SELECT 1 FROM json_each(json_extract(${row},'$.versions')) v,json_each(v.value) bound
+    WHERE bound.key IN('version','lessThan','lessThanOrEqual') AND (
+     lower(bound.value)=release OR lower(substr(bound.value,1,length(release)+1)) IN(release||'.',release||'-')))))`;
 }
 export const cnaCoverageAdapters=[{key:DOTNET_FAMILY,matchSql:dotnetAffectedSql}];
