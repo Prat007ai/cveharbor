@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {DB} from './helpers/d1.mjs';
-import {subscribeProducts,cvieRoute,runCvieStep} from '../src/cvie.js';
+import {subscribeProducts,cvieRoute,runCvieStep,syncAccountProducts} from '../src/cvie.js';
 import {sourceHealth} from '../src/cvie-records.js';
 import {publicSourceStatus,invalidatePublicSourceStatus,PUBLIC_STATUS_TTL} from '../src/public-source-status-cache.js';
 import worker from '../src/index.js';
@@ -55,3 +55,32 @@ test('public status caching reduces repeated queue aggregates without hiding sou
  assert.equal(env.DB.executions,0);
  await sourceHealth(env,NOW+PUBLIC_STATUS_TTL);assert.ok(env.DB.executions>0);
 });
+test('unresolved identities do not label completed shared products as scanning on each page',async()=>{
+ const env={DB:new DB(),CVIE_SHARED_SCANS_ENABLED:'true'};
+ await subscribeProducts(env,'a',[{name:'Apache Tomcat'},{name:'Private unresolved product',vendor:'Example'}]);
+ await env.DB.prepare("UPDATE cvie_products SET status='needs_identity' WHERE cpe=''").run();
+ await env.DB.prepare("UPDATE cvie_shared_scopes SET status='ready',last_success_at=?,recent_complete_at=?,history_complete_at=?,next_attempt_at=?").bind(Date.now(),Date.now(),Date.now(),Date.now()+21600000).run();
+ const before=(await env.DB.prepare('SELECT * FROM cvie_shared_scopes').all()).results;
+ for(let i=0;i<3;i++){
+  const state=await (await route(env)).json();
+  assert.equal(state.evidence.sources.find(s=>s.id==='nvd').status,'needs_identity');
+  assert.equal(state.products.find(p=>p.name==='Apache Tomcat').status,'ready');
+ }
+ assert.deepEqual((await env.DB.prepare('SELECT * FROM cvie_shared_scopes').all()).results,before);
+ await env.DB.prepare("UPDATE cvie_shared_scopes SET status='scanning'").run();
+ const active=await (await route(env)).json();assert.equal(active.evidence.sources.find(s=>s.id==='nvd').status,'scanning');
+});
+test('repeated login synchronization preserves completed shared history without scheduling a new scan',async()=>{
+ const env={DB:new DB(),CVIE_SHARED_SCANS_ENABLED:'true'};
+ await env.DB.prepare('INSERT INTO user_technology_catalogue VALUES(?,?,?)').bind('a',JSON.stringify({products:[{name:'Apache Tomcat'}]}),Date.now()).run();
+ await syncAccountProducts(env,'a');
+ await env.DB.prepare("UPDATE cvie_shared_scopes SET status='ready',last_success_at=?,history_complete_at=?,next_attempt_at=?").bind(Date.now(),Date.now(),Date.now()+21600000).run();
+ const before=(await env.DB.prepare('SELECT * FROM cvie_shared_scopes').all()).results;
+ for(let i=0;i<3;i++){
+  const sync=await syncAccountProducts(env,'a');assert.equal(sync.changed,false);assert.equal(sync.queued,0);
+  const pending=[];const response=await cvieRoute(new Request('https://api.cveharbor.com/v1/cvie/sync',{method:'POST'}),env,{id:'a'},{waitUntil:promise=>pending.push(promise)});
+  assert.equal(response.status,200);assert.equal(pending.length,0);
+ }
+ assert.deepEqual((await env.DB.prepare('SELECT * FROM cvie_shared_scopes').all()).results,before);
+});
+

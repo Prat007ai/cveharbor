@@ -2,7 +2,7 @@ name: Inspect CVIE production source health without changing data
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, fix/cvie-background-status]
     paths: ['.github/workflows/check-cvie-runtime.yml']
 permissions:
   contents: read
@@ -24,7 +24,9 @@ jobs:
           from deploy_site_gate import cloudflare
           sources=query('SELECT id,status,last_attempt_at,last_success_at,publisher_at,checkpoint,error FROM cvie_sources ORDER BY id')
           totals=query('SELECT (SELECT COUNT(*) FROM cvie_kev) AS kev_records, (SELECT COUNT(*) FROM cvie_disclosures) AS disclosures, (SELECT COUNT(*) FROM cvie_disclosure_queue) AS pending_records, (SELECT COUNT(*) FROM cvie_disclosure_queue WHERE attempts>0) AS retrying_records')[0]
-          result=json.dumps({'sources':sources,'public_record_counts':totals})
+          shared=query('SELECT status,seed_state,COUNT(*) AS scopes,MIN(last_success_at) AS oldest_success,MAX(last_success_at) AS newest_success FROM cvie_shared_scopes GROUP BY status,seed_state')
+          queue=query('SELECT priority,COUNT(*) AS records,MIN(attempts) AS min_attempts,MAX(attempts) AS max_attempts,MIN(next_attempt_at) AS next_attempt_at FROM cvie_disclosure_queue GROUP BY priority')
+          result=json.dumps({'sources':sources,'public_record_counts':totals,'shared_public_jobs':shared,'shared_queue':queue})
           message=result.replace('%','%25').replace('\r','%0D').replace('\n','%0A')
           print('::notice title=Public CVIE runtime health::'+message)
           schedules=cloudflare('/accounts/'+os.environ['CLOUDFLARE_ACCOUNT_ID']+'/workers/scripts/cveharbor-accounts/schedules')
@@ -32,3 +34,4 @@ jobs:
           with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as output:
               output.write('Read-only production CVIE public-source metadata. No customer rows were queried.\n\n```json\n'+json.dumps(json.loads(result),indent=2)+'\n```\n')
           PY
+

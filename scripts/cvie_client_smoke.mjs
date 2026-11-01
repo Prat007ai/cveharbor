@@ -30,6 +30,11 @@ try{
  assert.equal(syncCalls,initialSyncs,'status refresh and inventory display events do not repeat product registration');
  assert.match(client.statusFor({status:'scanning',progress:{windows_complete:4}}),/Continuing saved/);
  assert.match(client.statusFor({status:'scanning',history_complete_at:Date.now()}),/Updating saved vulnerabilities/);
+ evidenceSources=[{id:'cve_program',label:'CVE Program / original disclosures',status:'catching_up',pending_records:3379}];
+ await client.refresh();
+ assert.match(w.document.querySelector('.cvie-source').textContent,/3379 public records awaiting shared background verification/);
+ assert.match(w.document.querySelector('.cvie-source').textContent,/Opening a page does not restart it/);
+ evidenceSources=[];
  holdNext=true;const inFlight=client.refresh();await until(()=>held);
  owner='b';auth(true,'b@example.test');assert.equal(client.records.length,0,'account changes clear old private results synchronously');
  const seen=[];w.addEventListener('cvie:updated',()=>seen.push(client.records.map(r=>r.id)));
@@ -66,3 +71,4 @@ try{
  assert.doesNotMatch(client.statusFor(emptyProduct),/No published advisories found/);
  console.log('PASS CVIE client: late responses, logout, account changes, failed pagination, cyclic cursors and product-specific public-snapshot corrections.');
 }finally{dom.window.close();}
+
