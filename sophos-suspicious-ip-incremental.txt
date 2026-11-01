@@ -1,6 +1,6 @@
-CVEHarbor Threat IP Intelligence | 2026-11-01T18:04:26.923869+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-01T18:13:06.916020+00:00
 Permanent logical group: Suspicious IP Block
-Cumulative indexed IPs: 2372
+Cumulative indexed IPs: 2375
 New since prior published snapshot: 3
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
@@ -26,22 +26,22 @@ No firewall rule is created or activated.
   </Login>
   <Set operation="add">
     <IPHost>
-      <Name>CVEH_79_124_58_18</Name>
+      <Name>CVEH_103_123_168_58</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>79.124.58.18</IPAddress>
+      <IPAddress>103.123.168.58</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_102_104_11_44</Name>
+      <Name>CVEH_141_98_10_112</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>102.104.11.44</IPAddress>
+      <IPAddress>141.98.10.112</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_103_118_85_147</Name>
+      <Name>CVEH_141_98_10_213</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>103.118.85.147</IPAddress>
+      <IPAddress>141.98.10.213</IPAddress>
     </IPHost>
   </Set>
 </Request>
@@ -54,6 +54,6 @@ Merge the newly created host names with ALL existing members, deduplicate,
 then submit an IPHostGroup edit with that complete merged HostList.
 Do not issue a group edit containing only the new IPs.
 New host names to merge:
-CVEH_79_124_58_18
-CVEH_102_104_11_44
-CVEH_103_118_85_147
+CVEH_103_123_168_58
+CVEH_141_98_10_112
+CVEH_141_98_10_213

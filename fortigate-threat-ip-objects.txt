@@ -1,6 +1,6 @@
-# CVEHarbor Threat IP Intelligence | 2026-11-01T18:04:26.923869+00:00
+# CVEHarbor Threat IP Intelligence | 2026-11-01T18:13:06.916020+00:00
 # Permanent logical group: Suspicious IP Block
-# Cumulative indexed IPs: 2372
+# Cumulative indexed IPs: 2375
 # New since prior published snapshot: 3
 # REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 # Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
@@ -3770,6 +3770,9 @@ config firewall address
     edit "CVEH_103_123_168_56"
         set subnet 103.123.168.56 255.255.255.255
     next
+    edit "CVEH_103_123_168_58"
+        set subnet 103.123.168.58 255.255.255.255
+    next
     edit "CVEH_103_123_168_59"
         set subnet 103.123.168.59 255.255.255.255
     next
@@ -4835,6 +4838,9 @@ config firewall address
     edit "CVEH_140_246_137_102"
         set subnet 140.246.137.102 255.255.255.255
     next
+    edit "CVEH_141_98_10_112"
+        set subnet 141.98.10.112 255.255.255.255
+    next
     edit "CVEH_141_98_10_157"
         set subnet 141.98.10.157 255.255.255.255
     next
@@ -4846,6 +4852,9 @@ config firewall address
     next
     edit "CVEH_141_98_10_198"
         set subnet 141.98.10.198 255.255.255.255
+    next
+    edit "CVEH_141_98_10_213"
+        set subnet 141.98.10.213 255.255.255.255
     next
     edit "CVEH_141_98_102_235"
         set subnet 141.98.102.235 255.255.255.255
@@ -8386,6 +8395,7 @@ config firewall addrgrp
         append member "CVEH_103_123_71_86"
         append member "CVEH_103_123_72_12"
         append member "CVEH_103_123_168_56"
+        append member "CVEH_103_123_168_58"
         append member "CVEH_103_123_168_59"
         append member "CVEH_103_123_234_219"
         append member "CVEH_103_124_139_197"
@@ -8741,10 +8751,12 @@ config firewall addrgrp
         append member "CVEH_140_238_82_44"
         append member "CVEH_140_238_168_101"
         append member "CVEH_140_246_137_102"
+        append member "CVEH_141_98_10_112"
         append member "CVEH_141_98_10_157"
         append member "CVEH_141_98_10_160"
         append member "CVEH_141_98_10_172"
         append member "CVEH_141_98_10_198"
+        append member "CVEH_141_98_10_213"
         append member "CVEH_141_98_102_235"
         append member "CVEH_141_144_199_32"
         append member "CVEH_141_144_233_191"
