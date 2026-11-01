@@ -1,6 +1,6 @@
-# CVEHarbor Threat IP Intelligence | 2026-11-01T18:04:26.923869+00:00
+# CVEHarbor Threat IP Intelligence | 2026-11-01T18:13:06.916020+00:00
 # Permanent logical group: Suspicious IP Block
-# Cumulative indexed IPs: 2372
+# Cumulative indexed IPs: 2375
 # New since prior published snapshot: 3
 # REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 # Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
@@ -14,21 +14,21 @@
 # If an address object name already exists with a different subnet, STOP.
 # Applying group membership can affect an existing deny policy immediately.
 config firewall address
-    edit "CVEH_79_124_58_18"
-        set subnet 79.124.58.18 255.255.255.255
+    edit "CVEH_103_123_168_58"
+        set subnet 103.123.168.58 255.255.255.255
     next
-    edit "CVEH_102_104_11_44"
-        set subnet 102.104.11.44 255.255.255.255
+    edit "CVEH_141_98_10_112"
+        set subnet 141.98.10.112 255.255.255.255
     next
-    edit "CVEH_103_118_85_147"
-        set subnet 103.118.85.147 255.255.255.255
+    edit "CVEH_141_98_10_213"
+        set subnet 141.98.10.213 255.255.255.255
     next
 end
 config firewall addrgrp
     edit "Suspicious IP Block"
-        append member "CVEH_79_124_58_18"
-        append member "CVEH_102_104_11_44"
-        append member "CVEH_103_118_85_147"
+        append member "CVEH_103_123_168_58"
+        append member "CVEH_141_98_10_112"
+        append member "CVEH_141_98_10_213"
     next
 end
 # No firewall policy has been created. Review existing policy use.

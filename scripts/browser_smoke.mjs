@@ -890,7 +890,8 @@ assert.ok(fs.readFileSync('inventory.js','utf8').includes('inventory-record-acti
 
 assert.ok(fs.readFileSync('styles.css','utf8').includes('Align customer and nested environment actions'),'customer and environment button alignment style exists');
 
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes("if(needsReview){card.classList.add('customer-software-attention')"),'needs review findings trigger red attention class');
+// Severity-aware customer attention is verified behaviourally by customer_security_smoke.mjs.
+// A Needs Review status alone must not turn medium/low findings red.
 
 // Account redesign retains passwordless sign-in contract and removes provider disclosure.
 const accountMarkup=fs.readFileSync('workspace/index.html','utf8');
