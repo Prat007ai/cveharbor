@@ -130,7 +130,7 @@ workflow performs a real NVD backfill in a disposable SQLite database and writes
 only public provider evidence to `data/cvie-provider-check.json`. It does not
 deploy or mutate production.
 
-For a later approved release, the backend deployment workflow applies only
+For an approved release, the backend deployment workflow applies only
 `account-backend/migrations/0019_cvie.sql` and the additive
 `account-backend/migrations/0020_cvie_evidence.sql` before deploying the Worker. The
 migration adds CVIE tables/indexes and an initial request-budget row; it does not
@@ -138,6 +138,12 @@ reapply the original account schema or modify inventory. Missing tables fail
 closed with a service-setup message. Existing `NVD_API_KEY`, if configured in
 GitHub, is copied over stdin to an encrypted Worker secret; otherwise anonymous
 NVD access works with the lower request budget.
+
+After deployment, `scripts/verify_cvie_production.py` checks API health,
+unauthenticated CVIE rejection, the nine CVIE tables and actual scheduled
+disclosure/KEV ingestion. It reads schema and public feed metadata only. It allows
+time for new Cloudflare cron schedules to propagate; successful deployment is
+reported separately from a feed that has not yet passed its live checks.
 
 Limits: 50 additional catalogue entries and 500 distinct actively monitored
 products per account. Removing a product stops its job once no inventory,
