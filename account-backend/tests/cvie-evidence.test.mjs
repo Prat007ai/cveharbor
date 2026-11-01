@@ -4,7 +4,7 @@ import {DB} from './helpers/d1.mjs';
 import {subscribeProducts,cvieRoute,runCvieStep} from '../src/cvie.js';
 import {knownIdentity} from '../src/product-identity.js';
 import {readDeltaLog,refreshEvidence,ingestDisclosures,normalizeDisclosure,productFamilies,queueRelevantKev} from '../src/cvie-evidence.js';
-import {sourceHealth,combinedPage,combinedCounts,reconcileRecord} from '../src/cvie-records.js';
+import {sourceHealth,combinedPage,combinedCounts,reconcileRecord,mergeDigestEvidence} from '../src/cvie-records.js';
 import {selectDigest,revisionOf} from '../src/digest.js';
 const NOW=Date.parse('2026-11-01T12:00:00Z'),DAY=86400000;
 const cpe=knownIdentity('Apache Tomcat').cpe,id='CVE-2026-12345';
@@ -88,6 +88,14 @@ check('a failed original-record fetch is retried and does not erase a prior good
  assert.equal(result.failed,1);assert.equal((await q(e,'SELECT COUNT(*) AS total FROM cvie_disclosures').first()).total,1);
  assert.equal((await q(e,'SELECT attempts FROM cvie_disclosure_queue').first()).attempts,1);
 });
+check('provider Retry-After pauses record requests globally instead of hammering other CVE IDs',async()=>{
+ const e=env();await seedQueue(e);let calls=0;
+ await ingestDisclosures(e,async()=>{calls++;return new Response('Rate limited',{status:429,headers:{'Retry-After':'3600'}});},NOW);
+ const first=calls;await seedQueue(e,'CVE-2026-12346');
+ const retry=await ingestDisclosures(e,async()=>{calls++;return Response.json(cna());},NOW+60000);
+ assert.equal(retry.waiting,true);assert.equal(calls,first);
+ assert.equal((await q(e,"SELECT record_retry_at FROM cvie_sources WHERE id='cve_program'").first()).record_retry_at,NOW+3600000);
+});
 check('a rejected CVE is removed even when a stale NVD record still contains it',async()=>{
  const e=env();await subscribeProducts(e,'a',[{name:'Apache Tomcat'}]);await storeNvd(e);
  const raw=cna();raw.cveMetadata.state='REJECTED';raw.containers.cna={rejectedReasons:[{lang:'en',value:'Withdrawn fixture'}]};await storeCna(e,raw);
@@ -105,7 +113,7 @@ check('public disclosure caches never bypass account-scoped product selection',a
  assert.equal((await combinedPage(e,'b','2026-08-01T00:00:00Z')).advisories.length,0);
 });
 check('streamed change logs handle chunk boundaries and stop at the checkpoint',async()=>{
- const row=(time,ids)=>({fetchTime:new Date(time).toISOString(),new:ids.map(cveId=>({cveId,dateUpdated:new Date(time).toISOString(),githubLink:'https://untrusted.invalid/ignored'})),updated:[],error:[]});
+ const row=(time,ids)=>({fetchTime:new Date(time).toISOString(),numberOfChanges:ids.length,new:ids.map(cveId=>({cveId,dateUpdated:new Date(time).toISOString(),githubLink:'https://untrusted.invalid/ignored'})),updated:[],error:[]});
  const text=JSON.stringify([row(NOW,[id]),row(NOW-60000,['CVE-2026-12346']),row(NOW-120000,[])]);
  const bytes=new TextEncoder().encode(text);let pos=0;
  const response=new Response(new ReadableStream({pull(controller){if(pos>=bytes.length){controller.close();return;}controller.enqueue(bytes.slice(pos,pos+=7));}}));
@@ -113,7 +121,7 @@ check('streamed change logs handle chunk boundaries and stop at the checkpoint',
 });
 check('truncated, unordered or publisher-error change logs do not advance the checkpoint',async()=>{
  await assert.rejects(()=>readDeltaLog(new Response('[{"fetchTime":'),NOW-60000,NOW));
- const row=time=>({fetchTime:new Date(time).toISOString(),new:[],updated:[],error:[]});
+ const row=time=>({fetchTime:new Date(time).toISOString(),numberOfChanges:0,new:[],updated:[],error:[]});
  await assert.rejects(()=>readDeltaLog(Response.json([row(NOW-1000),row(NOW)]),NOW-60000,NOW));
  await assert.rejects(()=>readDeltaLog(Response.json([{...row(NOW),error:['publisher failure']}]),NOW-60000,NOW));
 });
@@ -126,4 +134,10 @@ check('newly confirmed exploitation can trigger one alert for an older, unrated 
  const record={id:'CVE-2019-12345',source_type:'cvie_combined',categories:['Apache Tomcat'],severity:'unrated',published:'2019-01-01',updated:'2019-01-02',known_exploited:true,kev_added:'2026-10-30'};
  const first=selectDigest([record],['Apache Tomcat'],'critical',new Map(),NOW);assert.equal(first.items.length,1);
  const second=selectDigest([record],['Apache Tomcat'],'critical',new Map([[record.id,revisionOf(record)]]),NOW);assert.equal(second.items.length,0);
+});
+check('alerts prefer reconciled scores and remove withdrawn CVEs from an older public snapshot',async()=>{
+ const old={id,updated:'2026-10-20',severity:'critical',known_exploited:true,categories:['Apache Tomcat']};
+ const current={...old,severity:'high',known_exploited:false,kev_verified_at:NOW,source_type:'cvie_combined'};
+ const records=mergeDigestEvidence([old],[current]);assert.equal(records.length,1);assert.equal(records[0].severity,'high');assert.equal(records[0].known_exploited,false);
+ assert.equal(mergeDigestEvidence([old],[],[id]).length,0);
 });

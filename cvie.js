@@ -34,7 +34,7 @@ function statusFor(p){
  const older=months===12?p.older_kev_history_count:p.older_kev_recent_count;
  return (complete?(count?count+' advisories · last '+months+' months':'No published advisories found in '+months+' months'):'Preparing '+months+'-month history')+(older?' · '+older+' older KEV-listed':'');
 }
-function notify(){const signature=JSON.stringify([months,records]);const recordsChanged=signature!==lastSignature;lastSignature=signature;draw();window.dispatchEvent(new CustomEvent('cvie:updated',{detail:{recordsChanged}}));}
+function notify(){const signature=JSON.stringify([months,records,[...withdrawn].sort()]);const recordsChanged=signature!==lastSignature;lastSignature=signature;draw();window.dispatchEvent(new CustomEvent('cvie:updated',{detail:{recordsChanged}}));}
 async function request(path='',options={}){
  const response=await fetch(API+path,{credentials:'include',headers:{Accept:'application/json',...(options.body?{'Content-Type':'application/json'}:{})},...options});
  if(response.status===401){signedIn=false;products=[];records=[];withdrawn=new Set();evidence={sources:[]};ready=false;throw Error('Sign in to use private CVIE monitoring.');}
@@ -62,7 +62,7 @@ function draw(){
   select.addEventListener('change',()=>{months=Number(select.value);void refresh();});label.append(select);
   const button=node('button','Refresh status');button.type='button';button.disabled=busy;button.addEventListener('click',()=>void refresh(true));
   header.append(title,label,button);panel.append(header);
-  const sourceLabels={current:'Checked',scanning:'Scanning',catching_up:'Indexing disclosures',verifying_products:'Verifying product applicability',pending:'Waiting for first check',stale:'Check overdue',unavailable:'Source unavailable',setup_required:'Setup required',no_products:'Add a product'};
+  const sourceLabels={current:'Checked',scanning:'Scanning',catching_up:'Indexing disclosures',verifying_products:'Verifying product applicability',pending:'Waiting for first check',stale:'Check overdue',unavailable:'Source unavailable',rate_limited:'Rate limited · retry scheduled',setup_required:'Setup required',no_products:'Add a product'};
   const sourceGrid=node('div','','cvie-source-grid');
   for(const s of evidence.sources||[]){
    const card=node('div','','cvie-source '+s.status);
@@ -70,11 +70,12 @@ function draw(){
    card.append(node('small',s.last_success_at?'Checked '+new Date(s.last_success_at).toLocaleString():'No successful check yet'));
    if(s.publisher_at)card.append(node('small','Publisher update: '+new Date(s.publisher_at).toLocaleString()));
    if(s.pending_records)card.append(node('small',s.pending_records+' records awaiting verification'));
+   if(s.status==='rate_limited'&&s.retry_at)card.append(node('small','Retry after '+new Date(s.retry_at).toLocaleString()));
    if(s.error)card.append(node('small',s.error));sourceGrid.append(card);
   }
   if(sourceGrid.children.length)panel.append(sourceGrid);
   const active=products.filter(p=>['queued','scanning','retrying'].includes(p.status));
-  const attention=(evidence.sources||[]).some(s=>['pending','stale','unavailable','setup_required','catching_up','verifying_products'].includes(s.status));
+  const attention=(evidence.sources||[]).some(s=>['pending','stale','unavailable','rate_limited','setup_required','catching_up','verifying_products'].includes(s.status));
   const message=error||(busy?'Loading '+months+'-month results...':!ready?'Preparing CVIE...':!products.length?'Add a product or register an asset to start CVIE.':attention?'Some sources are still being verified or need attention. Available results are shown below; check each source status.':products.some(p=>p.status==='needs_identity')?'Some products need an exact identity before CVIE can scan. Expand product status to choose.':products.some(p=>p.status==='retrying')?'A source check is unavailable. Saved results remain available; CVIE will retry automatically.':products.some(p=>p.status==='ready'&&p.stale)?'Some source checks are overdue. Saved results remain available while CVIE refreshes them.':active.length?active.length+' product'+(active.length===1?' is':'s are')+' being prepared. Results appear as source pages finish.':'Product checks complete. Review the source and installed version before acting.');
   const status=node('p',message,'cvie-status');status.setAttribute('role','status');panel.append(status);
   const list=node('div','','cvie-product-statuses');
@@ -118,7 +119,7 @@ async function refresh(sync=false){
   else if(signedIn)timer=setTimeout(()=>void refresh(),products.some(p=>['queued','scanning'].includes(p.status))?8000:60000);
  }
 }
-window.CVEHARBOR_CVIE={get products(){return products;},get records(){return merge();},get months(){return months;},get ready(){return ready;},get signedIn(){return signedIn;},get loading(){return busy;},merge,refresh,statusFor,
+window.CVEHARBOR_CVIE={get products(){return products;},get records(){return merge();},get evidence(){return evidence;},get months(){return months;},get ready(){return ready;},get signedIn(){return signedIn;},get loading(){return busy;},merge,refresh,statusFor,
  setMonths:value=>{if(![3,12].includes(Number(value)))throw Error('Select 3 or 12 months');months=Number(value);return refresh();},
  product:name=>products.find(p=>normalize(p.name)===normalize(name))};
 mount();

@@ -493,6 +493,10 @@ function renderScorePanel(root,customer,scope,stats){
   }catch(_){message.textContent='Score history could not be loaded. Current assessment is still available.'}
  })();
 }
+function intelligenceSourceSummary(){
+ const labels={current:'checked',scanning:'scan in progress',catching_up:'indexing updates',verifying_products:'verifying applicability',unavailable:'source unavailable',stale:'check overdue',pending:'first check pending',rate_limited:'rate limited; retry scheduled',setup_required:'setup pending',no_products:'no products registered'};
+ return (window.CVEHARBOR_CVIE?.evidence?.sources||[]).map(s=>(s.label||s.id)+': '+(labels[s.status]||s.status)+(s.last_success_at?' (checked '+new Date(s.last_success_at).toLocaleString()+')':'')).join(' · ');
+}
 function buildCustomerPrintDocument(customer,stats,scope,date){
  const doc=text('div','','customer-print-document');
  const cover=text('section','','customer-print-cover');
@@ -505,7 +509,9 @@ function buildCustomerPrintDocument(customer,stats,scope,date){
  }
  cover.append(metadata);
  const notice=text('p','Based on submitted software inventory and available public advisories. No authenticated endpoint scan was performed. Findings are candidates requiring vendor and environment verification.','customer-print-disclaimer');
- cover.append(notice);doc.append(cover);
+ cover.append(notice);
+ if(intelligenceSourceSummary())cover.append(text('p',intelligenceSourceSummary(),'customer-print-disclaimer cvie-report-source-note'));
+ doc.append(cover);
  const section=(name)=>text('h2',name,'customer-print-heading');
  const counts=text('section','','customer-print-overview');
  counts.append(section('Executive overview'));
@@ -589,6 +595,7 @@ function drawReport(){
  root.append(text('p','CVEHarbor | Customer Security Review','eyebrow'),text('h2',customer.name),
   text('p','Prepared: '+date+' · Scope: '+(env?(stats.environments[0]?.name||'Selected environment'):'All recorded environments')),
   text('p','This is an automated review of user-entered software inventory and a limited public advisory index. No customer endpoints were scanned. Potential findings must be validated before being treated as confirmed vulnerabilities.','ops-note'));
+ if(intelligenceSourceSummary())root.append(text('p',intelligenceSourceSummary(),'ops-note cvie-report-source-note'));
  renderScorePanel(root,customer,env,stats);
  root.append(reportSection('Executive Summary'),
  table(['Metric','Count'],[['Environments',stats.environments.length],['Technology entries',stats.assets.length],
@@ -755,9 +762,9 @@ function drawReport(){
 function csvReport(){
  const id=$('customerDashFilter').value,env=$('customerDashEnvironment').value;
  const customer=inventory.customers.find(c=>c.id===id);if(!customer)return;
- const rows=[['Customer','Environment','Asset','Technology','Installed version','CVE','Severity','CISA KEV','Match classification','Published','Summary','Vulnerability Fix Status','DevOps Ticket #','Affected versions','Version comparison','Remediation','Source']];
+ const rows=[['Customer','Environment','Asset','Technology','Installed version','CVE','Severity','CISA KEV','Match classification','Published','Summary','Vulnerability Fix Status','DevOps Ticket #','Affected versions','Version comparison','Remediation','Source','Evidence status','KEV added','CISA last checked','Source verification']];
  for(const f of compute(id,env).issues)
-  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.published||'Not available',shortSummary(f),statusFor(f),ticketFor(f).join(' | '),f.affected||'',f.comparison_detail||'',f.remediation||'',f.source_url]);
+  rows.push([customer.name,f.environment?.name||'',f.asset?.name||'',f.technology,f.version,f.id,f.severity,f.known_exploited?'Yes':'No',f.level,f.published||'Not available',shortSummary(f),statusFor(f),ticketFor(f).join(' | '),f.affected||'',f.comparison_detail||'',f.remediation||'',f.source_url,f.evidence_status||'',f.kev_added||'',f.kev_verified_at?new Date(f.kev_verified_at).toISOString():'',(f.provenance||[]).map(p=>p.source+': '+(p.checked_at?new Date(p.checked_at).toISOString():'pending')).join('; ')]);
  const csv=rows.map(r=>r.map(v=>{
   let value=String(v??'');
   if(/^[=+\-@\t\r]/.test(value))value="'"+value;
@@ -869,6 +876,6 @@ async function init(){
   void refreshPluginFindings();
  }catch(e){$('customerDashLogin').hidden=false;$('customerDashStatus').textContent=(e.status===404||e.status===503)?'Customer inventory backend is not active. The D1 migration and updated Cloudflare Worker must be deployed.':'Could not reach account data. Please sign in or check the service. '+e.message}
 }
-window.addEventListener('cvie:updated',event=>{if(!event.detail?.recordsChanged)return;records=advisories();if(customerReady)(reporting?drawReport:drawDashboard)();});
+window.addEventListener('cvie:updated',event=>{for(const note of document.querySelectorAll('.cvie-report-source-note'))note.textContent=intelligenceSourceSummary();if(!event.detail?.recordsChanged)return;records=advisories();if(customerReady)(reporting?drawReport:drawDashboard)();});
 void init();
 })();

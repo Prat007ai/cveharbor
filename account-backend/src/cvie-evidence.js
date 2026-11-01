@@ -1,9 +1,15 @@
-// Direct, vendor-authored CVE Program records and the independent CISA KEV feed.
+// Original CVE Program records from vendors/authorized CNAs and independent CISA KEV.
 // URLs from provider content are never fetched: all request destinations are fixed.
 import {cveMirrorUrl,simplifyCve,normalizeCveId} from './cve-lookup.js';
 import {cpeFamily} from './product-identity.js';
 const q=(db,sql,...args)=>db.prepare(sql).bind(...args);
 const DAY=86400000;
+class SourceError extends Error{
+ constructor(response){super('Source returned HTTP '+response.status);const value=response.headers.get('Retry-After');
+  const delay=/^\d+$/.test(value||'')?Number(value)*1000:Date.parse(value||'')-Date.now();
+  this.delay=Math.max(60000,Math.min(6*3600000,delay||60000));this.throttled=response.status===429;
+ }
+}
 export const SOURCE_URLS={
  cve_program:'https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/deltaLog.json',
  cisa_kev:'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json',
@@ -43,7 +49,7 @@ export function normalizeDisclosure(raw){
  if(!simple||!['published','rejected'].includes(simple.status))throw Error('CVE Program record is not published or rejected');
  const metadata=raw.cveMetadata,cna=raw.containers?.cna||{};
  const updated=Date.parse(metadata.dateUpdated||metadata.datePublished);
- if(!Number.isFinite(updated))throw Error('CVE Program record has no valid revision timestamp');
+ if(!Number.isFinite(updated)||updated>Date.now()+300000)throw Error('CVE Program record has no valid revision timestamp');
  if(simple.status==='rejected')return {id:simple.id,state:'REJECTED',published:null,updated_at:new Date(updated).toISOString(),base:{id:simple.id,status:'rejected'},families:[]};
  const published=Date.parse(metadata.datePublished||cna.datePublic);
  if(!Number.isFinite(published)||published>Date.now()+300000)throw Error('CVE Program record has no valid disclosure date');
@@ -67,12 +73,12 @@ export async function evidenceReady(env){
 }
 async function fetchJson(url,fetcher,max=3000000){
  const response=await fetcher(url,{headers:{Accept:'application/json','User-Agent':'CVEHarbor-CVIE/1.0'},signal:AbortSignal.timeout(20000)});
- if(!response.ok)throw Error('Source returned HTTP '+response.status);
+ if(!response.ok)throw new SourceError(response);
  const raw=await response.text();if(raw.length>max)throw Error('Source exceeded its safe response size');return JSON.parse(raw);
 }
 // Stream just the required prefix of the 30+ MB official change log.
 export async function readDeltaLog(response,checkpoint,now=Date.now()){
- if(!response.ok||!response.body)throw Error('CVE change feed returned HTTP '+response.status);
+ if(!response.ok)throw new SourceError(response);if(!response.body)throw Error('CVE change feed has no response body');
  const reader=response.body.getReader(),decode=new TextDecoder(),entries=new Map();
  const target=checkpoint||now-DAY;
  let bytes=0,object='',depth=0,inString=false,escape=false,started=false,ended=false,newest=null,oldest=null,previous=Infinity,boundary=false;
@@ -94,6 +100,7 @@ export async function readDeltaLog(response,checkpoint,now=Date.now()){
     previous=timestamp;newest??=timestamp;oldest=timestamp;
     if(timestamp<=target){boundary=true;break;}
     if(!Array.isArray(row.new)||!Array.isArray(row.updated)||(row.error||[]).length)throw Error('Publisher reported incomplete CVE change data');
+    if(!Number.isInteger(row.numberOfChanges)||row.numberOfChanges!==row.new.length+row.updated.length)throw Error('CVE change-feed entry count is incomplete');
     for(const entry of [...row.new,...row.updated]){
      const id=normalizeCveId(entry.cveId),revision=Date.parse(entry.dateUpdated);
      if(!id||!Number.isFinite(revision)||revision>now+300000)throw Error('Invalid CVE identifier or revision in change feed');
@@ -166,23 +173,26 @@ export async function refreshEvidence(env,fetcher=fetch,now=Date.now()){
    next_attempt_at=?,lease_until=0,error='',source_url=? WHERE id=? AND lease_until=?`,now,publisher,checkpoint,coverage,now+(source.id==='cisa_kev'?15:5)*60000,SOURCE_URLS[source.id],source.id,lease));
   await env.DB.batch(statements);return {source:source.id,ok:true};
  }catch(error){
-  await q(env.DB,"UPDATE cvie_sources SET status='unavailable',error=?,next_attempt_at=?,lease_until=0 WHERE id=? AND lease_until=?",String(error.message).slice(0,220),now+60000,source.id,lease).run();return {source:source.id,ok:false};
+  const retry=now+(error.delay||60000);
+  await q(env.DB,"UPDATE cvie_sources SET status='unavailable',error=?,next_attempt_at=?,record_retry_at=MAX(record_retry_at,?),lease_until=0 WHERE id=? AND lease_until=?",String(error.message).slice(0,220),retry,source.id==='cve_program'&&error.throttled?retry:0,source.id,lease).run();return {source:source.id,ok:false};
  }
 }
 export async function ingestDisclosures(env,fetcher=fetch,now=Date.now(),limit=15){
  if(!await evidenceReady(env))return {ready:false};
+ const provider=await env.DB.prepare("SELECT record_retry_at FROM cvie_sources WHERE id='cve_program'").first();
+ if(provider.record_retry_at>now)return {waiting:true};
  const jobs=(await q(env.DB,'SELECT * FROM cvie_disclosure_queue WHERE next_attempt_at<=? AND lease_until<? ORDER BY priority,next_attempt_at,revision DESC,cve_id LIMIT ?',now,now,Math.min(15,limit)).all()).results||[];
  if(!jobs.length)return {processed:0};const lease=now+120000;
  const ids=JSON.stringify(jobs.map(j=>j.cve_id));
  const claimed=(await q(env.DB,'UPDATE cvie_disclosure_queue SET lease_until=? WHERE cve_id IN(SELECT value FROM json_each(?)) AND lease_until<? RETURNING *',lease,ids,now).all()).results||[];
- const successes=[],failures=[];
+ const successes=[],failures=[];let throttledUntil=0;
  // Bounded batches avoid overwhelming CVE Program endpoints or the Worker.
  for(let i=0;i<claimed.length;i+=5)await Promise.all(claimed.slice(i,i+5).map(async job=>{
   try{
-   let raw;try{raw=await fetchJson(cveMirrorUrl(job.cve_id),fetcher,1500000);}catch{raw=await fetchJson('https://cveawg.mitre.org/api/cve/'+job.cve_id,fetcher,1500000);}
+   let raw;try{raw=await fetchJson(cveMirrorUrl(job.cve_id),fetcher,1500000);}catch(error){if(error.throttled)throttledUntil=Math.max(throttledUntil,now+error.delay);raw=await fetchJson('https://cveawg.mitre.org/api/cve/'+job.cve_id,fetcher,1500000);}
    const record=normalizeDisclosure(raw);if(record.id!==job.cve_id)throw Error('CVE source returned the wrong identifier');
    successes.push(record);
-  }catch(error){failures.push({id:job.cve_id,error:String(error.message).slice(0,180)});}
+  }catch(error){if(error.throttled)throttledUntil=Math.max(throttledUntil,now+error.delay);failures.push({id:job.cve_id,error:String(error.message).slice(0,180),delay:Math.max(error.delay||60000,Math.min(6*3600000,60000*2**Math.min(job.attempts,9)))});}
  }));
  const records=successes.map(r=>({id:r.id,state:r.state,published:r.published,updated:r.updated_at,record:r.base}));
  const families=successes.flatMap(r=>r.families.map(f=>({id:r.id,key:f.family_key,applicability:f.applicability,rows:f.rows})));
@@ -198,9 +208,10 @@ export async function ingestDisclosures(env,fetcher=fetch,now=Date.now(),limit=1
    WHERE EXISTS(SELECT 1 FROM cvie_disclosure_queue j WHERE j.cve_id=json_extract(value,'$.id') AND j.lease_until=?)`,chunk,lease));
  statements.push(q(env.DB,`DELETE FROM cvie_disclosure_queue WHERE cve_id IN(SELECT value FROM json_each(?)) AND lease_until=?
    AND revision<=(SELECT updated_at FROM cvie_disclosures d WHERE d.cve_id=cvie_disclosure_queue.cve_id)`,successIds,lease),
-  q(env.DB,`UPDATE cvie_disclosure_queue SET lease_until=0,next_attempt_at=?,attempts=attempts+1,
+  q(env.DB,`UPDATE cvie_disclosure_queue SET lease_until=0,next_attempt_at=?+COALESCE((SELECT json_extract(value,'$.delay') FROM json_each(?) WHERE json_extract(value,'$.id')=cvie_disclosure_queue.cve_id),60000),attempts=attempts+1,
    error=COALESCE((SELECT json_extract(value,'$.error') FROM json_each(?) WHERE json_extract(value,'$.id')=cvie_disclosure_queue.cve_id),'A newer revision is queued')
-   WHERE cve_id IN(SELECT value FROM json_each(?)) AND lease_until=?`,now+60000,JSON.stringify(failures),ids,lease));
+   WHERE cve_id IN(SELECT value FROM json_each(?)) AND lease_until=?`,now,JSON.stringify(failures),JSON.stringify(failures),ids,lease));
+ if(throttledUntil)statements.push(q(env.DB,"UPDATE cvie_sources SET record_retry_at=MAX(record_retry_at,?) WHERE id='cve_program'",throttledUntil));
  await env.DB.batch(statements);return {processed:successes.length,failed:failures.length};
 }
 export async function dispatchEvidence(env){

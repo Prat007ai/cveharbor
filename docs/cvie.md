@@ -46,19 +46,54 @@ database query per product or CVE. A 500-product import and each 50-record sourc
 page are tested against D1's query budget. The cron batch stays bounded for free
 Worker limits as well as paid deployments.
 
+## Sources, freshness and reconciliation
+
+CVIE combines three independently checked sources:
+
+- NVD supplies product/CPE history and severity enrichment.
+- The official CVE Program change log supplies original disclosures from vendors and authorized CNAs, including CVEs that do not yet have NVD product analysis.
+- CISA KEV supplies independent evidence of known exploitation. A listing is
+  evidence of exploitation, not a live measurement of attacks on an account.
+
+A separate minute cron checks due feeds and processes five original records per
+invocation. The CVE change feed is due every five minutes and KEV every fifteen.
+The worker streams the needed change-log prefix, persists its checkpoint only
+after queuing all entries, and processes product-relevant KEV records and recent
+changes before unrelated historical records. The first direct-disclosure sync
+starts with the previous 24 hours; it is not a complete CNA historical archive.
+Initial backfill can take time, and its backlog remains visible.
+
+The source panel shows last successful checks, publisher timestamps, incomplete
+indexing, rate limits and outages separately. Source failures preserve last good
+records and timestamps. Retry-After and retry backoff are enforced. API errors,
+malformed/truncated feeds and unexpected catalogue reductions never become green
+success or zero-vulnerability claims. Original-record URLs are constructed from
+validated CVE IDs; URLs embedded in feeds are not fetched.
+
+Records merge by CVE ID with provenance. The original CNA description/version
+evidence takes precedence where available, NVD can supply missing severity, and
+score disagreements are explicit. Authoritative withdrawals suppress stale NVD
+and public-snapshot rows. Explicit CNA unaffected-product corrections suppress
+stale product matches. Known-exploited CVEs remain visible outside the selected
+3/12-month history, retaining their original publication date. KEV dateAdded is a
+separate field and can trigger a new opt-in alert without inventing CVSS severity.
+Reports and CSV exports retain evidence status and source check times.
+
 ## Matching and coverage
 
-The current product-history adapter is NVD's CVE API and CPE directory. It uses
+The historical adapter uses NVD's CVE API and CPE directory. It uses
 the affected-product CPE, not a summary substring. Rejected CVEs, negated
 configurations and unrelated product mentions do not become matches. CVIE keeps
-original publication dates, summaries, CVSS scores, vendor references, structured
-version bounds and NVD's CISA KEV attribution. Existing public/vendor feeds remain
-available alongside it.
+original publication dates, summaries, CVSS scores, vendor references and structured
+version bounds. Original CNA records and the independent KEV catalogue enrich
+that history. Existing public/vendor feeds remain available alongside it.
 
-**Coverage means NVD records with affected-product CPE metadata.** New CVEs can
-appear before NVD assigns product configurations, and the directory may not cover
-every product. A successful scan is not a claim of exhaustive vendor coverage.
-Broader vendor/CNA adapters can be added behind this same job/status interface.
+**Coverage combines NVD history with continuously ingested original CNA records
+and KEV evidence.** NVD may lag disclosure, the CNA stream begins at its displayed
+coverage checkpoint, and some products lack usable structured identifiers. CNA
+matching requires an affected-product CPE or a precise vendor/product match.
+CNA records are vendor/assigner-authored disclosures; CVIE does not scrape every
+vendor website. A successful check does not promise exhaustive vendor coverage.
 Broad labels such as “Linux” or “.NET” can require a more specific product.
 
 Numeric version-range comparisons are preliminary review matches. Non-numeric
@@ -80,7 +115,8 @@ only public provider evidence to `data/cvie-provider-check.json`. It does not
 deploy or mutate production.
 
 For a later approved release, the backend deployment workflow applies only
-`account-backend/migrations/0019_cvie.sql` before deploying the Worker. The
+`account-backend/migrations/0019_cvie.sql` and the additive
+`account-backend/migrations/0020_cvie_evidence.sql` before deploying the Worker. The
 migration adds CVIE tables/indexes and an initial request-budget row; it does not
 reapply the original account schema or modify inventory. Missing tables fail
 closed with a service-setup message. Existing `NVD_API_KEY`, if configured in
@@ -90,7 +126,9 @@ NVD access works with the lower request budget.
 Limits: 50 additional catalogue entries and 500 distinct actively monitored
 products per account. Removing a product stops its job once no inventory,
 catalogue or watchlist subscription remains. Removing an account cascades to its
-CVIE results. No customer assets or usernames are sent to NVD.
+CVIE results. NVD receives configured software product/vendor query strings.
+Customer hostnames, account identifiers and installed versions are not included
+in those queries. Original CVE lookups use public CVE IDs only.
 
 ## Verification
 

@@ -142,7 +142,7 @@
     const zone = new Intl.DateTimeFormat('en-US',{timeZone:'America/Toronto',timeZoneName:'short'}).formatToParts(d).find(x=>x.type==='timeZoneName')?.value||'ET';
     return date+', '+time+' '+zone;
   };
-  const severityText=s=>({critical:'CRITICAL',high:'HIGH',medium:'MEDIUM',low:'LOW',bulletin:'BULLETIN'})[s]||'UNKNOWN';
+  const severityText=s=>({critical:'CRITICAL',high:'HIGH',medium:'MEDIUM',low:'LOW',unrated:'UNRATED',bulletin:'BULLETIN'})[s]||'UNKNOWN';
   const stat=(id,num)=>{$(id).textContent=String(num);};
   stat('statTotal',cveIDs(items).length);
   stat('statCritical',cveIDs(items.filter(x=>x.severity==='critical')).length);
@@ -475,6 +475,7 @@
   }
   function render(){
     const selected=filterItems();
+    if(['published3m','published12m'].includes(state.period))selected.sort((a,b)=>Number(!!b.retained_exploited)-Number(!!a.retained_exploited)||Number(!!b.known_exploited)-Number(!!a.known_exploited)||String(b.published||'').localeCompare(String(a.published||'')));
     if(state.period==='updated7') selected.sort((a,b)=>String(b.updated||'').localeCompare(String(a.updated||'')));
     $('resultCount').textContent=`${selected.length} of ${items.length} indexed advisories`;
     $('advisoryCards').replaceChildren();

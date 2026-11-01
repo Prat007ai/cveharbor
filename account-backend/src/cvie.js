@@ -146,7 +146,7 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
   for(const entry of data.vulnerabilities){
    const record=normalizeNvd(entry.cve,product);
    if(record&&Date.parse(record.published)>=monthsAgo(cursor.anchor,12)&&Date.parse(record.published)<=cursor.anchor)
-    pageRecords.push(record);
+    pageRecords.push({...record,nvd_checked_at:now});
   }
   if(pageRecords.length)statements.push(query(env.DB,`INSERT INTO cvie_advisories(product_id,cve_id,published,record_json,generation)
    SELECT ?,json_extract(value,'$.id'),json_extract(value,'$.published'),value,? FROM json_each(?)
@@ -189,7 +189,7 @@ export async function loadCvieDigest(env,userId,now=Date.now()){
   const cutoff=iso(monthsAgo(now,12));let after='',records=[];
   do{const page=await combinedPage(env,userId,cutoff,after,'',now,ctx);records.push(...page.advisories);after=page.next||'';}while(after&&records.length<1000);
   const health=await sourceHealth(env,now);
-  return {records,degraded:health.sources.some(s=>s.status!=='current')||ctx.products.some(p=>p.status!=='ready'),coverageLimited:Boolean(after)};
+  return {records,withdrawn_ids:await withdrawnIds(env),degraded:health.sources.some(s=>s.status!=='current')||ctx.products.some(p=>p.status!=='ready'||!p.last_success_at||now-p.last_success_at>DAY),coverageLimited:Boolean(after)};
  }
  const recent=iso(now-30*DAY);
  const result=await query(env.DB,`SELECT a.record_json FROM cvie_advisories a JOIN cvie_products p ON p.id=a.product_id

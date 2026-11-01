@@ -15,6 +15,7 @@ try{
   await new Promise(resolve=>setTimeout(resolve,env.NVD_API_KEY?1100:6700));
  }
  const product=await env.DB.prepare('SELECT * FROM cvie_products').first();
+ report.nvd_checked_at=product.last_success_at;
  report.status=product.status;report.cpe=product.cpe;
  report.advisories=(await env.DB.prepare('SELECT record_json FROM cvie_advisories ORDER BY published DESC').all()).results.map(row=>JSON.parse(row.record_json));
  report.history_count=report.advisories.length;

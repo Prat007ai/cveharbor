@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS cvie_sources (
  coverage_start_at INTEGER,
  next_attempt_at INTEGER NOT NULL DEFAULT 0,
  lease_until INTEGER NOT NULL DEFAULT 0,
+ record_retry_at INTEGER NOT NULL DEFAULT 0,
  error TEXT NOT NULL DEFAULT '',
  source_url TEXT NOT NULL DEFAULT ''
 );

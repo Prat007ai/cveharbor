@@ -10,8 +10,11 @@ assert.equal(source.ok,true,'a verified public NVD sample is required');
 const product={name:'Apache Tomcat',cpe:knownIdentity('Apache Tomcat').cpe};
 const all=source.advisories||(source.sample||[]).map(x=>normalizeNvd(x.cve,product)).filter(Boolean);
 assert.ok(all.length,'real NVD advisories are available for the interface review');
-const now=Date.now(),recent=all.filter(x=>Date.parse(x.published)>=monthsAgo(now,3));
-let preferences={defaults:null,products:[]},phase='scanning',authenticated=true;
+const now=Date.now(),recentHistory=all.filter(x=>Date.parse(x.published)>=monthsAgo(now,3)),yearHistory=all.filter(x=>Date.parse(x.published)>=monthsAgo(now,12));
+const windowRecords=n=>all.map(x=>({...x,retained_exploited:Boolean(x.known_exploited&&Date.parse(x.published)<monthsAgo(now,n))})).filter(x=>Date.parse(x.published)>=monthsAgo(now,n)||x.retained_exploited);
+const recent=windowRecords(3),history=windowRecords(12);
+let preferences={defaults:null,products:[]},phase='scanning',authenticated=true,sourceFailure=false,withdrawnIds=[];
+function sourceEvidence(){return {...(source.evidence||{}),sources:[{id:'nvd',label:'NVD product history',status:phase==='ready'?'current':'scanning',last_success_at:source.nvd_checked_at||Date.parse(source.checked_at)},...(source.evidence?.sources||[]).map(s=>sourceFailure&&s.id==='cisa_kev'?{...s,status:'unavailable',error:'Simulated source outage; last verified evidence retained'}:s)]};}
 const requests=[],errors=[];
 const id='11111111-1111-4111-8111-111111111111';
 const inventory={customers:[{id:'c1',name:'Example Organization'}],environments:[{id:'e1',customer_id:'c1',name:'Production',kind:'Production'}],
@@ -46,11 +49,12 @@ try{
    return send(preferences);
   }
   if(path==='/v1/cvie/sync')return send({ready:true,status:'queued'},202);
-  if(path==='/v1/cvie')return send({ready:true,products:preferences.products.map(p=>({...p,id,cpe:product.cpe,status:phase,
-   icon_slug:'apachetomcat',error:'',recent_count:phase==='ready'?recent.length:0,history_count:phase==='ready'?all.length:0,
+  if(path==='/v1/cvie')return send({ready:true,evidence:sourceEvidence(),withdrawn_ids:withdrawnIds,products:preferences.products.map(p=>({...p,id,cpe:product.cpe,status:phase,
+   icon_slug:'apachetomcat',error:'',recent_count:phase==='ready'?recentHistory.length:0,history_count:phase==='ready'?yearHistory.length:0,
+   older_kev_recent_count:recent.filter(r=>r.retained_exploited).length,older_kev_history_count:history.filter(r=>r.retained_exploited).length,
    recent_complete_at:phase==='ready'?now:null,history_complete_at:phase==='ready'?now:null,last_success_at:phase==='ready'?now:null,
    stale:false,candidates:[],progress:{windows_complete:0,windows_total:5,records_checked:0,records_in_window:null}}))});
-  if(path==='/v1/cvie/advisories')return send({ready:true,months:Number(url.searchParams.get('months')),advisories:phase==='ready'?(url.searchParams.get('months')==='12'?all:recent):[],next:null});
+  if(path==='/v1/cvie/advisories')return send({ready:true,months:Number(url.searchParams.get('months')),advisories:phase==='ready'?(url.searchParams.get('months')==='12'?history:recent).filter(r=>!withdrawnIds.includes(r.id)).map(r=>sourceFailure?{...r,exploitation_verification_stale:true,evidence_status:'CISA verification overdue; last good evidence retained'}:r):[],next:null});
   if(path==='/v1/inventory/status')return send({ready:true});
   if(path==='/v1/inventory')return send(inventory);
   if(path==='/v1/plugin-advisories')return send({ready:true,findings:[]});
@@ -82,7 +86,7 @@ try{
  await page.waitForFunction(()=>window.CVEHARBOR_CVIE.records.length>0);
  assert.equal(await page.locator('#dateRange').inputValue(),'published3m');
  const row=page.getByRole('button',{name:/^View Apache Tomcat:/});
- assert.match(await row.innerText(),new RegExp(recent.length+' advisories'),'the product row updates immediately when its scan completes');
+ assert.match(await row.innerText(),new RegExp(recentHistory.length+' advisories'),'the product row updates immediately when its scan completes');
  assert.ok(await row.locator('img').count(),'registered product logo is automatically displayed');
  await row.click();
  assert.equal(await page.locator('#technologyFilter').inputValue(),product.name);
@@ -97,14 +101,35 @@ try{
  await page.setViewportSize({width:1920,height:1080});
  const historyResponse=page.waitForResponse(response=>response.url().includes('/cvie/advisories?months=12'));
  await page.locator('#cvieExplorer select').selectOption('12');await historyResponse;
- await page.waitForFunction(count=>window.CVEHARBOR_CVIE.months===12&&!window.CVEHARBOR_CVIE.loading&&window.CVEHARBOR_CVIE.records.length===count,all.length);
+ await page.waitForFunction(count=>window.CVEHARBOR_CVIE.months===12&&!window.CVEHARBOR_CVIE.loading&&window.CVEHARBOR_CVIE.records.length===count,history.length);
  assert.ok(requests.some(r=>r.path==='/v1/cvie/advisories'&&r.months==='12'),'12-month selection requests the longer source history');
  assert.equal(await page.locator('#dateRange').inputValue(),'published12m');
+ const older=history.find(r=>r.retained_exploited);
+ if(older)assert.ok((await page.locator('#advisoryTableBody').innerText()).includes(older.id),'older confirmed-exploited CVEs remain prominent outside the selected date window');
  await page.evaluate(()=>window.scrollTo(0,document.getElementById('advisories').getBoundingClientRect().top+window.scrollY-90));
  await page.screenshot({path:directory+'/CVIE-history-12-months.png'});
  await page.setViewportSize({width:390,height:844});await page.evaluate(()=>window.scrollTo(0,0));
  await page.screenshot({path:directory+'/CVIE-mobile.png'});
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'no mobile page overflow');
+ await page.setViewportSize({width:1920,height:1080});
+ if(source.evidence){
+  assert.equal(await page.locator('#cvieExplorer .cvie-source').count(),3,'all three independently checked sources are displayed');
+  const before=await page.evaluate(()=>window.CVEHARBOR_CVIE.records.length);sourceFailure=true;
+  await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
+  assert.match(await page.locator('#cvieExplorer .cvie-source.unavailable').innerText(),/CISA KEV/);
+  assert.equal(await page.evaluate(()=>window.CVEHARBOR_CVIE.records.length),before,'source failure does not erase last verified records');
+  await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:directory+'/CVIE-source-outage.png'});
+  sourceFailure=false;await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
+ }
+ const publicId=await page.evaluate(ids=>window.CVEHARBOR_DATA.advisories.find(r=>!ids.includes(r.id))?.id,all.map(x=>x.id));
+ if(publicId){
+  await page.locator('#technologyFilter').selectOption('all');await page.locator('#dateRange').selectOption('all');
+  await page.locator('#search').fill(publicId);await page.locator('#search').dispatchEvent('input');
+  await page.waitForFunction(id=>document.getElementById('advisoryTableBody').textContent.includes(id),publicId);
+  withdrawnIds=[publicId];await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
+  assert.equal((await page.locator('#advisoryTableBody').textContent()).includes(publicId),false,'authoritative withdrawal removes a stale public-snapshot row');
+  withdrawnIds=[];await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
+ }
  // The same account-scoped records must reach the customer report through the shared matcher.
  await page.setViewportSize({width:1920,height:1080});
  await page.goto(base+'/customer-reports/?customer=c1',{waitUntil:'domcontentloaded'});
@@ -114,6 +139,6 @@ try{
  authenticated=false;await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
  assert.equal(await page.evaluate(()=>window.CVEHARBOR_CVIE.records.length),0,'private CVIE results clear when the account session expires');
  assert.deepEqual(errors,[],'no uncaught browser errors');
- fs.writeFileSync(directory+'/verification.json',JSON.stringify({ok:true,source:'Real NVD advisories from isolated CVIE verification',account:'Simulated; no customer data',recent_records:recent.length,history_records:all.length,widths:[390,1366,1920,2560],checks:['immediate save and scan','automatic product logo','three/twelve month retrieval','shared report findings','expired-session clearing','horizontal overflow','uncaught browser errors']},null,2));
- console.log('PASS CVIE Chromium workflow: add/scan, logo, 3/12 months, reports, expired session; screenshots at 390/1366/1920/2560.');
+ fs.writeFileSync(directory+'/verification.json',JSON.stringify({ok:true,source:'Real reconciled NVD/CNA/KEV records from isolated CVIE verification',account:'Simulated; no customer data',recent_records:recentHistory.length,history_records:yearHistory.length,retained_older_kev:history.filter(r=>r.retained_exploited).length,widths:[390,1366,1920,2560],checks:['immediate save and scan','automatic product logo','three/twelve month retrieval','three-source freshness','source failure preserves records','withdrawal suppresses stale public rows','shared report findings','expired-session clearing','horizontal overflow','uncaught browser errors']},null,2));
+ console.log('PASS CVIE Chromium: three-source status, source outage retention, withdrawals, older KEV, add/scan, logo, 3/12 months, reports and session expiry; screenshots at 390/1366/1920/2560.');
 }finally{await browser.close();}

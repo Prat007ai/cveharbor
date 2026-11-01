@@ -132,12 +132,16 @@ function candidate(asset,cve){
    }
   }
  }
+ if(cve.verification_pending)evidence+=' A newer source record is still being verified.';
+ if(cve.exploitation_verification_stale&&cve.known_exploited)evidence+=' Current CISA verification is pending or overdue.';
  return {id:String(cve.id),title:String(cve.title||cve.summary||cve.id),
  severity:String(cve.severity||'unknown'),known_exploited:!!cve.known_exploited,
  asset_id:asset.id,technology:asset.technology,version,level,evidence,
  affected,comparison_detail:comparisonDetail,
  summary:String(cve.summary||cve.title||''),remediation:String(cve.remediation||''),
  published:String(cve.published||''),updated:String(cve.updated||''),
+ provenance:cve.provenance||[],kev_added:cve.kev_added||'',kev_verified_at:cve.kev_verified_at||null,
+ evidence_status:cve.evidence_status||'Original advisory verification required',
  source_label:String((cve.sources||[]).find(s=>String(s.url||'').startsWith('https://'))?.label||'Original advisory'),
  source_url:(cve.sources||[]).map(s=>String(s.url||'')).find(url=>url.startsWith('https://'))||''};
 }
