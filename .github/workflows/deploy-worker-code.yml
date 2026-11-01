@@ -10,6 +10,7 @@ on:
       - 'account-backend/migrations/0021_cvie_audit_refresh.sql'
       - 'account-backend/wrangler.toml'
       - 'scripts/verify_cvie_production.py'
+      - 'scripts/verify_cvie_d1.mjs'
       - '.github/workflows/deploy-worker-code.yml'
   workflow_dispatch:
 
@@ -64,6 +65,11 @@ jobs:
               print('Existing NVD key stored as an encrypted runtime secret')
           else:print('Using the anonymous NVD request budget; no new key is required')
           PY
+      - name: Require real D1 compatibility for CVIE queries before deployment
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify_cvie_d1.mjs
       - name: Deploy Worker source
         working-directory: account-backend
         env:
@@ -82,3 +88,8 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: python3 scripts/verify_cvie_production.py --wait-for-feeds 900
+      - name: Confirm CVIE status and result queries on real production D1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify_cvie_d1.mjs
