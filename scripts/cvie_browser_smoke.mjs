@@ -78,7 +78,7 @@ try{
  await page.waitForFunction(()=>window.CVEHARBOR_CVIE.products.length===1);
  assert.equal(preferences.products.length,1,'Add and scan saves immediately, without a second save');
  await page.locator('#technologyManageClose').click();
- await page.evaluate(()=>{const badge=document.createElement('div');badge.id='cvieReviewBadge';badge.textContent='DEVELOPMENT PREVIEW · REAL NVD ADVISORIES · SIMULATED ACCOUNT';Object.assign(badge.style,{position:'fixed',bottom:'12px',right:'12px',zIndex:'99999',background:'#16384a',color:'#baf3e8',padding:'8px 12px',borderRadius:'6px',fontSize:'11px'});document.body.append(badge);});
+ await page.evaluate(()=>{const badge=document.createElement('div');badge.id='cvieReviewBadge';badge.textContent='DEVELOPMENT PREVIEW · REAL PUBLIC ADVISORIES · SIMULATED ACCOUNT';Object.assign(badge.style,{position:'fixed',bottom:'12px',right:'12px',zIndex:'99999',background:'#16384a',color:'#baf3e8',padding:'8px 12px',borderRadius:'6px',fontSize:'11px'});document.body.append(badge);});
  await page.locator('#cvieExplorer details').evaluate(el=>{el.open=true;});
  await page.locator('#technology').scrollIntoViewIfNeeded();
  await page.screenshot({path:directory+'/CVIE-scanning-1920.png'});

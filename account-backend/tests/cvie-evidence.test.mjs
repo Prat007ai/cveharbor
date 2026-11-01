@@ -6,6 +6,7 @@ import {knownIdentity} from '../src/product-identity.js';
 import {readDeltaLog,refreshEvidence,ingestDisclosures,normalizeDisclosure,productFamilies,queueRelevantKev} from '../src/cvie-evidence.js';
 import {sourceHealth,combinedPage,combinedCounts,reconcileRecord,mergeDigestEvidence} from '../src/cvie-records.js';
 import {selectDigest,revisionOf} from '../src/digest.js';
+import worker from '../src/index.js';
 const NOW=Date.parse('2026-11-01T12:00:00Z'),DAY=86400000;
 const cpe=knownIdentity('Apache Tomcat').cpe,id='CVE-2026-12345';
 const env=()=>({DB:new DB()}),q=(e,sql,...args)=>e.DB.prepare(sql).bind(...args);
@@ -140,4 +141,15 @@ check('alerts prefer reconciled scores and remove withdrawn CVEs from an older p
  const current={...old,severity:'high',known_exploited:false,kev_verified_at:NOW,source_type:'cvie_combined'};
  const records=mergeDigestEvidence([old],[current]);assert.equal(records.length,1);assert.equal(records[0].severity,'high');assert.equal(records[0].known_exploited,false);
  assert.equal(mergeDigestEvidence([old],[],[id]).length,0);
+});
+check('a fresh successful check remains valid when the publisher has released no new changes',async()=>{
+ const e=env();await q(e,"UPDATE cvie_sources SET status='ok',last_success_at=?,publisher_at=? WHERE id='cve_program'",NOW,NOW-2*DAY).run();
+ const source=(await sourceHealth(e,NOW)).sources.find(s=>s.id==='cve_program');
+ assert.equal(source.status,'current');assert.equal(source.publisher_at,NOW-2*DAY);assert.equal(source.last_success_at,NOW);
+});
+check('the minute evidence cron does not run hourly email or website-monitoring jobs',async t=>{
+ const e={...env(),ALERT_DELIVERY_ENABLED:'true',PLUGIN_MONITOR_ENABLED:'true',WEBSITE_MONITOR_ENABLED:'true',LIFECYCLE_DELIVERY_ENABLED:'true'};
+ const calls=[],pending=[];t.mock.method(globalThis,'fetch',async url=>{calls.push(String(url));return new Response('Unavailable',{status:503});});
+ await worker.scheduled({cron:'* * * * *'},e,{waitUntil:p=>pending.push(p)});await Promise.all(pending);
+ assert.ok(calls.length);assert.ok(calls.every(url=>!url.includes('smtp2go')&&!url.includes('nvd.nist.gov')));
 });
