@@ -1,7 +1,7 @@
-CVEHarbor Threat IP Intelligence | 2026-11-01T23:02:53.492177+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-01T23:19:52.828809+00:00
 Permanent logical group: Suspicious IP Block
-Cumulative indexed IPs: 2437
-New since prior published snapshot: 1
+Cumulative indexed IPs: 2439
+New since prior published snapshot: 2
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 No rules or policies are created or enabled. No old IPs are removed.
@@ -11510,6 +11510,12 @@ No firewall rule is created or activated.
       <IPAddress>172.81.61.139</IPAddress>
     </IPHost>
     <IPHost>
+      <Name>CVEH_172_82_74_44</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>172.82.74.44</IPAddress>
+    </IPHost>
+    <IPHost>
       <Name>CVEH_172_86_73_27</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
@@ -12396,6 +12402,12 @@ No firewall rule is created or activated.
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
       <IPAddress>185.216.68.86</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_185_228_138_115</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>185.228.138.115</IPAddress>
     </IPHost>
     <IPHost>
       <Name>CVEH_185_231_153_45</Name>
@@ -16566,6 +16578,7 @@ No firewall rule is created or activated.
         <Host>CVEH_171_220_244_134</Host>
         <Host>CVEH_171_244_47_232</Host>
         <Host>CVEH_172_81_61_139</Host>
+        <Host>CVEH_172_82_74_44</Host>
         <Host>CVEH_172_86_73_27</Host>
         <Host>CVEH_172_86_125_61</Host>
         <Host>CVEH_172_86_125_98</Host>
@@ -16714,6 +16727,7 @@ No firewall rule is created or activated.
         <Host>CVEH_185_206_225_29</Host>
         <Host>CVEH_185_213_27_138</Host>
         <Host>CVEH_185_216_68_86</Host>
+        <Host>CVEH_185_228_138_115</Host>
         <Host>CVEH_185_231_153_45</Host>
         <Host>CVEH_185_233_3_95</Host>
         <Host>CVEH_185_233_118_159</Host>
