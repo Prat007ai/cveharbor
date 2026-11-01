@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DB} from './helpers/d1.mjs';
-import {subscribeProducts,runCvieStep,cvieRoute,normalizeNvd} from '../src/cvie.js';
+import {subscribeProducts,syncAccountProducts,runCvieStep,cvieRoute,normalizeNvd} from '../src/cvie.js';
 import {ingestDisclosures} from '../src/cvie-evidence.js';
 import {combinedPage} from '../src/cvie-records.js';
 import {coveragePlan,coverageSummary,catalogueNames,catalogueKind,sourceWorkTypes,DISCOVERY_PAGES} from '../src/product-coverage.js';
@@ -11,6 +11,44 @@ const check=(name,fn)=>test(name,async t=>{t.mock.timers.enable({apis:['Date'],n
 const p={name:'Apache Tomcat',cpe:'cpe:2.3:a:apache:tomcat:*:*:*:*:*:*:*:*'};
 const state=(e,user='a')=>cvieRoute(new Request('https://api.cveharbor.com/v1/cvie'),e,{id:user}).then(r=>r.json());
 const empty=()=>Response.json({startIndex:0,totalResults:0,vulnerabilities:[]});
+check('navigation syncs and status reads preserve saved cursors, results and provider budget without writes',async()=>{
+ const e=env();
+ await q(e,'INSERT INTO user_technology_catalogue VALUES(?,?,0)','a',JSON.stringify({products:[{name:'Apache Tomcat'}]})).run();
+ await syncAccountProducts(e,'a');await runCvieStep(e,empty,NOW);
+ const before=await q(e,"SELECT * FROM cvie_products WHERE user_id='a'").first();
+ await q(e,'INSERT INTO cvie_advisories VALUES(?,?,?,?,?)',before.id,'CVE-2026-19999','2026-10-15T00:00:00Z',JSON.stringify({id:'CVE-2026-19999',published:'2026-10-15T00:00:00Z',summary:'Retained source fixture'}),'saved').run();
+ const saved=JSON.stringify(await q(e,"SELECT * FROM cvie_products WHERE user_id='a'").first());
+ const budget=JSON.stringify(await q(e,'SELECT * FROM cvie_provider_budget').first());
+ let mutations=0,scheduled=0;
+ const prepare=e.DB.prepare.bind(e.DB);
+ e.DB.prepare=sql=>{if(/^(INSERT|UPDATE|DELETE)/i.test(sql.trim()))mutations++;return prepare(sql);};
+ const ctx={waitUntil(){scheduled++;}};
+ for(let visit=0;visit<3;visit++){
+  const sync=await cvieRoute(new Request('https://api.cveharbor.com/v1/cvie/sync',{method:'POST'}),e,{id:'a'},ctx);
+  assert.equal(sync.status,200);assert.equal((await sync.json()).status,'unchanged');
+  const response=await cvieRoute(new Request('https://api.cveharbor.com/v1/cvie'),e,{id:'a'},ctx);
+  assert.equal(response.status,200);assert.equal((await response.json()).products[0].progress.windows_complete,1);
+ }
+ assert.equal(mutations,0,'unchanged navigation has no D1 mutation statements');
+ assert.equal(scheduled,0,'reading pages never schedules provider requests');
+ assert.equal(JSON.stringify(await q(e,"SELECT * FROM cvie_products WHERE user_id='a'").first()),saved);
+ assert.equal(JSON.stringify(await q(e,'SELECT * FROM cvie_provider_budget').first()),budget);
+ assert.equal((await q(e,'SELECT COUNT(*) AS total FROM cvie_advisories').first()).total,1);
+});
+check('replaying every stored .NET Core member never restarts an unchanged reviewed product scope',async()=>{
+ const e=env(),families=coveragePlan({name:'.NET Core'}).families;
+ for(const member of families){
+  await q(e,'INSERT INTO user_technology_catalogue VALUES(?,?,0) ON CONFLICT(user_id) DO UPDATE SET preferences_json=excluded.preferences_json','a',JSON.stringify({products:[{name:'.NET Core',cpe:member}]})).run();
+  await syncAccountProducts(e,'a');
+  await runCvieStep(e,empty,NOW);await runCvieStep(e,empty,NOW+7000);
+  const before=await q(e,"SELECT * FROM cvie_products WHERE user_id='a'").first();
+  for(let visit=0;visit<3;visit++){
+   const sync=await syncAccountProducts(e,'a');assert.equal(sync.changed,false);
+   await state(e);
+   assert.deepEqual(await q(e,"SELECT * FROM cvie_products WHERE user_id='a'").first(),before);
+  }
+ }
+});
 function cna(id,name='Apache Tomcat 10.1',vendor='Apache Software Foundation',version='10.1.0'){
  return {dataType:'CVE_RECORD',dataVersion:'5.1',cveMetadata:{cveId:id,state:'PUBLISHED',datePublished:'2026-10-15T00:00:00Z',dateUpdated:'2026-10-20T00:00:00Z'},containers:{cna:{title:'Coverage fixture',descriptions:[{lang:'en',value:'Structured source evidence fixture.'}],affected:[{vendor,product:name,defaultStatus:'unaffected',versions:[{version,lessThan:version+'.9',versionType:'semver',status:'affected'}]}]}}};
 }

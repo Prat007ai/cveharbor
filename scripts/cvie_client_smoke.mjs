@@ -4,11 +4,11 @@ import fs from 'node:fs';
 import {JSDOM} from 'jsdom';
 const dom=new JSDOM('<div id="cvieExplorer"></div>',{url:'https://cveharbor.com/vulnerabilities/',runScripts:'outside-only'});
 const w=dom.window;w.AbortSignal=globalThis.AbortSignal;
-let owner='a',held=null,holdNext=false,failPages=false,wrongPage=false,cycle=false,excluded=[],componentProducts=[],extraRecords=[],evidenceSources=[];
+let owner='a',held=null,holdNext=false,failPages=false,wrongPage=false,cycle=false,excluded=[],componentProducts=[],extraRecords=[],evidenceSources=[],syncCalls=0;
 const record=who=>({id:who==='a'?'CVE-2026-12345':'CVE-2026-54321',summary:'Synthetic private '+who,categories:['Apache Tomcat'],cvie_products:['Apache Tomcat'],source_type:'cvie_combined'});
 w.fetch=async url=>{
  const parsed=new URL(url),who=owner;
- if(parsed.pathname.endsWith('/sync'))return Response.json({ready:true}, {status:202});
+ if(parsed.pathname.endsWith('/sync')){syncCalls++;return Response.json({ready:true,status:'unchanged'});}
  if(parsed.pathname==='/v1/cvie')return Response.json({ready:true,account_id:who,products:[{id:who,name:'Apache Tomcat',status:'ready',progress:{},recent_count:1,history_count:1},...componentProducts],evidence:{sources:evidenceSources},excluded_product_cves:excluded});
  if(parsed.pathname.endsWith('/advisories')){
   if(failPages)throw Error('Simulated page failure');
@@ -24,6 +24,12 @@ try{
  w.eval(fs.readFileSync('cvie.js','utf8'));const client=w.CVEHARBOR_CVIE;
  await until(()=>client.ready&&!client.loading&&client.records.length===1);
  assert.equal(client.records[0].id,record('a').id);
+ const initialSyncs=syncCalls;
+ w.document.querySelector('.cvie-panel-head button').click();await until(()=>!client.loading);
+ w.dispatchEvent(new w.Event('cveharbor:inventory-loaded'));await until(()=>!client.loading);
+ assert.equal(syncCalls,initialSyncs,'status refresh and inventory display events do not repeat product registration');
+ assert.match(client.statusFor({status:'scanning',progress:{windows_complete:4}}),/Continuing saved/);
+ assert.match(client.statusFor({status:'scanning',history_complete_at:Date.now()}),/Updating saved vulnerabilities/);
  holdNext=true;const inFlight=client.refresh();await until(()=>held);
  owner='b';auth(true,'b@example.test');assert.equal(client.records.length,0,'account changes clear old private results synchronously');
  const seen=[];w.addEventListener('cvie:updated',()=>seen.push(client.records.map(r=>r.id)));

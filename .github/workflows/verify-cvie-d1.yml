@@ -1,8 +1,8 @@
 name: Verify CVIE queries against production D1 without customer data
 on:
   push:
-    branches: [fix/cvie-status-d1]
-    paths: ['account-backend/**', 'scripts/verify_cvie_d1.mjs', '.github/workflows/verify-cvie-d1.yml']
+    branches: [fix/cvie-status-d1, fix/cvie-navigation-resume]
+    paths: ['account-backend/**', 'cvie.js', 'app.js', 'scripts/cvie_client_smoke.mjs', 'scripts/verify_cvie_d1.mjs', '.github/workflows/verify-cvie-d1.yml']
 permissions:
   contents: write
 jobs:
@@ -13,6 +13,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Verify scan continuity, subscription changes and private account isolation
+        run: npm test --prefix account-backend
+      - name: Verify status refresh and account-change behavior in the browser client
+        run: |
+          npm install --no-save --no-package-lock jsdom@26
+          node scripts/cvie_client_smoke.mjs
       - name: Exercise the actual production database query contracts with synthetic identities
         id: probe
         continue-on-error: true

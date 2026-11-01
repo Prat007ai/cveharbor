@@ -770,7 +770,8 @@
       const before=new Set((personalized?.products||[]).map(p=>p.name.toLowerCase()));
       const newest=draft.products.find(p=>!before.has(p.name.toLowerCase()));
       personalized=JSON.parse(JSON.stringify(draft));addedHighlight=newest?.name||null;renderCategories();
-      void window.CVEHARBOR_CVIE?.refresh(true);
+      // The catalogue save already registers changed products on the server.
+      void window.CVEHARBOR_CVIE?.refresh();
       if(newest){const category=newest.category||inferProductCategory(newest.name)||'applications';statusMessage(newest.name+' added under '+customCategoryNames[category]+'. '+(data.cvie?.ready?'CVIE is scanning and preparing the current vulnerabilities.':data.cvie?.message||'CVIE service setup is pending; the product is safely saved.'));
         const row=[...document.querySelectorAll('.technology-just-added')].find(x=>x.dataset.customProduct===newest.name);
         row?.scrollIntoView({behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth',block:'center'});

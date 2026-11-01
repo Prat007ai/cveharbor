@@ -37,7 +37,11 @@ function statusFor(p){
  if(p.status==='needs_identity')return 'Choose the exact product';
  if(p.status==='retrying')return 'Source unavailable · retry scheduled';
  if(p.status==='queued')return 'Queued · preparing vulnerability scan';
- if(p.status==='scanning')return months===3&&p.recent_complete_at?'3-month results ready · preparing older history':'Scanning and preparing vulnerabilities';
+ if(p.status==='scanning'){
+  if(p.history_complete_at)return 'Updating saved vulnerabilities · previous results available';
+  if(months===3&&p.recent_complete_at)return '3-month results ready · preparing older history';
+  return p.last_success_at||p.progress?.windows_complete||p.progress?.records_checked?'Continuing saved vulnerability scan':'Scanning and preparing vulnerabilities';
+ }
  if(p.stale)return 'Saved results · source check overdue';
  const count=months===12?p.history_count:p.recent_count;
  const complete=months===12?p.history_complete_at:p.recent_complete_at;
@@ -100,7 +104,7 @@ function draw(){
   const label=node('label','History '),select=node('select');select.setAttribute('aria-label','CVIE vulnerability history');
   for(const n of [3,12]){const option=node('option','Last '+n+' months');option.value=String(n);select.append(option);}select.value=String(months);
   select.addEventListener('change',()=>{months=Number(select.value);void refresh();});label.append(select);
-  const button=node('button','Refresh status');button.type='button';button.disabled=busy;button.addEventListener('click',()=>void refresh(true));
+  const button=node('button','Refresh status');button.type='button';button.disabled=busy;button.addEventListener('click',()=>void refresh());
   header.append(title,label,button);panel.append(header);
   const sourceLabels={current:'Checked',scanning:'Scanning',needs_identity:'Waiting for product selection',catching_up:'Indexing disclosures',verifying_products:'Verifying product applicability',pending:'Waiting for first check',stale:'Check overdue',unavailable:'Source unavailable',rate_limited:'Rate limited · retry scheduled',setup_required:'Setup required',no_products:'Add a product'};
   const sourceGrid=node('div','','cvie-source-grid');
@@ -182,7 +186,7 @@ window.CVEHARBOR_CVIE={get products(){return products;},get records(){return mer
  setMonths:value=>{if(![3,12].includes(Number(value)))throw Error('Select 3 or 12 months');months=Number(value);return refresh();},
  product:name=>products.find(p=>normalize(p.name)===normalize(name))};
 mount();
-window.addEventListener('cveharbor:inventory-loaded',()=>void refresh(true));
+window.addEventListener('cveharbor:inventory-loaded',()=>void refresh());
 window.addEventListener('cveharbor:account-state',event=>{
  const email=normalize(event.detail?.email||'');
  if(!event.detail?.authenticated||email!==accountEmail){authEpoch++;clearPrivate();accountEmail=email;signedIn=!!event.detail?.authenticated;error='';notify();}

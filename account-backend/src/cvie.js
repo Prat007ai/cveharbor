@@ -37,23 +37,28 @@ export async function subscribeProducts(env,userId,products,origin='catalogue'){
   if(!name||name.length>120||vendor.length>100||/[\u0000-\u001f]/.test(name+vendor))throw new CvieError('Invalid product identity');
   if(item.cpe&&!productCpe(item.cpe))throw new CvieError('Use a product-family CPE 2.3 identifier with wildcard versions');
   if(item.cpe&&vendor&&vendorKey(vendor)!==vendorKey(productCpe(item.cpe).split(':')[3]))throw new CvieError('The vendor does not match the selected source identity');
-  normalized.set(normalizeName(name),{name,vendor,cpe:item.cpe?productCpe(item.cpe):knownIdentity(name,vendor)?.cpe||'',explicitCpe:Boolean(item.cpe),vendorProvided:item.vendor!==undefined});
+  const selected=item.cpe?productCpe(item.cpe):knownIdentity(name,vendor)?.cpe||'';
+  // A reviewed multi-family scope has one durable primary identity. Replaying a
+  // saved legacy member must not undo the scope upgrade and restart its history.
+  const cpe=coveragePlan({name,vendor,cpe:selected}).primary||selected;
+  normalized.set(normalizeName(name),{name,vendor,cpe,explicitCpe:Boolean(item.cpe),vendorProvided:item.vendor!==undefined});
  }
  if(normalized.size>500)throw new CvieError('CVIE supports up to 500 distinct products per account',409);
  const existing=(await query(env.DB,'SELECT id,name_key,cpe,vendor FROM cvie_products WHERE user_id=?',userId).all()).results||[];
+ const subscribed=(await query(env.DB,'SELECT product_id FROM cvie_subscriptions WHERE user_id=? AND origin=?',userId,origin).all()).results||[];
  const ids=new Map(existing.map(x=>[x.name_key,x.id]));
  const other=(await query(env.DB,'SELECT DISTINCT p.name_key FROM cvie_products p JOIN cvie_subscriptions s ON p.id=s.product_id WHERE s.user_id=? AND s.origin<>?',userId,origin).all()).results||[];
  if(new Set([...other.map(x=>x.name_key),...normalized.keys()]).size>500)throw new CvieError('CVIE product capacity reached; remove unused products before adding more',409);
  const statements=[],inserts=[],changes=[];
  for(const [key,p] of normalized){
   const id=ids.get(key)||crypto.randomUUID();ids.set(key,id);
-  inserts.push({id,key,name:p.name,vendor:p.vendor,cpe:p.cpe});
   const prior=existing.find(x=>x.name_key===key);
+  if(!prior)inserts.push({id,key,name:p.name,vendor:p.vendor,cpe:p.cpe});
   if(prior&&(p.explicitCpe&&p.cpe!==prior.cpe||p.vendorProvided&&p.vendor!==prior.vendor)){
    changes.push({id,cpe:p.explicitCpe?p.cpe:knownIdentity(p.name,p.vendor)?.cpe||'',vendor:p.vendorProvided?p.vendor:prior.vendor});
   }
  }
- statements.push(query(env.DB,`INSERT OR IGNORE INTO cvie_products(id,user_id,name_key,name,vendor,cpe)
+ if(inserts.length)statements.push(query(env.DB,`INSERT OR IGNORE INTO cvie_products(id,user_id,name_key,name,vendor,cpe)
   SELECT json_extract(value,'$.id'),?,json_extract(value,'$.key'),json_extract(value,'$.name'),json_extract(value,'$.vendor'),json_extract(value,'$.cpe') FROM json_each(?)`,userId,JSON.stringify(inserts)));
  if(changes.length){
   const payload=JSON.stringify(changes);
@@ -64,21 +69,27 @@ export async function subscribeProducts(env,userId,products,origin='catalogue'){
    status='queued',cursor_json='{}',candidates_json='[]',recent_complete_at=NULL,history_complete_at=NULL,last_success_at=NULL,next_attempt_at=0,lease_until=0,error=''
    WHERE user_id=? AND id IN(SELECT json_extract(value,'$.id') FROM json_each(?))`,payload,payload,userId,payload));
  }
- statements.push(query(env.DB,'DELETE FROM cvie_subscriptions WHERE user_id=? AND origin=?',userId,origin));
- statements.push(query(env.DB,'INSERT INTO cvie_subscriptions(user_id,product_id,origin) SELECT ?,value,? FROM json_each(?)',userId,origin,JSON.stringify([...normalized.keys()].map(key=>ids.get(key)))));
- statements.push(query(env.DB,'DELETE FROM cvie_products WHERE user_id=? AND NOT EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=cvie_products.id)',userId));
+ const desired=new Set([...normalized.keys()].map(key=>ids.get(key))),current=new Set(subscribed.map(s=>s.product_id));
+ const added=[...desired].filter(id=>!current.has(id)),removed=[...current].filter(id=>!desired.has(id));
+ if(removed.length)statements.push(query(env.DB,'DELETE FROM cvie_subscriptions WHERE user_id=? AND origin=? AND product_id IN(SELECT value FROM json_each(?))',userId,origin,JSON.stringify(removed)));
+ if(added.length)statements.push(query(env.DB,'INSERT OR IGNORE INTO cvie_subscriptions(user_id,product_id,origin) SELECT ?,value,? FROM json_each(?)',userId,origin,JSON.stringify(added)));
+ if(removed.length)statements.push(query(env.DB,'DELETE FROM cvie_products WHERE user_id=? AND NOT EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=cvie_products.id)',userId));
  // Set-based JSON bindings keep bulk imports within D1's per-invocation query budget.
- await env.DB.batch(statements);
- await queueRelevantKev(env,[...normalized.values()]);
- return {ready:true,queued:normalized.size};
+ if(statements.length)await env.DB.batch(statements);
+ const updatedIds=new Set([...inserts,...changes].map(p=>p.id));
+ const relevant=[...normalized.entries()].filter(([key])=>updatedIds.has(ids.get(key))).map(([,p])=>p);
+ if(relevant.length)await queueRelevantKev(env,relevant);
+ return {ready:true,queued:updatedIds.size,changed:statements.length>0};
 }
 export async function syncAccountProducts(env,userId){
  const catalogue=await query(env.DB,'SELECT preferences_json FROM user_technology_catalogue WHERE user_id=?',userId).first();
  const inventory=await query(env.DB,'SELECT DISTINCT technology FROM inventory_assets WHERE user_id=?',userId).all();
  const stack=await query(env.DB,'SELECT technology FROM user_stack WHERE user_id=?',userId).all();
- await subscribeProducts(env,userId,JSON.parse(catalogue?.preferences_json||'{}').products||[],'catalogue');
- await subscribeProducts(env,userId,(inventory.results||[]).map(x=>({name:x.technology})),'inventory');
- await subscribeProducts(env,userId,(stack.results||[]).map(x=>({name:x.technology})),'stack');
+ const results=[];
+ results.push(await subscribeProducts(env,userId,JSON.parse(catalogue?.preferences_json||'{}').products||[],'catalogue'));
+ results.push(await subscribeProducts(env,userId,(inventory.results||[]).map(x=>({name:x.technology})),'inventory'));
+ results.push(await subscribeProducts(env,userId,(stack.results||[]).map(x=>({name:x.technology})),'stack'));
+ return {ready:results.every(r=>r.ready),changed:results.some(r=>r.changed),queued:results.reduce((n,r)=>n+(r.queued||0),0)};
 }
 function configurations(cve){
  const result=[];
@@ -263,7 +274,9 @@ export async function cvieRoute(req,env,user,ctx,data={}){
  if(!await cvieReady(env))return json({ready:false,error:'CVIE database setup is required. Your saved products and inventory are unchanged.'},503);
  const url=new URL(req.url),path=url.pathname;
  if(path==='/v1/cvie/sync'&&req.method==='POST'){
-  await syncAccountProducts(env,user.id);ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id));return json({ready:true,status:'queued'},202);
+  const sync=await syncAccountProducts(env,user.id);
+  if(sync.changed)ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id));
+  return json({...sync,status:sync.changed?'updated':'unchanged'},sync.changed?202:200);
  }
  const identity=/^\/v1\/cvie\/products\/([a-f0-9-]{36})\/identity$/.exec(path);
  if(identity&&req.method==='PUT'){
@@ -304,7 +317,7 @@ export async function cvieRoute(req,env,user,ctx,data={}){
   evidence.sources.unshift({id:'nvd',label:'NVD product history',url:'https://nvd.nist.gov/',
    status:!products.length?'no_products':products.every(p=>p.status==='needs_identity')?'needs_identity':products.some(p=>p.status==='retrying')?'unavailable':products.some(p=>p.stale&&p.status==='ready')?'stale':products.some(p=>p.status!=='ready')?'scanning':'current',
    last_success_at:attempted.length?Math.min(...attempted):null});
-  ctx?.waitUntil(runCvieStep(env,fetch,now,user.id));return json({ready:true,engine:'CVIE',account_id:user.id,products,evidence,withdrawn_ids:withdrawn,excluded_product_cves:await excludedProductCves(env,user.id,evidenceCtx),default_months:3});
+  return json({ready:true,engine:'CVIE',account_id:user.id,products,evidence,withdrawn_ids:withdrawn,excluded_product_cves:await excludedProductCves(env,user.id,evidenceCtx),default_months:3});
  }
  if(path==='/v1/cvie/advisories'&&req.method==='GET'){
   const months=Number(url.searchParams.get('months')||3),after=url.searchParams.get('after')||'';
