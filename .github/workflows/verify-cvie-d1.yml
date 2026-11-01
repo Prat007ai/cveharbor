@@ -2,7 +2,7 @@ name: Verify CVIE queries against production D1 without customer data
 on:
   push:
     branches: [fix/cvie-status-d1, fix/cvie-navigation-resume, perf/cvie-read-usage, feat/cvie-shared-product-scans]
-    paths: ['account-backend/**', 'cvie.js', 'app.js', 'scripts/cvie_client_smoke.mjs', 'scripts/cvie_polling_smoke.mjs', 'scripts/probe_cvie_shared.mjs', 'scripts/verify_cvie_d1.mjs', '.github/workflows/verify-cvie-d1.yml']
+    paths: ['account-backend/**', 'cvie.js', 'app.js', 'scripts/cvie_client_smoke.mjs', 'scripts/cvie_polling_smoke.mjs', 'scripts/probe_cvie_shared.mjs', 'scripts/bootstrap_cvie_shared.mjs', 'scripts/verify_cvie_d1.mjs', '.github/workflows/verify-cvie-d1.yml']
 permissions:
   contents: write
 jobs:
@@ -60,6 +60,8 @@ jobs:
           git push origin "HEAD:$CVIE_CHECK_BRANCH"
       - name: Require successful production query checks
         env:
+          QUERY_OUTCOME: ${{ steps.probe.outcome }}
+          PROVIDER_OUTCOME: ${{ steps.shared_provider.outcome }}
           VERIFY_SHARED: ${{ github.ref_name == 'feat/cvie-shared-product-scans' }}
-        run: node -e "if(!require('./data/cvie-d1-check.json').ok||process.env.VERIFY_SHARED==='true'&&!require('./data/cvie-shared-check.json').ok)process.exit(1)"
+        run: node -e "if(process.env.QUERY_OUTCOME!=='success'||!require('./data/cvie-d1-check.json').ok||process.env.VERIFY_SHARED==='true'&&(process.env.PROVIDER_OUTCOME!=='success'||!require('./data/cvie-shared-check.json').ok))process.exit(1)"
 
