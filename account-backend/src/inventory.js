@@ -37,6 +37,22 @@ export async function inventoryRoute(req,env,user,path,data={}){
   if(path==='/v1/inventory/status'&&req.method==='GET')
     return json({storage:'d1',ready:await ready(env),max_customers:100,max_environments:500,max_assets:3000});
   await ensureReady(env);
+  if(path==='/v1/inventory/software-history'&&req.method==='GET'){
+    const params=new URL(req.url).searchParams,customer=id(params.get('customer_id'));
+    const rawEnvironment=params.get('environment_id'),environment=rawEnvironment?id(rawEnvironment):null;
+    const before=params.get('before'),cursor=before===null?null:Number(before);
+    if(!customer||(rawEnvironment&&!environment)||cursor!==null&&(!Number.isSafeInteger(cursor)||cursor<1))throw new InventoryError('Invalid history scope or cursor');
+    await owned(env,'inventory_customers',user.id,customer);
+    if(environment)await owned(env,'inventory_environments',user.id,environment,customer);
+    const installed=await env.DB.prepare("SELECT name FROM sqlite_schema WHERE (type='table' AND name='inventory_software_history') OR (type='trigger' AND name='inventory_software_version_changed')").all();
+    if((installed.results||[]).length!==2)return json({ready:false,entries:[],next_before:null});
+    const clauses=['user_id=?','customer_id=?'],args=[user.id,customer];
+    if(environment){clauses.push('environment_id=?');args.push(environment)}
+    if(cursor!==null){clauses.push('id<?');args.push(cursor)}
+    const rows=(await env.DB.prepare('SELECT id,environment_id,asset_id,asset_name,previous_technology,technology,previous_version,version,recorded_at FROM inventory_software_history WHERE '+clauses.join(' AND ')+' ORDER BY id DESC LIMIT 101').bind(...args).all()).results||[];
+    const entries=rows.slice(0,100);
+    return json({ready:true,customer_id:customer,environment_id:environment||'',entries,next_before:rows.length>100?entries.at(-1).id:null});
+  }
   if(path==='/v1/inventory'&&req.method==='GET'){
     // No public customer, host or software inventory is exposed.
     const [customers,environments,assets]=await Promise.all([

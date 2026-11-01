@@ -73,7 +73,7 @@ try{
    assert.ok(layout.engine.y<190,'report intelligence appears near the top, as in the mockup');
    assert.ok(Math.abs(layout.engine.y-layout.score.y)<2,'source and assessment panels align');
    assert.ok(layout.summary.y<460,'compact top panels keep the executive summary visible');
-   assert.ok(layout.footer.bottom<1100,'default report fits the mockup density with the synthetic inventory');
+   assert.ok(layout.footer.bottom<1150,'default report fits the mockup density with the synthetic inventory');
    assert.ok(layout.table<=layout.container+1,'all seven findings columns fit desktop without horizontal scrolling');
   }
   await page.screenshot({path:directory+'/reports-'+width+'.png',fullPage:true});

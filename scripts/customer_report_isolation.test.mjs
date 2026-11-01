@@ -17,7 +17,7 @@ function setup(){
  CREATE TABLE user_totp(user_id TEXT,enabled INTEGER);
  CREATE TABLE auth_rate_limits(key TEXT PRIMARY KEY,window_start INTEGER,count INTEGER);
  INSERT INTO users VALUES('a','a@example.test'),('b','b@example.test'); INSERT INTO user_totp VALUES('a',1),('b',1);`);
- for(const name of ['inventory-schema.sql','finding-status-schema.sql','finding-ticket-schema.sql','finding-ticket-history-schema.sql','customer-score-schema.sql'])sql.exec(fs.readFileSync(new URL('../account-backend/'+name,import.meta.url),'utf8'));
+ for(const name of ['inventory-schema.sql','finding-status-schema.sql','finding-ticket-schema.sql','finding-ticket-history-schema.sql','customer-score-schema.sql','software-upgrade-history-schema.sql'])sql.exec(fs.readFileSync(new URL('../account-backend/'+name,import.meta.url),'utf8'));
  sql.prepare('INSERT INTO sessions VALUES(?,?,?,?)').run('session','a',createHash('sha256').update(token).digest('hex'),Math.floor(Date.now()/1000)+3600);
  for(const [user,customer,environment,asset] of [['a',customerA,environmentA,assetA],['b',customerB,environmentB,assetB]]){
   sql.prepare('INSERT INTO inventory_customers(id,user_id,name) VALUES(?,?,?)').run(customer,user,'Customer '+user);
@@ -39,6 +39,13 @@ test('report reads isolate account inventory, statuses, tickets and history with
   const tickets=await (await request('finding-tickets')).json();assert.deepEqual(tickets.tickets.map(x=>x.ticket_number),['TICKET-a']);
   assert.equal((await request('customer-score-history?customer_id='+customerB)).status,404);
   assert.equal((await request('customer-score-history?customer_id='+customerA+'&environment_id='+environmentB)).status,404);
+  db.sql.prepare('UPDATE inventory_assets SET version=? WHERE id=?').run('8.4.2',assetA);
+  db.sql.prepare('UPDATE inventory_assets SET version=? WHERE id=?').run('8.4.3',assetB);
+  const history=await (await request('inventory/software-history?customer_id='+customerA)).json();
+  assert.equal(history.ready,true);assert.deepEqual(history.entries.map(x=>x.asset_id),[assetA]);
+  assert.equal((await request('inventory/software-history?customer_id='+customerB)).status,404);
+  assert.equal((await request('inventory/software-history?customer_id='+customerA+'&environment_id='+environmentB)).status,404);
+  assert.equal((await request('inventory/software-history?customer_id='+customerA,'GET',null,{cookie:''})).status,401);
   assert.equal(db.writes,0);
  }finally{db.sql.close()}
 });
