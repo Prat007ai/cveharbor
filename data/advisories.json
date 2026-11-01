@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-01",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6420,
+  "candidate_records": 6460,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -991,6 +991,1126 @@
       "first_seen_at": "2026-11-01T18:35:11Z",
       "source_updated_at": "2026-11-01T18:30:26Z",
       "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2025-53905",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2025-53906",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-25749",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-26269",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-28417",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-28418",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-28419",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-28420",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-28421",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-28422",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-32249",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-33412",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-34982",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-35177",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-39881",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-41411",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-42307",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-43961",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-44656",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-45130",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-46483",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-47162",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-47167",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-52858",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-52859",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-52860",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-55693",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-55892",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-55895",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-57452",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-57455",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-57456",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-59856",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-59857",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-59858",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-73072",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-73073",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-73076",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-73077",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-73078",
+      "title": "DSA-6600-1 vim - security update",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "Multiple vulnerabilities were found and fixed in Vim, an enhanced version of the standard UNIX editor Vi (Vi IMproved). A remote attacker could trigger arbitrary code execution, command injection, or a crash (potential memory-corruption) via crafted files, archives, help/tag files, modelines, spell files, or crafted input to the NetBeans interface. <p> CVE-2025-53905 - Path traversal in the tar plugin. The tar plugin did not protect archive member names against \"..\" traversal. <p> CVE-2025-53906 - Path traversal in the zip plugin. The zip plugin did not protect archive member names against \"..\" traversal. <p> CVE-2026-25749 - Buffer overflow in 'helpfile' option handling. Overlong help file paths could overflow a fixed-size buffer. <p> CVE-2026-26269 - Buffer overflow in the NetBeans interface. Specially crafted NetBeans protocol input could overflow a buffer. <p> CVE-2026-28417 - Command injection using netrw. Crafted file names could break out of netrw commands. <p> CVE-2026-28418 - Crash with an overlong emacs tag file. An overlong tag line could crash the tag reader. <p> CVE-2026-28419 - Buffer underflow with an emacs tag file. Crafted emacs tag files could cause an underflow. ",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Debian Security Advisory",
+          "url": "https://lists.debian.org/debian-security-announce/2026/msg00519.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "Debian Security Advisory RSS notice",
+      "first_seen_at": "2026-11-01T19:50:15Z",
+      "source_updated_at": "2026-11-01",
+      "source_type": "debian_rss",
       "known_exploited": false
     },
     {
@@ -150275,37 +151395,6 @@
       "epss_as_of": "2026-11-01"
     },
     {
-      "id": "CVE-2025-7624",
-      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
-      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
-      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.10514,
-      "epss_percentile": 0.95765,
-      "epss_as_of": "2026-11-01"
-    },
-    {
       "id": "CVE-2025-6704",
       "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
       "severity": "critical",
@@ -150334,6 +151423,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.11772,
       "epss_percentile": 0.96077,
+      "epss_as_of": "2026-11-01"
+    },
+    {
+      "id": "CVE-2025-7624",
+      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
+      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
+      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.10514,
+      "epss_percentile": 0.95765,
       "epss_as_of": "2026-11-01"
     },
     {
@@ -167918,1330 +169038,90 @@
       "epss": 0.95074,
       "epss_percentile": 0.99862,
       "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2018-8414",
-      "title": "Microsoft Windows Shell Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-25",
-      "summary": "A remote code execution vulnerability exists when the Windows Shell does not properly validate file paths.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.72621,
-      "epss_percentile": 0.99443,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2018-6961",
-      "title": "VMware SD-WAN Edge by VeloCloud Command Injection Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2022-03-25",
-      "summary": "VMware SD-WAN Edge by VeloCloud contains a command injection vulnerability in the local web UI component. Successful exploitation of this issue could result in remote code execution.",
-      "affected": "VMware SD-WAN Edge. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.85342,
-      "epss_percentile": 0.99717,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2018-1273",
-      "title": "VMware Tanzu Spring Data Commons Property Binder Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2022-03-25",
-      "summary": "Spring Data Commons contains a property binder vulnerability which can allow an attacker to perform remote code execution.",
-      "affected": "VMware Tanzu Spring Data Commons. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.96956,
-      "epss_percentile": 0.99889,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2017-3881",
-      "title": "Cisco IOS and IOS XE Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-25",
-      "summary": "A vulnerability in the Cisco Cluster Management Protocol (CMP) processing code in Cisco IOS and Cisco IOS XE Software could allow an unauthenticated, remote attacker to cause a reload of an affected device or remotely execute code with elevated privileges.",
-      "affected": "Cisco IOS and IOS XE. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.9895,
-      "epss_percentile": 0.99929,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2017-12615",
-      "title": "Apache Tomcat on Windows Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-25",
-      "summary": "When running Apache Tomcat on Windows with HTTP PUTs enabled, it is possible to upload a JSP file to the server via a specially crafted request. This JSP could then be requested and any code it contained would be executed by the server.",
-      "affected": "Apache Tomcat. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99707,
-      "epss_percentile": 0.99952,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2017-0146",
-      "title": "Microsoft Windows SMB Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-25",
-      "summary": "The SMBv1 server in Microsoft Windows allows remote attackers to perform remote code execution.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.89755,
-      "epss_percentile": 0.99789,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2014-6332",
-      "title": "Microsoft Windows Object Linking & Embedding (OLE) Automation Array Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-25",
-      "summary": "OleAut32.dll in OLE in Microsoft Windows allows remote attackers to remotely execute code via a crafted web site.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.94918,
-      "epss_percentile": 0.9986,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2012-1823",
-      "title": "PHP-CGI Query String Parameter Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "PHP"
-      ],
-      "published": "",
-      "updated": "2022-03-25",
-      "summary": "sapi/cgi/cgi_main.c in PHP, when configured as a CGI script, does not properly handle query strings, which allows remote attackers to execute arbitrary code.",
-      "affected": "PHP PHP. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99998,
-      "epss_percentile": 0.9999,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2010-3035",
-      "title": "Cisco IOS XR Border Gateway Protocol (BGP) Denial-of-Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-25",
-      "summary": "Cisco IOS XR, when BGP is the configured routing feature, allows remote attackers to cause a denial-of-service (DoS).",
-      "affected": "Cisco IOS XR. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.05668,
-      "epss_percentile": 0.92982,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2009-2055",
-      "title": "Cisco IOS XR Border Gateway Protocol (BGP) Denial-of-Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-25",
-      "summary": "Cisco IOS XR,when BGP is the configured routing feature, allows remote attackers to cause a denial-of-service (DoS).",
-      "affected": "Cisco IOS XR. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.03314,
-      "epss_percentile": 0.8857,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2019-1405",
-      "title": "Microsoft Windows Universal Plug and Play (UPnP) Service Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-15",
-      "summary": "A privilege escalation vulnerability exists when the Windows UPnP service improperly allows COM object creation.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-15",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.30168,
-      "epss_percentile": 0.98219,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2019-1322",
-      "title": "Microsoft Windows Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-15",
-      "summary": "A privilege escalation vulnerability exists when Windows improperly handles authentication requests. An attacker who successfully exploited this vulnerability could run processes in an elevated context.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-15",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.18843,
-      "epss_percentile": 0.97287,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2019-1315",
-      "title": "Microsoft Windows Error Reporting Manager Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-15",
-      "summary": "A privilege escalation vulnerability exists when Windows Error Reporting manager improperly handles hard links. An attacker who successfully exploited this vulnerability could overwrite a targeted file leading to an elevated status.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-15",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.03478,
-      "epss_percentile": 0.891,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2019-1253",
-      "title": "Microsoft Windows AppX Deployment Server Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-15",
-      "summary": "A privilege escalation vulnerability exists when the Windows AppX Deployment Server improperly handles junctions.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-15",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.11616,
-      "epss_percentile": 0.96046,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2019-1129",
-      "title": "Microsoft Windows AppX Deployment Service (AppXSVC) Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-15",
-      "summary": "A privilege escalation vulnerability exists when Windows AppXSVC improperly handles hard links. An attacker who successfully exploited this vulnerability could run processes in an elevated context.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-15",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.01782,
-      "epss_percentile": 0.78275,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2019-1064",
-      "title": "Microsoft Windows AppX Deployment Service (AppXSVC) Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-15",
-      "summary": "A privilege escalation vulnerability exists when Windows AppXSVC improperly handles hard links. An attacker who successfully exploited this vulnerability could run processes in an elevated context.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-15",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.06886,
-      "epss_percentile": 0.94071,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2019-0841",
-      "title": "Microsoft Windows AppX Deployment Service (AppXSVC) Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-15",
-      "summary": "A privilege escalation vulnerability exists when Windows AppXSVC improperly handles hard links. An attacker who successfully exploited this vulnerability could run processes in an elevated context.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-15",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.414,
-      "epss_percentile": 0.98674,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2019-0543",
-      "title": "Microsoft Windows Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-15",
-      "summary": "A privilege escalation vulnerability exists when Windows improperly handles authentication requests. An attacker who successfully exploited this vulnerability could run processes in an elevated context.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-15",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.04679,
-      "epss_percentile": 0.91777,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2017-0101",
-      "title": "Microsoft Windows Transaction Manager Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-15",
-      "summary": "A privilege escalation vulnerability exists when the Windows Transaction Manager improperly handles objects in memory.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-15",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.57482,
-      "epss_percentile": 0.99081,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2016-3309",
-      "title": "Microsoft Windows Kernel Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-15",
-      "summary": "A privilege escalation vulnerability exists when the Windows kernel fails to properly handle objects in memory. An attacker who successfully exploited this vulnerability could run arbitrary code in kernel mode.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-15",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.20467,
-      "epss_percentile": 0.97507,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2021-21973",
-      "title": "VMware vCenter Server and Cloud Foundation Server Side Request Forgery (SSRF) Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2022-03-07",
-      "summary": "VMware vCenter Server and Cloud Foundation Server contain a SSRF vulnerability due to improper validation of URLs in a vCenter Server plugin. This allows for information disclosure.",
-      "affected": "VMware vCenter Server and Cloud Foundation. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-07",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.88012,
-      "epss_percentile": 0.99764,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2021-41379",
-      "title": "Microsoft Windows Installer Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "Microsoft Windows Installer contains an unspecified vulnerability that allows for privilege escalation.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.19452,
-      "epss_percentile": 0.9737,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2018-8581",
-      "title": "Microsoft Exchange Server Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A privilege escalation vulnerability exists in Microsoft Exchange Server. An attacker who successfully exploited this vulnerability could attempt to impersonate any other user of the Exchange server.",
-      "affected": "Microsoft Exchange Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.27558,
-      "epss_percentile": 0.98077,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2018-0180",
-      "title": "Cisco IOS Software Denial-of-Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A vulnerability in the Login Enhancements (Login Block) feature of Cisco IOS Software could allow an unauthenticated, remote attacker to trigger a reload of an affected system, resulting in a denial of service (DoS) condition.",
-      "affected": "Cisco IOS Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.04935,
-      "epss_percentile": 0.92141,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2018-0179",
-      "title": "Cisco IOS Software Denial-of-Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A vulnerability in the Login Enhancements (Login Block) feature of Cisco IOS Software could allow an unauthenticated, remote attacker to trigger a reload of an affected system, resulting in a denial of service (DoS) condition.",
-      "affected": "Cisco IOS Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.04935,
-      "epss_percentile": 0.92141,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2018-0175",
-      "title": "Cisco IOS, XR, and XE Software Buffer Overflow Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "Format string vulnerability in the Link Layer Discovery Protocol (LLDP) subsystem of Cisco IOS Software, Cisco IOS XE Software, and Cisco IOS XR Software could allow an unauthenticated, adjacent attacker to cause a denial of service (DoS) condition or execute arbitrary code with elevated privileges on an affected device.",
-      "affected": "Cisco IOS, XR, and XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.03478,
-      "epss_percentile": 0.89101,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2018-0174",
-      "title": "Cisco IOS Software and Cisco IOS XE Software Improper Input Validation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A vulnerability in the DHCP option 82 encapsulation functionality of Cisco IOS Software and Cisco IOS XE Software could allow for denial-of-service (DoS).",
-      "affected": "Cisco IOS XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.07608,
-      "epss_percentile": 0.94551,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2018-0173",
-      "title": "Cisco IOS and IOS XE Software Improper Input Validation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A vulnerability in the Cisco IOS Software and Cisco IOS XE Software function that restores encapsulated option 82 information in DHCP Version 4 (DHCPv4) packets can allow for denial-of-service (DoS).",
-      "affected": "Cisco IOS and IOS XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.07608,
-      "epss_percentile": 0.94551,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2018-0172",
-      "title": "Cisco IOS and IOS XE Software Improper Input Validation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A vulnerability in the DHCP option 82 encapsulation functionality of Cisco IOS Software and Cisco IOS XE Software could allow for denial-of-service (DoS).",
-      "affected": "Cisco IOS and IOS XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.0782,
-      "epss_percentile": 0.94671,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2018-0167",
-      "title": "Cisco IOS, XR, and XE Software Buffer Overflow Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "There is a buffer overflow vulnerability in the Link Layer Discovery Protocol (LLDP) subsystem of Cisco IOS Software, Cisco IOS XE Software, and Cisco IOS XR Software which could allow an unauthenticated, adjacent attacker to cause a denial of service (DoS) condition or execute arbitrary code.",
-      "affected": "Cisco IOS, XR, and XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.03354,
-      "epss_percentile": 0.88697,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2018-0161",
-      "title": "Cisco IOS Software Resource Management Errors Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A vulnerability in the Simple Network Management Protocol (SNMP) subsystem of Cisco IOS Software running on certain models of Cisco Catalyst Switches could allow an authenticated, remote attacker to cause a denial-of-service (DoS) condition.",
-      "affected": "Cisco IOS Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.04116,
-      "epss_percentile": 0.90785,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2018-0159",
-      "title": "Cisco IOS and XE Software Internet Key Exchange Version 1 Denial-of-Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A vulnerability in the implementation of Internet Key Exchange Version 1 (IKEv1) functionality in Cisco IOS Software and Cisco IOS XE Software could allow an unauthenticated, remote attacker to cause an affected device to reload, resulting in a denial-of-service (DoS) condition.",
-      "affected": "Cisco IOS Software and Cisco IOS XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.0687,
-      "epss_percentile": 0.94056,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2018-0158",
-      "title": "Cisco IOS and XE Software Internet Key Exchange Memory Leak Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A vulnerability in the implementation of Internet Key Exchange Version 1 (IKEv1) functionality in Cisco IOS Software and Cisco IOS XE Software could allow an unauthenticated, remote attacker to cause an affected device to reload, resulting in a denial-of-service (DoS) condition.",
-      "affected": "Cisco IOS Software and Cisco IOS XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.0719,
-      "epss_percentile": 0.94303,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2018-0156",
-      "title": "Cisco IOS Software and Cisco IOS XE Software Smart Install Denial-of-Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A vulnerability in the Smart Install feature of Cisco IOS Software and Cisco IOS XE Software could allow an unauthenticated, remote attacker to trigger a reload of an affected device, resulting in a denial-of-service (DoS) condition.",
-      "affected": "Cisco IOS Software and Cisco IOS XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.0936,
-      "epss_percentile": 0.95391,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2018-0154",
-      "title": "Cisco IOS Software Integrated Services Module for VPN Denial-of-Service Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A vulnerability in the crypto engine of the Cisco Integrated Services Module for VPN (ISM-VPN) running Cisco IOS Software could allow an unauthenticated, remote attacker to cause a denial-of-service (DoS) condition.",
-      "affected": "Cisco IOS Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.0707,
-      "epss_percentile": 0.94214,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2018-0151",
-      "title": "Cisco IOS Software and Cisco IOS XE Software Quality of Service Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "A vulnerability in the quality of service (QoS) subsystem of Cisco IOS Software and Cisco IOS XE Software could allow an unauthenticated, remote attacker to cause a denial of service (DoS) condition or execute arbitrary code with elevated privileges.",
-      "affected": "Cisco IOS and IOS XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.14197,
-      "epss_percentile": 0.96584,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2017-6744",
-      "title": "Cisco IOS Software SNMP Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "The Simple Network Management Protocol (SNMP) subsystem of Cisco IOS 1 contains a vulnerability that could allow an authenticated, remote attacker to remotely execute code on an affected system or cause an affected system to reload. An attacker could exploit these vulnerabilities by sending a crafted SNMP packet to an affected system via IPv4 or IPv6.",
-      "affected": "Cisco IOS software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.07292,
-      "epss_percentile": 0.94365,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2017-6743",
-      "title": "Cisco IOS and IOS XE Software SNMP Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "The Simple Network Management Protocol (SNMP) subsystem of Cisco IOS and IOS XE contains a vulnerability that could allow an authenticated, remote attacker to remotely execute code.",
-      "affected": "Cisco IOS and IOS XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.10855,
-      "epss_percentile": 0.95858,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2017-6740",
-      "title": "Cisco IOS and IOS XE Software SNMP Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "The Simple Network Management Protocol (SNMP) subsystem of Cisco IOS and IOS XE contains a vulnerability that could allow an authenticated, remote attacker to remotely execute code on an affected system or cause an affected system to reload.",
-      "affected": "Cisco IOS and IOS XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.111,
-      "epss_percentile": 0.95927,
-      "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2017-6739",
-      "title": "Cisco IOS and IOS XE Software SNMP Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "The Simple Network Management Protocol (SNMP) subsystem of Cisco IOS and IOS XE contains a vulnerability that could allow an authenticated, remote attacker to remotely execute code on an affected system or cause an affected system to reload.",
-      "affected": "Cisco IOS and IOS XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.10855,
-      "epss_percentile": 0.95859,
-      "epss_as_of": "2026-11-01"
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-01T19:47:43Z",
-      "last_attempt": "2026-11-01T19:47:43Z",
+      "last_success": "2026-11-01T19:50:15Z",
+      "last_attempt": "2026-11-01T19:50:15Z",
       "items_processed": 274,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-01T19:47:43Z",
-      "last_attempt": "2026-11-01T19:47:43Z",
+      "last_success": "2026-11-01T19:50:15Z",
+      "last_attempt": "2026-11-01T19:50:15Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-01T19:47:43Z",
-      "last_attempt": "2026-11-01T19:47:43Z",
+      "last_success": "2026-11-01T19:50:15Z",
+      "last_attempt": "2026-11-01T19:50:15Z",
       "items_processed": 110,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-01T19:47:43Z",
-      "last_attempt": "2026-11-01T19:47:43Z",
+      "last_success": "2026-11-01T19:50:15Z",
+      "last_attempt": "2026-11-01T19:50:15Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-01T19:47:43Z",
-      "last_attempt": "2026-11-01T19:47:43Z",
+      "last_success": "2026-11-01T19:50:15Z",
+      "last_attempt": "2026-11-01T19:50:15Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-01T19:47:43Z",
-      "last_attempt": "2026-11-01T19:47:43Z",
+      "last_success": "2026-11-01T19:50:15Z",
+      "last_attempt": "2026-11-01T19:50:15Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-01T19:47:43Z",
-      "last_attempt": "2026-11-01T19:47:43Z",
+      "last_success": "2026-11-01T19:50:15Z",
+      "last_attempt": "2026-11-01T19:50:15Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-01T19:47:43Z",
-      "last_attempt": "2026-11-01T19:47:43Z",
-      "items_processed": 12,
+      "last_success": "2026-11-01T19:50:15Z",
+      "last_attempt": "2026-11-01T19:50:15Z",
+      "items_processed": 52,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-01T19:47:43Z",
-      "last_attempt": "2026-11-01T19:47:43Z",
+      "last_success": "2026-11-01T19:50:15Z",
+      "last_attempt": "2026-11-01T19:50:15Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-01T19:47:43Z",
-      "last_attempt": "2026-11-01T19:47:43Z",
+      "last_success": "2026-11-01T19:50:15Z",
+      "last_attempt": "2026-11-01T19:50:15Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-01T19:47:43Z",
-      "last_attempt": "2026-11-01T19:47:43Z",
+      "last_success": "2026-11-01T19:50:15Z",
+      "last_attempt": "2026-11-01T19:50:15Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-01T19:47:43Z",
-      "last_attempt": "2026-11-01T19:47:43Z",
+      "last_success": "2026-11-01T19:50:15Z",
+      "last_attempt": "2026-11-01T19:50:15Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -169253,7 +169133,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-01T19:47:43Z",
-  "last_successful_update": "2026-11-01T19:47:43Z",
+  "last_checked_at": "2026-11-01T19:50:15Z",
+  "last_successful_update": "2026-11-01T19:50:15Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }

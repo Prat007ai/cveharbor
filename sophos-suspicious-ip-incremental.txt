@@ -1,7 +1,7 @@
-CVEHarbor Threat IP Intelligence | 2026-11-01T19:48:44.189753+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-01T19:52:27.354397+00:00
 Permanent logical group: Suspicious IP Block
 Cumulative indexed IPs: 2401
-New since prior published snapshot: 6
+New since prior published snapshot: 0
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 No rules or policies are created or enabled. No old IPs are removed.
@@ -25,42 +25,6 @@ No firewall rule is created or activated.
     <Password>REPLACE_ADMIN_PASSWORD</Password>
   </Login>
   <Set operation="add">
-    <IPHost>
-      <Name>CVEH_45_61_170_68</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>45.61.170.68</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_78_17_70_76</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>78.17.70.76</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_79_108_161_30</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>79.108.161.30</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_100_26_97_113</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>100.26.97.113</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_102_64_34_58</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>102.64.34.58</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_165_222_210</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.165.222.210</IPAddress>
-    </IPHost>
   </Set>
 </Request>
 ===== XML REQUEST END =====
@@ -72,9 +36,3 @@ Merge the newly created host names with ALL existing members, deduplicate,
 then submit an IPHostGroup edit with that complete merged HostList.
 Do not issue a group edit containing only the new IPs.
 New host names to merge:
-CVEH_45_61_170_68
-CVEH_78_17_70_76
-CVEH_79_108_161_30
-CVEH_100_26_97_113
-CVEH_102_64_34_58
-CVEH_103_165_222_210
