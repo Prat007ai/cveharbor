@@ -1,7 +1,7 @@
-CVEHarbor Threat IP Intelligence | 2026-11-01T00:34:58.806340+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-01T01:22:20.178529+00:00
 Permanent logical group: Suspicious IP Block
-Cumulative indexed IPs: 1578
-New since prior published snapshot: 1
+Cumulative indexed IPs: 1588
+New since prior published snapshot: 10
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 No rules or policies are created or enabled. No old IPs are removed.
@@ -26,10 +26,64 @@ No firewall rule is created or activated.
   </Login>
   <Set operation="add">
     <IPHost>
-      <Name>CVEH_101_126_11_137</Name>
+      <Name>CVEH_34_182_250_240</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>101.126.11.137</IPAddress>
+      <IPAddress>34.182.250.240</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_38_76_190_209</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>38.76.190.209</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_43_133_248_198</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>43.133.248.198</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_47_109_109_168</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>47.109.109.168</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_102_129_54_216</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>102.129.54.216</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_102_129_60_60</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>102.129.60.60</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_103_171_69_88</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>103.171.69.88</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_103_171_69_89</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>103.171.69.89</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_103_171_69_90</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>103.171.69.90</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_103_171_69_92</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>103.171.69.92</IPAddress>
     </IPHost>
   </Set>
 </Request>
@@ -42,4 +96,13 @@ Merge the newly created host names with ALL existing members, deduplicate,
 then submit an IPHostGroup edit with that complete merged HostList.
 Do not issue a group edit containing only the new IPs.
 New host names to merge:
-CVEH_101_126_11_137
+CVEH_34_182_250_240
+CVEH_38_76_190_209
+CVEH_43_133_248_198
+CVEH_47_109_109_168
+CVEH_102_129_54_216
+CVEH_102_129_60_60
+CVEH_103_171_69_88
+CVEH_103_171_69_89
+CVEH_103_171_69_90
+CVEH_103_171_69_92
