@@ -184,15 +184,15 @@ async function requestNvd(env,path,params,fetcher){
  return data;
 }
 // One resumable page per invocation. Leases and provider slots survive restarts and concurrent pollers.
-export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null,scope='all'){
+export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null,scope='all',directoryProductId=null){
  if(!await cvieReady(env))return {ready:false};
  const shared=sharedScans(env);
  let product=await query(env.DB,`SELECT p.* ${shared?`,${publicIdentityProof()} AS public_identity_verified`:''} FROM cvie_products p ${shared?`JOIN cvie_product_scopes m ON ${validScopeLink()}`:''} WHERE p.status<>'needs_identity' AND p.next_attempt_at<=? AND p.lease_until<?
   ${shared?"AND m.scope_id IS NULL AND NOT EXISTS(SELECT 1 FROM cvie_shared_seeds x WHERE x.product_id=p.id)":''}
-  AND ${activeSubscription('p',scope)} ${userId?'AND p.user_id=?':''}
-  ORDER BY CASE WHEN p.recent_complete_at IS NULL THEN 0 WHEN p.history_complete_at IS NULL THEN 1 ELSE 2 END,p.next_attempt_at,COALESCE(p.last_attempt_at,0),p.id LIMIT 1`,now,now,...(userId?[userId]:[])).first();
+  AND ${activeSubscription('p',scope)} ${userId?'AND p.user_id=?':''} ${directoryProductId?"AND p.id=? AND p.cpe=''":''}
+  ORDER BY CASE WHEN p.recent_complete_at IS NULL THEN 0 WHEN p.history_complete_at IS NULL THEN 1 ELSE 2 END,p.next_attempt_at,COALESCE(p.last_attempt_at,0),p.id LIMIT 1`,now,now,...(userId?[userId]:[]),...(directoryProductId?[directoryProductId]:[])).first();
  let sharedJob=false;
- if(shared){
+ if(shared&&!directoryProductId){
   const candidate=await query(env.DB,`SELECT j.* FROM cvie_shared_scopes j WHERE (j.seed_state='pending' OR j.next_attempt_at<=?) AND j.lease_until<?
    AND EXISTS(SELECT 1 FROM cvie_product_scopes m JOIN cvie_products p ON ${validScopeLink()} WHERE m.scope_id=j.id
     AND ${activeSubscription('p',scope)} ${userId?'AND p.user_id=?':''})
@@ -245,7 +245,7 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null,s
    const status=cpe?'queued':finished||limited?'needs_identity':'scanning';
    await query(env.DB,"UPDATE cvie_products SET cpe=?,status=?,candidates_json=?,cursor_json=?,lease_until=0,error=? WHERE id=? AND lease_until=? AND json_extract(cursor_json,'$.active_scan')=?",cpe,status,JSON.stringify(candidates.slice(0,500)),JSON.stringify({directory_query:directorySearch(product),directory_complete:finished,directory_limited:limited,...(status==='scanning'?{directory_index:next,directory_total:data.totalResults}:{})}),cpe||status==='scanning'?'':limited?'The product directory is broad and only partially searched. Add the vendor or a more specific product name, or confirm an exact listed identity.':'Choose the exact vendor/product identity to continue; a name search alone is not a vulnerability match.',product.id,lease,owner).run();
    if(shared&&cpe)await reconcileSharedScopes(env,product.user_id,now);
-   return {resolved:Boolean(cpe)};
+   return {resolved:Boolean(cpe),directory_complete:finished||limited};
   }
   let cursor=JSON.parse(product.cursor_json||'{}');
   const plan=coveragePlan(product);
@@ -291,6 +291,15 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null,s
   if(error instanceof ProviderError)await query(env.DB,'UPDATE cvie_provider_budget SET next_request_at=MAX(next_request_at,?) WHERE provider=?',now+delay,'nvd').run();
   await query(env.DB,`UPDATE ${jobs} SET status=?,error=?,next_attempt_at=?,lease_until=0 WHERE id=? AND lease_until=? AND json_extract(cursor_json,'$.active_scan')=?`,'retrying',message,now+delay,product.id,lease,owner).run();
   return {retrying:true};
+ }
+}
+// A chooser can finish a small directory lookup promptly without running CVE history.
+// The existing lease and global provider budget still govern every page.
+export async function runIdentityLookup(env,userId,scope,productId,fetcher=fetch,pause=ms=>new Promise(resolve=>setTimeout(resolve,ms))){
+ for(let page=0;page<3;page++){
+  const result=await runCvieStep(env,fetcher,Date.now(),userId,scope,productId);
+  if(result.directory_complete!==false)break;
+  if(page<2)await pause(env.NVD_API_KEY?1050:6600);
  }
 }
 export async function dispatchCvie(env){
@@ -364,7 +373,7 @@ export async function cvieRoute(req,env,user,ctx,data={}){
   if(data.retry&&product.last_attempt_at&&Date.now()-product.last_attempt_at<60000)throw new CvieError('Please wait a minute before retrying the product directory.',429);
   const result=await query(env.DB,`UPDATE cvie_products SET status='queued',candidates_json='[]',cursor_json=?,next_attempt_at=0,lease_until=0,error=''
    WHERE id=? AND user_id=? AND status='needs_identity' AND cpe='' AND cursor_json=? AND ${activeSubscription('cvie_products',scope)}`,JSON.stringify({directory_query:search}),product.id,user.id,product.cursor_json).run();
-  if(result.meta.changes)ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id,scope));
+  if(result.meta.changes)ctx?.waitUntil(runIdentityLookup(env,user.id,scope,product.id));
   return json({status:result.meta.changes?'queued':'unchanged'},result.meta.changes?202:200);
  }
  const identity=/^\/v1\/cvie\/products\/([a-f0-9-]{36})\/identity$/.exec(path);

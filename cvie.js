@@ -78,7 +78,7 @@ function scanProgress(p){
  if(error)detail.append(node('span','Showing last saved progress. CVIE will reconnect automatically.'));
  block.append(heading,bar,detail);return block;
 }
-let identityDialog=null,identityProductId='',identityBusy=false,identityOptionsSignature='',identityOpener=null,identityError='';
+let identityDialog=null,identityProductId='',identityBusy=false,identityOptionsSignature='',identityOpener=null,identityError='',identityGeneration=0;
 function drawIdentity(){
  if(!identityDialog?.open)return;
  const p=products.find(x=>x.id===identityProductId);
@@ -100,10 +100,10 @@ function drawIdentity(){
 }
 async function lookupIdentity(retry=false){
  if(identityBusy)return;identityError='';identityBusy=true;drawIdentity();
- const id=identityProductId;
+ const id=identityProductId,generation=identityGeneration;
  try{await request('/products/'+id+'/identity-options',{method:'POST',body:JSON.stringify({retry})});await refresh();}
- catch(e){if(identityDialog.open&&identityProductId===id)identityError=e.message;}
- finally{identityBusy=false;identityOptionsSignature='';drawIdentity();}
+ catch(e){if(identityDialog.open&&identityProductId===id&&generation===identityGeneration)identityError=e.message;}
+ finally{if(generation===identityGeneration){identityBusy=false;identityOptionsSignature='';drawIdentity();}}
 }
 function openIdentity(name){
  const p=products.find(x=>normalize(x.name)===normalize(name));if(!p)return;
@@ -115,15 +115,15 @@ function openIdentity(name){
   const actions=node('div','','cvie-identity-actions'),retry=node('button','Refresh options'),confirm=node('button','Use selected product');retry.type=confirm.type='button';retry.dataset.retry='';confirm.dataset.confirm='';retry.onclick=()=>void lookupIdentity(true);
   options.onchange=()=>{confirm.disabled=identityBusy||!options.querySelector('input:checked')};
   confirm.onclick=async()=>{
-   const selected=options.querySelector('input:checked');if(!selected||identityBusy)return;identityBusy=true;const id=identityProductId;confirm.disabled=true;retry.disabled=true;options.querySelectorAll('input').forEach(x=>x.disabled=true);status.textContent='Saving product identity…';
-   try{await request('/products/'+id+'/identity',{method:'PUT',body:JSON.stringify({cpe:selected.value})});identityDialog.close();await refresh();}
-   catch(e){status.textContent=e.message;}
-   finally{identityBusy=false;confirm.disabled=false;retry.disabled=false;options.querySelectorAll('input').forEach(x=>x.disabled=false);}
+   const selected=options.querySelector('input:checked');if(!selected||identityBusy)return;identityBusy=true;const id=identityProductId,generation=identityGeneration;confirm.disabled=true;retry.disabled=true;options.querySelectorAll('input').forEach(x=>x.disabled=true);status.textContent='Saving product identity…';
+   try{await request('/products/'+id+'/identity',{method:'PUT',body:JSON.stringify({cpe:selected.value})});if(generation===identityGeneration)identityDialog.close();await refresh();}
+   catch(e){if(generation===identityGeneration)status.textContent=e.message;}
+   finally{if(generation===identityGeneration){identityBusy=false;confirm.disabled=false;retry.disabled=false;options.querySelectorAll('input').forEach(x=>x.disabled=false);}}
   };
   actions.append(retry,confirm);identityDialog.append(header,node('p','Choose the product you use. These identities come from the NVD product directory; the list may include older releases. Version applicability is checked separately.'),search,status,options,actions);document.body.append(identityDialog);
-  identityDialog.addEventListener('close',()=>{identityOptionsSignature='';if(identityOpener?.isConnected)identityOpener.focus();else document.getElementById('technologyManageButton')?.focus()});
+  identityDialog.addEventListener('close',()=>{identityGeneration++;identityBusy=false;identityOptionsSignature='';if(identityOpener?.isConnected)identityOpener.focus();else document.getElementById('technologyManageButton')?.focus()});
  }
- identityError='';identityProductId=p.id;identityOpener=document.activeElement;identityOptionsSignature='';identityDialog.querySelector('h2').textContent='Choose exact product · '+p.name;identityDialog.querySelector('input[type="search"]').value='';identityDialog.showModal();drawIdentity();void lookupIdentity();
+ identityGeneration++;identityBusy=false;identityError='';identityProductId=p.id;identityOpener=document.activeElement;identityOptionsSignature='';identityDialog.querySelector('h2').textContent='Choose exact product · '+p.name;identityDialog.querySelector('input[type="search"]').value='';identityDialog.showModal();drawIdentity();void lookupIdentity();
 }
 
 function notify(){const signature=JSON.stringify([months,records,[...withdrawn].sort(),excluded]);const recordsChanged=signature!==lastSignature;lastSignature=signature;draw();drawIdentity();window.dispatchEvent(new CustomEvent('cvie:updated',{detail:{recordsChanged}}));}

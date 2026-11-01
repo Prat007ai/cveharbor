@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {DB} from './helpers/d1.mjs';
-import {subscribeProducts,runCvieStep,cvieRoute} from '../src/cvie.js';
+import {subscribeProducts,runCvieStep,cvieRoute,runIdentityLookup} from '../src/cvie.js';
 import {directorySearch,identityCandidates} from '../src/product-identity.js';
 const cpe=name=>'cpe:2.3:o:microsoft:'+name+':*:*:*:*:*:*:*:*';
 test('Windows Server uses directory labels and filters non-server results without hardcoding releases',()=>{
@@ -34,4 +34,16 @@ test('options pagination, approved identity persistence and ownership',async()=>
  await subscribeProducts(env,'a',[{name:'Windows Server OS'}]);
  assert.equal(env.DB.sql.prepare('SELECT cpe FROM cvie_products WHERE id=?').get(p.id).cpe,cpe('windows_server_2025'));
  await subscribeProducts(env,'a',[]);await assert.rejects(()=>route('identity-options'),/Product not found/);
+});
+
+test('on-demand lookup finishes up to three pages without running other products or CVE history',async()=>{
+ const env={DB:new DB(),CVIE_SHARED_SCANS_ENABLED:'true'};
+ await subscribeProducts(env,'a',[{name:'WordPress'},{name:'Windows Server OS'}]);
+ const p=env.DB.sql.prepare("SELECT id FROM cvie_products WHERE name='Windows Server OS'").get();
+ let calls=0;
+ await runIdentityLookup(env,'a','catalogue',p.id,async url=>{
+  const u=new URL(url);assert.ok(u.pathname.includes('/cpes/'));assert.equal(u.searchParams.get('keywordSearch'),'Microsoft Windows Server');
+  return Response.json({startIndex:calls++,totalResults:3,products:[{cpe:{cpeName:cpe('windows_server_'+(2022+calls))}}]});
+ },async()=>{env.DB.sql.exec('UPDATE cvie_provider_budget SET next_request_at=0')});
+ assert.equal(calls,3);assert.equal(env.DB.sql.prepare("SELECT last_attempt_at FROM cvie_products WHERE name='WordPress'").get().last_attempt_at,null);
 });
