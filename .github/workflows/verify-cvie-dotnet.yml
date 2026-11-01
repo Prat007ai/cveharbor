@@ -23,6 +23,12 @@ jobs:
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: node scripts/probe_dotnet_directory.mjs
+      - name: Verify account behavior and .NET regression cases
+        run: npm test --prefix account-backend && node account-backend/tests/cvie-dotnet.test.mjs
+      - name: Verify real modern .NET history and original Microsoft disclosures
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: node scripts/probe_cvie_dotnet.mjs
       - name: Inspect aggregate .NET Core scan identities without reading customer records
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -42,8 +48,8 @@ jobs:
         run: |
           git config user.name 'cveharbor-updater[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/cvie-dotnet-directory-check.json data/cvie-dotnet-runtime-check.json
+          git add data/cvie-dotnet-directory-check.json data/cvie-dotnet-runtime-check.json data/cvie-dotnet-check.json
           git commit -m 'Record public .NET identity compatibility evidence'
           git push origin "HEAD:$CVIE_CHECK_BRANCH"
       - name: Require a successful directory check
-        run: node -e "if(!require('./data/cvie-dotnet-directory-check.json').ok)process.exit(1)"
+        run: node -e "for(const file of ['cvie-dotnet-directory-check','cvie-dotnet-check'])if(!require('./data/'+file+'.json').ok)process.exit(1)"

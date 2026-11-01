@@ -3,6 +3,7 @@
 import {cveMirrorUrl,simplifyCve,normalizeCveId} from './cve-lookup.js';
 import {cpeFamily,vendorKey} from './product-identity.js';
 import {isHyperV,hyperVHostNames} from './hyperv.js';
+import {dotnetProfile,DOTNET_FAMILY} from './dotnet.js';
 const q=(db,sql,...args)=>db.prepare(sql).bind(...args);
 const DAY=86400000;
 const validAddedDate=(value,now)=>{
@@ -36,6 +37,7 @@ function jsonChunks(values,max=800000){
  if(items.length)chunks.push('['+items.join(',')+']');return chunks;
 }
 export function productFamilies(product){
+ const profile=dotnetProfile(product);if(profile)return [...profile.families.map(cpe=>'cpe:'+cpe),DOTNET_FAMILY];
  const parts=String(product.cpe||'').split(':');
  if(parts.length!==13){
   const vendor=vendorKey(product.vendor),name=wordKey(product.name);
@@ -139,6 +141,11 @@ function queueSql(env,items,sourceId=null,lease=null){
    attempts=CASE WHEN excluded.revision>revision THEN 0 ELSE attempts END,
    error=CASE WHEN excluded.revision>revision THEN '' ELSE error END,
    revision=MAX(revision,excluded.revision)`,JSON.stringify(items),...(sourceId?[sourceId,lease]:[]));
+}
+export function disclosureCandidatesStatement(env,ids){
+ // Keywords discover public CVE IDs only. Original affected-product evidence is
+ // required before any of these records can appear against an account product.
+ return queueSql(env,[...new Set(ids)].map(id=>({id,revision:'',priority:0})));
 }
 export function relevantKev(kev,products){
  const vendor=vendorKey(kev.vendorProject),name=wordKey(kev.product);

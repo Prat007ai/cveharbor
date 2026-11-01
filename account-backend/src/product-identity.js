@@ -17,6 +17,7 @@ export function cpeFamily(value){
  return parts.length===13?productCpe([...parts.slice(0,5),...Array(8).fill('*')].join(':')):null;
 }
 const known=[
+ [/^(?:microsoft\s+)?(?:\.net|dotnet)\s+core$/,'a','microsoft','.net','dotnet'],
  [/^apache tomcat$|^tomcat$/,'a','apache','tomcat','apachetomcat'],
  [/^apache http server$|^apache httpd$/,'a','apache','http_server','apache'],
  [/^windows server 2022$/,'o','microsoft','windows_server_2022',''],

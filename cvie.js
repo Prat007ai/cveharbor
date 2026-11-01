@@ -25,7 +25,7 @@ function merge(base=[]){
    affected_cpes:[...(prior.affected_cpes||[]),...(record.affected_cpes||[])],sources:[...source.values()]});
  }
  return [...result.values()].map(record=>{
-  // Shared keyword categories cannot establish which Windows host is affected.
+  // Shared keyword categories cannot establish the registered product scope.
   const names=[...new Set([...excluded.filter(item=>item.id===record.id).map(item=>item.product),...scopes.filter(name=>!verified.get(record.id)?.has(normalize(name)))])];
   if(!names.length)return record;
   return {...record,cvie_excluded_products:names,categories:(record.categories||[]).filter(name=>!names.some(product=>normalize(product)===normalize(name)))};
@@ -42,7 +42,7 @@ function statusFor(p){
  const count=months===12?p.history_count:p.recent_count;
  const complete=months===12?p.history_complete_at:p.recent_complete_at;
  const older=months===12?p.older_kev_history_count:p.older_kev_recent_count;
- return (complete?(count?count+' advisories · last '+months+' months':'No published advisories found in '+months+' months'):'Preparing '+months+'-month history')+(older?' · '+older+' older KEV-listed':'');
+ return (complete?(count?count+' advisories · last '+months+' months':'No advisories matched the checked product identity in '+months+' months'):'Preparing '+months+'-month history')+(older?' · '+older+' older KEV-listed':'');
 }
 function scanProgress(p){
  if(p.status==='needs_identity')return null;

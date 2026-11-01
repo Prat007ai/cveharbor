@@ -1,6 +1,7 @@
 // Reconcile authoritative evidence by CVE ID, retaining source-specific provenance.
 import {evidenceReady,productFamilies,productLabels,SOURCE_URLS} from './cvie-evidence.js';
 import {isHyperV,hyperVHost,hyperVStatementSql} from './hyperv.js';
+import {dotnetProfile,dotnetAffectedSql,DOTNET_FAMILY} from './dotnet.js';
 const q=(db,sql,...args)=>db.prepare(sql).bind(...args);
 const DAY=86400000;
 function affectedDescription(rows,name){
@@ -39,7 +40,7 @@ export function reconcileRecord(nvd,cna,affected,product,kev,checks,now,cutoff){
  const references=new Map([...(nvd?.sources||[]),...(cna?.sources||[])].map(s=>[s.url,s]));
  const record={...(nvd||{}),...(cna||{})};
  if(!record.id)return null;
- const ranges=cna?cnaRanges(affected,product.cpe,product.name):[];
+ const ranges=cna?cnaRanges(affected,product.cpe,product.name).map(range=>dotnetProfile(product)?{...range,comparison_unsupported:true}:range):[];
  if(cna){
   if(cna.cvss===null&&nvd){record.cvss=nvd.cvss;record.severity=nvd.severity;record.severity_source='NVD';}
   else record.severity_source=cna.cvss_provider||'CVE Program / CNA';
@@ -50,7 +51,7 @@ export function reconcileRecord(nvd,cna,affected,product,kev,checks,now,cutoff){
  record.affected_cpes=cna?(ranges.length?ranges:[{criteria:product.cpe,cvie_product_key:product.name,comparison_unsupported:true}]):nvd?.affected_cpes||[];
  record.affected=cna?affectedDescription(affected,product.name):nvd?.affected||'';
  record.cna_affected=cna?affected:undefined;
- record.source_type='cvie_combined';record.categories=[product.name];record.cvie_products=[product.name];record.cvie_identities=[{name:product.name,cpe:product.cpe}];
+ record.source_type='cvie_combined';record.categories=[product.name];record.cvie_products=[product.name];record.cvie_identities=nvd?.cvie_identities||[{name:product.name,cpe:product.cpe}];
  const revisions=[nvd?.updated,cna?.updated,kev?.dateAdded].filter(value=>Number.isFinite(Date.parse(value)));
  if(revisions.length)record.source_updated_at=new Date(Math.max(...revisions.map(Date.parse))).toISOString();
  record.known_exploited=checks.cisa_kev?.last_success_at?Boolean(kev):Boolean(nvd?.known_exploited);
@@ -105,6 +106,10 @@ function familiesCte(){return `WITH families AS (
  WHERE (substr(f.family_key,1,4)='cpe:' OR EXISTS(SELECT 1 FROM json_each(d.affected_json) a
   WHERE lower(replace(replace(json_extract(a.value,'$.product'),' ',''),'_','')) IN(SELECT value FROM json_each(f.labels))))
  AND (f.scope<>'windows_hyperv' OR EXISTS(SELECT 1 FROM cvie_disclosures c WHERE c.cve_id=d.cve_id AND ${hyperVStatementSql('c.record_json')}))
+ UNION
+ SELECT DISTINCT f.product_id,d.cve_id,d.applicability,d.affected_json FROM families f JOIN cvie_disclosure_products d
+  ON d.family_key LIKE 'name:microsoft:%'
+ WHERE f.family_key='${DOTNET_FAMILY}' AND EXISTS(SELECT 1 FROM json_each(d.affected_json) a WHERE ${dotnetAffectedSql('a.value')})
 ) `;}
 function unifiedCte(){return familiesCte()+`, links AS (
  SELECT a.product_id,a.cve_id FROM cvie_advisories a JOIN cvie_products p ON p.id=a.product_id
