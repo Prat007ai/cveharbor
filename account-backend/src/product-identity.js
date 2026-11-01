@@ -38,6 +38,7 @@ export function knownIdentity(name,vendor=''){
  if(found&&vendor&&vendorKey(vendor)!==vendorKey(found[2]))return null;
  return found?{cpe:['cpe','2.3',found[1],found[2],found[3],...Array(8).fill('*')].join(':'),icon:found[4]}:null;
 }
+export function curatedProductFamily(cpe){return known.some(([,part,vendor,product])=>cpe===['cpe','2.3',part,vendor,product,...Array(8).fill('*')].join(':'));}
 export function logoFor(name,cpe=''){
  const known=knownIdentity(name);
  if(known?.icon)return known.icon;

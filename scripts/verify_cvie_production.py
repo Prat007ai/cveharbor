@@ -16,7 +16,8 @@ stage = "initialization"
 DATABASE = "46710e51-7ca4-4571-b89c-921b9969de0b"
 TABLES = {"cvie_products", "cvie_subscriptions", "cvie_advisories",
           "cvie_provider_budget", "cvie_sources", "cvie_disclosures",
-          "cvie_disclosure_products", "cvie_disclosure_queue", "cvie_kev"}
+          "cvie_disclosure_products", "cvie_disclosure_queue", "cvie_kev",
+          "cvie_shared_scopes", "cvie_shared_advisories", "cvie_product_scopes", "cvie_shared_seeds"}
 
 
 def query(sql):
@@ -78,7 +79,7 @@ def main():
             summary = os.environ.get("GITHUB_STEP_SUMMARY")
             if summary:
                 with open(summary, "a") as output:
-                    output.write("\nCVIE production checks passed: authenticated API isolation, nine additive tables, fresh original CVE and CISA KEV collection, and original-record ingestion.\n")
+                    output.write("\nCVIE production checks passed: authenticated API isolation, core and shared-scan tables, fresh original CVE and CISA KEV collection, and original-record ingestion.\n")
             return
         if time.monotonic() >= deadline:
             raise RuntimeError("CVIE deployed, but live scheduled-feed verification is not yet complete; inspect the source status above")

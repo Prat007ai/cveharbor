@@ -4,6 +4,7 @@ import {isHyperV,hyperVHost,hyperVStatementSql} from './hyperv.js';
 import {dotnetProfile} from './dotnet.js';
 import {rawProductLabels,coveragePlan,versionedLabelSql,cnaCoverageAdapters} from './product-coverage.js';
 import {publicSourceStatus} from './public-source-status-cache.js';
+import {sharedScans,ownedProductSql,overlaySharedProduct,validScopeLink} from './shared-scopes.js';
 const q=(db,sql,...args)=>db.prepare(sql).bind(...args);
 const DAY=86400000;
 function affectedDescription(rows,name,preserveLabel=false){
@@ -53,7 +54,7 @@ export function reconcileRecord(nvd,cna,affected,product,kev,checks,now,cutoff){
  record.affected_cpes=cna?(ranges.length?ranges:[{criteria:product.cpe,cvie_product_key:product.name,comparison_unsupported:true}]):nvd?.affected_cpes||[];
  record.affected=cna?affectedDescription(affected,product.name,Boolean(dotnetProfile(product))):nvd?.affected||'';
  record.cna_affected=cna?affected:undefined;
- record.source_type='cvie_combined';record.categories=[product.name];record.cvie_products=[product.name];record.cvie_identities=nvd?.cvie_identities||[{name:product.name,cpe:product.cpe}];
+ record.source_type='cvie_combined';record.categories=[product.name];record.cvie_products=[product.name];record.cvie_identities=nvd?.cvie_identities?.map(identity=>({...identity,name:product.name}))||[{name:product.name,cpe:product.cpe}];
  const revisions=[nvd?.updated,cna?.updated,kev?.dateAdded].filter(value=>Number.isFinite(Date.parse(value)));
  if(revisions.length)record.source_updated_at=new Date(Math.max(...revisions.map(Date.parse))).toISOString();
  record.known_exploited=checks.cisa_kev?.last_success_at?Boolean(kev):Boolean(nvd?.known_exploited);
@@ -94,7 +95,7 @@ async function loadSourceHealth(env,now){
 }
 export async function evidenceContext(env,userId){
  if(!await evidenceReady(env))return null;
- const products=(await q(env.DB,`SELECT p.* FROM cvie_products p WHERE p.user_id=? AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id)`,userId).all()).results||[];
+ const products=((await q(env.DB,ownedProductSql(env),userId).all()).results||[]).map(overlaySharedProduct);
  const families=products.flatMap(p=>{
   const scope=isHyperV(p)?'windows_hyperv':'';
   const keys=scope&&!hyperVHost(p.cpe)?['scope:windows_hyperv']:productFamilies(p);
@@ -122,9 +123,23 @@ function familiesCte(){return `WITH families AS (
   ON d.family_key LIKE 'name:microsoft:%'
  WHERE f.family_key='${adapter.key}' AND EXISTS(SELECT 1 FROM json_each(d.affected_json) a WHERE ${adapter.matchSql('a.value')})`).join('\n')}
 ) `;}
-function unifiedCte(){return familiesCte()+`, links AS (
- SELECT a.product_id,a.cve_id FROM cvie_advisories a JOIN cvie_products p ON p.id=a.product_id
- WHERE p.user_id=? AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id)
+function unifiedCte(env){
+ const shared=sharedScans(env),source=shared?'nvd_records':'cvie_advisories';
+ const sharedSource=shared?`, owner AS(SELECT ? AS user_id), shared_nvd AS MATERIALIZED (
+  SELECT p.id AS product_id,a.cve_id,a.published,a.record_json FROM cvie_products p JOIN cvie_product_scopes m ON ${validScopeLink()}
+  JOIN cvie_shared_advisories a ON a.scope_id=m.scope_id
+  WHERE p.user_id=(SELECT user_id FROM owner) AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id)
+ ), nvd_records AS (
+  SELECT * FROM shared_nvd UNION ALL
+  SELECT a.product_id,a.cve_id,a.published,a.record_json FROM cvie_advisories a JOIN cvie_products p ON p.id=a.product_id
+  WHERE p.user_id=(SELECT user_id FROM owner) AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id)
+  AND NOT EXISTS(SELECT 1 FROM shared_nvd n WHERE n.product_id=a.product_id AND n.cve_id=a.cve_id)
+  AND NOT EXISTS(SELECT 1 FROM cvie_product_scopes m JOIN cvie_shared_scopes j ON j.id=m.scope_id
+   WHERE ${validScopeLink()} AND j.seed_state='complete' AND j.history_complete_at IS NOT NULL)
+ )`:'';
+ return familiesCte()+sharedSource+`, links AS (
+ SELECT a.product_id,a.cve_id FROM ${source} a JOIN cvie_products p ON p.id=a.product_id
+ WHERE p.user_id=${shared?'(SELECT user_id FROM owner)':'?'} AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id)
  AND (NOT EXISTS(SELECT 1 FROM families f WHERE f.product_id=p.id AND f.scope='windows_hyperv')
   OR (EXISTS(SELECT 1 FROM families f WHERE f.product_id=p.id AND f.family_key='cpe:'||p.cpe) AND ${hyperVStatementSql('a.record_json')}
    AND NOT EXISTS(SELECT 1 FROM cvie_disclosures c WHERE c.cve_id=a.cve_id AND c.state='PUBLISHED' AND NOT ${hyperVStatementSql('c.record_json')})))
@@ -134,7 +149,7 @@ function unifiedCte(){return familiesCte()+`, links AS (
   WHERE m.product_id=l.product_id AND m.cve_id=l.cve_id) THEN d.published END,a.published) AS published,
  a.record_json AS nvd_json,CASE WHEN EXISTS(SELECT 1 FROM verified_matches m WHERE m.product_id=l.product_id AND m.cve_id=l.cve_id) THEN d.record_json END AS cna_json,
  d.checked_at AS cna_checked_at,k.record_json AS kev_json,j.cve_id AS queued_id
- FROM links l LEFT JOIN cvie_advisories a ON a.product_id=l.product_id AND a.cve_id=l.cve_id
+ FROM links l LEFT JOIN ${source} a ON a.product_id=l.product_id AND a.cve_id=l.cve_id
  LEFT JOIN cvie_disclosures d ON d.cve_id=l.cve_id LEFT JOIN cvie_kev k ON k.cve_id=l.cve_id
  LEFT JOIN cvie_disclosure_queue j ON j.cve_id=l.cve_id
  WHERE COALESCE(d.state,'PUBLISHED')<>'REJECTED'
@@ -155,7 +170,7 @@ export async function combinedPage(env,userId,cutoff,after='',productId='',now=D
   `SELECT * FROM unified WHERE (published>=? OR kev_json IS NOT NULL) AND published<=?
   AND (product_id||'/'||cve_id)>? ${productId?'AND product_id=?':''} ORDER BY product_id,cve_id LIMIT 101`;
  const args=ctx.digest?[cutoff,new Date(now).toISOString(),recent,recent,recent,recent,recent,after]:[cutoff,new Date(now).toISOString(),after,...(productId?[productId]:[])];
- const rows=(await q(env.DB,unifiedCte()+ranked,ctx.families,userId,...args).all()).results||[];
+ const rows=(await q(env.DB,unifiedCte(env)+ranked,ctx.families,userId,...args).all()).results||[];
  const page=rows.slice(0,100),keys=JSON.stringify(page.map(r=>r.product_id+'/'+r.cve_id));
  const matches=(await q(env.DB,familiesCte()+`SELECT product_id,cve_id,affected_json FROM verified_matches
   WHERE (product_id||'/'||cve_id) IN(SELECT value FROM json_each(?)) AND applicability='affected'`,ctx.families,keys).all()).results||[];
@@ -172,7 +187,7 @@ export async function combinedPage(env,userId,cutoff,after='',productId='',now=D
 }
 export async function combinedCounts(env,userId,recent,history,now=Date.now(),context=null){
  const ctx=context||await evidenceContext(env,userId);if(!ctx)return null;
- return (await q(env.DB,unifiedCte()+`SELECT product_id,SUM(CASE WHEN published>=? THEN 1 ELSE 0 END) AS recent_count,
+ return (await q(env.DB,unifiedCte(env)+`SELECT product_id,SUM(CASE WHEN published>=? THEN 1 ELSE 0 END) AS recent_count,
   SUM(CASE WHEN published>=? THEN 1 ELSE 0 END) AS history_count,
   SUM(CASE WHEN published<? AND kev_json IS NOT NULL THEN 1 ELSE 0 END) AS older_kev_recent_count,
   SUM(CASE WHEN published<? AND kev_json IS NOT NULL THEN 1 ELSE 0 END) AS older_kev_history_count
