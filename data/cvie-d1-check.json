@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-01T16:35:09.650Z",
+  "checked_at": "2026-11-01T16:36:21.644Z",
   "read_only": true,
   "synthetic_products": true,
   "checks": [
@@ -17,23 +17,19 @@
     },
     {
       "stage": "combined counts",
-      "ok": false,
-      "error": "[{\"code\":7500,\"message\":\"Expression tree is too large (maximum depth 100): SQLITE_ERROR\"}]"
+      "ok": true
     },
     {
       "stage": "advisory page",
-      "ok": false,
-      "error": "[{\"code\":7500,\"message\":\"Expression tree is too large (maximum depth 100): SQLITE_ERROR\"}]"
+      "ok": true
     },
     {
       "stage": "withdrawal exclusions",
-      "ok": false,
-      "error": "[{\"code\":7500,\"message\":\"Expression tree is too large (maximum depth 100): SQLITE_ERROR\"}]"
+      "ok": true
     },
     {
       "stage": "digest page",
-      "ok": false,
-      "error": "[{\"code\":7500,\"message\":\"Expression tree is too large (maximum depth 100): SQLITE_ERROR\"}]"
+      "ok": true
     }
   ],
   "source_columns": [
@@ -53,6 +49,6 @@
   "invalid_scan_json": {
     "invalid": 0
   },
-  "ok": false,
-  "queries": 9
+  "ok": true,
+  "queries": 11
 }
