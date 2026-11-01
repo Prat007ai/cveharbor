@@ -7,7 +7,7 @@ const database=fs.readFileSync(new URL('../account-backend/wrangler.toml',import
 let reads=0,writes=0,queries=0;
 const DB={prepare(sql){
  const syntax=sql.replace(/'(?:''|[^'])*'/g,"''");
- assert.ok(/^\s*(SELECT|WITH)\b/i.test(syntax)&&!/[;]/.test(syntax)&&! /\b(INSERT|UPDATE|DELETE|REPLACE|CREATE|DROP|ALTER|PRAGMA|ATTACH)\b/i.test(syntax),'Production catalogue probe permits only read queries');
+ assert.ok(/^\s*(SELECT|WITH)\b/i.test(syntax)&&!/[;]/.test(syntax)&&! /\b(INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|PRAGMA|ATTACH)\b/i.test(syntax)&&! /\bREPLACE\b(?!\s*\()/i.test(syntax),'Production catalogue probe permits only read queries');
  let params=[];const stmt={bind(...args){params=args;return stmt},async all(){
   const r=await fetch(`https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/d1/database/${database}/query`,{method:'POST',headers:{Authorization:'Bearer '+process.env.CLOUDFLARE_API_TOKEN,'Content-Type':'application/json'},body:JSON.stringify({sql,params})});
   const data=await r.json();assert.ok(r.ok&&data.success&&data.result?.[0]?.success,'D1 SELECT failed');
