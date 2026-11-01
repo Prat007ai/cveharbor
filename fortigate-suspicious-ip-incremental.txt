@@ -1,7 +1,7 @@
-# CVEHarbor Threat IP Intelligence | 2026-11-01T10:52:08.005892+00:00
+# CVEHarbor Threat IP Intelligence | 2026-11-01T11:47:21.763287+00:00
 # Permanent logical group: Suspicious IP Block
-# Cumulative indexed IPs: 2001
-# New since prior published snapshot: 16
+# Cumulative indexed IPs: 2114
+# New since prior published snapshot: 113
 # REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 # Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 # No rules or policies are created or enabled. No old IPs are removed.
@@ -14,73 +14,461 @@
 # If an address object name already exists with a different subnet, STOP.
 # Applying group membership can affect an existing deny policy immediately.
 config firewall address
-    edit "CVEH_1_173_231_52"
-        set subnet 1.173.231.52 255.255.255.255
+    edit "CVEH_2_57_121_112"
+        set subnet 2.57.121.112 255.255.255.255
     next
-    edit "CVEH_49_64_169_153"
-        set subnet 49.64.169.153 255.255.255.255
+    edit "CVEH_2_57_217_229"
+        set subnet 2.57.217.229 255.255.255.255
     next
-    edit "CVEH_62_210_142_163"
-        set subnet 62.210.142.163 255.255.255.255
+    edit "CVEH_14_29_181_34"
+        set subnet 14.29.181.34 255.255.255.255
     next
-    edit "CVEH_78_128_114_46"
-        set subnet 78.128.114.46 255.255.255.255
+    edit "CVEH_14_103_9_211"
+        set subnet 14.103.9.211 255.255.255.255
     next
-    edit "CVEH_101_33_228_98"
-        set subnet 101.33.228.98 255.255.255.255
+    edit "CVEH_14_103_86_183"
+        set subnet 14.103.86.183 255.255.255.255
     next
-    edit "CVEH_102_64_35_146"
-        set subnet 102.64.35.146 255.255.255.255
+    edit "CVEH_14_103_107_29"
+        set subnet 14.103.107.29 255.255.255.255
     next
-    edit "CVEH_102_129_60_76"
-        set subnet 102.129.60.76 255.255.255.255
+    edit "CVEH_14_103_115_115"
+        set subnet 14.103.115.115 255.255.255.255
     next
-    edit "CVEH_103_175_74_39"
-        set subnet 103.175.74.39 255.255.255.255
+    edit "CVEH_14_103_117_84"
+        set subnet 14.103.117.84 255.255.255.255
     next
-    edit "CVEH_103_175_225_238"
-        set subnet 103.175.225.238 255.255.255.255
+    edit "CVEH_14_103_117_85"
+        set subnet 14.103.117.85 255.255.255.255
     next
-    edit "CVEH_103_175_240_80"
-        set subnet 103.175.240.80 255.255.255.255
+    edit "CVEH_14_103_118_121"
+        set subnet 14.103.118.121 255.255.255.255
     next
-    edit "CVEH_103_176_160_146"
-        set subnet 103.176.160.146 255.255.255.255
+    edit "CVEH_27_112_78_170"
+        set subnet 27.112.78.170 255.255.255.255
     next
-    edit "CVEH_103_177_150_100"
-        set subnet 103.177.150.100 255.255.255.255
+    edit "CVEH_27_128_171_39"
+        set subnet 27.128.171.39 255.255.255.255
     next
-    edit "CVEH_103_177_150_103"
-        set subnet 103.177.150.103 255.255.255.255
+    edit "CVEH_27_150_188_148"
+        set subnet 27.150.188.148 255.255.255.255
     next
-    edit "CVEH_106_54_10_214"
-        set subnet 106.54.10.214 255.255.255.255
+    edit "CVEH_36_95_221_140"
+        set subnet 36.95.221.140 255.255.255.255
     next
-    edit "CVEH_154_91_53_172"
-        set subnet 154.91.53.172 255.255.255.255
+    edit "CVEH_36_134_69_15"
+        set subnet 36.134.69.15 255.255.255.255
     next
-    edit "CVEH_216_180_246_200"
-        set subnet 216.180.246.200 255.255.255.255
+    edit "CVEH_36_138_134_121"
+        set subnet 36.138.134.121 255.255.255.255
+    next
+    edit "CVEH_41_128_181_199"
+        set subnet 41.128.181.199 255.255.255.255
+    next
+    edit "CVEH_41_216_177_55"
+        set subnet 41.216.177.55 255.255.255.255
+    next
+    edit "CVEH_41_216_178_119"
+        set subnet 41.216.178.119 255.255.255.255
+    next
+    edit "CVEH_45_92_33_82"
+        set subnet 45.92.33.82 255.255.255.255
+    next
+    edit "CVEH_45_169_200_254"
+        set subnet 45.169.200.254 255.255.255.255
+    next
+    edit "CVEH_46_24_47_94"
+        set subnet 46.24.47.94 255.255.255.255
+    next
+    edit "CVEH_49_64_85_138"
+        set subnet 49.64.85.138 255.255.255.255
+    next
+    edit "CVEH_54_38_52_18"
+        set subnet 54.38.52.18 255.255.255.255
+    next
+    edit "CVEH_59_98_148_5"
+        set subnet 59.98.148.5 255.255.255.255
+    next
+    edit "CVEH_61_220_235_10"
+        set subnet 61.220.235.10 255.255.255.255
+    next
+    edit "CVEH_62_60_130_210"
+        set subnet 62.60.130.210 255.255.255.255
+    next
+    edit "CVEH_62_210_142_148"
+        set subnet 62.210.142.148 255.255.255.255
+    next
+    edit "CVEH_62_210_142_159"
+        set subnet 62.210.142.159 255.255.255.255
+    next
+    edit "CVEH_62_210_142_160"
+        set subnet 62.210.142.160 255.255.255.255
+    next
+    edit "CVEH_62_210_142_170"
+        set subnet 62.210.142.170 255.255.255.255
+    next
+    edit "CVEH_62_210_142_172"
+        set subnet 62.210.142.172 255.255.255.255
+    next
+    edit "CVEH_78_83_103_72"
+        set subnet 78.83.103.72 255.255.255.255
+    next
+    edit "CVEH_85_105_250_114"
+        set subnet 85.105.250.114 255.255.255.255
+    next
+    edit "CVEH_89_218_69_66"
+        set subnet 89.218.69.66 255.255.255.255
+    next
+    edit "CVEH_92_207_4_157"
+        set subnet 92.207.4.157 255.255.255.255
+    next
+    edit "CVEH_95_85_114_218"
+        set subnet 95.85.114.218 255.255.255.255
+    next
+    edit "CVEH_95_90_13_168"
+        set subnet 95.90.13.168 255.255.255.255
+    next
+    edit "CVEH_95_111_234_240"
+        set subnet 95.111.234.240 255.255.255.255
+    next
+    edit "CVEH_96_78_175_45"
+        set subnet 96.78.175.45 255.255.255.255
+    next
+    edit "CVEH_100_34_231_196"
+        set subnet 100.34.231.196 255.255.255.255
+    next
+    edit "CVEH_100_56_203_72"
+        set subnet 100.56.203.72 255.255.255.255
+    next
+    edit "CVEH_101_79_167_183"
+        set subnet 101.79.167.183 255.255.255.255
+    next
+    edit "CVEH_102_222_145_170"
+        set subnet 102.222.145.170 255.255.255.255
+    next
+    edit "CVEH_103_182_132_154"
+        set subnet 103.182.132.154 255.255.255.255
+    next
+    edit "CVEH_103_187_165_26"
+        set subnet 103.187.165.26 255.255.255.255
+    next
+    edit "CVEH_103_211_217_182"
+        set subnet 103.211.217.182 255.255.255.255
+    next
+    edit "CVEH_103_250_10_42"
+        set subnet 103.250.10.42 255.255.255.255
+    next
+    edit "CVEH_110_49_76_244"
+        set subnet 110.49.76.244 255.255.255.255
+    next
+    edit "CVEH_112_216_120_67"
+        set subnet 112.216.120.67 255.255.255.255
+    next
+    edit "CVEH_112_219_151_50"
+        set subnet 112.219.151.50 255.255.255.255
+    next
+    edit "CVEH_114_130_85_36"
+        set subnet 114.130.85.36 255.255.255.255
+    next
+    edit "CVEH_114_217_10_60"
+        set subnet 114.217.10.60 255.255.255.255
+    next
+    edit "CVEH_117_62_22_127"
+        set subnet 117.62.22.127 255.255.255.255
+    next
+    edit "CVEH_119_203_251_187"
+        set subnet 119.203.251.187 255.255.255.255
+    next
+    edit "CVEH_120_48_44_93"
+        set subnet 120.48.44.93 255.255.255.255
+    next
+    edit "CVEH_121_204_171_142"
+        set subnet 121.204.171.142 255.255.255.255
+    next
+    edit "CVEH_121_229_9_110"
+        set subnet 121.229.9.110 255.255.255.255
+    next
+    edit "CVEH_121_229_25_10"
+        set subnet 121.229.25.10 255.255.255.255
+    next
+    edit "CVEH_124_155_125_131"
+        set subnet 124.155.125.131 255.255.255.255
+    next
+    edit "CVEH_138_199_59_174"
+        set subnet 138.199.59.174 255.255.255.255
+    next
+    edit "CVEH_146_59_95_254"
+        set subnet 146.59.95.254 255.255.255.255
+    next
+    edit "CVEH_147_50_231_135"
+        set subnet 147.50.231.135 255.255.255.255
+    next
+    edit "CVEH_148_230_154_182"
+        set subnet 148.230.154.182 255.255.255.255
+    next
+    edit "CVEH_149_118_67_149"
+        set subnet 149.118.67.149 255.255.255.255
+    next
+    edit "CVEH_153_99_92_11"
+        set subnet 153.99.92.11 255.255.255.255
+    next
+    edit "CVEH_154_83_196_237"
+        set subnet 154.83.196.237 255.255.255.255
+    next
+    edit "CVEH_156_146_55_166"
+        set subnet 156.146.55.166 255.255.255.255
+    next
+    edit "CVEH_158_178_141_16"
+        set subnet 158.178.141.16 255.255.255.255
+    next
+    edit "CVEH_159_13_55_134"
+        set subnet 159.13.55.134 255.255.255.255
+    next
+    edit "CVEH_164_152_250_192"
+        set subnet 164.152.250.192 255.255.255.255
+    next
+    edit "CVEH_165_231_182_151"
+        set subnet 165.231.182.151 255.255.255.255
+    next
+    edit "CVEH_167_148_201_186"
+        set subnet 167.148.201.186 255.255.255.255
+    next
+    edit "CVEH_168_107_68_221"
+        set subnet 168.107.68.221 255.255.255.255
+    next
+    edit "CVEH_168_195_210_165"
+        set subnet 168.195.210.165 255.255.255.255
+    next
+    edit "CVEH_172_233_120_230"
+        set subnet 172.233.120.230 255.255.255.255
+    next
+    edit "CVEH_173_249_52_138"
+        set subnet 173.249.52.138 255.255.255.255
+    next
+    edit "CVEH_179_57_170_71"
+        set subnet 179.57.170.71 255.255.255.255
+    next
+    edit "CVEH_179_199_199_60"
+        set subnet 179.199.199.60 255.255.255.255
+    next
+    edit "CVEH_180_108_64_6"
+        set subnet 180.108.64.6 255.255.255.255
+    next
+    edit "CVEH_180_168_24_186"
+        set subnet 180.168.24.186 255.255.255.255
+    next
+    edit "CVEH_180_184_141_117"
+        set subnet 180.184.141.117 255.255.255.255
+    next
+    edit "CVEH_181_188_172_6"
+        set subnet 181.188.172.6 255.255.255.255
+    next
+    edit "CVEH_182_244_5_153"
+        set subnet 182.244.5.153 255.255.255.255
+    next
+    edit "CVEH_185_177_72_9"
+        set subnet 185.177.72.9 255.255.255.255
+    next
+    edit "CVEH_185_177_72_100"
+        set subnet 185.177.72.100 255.255.255.255
+    next
+    edit "CVEH_185_206_225_29"
+        set subnet 185.206.225.29 255.255.255.255
+    next
+    edit "CVEH_185_233_3_95"
+        set subnet 185.233.3.95 255.255.255.255
+    next
+    edit "CVEH_186_123_86_15"
+        set subnet 186.123.86.15 255.255.255.255
+    next
+    edit "CVEH_187_8_120_90"
+        set subnet 187.8.120.90 255.255.255.255
+    next
+    edit "CVEH_187_174_162_164"
+        set subnet 187.174.162.164 255.255.255.255
+    next
+    edit "CVEH_191_96_168_159"
+        set subnet 191.96.168.159 255.255.255.255
+    next
+    edit "CVEH_193_32_162_11"
+        set subnet 193.32.162.11 255.255.255.255
+    next
+    edit "CVEH_195_60_166_252"
+        set subnet 195.60.166.252 255.255.255.255
+    next
+    edit "CVEH_195_60_166_253"
+        set subnet 195.60.166.253 255.255.255.255
+    next
+    edit "CVEH_195_60_166_255"
+        set subnet 195.60.166.255 255.255.255.255
+    next
+    edit "CVEH_196_188_93_169"
+        set subnet 196.188.93.169 255.255.255.255
+    next
+    edit "CVEH_196_189_155_89"
+        set subnet 196.189.155.89 255.255.255.255
+    next
+    edit "CVEH_197_44_15_210"
+        set subnet 197.44.15.210 255.255.255.255
+    next
+    edit "CVEH_200_77_172_159"
+        set subnet 200.77.172.159 255.255.255.255
+    next
+    edit "CVEH_201_249_192_30"
+        set subnet 201.249.192.30 255.255.255.255
+    next
+    edit "CVEH_202_79_29_108"
+        set subnet 202.79.29.108 255.255.255.255
+    next
+    edit "CVEH_203_32_69_151"
+        set subnet 203.32.69.151 255.255.255.255
+    next
+    edit "CVEH_211_253_31_30"
+        set subnet 211.253.31.30 255.255.255.255
+    next
+    edit "CVEH_212_154_234_9"
+        set subnet 212.154.234.9 255.255.255.255
+    next
+    edit "CVEH_216_180_246_103"
+        set subnet 216.180.246.103 255.255.255.255
+    next
+    edit "CVEH_216_180_246_174"
+        set subnet 216.180.246.174 255.255.255.255
+    next
+    edit "CVEH_216_180_246_204"
+        set subnet 216.180.246.204 255.255.255.255
+    next
+    edit "CVEH_216_180_246_205"
+        set subnet 216.180.246.205 255.255.255.255
+    next
+    edit "CVEH_216_180_246_211"
+        set subnet 216.180.246.211 255.255.255.255
+    next
+    edit "CVEH_218_201_148_69"
+        set subnet 218.201.148.69 255.255.255.255
+    next
+    edit "CVEH_222_110_147_56"
+        set subnet 222.110.147.56 255.255.255.255
+    next
+    edit "CVEH_223_221_38_226"
+        set subnet 223.221.38.226 255.255.255.255
     next
 end
 config firewall addrgrp
     edit "Suspicious IP Block"
-        append member "CVEH_1_173_231_52"
-        append member "CVEH_49_64_169_153"
-        append member "CVEH_62_210_142_163"
-        append member "CVEH_78_128_114_46"
-        append member "CVEH_101_33_228_98"
-        append member "CVEH_102_64_35_146"
-        append member "CVEH_102_129_60_76"
-        append member "CVEH_103_175_74_39"
-        append member "CVEH_103_175_225_238"
-        append member "CVEH_103_175_240_80"
-        append member "CVEH_103_176_160_146"
-        append member "CVEH_103_177_150_100"
-        append member "CVEH_103_177_150_103"
-        append member "CVEH_106_54_10_214"
-        append member "CVEH_154_91_53_172"
-        append member "CVEH_216_180_246_200"
+        append member "CVEH_2_57_121_112"
+        append member "CVEH_2_57_217_229"
+        append member "CVEH_14_29_181_34"
+        append member "CVEH_14_103_9_211"
+        append member "CVEH_14_103_86_183"
+        append member "CVEH_14_103_107_29"
+        append member "CVEH_14_103_115_115"
+        append member "CVEH_14_103_117_84"
+        append member "CVEH_14_103_117_85"
+        append member "CVEH_14_103_118_121"
+        append member "CVEH_27_112_78_170"
+        append member "CVEH_27_128_171_39"
+        append member "CVEH_27_150_188_148"
+        append member "CVEH_36_95_221_140"
+        append member "CVEH_36_134_69_15"
+        append member "CVEH_36_138_134_121"
+        append member "CVEH_41_128_181_199"
+        append member "CVEH_41_216_177_55"
+        append member "CVEH_41_216_178_119"
+        append member "CVEH_45_92_33_82"
+        append member "CVEH_45_169_200_254"
+        append member "CVEH_46_24_47_94"
+        append member "CVEH_49_64_85_138"
+        append member "CVEH_54_38_52_18"
+        append member "CVEH_59_98_148_5"
+        append member "CVEH_61_220_235_10"
+        append member "CVEH_62_60_130_210"
+        append member "CVEH_62_210_142_148"
+        append member "CVEH_62_210_142_159"
+        append member "CVEH_62_210_142_160"
+        append member "CVEH_62_210_142_170"
+        append member "CVEH_62_210_142_172"
+        append member "CVEH_78_83_103_72"
+        append member "CVEH_85_105_250_114"
+        append member "CVEH_89_218_69_66"
+        append member "CVEH_92_207_4_157"
+        append member "CVEH_95_85_114_218"
+        append member "CVEH_95_90_13_168"
+        append member "CVEH_95_111_234_240"
+        append member "CVEH_96_78_175_45"
+        append member "CVEH_100_34_231_196"
+        append member "CVEH_100_56_203_72"
+        append member "CVEH_101_79_167_183"
+        append member "CVEH_102_222_145_170"
+        append member "CVEH_103_182_132_154"
+        append member "CVEH_103_187_165_26"
+        append member "CVEH_103_211_217_182"
+        append member "CVEH_103_250_10_42"
+        append member "CVEH_110_49_76_244"
+        append member "CVEH_112_216_120_67"
+        append member "CVEH_112_219_151_50"
+        append member "CVEH_114_130_85_36"
+        append member "CVEH_114_217_10_60"
+        append member "CVEH_117_62_22_127"
+        append member "CVEH_119_203_251_187"
+        append member "CVEH_120_48_44_93"
+        append member "CVEH_121_204_171_142"
+        append member "CVEH_121_229_9_110"
+        append member "CVEH_121_229_25_10"
+        append member "CVEH_124_155_125_131"
+        append member "CVEH_138_199_59_174"
+        append member "CVEH_146_59_95_254"
+        append member "CVEH_147_50_231_135"
+        append member "CVEH_148_230_154_182"
+        append member "CVEH_149_118_67_149"
+        append member "CVEH_153_99_92_11"
+        append member "CVEH_154_83_196_237"
+        append member "CVEH_156_146_55_166"
+        append member "CVEH_158_178_141_16"
+        append member "CVEH_159_13_55_134"
+        append member "CVEH_164_152_250_192"
+        append member "CVEH_165_231_182_151"
+        append member "CVEH_167_148_201_186"
+        append member "CVEH_168_107_68_221"
+        append member "CVEH_168_195_210_165"
+        append member "CVEH_172_233_120_230"
+        append member "CVEH_173_249_52_138"
+        append member "CVEH_179_57_170_71"
+        append member "CVEH_179_199_199_60"
+        append member "CVEH_180_108_64_6"
+        append member "CVEH_180_168_24_186"
+        append member "CVEH_180_184_141_117"
+        append member "CVEH_181_188_172_6"
+        append member "CVEH_182_244_5_153"
+        append member "CVEH_185_177_72_9"
+        append member "CVEH_185_177_72_100"
+        append member "CVEH_185_206_225_29"
+        append member "CVEH_185_233_3_95"
+        append member "CVEH_186_123_86_15"
+        append member "CVEH_187_8_120_90"
+        append member "CVEH_187_174_162_164"
+        append member "CVEH_191_96_168_159"
+        append member "CVEH_193_32_162_11"
+        append member "CVEH_195_60_166_252"
+        append member "CVEH_195_60_166_253"
+        append member "CVEH_195_60_166_255"
+        append member "CVEH_196_188_93_169"
+        append member "CVEH_196_189_155_89"
+        append member "CVEH_197_44_15_210"
+        append member "CVEH_200_77_172_159"
+        append member "CVEH_201_249_192_30"
+        append member "CVEH_202_79_29_108"
+        append member "CVEH_203_32_69_151"
+        append member "CVEH_211_253_31_30"
+        append member "CVEH_212_154_234_9"
+        append member "CVEH_216_180_246_103"
+        append member "CVEH_216_180_246_174"
+        append member "CVEH_216_180_246_204"
+        append member "CVEH_216_180_246_205"
+        append member "CVEH_216_180_246_211"
+        append member "CVEH_218_201_148_69"
+        append member "CVEH_222_110_147_56"
+        append member "CVEH_223_221_38_226"
     next
 end
 # No firewall policy has been created. Review existing policy use.
