@@ -1,10 +1,10 @@
 // CVIE: durable, account-scoped product identity resolution and NVD history.
 // Every external URL is fixed here. Customer hosts/versions are never scanned or sent.
-import {normalizeName,productCpe,cpeFamily,knownIdentity,logoFor,identityCandidates} from './product-identity.js';
+import {normalizeName,productCpe,cpeFamily,knownIdentity,logoFor,identityCandidates,vendorKey} from './product-identity.js';
 import {queueRelevantKev} from './cvie-evidence.js';
 import {combinedPage,combinedCounts,evidenceContext,sourceHealth,withdrawnIds,excludedProductCves} from './cvie-records.js';
 import {isHyperV,hyperVHosts,hyperVHost,hyperVHelp,hyperVStatement} from './hyperv.js';
-import {dotnetProfile,dotnetFamilies,dotnetFamilyLabel} from './dotnet.js';
+import {coveragePlan,coverageMetadata,coverageSummary,sourceWorkTypes,catalogueKind,DISCOVERY_PAGES} from './product-coverage.js';
 import {disclosureCandidatesStatement} from './cvie-evidence.js';
 const ORIGIN='https://cveharbor.com',DAY=86400000;
 const iso=value=>new Date(value).toISOString();
@@ -36,6 +36,7 @@ export async function subscribeProducts(env,userId,products,origin='catalogue'){
   const name=String(item.name||item.technology||'').trim(),vendor=String(item.vendor||'').trim();
   if(!name||name.length>120||vendor.length>100||/[\u0000-\u001f]/.test(name+vendor))throw new CvieError('Invalid product identity');
   if(item.cpe&&!productCpe(item.cpe))throw new CvieError('Use a product-family CPE 2.3 identifier with wildcard versions');
+  if(item.cpe&&vendor&&vendorKey(vendor)!==vendorKey(productCpe(item.cpe).split(':')[3]))throw new CvieError('The vendor does not match the selected source identity');
   normalized.set(normalizeName(name),{name,vendor,cpe:item.cpe?productCpe(item.cpe):knownIdentity(name,vendor)?.cpe||'',explicitCpe:Boolean(item.cpe),vendorProvided:item.vendor!==undefined});
  }
  if(normalized.size>500)throw new CvieError('CVIE supports up to 500 distinct products per account',409);
@@ -87,7 +88,7 @@ function configurations(cve){
 }
 export function normalizeNvd(cve,product){
  if(!/^CVE-\d{4}-\d{4,10}$/i.test(cve?.id||'')||/rejected/i.test(cve.vulnStatus||''))return null;
- const families=dotnetFamilies(product),matches=configurations(cve).filter(m=>families.includes(cpeFamily(m.criteria)));
+ const plan=coveragePlan(product),matches=configurations(cve).filter(m=>plan.families.includes(cpeFamily(m.criteria)));
  if(!matches.length)return null; // Mentioning a product in the summary is insufficient evidence.
  const published=Date.parse(cve.published);if(!Number.isFinite(published))return null;
  const metrics=['cvssMetricV40','cvssMetricV31','cvssMetricV30','cvssMetricV2'].flatMap(key=>[...(cve.metrics?.[key]||[])].sort((a,b)=>Number(b.type==='Primary')-Number(a.type==='Primary')));
@@ -101,20 +102,21 @@ export function normalizeNvd(cve,product){
  return {id:cve.id,kind:'cve',title:summary.slice(0,180),summary,published:iso(published),updated:cve.lastModified||cve.published,
   severity,cvss,known_exploited:Boolean(cve.cisaExploitAdd),status:cve.vulnStatus||'NVD indexed CVE',source_type:'cvie_nvd',
   categories:[product.name],cvie_products:[product.name],cvie_identities:[...new Set(matches.map(m=>cpeFamily(m.criteria)))].map(cpe=>({name:product.name,cpe})),affected_cpes:matches,
-  affected:matches.map(m=>(dotnetProfile(product)?dotnetFamilyLabel(m.criteria):product.name)+' '+[m.versionStartIncluding&&'>= '+m.versionStartIncluding,m.versionStartExcluding&&'> '+m.versionStartExcluding,m.versionEndIncluding&&'<= '+m.versionEndIncluding,m.versionEndExcluding&&'< '+m.versionEndExcluding].filter(Boolean).join(', ')).join('; '),
+  affected:matches.map(m=>(plan.families.length>1?plan.familyLabel(m.criteria):product.name)+' '+[m.versionStartIncluding&&'>= '+m.versionStartIncluding,m.versionStartExcluding&&'> '+m.versionStartExcluding,m.versionEndIncluding&&'<= '+m.versionEndIncluding,m.versionEndExcluding&&'< '+m.versionEndExcluding].filter(Boolean).join(', ')).join('; '),
   remediation:'Review the linked vendor advisory for affected versions, prerequisites and the appropriate fix.',sources,
   action:'Confirm the installed version and deployment prerequisites before remediation.',
   exploitation:cve.cisaExploitAdd?'Listed in CISA KEV':'No exploitation claim made by CVIE'};
 }
-async function prepareDotnetHistory(env,userId,products){
+async function prepareProductCoverage(env,userId,products){
  const repairs=products.flatMap(p=>{
-  const profile=dotnetProfile(p);if(!profile||JSON.parse(p.cursor_json||'{}').profile===profile.key)return [];
-  return [{id:p.id,before_cpe:p.cpe,vendor:p.vendor,cursor:p.cursor_json,cpe:profile.primary,profile:profile.key}];
+  const plan=coveragePlan(p),cursor=JSON.parse(p.cursor_json||'{}');
+  if(!plan.families.length||cursor.coverage_signature===plan.signature||!plan.profile&&!p.last_success_at&&!cursor.windows?.length)return [];
+  return [{id:p.id,before_cpe:p.cpe,vendor:p.vendor,cursor:p.cursor_json,cpe:plan.primary,metadata:JSON.stringify(coverageMetadata(plan))}];
  });
  if(!repairs.length)return false;
  // Keep verified cached evidence while resetting only the incomplete coverage claim.
  const result=await query(env.DB,`UPDATE cvie_products SET cpe=(SELECT json_extract(value,'$.cpe') FROM json_each(?) WHERE json_extract(value,'$.id')=cvie_products.id),
-  cursor_json=(SELECT json_object('profile',json_extract(value,'$.profile')) FROM json_each(?) WHERE json_extract(value,'$.id')=cvie_products.id),
+  cursor_json=(SELECT json_extract(value,'$.metadata') FROM json_each(?) WHERE json_extract(value,'$.id')=cvie_products.id),
   status='queued',candidates_json='[]',recent_complete_at=NULL,history_complete_at=NULL,next_attempt_at=0,lease_until=0,error=''
   WHERE user_id=? AND EXISTS(SELECT 1 FROM json_each(?) r WHERE json_extract(r.value,'$.id')=cvie_products.id
    AND json_extract(r.value,'$.before_cpe')=cvie_products.cpe AND json_extract(r.value,'$.vendor')=cvie_products.vendor
@@ -160,7 +162,7 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
   AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) ${userId?'AND p.user_id=?':''}
   ORDER BY CASE WHEN p.recent_complete_at IS NULL THEN 0 WHEN p.history_complete_at IS NULL THEN 1 ELSE 2 END,p.next_attempt_at,COALESCE(p.last_attempt_at,0),p.id LIMIT 1`,now,now,...(userId?[userId]:[])).first();
  if(!product)return {idle:true};
- if(await prepareDotnetHistory(env,product.user_id,[product]))return {requeued:true};
+ if(await prepareProductCoverage(env,product.user_id,[product]))return {requeued:true};
  if(isHyperV(product)&&!hyperVHost(product.cpe)){
   await prepareHyperVHosts(env,product.user_id,[product]);return {resolved:false};
  }
@@ -170,19 +172,24 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
  if((await query(env.DB,'UPDATE cvie_products SET lease_until=?,status=?,last_attempt_at=? WHERE id=? AND lease_until<?',lease,'scanning',now,product.id,now).run()).meta.changes!==1)return {busy:true};
  try{
   if(!product.cpe){
-   const data=await requestNvd(env,'cpes',{keywordSearch:[product.vendor,product.name].filter(Boolean).join(' '),resultsPerPage:500},fetcher);
-   if(!Array.isArray(data.products)||!Number.isSafeInteger(data.totalResults))throw new ProviderError('NVD product directory response is incomplete');
-   const candidates=identityCandidates(data);
+   const cursor=JSON.parse(product.cursor_json||'{}'),index=cursor.directory_index||0;
+   const data=await requestNvd(env,'cpes',{keywordSearch:[product.vendor,product.name].filter(Boolean).join(' '),startIndex:index,resultsPerPage:500},fetcher);
+   if(!Array.isArray(data.products)||!Number.isSafeInteger(data.totalResults)||data.totalResults<0||
+    (data.startIndex??0)!==index||!data.products.length&&index<data.totalResults)throw new ProviderError('NVD product directory response is incomplete');
+   const candidates=[...new Map([...JSON.parse(product.candidates_json||'[]'),...identityCandidates(data,product)].map(c=>[c.cpe,c])).values()];
+   const next=index+data.products.length,finished=next>=data.totalResults,limited=!finished&&(next>=10000||candidates.length>=500);
    // A unique result can only be accepted if the directory was fully searched.
-   const cpe=candidates.length===1&&data.totalResults<=data.products.length?candidates[0].cpe:'';
-   await query(env.DB,'UPDATE cvie_products SET cpe=?,status=?,candidates_json=?,lease_until=0,error=? WHERE id=? AND lease_until=?',cpe,cpe?'queued':'needs_identity',JSON.stringify(candidates.slice(0,100)),cpe?'':'Choose the exact vendor/product identity to continue; a name search alone is not a vulnerability match.',product.id,lease).run();
+   const sameName=candidates.length===1&&[candidates[0].cpe.split(':')[4],candidates[0].cpe.split(':').slice(3,5).join(' ')].some(x=>normalizeName(x.replaceAll('_',' '))===normalizeName(product.name));
+   const cpe=finished&&sameName&&catalogueKind(product.name)==='product'?candidates[0].cpe:'';
+   const status=cpe?'queued':finished||limited?'needs_identity':'scanning';
+   await query(env.DB,'UPDATE cvie_products SET cpe=?,status=?,candidates_json=?,cursor_json=?,lease_until=0,error=? WHERE id=? AND lease_until=?',cpe,status,JSON.stringify(candidates.slice(0,500)),JSON.stringify(status==='scanning'?{directory_index:next,directory_total:data.totalResults}:{}),cpe||status==='scanning'?'':limited?'The product directory is broad and only partially searched. Add the vendor or a more specific product name, or confirm an exact listed identity.':'Choose the exact vendor/product identity to continue; a name search alone is not a vulnerability match.',product.id,lease).run();
    return {resolved:Boolean(cpe)};
   }
   let cursor=JSON.parse(product.cursor_json||'{}');
-  const profile=dotnetProfile(product);
+  const plan=coveragePlan(product);
   if(!cursor.windows?.length){
-   const dates=scanWindows(now),types=profile?[...profile.families.map(cpe=>({cpe})),{disclosures:'.NET'},{disclosures:'ASP.NET Core'}]:[{}];
-   cursor={generation:crypto.randomUUID(),anchor:now,windows:dates.flatMap(date=>types.map(type=>({...date,...type}))),position:0,recent_windows:types.length,...(profile?{profile:profile.key}:{})};
+   const dates=scanWindows(now),types=sourceWorkTypes(plan);
+   cursor={...coverageMetadata(plan),generation:crypto.randomUUID(),anchor:now,windows:dates.flatMap(date=>types.map(type=>({...date,...type}))),position:0,recent_windows:types.length};
   }
   const window=cursor.windows[cursor.position];
    const data=await requestNvd(env,'cves',{...(window.disclosures?{keywordSearch:window.disclosures,keywordExactMatch:''}:{virtualMatchString:window.cpe||product.cpe}),...(isHyperV(product)?{keywordSearch:'Windows Hyper-V',keywordExactMatch:''}:{}),pubStartDate:iso(window.start),pubEndDate:iso(window.end),startIndex:window.index,resultsPerPage:50},fetcher);
@@ -200,8 +207,10 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
    WHERE EXISTS(SELECT 1 FROM cvie_products WHERE id=? AND lease_until=? AND cpe=?)
    ON CONFLICT(product_id,cve_id) DO UPDATE SET published=excluded.published,record_json=excluded.record_json,generation=excluded.generation`,product.id,cursor.generation,JSON.stringify(pageRecords),product.id,lease,product.cpe));
   window.index+=data.vulnerabilities.length;window.total=data.totalResults;
+  window.pages=(window.pages||0)+1;
   let recent=product.recent_complete_at,history=product.history_complete_at;
-  if(window.index>=data.totalResults){cursor.position++;if(cursor.position===(cursor.recent_windows||1))recent=now;}
+  if(window.disclosures&&window.index<data.totalResults&&window.pages>=DISCOVERY_PAGES){cursor.discovery_limited=true;cursor.position++;if(cursor.position===(cursor.recent_windows||1))recent=now;}
+  else if(window.index>=data.totalResults){cursor.position++;if(cursor.position===(cursor.recent_windows||1))recent=now;}
   const complete=cursor.position===cursor.windows.length;
   if(complete){
    history=now;
@@ -210,7 +219,7 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
   // Cursor + page records commit together, so a crash never advances past unsaved results.
   statements.push(query(env.DB,`UPDATE cvie_products SET status=?,cursor_json=?,scan_started_at=COALESCE(scan_started_at,?),last_success_at=?,
    recent_complete_at=?,history_complete_at=?,next_attempt_at=?,lease_until=0,error='' WHERE id=? AND lease_until=?`,
-   complete?'ready':'scanning',JSON.stringify(complete?(profile?{profile:profile.key}:{}):cursor),cursor.anchor,now,recent,history,complete?now+6*3600000:0,product.id,lease));
+   complete?'ready':'scanning',JSON.stringify(complete?coverageMetadata(plan,cursor):cursor),cursor.anchor,now,recent,history,complete?now+6*3600000:0,product.id,lease));
   await env.DB.batch(statements);
   return {complete,processed:data.vulnerabilities.length};
  }catch(error){
@@ -238,7 +247,7 @@ export async function loadCvieDigest(env,userId,now=Date.now(),selected=null){
   const cutoff=iso(monthsAgo(now,12));let after='',records=[];
   do{const page=await combinedPage(env,userId,cutoff,after,'',now,ctx);records.push(...page.advisories);after=page.next||'';}while(after&&records.length<1000);
   const health=await sourceHealth(env,now);
-  return {records,withdrawn_ids:await withdrawnIds(env),excluded_product_cves:await excludedProductCves(env,userId,ctx),component_products:ctx.products.filter(p=>isHyperV(p)||dotnetProfile(p)).map(p=>p.name),degraded:health.sources.some(s=>s.status!=='current')||ctx.products.some(p=>p.status!=='ready'||!p.last_success_at||now-p.last_success_at>DAY),coverageLimited:Boolean(after)};
+  return {records,withdrawn_ids:await withdrawnIds(env),excluded_product_cves:await excludedProductCves(env,userId,ctx),component_products:ctx.products.map(p=>p.name),degraded:health.sources.some(s=>s.status!=='current')||ctx.products.some(p=>p.status!=='ready'||!p.last_success_at||now-p.last_success_at>DAY),coverageLimited:Boolean(after)||ctx.products.some(p=>coverageSummary(p).limited)};
  }
  const recent=iso(now-30*DAY);
  const result=await query(env.DB,`SELECT a.record_json FROM cvie_advisories a JOIN cvie_products p ON p.id=a.product_id
@@ -273,19 +282,20 @@ export async function cvieRoute(req,env,user,ctx,data={}){
    (SELECT COUNT(*) FROM cvie_advisories a WHERE a.product_id=p.id AND a.published>=?) AS history_count
    FROM cvie_products p WHERE p.user_id=? AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) ORDER BY p.name`,iso(monthsAgo(now,3)),iso(monthsAgo(now,12)),user.id).all();
   let result=await loadProducts();
-  const repairedHyperV=await prepareHyperVHosts(env,user.id,result.results||[]),repairedDotnet=await prepareDotnetHistory(env,user.id,result.results||[]);
-  if(repairedHyperV||repairedDotnet)result=await loadProducts();
+  const repairedHyperV=await prepareHyperVHosts(env,user.id,result.results||[]),repairedCoverage=await prepareProductCoverage(env,user.id,result.results||[]);
+  if(repairedHyperV||repairedCoverage)result=await loadProducts();
   const evidenceCtx=await evidenceContext(env,user.id),counts=evidenceCtx?await combinedCounts(env,user.id,iso(monthsAgo(now,3)),iso(monthsAgo(now,12)),now,evidenceCtx):null;
   const products=(result.results||[]).map(p=>{
    const cursor=JSON.parse(p.cursor_json||'{}'),window=cursor.windows?.[cursor.position];
    return {id:p.id,name:p.name,vendor:p.vendor,cpe:p.cpe,status:p.status,error:p.error,icon_slug:logoFor(p.name,p.cpe),
+    component_scope:coveragePlan(p).component||'verified_product',coverage:coverageSummary(p),identity_label:coveragePlan(p).label,
     ...(isHyperV(p)?{component_scope:'windows_hyperv',identity_prompt:'Select the Windows host for Hyper-V',identity_label:hyperVHost(p.cpe)?.label||''}:{}),
-    ...(dotnetProfile(p)?{component_scope:'modern_dotnet',identity_label:dotnetProfile(p).label}:{}),
+    ...(coveragePlan(p).profile?{component_scope:'modern_dotnet'}:{}),
     recent_count:counts?(counts.find(c=>c.product_id===p.id)?.recent_count||0):p.recent_count,history_count:counts?(counts.find(c=>c.product_id===p.id)?.history_count||0):p.history_count,
     older_kev_recent_count:counts?.find(c=>c.product_id===p.id)?.older_kev_recent_count||0,older_kev_history_count:counts?.find(c=>c.product_id===p.id)?.older_kev_history_count||0,
     last_success_at:p.last_success_at,recent_complete_at:p.recent_complete_at,
     history_complete_at:p.history_complete_at,next_attempt_at:p.next_attempt_at,stale:!p.last_success_at||now-p.last_success_at>24*3600000,
-    progress:{windows_complete:cursor.position||0,windows_total:cursor.windows?.length||0,records_checked:window?.index||0,records_in_window:window?.total??null},
+    progress:{windows_complete:cursor.position||0,windows_total:cursor.windows?.length||0,records_checked:window?.index||0,records_in_window:window?.total??null,directory_checked:cursor.directory_index||0,directory_total:cursor.directory_total||0},
     candidates:p.status==='needs_identity'?JSON.parse(p.candidates_json):[]};
   });
   const evidence=await sourceHealth(env,now),withdrawn=await withdrawnIds(env);

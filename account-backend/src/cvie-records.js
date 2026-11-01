@@ -1,7 +1,8 @@
 // Reconcile authoritative evidence by CVE ID, retaining source-specific provenance.
 import {evidenceReady,productFamilies,productLabels,SOURCE_URLS} from './cvie-evidence.js';
 import {isHyperV,hyperVHost,hyperVStatementSql} from './hyperv.js';
-import {dotnetProfile,dotnetAffectedSql,DOTNET_FAMILY} from './dotnet.js';
+import {dotnetProfile} from './dotnet.js';
+import {rawProductLabels,coveragePlan,versionedLabelSql,cnaCoverageAdapters} from './product-coverage.js';
 const q=(db,sql,...args)=>db.prepare(sql).bind(...args);
 const DAY=86400000;
 function affectedDescription(rows,name,preserveLabel=false){
@@ -93,14 +94,15 @@ export async function evidenceContext(env,userId){
  const families=products.flatMap(p=>{
   const scope=isHyperV(p)?'windows_hyperv':'';
   const keys=scope&&!hyperVHost(p.cpe)?['scope:windows_hyperv']:productFamilies(p);
-  return keys.map(key=>({product_id:p.id,key,labels:productLabels(p),scope}));
+  const rawLabels=coveragePlan(p).families.length?coveragePlan(p).families.flatMap(cpe=>rawProductLabels({...p,cpe})):rawProductLabels(p);
+  return keys.map(key=>({product_id:p.id,key,labels:productLabels(p),raw_labels:rawLabels,scope}));
  });
  const sources=(await env.DB.prepare('SELECT * FROM cvie_sources').all()).results||[];
  return {products,families:JSON.stringify(families),sources:Object.fromEntries(sources.map(s=>[s.id,s]))};
 }
 // SQL keyset pagination limits both public evidence and private data to the requested page.
 function familiesCte(){return `WITH families AS (
- SELECT json_extract(value,'$.product_id') AS product_id,json_extract(value,'$.key') AS family_key,json_extract(value,'$.labels') AS labels,COALESCE(json_extract(value,'$.scope'),'') AS scope FROM json_each(?)
+ SELECT json_extract(value,'$.product_id') AS product_id,json_extract(value,'$.key') AS family_key,json_extract(value,'$.labels') AS labels,COALESCE(json_extract(value,'$.raw_labels'),'[]') AS raw_labels,COALESCE(json_extract(value,'$.scope'),'') AS scope FROM json_each(?)
 ), verified_matches AS (
  SELECT DISTINCT f.product_id,d.cve_id,d.applicability,d.affected_json FROM families f JOIN cvie_disclosure_products d ON d.family_key=f.family_key
  WHERE (substr(f.family_key,1,4)='cpe:' OR EXISTS(SELECT 1 FROM json_each(d.affected_json) a
@@ -108,8 +110,13 @@ function familiesCte(){return `WITH families AS (
  AND (f.scope<>'windows_hyperv' OR EXISTS(SELECT 1 FROM cvie_disclosures c WHERE c.cve_id=d.cve_id AND ${hyperVStatementSql('c.record_json')}))
  UNION
  SELECT DISTINCT f.product_id,d.cve_id,d.applicability,d.affected_json FROM families f JOIN cvie_disclosure_products d
+  ON d.family_key>=f.family_key AND d.family_key<f.family_key||char(127)
+ WHERE substr(f.family_key,1,5)='name:' AND EXISTS(SELECT 1 FROM json_each(d.affected_json) a WHERE ${versionedLabelSql('a.value','f.raw_labels')})
+  AND (f.scope<>'windows_hyperv' OR EXISTS(SELECT 1 FROM cvie_disclosures c WHERE c.cve_id=d.cve_id AND ${hyperVStatementSql('c.record_json')}))
+ ${cnaCoverageAdapters.map(adapter=>`UNION
+ SELECT DISTINCT f.product_id,d.cve_id,d.applicability,d.affected_json FROM families f JOIN cvie_disclosure_products d
   ON d.family_key LIKE 'name:microsoft:%'
- WHERE f.family_key='${DOTNET_FAMILY}' AND EXISTS(SELECT 1 FROM json_each(d.affected_json) a WHERE ${dotnetAffectedSql('a.value')})
+ WHERE f.family_key='${adapter.key}' AND EXISTS(SELECT 1 FROM json_each(d.affected_json) a WHERE ${adapter.matchSql('a.value')})`).join('\n')}
 ) `;}
 function unifiedCte(){return familiesCte()+`, links AS (
  SELECT a.product_id,a.cve_id FROM cvie_advisories a JOIN cvie_products p ON p.id=a.product_id

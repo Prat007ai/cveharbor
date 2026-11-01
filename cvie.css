@@ -5,6 +5,8 @@
 .cvie-panel summary{cursor:pointer;padding:8px 0}.cvie-product-statuses{max-height:330px;overflow:auto}.cvie-product-status{display:flex;align-items:center;flex-wrap:wrap;gap:8px 20px;padding:13px 0;border-top:1px solid #254654}
 .cvie-source-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}.cvie-source{display:flex;flex-direction:column;gap:5px;border:1px solid #2c5263;border-left:3px solid #79e6d7;border-radius:6px;padding:10px 12px;font-size:.84rem}.cvie-source small{font-size:.73rem;color:#a3c1ce}.cvie-source.stale,.cvie-source.unavailable,.cvie-source.rate_limited,.cvie-source.setup_required{border-left-color:#f1b968}.cvie-source.pending,.cvie-source.catching_up,.cvie-source.verifying_products{border-left-color:#66b9f1}
 .cvie-product-status strong{min-width:180px}.cvie-product-status small{flex-basis:100%}.cvie-state{font-size:.87rem}.cvie-state.retrying,.cvie-state.needs_identity{color:#f2cc81}
+.cvie-coverage-details{flex-basis:100%;min-width:0}.cvie-coverage-details .cvie-caption{overflow-wrap:anywhere}.cvie-coverage-details p{margin:5px 0}
+.cvie-state.coverage-limited{color:#f2cc81}
 .cvie-progress{flex-basis:100%;min-width:0;padding:12px 14px;border:1px solid #2c5263;border-radius:8px;background:#0b2231}
 .cvie-progress-heading,.cvie-progress-detail{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;line-height:1.5}.cvie-progress-heading{color:#d9edf3}.cvie-progress-detail{color:#a3c1ce}
 .cvie-progress-activity{display:inline-flex;align-items:center;gap:7px;color:#8ee8d3}.cvie-progress.is-paused .cvie-progress-activity{color:#f2cc81}

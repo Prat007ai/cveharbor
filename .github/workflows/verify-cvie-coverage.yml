@@ -1,0 +1,54 @@
+name: Verify shared CVIE product coverage without deployment
+on:
+  push:
+    branches: [fix/cvie-product-coverage]
+    paths: ['account-backend/**','cvie.js','cvie.css','scripts/*cvie*.mjs','.github/workflows/verify-cvie-coverage.yml']
+permissions:
+  contents: write
+concurrency:
+  group: cvie-shared-coverage-verification
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify shared matching, private account behavior and coverage regression cases
+        run: |
+          npm test --prefix account-backend
+          node account-backend/tests/cvie-coverage.test.mjs
+          node account-backend/tests/cvie-audit.test.mjs
+      - name: Verify generated site and existing interactions
+        run: |
+          python -m unittest discover -s tests
+          python scripts/build_site.py
+          python scripts/verify_production.py --preflight
+          npm install --no-save --no-package-lock jsdom@26
+          node scripts/browser_smoke.mjs
+          node scripts/customer_security_smoke.mjs
+          node scripts/cvie_client_smoke.mjs
+      - name: Verify the same scan contract against multiple real non-.NET products
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: node scripts/probe_cvie_coverage.mjs
+      - name: Verify the shared family plan against real modern .NET history
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: node scripts/probe_cvie_dotnet.mjs
+      - name: Record public provider evidence and catalogue coverage review
+        env:
+          CVIE_CHECK_BRANCH: ${{ github.ref_name }}
+        run: |
+          git config user.name 'cveharbor-updater[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/cvie-coverage-check.json data/cvie-catalogue-coverage.json docs/cvie-catalogue-coverage.md data/cvie-dotnet-check.json
+          git commit -m 'Record shared CVIE provider checks and catalogue coverage review'
+          git push origin "HEAD:$CVIE_CHECK_BRANCH"
+      - name: Require successful live-source checks
+        run: node -e "for(const file of ['cvie-coverage-check','cvie-dotnet-check'])if(!require('./data/'+file+'.json').ok)process.exit(1)"

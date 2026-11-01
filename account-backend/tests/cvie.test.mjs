@@ -76,8 +76,9 @@ test('history scans prioritize three months, resume pagination, and only finish 
  const records=[cve(),cve('CVE-2026-12346'),cve('CVE-2026-12347','2026-02-01T00:00:00Z')],fetcher=provider(records,1);
  await runCvieStep(e,fetcher,NOW);
  let p=await first(e);assert.equal(p.status,'scanning');assert.equal(p.recent_complete_at,null);assert.equal(JSON.parse(p.cursor_json).windows[0].index,1);
- await runCvieStep(e,fetcher,NOW+7000);p=await first(e);assert.ok(p.recent_complete_at);assert.equal(p.history_complete_at,null);
- await complete(e,fetcher,NOW+14000);p=await first(e);assert.equal(p.status,'ready');assert.ok(p.history_complete_at);
+ await runCvieStep(e,fetcher,NOW+7000);p=await first(e);assert.equal(p.recent_complete_at,null,'original-disclosure discovery is also required before recent history is checked');assert.equal(p.history_complete_at,null);
+ await runCvieStep(e,fetcher,NOW+14000);await runCvieStep(e,fetcher,NOW+21000);assert.ok((await first(e)).recent_complete_at);
+ await complete(e,fetcher,NOW+28000);p=await first(e);assert.equal(p.status,'ready');assert.ok(p.history_complete_at);
  assert.equal((await rows(e,'SELECT * FROM cvie_advisories')).length,3);
 });
 test('a full fifty-record NVD page is saved transactionally and the next page is not skipped',async()=>{
@@ -87,7 +88,8 @@ test('a full fifty-record NVD page is saved transactionally and the next page is
  assert.ok(e.DB.executions<=8,'six cron pages must fit in a 50-query invocation budget');
  assert.equal((await rows(e,'SELECT * FROM cvie_advisories')).length,50);
  await runCvieStep(e,fetcher,NOW+7000);assert.equal((await rows(e,'SELECT * FROM cvie_advisories')).length,51);
- assert.ok((await first(e)).recent_complete_at);
+ assert.equal((await first(e)).recent_complete_at,null);
+ await runCvieStep(e,fetcher,NOW+14000);await runCvieStep(e,fetcher,NOW+21000);assert.ok((await first(e)).recent_complete_at);
 });
 test('an in-flight response cannot contaminate a corrected product identity',async()=>{
  const e=env();await subscribeProducts(e,'a',[{name:'Apache Tomcat'}]);
@@ -134,7 +136,7 @@ test('ambiguous directory responses require an account-owned exact selection',as
 test('partial product-directory results are not treated as a unique identity',async()=>{
  const e=env();await subscribeProducts(e,'a',[{name:'Example product'}]);
  await runCvieStep(e,async()=>Response.json({totalResults:1000,products:[{cpe:{cpeName:cpe}}]}),NOW);
- assert.equal((await first(e)).status,'needs_identity');
+ assert.equal((await first(e)).status,'scanning');assert.equal((await first(e)).cpe,'');assert.equal(JSON.parse((await first(e)).cursor_json).directory_index,1);
 });
 test('advisory routes enforce account ownership and the selected calendar horizon',async t=>{
  t.mock.timers.enable({apis:['Date'],now:NOW});

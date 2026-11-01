@@ -43,6 +43,7 @@ function statusFor(p){
  const complete=months===12?p.history_complete_at:p.recent_complete_at;
  const older=months===12?p.older_kev_history_count:p.older_kev_recent_count;
  const disclosurePending=(evidence.sources||[]).some(s=>s.id==='cve_program'&&s.status!=='current');
+ if(p.coverage?.limited)return (count?count+' verified advisories · ':'')+(p.coverage.discovery_limited?'Additional disclosure history is incomplete':'Coverage limited · review the checked products');
  return (complete?(count?count+' advisories · last '+months+' months':disclosurePending?'No verified matches available yet · original disclosure checks pending':'No advisories matched the checked product identity in '+months+' months'):'Preparing '+months+'-month history')+(older?' · '+older+' older KEV-listed':'');
 }
 function scanProgress(p){
@@ -52,7 +53,7 @@ function scanProgress(p){
  const total=Number.isInteger(p.progress?.windows_total)&&p.progress.windows_total>0?p.progress.windows_total:0;
  const completed=Math.max(0,Math.min(total,Number(p.progress?.windows_complete)||0));
  const block=node('div','','cvie-progress'+(paused?' is-paused':finished?' is-complete':''));
- const heading=node('div','','cvie-progress-heading'),label=node('span','NVD history scan');
+ const heading=node('div','','cvie-progress-heading'),label=node('span',p.progress?.directory_total?'Product identity lookup':'NVD history scan');
  const activity=node('span',error?'Connection interrupted':p.status==='retrying'?'Paused · automatic retry':finished?(p.stale?'Previous check complete · refresh overdue':'History check complete'):p.status==='queued'?'Waiting to start':'Checking source records','cvie-progress-activity');
  if(running){const indicator=node('span','','cvie-activity');indicator.setAttribute('aria-hidden','true');activity.prepend(indicator);}
  heading.append(label,activity);
@@ -62,6 +63,7 @@ function scanProgress(p){
  const description=finished?'History scan complete':total?completed+' of '+total+' history windows checked':'Preparing the product and history windows';
  bar.setAttribute('aria-valuetext',description);bar.textContent=description;
  const detail=node('div',description,'cvie-progress-detail');
+ if(p.progress?.directory_total)detail.append(node('span',p.progress.directory_checked+' of '+p.progress.directory_total+' directory entries checked'));
  const recordTotal=p.progress?.records_in_window,checked=p.progress?.records_checked;
  if(!finished&&Number.isFinite(recordTotal)&&recordTotal>0&&Number.isFinite(checked))detail.append(node('span',Math.max(0,Math.min(recordTotal,checked))+' of '+recordTotal+' source records checked in the current window'));
  if(p.status==='retrying'&&p.next_attempt_at)detail.append(node('span','Next attempt: '+new Date(p.next_attempt_at).toLocaleString()));
@@ -106,6 +108,7 @@ function draw(){
    card.append(node('strong',s.label||s.id),node('span',sourceLabels[s.status]||s.status));
    card.append(node('small',s.last_success_at?'Checked '+new Date(s.last_success_at).toLocaleString():'No successful check yet'));
    if(s.publisher_at)card.append(node('small','Publisher update: '+new Date(s.publisher_at).toLocaleString()));
+   if(s.coverage_start_at)card.append(node('small','Original disclosure feed coverage starts: '+new Date(s.coverage_start_at).toLocaleString()));
    if(s.pending_records)card.append(node('small',s.pending_records+' records awaiting verification'));
    if(s.status==='rate_limited'&&s.retry_at)card.append(node('small','Retry after '+new Date(s.retry_at).toLocaleString()));
    if(s.error)card.append(node('small',s.error));sourceGrid.append(card);
@@ -121,11 +124,19 @@ function draw(){
   const list=node('div','','cvie-product-statuses');
   for(const p of products){
    const row=node('div','','cvie-product-status');
-   row.append(node('strong',p.name),node('span',statusFor(p),'cvie-state '+p.status));
+   row.append(node('strong',p.name),node('span',statusFor(p),'cvie-state '+p.status+(p.coverage?.limited?' coverage-limited':'')));
    const progress=scanProgress(p);if(progress)row.append(progress);
    if(p.last_success_at)row.append(node('small','Last successful source page: '+new Date(p.last_success_at).toLocaleString()));
    if(p.error)row.append(node('small',p.error));
    if(p.identity_label)row.append(node('small','Checking: '+p.identity_label));
+   if(p.coverage){
+    const coverage=node('details','','cvie-coverage-details');
+    coverage.append(node('summary',p.coverage.limited?'Coverage review required':'Products and source coverage'));
+    const description=node('div','','cvie-caption');
+    for(const identity of p.coverage.identities||(p.coverage.families||[]).map(cpe=>({label:cpe.split(':').slice(3,5).join(' / ').replaceAll('_',' ')})))description.append(node('p',identity.label));
+    for(const note of p.coverage.notes||[])description.append(node('p',note));
+    coverage.append(description);row.append(coverage);
+   }
    if(p.candidates?.length){
     const choose=node('select');choose.setAttribute('aria-label','Product identity for '+p.name);
     choose.append(node('option',p.identity_prompt||'Select the correct vendor and product'));

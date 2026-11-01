@@ -94,11 +94,11 @@ check('NVD matching requires both a selected affected host and an explicit Windo
 });
 check('Hyper-V history uses the host CPE plus component query for all history windows',async()=>{
  const e=env();await subscribeProducts(e,'a',[{name:'HyperV',cpe:host}]);let calls=0;
- for(let i=0;i<6;i++)await runCvieStep(e,async url=>{
-  const u=new URL(url);assert.equal(u.searchParams.get('virtualMatchString'),host);assert.equal(u.searchParams.get('keywordSearch'),'Windows Hyper-V');assert.ok(u.searchParams.has('keywordExactMatch'));
+ for(let i=0;i<10;i++)await runCvieStep(e,async url=>{
+  const u=new URL(url);if(u.searchParams.has('virtualMatchString'))assert.equal(u.searchParams.get('virtualMatchString'),host);assert.equal(u.searchParams.get('keywordSearch'),'Windows Hyper-V');assert.ok(u.searchParams.has('keywordExactMatch'));
   calls++;return Response.json({startIndex:0,totalResults:0,vulnerabilities:[]});
  },NOW+i*7000);
- assert.equal(calls,5);assert.equal((await state(e)).products[0].status,'ready');
+ assert.equal(calls,10);assert.equal((await state(e)).products[0].status,'ready');
 });
 check('CNA-only Hyper-V records require the same Windows host and exclude other components/vendors',async()=>{
  const e=env();await subscribeProducts(e,'a',[{name:'HyperV',cpe:host}]);

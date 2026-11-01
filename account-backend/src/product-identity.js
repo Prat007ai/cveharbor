@@ -51,11 +51,12 @@ export function logoFor(name,cpe=''){
  const key=value=>String(value||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
  return curated||brands[key(name)]||brands[key(parts[4])]||brands[key(parts[3])]||'';
 }
-export function identityCandidates(data){
+export function identityCandidates(data,product={}){
  const options=new Map();
  for(const item of data.products||[]){
   if(item.cpe?.deprecated)continue;
   const cpe=cpeFamily(item.cpe?.cpeName);if(!cpe)continue;
+  if(product.vendor&&vendorKey(cpe.split(':')[3])!==vendorKey(product.vendor))continue;
   if(!options.has(cpe))options.set(cpe,{cpe,label:cpe.split(':').slice(3,5).join(' / ').replaceAll('_',' ')});
  }
  return [...options.values()].sort((a,b)=>a.label.localeCompare(b.label));

@@ -4,6 +4,7 @@ import {cveMirrorUrl,simplifyCve,normalizeCveId} from './cve-lookup.js';
 import {cpeFamily,vendorKey} from './product-identity.js';
 import {isHyperV,hyperVHostNames} from './hyperv.js';
 import {dotnetProfile,DOTNET_FAMILY} from './dotnet.js';
+import {coveragePlan} from './product-coverage.js';
 const q=(db,sql,...args)=>db.prepare(sql).bind(...args);
 const DAY=86400000;
 const validAddedDate=(value,now)=>{
@@ -24,8 +25,9 @@ export const SOURCE_URLS={
 export const wordKey=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[^a-z0-9]/g,'');
 export const productLabel=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[\s_]/g,'');
 export function productLabels(product){
- const parts=String(product.cpe||'').split(':');
- return [...new Set([...(parts.length===13?[parts[4],parts[3]+parts[4]]:[product.name]),...(isHyperV(product)?hyperVHostNames(product.cpe):[])].map(productLabel))];
+ const selected=coveragePlan(product).families;
+ const names=selected.length?selected.flatMap(cpe=>{const parts=cpe.split(':');return [parts[4],parts[3]+parts[4]];}):[product.name];
+ return [...new Set([...names,...(isHyperV(product)?hyperVHostNames(product.cpe):[])].map(productLabel))];
 }
 function jsonChunks(values,max=800000){
  const chunks=[];let items=[],size=2;
@@ -37,7 +39,8 @@ function jsonChunks(values,max=800000){
  if(items.length)chunks.push('['+items.join(',')+']');return chunks;
 }
 export function productFamilies(product){
- const profile=dotnetProfile(product);if(profile)return [...profile.families.map(cpe=>'cpe:'+cpe),DOTNET_FAMILY];
+ const profile=dotnetProfile(product);
+ if(profile)return [...profile.families.flatMap(cpe=>{const parts=cpe.split(':'),vendor=vendorKey(parts[3]);return ['cpe:'+cpe,'name:'+vendor+':'+wordKey(parts[4]),'name:'+vendor+':'+wordKey(parts[3]+parts[4])];}),DOTNET_FAMILY];
  const parts=String(product.cpe||'').split(':');
  if(parts.length!==13){
   const vendor=vendorKey(product.vendor),name=wordKey(product.name);
