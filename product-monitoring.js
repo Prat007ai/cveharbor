@@ -11,13 +11,17 @@ function metrics(){
  const upcoming=cycles.filter(c=>{const d=Date.parse(c.eol_date);return Number.isFinite(d)&&d>=now&&d-now<=365*86400000}).length;
  const recent=cycles.filter(c=>{const d=Date.parse(c.latest_release_date);return Number.isFinite(d)&&d<=now&&now-d<=30*86400000}).length;
  const panel=$('lifecycleMetrics');if(!panel)return;panel.replaceChildren();
- for(const [icon,value,label] of [['◇',directory||'—','Products in reference directory'],['◷',cycles.length?upcoming:'—','Published support ends · next year'],['↻',cycles.length?recent:'—','Recorded releases · last 30 days'],['♧',state.watches.length,'My saved product watches']]){const card=make('article',undefined,'lifecycle-metric'),body=make('div');body.append(make('strong',value),make('small',label));card.append(make('span',icon),body);panel.append(card);}
+ const icons=['<path d="m12 2 9 5v10l-9 5-9-5V7Z M3 7l9 5 9-5M12 12v10"/>','<path d="m12 3 10 18H2Z M12 9v5m0 3v1"/>','<path d="M21 10a9 9 0 0 0-15-6L3 7m0-5v5h5M3 14a9 9 0 0 0 15 6l3-3m0 5v-5h-5"/>','<path d="m12 2 9 4v6c0 6-5 9-9 11-4-2-9-5-9-11V6Z m-5 10 3 3 6-6"/>'];
+ const values=[[directory||'—','Products in reference directory'],[cycles.length?upcoming:'—','Support ends · next year'],[cycles.length?recent:'—','Releases · last 30 days'],[state.watches.length,'My saved product watches']];
+ values.forEach(([value,label],index)=>{const card=make('article',undefined,'lifecycle-metric'),body=make('div'),icon=make('span');icon.setAttribute('aria-hidden','true');icon.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+icons[index]+'</svg>';body.append(make('strong',value),make('small',label));card.append(icon,body);panel.append(card);});
+
 }
 function activation(){
  const node=$('productMonitorActivation'),health=state.scheduler||state.flags.scheduler||{};
  const operating=state.enhanced&&health.operating;
  node.classList.toggle('is-operating',!!operating);
  node.textContent=operating?'Scheduled product monitoring is operating'+(state.flags.delivery_enabled?' · email delivery enabled':' · email delivery not enabled'):'Monitoring Not Yet Active · '+(!state.enhanced?'Scheduled checks and email are not enabled.':health.enabled?'No recent successful scheduled run has been verified.':'Scheduled checks await approved activation.');
+ $('lifecycleDeliveryState').hidden=!operating;
  $('productMonitorRecipient').textContent=state.recipient||'Sign in to view your verified recipient';
  $('productMonitorTest').disabled=!state.enhanced||!state.flags.test_allowed;
  const admin=root.querySelector('[data-monitor-tab="admin"]');admin.hidden=!state.flags.admin;

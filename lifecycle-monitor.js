@@ -295,7 +295,7 @@ function renderUser(){
  if(!signed||!ready){results.append(make('p','ops-note','You can choose products and versions above. Sign in to save your private watchlist.'));return;}
  if(!logged.length){results.append(make('p','ops-note','No saved product lifecycle watches. Choose a monitored product or add your own verified support date.'));return;}
  for(const watch of logged){
-  const div=make('article','ops-result');
+  const div=make('article','ops-result');div.dataset.productMark=watch.slug==='wordpress'?'W':watch.product.slice(0,2);
   const top=make('div','ops-result-top');
   top.append(make('strong','',watch.product+(watch.cycle?' · '+watch.cycle:'')));
   const del=make('button','ops-remove','Remove');del.type='button';
@@ -347,6 +347,7 @@ function renderUser(){
   if(info?.source&&info.source.startsWith('https://')){
    const a=make('a','ops-link','Check source');a.href=info.source;a.target='_blank';a.rel='noopener noreferrer';div.append(a);
   }
+  const details=make('details','monitor-watch-details');details.append(make('summary','','Release and check details'));for(const paragraph of [...div.querySelectorAll(':scope > p')])details.append(paragraph);div.append(details);
   results.append(div);
  }
 }

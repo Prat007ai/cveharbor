@@ -109,3 +109,16 @@ body[data-page="lifecycle"]{background:#031421;background-image:radial-gradient(
 #lifecycleMonitor .lifecycle-private .monitor-tabs{margin-top:12px;border-top:1px solid #21485c;border-bottom:0;padding:8px 0 0}
 #lifecycleMonitor .lifecycle-private .lifecycle-prefs-form{margin-bottom:8px}
 #lifecycleMonitor .lifecycle-private #lifecycleUserStatus{margin:5px 0;color:#9bb5c6}
+.lifecycle-metric>span svg{width:28px;height:28px}.lifecycle-metric:nth-child(2)>span{color:#ff667d!important;background:#af2e4d22!important}.lifecycle-metric:nth-child(3)>span{color:#18c8f8!important}.lifecycle-metric:nth-child(4)>span{color:#1df3c6!important}
+#lifecycleMonitor .monitor-watch-details{font-size:10px;color:#a6c8db;margin-top:5px}.monitor-watch-details summary{cursor:pointer}
+#lifecycleMonitor #lifecycleWatches .ops-result-top{gap:8px;align-items:center}#lifecycleMonitor #lifecycleWatches .ops-result{position:relative;padding-left:54px}
+#lifecycleMonitor #lifecycleWatches .ops-result:before{content:'◎';position:absolute;left:14px;top:12px;color:#51e9df;font-size:26px;line-height:1}
+#lifecycleMonitor #lifecycleWatches .monitor-state-tag{margin-top:0}
+#lifecycleMonitor .lifecycle-prefs-form .ops-span>span{display:flex;flex-direction:row-reverse;justify-content:space-between;align-items:center;width:100%;gap:12px}
+#lifecycleMonitor .lifecycle-prefs-form input[type=checkbox]{appearance:none;width:32px;min-width:32px;height:18px;border:1px solid #38657a;border-radius:20px;background:#173f52;padding:2px;position:relative;margin:0;cursor:pointer}
+#lifecycleMonitor .lifecycle-prefs-form input[type=checkbox]:before{content:'';display:block;width:12px;height:12px;background:#bdd5e1;border-radius:50%;transition:transform .15s}
+#lifecycleMonitor .lifecycle-prefs-form input[type=checkbox]:checked{background:#02c9b2;border-color:#20ead7}#lifecycleMonitor .lifecycle-prefs-form input[type=checkbox]:checked:before{transform:translateX(13px);background:white}
+#lifecycleMonitor .lifecycle-private .ops-form{gap:7px 12px;margin-bottom:10px}#lifecycleMonitor .lifecycle-private .monitor-tabs{margin-top:6px;padding-top:5px}
+#lifecycleMonitor #lifecycleUserStatus{font-size:9px!important;margin-bottom:0!important}
+@media(max-width:760px){body[data-page="lifecycle"] .site-header{height:auto;min-height:94px}body[data-page="lifecycle"] .topbar{height:auto;min-height:94px;padding:9px 0;gap:8px}body[data-page="lifecycle"] .header-account-actions{margin-left:auto}body[data-page="lifecycle"] .brand-type{font-size:21px}body[data-page="lifecycle"] .header-account-user{display:none}}
+#lifecycleMonitor #lifecycleWatches .ops-result:before{content:attr(data-product-mark);width:30px;height:30px;border:1px solid #4babc6;border-radius:50%;background:#075379;font:24px/29px Georgia,serif;text-align:center;color:#edfaff}
