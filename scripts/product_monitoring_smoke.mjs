@@ -7,6 +7,7 @@ let owner='a',provisioned=true,operating=false,testAllowed=false,saves=0,prefs={
 const rows={a:[],b:[]},history={a:[],b:[]};
 w.confirm=()=>true;w.prompt=()=>null;
 w.CVEHARBOR_LIFECYCLE={checked_at:new Date().toISOString(),available_products:['dotnet','wordpress'],cycles:[{slug:'dotnet',product:'.NET',cycle:'8.0',latest:'8.0.11',eol_date:'2027-11-01',url:'https://endoflife.date/dotnet'}],errors:[]};
+w.CVEHARBOR_LIFECYCLE.cycles.push({slug:'sharepoint',product:'SharePoint Server',cycle:'subscription',eol_date:null},{slug:'sharepoint',product:'SharePoint Server',cycle:'2019',eol_date:'2026-07-14'});
 w.fetch=async(url,options={})=>{
  const path=new URL(url).pathname,method=options.method||'GET',body=options.body?JSON.parse(options.body):{};
  if(path.endsWith('/status'))return Response.json(path.includes('/monitoring')?{ready:provisioned,scheduler:{enabled:operating,operating},recipient:owner+'@example.test',admin:false,test_allowed:testAllowed}:{ready:true});
@@ -21,6 +22,7 @@ const until=async fn=>{const end=Date.now()+3000;while(!fn()){if(Date.now()>end)
 const auth=(email,authenticated=true)=>w.dispatchEvent(new w.CustomEvent('cveharbor:account-state',{detail:{email,authenticated}}));
 try{
  w.eval(fs.readFileSync('lifecycle-monitor.js','utf8'));w.eval(fs.readFileSync('product-monitoring.js','utf8'));
+ const sharepoint=[...d.querySelectorAll('.lifecycle-source-row')].find(r=>r.textContent.includes('SharePoint'));assert.match(sharepoint.textContent,/Support date not published/);assert.doesNotMatch(sharepoint.textContent,/2026-07-14/,'unknown latest-cycle support never borrows an older cycle date');
  assert.match(d.getElementById('productMonitorActivation').textContent,/Not Yet Active/);assert.equal(d.getElementById('lifecycleWatchSave').disabled,true);
  auth('a@example.test');await until(()=>!d.getElementById('lifecycleWatchSave').disabled);
  d.getElementById('lifecycleProduct').value='dotnet';d.getElementById('lifecycleProduct').dispatchEvent(new w.Event('change'));d.getElementById('lifecycleCycle').value='8.0';d.getElementById('lifecycleInstalled').value='8.0.9';

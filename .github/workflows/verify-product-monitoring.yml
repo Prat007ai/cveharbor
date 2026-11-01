@@ -47,11 +47,13 @@ jobs:
           SITE_GATE_PASSWORD: ${{ secrets.SITE_GATE_PASSWORD }}
         run: |
           python - <<'PYCODE'
-          import sys,urllib.request,pathlib
+          import sys,urllib.request,pathlib,os,base64
           sys.path.insert(0,'scripts')
           from site_gate_client import install_site_auth
           install_site_auth()
-          with urllib.request.urlopen('https://cveharbor.com/lifecycle.js',timeout=30) as response:
+          headers={'User-Agent':'CVEHarbor-Production-Verifier/1.0','Cache-Control':'no-cache','Authorization':'Basic '+base64.b64encode(('cveharbor:'+os.environ['SITE_GATE_PASSWORD']).encode()).decode()}
+          request=urllib.request.Request('https://cveharbor.com/lifecycle.js',headers=headers)
+          with urllib.request.urlopen(request,timeout=30) as response:
               pathlib.Path('public/lifecycle.js').write_bytes(response.read(2000000))
           PYCODE
       - name: Capture reference, wide and mobile lifecycle layouts
