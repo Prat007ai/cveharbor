@@ -120,6 +120,52 @@ function tableScroll(element){
  const wrap=text('div','','customer-table-scroll');wrap.tabIndex=0;
  wrap.setAttribute('role','region');wrap.setAttribute('aria-label','Scrollable report table');wrap.append(element);return wrap;
 }
+let findingDialog=null;
+function closeFindingDetail(){
+ if(!findingDialog)return;
+ if(findingDialog.open&&typeof findingDialog.close==='function')findingDialog.close();
+ findingDialog.remove();findingDialog=null;
+}
+function findingDetailButton(i){
+ const button=text('button',i.id,'customer-cve-detail');button.type='button';
+ button.setAttribute('aria-haspopup','dialog');
+ button.setAttribute('aria-label','View '+i.id+' details for '+(i.asset?.name||i.technology));
+ button.addEventListener('click',()=>{
+  if(!customerReady)return;
+  closeFindingDetail();
+  const dialog=text('dialog','','detail-dialog customer-finding-dialog');
+  dialog.setAttribute('aria-labelledby','customerFindingTitle');
+  const layout=text('div','','dialog-layout'),close=text('button','×','close-dialog');
+  close.type='button';close.autofocus=true;close.setAttribute('aria-label','Close vulnerability details');
+  const root=text('div','','customer-finding-content');
+  const context=text('section','','customer-finding-context');
+  context.setAttribute('aria-label','Selected customer finding');
+  context.append(text('h3','Selected customer finding'),text('p','Potential match — requires verification.'));
+  const customer=inventory.customers.find(c=>c.id===i.environment?.customer_id);
+  const facts=[['Customer',customer?.name],['Environment',i.environment?.name],['Asset',i.asset?.name],
+   ['Installed software',i.technology+' '+(i.version||'(version unknown)')],
+   ['Matching evidence',i.evidence],['Version comparison',i.comparison_detail],
+   ['Saved fix status',findingStatusReady?statusFor(i):'Unavailable'],
+   ['Saved DevOps tickets',ticketReady?(ticketFor(i).join(', ')||'None recorded'):'Unavailable']];
+  for(const [label,value] of facts)if(value){const p=text('p','');p.append(text('strong',label+': '),document.createTextNode(value));context.append(p)}
+  // Matching rows omit some public metadata. Recover it from the already-loaded
+  // advisory, without fetching another account's inventory or triggering scans.
+  const source=records.find(record=>record.id===i.id);
+  const advisory={...i,...source};
+  if(!advisory.categories?.length)advisory.categories=[i.technology];
+  advisory.sources=[...(source?.sources||i.sources||[])];
+  if(i.source_url)advisory.sources.push({label:i.source_label,url:i.source_url});
+  window.CVEHARBOR_ADVISORY_DETAILS.render(root,advisory,{context});
+  root.querySelector('h2').id='customerFindingTitle';
+  layout.append(close,root);dialog.append(layout);document.body.append(dialog);findingDialog=dialog;
+  const dismiss=()=>{closeFindingDetail();if(button.isConnected)button.focus({preventScroll:true})};
+  close.addEventListener('click',dismiss);
+  dialog.addEventListener('cancel',event=>{event.preventDefault();dismiss()});
+  dialog.addEventListener('click',event=>{if(event.target===dialog)dismiss()});
+  if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','');
+ });
+ return button;
+}
 function renderFindings(root,issues,readOnly){
  root.append(findingStatusControls(issues));
  const filtered=filteredFindings(issues),compact=filtered.slice(0,250);
@@ -129,6 +175,7 @@ function renderFindings(root,issues,readOnly){
  findingsTable.classList.add('customer-vulnerability-table');enableFindingSort(findingsTable);
  for(const [index,i] of compact.entries()){
   const row=findingsTable.tBodies[0].rows[index],cell=row.cells[5],ticketCell=row.cells[6];
+  row.cells[0].replaceChildren(findingDetailButton(i));
   const severity=text('span',i.severity,'customer-severity-badge');severity.dataset.level=normalize(i.severity);row.cells[2].replaceChildren(severity);
   const existing=ticketFor(i),history=text('div','','customer-ticket-history');
   for(const value of existing)history.append(text('span',value,'customer-ticket-reference'));
@@ -164,6 +211,7 @@ function renderFindings(root,issues,readOnly){
 }
 let savedFindingsRequest=null;
 function invalidateSession(){
+ closeFindingDetail();
  customerDataEpoch++;upgradeHistory.clear();inventoryRefresh=null;
  customerReady=false;inventory={customers:[],environments:[],assets:[]};findingStatuses.clear();findingNotes.clear();findingTickets.clear();scoreSeries.clear();
  findingStatusDrafts.clear();findingTicketDrafts.clear();
@@ -1004,7 +1052,7 @@ async function refreshCustomerInventory(){
   if(epoch!==customerDataEpoch||!customerReady)throw Error('Session changed; reload the page.');
   if(latest.authenticated===false){invalidateSession();throw Error('Sign in to reload current inventory.')}
   if(!Array.isArray(latest.assets)||!Array.isArray(latest.customers)||!Array.isArray(latest.environments))throw Error('Inventory response unavailable');
-  inventory=latest;filters();upgradeHistory.clear();
+  closeFindingDetail();inventory=latest;filters();upgradeHistory.clear();
   await refreshPluginFindings(false,false);
   if(epoch!==customerDataEpoch||!customerReady)throw Error('Session changed; reload the page.');
   $('customerDashStatus').dataset.ready='true';
@@ -1117,8 +1165,8 @@ async function init(){
   await refreshPluginFindings(false);
   if(reporting)layoutReportIntelligence();
   const draw=redraw;customerReady=true;draw();
-  $('customerDashFilter').addEventListener('change',()=>{environments();draw()});
-  $('customerDashEnvironment').addEventListener('change',draw);
+  $('customerDashFilter').addEventListener('change',()=>{closeFindingDetail();environments();draw()});
+  $('customerDashEnvironment').addEventListener('change',()=>{closeFindingDetail();draw()});
   if(reporting){
    window.addEventListener('beforeprint',()=>setReportPrintMode(true));
    window.addEventListener('afterprint',()=>setReportPrintMode(false));

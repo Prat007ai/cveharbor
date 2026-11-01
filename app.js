@@ -614,54 +614,15 @@
     const remaining=Math.max(0,selected.length-visible);
     $('showMore').textContent=`Show ${Math.min(PAGE_SIZE,remaining)} more`;
   }
-  function rowSpec(name,value){const el=text('div','spec','');el.append(text('small','',name),text('b','',value||'Not confirmed'));return el;}
   function showDetail(x){
-    const root=$('dialogContent');root.replaceChildren();
-    root.append(text('span','cat-badge',x.categories.join(' · ')),text('h2','',x.title));
-    const detailMarkers=text('div','detail-labels','');
-    const firstPublished=makeDisclosureBadge(x);
-    if(firstPublished)detailMarkers.append(firstPublished);
-    detailMarkers.append(text('span','severity-badge '+x.severity,severityText(x.severity)));
-    root.append(detailMarkers);
-    const specs=text('div','spec-grid','');specs.append(rowSpec('Advisory ID',x.id),rowSpec('First published',fmtDate(x.published)),rowSpec('Last source update',fmtDate(x.updated)),rowSpec('First indexed',fmtStamp(x.first_seen_at)),rowSpec('Source status',x.status||'Vendor/source verification required'),rowSpec('Exploitation',x.exploitation));if(x.cvss)specs.append(rowSpec('Reported CVSS',x.cvss));if(typeof x.epss==='number')specs.append(rowSpec('FIRST EPSS, 30 day exploitation probability',(x.epss*100).toFixed(2)+'% ('+(x.epss_as_of||'date not available')+')'));root.append(specs);
-    function block(h,body){root.append(text('h3','',h),text('p','',body||'Not provided by the indexed source.'));}
-    if(typeof x.epss==='number')root.append(text('p','epss-note','EPSS estimates exploitation probability within 30 days. It is not a vulnerability severity score or proof that your environment is affected. Source: FIRST EPSS.'));block('Description',x.summary);block('Affected software and versions',x.affected);block('Fix or workaround',x.remediation);block('Suggested next step',x.action);
-    if(x.source_conflicts?.length)block('Source differences requiring review',x.source_conflicts.join(' '));
-    if(x.kev_added)block('CISA exploitation evidence','Added to KEV: '+x.kev_added+'. '+(x.kev_required_action||'Review the CISA entry and vendor guidance.')+(x.kev_due_date?' CISA catalogue due date: '+x.kev_due_date+'.':''));
-    if(x.provenance?.length)block('Source verification',x.provenance.map(p=>p.source+' · checked '+fmtStamp(p.checked_at?new Date(p.checked_at).toISOString():null)+' · source revision '+(p.updated||'not stated')).join('\n'));
-    root.append(text('h3','','Original advisory and source references'));
-    root.append(text('p','source-note','You can review the available advisory details here. The source links below are optional and open in a new tab.'));
-    const list=document.createElement('ul');list.className='detail-source-links';
-    list.style.paddingLeft='20px';
-    const links=[...(x.sources||[])];
-    if(/^CVE-\d{4}-\d{4,}$/i.test(String(x.id||''))){
-      links.push({label:'CVE Program record',url:'https://www.cve.org/CVERecord?id='+x.id});
-      links.push({label:'NVD vulnerability record',url:'https://nvd.nist.gov/vuln/detail/'+x.id});
-    }
-    const seenLinks=new Set();
-    links.forEach(s=>{
-      try{
-        const url=new URL(s.url);
-        if(url.protocol!=='https:'||seenLinks.has(url.href))return;
-        seenLinks.add(url.href);
-        const li=document.createElement('li'),a=text('a','',s.label||url.hostname);
-        a.href=url.href;a.target='_blank';a.rel='noopener noreferrer';
-        li.append(a);list.append(li);
-      }catch(_e){}
-    });
-    if(list.childElementCount)root.append(list);
-    else root.append(text('p','','No direct source URLs were included in this indexed record.'));
-    if(/^CVE-\d{4}-\d{4,}$/i.test(String(x.id||''))){
-      const assign=text('button','ops-download remediation-detail-assign','Assign vulnerability by email');
-      assign.type='button';
-      assign.addEventListener('click',()=>{
+    window.CVEHARBOR_ADVISORY_DETAILS.render($('dialogContent'),x,{
+      disclosureBadge:makeDisclosureBadge(x),
+      onAssign:()=>{
         const dialog=$('detailDialog');
         if(typeof dialog.close==='function')dialog.close();else dialog.removeAttribute('open');
         window.dispatchEvent(new CustomEvent('cveharbor:assign-remediation',{detail:{id:x.id}}));
-      });
-      root.append(assign);
-    }
-    root.append(text('p','disclaimer','CVEHarbor aggregates public third-party advisory data. This record does not establish that your environment is vulnerable. Verify the primary vendor bulletin, affected versions, and patch applicability.'));
+      }
+    });
     const dlg=$('detailDialog');if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');
   }
   // The watchlist and search share this same on-site advisory details dialog.

@@ -1,0 +1,15 @@
+# Customer CVE detail dialog
+
+Started from clean production commit `ffcbd0bf3855d1351953cd9a6fda84d972cdcebc` on isolated branch `codex/customer-cve-details`. This contains the software-upgrade/history release (#217) and the existing report redesign. Other worktrees were left unchanged.
+
+CVE identifiers in the dashboard and read-only report summary tables now open a native modal dialog. The explorer's advisory content renderer is shared in `advisory-details.js`, preserving full descriptions, dates, affected versions, guidance, exploitation evidence, CVSS/EPSS when supplied, provenance and safe source links. Explorer disclosure badges and its existing assignment action remain available; customer dialogs are read only.
+
+Customer dialogs add the selected customer/environment/asset, installed software, matching evidence, saved status and recorded tickets. Unsaved drafts stay in the table; opening/closing the dialog does not save changes. Missing metadata is explicitly unavailable. Plugin-only findings can show details without an explorer record. Opening details makes no requests, writes, scans or email deliveries. No authentication, API, D1, scoring or vulnerability matching changes are included.
+
+Escape, close button and backdrop dismiss the native dialog; keyboard focus returns to the trigger. Native modal focus containment, responsive styling and reduced-motion defaults are preserved. Scope changes, inventory reloads and session invalidation remove customer dialog content. Report print output excludes the interactive dialog; the existing PDF document and CSV behavior are retained.
+
+Validation: existing DOM/explorer/customer/upgrade/isolation tests and 112 Python tests passed. Dedicated dialog tests cover complete metadata, untruncated descriptions, plugin-only records, safe URLs/text, missing data, customer scope, logout, no requests/writes and draft preservation. Real Chromium covers keyboard activation, Escape/focus containment, preserved status/ticket drafts and both pages at 390/768/1440px. Existing report/browser suite validates exports and remediation using intercepted fixtures. Build/preflight, JavaScript syntax and whitespace checks pass. No production customer data or emails were used.
+
+Changed runtime files: `advisory-details.js`, `app.js`, `customer-security.js`, `styles.css`, `index.html`, `customer-dashboard/index.html`, `customer-reports/index.html`. Build/verification: `scripts/build_site.py`, `scripts/verify_production.py`. Tests: `scripts/browser_smoke.mjs`, `scripts/customer_security_smoke.mjs`, `scripts/software_upgrade_smoke.mjs`, `scripts/customer_finding_details_smoke.mjs`, `scripts/customer_finding_details_browser_smoke.mjs`, `tests/test_update.py`.
+
+Integration overlap is limited to shared frontend renderer, customer tables and styles. Preserve concurrent changes in these files and rerun the explorer/customer tests. Deploy the new shared script with the HTML and application scripts as one frontend release; cache versions and the production asset verifier include it. No backend deployment or database setup is required.
