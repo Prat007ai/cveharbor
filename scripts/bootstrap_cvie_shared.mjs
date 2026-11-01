@@ -8,7 +8,7 @@ let stage='initialization';
 async function query(body){
  const response=await fetch(`https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/d1/database/${database}/query`,{method:'POST',headers:{Authorization:'Bearer '+process.env.CLOUDFLARE_API_TOKEN,'Content-Type':'application/json'},body:JSON.stringify(body)});
  const result=await response.json();
- if(!response.ok||!result.success||!result.result?.every(r=>r.success))throw Error('Production D1 operation failed');
+ if(!response.ok||!result.success||!result.result?.every(r=>r.success))throw Error(process.argv.includes('--preflight')?JSON.stringify({http:response.status,response:result}):'Production D1 operation failed');
  return result.result;
 }
 const DB={prepare(sql){let params=[];const statement={sql,get params(){return params;},bind(...values){params=values;return statement;},async all(){return (await query({sql,params}))[0];},async first(){return (await statement.all()).results[0]||null;},async run(){return (await query({sql,params}))[0];}};return statement;},
@@ -42,7 +42,8 @@ try{
  const totals=await DB.prepare('SELECT (SELECT COUNT(*) FROM cvie_shared_scopes) AS scopes,(SELECT COUNT(*) FROM cvie_shared_advisories) AS public_advisories,(SELECT COUNT(*) FROM cvie_product_scopes WHERE scope_id IS NOT NULL) AS private_links').first();
  console.log(JSON.stringify({ok:true,linked_this_run:linked,public_records_imported:seeded,...totals,legacy_private_history_preserved:true}));
  }
-}catch{
+}catch(error){
+ if(process.argv.includes('--preflight'))console.error(error.message);
  console.error('Shared CVIE bootstrap failed during '+stage+'. Legacy history remains preserved; deployment must not proceed until the resumable bootstrap passes.');process.exitCode=1;
 }
 
