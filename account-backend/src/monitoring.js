@@ -123,15 +123,19 @@ export async function monitoringHandler(req,env,user,path,data={},now=Date.now()
  }
  return json({error:'Not found'},404);
 }
+function meteredEnvironment(env){
+ const metrics={read:0,written:0},db=env.DB,originals=new WeakMap();
+ const count=r=>{metrics.read+=r.meta?.rows_read||0;metrics.written+=r.meta?.rows_written||0;return r;};
+ const wrap=statement=>{const wrapped={bind:(...args)=>wrap(statement.bind(...args))};for(const method of ['all','run'])wrapped[method]=async()=>count(await statement[method]());wrapped.first=async()=>{const r=count(await statement.all());return r.results?.[0]||null;};originals.set(wrapped,statement);return wrapped;};
+ const metered={...env,DB:{prepare:sql=>wrap(db.prepare(sql)),batch:async statements=>(await db.batch(statements.map(s=>originals.get(s)))).map(count)}};
+ return {metered,metrics};
+}
 export async function dispatchProductMonitoring(env,day=new Date(),fetcher=fetch){
  if(env.PRODUCT_MONITOR_CHECKS_ENABLED!=='true')return {disabled:true};
  if(!await monitorReady(env))return {migration_required:true};
  const now=day.getTime(),slot=day.toISOString().slice(0,13),claim=await q(env.DB,'INSERT OR IGNORE INTO lifecycle_monitor_runs(slot,started_at) VALUES(?,?)',slot,now).run();
  if(claim.meta.changes!==1)return {already_claimed:true};
- const metrics={read:0,written:0},db=env.DB,originals=new WeakMap();
- const count=r=>{metrics.read+=r.meta?.rows_read||0;metrics.written+=r.meta?.rows_written||0;return r;};
- const wrap=statement=>{const wrapped={bind:(...args)=>wrap(statement.bind(...args))};for(const method of ['all','run'])wrapped[method]=async()=>count(await statement[method]());wrapped.first=async()=>{const r=count(await statement.all());return r.results?.[0]||null;};originals.set(wrapped,statement);return wrapped;};
- const metered={...env,DB:{prepare:sql=>wrap(db.prepare(sql)),batch:async statements=>(await db.batch(statements.map(s=>originals.get(s)))).map(count)}};
+ const {metered,metrics}=meteredEnvironment(env);
  try{
   const source=await checkSubscribedSources(metered,fetcher,now),reminderDay=day.toISOString().slice(0,10);
   const alreadyEvaluated=await q(metered.DB,'SELECT 1 FROM lifecycle_monitor_runs WHERE reminder_day=? AND completed_at IS NOT NULL LIMIT 1',reminderDay).first();
@@ -151,6 +155,6 @@ export async function dispatchProductMonitorMail(env,day=new Date(),fetcher=fetc
  if(!work?.due)return {idle:true};
  const slot='mail:'+day.toISOString().slice(0,16);
  if((await q(env.DB,'INSERT OR IGNORE INTO lifecycle_monitor_runs(slot,started_at) VALUES(?,?)',slot,now).run()).meta.changes!==1)return {already_claimed:true};
- try{const result=await dispatchMonitorMail(env,fetcher,now);await q(env.DB,'UPDATE lifecycle_monitor_runs SET completed_at=?,submitted=? WHERE slot=?',now,result.submitted||0,slot).run();return result;}
+ try{const {metered,metrics}=meteredEnvironment(env);const result=await dispatchMonitorMail(metered,fetcher,now);await q(env.DB,'UPDATE lifecycle_monitor_runs SET completed_at=?,submitted=?,rows_read=?,rows_written=? WHERE slot=?',now,result.submitted||0,metrics.read,metrics.written,slot).run();return result;}
  catch{await q(env.DB,"UPDATE lifecycle_monitor_runs SET completed_at=?,error='Delivery worker failed; inspect outbox before retrying' WHERE slot=?",now,slot).run();return {failed:true};}
 }

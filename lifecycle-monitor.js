@@ -168,7 +168,7 @@ function renderFeed(){
   const backup=catalog.cycles.filter(c=>(c.product+' '+c.cycle).toLowerCase().includes(query)).map(c=>c.slug);
   for(const slug of [...found,...backup])if(!matches.includes(slug))matches.push(slug);
  }else{
-  for(const slug of catalog.cycles.map(x=>x.slug))if(!matches.includes(slug))matches.push(slug);
+  for(const slug of [...catalog.cycles.map(x=>x.slug),...catalogList])if(!matches.includes(slug))matches.push(slug);
  }
  const filtered=matches.filter(slug=>directoryCategory==='All Products'||categoryOf(slug)===directoryCategory);
  const filters=$('lifecycleDirectoryFilters');
@@ -263,6 +263,7 @@ function updateActions(){
  $('lifecyclePrefsSave').disabled=!signed||!ready;
  if($('lifecycleSaveAll'))$('lifecycleSaveAll').disabled=!signed||!ready||!queued.length;
  for(const option of $('lifecycleLead').options)option.disabled=!enhanced&&['7','14'].includes(option.value);
+ for(const control of document.querySelectorAll('#productMonitorTypes input,#productMonitorCadence,#lifecycleEdition,#lifecycleManualBranch')){control.disabled=!enhanced;control.title=enhanced?'':'Enhanced monitoring setup must be approved before these settings can be saved.';}
  // Preferences can be explored without sign in; saving requires an account.
 }
 function renderUser(){
