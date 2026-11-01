@@ -166,6 +166,12 @@ body[data-page="lifecycle"] .footer-status{padding-left:0;padding-right:0}
  body[data-page="lifecycle"] .lifecycle-header-search{display:none}
  body[data-page="lifecycle"] .topbar{flex-wrap:nowrap;gap:12px}
 }
+@media(min-width:761px) and (max-width:820px){
+ body[data-page="lifecycle"] .command-sidebar{position:fixed;height:100dvh;flex-direction:column;overflow-y:auto;overflow-x:hidden}
+ body[data-page="lifecycle"] .command-sidebar-nav{flex-direction:column;width:100%}
+ body[data-page="lifecycle"] .command-nav-link span{display:block}
+ body[data-page="lifecycle"] .site-header{height:auto}
+}
 @media(max-width:650px){
  #lifecycleMonitor .lifecycle-public-results{max-height:580px}
  #lifecycleMonitor .lifecycle-source-row{grid-template-columns:32px minmax(0,1fr) 66px}
