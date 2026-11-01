@@ -12,16 +12,28 @@ export function securityFixture(){
  {id:'CVE-2026-12346',categories:['PHP'],title:'PHP fixture high issue',summary:'Synthetic PHP issue for remediation testing.',affected:'PHP before 8.4.2',severity:'high',published:'2026-10-20',sources:[{label:'Fixture advisory',url:'https://example.test/high'}]}];
  const statuses=new Map([['a1|CVE-2026-12345',{asset_id:'a1',cve_id:'CVE-2026-12345',status:'Needs Review',notes:'Retain reviewer evidence'}]]);
  const tickets=[{asset_id:'a1',cve_id:'CVE-2026-12345',ticket_number:'DEV-10'}];
- const seen=[],writes=[];
+ const seen=[],writes=[],upgrades=[];
  let authenticated=true,ready=true,emailFails=false;
  async function request(url,options={}){
   const path=new URL(url).pathname.replace('/v1/',''),method=options.method||'GET';
   const data=options.body?JSON.parse(options.body):{};seen.push({path,method,data});
-  const response=(body,status=200)=>({ok:status>=200&&status<300,status,json:async()=>body});
+  const response=(body,status=200)=>({ok:status>=200&&status<300,status,json:async()=>structuredClone(body)});
   if(path==='me')return response({authenticated,email:'fixture@example.test'},authenticated?200:401);
   if(!authenticated)return response({error:'Sign in required'},401);
   if(path==='inventory/status')return response({ready:true});
   if(path==='inventory')return response(inventory);
+  if(path==='inventory/software-history'){
+   const params=new URL(url).searchParams,customer=params.get('customer_id'),environment=params.get('environment_id')||'';
+   return response({ready:true,customer_id:customer,environment_id:environment,entries:upgrades.filter(h=>h.customer_id===customer&&(!environment||h.environment_id===environment)),next_before:null});
+  }
+  if(path.startsWith('inventory/assets/')&&method==='PUT'){
+   const asset=inventory.assets.find(a=>a.id===path.split('/').at(-1));if(!asset)return response({error:'Asset not found'},404);
+   if(asset.version!==data.version||asset.technology!==data.technology){
+    const environment=inventory.environments.find(e=>e.id===asset.environment_id);
+    upgrades.unshift({id:upgrades.length+1,customer_id:environment.customer_id,environment_id:environment.id,asset_id:asset.id,asset_name:data.name,previous_technology:asset.technology,technology:data.technology,previous_version:asset.version,version:data.version,recorded_at:new Date().toISOString()});
+   }
+   Object.assign(asset,data);writes.push({path,...data});return response({saved:true});
+  }
   if(path==='finding-statuses')return response({ready,statuses:[...statuses.values()]});
   if(path==='finding-tickets')return response({ready,append_ready:ready,tickets});
   if(path==='plugin-installation-status')return response({ready:true,statuses:[{asset_id:'a4',status:'Active'}]});
@@ -47,5 +59,5 @@ export function securityFixture(){
   if(path==='customer-report-email'&&method==='POST'){writes.push({path,...data});return response(emailFails?{error:'Fixture email rejected'}:{sent:true},emailFails?503:200)}
   return response({error:'Unexpected fixture route '+path},404);
  }
- return {inventory,advisories,statuses,tickets,seen,writes,request,setAuthenticated:v=>authenticated=v,setReady:v=>ready=v,setEmailFails:v=>emailFails=v};
+ return {inventory,advisories,statuses,tickets,upgrades,seen,writes,request,setAuthenticated:v=>authenticated=v,setReady:v=>ready=v,setEmailFails:v=>emailFails=v};
 }
