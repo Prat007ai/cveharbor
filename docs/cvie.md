@@ -34,6 +34,14 @@ Completed history has a full bar; disclosure/KEV indexing is tracked separately.
 Scan details open for an initial active scan and retain the user's expanded or
 collapsed choice across polling. Animations respect reduced-motion settings.
 
+The explorer's four statistic cards are keyboard-operable drill-downs. Their
+mini charts show displayed technology groups, original disclosures by day and
+the current indexed severity distribution. Hover reveals the underlying counts.
+Chart drawing and hover effects animate without changing the numbers; reduced
+motion keeps them static. Daily disclosure charts are not attack-activity charts,
+and the indexed/critical totals cover the index rather than just the chart period.
+Public counts remain limited to the shared index plus available private results.
+
 The product/history cache is private to an account. Database leases, fenced
 writes and a shared provider request budget prevent overlapping workers from
 advancing the same job or contaminating a corrected product identity. Record
@@ -157,6 +165,7 @@ for `public/` on port 8080:
 
 ```sh
 node scripts/cvie_browser_smoke.mjs
+node scripts/explorer_cards_browser_smoke.mjs
 ```
 
 `CVIE_PLAYWRIGHT_MODULE`, `CVIE_CHROMIUM_PATH`, `CVIE_ICON_DIRECTORY` and

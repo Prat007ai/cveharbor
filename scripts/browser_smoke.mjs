@@ -78,6 +78,28 @@ const $=id=>document.getElementById(id);
 assert.equal($('statTotal').textContent,'12','total CVE count');
 assert.equal(document.querySelectorAll('.technology-panel').length,4,'four platform groups');
 assert.equal(document.querySelectorAll('.technology-row').length,38,'all categories visible');
+const explorerCard=key=>document.querySelector('[data-technology-metric="'+key+'"]');
+const chartSum=(key,selector)=>[...explorerCard(key).querySelectorAll(selector)].reduce((sum,mark)=>sum+Number(mark.dataset.chartValue),0);
+assert.equal(chartSum('technologies','.kpi-bar'),38,'technology bars use actual group counts');
+assert.equal(chartSum('recent','.kpi-bar'),12,'daily disclosure bars reconcile to the recent counter');
+assert.equal(chartSum('indexed','.kpi-severity'),12,'severity distribution reconciles to indexed records');
+assert.equal(chartSum('critical','.kpi-hit'),4,'critical daily series uses actual original publication dates');
+explorerCard('critical').click();
+assert.equal($('severity').value,'critical');assert.equal($('dateRange').value,'all');
+assert.equal(document.querySelectorAll('#advisoryTableBody tr').length,4,'critical card opens all matching critical advisories');
+explorerCard('recent').click();
+assert.equal($('severity').value,'all');assert.equal($('dateRange').value,'published30');
+assert.equal(document.querySelectorAll('#advisoryTableBody tr').length,12,'recent card opens original disclosures in 30 days');
+explorerCard('indexed').click();assert.equal($('dateRange').value,'all');
+assert.equal(document.querySelectorAll('#advisoryTableBody tr').length,12,'indexed card opens all advisory types');
+$('technologySearch').value='PHP';$('technologySearch').dispatchEvent(new window.Event('input'));
+assert.equal(chartSum('technologies','.kpi-bar'),1,'technology bars follow the displayed catalogue search');
+explorerCard('technologies').click();assert.equal($('technologySearch').value,'');
+assert.equal(document.querySelectorAll('.technology-row').length,38,'technology card restores the visible catalogue');
+const mark=explorerCard('recent').querySelector('.kpi-hit');mark.dispatchEvent(new window.Event('pointerover',{bubbles:true}));
+assert.equal(explorerCard('recent').querySelector('.kpi-insight').textContent,mark.dataset.chartLabel,'hover shows the actual date and count');
+explorerCard('recent').dispatchEvent(new window.Event('pointerleave'));
+assert.equal(explorerCard('recent').querySelector('.kpi-insight').textContent,'Daily disclosures · 30d');
 assert.equal(document.querySelectorAll('.focus-action').length,9,'focus panel populated');
 assert.match(fs.readFileSync('app.js','utf8'),/FIRST EPSS, 30 day exploitation probability/,'EPSS details supported');
 assert.equal(document.querySelectorAll('#chartInsights .chart-insight').length,4,'chart insights populated');
@@ -1023,8 +1045,8 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('grid-template-columns:r
 
 // Changed styles and the explorer script retain explicit cache versions.
 const explorerSource=fs.readFileSync('index.html','utf8');
-assert.match(explorerSource,/\/styles\.css\?v=attack-feeds-220/,'technology layout stylesheet must refresh');
-assert.match(explorerSource,/\/app\.js\?v=cvie-1/,'technology customization script must refresh');
+assert.match(explorerSource,/\/styles\.css\?v=explorer-cards-1/,'technology layout stylesheet must refresh');
+assert.match(explorerSource,/\/app\.js\?v=explorer-cards-1/,'interactive explorer script must refresh');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"\/vulnerabilities\/":\["technology-kpis"/,'live verifier checks technology explorer page');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"styles.css","homepage.css","app.js"/,'live verifier validates explorer JavaScript');
 
@@ -1033,7 +1055,7 @@ assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"command-ce
 
 assert.match(fs.readFileSync('app.js','utf8'),/function productIcon\(x\)/,'technology explorer renders branded icons with a fallback');
 assert.match(fs.readFileSync('app.js','utf8'),/img\.addEventListener\('error'/,'missing brand icon falls back gracefully');
-assert.match(fs.readFileSync('index.html','utf8'),/app\.js\?v=cvie-1/,'latest product icon client asset version');
+assert.match(fs.readFileSync('index.html','utf8'),/app\.js\?v=explorer-cards-1/,'latest product icon client asset version');
 
 assert.match(fs.readFileSync('app.js','utf8'),/cdn\.simpleicons\.org/,'branded product artwork endpoint');
 assert.match(fs.readFileSync('styles.css','utf8'),/technology-brand-icon img\{filter:none!important/,'brand colours are not overridden');
@@ -1041,7 +1063,7 @@ assert.match(fs.readFileSync('styles.css','utf8'),/technology-brand-icon img\{fi
 
 assert.match(fs.readFileSync('app.js','utf8'),/microsoftMarks/,'Microsoft icon mappings are present');
 assert.match(fs.readFileSync('app.js','utf8'),/technology-panel-description/,'category panel descriptions are rendered');
-assert.match(fs.readFileSync('index.html','utf8'),/kpi-sparkline/,'KPI visual accents are present');
+assert.match(fs.readFileSync('index.html','utf8'),/kpi-chart/,'data-driven KPI charts are present');
 
 assert.match(fs.readFileSync('styles.css','utf8'),/Reference world globe background/,'dotted globe decorative background available');
 
