@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {DB} from '../account-backend/tests/helpers/d1.mjs';
 import {subscribeProducts,cvieRoute} from '../account-backend/src/cvie.js';
 import {hyperVHosts} from '../account-backend/src/hyperv.js';
+import {coveragePlan,coverageMetadata} from '../account-backend/src/product-coverage.js';
 const {chromium}=await import(process.env.CVIE_PLAYWRIGHT_MODULE||'playwright');
 const evidence=JSON.parse(fs.readFileSync('data/cvie-hyperv-check.json','utf8'));
 assert.ok(evidence.ok&&evidence.sample.length,'verified public Hyper-V samples are required');
@@ -29,7 +30,7 @@ try{
    if(url.pathname.endsWith('/identity')&&response.ok){
     const p=await env.DB.prepare('SELECT * FROM cvie_products').first();
     for(const r of evidence.sample)await env.DB.prepare('INSERT INTO cvie_advisories VALUES(?,?,?,?,?)').bind(p.id,r.id,r.published,JSON.stringify(r),'browser-public-sample').run();
-    await env.DB.prepare("UPDATE cvie_products SET status='ready',last_success_at=?,recent_complete_at=?,history_complete_at=?").bind(Date.now(),Date.now(),Date.now()).run();
+    await env.DB.prepare("UPDATE cvie_products SET status='ready',cursor_json=?,last_success_at=?,recent_complete_at=?,history_complete_at=?").bind(JSON.stringify(coverageMetadata(coveragePlan(p))),Date.now(),Date.now(),Date.now()).run();
    }
    return send(await response.json(),response.status);
   }
