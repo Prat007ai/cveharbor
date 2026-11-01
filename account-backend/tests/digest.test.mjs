@@ -99,9 +99,16 @@ test('Toronto digest slot handles daylight saving for morning deliveries', () =>
 });
 test('loads the public JavaScript advisory feed and requires recent source health', async () => {
   const fixture = { advisories:[example()], mode:'live' };
-  const fetcher = async url => ({ ok:true, text:async ()=>'/* feed */\nwindow.CVEHARBOR_DATA = '+JSON.stringify(fixture)+';\n',
-    json:async () => ({ mode:'live', last_successful_update:new Date().toISOString(), coverage_limited:true }) });
+  const requested=[];
+  const fetcher = async url => {
+    requested.push(url);
+    assert.ok(url.startsWith('https://raw.githubusercontent.com/Prat007ai/cveharbor/main/'),'scheduled alerts must not depend on the password-protected frontend');
+    if(url.endsWith('/data.js'))return {ok:true,text:async ()=>'/* feed */\nwindow.CVEHARBOR_DATA = '+JSON.stringify(fixture)+';\n'};
+    assert.ok(url.endsWith('/data/feed-health.json'));
+    return {ok:true,json:async () => ({ mode:'live', last_successful_update:new Date().toISOString(), coverage_limited:true })};
+  };
   const data = await loadPublicFeed(fetcher);
+  assert.equal(requested.length,2);
   assert.equal(data.records.length, 1);
   assert.equal(data.coverageLimited, true);
   await assert.rejects(loadPublicFeed(async url=>({ok:true,text:async()=>'{broken',json:async()=>({last_successful_update:new Date().toISOString()})})), /Unexpected/);

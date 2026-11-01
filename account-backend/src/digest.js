@@ -1,8 +1,10 @@
 // Personalized CVEHarbor vulnerability digest. No emails or remote calls at import time.
 export const MAX_DIGEST_ITEMS = 30;
 export const LOOKBACK_DAYS = 30;
-export const DATA_URL = 'https://cveharbor.com/data.js';
-export const HEALTH_URL = 'https://cveharbor.com/feed-health.json';
+// Read the already-public committed snapshots independently of the temporary
+// frontend password gate. These files contain advisories, not customer data.
+export const DATA_URL = 'https://raw.githubusercontent.com/Prat007ai/cveharbor/main/data.js';
+export const HEALTH_URL = 'https://raw.githubusercontent.com/Prat007ai/cveharbor/main/data/feed-health.json';
 
 function text(v, limit = 500) { return String(v == null ? '' : v).trim().slice(0, limit); }
 function esc(v) { return text(v, 1500).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
