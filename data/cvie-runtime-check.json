@@ -1,13 +1,13 @@
 {
-  "checked_at": "2026-11-01T03:34:33Z",
+  "checked_at": "2026-11-01T03:46:25Z",
   "ok": true,
   "scope": "Read-only production public feed metadata; no customer records queried",
   "sources": [
     {
       "id": "cisa_kev",
       "status": "ok",
-      "last_attempt_at": 1793503690543,
-      "last_success_at": 1793503690543,
+      "last_attempt_at": 1793504650698,
+      "last_success_at": 1793504650698,
       "publisher_at": 1793379765366,
       "coverage_start_at": null,
       "error": ""
@@ -15,8 +15,8 @@
     {
       "id": "cve_program",
       "status": "ok",
-      "last_attempt_at": 1793504049869,
-      "last_success_at": 1793504049869,
+      "last_attempt_at": 1793504653470,
+      "last_success_at": 1793504653470,
       "publisher_at": 1793504008943,
       "coverage_start_at": 1793414636064,
       "error": ""
@@ -24,10 +24,27 @@
   ],
   "counts": {
     "kev_records": 1766,
-    "disclosures": 195,
-    "pending_records": 4260,
+    "disclosures": 255,
+    "pending_records": 4200,
     "retrying_records": 0
   },
   "retry_examples": [],
+  "product_job_health": [
+    {
+      "status": "needs_identity",
+      "error": "Choose the exact vendor/product identity to continue; a name search alone is not a vulnerability match.",
+      "products": 50,
+      "last_attempt_at": 1793502084780,
+      "last_success_at": null
+    },
+    {
+      "status": "ready",
+      "error": "",
+      "products": 6,
+      "last_attempt_at": 1793502325512,
+      "last_success_at": 1793502325512
+    }
+  ],
+  "production_nvd_observed": true,
   "indexing_complete": false
 }
