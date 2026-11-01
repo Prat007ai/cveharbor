@@ -1,22 +1,18 @@
 {
-  "checked_at": "2026-11-01T00:18:19.872789+00:00",
-  "source_revision": "0016cf880dffbaf1c84d497ad87c51b1cd338879",
+  "checked_at": "2026-11-01T00:30:16.863173+00:00",
+  "source_revision": "c50ff6ccb0dbdd656a3f06f363d4b62c7f405e87",
   "dns": {
     "cveharbor.com": [
-      "185.199.108.153",
-      "185.199.109.153",
-      "185.199.110.153",
-      "185.199.111.153"
+      "104.21.96.7",
+      "172.67.150.29",
+      "2606:4700:3031::6815:6007",
+      "2606:4700:3031::ac43:961d"
     ],
     "www.cveharbor.com": [
-      "185.199.108.153",
-      "185.199.109.153",
-      "185.199.110.153",
-      "185.199.111.153",
-      "2606:50c0:8000::153",
-      "2606:50c0:8001::153",
-      "2606:50c0:8002::153",
-      "2606:50c0:8003::153"
+      "104.21.96.7",
+      "172.67.150.29",
+      "2606:4700:3031::6815:6007",
+      "2606:4700:3031::ac43:961d"
     ],
     "api.cveharbor.com": [
       "104.21.96.7",
@@ -50,45 +46,58 @@
       },
       "frontend_records": [
         {
-          "id": "7721e768610274143cb3b2e6b90300d1",
+          "id": "43a9ff0b60c3c9ecb5232bbf40425987",
           "type": "A",
           "name": "cveharbor.com",
-          "content": "185.199.108.153",
-          "proxied": false
-        },
-        {
-          "id": "9a9e63e1745d125d3d47a95bcda763ac",
-          "type": "A",
-          "name": "cveharbor.com",
-          "content": "185.199.109.153",
-          "proxied": false
+          "content": "185.199.110.153",
+          "proxied": true
         },
         {
           "id": "74dc7c6c5fca9c1d633592a054f0ad20",
           "type": "A",
           "name": "cveharbor.com",
           "content": "185.199.111.153",
-          "proxied": false
+          "proxied": true
         },
         {
-          "id": "43a9ff0b60c3c9ecb5232bbf40425987",
+          "id": "9a9e63e1745d125d3d47a95bcda763ac",
           "type": "A",
           "name": "cveharbor.com",
-          "content": "185.199.110.153",
-          "proxied": false
+          "content": "185.199.109.153",
+          "proxied": true
+        },
+        {
+          "id": "7721e768610274143cb3b2e6b90300d1",
+          "type": "A",
+          "name": "cveharbor.com",
+          "content": "185.199.108.153",
+          "proxied": true
         },
         {
           "id": "e626d1d8090250af6980af578aabc0a1",
           "type": "CNAME",
           "name": "www.cveharbor.com",
           "content": "prat007ai.github.io",
-          "proxied": false
+          "proxied": true
         }
       ],
       "route_access": {
         "ok": true
       },
-      "frontend_routes": []
+      "frontend_routes": [
+        {
+          "id": "b1fdb7b1a86e42e2bed8a23bbbba969d",
+          "pattern": "www.cveharbor.com/*",
+          "script": "cveharbor-site",
+          "request_limit_fail_open": false
+        },
+        {
+          "id": "64d94308715b4ae089743c3a9ba84c30",
+          "pattern": "cveharbor.com/*",
+          "script": "cveharbor-site",
+          "request_limit_fail_open": false
+        }
+      ]
     }
   ]
 }

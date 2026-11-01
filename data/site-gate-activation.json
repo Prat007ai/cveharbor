@@ -1,0 +1,20 @@
+{
+  "checked_at": "2026-11-01T00:30:18.429401+00:00",
+  "steps": [
+    {
+      "name": "deploy_protected_frontend",
+      "success": true
+    },
+    {
+      "name": "verify_published_assets",
+      "success": true
+    },
+    {
+      "name": "disable_old_public_origin",
+      "success": false
+    }
+  ],
+  "success": false,
+  "error": "RuntimeError: The website gate is active, but closing the old public Pages origin needs Pages-write permission: HTTP 403",
+  "diagnostic": "Frontend password stored as an encrypted Worker secret\n\n \u26c5\ufe0f wrangler 4.156.0\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\ud83c\udf00 Building list of assets...\n\u2728 Read 74 files from the assets directory /home/runner/work/cveharbor/cveharbor/public\n\ud83c\udf00 Starting asset upload...\nNo updated asset files to upload. Proceeding with deployment...\nTotal Upload: 3.35 KiB / gzip: 1.38 KiB\nWorker Startup Time: 3 ms\nYour Worker has access to the following bindings:\nBinding                                   Resource                  \nenv.ASSETS                                Assets                    \nenv.SITE_GATE_ENABLED (\"true\")            Environment Variable      \nenv.SITE_GATE_USERNAME (\"cveharbor\")      Environment Variable      \n\nUploaded cveharbor-site (3.32 sec)\nDeployed cveharbor-site triggers (1.79 sec)\n  cveharbor.com/* (zone name: cveharbor.com)\n  www.cveharbor.com/* (zone name: cveharbor.com)\nCurrent Version ID: 95db10eb-ab86-4594-a043-4a3d2456c62c\n\nPASS: frontend routes and asset downloads are protected; account API and database were not changed\nPASS: Generated routes and linked assets verified before deployment\nPASS: Production pages and linked frontend assets match deployed source\n\n"
+}
