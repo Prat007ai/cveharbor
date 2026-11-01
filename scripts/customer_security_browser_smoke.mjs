@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import {securityFixture} from './customer_security_fixture.mjs';
 const {chromium}=await import(process.env.CVEHARBOR_PLAYWRIGHT_MODULE||'playwright');
 const fixture=securityFixture(),directory=process.env.CVEHARBOR_REVIEW_DIR||'work/task2-browser';
+let activeScan=false;
 fs.mkdirSync(directory,{recursive:true});
 const browser=await chromium.launch({headless:true,executablePath:process.env.CVEHARBOR_CHROMIUM_PATH||undefined,args:['--no-sandbox']});
 try{
@@ -14,8 +15,15 @@ try{
   if(url.hostname==='api.cveharbor.com'){
    const headers={'Access-Control-Allow-Origin':'http://127.0.0.1:8080','Access-Control-Allow-Credentials':'true','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST,PUT,OPTIONS'};
    if(req.method()==='OPTIONS')return route.fulfill({status:204,headers});
-   const result=await fixture.request(req.url(),{method:req.method(),body:req.postData()});
-   return route.fulfill({status:result.status,headers,contentType:'application/json',body:JSON.stringify(await result.json())});
+   // Supply the same synthetic product/source snapshot to lightweight polling.
+   const fixtureUrl=url.pathname==='/v1/cvie/progress'?req.url().replace('/cvie/progress','/cvie'):req.url();
+   const result=await fixture.request(fixtureUrl,{method:req.method(),body:req.postData()});
+   const body=await result.json();
+   if(['/v1/cvie','/v1/cvie/progress'].includes(url.pathname)){
+    if(activeScan)body.products[0].status='scanning';
+    body.evidence.sources.reverse(); // API order need not match presentation order.
+   }
+   return route.fulfill({status:result.status,headers,contentType:'application/json',body:JSON.stringify(body)});
   }
   if(url.hostname!=='127.0.0.1')return route.abort();
   const filename=path.resolve('public','.'+url.pathname+(url.pathname.endsWith('/')?'index.html':''));
@@ -32,6 +40,7 @@ try{
  await page.selectOption('#customerDashEnvironment','e1');
  assert.equal(await page.locator('#customerReportBody input,#customerReportBody select').count(),0);
  assert.equal(await page.locator('.cvie-source').count(),3);
+ assert.deepEqual(await page.locator('.cvie-source').evaluateAll(nodes=>nodes.map(n=>n.dataset.source)),['nvd','cisa_kev','cve_program']);
  assert.equal(await page.locator('#customerReportIntelligence .cvie-panel').count(),1);
  await page.waitForFunction(()=>window.CVEHARBOR_CVIE?.products.length===1&&!window.CVEHARBOR_CVIE.loading);
  await page.locator('#customerReportIntelligence .cvie-scan-details > summary').click();
@@ -44,6 +53,9 @@ try{
  await page.waitForFunction(()=>window.CVEHARBOR_CVIE.months===12&&!window.CVEHARBOR_CVIE.loading);
  await page.getByLabel('CVIE vulnerability history').selectOption('3');
  await page.waitForFunction(()=>window.CVEHARBOR_CVIE.months===3&&!window.CVEHARBOR_CVIE.loading);
+ await page.locator('#customerReportIntelligence .cvie-scan-details > summary').click();
+ assert.equal(await page.locator('#customerReportSourceControls select').count(),1,'existing history control sits alongside the customer selectors');
+ assert.equal(await page.locator('#customerReportSourceControls button').count(),1,'refresh control survives engine redraws without duplicates');
  assert.doesNotMatch(await page.locator('[data-section="Vulnerabilities Requiring Verification"] > summary').innerText(),/9999/,'global source backlog is never a customer verification count');
  assert.match(await page.locator('#customerReportAssessment').innerText(),/Insufficient Data/);
  assert.equal(await page.locator('.command-sidebar').count(),1);
@@ -51,6 +63,19 @@ try{
  for(const width of [1440,1024,768,390]){
   await page.setViewportSize({width,height:1080});
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no page overflow at '+width);
+  if(width===1440){
+   const layout=await page.evaluate(()=>{
+    const box=s=>document.querySelector(s).getBoundingClientRect().toJSON();
+    return {engine:box('#customerReportIntelligence'),score:box('#customerReportAssessment'),summary:box('.customer-report-summary'),footer:box('.customer-report-details'),table:document.querySelector('.customer-vulnerability-table').scrollWidth,container:document.querySelector('.customer-vulnerability-table').parentElement.clientWidth};
+   });
+   console.log('Report geometry',JSON.stringify(layout));
+   await page.screenshot({path:directory+'/layout-review.png',fullPage:true});
+   assert.ok(layout.engine.y<190,'report intelligence appears near the top, as in the mockup');
+   assert.ok(Math.abs(layout.engine.y-layout.score.y)<2,'source and assessment panels align');
+   assert.ok(layout.summary.y<460,'compact top panels keep the executive summary visible');
+   assert.ok(layout.footer.bottom<1100,'default report fits the mockup density with the synthetic inventory');
+   assert.ok(layout.table<=layout.container+1,'all seven findings columns fit desktop without horizontal scrolling');
+  }
   await page.screenshot({path:directory+'/reports-'+width+'.png',fullPage:true});
   for(const id of ['customerReportPrint','customerReportEmail','customerReportCsv'])assert.ok(await page.locator('#'+id).isVisible());
  }
@@ -88,6 +113,23 @@ try{
  assert.equal(fixture.writes.find(x=>x.path==='customer-report-email').environment_id,'e1');
  await page.getByRole('button',{name:'Close',exact:true}).click();
  assert.equal(fixture.seen.filter(x=>x.method!=='GET'&&!['cvie/sync','customer-report-email'].includes(x.path)&&!x.path.startsWith('finding-statuses/')).length,0);
+ // Numeric assessment uses the existing scorer: remove the unmonitored plugin
+ // from the synthetic inventory so all remaining assets have known versions.
+ fixture.inventory.assets.splice(fixture.inventory.assets.findIndex(a=>a.id==='a4'),1);
+ activeScan=true;
+ await page.reload();await page.waitForSelector('.customer-vulnerability-table');
+ await page.selectOption('#customerDashEnvironment','e1');
+ await page.waitForFunction(()=>window.CVEHARBOR_CVIE?.products[0]?.status==='scanning'&&!window.CVEHARBOR_CVIE.loading);
+ assert.match(await page.locator('.customer-score-seal-number').innerText(),/^\d+$/,'available score is displayed using the existing assessment');
+ assert.equal(await page.locator('.cvie-scan-details').evaluate(el=>el.open),false,'active scan starts collapsed in the report presentation');
+ await page.screenshot({path:directory+'/reports-score.png',fullPage:true});
+ await page.locator('.cvie-scan-details > summary').click();
+ await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
+ assert.equal(await page.locator('.cvie-scan-details').evaluate(el=>el.open),true,'user-expanded live progress survives refresh');
+ await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh(false,true));
+ assert.equal(await page.locator('.cvie-scan-details').evaluate(el=>el.open),true,'lightweight progress polling retains the report presentation');
+ assert.equal(await page.locator('#customerReportSourceControls select').count(),1);
+ assert.equal(await page.locator('#customerReportSourceControls button').count(),1);
  assert.deepEqual(errors,[]);
  fs.writeFileSync(directory+'/verification.json',JSON.stringify({ok:true,fixtures:'Synthetic data; all API and email requests intercepted locally',widths:[390,768,1024,1440],checks:['read-only reports','CVIE widget preserved','icon sidebar preserved','independent accordions','dashboard status save','live status export refresh','CSV isolation','PDF generated','email attachment flow','no page errors']},null,2));
  console.log('PASS Chromium customer reports/dashboard: responsive layouts, sidebar, controls, status saves, CSV, PDF and mocked email flow.');
