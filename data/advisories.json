@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-01",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6419,
+  "candidate_records": 6420,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -282,7 +282,7 @@
     {
       "id": "CVE-2026-118168",
       "title": "The MapPress WordPress plugin before 2.97.15 does not restrict which user's data its front-end...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "WordPress / Plugins"
       ],
@@ -308,17 +308,17 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "5.3",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-01T07:14:08Z",
-      "source_updated_at": "2026-11-01T06:30:28Z",
+      "source_updated_at": "2026-11-01T18:31:24Z",
       "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-107343",
       "title": "The Kali Forms — Contact Form & Drag-and-Drop Builder WordPress plugin before 2.4.30 does not...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "WordPress / Plugins"
       ],
@@ -344,17 +344,17 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "4.3",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-01T07:14:08Z",
-      "source_updated_at": "2026-11-01T06:30:28Z",
+      "source_updated_at": "2026-11-01T18:30:23Z",
       "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-113481",
       "title": "The Media Library Assistant WordPress plugin before 3.44 does not check that the requesting user...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "WordPress / Plugins"
       ],
@@ -380,17 +380,17 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "4.3",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-01T07:14:08Z",
-      "source_updated_at": "2026-11-01T06:30:28Z",
+      "source_updated_at": "2026-11-01T18:30:23Z",
       "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-107342",
       "title": "The Kali Forms — Contact Form & Drag-and-Drop Builder WordPress plugin before 2.4.30 does not...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "WordPress / Plugins"
       ],
@@ -416,17 +416,17 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "4.3",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-01T07:14:08Z",
-      "source_updated_at": "2026-11-01T06:30:28Z",
+      "source_updated_at": "2026-11-01T18:30:22Z",
       "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-113482",
       "title": "The Media Library Assistant WordPress plugin before 3.44 does not escape one of its shortcode...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "WordPress / Plugins"
       ],
@@ -452,10 +452,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "6.8",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-01T07:14:08Z",
-      "source_updated_at": "2026-11-01T06:30:28Z",
+      "source_updated_at": "2026-11-01T18:30:23Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -885,7 +885,7 @@
     },
     {
       "id": "CVE-2026-120338",
-      "title": "Prefab UI's Generative UI sandbox runs caller-supplied Python inside Pyodide, Python compiled to WebAssembly, in a Deno subprocess",
+      "title": "Prefab UI's Generative UI sandbox runs caller-supplied Python inside Pyodide, Python compiled to...",
       "severity": "critical",
       "categories": [
         "JavaScript / TypeScript",
@@ -893,28 +893,40 @@
       ],
       "published": "2026-11-01",
       "updated": "2026-11-01",
-      "summary": "Prefab UI's Generative UI sandbox runs caller-supplied Python inside Pyodide, Python compiled to WebAssembly, in a Deno subprocess. The feature is documented as isolation for untrusted code, including LLM-written UI. From prefab-ui 0.14.0 through 0.20.2 the launcher starts Deno with unrestricted --allow-read, --allow-write, and --allow-net, and the runner leaves the Deno API on the JavaScript global object. Pyodide's js module proxies that global, so the Python can call Deno.readTextFileSync and Deno.writeTextFileSync. A caller who can supply the code can read and write files as the server OS user, and can persist code execution by writing a .pth file into the server virtualenv's site-packages. The usual remote path is FastMCP's GenerativeUI provider, which registers the MCP tool generate_prefab_ui and forwards that tool's code argument into this sandbox. On a FastMCP server with no authentication configured, any client who can reach the server can call the tool. With authentication, any client allowed to call tools can. Generative UI is opt-in, and the host must have Deno installed. Confirmed on prefab-ui 0.20.2. Fixed in 0.21.0: after the runtime and Prefab sources load, the runner revokes Deno read, write, and network permissio",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "summary": "Prefab UI's Generative UI sandbox runs caller-supplied Python inside Pyodide, Python compiled to WebAssembly, in a Deno subprocess. The feature is documented as isolation for untrusted code, including LLM-written UI. From prefab-ui 0.14.0 through 0.20.2 the launcher starts Deno with unrestricted --allow-read, --allow-write, and --allow-net, and the runner leaves the Deno API on the JavaScript global object. Pyodide's js module proxies that global, so the Python can call Deno.readTextFileSync and Deno.writeTextFileSync. A caller who can supply the code can read and write files as the server OS user, and can persist code execution by writing a .pth file into the server virtualenv's site-packages. The usual remote path is FastMCP's GenerativeUI provider, which registers the MCP tool generate_prefab_ui and forwards that tool's code argument into this sandbox. On a FastMCP server with no authentication configured, any client who can reach the server can call the tool. With authentication, any client allowed to call tools can. Generative UI is opt-in, and the host must have Deno installed. Confirmed on prefab-ui 0.20.2. Fixed in 0.21.0: after the runtime and Prefab sources load, the runner revokes Deno read, write, and network permission before it accepts code, the process is started w",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120338"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-3g72-rrqc-f76c"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/PrefectHQ/prefab/security/advisories/GHSA-595q-jv4r-q7j9"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/PrefectHQ/prefab/pull/538"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "10.0",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-01T16:23:12Z",
-      "source_updated_at": "2026-11-01T16:18:14.970",
-      "source_type": "nvd",
+      "source_updated_at": "2026-11-01T18:30:24Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-66570",
-      "title": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting') vulnerability in Nickboss WordPress File Upload wp-file-upload allows Stored XSS.This issu",
+      "title": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')...",
       "severity": "high",
       "categories": [
         "WordPress / Plugins"
@@ -922,28 +934,69 @@
       "published": "2026-11-01",
       "updated": "2026-11-01",
       "summary": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting') vulnerability in Nickboss WordPress File Upload wp-file-upload allows Stored XSS.This issue affects WordPress File Upload: from n/a through 5.2.1.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-66570"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-9jg4-gr2w-m5jg"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://patchstack.com/database/wordpress/plugin/wp-file-upload/vulnerability/wordpress-wordpress-file-upload-plugin-5-2-1-cross-site-scripting-xss-vulnerability?_s_id=cve"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "7.1",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-01T16:23:12Z",
-      "source_updated_at": "2026-11-01T18:18:13.433",
-      "source_type": "nvd",
+      "source_updated_at": "2026-11-01T18:30:25Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-vj43-6r45-847h",
+      "title": "Malicious code in atlassian-wallboard-plugin (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "summary": "## Source: ossf-package-analysis (65fa335403aab4ce396a9df1a2b0d61634f51ee8d63db761c0ccf21f744b6292) The OpenSSF Package Analysis project identified 'atlassian-wallboard-plugin' @ 10.0.0 (npm) as malicious. It is considered malicious because: - The package communicates with a domain associated with malicious activity. - The package executes one or more commands associated with malicious behavior. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/db42b448a9b6e1e97a353c5f2aa6a1bf2ab5cfa4/osv/malicious/npm/atlassian-wallboard-plugin/MAL-2026-18437.json))",
+      "affected": "npm: atlassian-wallboard-plugin (= 10.0.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-vj43-6r45-847h"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/db42b448a9b6e1e97a353c5f2aa6a1bf2ab5cfa4/osv/malicious/npm/atlassian-wallboard-plugin/MAL-2026-18437.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-01T18:35:11Z",
+      "source_updated_at": "2026-11-01T18:30:26Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-94361",
       "title": "The Payable Payment Gateway for WooCommerce WordPress plugin before 1.3.1 does not verify the...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "WordPress / Plugins"
       ],
@@ -969,10 +1022,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "5.3",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-31T07:05:46Z",
-      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_updated_at": "2026-11-01T18:31:24Z",
       "source_type": "github",
       "known_exploited": false,
       "epss": 0.00147,
@@ -982,7 +1035,7 @@
     {
       "id": "CVE-2026-82214",
       "title": "The Quick Event Manager WordPress plugin before 9.19 does not verify the status or type of the...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "WordPress / Plugins"
       ],
@@ -1008,10 +1061,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "5.3",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-31T07:05:46Z",
-      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_updated_at": "2026-11-01T18:31:24Z",
       "source_type": "github",
       "known_exploited": false,
       "epss": 0.00157,
@@ -1021,7 +1074,7 @@
     {
       "id": "CVE-2026-118638",
       "title": "The Mapster WP Maps WordPress plugin before 2.0.6 does not perform any authorization check on a...",
-      "severity": "bulletin",
+      "severity": "high",
       "categories": [
         "WordPress / Plugins"
       ],
@@ -1047,10 +1100,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "7.5",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-31T07:05:46Z",
-      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_updated_at": "2026-11-01T18:30:22Z",
       "source_type": "github",
       "known_exploited": false,
       "epss": 0.00147,
@@ -1060,7 +1113,7 @@
     {
       "id": "CVE-2026-118629",
       "title": "The All-in-One Video Gallery WordPress plugin before 5.0.0 does not check a video's publication...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "WordPress / Plugins"
       ],
@@ -1086,10 +1139,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "5.3",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-31T07:05:46Z",
-      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_updated_at": "2026-11-01T18:30:22Z",
       "source_type": "github",
       "known_exploited": false,
       "epss": 0.00157,
@@ -1186,7 +1239,7 @@
     {
       "id": "CVE-2026-118438",
       "title": "The Firelight Lightbox WordPress plugin before 2.3.24 does not properly escape image attribute...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "WordPress / Plugins"
       ],
@@ -1212,10 +1265,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "6.8",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-31T07:05:46Z",
-      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_updated_at": "2026-11-01T18:30:21Z",
       "source_type": "github",
       "known_exploited": false,
       "epss": 0.00164,
@@ -1225,7 +1278,7 @@
     {
       "id": "CVE-2026-118185",
       "title": "The Security Optimizer WordPress plugin before 1.6.9 does not limit the number of two-factor...",
-      "severity": "bulletin",
+      "severity": "high",
       "categories": [
         "WordPress / Plugins"
       ],
@@ -1251,10 +1304,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "7.5",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-31T07:05:46Z",
-      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_updated_at": "2026-11-01T18:31:23Z",
       "source_type": "github",
       "known_exploited": false,
       "epss": 0.00182,
@@ -1264,7 +1317,7 @@
     {
       "id": "CVE-2026-118184",
       "title": "The Premium Packages WordPress plugin before 7.2.2 does not prevent unauthenticated visitors...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "WordPress / Plugins"
       ],
@@ -1290,10 +1343,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "5.3",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-31T07:05:46Z",
-      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_updated_at": "2026-11-01T18:31:23Z",
       "source_type": "github",
       "known_exploited": false,
       "epss": 0.00142,
@@ -1303,7 +1356,7 @@
     {
       "id": "CVE-2026-110042",
       "title": "The Payment Forms for Paystack WordPress plugin before 4.0.6 does not properly restrict access to...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "WordPress / Plugins"
       ],
@@ -1329,10 +1382,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "4.9",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-31T07:05:46Z",
-      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_updated_at": "2026-11-01T18:30:21Z",
       "source_type": "github",
       "known_exploited": false,
       "epss": 0.0015,
@@ -1342,7 +1395,7 @@
     {
       "id": "CVE-2026-118437",
       "title": "The BuddyForms WordPress plugin before 2.10.1 does not properly verify ownership before deleting...",
-      "severity": "bulletin",
+      "severity": "low",
       "categories": [
         "WordPress / Plugins"
       ],
@@ -1368,10 +1421,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "3.7",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-31T07:05:46Z",
-      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_updated_at": "2026-11-01T18:31:24Z",
       "source_type": "github",
       "known_exploited": false,
       "epss": 0.00157,
@@ -1381,7 +1434,7 @@
     {
       "id": "CVE-2026-110808",
       "title": "The Essential Addons for Elementor WordPress plugin before 6.8.8 does not correctly restrict who...",
-      "severity": "bulletin",
+      "severity": "medium",
       "categories": [
         "WordPress / Plugins"
       ],
@@ -1407,10 +1460,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "4.2",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-31T07:05:46Z",
-      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_updated_at": "2026-11-01T18:30:22Z",
       "source_type": "github",
       "known_exploited": false,
       "epss": 0.00176,
@@ -1420,7 +1473,7 @@
     {
       "id": "CVE-2026-118043",
       "title": "The Bulk Media Register WordPress plugin before 2.01 does not properly validate a user-supplied...",
-      "severity": "bulletin",
+      "severity": "high",
       "categories": [
         "WordPress / Plugins"
       ],
@@ -1446,10 +1499,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "7.2",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-31T07:05:46Z",
-      "source_updated_at": "2026-10-31T06:30:34Z",
+      "source_updated_at": "2026-11-01T18:31:23Z",
       "source_type": "github",
       "known_exploited": false,
       "epss": 0.00161,
@@ -66528,53 +66581,6 @@
       "epss_as_of": "2026-11-01"
     },
     {
-      "id": "CVE-2026-109618",
-      "title": "RCE via OOM corruption",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-30",
-      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "PHP upstream security advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:25Z",
-      "source_type": "php_upstream",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99998,
-      "epss_as_of": "2026-11-01"
-    },
-    {
       "id": "CVE-2026-109619",
       "title": "RCE via stale global state",
       "severity": "critical",
@@ -66619,6 +66625,53 @@
       "known_exploited": true,
       "epss": 0.99999,
       "epss_percentile": 0.99999,
+      "epss_as_of": "2026-11-01"
+    },
+    {
+      "id": "CVE-2026-109618",
+      "title": "RCE via OOM corruption",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-30",
+      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "PHP upstream security advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:25Z",
+      "source_type": "php_upstream",
+      "known_exploited": true,
+      "epss": 0.99999,
+      "epss_percentile": 0.99998,
       "epss_as_of": "2026-11-01"
     },
     {
@@ -99039,42 +99092,6 @@
       "epss_as_of": "2026-11-01"
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60769,
-      "epss_as_of": "2026-11-01"
-    },
-    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -99113,6 +99130,42 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55906,
+      "epss_as_of": "2026-11-01"
+    },
+    {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60769,
       "epss_as_of": "2026-11-01"
     },
     {
@@ -150222,37 +150275,6 @@
       "epss_as_of": "2026-11-01"
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.11772,
-      "epss_percentile": 0.96077,
-      "epss_as_of": "2026-11-01"
-    },
-    {
       "id": "CVE-2025-7624",
       "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
@@ -150281,6 +150303,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.10514,
       "epss_percentile": 0.95765,
+      "epss_as_of": "2026-11-01"
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.11772,
+      "epss_percentile": 0.96077,
       "epss_as_of": "2026-11-01"
     },
     {
@@ -169105,121 +169158,90 @@
       "epss": 0.10855,
       "epss_percentile": 0.95859,
       "epss_as_of": "2026-11-01"
-    },
-    {
-      "id": "CVE-2017-6738",
-      "title": "Cisco IOS and IOS XE Software SNMP Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-03-03",
-      "summary": "The Simple Network Management Protocol (SNMP) subsystem of Cisco IOS and IOS XE contains a vulnerability that could allow an authenticated, remote attacker to remotely execute code.",
-      "affected": "Cisco IOS and IOS XE Software. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-03",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.10855,
-      "epss_percentile": 0.95859,
-      "epss_as_of": "2026-11-01"
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-01T18:28:21Z",
-      "last_attempt": "2026-11-01T18:28:21Z",
-      "items_processed": 287,
+      "last_success": "2026-11-01T18:35:11Z",
+      "last_attempt": "2026-11-01T18:35:11Z",
+      "items_processed": 274,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-01T18:28:21Z",
-      "last_attempt": "2026-11-01T18:28:21Z",
+      "last_success": "2026-11-01T18:35:11Z",
+      "last_attempt": "2026-11-01T18:35:11Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-01T18:28:21Z",
-      "last_attempt": "2026-11-01T18:28:21Z",
+      "last_success": "2026-11-01T18:35:11Z",
+      "last_attempt": "2026-11-01T18:35:11Z",
       "items_processed": 120,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-01T18:28:21Z",
-      "last_attempt": "2026-11-01T18:28:21Z",
+      "last_success": "2026-11-01T18:35:11Z",
+      "last_attempt": "2026-11-01T18:35:11Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-01T18:28:21Z",
-      "last_attempt": "2026-11-01T18:28:21Z",
+      "last_success": "2026-11-01T18:35:11Z",
+      "last_attempt": "2026-11-01T18:35:11Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-01T18:28:21Z",
-      "last_attempt": "2026-11-01T18:28:21Z",
+      "last_success": "2026-11-01T18:35:11Z",
+      "last_attempt": "2026-11-01T18:35:11Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-01T18:28:21Z",
-      "last_attempt": "2026-11-01T18:28:21Z",
+      "last_success": "2026-11-01T18:35:11Z",
+      "last_attempt": "2026-11-01T18:35:11Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-01T18:28:21Z",
-      "last_attempt": "2026-11-01T18:28:21Z",
+      "last_success": "2026-11-01T18:35:11Z",
+      "last_attempt": "2026-11-01T18:35:11Z",
       "items_processed": 12,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-01T18:28:21Z",
-      "last_attempt": "2026-11-01T18:28:21Z",
+      "last_success": "2026-11-01T18:35:11Z",
+      "last_attempt": "2026-11-01T18:35:11Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-01T18:28:21Z",
-      "last_attempt": "2026-11-01T18:28:21Z",
+      "last_success": "2026-11-01T18:35:11Z",
+      "last_attempt": "2026-11-01T18:35:11Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-01T18:28:21Z",
-      "last_attempt": "2026-11-01T18:28:21Z",
+      "last_success": "2026-11-01T18:35:11Z",
+      "last_attempt": "2026-11-01T18:35:11Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-01T18:28:21Z",
-      "last_attempt": "2026-11-01T18:28:21Z",
+      "last_success": "2026-11-01T18:35:11Z",
+      "last_attempt": "2026-11-01T18:35:11Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -169231,7 +169253,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-01T18:28:21Z",
-  "last_successful_update": "2026-11-01T18:28:21Z",
+  "last_checked_at": "2026-11-01T18:35:11Z",
+  "last_successful_update": "2026-11-01T18:35:11Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
