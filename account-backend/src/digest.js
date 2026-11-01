@@ -10,11 +10,12 @@ function text(v, limit = 500) { return String(v == null ? '' : v).trim().slice(0
 function esc(v) { return text(v, 1500).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
 function https(v) { try { const url = new URL(String(v)); return url.protocol === 'https:' ? url.href : ''; } catch (_) { return ''; } }
 function recent(record, minDate) {
-  const dates = [record.published, record.updated, record.first_seen_at, record.source_updated_at].map(x => String(x || '').slice(0, 10));
+  const dates = [record.published, record.updated, record.first_seen_at, record.source_updated_at,record.known_exploited?record.kev_added:null].map(x => String(x || '').slice(0, 10));
   return dates.some(x => /^\d{4}-\d{2}-\d{2}$/.test(x) && x >= minDate);
 }
 export function revisionOf(record) {
-  return text(record.source_updated_at || record.updated || record.published || record.first_seen_at, 64);
+  const revision=text(record.source_updated_at || record.updated || record.published || record.first_seen_at, 64);
+  return record.known_exploited&&Date.parse(record.kev_added)>Date.parse(revision)?new Date(record.kev_added).toISOString():revision;
 }
 function falseWordPressMatch(record) {
   const affected = String(record.affected || '').toLowerCase();
@@ -38,11 +39,12 @@ export function selectDigest(records, selectedTechnologies, severityPreference, 
   if (!Array.isArray(records) || !selected.size) return { items: [], pending: 0, selected: [...selected] };
   for (const record of records) {
     if (!record || !/^(CVE-\d{4}-\d{4,}|GHSA-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4})$/i.test(String(record.id || ''))) continue;
-    if (!['critical', 'high'].includes(record.severity)) continue;
-    if (severityPreference !== 'high' && record.severity !== 'critical') continue;
+    const newExploitation=record.known_exploited&&/^\d{4}-\d{2}-\d{2}$/.test(record.kev_added||'')&&record.kev_added>=minDate;
+    if (!newExploitation&&!['critical', 'high'].includes(record.severity)) continue;
+    if (!newExploitation&&severityPreference !== 'high' && record.severity !== 'critical') continue;
     if (!recent(record, minDate)) continue;
     const matches = verifiedCategories(record).filter(x => !(x === 'WordPress / Plugins' && falseWordPressMatch(record)))
-      .map(x=>record.source_type==='cvie_nvd'?[...selected].find(name=>name.trim().toLowerCase()===x.trim().toLowerCase())||x:x)
+      .map(x=>/^cvie_/.test(record.source_type||'')?[...selected].find(name=>name.trim().toLowerCase()===x.trim().toLowerCase())||x:x)
       .filter(x => selected.has(x));
     if (!matches.length) continue;
     const revision = revisionOf(record);

@@ -23,4 +23,4 @@ database_id = "46710e51-7ca4-4571-b89c-921b9969de0b"
 
 # Hourly tick, daily deliveries at 08:00 America/Toronto. No sending until ALERT_DELIVERY_ENABLED=true.
 [triggers]
-crons = ["5 * * * *", "*/5 * * * *"]
+crons = ["5 * * * *", "*/5 * * * *", "* * * * *"]

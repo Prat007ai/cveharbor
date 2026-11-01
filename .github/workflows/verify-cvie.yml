@@ -32,7 +32,7 @@ jobs:
           node scripts/customer_security_smoke.mjs
           node scripts/customer_score_smoke.mjs
           node scripts/threat_health_smoke.mjs
-      - name: Backfill a public product through actual CVIE in a disposable database
+      - name: Verify NVD, original CVE disclosures and CISA KEV in a disposable database
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: node scripts/probe_cvie_live.mjs
@@ -44,4 +44,4 @@ jobs:
           git commit -m 'Record read-only CVIE provider compatibility check'
           git push origin HEAD:feat/cvie-product-intelligence
       - name: Require a successful live provider check
-        run: python -c "import json; assert json.load(open('data/cvie-provider-check.json'))['ok'], 'Live NVD verification failed; inspect compatibility evidence'"
+        run: python -c "import json; assert json.load(open('data/cvie-provider-check.json'))['ok'], 'Live three-source CVIE verification failed; inspect compatibility evidence'"

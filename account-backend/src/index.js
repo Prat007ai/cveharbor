@@ -3,6 +3,7 @@ import {newSecret,totp,verifyTotp,encryptSecret,decryptSecret,newRecoveryCodes,h
 import { saveOptin, loadAlertSubscription, sendUserSample, dispatchDueDigests, unsubscribe } from './delivery.js';
 import { handlePublicCveLookup } from './cve-lookup.js';
 import {cvieRoute,subscribeProducts,syncAccountProducts,runCvieStep,dispatchCvie,CvieError} from './cvie.js';
+import {dispatchEvidence} from './cvie-evidence.js';
 import {productCpe,normalizeName} from './product-identity.js';
 import { handler as lifecycleHandler, LifecycleError, dispatchLifecycle } from './lifecycle.js';
 import { inventoryRoute, InventoryError } from './inventory.js';
@@ -323,6 +324,7 @@ export default {async fetch(req,env,ctx){
  }catch(error){if(error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
+  if(_event.cron==='* * * * *'){ctx.waitUntil(dispatchEvidence(env));return;}
   if(_event.cron==='*/5 * * * *'){ctx.waitUntil(dispatchCvie(env));return;}
   if(env.ALERT_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchDueDigests(env));
   if(env.LIFECYCLE_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchLifecycle(env));

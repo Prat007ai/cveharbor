@@ -120,8 +120,8 @@
   const recentRevision = (record,days=7) => recentDate(record.updated,days);
   const periodMatches = record => {
     if(state.period==='all') return true;
-    if(state.period==='published3m')return inMonths(record,3);
-    if(state.period==='published12m')return inMonths(record,12);
+    if(state.period==='published3m')return inMonths(record,3)||record.retained_exploited;
+    if(state.period==='published12m')return inMonths(record,12)||record.retained_exploited;
     if(state.period==='today') return matchesDisclosureDay(record,'TODAY');
     if(state.period==='yesterday') return matchesDisclosureDay(record,'YESTERDAY');
     if(state.period==='twoDays') return matchesDisclosureDay(record,'72 HOURS');
@@ -489,7 +489,7 @@
     $('cardViewBtn').setAttribute('aria-pressed',String(!full));
     $('listViewBtn').setAttribute('aria-pressed',String(full));
     const descriptions={all:'Latest indexed advisories',cves:'All indexed CVEs',critical:'Critical CVEs',high:'High severity CVEs'};
-    const periodNames={published3m:'published in the last 3 months',published12m:'published in the last 12 months',today:'originally published today',yesterday:'originally published yesterday',twoDays:'originally published two days ago',published7:'new in the last 7 days',published30:'new in the last 30 days',updated7:'updated in the last 7 days',all:'from the indexed archive'};
+    const periodNames={published3m:'last 3 months, plus older KEV-listed advisories',published12m:'last 12 months, plus older KEV-listed advisories',today:'originally published today',yesterday:'originally published yesterday',twoDays:'originally published two days ago',published7:'new in the last 7 days',published30:'new in the last 30 days',updated7:'updated in the last 7 days',all:'from the indexed archive'};
     const title = state.group!=='all'?groupTitles[state.group]+' advisories':state.tech!=='all'?state.tech+(metricScope==='cves'?' CVEs':' advisories'):(descriptions[metricScope]||descriptions.all);
     $('listContext').textContent=title+' · '+periodNames[state.period];
     const pages=Math.max(1,Math.ceil(selected.length/TABLE_PAGE_SIZE));
@@ -505,6 +505,7 @@
           row.append(el);return el;
         };
         const idCell=cell(x.id,'table-cve');
+        if(x.retained_exploited)idCell.append(text('span','kev-mark','Older · CISA KEV'));
         const firstPublished=makeDisclosureBadge(x);
         if(firstPublished) idCell.append(firstPublished);
         const sev=cell(severityText(x.severity),'table-severity');
@@ -567,6 +568,9 @@
     const specs=text('div','spec-grid','');specs.append(rowSpec('Advisory ID',x.id),rowSpec('First published',fmtDate(x.published)),rowSpec('Last source update',fmtDate(x.updated)),rowSpec('First indexed',fmtStamp(x.first_seen_at)),rowSpec('Source status',x.status||'Vendor/source verification required'),rowSpec('Exploitation',x.exploitation));if(x.cvss)specs.append(rowSpec('Reported CVSS',x.cvss));if(typeof x.epss==='number')specs.append(rowSpec('FIRST EPSS, 30 day exploitation probability',(x.epss*100).toFixed(2)+'% ('+(x.epss_as_of||'date not available')+')'));root.append(specs);
     function block(h,body){root.append(text('h3','',h),text('p','',body||'Not provided by the indexed source.'));}
     if(typeof x.epss==='number')root.append(text('p','epss-note','EPSS estimates exploitation probability within 30 days. It is not a vulnerability severity score or proof that your environment is affected. Source: FIRST EPSS.'));block('Description',x.summary);block('Affected software and versions',x.affected);block('Fix or workaround',x.remediation);block('Suggested next step',x.action);
+    if(x.source_conflicts?.length)block('Source differences requiring review',x.source_conflicts.join(' '));
+    if(x.kev_added)block('CISA exploitation evidence','Added to KEV: '+x.kev_added+'. '+(x.kev_required_action||'Review the CISA entry and vendor guidance.')+(x.kev_due_date?' CISA catalogue due date: '+x.kev_due_date+'.':''));
+    if(x.provenance?.length)block('Source verification',x.provenance.map(p=>p.source+' · checked '+fmtStamp(p.checked_at?new Date(p.checked_at).toISOString():null)+' · source revision '+(p.updated||'not stated')).join('\n'));
     root.append(text('h3','','Original advisory and source references'));
     root.append(text('p','source-note','You can review the available advisory details here. The source links below are optional and open in a new tab.'));
     const list=document.createElement('ul');list.className='detail-source-links';

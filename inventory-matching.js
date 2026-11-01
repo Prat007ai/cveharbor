@@ -80,7 +80,7 @@ function candidate(asset,cve){
  const product=norm(asset.technology);
  if(!product||!/^(CVE-\d{4}-\d{4,}|GHSA-[a-z0-9-]+)$/i.test(String(cve.id||'')))return null;
  if(/rejected|withdrawn/i.test(String(cve.status||'')))return null;
- const cvie=cve.source_type==='cvie_nvd'&&(cve.cvie_products||[]).some(name=>norm(name)===product);
+ const cvie=/^cvie_/.test(cve.source_type||'')&&(cve.cvie_products||[]).some(name=>norm(name)===product);
  const tags=(cve.categories||[]).map(norm);
  if(!cvie&&!(product.startsWith('wordpress plugin:')?tags.includes('wordpress / plugins'):(categories[product]||[product]).some(t=>tags.includes(norm(t)))))return null;
  if(!cvie&&!preciseProductMatch(asset,cve))return null;
@@ -101,11 +101,11 @@ function candidate(asset,cve){
  if(vendorAssessment){level=vendorAssessment.level;evidence=vendorAssessment.evidence;comparisonDetail=vendorAssessment.comparison_detail;}
  if(cvie){
   const families=(cve.cvie_identities||[]).filter(x=>norm(x.name)===product).map(x=>x.cpe.split(':').slice(0,5).join(':'));
-  const result=cvieVersionAssessment(version,(cve.affected_cpes||[]).filter(x=>families.includes(String(x.criteria).split(':').slice(0,5).join(':'))));
+  const result=cvieVersionAssessment(version,(cve.affected_cpes||[]).filter(x=>x.cvie_product_key?norm(x.cvie_product_key)===product:families.includes(String(x.criteria).split(':').slice(0,5).join(':'))));
   if(result==='outside')return null;
   level=result==='within'?'version_review':'category';
-  evidence=result==='within'?'CVIE product identity and numeric NVD version range match. Verify vendor prerequisites and deployment before treating this as exposure.':'CVIE matched the NVD affected product identity. Installed-version applicability still needs verification.';
-  comparisonDetail=result==='within'?'Installed '+version+' is within a structured NVD CPE range. Complex configuration prerequisites are not evaluated.':'No unambiguous supported numeric comparison is available. Review the original advisory.';
+  evidence=result==='within'?'CVIE product identity and a published numeric version range match. Verify vendor prerequisites and deployment before treating this as exposure.':'CVIE matched the affected product identity. Installed-version applicability still needs verification.';
+  comparisonDetail=result==='within'?'Installed '+version+' is within a structured affected-version range. Complex configuration prerequisites are not evaluated.':'No unambiguous supported numeric comparison is available. Review the original advisory.';
  }
  const distroAsset=['debian','debian linux','ubuntu','ubuntu linux'].includes(product);
  if(distroAsset){
@@ -145,6 +145,7 @@ function cvieVersionAssessment(version,ranges){
  if(!numeric(version)||!ranges.length)return 'unknown';
  let unknown=false;
  for(const range of ranges){
+  if(range.comparison_unsupported){unknown=true;continue;}
   let outside=false,uncertain=false,hasBound=false;
   const exact=String(range.criteria||'').split(':')[5];
   if(exact&&exact!=='*'&&exact!=='-'){

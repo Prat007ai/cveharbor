@@ -4,15 +4,17 @@ const API='https://api.cveharbor.com/v1/cvie';
 let products=[],records=[],months=3,error='',ready=false,signedIn=false,timer=null,busy=false,pending=false,pendingSync=false;
 const panels=[];
 let lastSignature='';
+let evidence={sources:[]},withdrawn=new Set();
 const node=(tag,value,cls)=>{const el=document.createElement(tag);if(value)el.textContent=value;if(cls)el.className=cls;return el;};
 const normalize=value=>String(value||'').normalize('NFKC').trim().toLowerCase().replace(/\s+/g,' ');
 function merge(base=[]){
  const result=new Map();
  for(const record of [...base,...records]){
+  if(withdrawn.has(record.id))continue;
   const prior=result.get(record.id);
   if(!prior){result.set(record.id,{...record});continue;}
   const source=new Map([...(prior.sources||[]),...(record.sources||[])].map(x=>[x.url,x]));
-  result.set(record.id,{...prior,...record,known_exploited:!!(prior.known_exploited||record.known_exploited),
+  result.set(record.id,{...prior,...record,known_exploited:record.kev_verified_at?!!record.known_exploited:!!(prior.known_exploited||record.known_exploited),
    categories:[...new Set([...(prior.categories||[]),...(record.categories||[])])],
    cvie_products:[...new Set([...(prior.cvie_products||[]),...(record.cvie_products||[])])],
    cvie_identities:[...(prior.cvie_identities||[]),...(record.cvie_identities||[])],
@@ -29,12 +31,13 @@ function statusFor(p){
  if(p.stale)return 'Saved results · source check overdue';
  const count=months===12?p.history_count:p.recent_count;
  const complete=months===12?p.history_complete_at:p.recent_complete_at;
- return complete?(count?count+' advisories · last '+months+' months':'No published advisories found in '+months+' months'):'Preparing '+months+'-month history';
+ const older=months===12?p.older_kev_history_count:p.older_kev_recent_count;
+ return (complete?(count?count+' advisories · last '+months+' months':'No published advisories found in '+months+' months'):'Preparing '+months+'-month history')+(older?' · '+older+' older KEV-listed':'');
 }
 function notify(){const signature=JSON.stringify([months,records]);const recordsChanged=signature!==lastSignature;lastSignature=signature;draw();window.dispatchEvent(new CustomEvent('cvie:updated',{detail:{recordsChanged}}));}
 async function request(path='',options={}){
  const response=await fetch(API+path,{credentials:'include',headers:{Accept:'application/json',...(options.body?{'Content-Type':'application/json'}:{})},...options});
- if(response.status===401){signedIn=false;products=[];records=[];ready=false;throw Error('Sign in to use private CVIE monitoring.');}
+ if(response.status===401){signedIn=false;products=[];records=[];withdrawn=new Set();evidence={sources:[]};ready=false;throw Error('Sign in to use private CVIE monitoring.');}
  signedIn=true;
  const data=await response.json();
  if(!response.ok)throw Error(data.error||'CVIE is temporarily unavailable. Saved results may be incomplete.');
@@ -59,8 +62,20 @@ function draw(){
   select.addEventListener('change',()=>{months=Number(select.value);void refresh();});label.append(select);
   const button=node('button','Refresh status');button.type='button';button.disabled=busy;button.addEventListener('click',()=>void refresh(true));
   header.append(title,label,button);panel.append(header);
+  const sourceLabels={current:'Checked',scanning:'Scanning',catching_up:'Indexing disclosures',verifying_products:'Verifying product applicability',pending:'Waiting for first check',stale:'Check overdue',unavailable:'Source unavailable',setup_required:'Setup required',no_products:'Add a product'};
+  const sourceGrid=node('div','','cvie-source-grid');
+  for(const s of evidence.sources||[]){
+   const card=node('div','','cvie-source '+s.status);
+   card.append(node('strong',s.label||s.id),node('span',sourceLabels[s.status]||s.status));
+   card.append(node('small',s.last_success_at?'Checked '+new Date(s.last_success_at).toLocaleString():'No successful check yet'));
+   if(s.publisher_at)card.append(node('small','Publisher update: '+new Date(s.publisher_at).toLocaleString()));
+   if(s.pending_records)card.append(node('small',s.pending_records+' records awaiting verification'));
+   if(s.error)card.append(node('small',s.error));sourceGrid.append(card);
+  }
+  if(sourceGrid.children.length)panel.append(sourceGrid);
   const active=products.filter(p=>['queued','scanning','retrying'].includes(p.status));
-  const message=error||(busy?'Loading '+months+'-month results...':!ready?'Preparing CVIE...':!products.length?'Add a product or register an asset to start CVIE.':products.some(p=>p.status==='needs_identity')?'Some products need an exact identity before CVIE can scan. Expand product status to choose.':products.some(p=>p.status==='retrying')?'A source check is unavailable. Saved results remain available; CVIE will retry automatically.':products.some(p=>p.status==='ready'&&p.stale)?'Some source checks are overdue. Saved results remain available while CVIE refreshes them.':active.length?active.length+' product'+(active.length===1?' is':'s are')+' being prepared. Results appear as source pages finish.':'Product checks complete. Review the source and installed version before acting.');
+  const attention=(evidence.sources||[]).some(s=>['pending','stale','unavailable','setup_required','catching_up','verifying_products'].includes(s.status));
+  const message=error||(busy?'Loading '+months+'-month results...':!ready?'Preparing CVIE...':!products.length?'Add a product or register an asset to start CVIE.':attention?'Some sources are still being verified or need attention. Available results are shown below; check each source status.':products.some(p=>p.status==='needs_identity')?'Some products need an exact identity before CVIE can scan. Expand product status to choose.':products.some(p=>p.status==='retrying')?'A source check is unavailable. Saved results remain available; CVIE will retry automatically.':products.some(p=>p.status==='ready'&&p.stale)?'Some source checks are overdue. Saved results remain available while CVIE refreshes them.':active.length?active.length+' product'+(active.length===1?' is':'s are')+' being prepared. Results appear as source pages finish.':'Product checks complete. Review the source and installed version before acting.');
   const status=node('p',message,'cvie-status');status.setAttribute('role','status');panel.append(status);
   const list=node('div','','cvie-product-statuses');
   for(const p of products){
@@ -79,7 +94,7 @@ function draw(){
    }
    list.append(row);
   }
-  if(products.length){const details=node('details');details.append(node('summary','Product scan status ('+products.length+')'),list,node('p','Coverage: NVD affected-product records published in the selected period. A completed check with no results does not establish that a product is secure.','cvie-caption'));panel.append(details);}
+  if(products.length){const details=node('details');details.append(node('summary','Product scan status ('+products.length+')'),list,node('p','Coverage: NVD product history, original CNA disclosures and CISA KEV. Older KEV-listed advisories remain visible outside the selected history. A completed source check does not establish that an installation is secure.','cvie-caption'));panel.append(details);}
  }
 }
 async function refresh(sync=false){
@@ -87,7 +102,7 @@ async function refresh(sync=false){
  const requestedMonths=months;
  try{
   if(sync)await request('/sync',{method:'POST',body:'{}'});
-  const state=await request();products=state.products||[];ready=state.ready;error='';
+  const state=await request();products=state.products||[];ready=state.ready;evidence=state.evidence||{sources:[]};withdrawn=new Set(state.withdrawn_ids||[]);error='';
   const incoming=[];let after='';
   do{
    const page=await request('/advisories?months='+requestedMonths+(after?'&after='+encodeURIComponent(after):''));

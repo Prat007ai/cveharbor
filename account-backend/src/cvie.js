@@ -1,6 +1,8 @@
 // CVIE: durable, account-scoped product identity resolution and NVD history.
 // Every external URL is fixed here. Customer hosts/versions are never scanned or sent.
 import {normalizeName,productCpe,cpeFamily,knownIdentity,logoFor,identityCandidates} from './product-identity.js';
+import {queueRelevantKev} from './cvie-evidence.js';
+import {combinedPage,combinedCounts,evidenceContext,sourceHealth,withdrawnIds} from './cvie-records.js';
 const ORIGIN='https://cveharbor.com',DAY=86400000;
 const iso=value=>new Date(value).toISOString();
 const query=(db,sql,...args)=>db.prepare(sql).bind(...args);
@@ -63,6 +65,7 @@ export async function subscribeProducts(env,userId,products,origin='catalogue'){
  statements.push(query(env.DB,'DELETE FROM cvie_products WHERE user_id=? AND NOT EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=cvie_products.id)',userId));
  // Set-based JSON bindings keep bulk imports within D1's per-invocation query budget.
  await env.DB.batch(statements);
+ await queueRelevantKev(env,[...normalized.values()]);
  return {ready:true,queued:normalized.size};
 }
 export async function syncAccountProducts(env,userId){
@@ -181,6 +184,13 @@ export async function dispatchCvie(env){
 }
 export async function loadCvieDigest(env,userId,now=Date.now()){
  if(!await cvieReady(env))return {records:[],degraded:false,coverageLimited:false};
+ const ctx=await evidenceContext(env,userId);
+ if(ctx){
+  const cutoff=iso(monthsAgo(now,12));let after='',records=[];
+  do{const page=await combinedPage(env,userId,cutoff,after,'',now,ctx);records.push(...page.advisories);after=page.next||'';}while(after&&records.length<1000);
+  const health=await sourceHealth(env,now);
+  return {records,degraded:health.sources.some(s=>s.status!=='current')||ctx.products.some(p=>p.status!=='ready'),coverageLimited:Boolean(after)};
+ }
  const recent=iso(now-30*DAY);
  const result=await query(env.DB,`SELECT a.record_json FROM cvie_advisories a JOIN cvie_products p ON p.id=a.product_id
   WHERE p.user_id=? AND a.published>=? AND (a.published>=? OR json_extract(a.record_json,'$.updated')>=?)
@@ -212,20 +222,30 @@ export async function cvieRoute(req,env,user,ctx,data={}){
    (SELECT COUNT(*) FROM cvie_advisories a WHERE a.product_id=p.id AND a.published>=?) AS recent_count,
    (SELECT COUNT(*) FROM cvie_advisories a WHERE a.product_id=p.id AND a.published>=?) AS history_count
    FROM cvie_products p WHERE p.user_id=? AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) ORDER BY p.name`,iso(monthsAgo(now,3)),iso(monthsAgo(now,12)),user.id).all();
+  const evidenceCtx=await evidenceContext(env,user.id),counts=evidenceCtx?await combinedCounts(env,user.id,iso(monthsAgo(now,3)),iso(monthsAgo(now,12)),now,evidenceCtx):null;
   const products=(result.results||[]).map(p=>{
    const cursor=JSON.parse(p.cursor_json||'{}'),window=cursor.windows?.[cursor.position];
    return {id:p.id,name:p.name,vendor:p.vendor,cpe:p.cpe,status:p.status,error:p.error,icon_slug:logoFor(p.name,p.cpe),
-    recent_count:p.recent_count,history_count:p.history_count,last_success_at:p.last_success_at,recent_complete_at:p.recent_complete_at,
+    recent_count:counts?(counts.find(c=>c.product_id===p.id)?.recent_count||0):p.recent_count,history_count:counts?(counts.find(c=>c.product_id===p.id)?.history_count||0):p.history_count,
+    older_kev_recent_count:counts?.find(c=>c.product_id===p.id)?.older_kev_recent_count||0,older_kev_history_count:counts?.find(c=>c.product_id===p.id)?.older_kev_history_count||0,
+    last_success_at:p.last_success_at,recent_complete_at:p.recent_complete_at,
     history_complete_at:p.history_complete_at,next_attempt_at:p.next_attempt_at,stale:!p.last_success_at||now-p.last_success_at>24*3600000,
     progress:{windows_complete:cursor.position||0,windows_total:cursor.windows?.length||0,records_checked:window?.index||0,records_in_window:window?.total??null},
     candidates:p.status==='needs_identity'?JSON.parse(p.candidates_json):[]};
   });
-  ctx?.waitUntil(runCvieStep(env,fetch,now,user.id));return json({ready:true,engine:'CVIE',products,source:'NVD',default_months:3});
+  const evidence=await sourceHealth(env,now),withdrawn=await withdrawnIds(env);
+  const attempted=products.map(p=>p.last_success_at).filter(Boolean);
+  evidence.sources.unshift({id:'nvd',label:'NVD product history',url:'https://nvd.nist.gov/',
+   status:!products.length?'no_products':products.some(p=>p.status==='retrying')?'unavailable':products.some(p=>p.stale&&p.status==='ready')?'stale':products.some(p=>p.status!=='ready')?'scanning':'current',
+   last_success_at:attempted.length?Math.min(...attempted):null});
+  ctx?.waitUntil(runCvieStep(env,fetch,now,user.id));return json({ready:true,engine:'CVIE',products,evidence,withdrawn_ids:withdrawn,default_months:3});
  }
  if(path==='/v1/cvie/advisories'&&req.method==='GET'){
   const months=Number(url.searchParams.get('months')||3),after=url.searchParams.get('after')||'';
   if(![3,12].includes(months)||after.length>100)throw new CvieError('Choose a 3 or 12 month history');
   const product=url.searchParams.get('product')||'';
+  const combined=await combinedPage(env,user.id,iso(monthsAgo(Date.now(),months)),after,product);
+  if(combined)return json({ready:true,months,...combined});
   const rows=(await query(env.DB,`SELECT a.product_id,a.cve_id,a.record_json FROM cvie_advisories a JOIN cvie_products p ON p.id=a.product_id
    WHERE p.user_id=? AND a.published>=? AND a.published<=? AND (a.product_id||'/'||a.cve_id)>?
    AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) ${product?'AND p.id=?':''}

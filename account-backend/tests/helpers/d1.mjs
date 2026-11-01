@@ -10,6 +10,7 @@ export class DB{
    CREATE TABLE inventory_assets(user_id TEXT,technology TEXT); CREATE TABLE user_stack(user_id TEXT,technology TEXT);
    CREATE TABLE user_technology_catalogue(user_id TEXT PRIMARY KEY,preferences_json TEXT,updated_at INTEGER);`);
   this.sql.exec(fs.readFileSync(new URL('../../migrations/0019_cvie.sql',import.meta.url),'utf8'));
+  this.sql.exec(fs.readFileSync(new URL('../../migrations/0020_cvie_evidence.sql',import.meta.url),'utf8'));
  }
  prepare(sql){const statement=this.sql.prepare(sql),db=this;const make=args=>({
   bind:(...values)=>make(values),
