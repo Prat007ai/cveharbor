@@ -1,0 +1,43 @@
+name: Validate isolated product monitoring and inspect readiness without changing production
+on:
+  push:
+    branches: [feat/product-lifecycle-monitoring]
+    paths: ['account-backend/**', 'lifecycle-monitor*', 'product-monitoring.js', 'scripts/*monitor*', '.github/workflows/verify-product-monitoring.yml']
+  pull_request:
+    paths: ['account-backend/src/monitor*', 'lifecycle-monitor*', 'product-monitoring.js', 'account-backend/migrations/0023_lifecycle_monitoring.sql']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm test --prefix account-backend
+      - run: npm install --no-save --no-package-lock jsdom@26
+      - run: python scripts/build_site.py && node scripts/browser_smoke.mjs && node scripts/product_monitoring_smoke.mjs && node scripts/worker_release_smoke.mjs
+      - name: Probe only the reviewed vendor endpoints, without subscriptions or email
+        continue-on-error: true
+        run: node scripts/probe_monitor_sources.mjs
+      - name: Inspect deployed binding names, flags and schema metadata only
+        if: github.event_name == 'push'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          python - <<'PY'
+          import json,sys,os
+          sys.path.insert(0,'scripts')
+          from deploy_site_gate import cloudflare
+          from verify_cvie_production import query
+          settings=cloudflare('/accounts/'+os.environ['CLOUDFLARE_ACCOUNT_ID']+'/workers/scripts/cveharbor-accounts/settings')
+          bindings=settings.get('bindings',[])
+          names=[b.get('name') for b in bindings if b.get('type')=='secret_text']
+          flags={b.get('name'):b.get('text') for b in bindings if b.get('type')=='plain_text' and b.get('name') in ['EMAIL_FROM','LIFECYCLE_DELIVERY_ENABLED','PRODUCT_MONITOR_CHECKS_ENABLED','PRODUCT_MONITOR_DELIVERY_ENABLED','PRODUCT_MONITOR_TEST_ENABLED']}
+          tables=query("SELECT name FROM sqlite_master WHERE type='table' AND (name LIKE 'lifecycle_%' OR name LIKE 'monitor_%') ORDER BY name")
+          report={'secret_binding_names':names,'flags':flags,'tables':[t['name'] for t in tables],'production_writes':0,'smtp2go_account_settings':'not accessible through Worker secret metadata'}
+          print(json.dumps(report))
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as output:output.write('Read-only readiness metadata; no customer rows or secret values.\n\n```json\n'+json.dumps(report,indent=2)+'\n```\n')
+          PY

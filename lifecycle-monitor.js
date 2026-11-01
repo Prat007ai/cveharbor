@@ -15,16 +15,18 @@ const staticProducts=[
  ['python','Python'],['nodejs','Node.js'],['docker-engine','Docker Engine'],
  ['kubernetes','Kubernetes'],['fortios','FortiOS']
 ];
-let signed=false,ready=false,logged=[],prefs={email_enabled:0,lead_days:90},delivery=false;
+let signed=false,ready=false,logged=[],prefs={email_enabled:0,lead_days:90},delivery=false,enhanced=false,monitorFlags={},accountEmail='',authEpoch=0;
 const queued=[];
 const make=(tag,cls,value)=>{
  const node=document.createElement(tag);if(cls)node.className=cls;if(value!==undefined)node.textContent=String(value);return node;
 };
 const message=value=>{$('lifecycleUserStatus').textContent=value};
 async function call(path='',method='GET',data){
- const res=await fetch(endpoint+path,{method,credentials:'include',
+ const epoch=authEpoch;
+ const res=await fetch((enhanced?'https://api.cveharbor.com/v1/monitoring':endpoint)+path,{method,credentials:'include',
   headers:{'Content-Type':'application/json'},body:data===undefined?undefined:JSON.stringify(data)});
  let body={};try{body=await res.json()}catch(_){}
+ if(epoch!==authEpoch)throw Error('Account changed; response discarded');
  if(!res.ok)throw Error(body.error||'Lifecycle account service unavailable');
  return body;
 }
@@ -35,11 +37,14 @@ function daysTo(date){
 }
 function itemLabel(entry){return entry.product+' '+entry.cycle;}
 function summary(watch){
+ if(enhanced){const s=watch.verified;return s?{date:s.milestones?.security||s.milestones?.eol||s.milestones?.mainstream||'',source:s.source_url,origin:'Official checked source',latest:s.version}:null;}
  if(watch.custom_eol_date)return {date:watch.custom_eol_date,source:watch.custom_source_url,origin:'Customer supplied'};
  const c=catalog.cycles.find(x=>x.slug===watch.slug&&(!watch.cycle||String(x.cycle).toLowerCase()===watch.cycle.toLowerCase()));
  return c?{date:c.eol_date,source:c.url,origin:'Source published',latest:c.latest}:null;
 }
 const MAX_ROWS=60;
+let directoryCategory='All Products';
+const categoryOf=slug=>['windows-server','windows','mssqlserver','sharepoint','dotnet','dotnet-framework','exchange-server','system-center','powershell','azure-devops-server'].includes(slug)?'Microsoft':['ubuntu','debian','rhel','centos','almalinux','rocky-linux'].includes(slug)?'Linux':['wordpress','php','sitefinity','nodejs'].includes(slug)?'Web & CMS':['mysql','mariadb','postgresql','mongodb','redis'].includes(slug)?'Databases':'Other';
 const catalogList=Array.isArray(catalog.available_products)?catalog.available_products:[];
 const titleCase=slug=>String(slug||'').split('-').map(x=>x==='mssqlserver'?'SQL':x.charAt(0).toUpperCase()+x.slice(1)).join(' ');
 const detail=$('lifecycleDetailDialog');
@@ -145,12 +150,14 @@ async function openRemote(slug,product){
 function renderFeed(){
  const products=$('lifecycleProduct'),existing=products.value;
  products.replaceChildren();let empty=make('option','', 'Choose a monitored product');empty.value='';products.append(empty);
- for(const [slug,label] of staticProducts){
+ const choices=[...new Set([...staticProducts.map(p=>p[0]),...catalogList])];
+ for(const slug of choices){
+  const label=staticProducts.find(p=>p[0]===slug)?.[1]||catalog.cycles.find(c=>c.slug===slug)?.product||titleCase(slug);
   const available=catalog.cycles.some(c=>c.slug===slug);
   const option=make('option','',label+(available?'':' · Dates unavailable'));
-  option.value=slug;option.disabled=!available;products.append(option);
+  option.value=slug;products.append(option);
  }
- if(staticProducts.some(([slug])=>slug===existing))products.value=existing;
+ if(choices.includes(existing))products.value=existing;
  syncCycles();
  const results=$('lifecyclePublished');results.replaceChildren();
  const query=$('lifecyclePublicSearch').value.trim().toLowerCase();
@@ -163,26 +170,33 @@ function renderFeed(){
  }else{
   for(const slug of catalog.cycles.map(x=>x.slug))if(!matches.includes(slug))matches.push(slug);
  }
- for(const slug of matches.slice(0,MAX_ROWS)){
+ const filtered=matches.filter(slug=>directoryCategory==='All Products'||categoryOf(slug)===directoryCategory);
+ const filters=$('lifecycleDirectoryFilters');
+ if(filters){filters.replaceChildren();for(const label of ['All Products','Microsoft','Linux','Web & CMS','Databases','Other']){const button=make('button','',label+' '+matches.filter(slug=>label==='All Products'||categoryOf(slug)===label).length);button.type='button';button.setAttribute('aria-pressed',String(label===directoryCategory));button.addEventListener('click',()=>{directoryCategory=label;renderFeed()});filters.append(button)}}
+ for(const slug of filtered.slice(0,MAX_ROWS)){
   const known=catalog.cycles.filter(x=>x.slug===slug);
   const title=known[0]?.product||staticProducts.find(x=>x[0]===slug)?.[1]||titleCase(slug);
   const row=make('div','lifecycle-source-row lifecycle-source-interactive');
+  row.append(make('span','lifecycle-product-mark',categoryOf(slug)==='Microsoft'?'⊞':title.slice(0,2).toUpperCase()));
   row.append(make('strong','',title));
   const description=known.length?
    known.length+' release cycles in the collected snapshot. Latest: '+(known[0].cycle||'Unknown')+
     '. Select to review support dates and versions.':
    'Additional product found in the lifecycle directory. Select to load its release history.';
   row.append(make('p','ops-note',description));
+  const published=known.find(c=>/^\d{4}-\d{2}-\d{2}$/.test(c.eol_date||''));
+  row.append(make('span','lifecycle-support-summary',published?'Published support end: '+published.eol_date+' · '+published.cycle:'Support milestone: Unknown / Not Published'));
   const btn=make('button','ops-download lifecycle-view-details','View lifecycle details');
   btn.type='button';btn.addEventListener('click',()=>openRemote(slug,title));
   row.append(btn);results.append(row);
  }
  if(!matches.length)results.append(make('p','ops-note','No matching product in the currently indexed lifecycle directory. This does not mean the product is supported. Check the vendor directly or add a custom verified date to your account.'));
  $('lifecycleSearchStatus').textContent=query?
-  matches.length+' products found; showing up to '+MAX_ROWS+'. Select a product for its detailed release history.':
+  filtered.length+' products found; showing up to '+MAX_ROWS+'. Select a product for its detailed release history.':
   'Browse the monitored product catalogue or search by any name in the extended directory.';
  const failures=(catalog.errors||[]).length;
- $('lifecycleFreshness').textContent='Snapshot: '+(catalog.checked_at||'Unavailable')+
+ $('lifecyclePublicSearch').placeholder=catalogList.length?'Search '+catalogList.length+' directory products…':'Search products or release branches…';
+ $('lifecycleFreshness').textContent=!catalog.checked_at?'Source snapshot unavailable. Product counts and dates cannot be confirmed.':'Snapshot: '+catalog.checked_at+
   '. '+failures+' product sources unavailable. '+catalogList.length+' products indexed in the broader directory. Verify vendor lifecycle terms and editions.';
 }
 function syncCycles(){
@@ -196,18 +210,19 @@ function syncCycles(){
 }
 function getCandidate(){
  const slug=$('lifecycleProduct').value;
- const product=slug?staticProducts.find(([name])=>name===slug)?.[1]:$('lifecycleCustomName').value.trim();
- const cycle=slug?$('lifecycleCycle').value:$('lifecycleCustomCycle').value.trim();
+ const product=slug?(staticProducts.find(([name])=>name===slug)?.[1]||catalog.cycles.find(c=>c.slug===slug)?.product||titleCase(slug)):$('lifecycleCustomName').value.trim();
+ const cycle=slug?($('lifecycleCycle').value||$('lifecycleManualBranch')?.value.trim()||''):$('lifecycleCustomCycle').value.trim();
  const customDate=slug?'':$('lifecycleCustomDate').value.trim();
  const customSource=slug?'':$('lifecycleCustomSource').value.trim();
  const installed=$('lifecycleInstalled').value.trim();
  if(!product)throw Error('Choose a product or enter a custom product name.');
  if(slug&&!cycle)throw Error('Choose a specific release cycle.');
- if(!slug&&!/^\d{4}-\d{2}-\d{2}$/.test(customDate))
+ if(!enhanced&&!slug&&!/^\d{4}-\d{2}-\d{2}$/.test(customDate))
   throw Error('Custom products need a verified end of support date.');
  if(!slug&&(!/^https:\/\//.test(customSource)))
   throw Error('Custom products need an official HTTPS source URL.');
- return {product,slug,cycle,installed_version:installed,custom_eol_date:customDate,custom_source_url:customSource};
+ const types=[...document.querySelectorAll('#productMonitorTypes input:checked')].map(x=>x.value);
+ return {product,slug,cycle,installed_version:installed,custom_eol_date:customDate,custom_source_url:customSource,edition:$('lifecycleEdition')?.value.trim()||'',...(types.length?{alert_types:types}:{}),delivery_mode:$('productMonitorCadence')?.value||'daily'};
 }
 function queueKey(w){
  return [w.slug,w.cycle,w.product.toLowerCase(),w.custom_eol_date].join('|');
@@ -254,9 +269,11 @@ function renderUser(){
  $('lifecycleWatchCount').textContent=logged.length+' monitored';
  $('lifecycleLead').value=String(prefs.lead_days||90);
  $('lifecycleEmailOptin').checked=!!prefs.email_enabled;
+ if(Array.isArray(prefs.alert_types))for(const checkbox of document.querySelectorAll('#productMonitorTypes input'))checkbox.checked=prefs.alert_types.includes(checkbox.value);
+ if(prefs.delivery_mode&&$('productMonitorCadence'))$('productMonitorCadence').value=prefs.delivery_mode;
  $('lifecycleDeliveryState').textContent=delivery
-  ? 'Automatic lifecycle sending is enabled in the Cloudflare Worker.'
-  : 'Saved preferences are not yet sending emails. Scheduled delivery requires activation in Cloudflare.';
+  ? 'Scheduled monitoring is operating. Email requires your saved consent; provider acceptance and delivery are recorded separately.'
+  : 'Monitoring Not Yet Active for email. Saved preferences do not activate scheduled checks or delivery.';
  updateActions();
  if(!signed||!ready){results.append(make('p','ops-note','You can choose products and versions above. Sign in and complete the D1 migration to save monitoring and notifications.'));return;}
  if(!logged.length){results.append(make('p','ops-note','No saved product lifecycle watches. Choose a monitored product or add your own verified support date.'));return;}
@@ -271,8 +288,30 @@ function renderUser(){
    catch(e){message(e.message)}
   });
   top.append(del);div.append(top);
+  div.append(make('span','monitor-state-tag',watch.monitoring_label||'Monitoring Not Yet Active'));
+  if(watch.last_attempt_at)div.append(make('p','ops-note','Last attempt: '+new Date(watch.last_attempt_at).toLocaleString()));
+  if(watch.last_success_at)div.append(make('p','ops-note','Last verified source check: '+new Date(watch.last_success_at).toLocaleString()));
+  if(watch.next_due_at)div.append(make('p','ops-note','Next due check: '+new Date(watch.next_due_at).toLocaleString()));
+  if(watch.verified)div.append(make('p','ops-note','Official branch release: '+watch.verified.version+' · Publication date: '+(watch.verified.published||'Not published')));
+  if(watch.verification_error||watch.source_error)div.append(make('p','ops-note',watch.verification_error||watch.source_error));
+  if(enhanced&&watch.monitoring_status){
+   const controls=make('div','monitor-watch-controls');
+   const pause=make('button','ops-download',watch.monitoring_status==='paused'?'Resume':'Pause');pause.type='button';pause.addEventListener('click',async()=>{try{await call('/watches/'+watch.id,'PUT',{status:watch.monitoring_status==='paused'?'enabled':'paused'});await load()}catch(e){message(e.message)}});
+   const edit=make('button','ops-download','Edit installed version');edit.type='button';edit.addEventListener('click',async()=>{const version=window.prompt('Installed version / build',watch.installed_version||'');if(version===null)return;try{await call('/watches/'+watch.id,'PUT',{installed_version:version});await load()}catch(e){message(e.message)}});
+   const options=make('button','ops-download','Alert options');options.type='button';
+   options.addEventListener('click',()=>{
+    if(div.querySelector('.monitor-watch-options')){div.querySelector('.monitor-watch-options').remove();return;}
+    const form=make('form','monitor-watch-options monitor-type-options'),types=[];
+    for(const original of document.querySelectorAll('#productMonitorTypes label')){const label=make('label'),checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.value=original.querySelector('input').value;checkbox.checked=(watch.alert_types||[]).includes(checkbox.value);types.push(checkbox);label.append(checkbox,document.createTextNode(original.textContent));form.append(label);}
+    const warning=make('fieldset');warning.append(make('legend','','Reminder thresholds'));const days=[];
+    for(const day of [180,90,60,30,14,7]){const label=make('label'),checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.value=String(day);checkbox.checked=(watch.notice_days||[]).includes(day);days.push(checkbox);label.append(checkbox,document.createTextNode(day+' days'));warning.append(label);}form.append(warning);
+    const entitledLabel=make('label'),entitled=document.createElement('input');entitled.type='checkbox';entitled.checked=watch.extended_entitled===1;entitledLabel.append(entitled,document.createTextNode('I have verified entitlement to published extended support'));form.append(entitledLabel);
+    const save=make('button','ops-download','Save watch alert options');save.type='submit';form.append(save);form.addEventListener('submit',async event=>{event.preventDefault();try{await call('/watches/'+watch.id,'PUT',{alert_types:types.filter(c=>c.checked).map(c=>c.value),notice_days:days.filter(c=>c.checked).map(c=>Number(c.value)),extended_entitled:entitled.checked});await load();message('Watch-specific alert options saved.')}catch(error){message(error.message)}});div.append(form);
+   });
+   controls.append(pause,edit,options);div.append(controls);
+  }
   const info=summary(watch),day=daysTo(info?.date);
-  if(watch.installed_version&&info?.latest)div.append(make('p','ops-note','Installed: '+watch.installed_version+' · Latest recorded release: '+info.latest+'. Verify vendor updates before assuming the release is a security fix.'));
+  div.append(make('p','ops-note','Installed: '+(watch.installed_version||'Not recorded')+' · Latest recorded release: '+(info?.latest||'Not verified')+'. Verify vendor updates before assuming the release is a security fix.'));
   const releases=(window.CVEHARBOR_PATCH_NOTES?.releases||[]).filter(x=>x.slug===watch.slug &&
     x.version?.startsWith(watch.cycle+'.')).sort((a,b)=>String(b.published).localeCompare(String(a.published)));
   if(releases.length){
@@ -295,15 +334,20 @@ function renderUser(){
 }
 async function load(){
  const state=await call();logged=state.watches||[];
- prefs=state.preferences||{email_enabled:0,lead_days:90};delivery=!!state.email_delivery_active;renderUser();
+ prefs=state.preferences||{email_enabled:0,lead_days:90};delivery=enhanced&&!!state.email_delivery_active;renderUser();
+ window.dispatchEvent(new CustomEvent('lifecycle:loaded',{detail:{watches:logged,enhanced,flags:monitorFlags,scheduler:state.scheduler,recipient:state.recipient||accountEmail}}));
 }
 window.addEventListener('cveharbor:account-state',async event=>{
+ const email=String(event.detail?.email||'').toLowerCase();
+ if(!event.detail?.authenticated||email!==accountEmail){authEpoch++;ready=false;logged=[];queued.splice(0);prefs={email_enabled:0,lead_days:90};enhanced=false;delivery=false;monitorFlags={};accountEmail=email;renderQueue();renderUser();}
  signed=!!event.detail?.authenticated;
  // Keep selection and custom product fields browsable for everyone.
  // Only account mutations require sign in and the D1 migration.
  updateActions();
- if(!signed){ready=false;logged=[];prefs={email_enabled:0,lead_days:90};delivery=false;renderUser();message('Sign in above to save lifecycle watches and email preferences.');return;}
+ if(!signed){ready=false;logged=[];prefs={email_enabled:0,lead_days:90};delivery=false;renderUser();window.dispatchEvent(new CustomEvent('lifecycle:loaded',{detail:{watches:[],enhanced:false,flags:{}}}));message('Sign in above to save lifecycle watches and email preferences.');return;}
  try{
+  const epoch=authEpoch;
+  try{const r=await fetch('https://api.cveharbor.com/v1/monitoring/status',{credentials:'include'});const state=await r.json();if(epoch!==authEpoch)return;if(r.ok){monitorFlags=state;enhanced=!!state.ready;}}catch{}
   const flags=await call('/status');ready=!!flags.ready;
   if(!ready){message('Cloudflare D1 lifecycle migration is required to save preferences. Product and release browsing remains available.');renderUser();return;}
   await load();message('Saved lifecycle watches loaded from your private account.');
@@ -329,10 +373,11 @@ $('lifecyclePreferencesForm').addEventListener('submit',async event=>{
  if(enabled&&!window.confirm('Enable lifecycle email notices for the products saved in your watchlist?'))return;
  const button=$('lifecyclePrefsSave');button.disabled=true;
  try{
-  await call('/preferences','PUT',{email_enabled:enabled,lead_days:lead});
+  await call('/preferences','PUT',{email_enabled:enabled,lead_days:lead,...(enhanced?{alert_types:[...document.querySelectorAll('#productMonitorTypes input:checked')].map(c=>c.value),delivery_mode:$('productMonitorCadence')?.value||'daily'}:{})});
   await load();message(enabled?'Email preference saved. Scheduled sending requires separate backend activation.':'Lifecycle email notices disabled.');
  }catch(e){message(e.message)}
  finally{button.disabled=false}
 });
 renderFeed();renderQueue();renderUser();
+window.CVEHARBOR_LIFECYCLE_MONITOR={refresh:load};
 })();

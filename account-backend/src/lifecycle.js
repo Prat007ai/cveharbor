@@ -1,5 +1,6 @@
 // Private lifecycle watchlist and explicit opt-in. No public customer records.
 import { sendEmail } from './delivery.js';
+import {monitorReady} from './monitor-engine.js';
 const SITE='https://cveharbor.com';
 const DATA=SITE+'/lifecycle.js';
 const now=()=>Math.floor(Date.now()/1000);
@@ -179,10 +180,11 @@ export async function dispatchLifecycle(env,day=new Date()){
  const people=config.results||[];if(!people.length)return {status:'none'};
  const feed=await loadLifecycleFeed();
  const vendorNotes=await loadVendorNotes();
+ const enhanced=await monitorReady(env);
  let sent=0,failed=0;
  for(const person of people){
   try{
-   const rows=await env.DB.prepare('SELECT id,product,slug,cycle,installed_version,custom_eol_date,custom_source_url FROM lifecycle_watches WHERE user_id=?').bind(person.id).all();
+   const rows=await env.DB.prepare('SELECT id,product,slug,cycle,installed_version,custom_eol_date,custom_source_url FROM lifecycle_watches WHERE user_id=?'+(enhanced?' AND NOT EXISTS(SELECT 1 FROM lifecycle_watch_settings s WHERE s.user_id=lifecycle_watches.user_id AND s.watch_id=lifecycle_watches.id)':'')).bind(person.id).all();
    const watches=rows.results||[];
    const matches=evaluate(watches,feed.cycles,person.lead_days,day).slice(0,15);
    const vendorMatches=vendorReleaseNotices(watches,vendorNotes).slice(0,15);

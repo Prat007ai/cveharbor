@@ -19,8 +19,9 @@ install_site_auth()
 
 root=Path(__file__).resolve().parents[1]
 base="https://cveharbor.com"
-routes=["/", "/intelligence/", "/vulnerabilities/","/threats/","/account/","/workspace/","/customer-reports/","/customer-dashboard/","/environments/","/website-monitor/"]
+routes=["/", "/intelligence/", "/vulnerabilities/","/threats/","/account/","/workspace/","/customer-reports/","/customer-dashboard/","/environments/","/website-monitor/","/lifecycle/"]
 required={
+ "/lifecycle/":["lifecycleMonitorTitle","productMonitorActivation","productMonitorHistory","lifecycle-monitor.css?v=product-monitor-1","product-monitoring.js?v=product-monitor-1"],
  "/":["homepageFeatures", "marketing-story", "asset-onboarding", "findings-table", "homepage.css?v=brochure-216"],
  "/intelligence/":["overviewTitle", "techBars", "chartInsights", "feedStatus"],
  "/vulnerabilities/":["technology-kpis","technologyManageButton","technologyCustomizer","categoryGrid","command-center.js?v=brochure-216"],
@@ -53,7 +54,7 @@ def verify_local_build():
         for marker in required[route]:
             if marker not in html:
                 raise RuntimeError(f"Generated {route} missing {marker}")
-        for asset in ("styles.css", "customer-security.js", "inventory.js", "website-monitor-page.js", "threats.js", "geo-map.js"):
+        for asset in ("styles.css", "customer-security.js", "inventory.js", "website-monitor-page.js", "product-monitoring.js", "lifecycle-monitor.css", "threats.js", "geo-map.js"):
             match = re.search(r'/'+re.escape(asset)+r'\?v=([a-zA-Z0-9-]+)', html)
             if match and not (root / "public" / asset).is_file():
                 raise RuntimeError(f"Generated {route} references missing asset {asset}")
@@ -90,6 +91,7 @@ for attempt in range(6):
             for marker in required[route]:
                 if marker not in html: raise RuntimeError(f"{route} missing {marker}")
             assets=("styles.css","homepage.css","app.js","advisory-details.js","cvie.js","cvie.css","inventory-matching.js","command-center.js","customer-security.js","inventory.js","website-monitor-page.js")
+            if route=="/lifecycle/":assets+=("lifecycle-monitor.js","product-monitoring.js","lifecycle-monitor.css")
             if route=="/threats/":assets+=("threats.js","geo-map.js")
             for asset in assets:
                 m=re.search(r'/'+re.escape(asset)+r'\?v=([a-zA-Z0-9-]+)',expected)
@@ -122,3 +124,4 @@ for attempt in range(6):
         if attempt==5: raise SystemExit(f"PRODUCTION VERIFICATION FAILED: {error}")
         print(f"Retry {attempt+1}: {error}",flush=True)
         time.sleep(15)
+
