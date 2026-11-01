@@ -12,9 +12,15 @@ async function query(body){
  return result.result;
 }
 const DB={prepare(sql){let params=[];const statement={sql,get params(){return params;},bind(...values){params=values;return statement;},async all(){return (await query({sql,params}))[0];},async first(){return (await statement.all()).results[0]||null;},async run(){return (await query({sql,params}))[0];}};return statement;},
- async batch(statements){return query({batch:statements.map(s=>({sql:s.sql,params:s.params}))});}};
+ async batch(statements){return query(statements.map(s=>({sql:s.sql,params:s.params})));}};
 const env={DB,CVIE_SHARED_SCANS_ENABLED:'true'};
 try{
+ stage='verify transactional D1 REST batch transport';
+ const transport=await DB.batch([DB.prepare('SELECT ? AS value').bind(1),DB.prepare('SELECT ? AS value').bind(2)]);
+ if(transport.length!==2||transport[0].results[0]?.value!==1||transport[1].results[0]?.value!==2)throw Error('Unexpected D1 batch response');
+ if(process.argv.includes('--preflight')){
+  console.log(JSON.stringify({ok:true,read_only:true,batch_transport_verified:true}));
+ }else{
  let linked=0,seeded=0;
  stage='link verified product identities';
  for(let i=0;i<200;i++){const result=await reconcileSharedScopes(env,null,Date.now(),500);linked+=result.linked;if(!result.linked)break;if(i===199)throw Error('Bootstrap batch limit reached');}
@@ -30,6 +36,8 @@ try{
  if(pending.n)throw Error('A history migration is still leased or pending; rerun this resumable step');
  const totals=await DB.prepare('SELECT (SELECT COUNT(*) FROM cvie_shared_scopes) AS scopes,(SELECT COUNT(*) FROM cvie_shared_advisories) AS public_advisories,(SELECT COUNT(*) FROM cvie_product_scopes WHERE scope_id IS NOT NULL) AS private_links').first();
  console.log(JSON.stringify({ok:true,linked_this_run:linked,public_records_imported:seeded,...totals,legacy_private_history_preserved:true}));
+ }
 }catch{
  console.error('Shared CVIE bootstrap failed during '+stage+'. Legacy history remains preserved; deployment must not proceed until the resumable bootstrap passes.');process.exitCode=1;
 }
+
