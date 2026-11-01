@@ -46,7 +46,9 @@ export async function dispatchMonitorMail(env,fetcher=fetch,now=Date.now()){
   CASE WHEN s.delivery_mode='immediate_security' AND e.kind='security' THEN n.id ELSE '' END AS immediate_id
   FROM lifecycle_monitor_notifications n JOIN lifecycle_monitor_events e ON e.id=n.event_id
   LEFT JOIN lifecycle_watch_settings s ON s.user_id=n.user_id AND s.watch_id=n.watch_id
-  WHERE n.state='pending' AND n.due_at<=? GROUP BY n.user_id,n.recipient,immediate_id ORDER BY due_at LIMIT 8`,now).all()).results||[];
+  WHERE n.state='pending' AND n.due_at<=? AND (COALESCE(s.delivery_mode,'daily')='immediate_security' AND e.kind='security' OR NOT EXISTS(
+   SELECT 1 FROM lifecycle_monitor_messages m WHERE m.user_id=n.user_id AND m.recipient=n.recipient AND m.slot=? AND m.state<>'pending'))
+  GROUP BY n.user_id,n.recipient,immediate_id ORDER BY CASE WHEN immediate_id<>'' THEN 0 ELSE 1 END,due_at LIMIT 2`,now,'digest:'+new Date(now).toISOString().slice(0,10)).all()).results||[];
  for(const owner of due){
   const slot=owner.immediate_id?'security:'+owner.immediate_id:'digest:'+new Date(now).toISOString().slice(0,10),id=await sha(owner.user_id+':'+owner.recipient+':'+slot);
   await q(env.DB,'INSERT OR IGNORE INTO lifecycle_monitor_messages(id,user_id,recipient,slot,created_at) VALUES(?,?,?,?,?)',id,owner.user_id,owner.recipient,slot,now).run();
@@ -54,11 +56,11 @@ export async function dispatchMonitorMail(env,fetcher=fetch,now=Date.now()){
    SELECT n.id FROM lifecycle_monitor_notifications n JOIN lifecycle_monitor_events e ON e.id=n.event_id
    LEFT JOIN lifecycle_watch_settings s ON s.user_id=n.user_id AND s.watch_id=n.watch_id
    WHERE n.user_id=? AND n.recipient=? AND n.state='pending' AND n.due_at<=?
-   AND ((?<>'' AND n.id=?) OR (?='' AND NOT(s.delivery_mode='immediate_security' AND e.kind='security')))
+   AND ((?<>'' AND n.id=?) OR (?='' AND NOT(COALESCE(s.delivery_mode,'daily')='immediate_security' AND e.kind='security')))
    ORDER BY n.due_at,n.id LIMIT 20)
    AND EXISTS(SELECT 1 FROM lifecycle_monitor_messages WHERE id=? AND state='pending')`,id,owner.user_id,owner.recipient,now,owner.immediate_id,owner.immediate_id,owner.immediate_id,id).run();
  }
- const messages=(await q(env.DB,"SELECT * FROM lifecycle_monitor_messages WHERE state='pending' AND next_attempt_at<=? AND lease_until<? AND attempts<5 ORDER BY created_at LIMIT 8",now,now).all()).results||[];
+ const messages=(await q(env.DB,"SELECT * FROM lifecycle_monitor_messages WHERE state='pending' AND next_attempt_at<=? AND lease_until<? AND attempts<5 ORDER BY CASE WHEN slot LIKE 'security:%' THEN 0 ELSE 1 END,created_at LIMIT 2",now,now).all()).results||[];
  let submitted=0;
  for(const message of messages){
   const token=crypto.randomUUID();
@@ -72,7 +74,7 @@ export async function dispatchMonitorMail(env,fetcher=fetch,now=Date.now()){
     WHERE n.message_id=? AND n.state='queued'`,message.id).all()).results||[];
    const allowed=rows.filter(r=>r.watch_status==='enabled'&&r.consented_at&&r.email_enabled===1&&!r.disabled);
    if(!await authorized(env,message)||!allowed.length){
-    await q(env.DB,"UPDATE lifecycle_monitor_messages SET state='suppressed',detail='Consent, ownership or monitoring eligibility changed',lease_until=0 WHERE id=? AND attempt_token=?",message.id,token).run();continue;
+    await env.DB.batch([q(env.DB,"UPDATE lifecycle_monitor_messages SET state='suppressed',detail='Consent, ownership or monitoring eligibility changed',lease_until=0 WHERE id=? AND attempt_token=?",message.id,token),q(env.DB,"UPDATE lifecycle_monitor_notifications SET state='suppressed' WHERE message_id=? AND state='queued'",message.id)]);continue;
    }
    // Notifications removed from the digest remain suppressed in history.
    const excluded=rows.filter(r=>!allowed.some(a=>a.id===r.id));

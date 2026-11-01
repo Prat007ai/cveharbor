@@ -17,7 +17,7 @@ function settingsInput(data){
  return {alert_types:JSON.stringify([...new Set(alert_types)].sort()),notice_days:JSON.stringify([...new Set(notice_days)].sort((a,b)=>b-a)),status,delivery_mode,extended_entitled:data.extended_entitled===true?1:0};
 }
 async function schedulerHealth(env,now){
- const last=await env.DB.prepare('SELECT * FROM lifecycle_monitor_runs ORDER BY started_at DESC LIMIT 1').first();
+ const last=await env.DB.prepare("SELECT * FROM lifecycle_monitor_runs WHERE slot NOT LIKE 'mail:%' ORDER BY started_at DESC LIMIT 1").first();
  return {enabled:env.PRODUCT_MONITOR_CHECKS_ENABLED==='true',operating:env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&Boolean(last?.completed_at)&&now-last.completed_at<3*3600000,last_run:last?.completed_at||null,next_expected:last?.started_at?last.started_at+3600000:null,error:last?.error||''};
 }
 export async function monitoringHandler(req,env,user,path,data={},now=Date.now()){
@@ -135,8 +135,22 @@ export async function dispatchProductMonitoring(env,day=new Date(),fetcher=fetch
  try{
   const source=await checkSubscribedSources(metered,fetcher,now),reminderDay=day.toISOString().slice(0,10);
   const alreadyEvaluated=await q(metered.DB,'SELECT 1 FROM lifecycle_monitor_runs WHERE reminder_day=? AND completed_at IS NOT NULL LIMIT 1',reminderDay).first();
-  const reminders=alreadyEvaluated?0:await dailyReminders(metered,now);const mail=await dispatchMonitorMail(metered,fetcher,now);
-  await q(env.DB,'UPDATE lifecycle_monitor_runs SET completed_at=?,checked=?,failed=?,new_events=?,submitted=?,rows_read=?,rows_written=?,reminder_day=?,error=? WHERE slot=?',now,source.checked,source.failed,source.events+reminders,mail.submitted||0,metrics.read,metrics.written,alreadyEvaluated?'':reminderDay,source.failed?'Some source checks failed; verified state retained':'',slot).run();
-  return {...source,...mail};
+  const reminders=alreadyEvaluated?0:await dailyReminders(metered,now);
+  await q(env.DB,'UPDATE lifecycle_monitor_runs SET completed_at=?,checked=?,failed=?,new_events=?,submitted=?,rows_read=?,rows_written=?,reminder_day=?,error=? WHERE slot=?',now,source.checked,source.failed,source.events+reminders,0,metrics.read,metrics.written,alreadyEvaluated?'':reminderDay,source.failed?'Some source checks failed; verified state retained':'',slot).run();
+  return source;
  }catch{await q(env.DB,"UPDATE lifecycle_monitor_runs SET completed_at=?,error='Monitoring run failed; inspect source and delivery logs' WHERE slot=?",now,slot).run();return {failed:true};}
+}
+export async function dispatchProductMonitorMail(env,day=new Date(),fetcher=fetch){
+ if(env.PRODUCT_MONITOR_CHECKS_ENABLED!=='true'||!monitorDeliveryReady(env)||!await monitorReady(env))return {disabled:true};
+ const now=day.getTime();
+ const work=await q(env.DB,`SELECT EXISTS(SELECT 1 FROM lifecycle_monitor_notifications n JOIN lifecycle_monitor_events e ON e.id=n.event_id
+  LEFT JOIN lifecycle_watch_settings s ON s.user_id=n.user_id AND s.watch_id=n.watch_id
+  WHERE n.state='pending' AND n.due_at<=? AND (COALESCE(s.delivery_mode,'daily')='immediate_security' AND e.kind='security' OR NOT EXISTS(
+   SELECT 1 FROM lifecycle_monitor_messages m WHERE m.user_id=n.user_id AND m.recipient=n.recipient AND m.slot=? AND m.state<>'pending')))
+  OR EXISTS(SELECT 1 FROM lifecycle_monitor_messages WHERE (state='pending' AND attempts<5 AND next_attempt_at<=?) OR (state='submitting' AND lease_until<?)) AS due`,now,'digest:'+day.toISOString().slice(0,10),now,now).first();
+ if(!work?.due)return {idle:true};
+ const slot='mail:'+day.toISOString().slice(0,16);
+ if((await q(env.DB,'INSERT OR IGNORE INTO lifecycle_monitor_runs(slot,started_at) VALUES(?,?)',slot,now).run()).meta.changes!==1)return {already_claimed:true};
+ try{const result=await dispatchMonitorMail(env,fetcher,now);await q(env.DB,'UPDATE lifecycle_monitor_runs SET completed_at=?,submitted=? WHERE slot=?',now,result.submitted||0,slot).run();return result;}
+ catch{await q(env.DB,"UPDATE lifecycle_monitor_runs SET completed_at=?,error='Delivery worker failed; inspect outbox before retrying' WHERE slot=?",now,slot).run();return {failed:true};}
 }

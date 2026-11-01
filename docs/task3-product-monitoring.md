@@ -21,7 +21,7 @@ Only subscriptions with enabled settings cause official-source checks. Sources a
 
 Separate runtime flags, disabled unless approved: PRODUCT_MONITOR_CHECKS_ENABLED, PRODUCT_MONITOR_DELIVERY_ENABLED, PRODUCT_MONITOR_TEST_ENABLED. PRODUCT_MONITOR_ADMIN_EMAILS and PRODUCT_MONITOR_TEST_RECIPIENTS are explicit allowlists. Existing SMTP2GO secrets are reused; webhook authentication needs a separately approved SMTP2GO_MONITOR_WEBHOOK_TOKEN Worker secret and matching provider configuration. Delivery additionally requires a sender, existing API key and webhook token. No new provider, Cloudflare Email Sending, Queue, Cron Trigger, paid plan or DNS record is created.
 
-The enhanced scheduler reuses the existing hourly UTC trigger, selects up to four due official endpoints per run, and performs daily checks and daily reminder evaluation. Notification submission is bounded to eight recipient messages per hourly run. Daily messages use an 08:00 UTC due window; for 50 simultaneously due customers, the existing hourly dispatcher can spread delivery over approximately seven hourly runs. Immediate verified-security mode means the next hourly run, not instant push; a faster dispatcher would need separately approved scheduling. The UI states the window and never promises instantaneous delivery.
+The enhanced scheduler reuses the existing hourly UTC trigger, selects one due official endpoint per hourly run, and performs daily checks and daily reminder evaluation. Notification submission reuses the existing minute trigger, separately gated by both approved monitoring and delivery flags, and sends at most two messages per tick with verified security prioritized. Daily messages use an 08:00 UTC due window; 50 simultaneously due customers can drain in approximately 25 minutes, subject to provider throttling. Immediate security means the next available minute processing window, not an inbox guarantee. No trigger is added or changed. Idle delivery ticks only read eligibility and do not write heartbeat rows. Source/notification fan-out is set-based: the 50-recipient source test fits within 20 D1 statements, rather than issuing a suppression read and notification insert per customer. Activation review must check unique source count and freshness; an hourly one-endpoint dispatcher has capacity for at most 24 endpoint checks/day, so more than 24 subscribed distinct endpoints needs separately reviewed throughput configuration.
 
 ## Sources and limitations
 
@@ -75,7 +75,7 @@ The first branch CI run passed all backend/UI checks. Read-only production metad
 
 The approved SMTP2GO test workflow completed with status **not_run**: no existing SMTP2GO key was bound to CI. Neither approved address was emailed. The production encrypted Worker key was not extracted. Live acceptance, provider message IDs and actual delivery remain unverified; mocked acceptance/webhook tests are not substituted for this evidence. Authorizing test recipients does not make a credential available.
 
-The concurrent catalogue-scope changes on main through 67ff94e105f3def2b55ef9af11a9a0397923dad0 were integrated before release. Authentication/CVIE routes, root script versions and both inventory/catalogue release classification paths were retained. The combined local backend suite has 25 test files, with 17 dedicated monitoring scenarios. Python includes four independent-watchdog checks (116 total).
+The concurrent catalogue-scope changes on main through 67ff94e105f3def2b55ef9af11a9a0397923dad0 were integrated before release. Authentication/CVIE routes, root script versions and both inventory/catalogue release classification paths were retained. The combined local backend suite has 25 test files, with 18 dedicated monitoring scenarios. Python includes four independent-watchdog checks (116 total).
 
 The production code-only guard records schema names, activation flags, sender, secret binding names and Cron schedules before deployment and asserts they are identical afterwards. It also verifies the new private status route rejects unauthenticated requests. No new monitoring migration is executed by this release.
 
@@ -110,3 +110,5 @@ The production code-only guard records schema names, activation flags, sender, s
 * `scripts/worker_release_mode.mjs`
 * `scripts/worker_release_smoke.mjs`
 * `tests/test_product_monitor_health.py`
+
+Final development evidence: the corrected PHP branch endpoint, .NET and WordPress all passed the live CI vendor contract probe. The latest monitoring scenarios also cover an idle minute dispatcher, cron replay, stale-lease fencing and the bounded 50-recipient D1 query budget. No real SMTP2GO send or delivered message was observed because the approved test could not access an existing CI credential.

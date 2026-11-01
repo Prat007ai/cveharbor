@@ -7,7 +7,7 @@ import {cvieRoute,subscribeProducts,syncAccountProducts,runCvieStep,dispatchCvie
 import {dispatchEvidence} from './cvie-evidence.js';
 import {productCpe,normalizeName} from './product-identity.js';
 import { handler as lifecycleHandler, LifecycleError, dispatchLifecycle } from './lifecycle.js';
-import {monitoringHandler,MonitorError,dispatchProductMonitoring} from './monitoring.js';
+import {monitoringHandler,MonitorError,dispatchProductMonitoring,dispatchProductMonitorMail} from './monitoring.js';
 import {smtp2goWebhook,unsubscribeMonitor} from './monitor-mail.js';
 import { inventoryRoute, InventoryError } from './inventory.js';
 import {route as websiteMonitorRoute,scanDue as scanWebsiteDue} from './website-monitor.js';
@@ -343,7 +343,7 @@ export default {async fetch(req,env,ctx){
  }catch(error){if(error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
-  if(_event.cron==='* * * * *'){ctx.waitUntil(dispatchEvidence(env));return;}
+  if(_event.cron==='* * * * *'){ctx.waitUntil(dispatchEvidence(env));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}
   if(_event.cron==='*/5 * * * *'){ctx.waitUntil(dispatchCvie(env));return;}
   if(env.ALERT_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchDueDigests(env));
   if(env.LIFECYCLE_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchLifecycle(env));

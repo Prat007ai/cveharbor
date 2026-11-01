@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DB} from './helpers/d1.mjs';
 import worker from '../src/index.js';
-import {monitoringHandler,dispatchProductMonitoring} from '../src/monitoring.js';
+import {monitoringHandler,dispatchProductMonitoring,dispatchProductMonitorMail} from '../src/monitoring.js';
 import {checkSubscribedSources,reminderThreshold,sha,q} from '../src/monitor-engine.js';
 import {compareVersions,normalizeVendor,monitorIdentity} from '../src/monitor-sources.js';
 import {dispatchMonitorMail,smtp2goWebhook,submitSmtp2go,unsubscribeMonitor} from '../src/monitor-mail.js';
@@ -16,7 +16,8 @@ async function watch(e,id='a',extra={}){const r=await api(e,'/watches','POST',{p
 const all=(e,table)=>q(e.DB,'SELECT * FROM '+table).all().then(r=>r.results);
 test('50 customers share one official source request, one public event and authorized notifications',async()=>{
  const e=env();for(let i=0;i<50;i++){const id='tenant'+i;await q(e.DB,'INSERT INTO users VALUES(?,?)',id,id+'@example.test').run();await watch(e,id);}
- let calls=0;const result=await checkSubscribedSources(e,async()=>{calls++;return Response.json(feed());},NOW);
+ e.DB.executions=0;let calls=0;const result=await checkSubscribedSources(e,async()=>{calls++;return Response.json(feed());},NOW);
+ assert.ok(e.DB.executions<=20,'50-recipient source fan-out stays within the free Worker query budget');
  assert.equal(calls,1);assert.equal(result.checked,1);assert.equal((await all(e,'lifecycle_monitor_products')).length,1);assert.equal((await all(e,'lifecycle_monitor_events')).length,1);assert.equal((await all(e,'lifecycle_monitor_notifications')).length,50);
  const global=JSON.stringify(await all(e,'lifecycle_monitor_products'))+JSON.stringify(await all(e,'lifecycle_monitor_state'));assert.doesNotMatch(global,/tenant|example\.test/);
  const state=await all(e,'lifecycle_monitor_state');await checkSubscribedSources(e,()=>Response.json(feed()),NOW+86400001);
@@ -133,4 +134,11 @@ test('daily reminders do not flood past thresholds and unchanged daily runs do n
  const ev=(await all(e,'lifecycle_monitor_events')).find(ev=>ev.id===first[0].event_id);assert.equal(JSON.parse(ev.record_json).threshold,14);
  await q(e.DB,'UPDATE lifecycle_monitor_sources SET next_due_at=0').run();await checkSubscribedSources(e,()=>Response.json(feed()),NOW+86400000);assert.equal((await all(e,'lifecycle_monitor_notifications')).length,1);
  await q(e.DB,'UPDATE lifecycle_monitor_sources SET next_due_at=0').run();await checkSubscribedSources(e,()=>Response.json(feed()),NOW+3*86400000);assert.equal((await all(e,'lifecycle_monitor_notifications')).length,2,'only the next threshold generates another notification');
+});
+test('minute delivery simulation runs without a browser, limits writes on idle ticks and claims submission once',async()=>{
+ const e=env();await watch(e);await checkSubscribedSources(e,()=>Response.json(feed()),NOW);
+ let sends=0;const send=()=>{sends++;return Response.json({data:{succeeded:1,failed:0,email_id:'minute-ok'}});};
+ const date=new Date(NOW+86400000);await dispatchProductMonitorMail(e,date,send);await dispatchProductMonitorMail(e,date,send);
+ assert.equal(sends,1);const runs=(await all(e,'lifecycle_monitor_runs')).length;
+ await dispatchProductMonitorMail(e,new Date(NOW+86460000),send);assert.equal((await all(e,'lifecycle_monitor_runs')).length,runs,'idle minute ticks do not write heartbeat rows');
 });

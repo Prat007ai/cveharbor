@@ -21,7 +21,7 @@ def main():
         print('Product monitoring activation is pending; no source, customer or notification rows queried.')
         return
     now=int(time.time()*1000)
-    report=query('SELECT MAX(completed_at) AS last_run FROM lifecycle_monitor_runs')[0]
+    report=query("SELECT MAX(completed_at) AS last_run FROM lifecycle_monitor_runs WHERE slot NOT LIKE 'mail:%'")[0]
     report.update(query("SELECT COUNT(*) AS stale_sources FROM lifecycle_monitor_sources x WHERE (x.last_success_at IS NULL OR x.last_success_at<"+str(now-3*86400000)+" OR x.failures>0) AND EXISTS(SELECT 1 FROM lifecycle_monitor_products p JOIN lifecycle_watch_settings s ON s.product_id=p.id WHERE p.source_id=x.id AND s.status='enabled')")[0])
     report.update(query("SELECT MIN(n.created_at) AS oldest_pending FROM lifecycle_monitor_notifications n LEFT JOIN lifecycle_monitor_messages m ON m.id=n.message_id WHERE n.state='pending' OR (n.state='queued' AND m.state IN('pending','submitting'))")[0])
     report.update(query("SELECT SUM(CASE WHEN state='submission_unknown' THEN 1 ELSE 0 END) AS unknown_submissions,COUNT(*) AS recent_messages,SUM(CASE WHEN state IN('failed','suppressed') THEN 1 ELSE 0 END) AS recent_failures FROM lifecycle_monitor_messages WHERE created_at>"+str(now-86400000))[0])
