@@ -78,32 +78,56 @@ function scanProgress(p){
  if(error)detail.append(node('span','Showing last saved progress. CVIE will reconnect automatically.'));
  block.append(heading,bar,detail);return block;
 }
-let identityDialog=null,identityProductId='',identityBusy=false,identityOptionsSignature='',identityOpener=null,identityError='',identityGeneration=0;
+let identityDialog=null,identityProductId='',identityBusy=false,identityOptionsSignature='',identityOpener=null,identityError='',identityGeneration=0,identityTimer=null,identityReading=false,identityStarted=0,identityResumedAt=0;
 function drawIdentity(){
  if(!identityDialog?.open)return;
  const p=products.find(x=>x.id===identityProductId);
  if(!p){identityDialog.close();return;}
  const status=identityDialog.querySelector('[role="status"]'),query=identityDialog.querySelector('input[type="search"]').value.toLowerCase();
  const choices=(p.candidates||[]).filter(x=>x.label.toLowerCase().includes(query));
- const signature=JSON.stringify([choices,identityBusy]);
+ const signature=JSON.stringify([choices,identityBusy,p.status,p.directory_complete]);
  if(signature!==identityOptionsSignature){
-  identityOptionsSignature=signature;const list=identityDialog.querySelector('.cvie-identity-options');list.replaceChildren();
+  const selected=identityDialog.querySelector('input[type="radio"]:checked')?.value;identityOptionsSignature=signature;const list=identityDialog.querySelector('.cvie-identity-options');list.replaceChildren();
   for(const item of choices){
-   const label=node('label','','cvie-identity-option'),radio=node('input');radio.type='radio';radio.name='cvie-identity';radio.value=item.cpe;radio.disabled=identityBusy;
+   const label=node('label','','cvie-identity-option'),radio=node('input');radio.type='radio';radio.name='cvie-identity';radio.value=item.cpe;radio.checked=item.cpe===selected;radio.disabled=identityBusy;
    const words=node('span'),title=node('strong',item.label);words.append(title);label.append(radio,words);list.append(label);
   }
-  if(!choices.length)list.append(node('p',query?'No matching options. Try another search.':p.status==='needs_identity'?'No identities were returned. Retry the directory lookup, or add a more specific product name and vendor in Customize technologies.':'Looking up product identities. You can leave this dialog open or return later.'));
+  if(!choices.length)list.append(node('p',query&&p.candidates?.length?'No matching options. Try another search.':p.status==='needs_identity'?'No identities were returned. Retry the directory lookup, or add a more specific product name and vendor in Customize technologies.':'Looking up product identities. You can leave this dialog open or return later.'));
  }
- if(!identityBusy)status.textContent=identityError||choices.length+' of '+(p.candidates?.length||0)+' available identities'+(p.directory_limited?' · Directory search is partial.':p.directory_complete?' · Directory search complete.':['queued','scanning'].includes(p.status)?' · Directory lookup in progress.':'');
+ if(!identityBusy)status.textContent=identityError||(p.status==='retrying'?(p.error||'NVD is unavailable; an automatic retry is scheduled.')+' Available choices remain selectable.':'')||choices.length+' of '+(p.candidates?.length||0)+' available identities'+(p.directory_limited?' · Directory search is partial.':p.directory_complete?' · Directory search complete.':['queued','scanning'].includes(p.status)?(Date.now()-identityStarted>20000?' · Waiting for NVD. Use Refresh options to resume.':' · Directory lookup in progress.'):'');
  identityDialog.querySelector('[data-confirm]').disabled=identityBusy||!identityDialog.querySelector('input[type="radio"]:checked');
- identityDialog.querySelector('[data-retry]').disabled=identityBusy||['queued','scanning'].includes(p.status);
+ identityDialog.querySelector('[data-retry]').disabled=identityBusy;
 }
 async function lookupIdentity(retry=false){
  if(identityBusy)return;identityError='';identityBusy=true;drawIdentity();
  const id=identityProductId,generation=identityGeneration;
- try{await request('/products/'+id+'/identity-options',{method:'POST',body:JSON.stringify({retry})});await refresh();}
+ try{const state=await request('/products/'+id+'/identity-options',{method:'POST',body:JSON.stringify({retry})});if(generation===identityGeneration){updateIdentityState(state);identityResumedAt=Date.now();}}
  catch(e){if(identityDialog.open&&identityProductId===id&&generation===identityGeneration)identityError=e.message;}
- finally{if(generation===identityGeneration){identityBusy=false;identityOptionsSignature='';drawIdentity();}}
+ finally{if(generation===identityGeneration){identityBusy=false;identityOptionsSignature='';drawIdentity();scheduleIdentityRead();}}
+}
+function updateIdentityState(state){
+ if(state.id!==identityProductId)return;
+ const p=products.find(x=>x.id===state.id);if(p)Object.assign(p,state);
+ if(state.cpe){identityDialog.close();void refresh();return;}
+ drawIdentity();
+}
+function scheduleIdentityRead(){
+ clearTimeout(identityTimer);
+ if(!identityDialog?.open||document.visibilityState==='hidden')return;
+ const p=products.find(x=>x.id===identityProductId);
+ if(p&&!['queued','scanning','retrying'].includes(p.status))return;
+ identityTimer=setTimeout(()=>void readIdentity(),3000);
+}
+async function readIdentity(){
+ if(identityReading||identityBusy||!identityDialog?.open){scheduleIdentityRead();return;}
+ const id=identityProductId,generation=identityGeneration;identityReading=true;
+ try{
+  const state=await request('/products/'+id+'/identity-options');
+  if(generation!==identityGeneration)return;identityError='';updateIdentityState(state);
+  // Resume an interrupted lookup at most once per 15 seconds, never during a live lease/backoff.
+  if(identityDialog.open&&(['queued','scanning'].includes(state.status)||state.status==='retrying'&&state.retry_at<=Date.now())&&state.lease_until<Date.now()&&Date.now()-identityResumedAt>=15000)await lookupIdentity();
+ }catch(e){if(generation===identityGeneration){identityError=e.message;drawIdentity();}}
+ finally{identityReading=false;if(generation===identityGeneration)scheduleIdentityRead();}
 }
 function openIdentity(name){
  const p=products.find(x=>normalize(x.name)===normalize(name));if(!p)return;
@@ -121,12 +145,12 @@ function openIdentity(name){
    finally{if(generation===identityGeneration){identityBusy=false;confirm.disabled=false;retry.disabled=false;options.querySelectorAll('input').forEach(x=>x.disabled=false);}}
   };
   actions.append(retry,confirm);identityDialog.append(header,node('p','Choose the product you use. These identities come from the NVD product directory; the list may include older releases. Version applicability is checked separately.'),search,status,options,actions);document.body.append(identityDialog);
-  identityDialog.addEventListener('close',()=>{identityGeneration++;identityBusy=false;identityOptionsSignature='';if(identityOpener?.isConnected)identityOpener.focus();else document.getElementById('technologyManageButton')?.focus()});
+  identityDialog.addEventListener('close',()=>{clearTimeout(identityTimer);identityGeneration++;identityBusy=false;identityOptionsSignature='';if(identityOpener?.isConnected)identityOpener.focus();else document.getElementById('technologyManageButton')?.focus()});
  }
- identityGeneration++;identityBusy=false;identityError='';identityProductId=p.id;identityOpener=document.activeElement;identityOptionsSignature='';identityDialog.querySelector('h2').textContent='Choose exact product · '+p.name;identityDialog.querySelector('input[type="search"]').value='';identityDialog.showModal();drawIdentity();void lookupIdentity();
+ identityGeneration++;identityStarted=Date.now();identityResumedAt=0;identityBusy=false;identityError='';identityProductId=p.id;identityOpener=document.activeElement;identityOptionsSignature='';identityDialog.querySelector('h2').textContent='Choose exact product · '+p.name;identityDialog.querySelector('input[type="search"]').value='';identityDialog.showModal();drawIdentity();void lookupIdentity();
 }
 
-function notify(){const signature=JSON.stringify([months,records,[...withdrawn].sort(),excluded]);const recordsChanged=signature!==lastSignature;lastSignature=signature;draw();drawIdentity();window.dispatchEvent(new CustomEvent('cvie:updated',{detail:{recordsChanged}}));}
+function notify(){const signature=JSON.stringify([months,records,[...withdrawn].sort(),excluded]);const recordsChanged=signature!==lastSignature;lastSignature=signature;draw();drawIdentity();scheduleIdentityRead();window.dispatchEvent(new CustomEvent('cvie:updated',{detail:{recordsChanged}}));}
 async function request(path='',options={}){
  const epoch=authEpoch;
  const response=await fetch(API+path+(path.includes('?')?'&':'?')+'scope='+scope,{credentials:'include',...(globalThis.AbortSignal?.timeout?{signal:AbortSignal.timeout(20000)}:{}),headers:{Accept:'application/json',...(options.body?{'Content-Type':'application/json'}:{})},...options});
@@ -199,7 +223,7 @@ function draw(){
     for(const note of p.coverage.notes||[])description.append(node('p',note));
     coverage.append(description);row.append(coverage);
    }
-   if(p.status==='needs_identity'||!p.cpe&&p.candidates?.length){
+   if(p.status==='needs_identity'||!p.cpe){
     const choose=node('button','Choose exact product','cvie-choose-product');choose.type='button';choose.setAttribute('aria-label','Choose exact product for '+p.name);choose.addEventListener('click',()=>openIdentity(p.name));row.append(choose);
    }
    list.append(row);
@@ -270,6 +294,7 @@ window.addEventListener('cveharbor:account-state',event=>{
  if(event.detail?.authenticated)void refresh(true);else{pending=false;pendingSync=false;clearTimeout(timer);}
 });
 document.addEventListener('visibilitychange',()=>{clearTimeout(timer);if(document.visibilityState==='visible'&&signedIn)void refresh(false,true);});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')scheduleIdentityRead();else clearTimeout(identityTimer)});
 if(typeof fetch==='function')void refresh(true);
 })();
 

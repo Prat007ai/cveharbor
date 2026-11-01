@@ -431,11 +431,11 @@
         freshness.append(text('span','technology-age-muted',latest?'Latest '+fmtDate(latest):'No dated advisories'));
       }
       const nameLine=text('span','technology-name-line',''),nameButton=text('button','technology-row-name technology-name-action',x.name);nameButton.type='button';
-      nameButton.addEventListener('click',event=>{event.stopPropagation();const p=window.CVEHARBOR_CVIE?.product(x.name);if(p?.status==='needs_identity')window.CVEHARBOR_CVIE.openIdentity(x.name);else openTechnologyAdvisories(x.name,false,horizon===12?'published12m':'published3m')});nameLine.append(nameButton);
+      nameButton.addEventListener('click',event=>{event.stopPropagation();const p=window.CVEHARBOR_CVIE?.product(x.name);if(p&&(p.status==='needs_identity'||!p.cpe))window.CVEHARBOR_CVIE.openIdentity(x.name);else openTechnologyAdvisories(x.name,false,horizon===12?'published12m':'published3m')});nameLine.append(nameButton);
       if(catalogueSignedIn&&personalized){const remove=text('button','technology-remove','×');remove.type='button';remove.title='Remove '+x.name+' from my catalogue';remove.setAttribute('aria-label',remove.title);remove.disabled=catalogueSaving;remove.addEventListener('click',event=>{event.stopPropagation();void removeTechnology(x.name)});nameLine.append(remove)}
       label.append(nameLine,freshness);
       const scan=window.CVEHARBOR_CVIE?.product(x.name);
-      if(scan){const status=text(scan.status==='needs_identity'?'button':'span','cvie-row-state '+scan.status,window.CVEHARBOR_CVIE.statusFor(scan));if(scan.status==='needs_identity'){status.type='button';status.classList.add('technology-choose');status.addEventListener('click',event=>{event.stopPropagation();window.CVEHARBOR_CVIE.openIdentity(x.name)})}label.append(status);button.setAttribute('aria-label',`View ${x.name}: ${window.CVEHARBOR_CVIE.statusFor(scan)}`);}
+      if(scan){const choosing=scan.status==='needs_identity'||!scan.cpe;const status=text(choosing?'button':'span','cvie-row-state '+scan.status,choosing?'Choose the exact product':window.CVEHARBOR_CVIE.statusFor(scan));if(choosing){status.type='button';status.classList.add('technology-choose');status.addEventListener('click',event=>{event.stopPropagation();window.CVEHARBOR_CVIE.openIdentity(x.name)})}label.append(status);button.setAttribute('aria-label',`View ${x.name}: ${window.CVEHARBOR_CVIE.statusFor(scan)}`);}
       const counts=text('span','technology-row-counts','');
       counts.append(text('span','technology-count-new'+(recent?' has-new':''),`${recent} new`),
                     text('span','technology-count-all',`${scan&&!(horizon===12?scan.history_complete_at:scan.recent_complete_at)&&!total?'—':total} / ${horizon} months`));

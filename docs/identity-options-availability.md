@@ -1,0 +1,11 @@
+# Empty product chooser correction
+
+The initial chooser implementation had a retry gap. `runIdentityLookup` stopped on a busy global NVD request budget, and `POST identity-options` treated an already queued/scanning product as unchanged without resuming it. The dialog depended on the full advisory refresh and disabled its refresh control while queued. A verified public directory response alone did not exercise this end-to-end path; the previous browser test seeded choices in advance.
+
+The correction waits through short provider-budget delays within a bounded 20-second continuation loop, resumes queued work when explicitly opened, and keeps existing leases/provider limits. Long source backoffs remain respected. A scope-checked, read-only GET returns just the product's identity choices/status. While open and visible, the chooser polls it every three seconds; an interrupted queued lookup can resume at most every 15 seconds when no lease/backoff is active. Polling stops when closed or complete. Refresh remains available. Unresolved cards remain actionable while queued. Errors and extended waits are shown, with available choices still usable.
+
+The options are still returned by NVD; no fabricated or hardcoded product list was introduced. Selecting an identity uses a conditional server-side update to reject concurrent changes/removal and invalidates obsolete directory work. Shared ingestion, customer inventory, other users and database schema remain unchanged.
+
+Regression tests now start with an empty stored candidate list and a busy provider budget, type “windows server 2019” into the real Chromium dialog, and wait for the actual backend lookup and GET polling to populate matching choices. Backend tests cover budget recovery, resuming previously queued work, zero-write option polling and cross-account access rejection. Existing catalogue removal, customer reports, explorer and backend regressions remain required.
+
+Work is isolated on `codex/identity-options-availability` from current main, preserving the newer monitoring changes. The existing catalogue code-only deployment mode skips migrations, bootstrap and cache resets. Production compatibility/diagnostic queries are read-only; no customer's catalogue or installed product choice is modified by verification.
