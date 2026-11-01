@@ -74,7 +74,7 @@ export async function sourceHealth(env,now=Date.now()){
   SUM(CASE WHEN priority=0 THEN 1 ELSE 0 END) AS relevant_kev,SUM(CASE WHEN attempts>0 THEN 1 ELSE 0 END) AS failed FROM cvie_disclosure_queue`).first();
  return {ready:true,pending_records:pending.total,failed_records:pending.failed||0,sources:rows.map(row=>({
   id:row.id,label:row.id==='cisa_kev'?'CISA KEV':'CVE Program / original disclosures',url:row.source_url||SOURCE_URLS[row.id],
-  status:row.status==='unavailable'?'unavailable':row.record_retry_at>now?'rate_limited':!row.last_success_at?'pending':now-row.last_success_at>(row.id==='cisa_kev'?30:15)*60000||row.id==='cve_program'&&row.publisher_at&&now-row.publisher_at>DAY?'stale':
+  status:row.status==='unavailable'?'unavailable':row.record_retry_at>now?'rate_limited':!row.last_success_at?'pending':now-row.last_success_at>(row.id==='cisa_kev'?30:15)*60000?'stale':
    row.id==='cve_program'&&pending.current>0?'catching_up':row.id==='cisa_kev'&&pending.relevant_kev>0?'verifying_products':'current',
   last_attempt_at:row.last_attempt_at,last_success_at:row.last_success_at,publisher_at:row.publisher_at,coverage_start_at:row.coverage_start_at,
   pending_records:row.id==='cisa_kev'?pending.relevant_kev||0:pending.current||0,error:row.error,
