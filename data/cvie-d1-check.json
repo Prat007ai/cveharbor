@@ -1,0 +1,58 @@
+{
+  "checked_at": "2026-11-01T16:35:09.650Z",
+  "read_only": true,
+  "synthetic_products": true,
+  "checks": [
+    {
+      "stage": "source schema",
+      "ok": true
+    },
+    {
+      "stage": "saved scan JSON integrity",
+      "ok": true
+    },
+    {
+      "stage": "source status",
+      "ok": true
+    },
+    {
+      "stage": "combined counts",
+      "ok": false,
+      "error": "[{\"code\":7500,\"message\":\"Expression tree is too large (maximum depth 100): SQLITE_ERROR\"}]"
+    },
+    {
+      "stage": "advisory page",
+      "ok": false,
+      "error": "[{\"code\":7500,\"message\":\"Expression tree is too large (maximum depth 100): SQLITE_ERROR\"}]"
+    },
+    {
+      "stage": "withdrawal exclusions",
+      "ok": false,
+      "error": "[{\"code\":7500,\"message\":\"Expression tree is too large (maximum depth 100): SQLITE_ERROR\"}]"
+    },
+    {
+      "stage": "digest page",
+      "ok": false,
+      "error": "[{\"code\":7500,\"message\":\"Expression tree is too large (maximum depth 100): SQLITE_ERROR\"}]"
+    }
+  ],
+  "source_columns": [
+    "id",
+    "status",
+    "last_attempt_at",
+    "last_success_at",
+    "publisher_at",
+    "checkpoint",
+    "coverage_start_at",
+    "next_attempt_at",
+    "lease_until",
+    "record_retry_at",
+    "error",
+    "source_url"
+  ],
+  "invalid_scan_json": {
+    "invalid": 0
+  },
+  "ok": false,
+  "queries": 9
+}
