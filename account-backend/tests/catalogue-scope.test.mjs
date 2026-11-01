@@ -70,3 +70,21 @@ test('private in-flight pages are invalidated after removal; shared requests req
   assert.equal((await runCvieStep(e,()=>{throw Error('Obsolete scan scheduled')},NOW+10000)).idle,true);
  }
 });
+test('historical advisory queries exclude inventory and watchlist records from catalogue pages',async()=>{
+ for(const shared of [false,true]){
+  const {e,request}=await setup(shared);
+  e.DB.sql.exec("INSERT INTO inventory_assets VALUES('a','WordPress');INSERT INTO user_stack VALUES('a','PHP')");
+  await syncAccountProducts(e,'a');await request('PUT',{defaults:['.NET Core'],products:[]});
+  const products=(await q(e,"SELECT * FROM cvie_products WHERE user_id='a'").all()).results;
+  for(const [i,p] of products.entries()){
+   const record={id:'CVE-2026-'+(88000+i),published:new Date(NOW-86400000).toISOString(),summary:p.name,severity:'high',cvss:8.1,sources:[]};
+   await q(e,'INSERT INTO cvie_advisories VALUES(?,?,?,?,?)',p.id,record.id,record.published,JSON.stringify(record),'retained').run();
+  }
+  const records=async scope=>(await (await cvieRoute(new Request('https://api.cveharbor.com/v1/cvie/advisories?scope='+scope),e,{id:'a'})).json()).advisories;
+  assert.deepEqual((await records('catalogue')).flatMap(r=>r.cvie_products),['.NET Core']);
+  assert.deepEqual((await records('inventory')).flatMap(r=>r.cvie_products),['WordPress']);
+  assert.deepEqual((await records('stack')).flatMap(r=>r.cvie_products),['PHP']);
+  await request('PUT',{defaults:[],products:[]});assert.deepEqual(await records('catalogue'),[]);
+  assert.equal((await runCvieStep(e,()=>{throw Error('Catalogue scheduled unrelated product')},NOW,'a','catalogue')).idle,true);
+ }
+});

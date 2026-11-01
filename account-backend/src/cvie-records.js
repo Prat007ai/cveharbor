@@ -3,6 +3,7 @@ import {evidenceReady,productFamilies,productLabels,SOURCE_URLS} from './cvie-ev
 import {isHyperV,hyperVHost,hyperVStatementSql} from './hyperv.js';
 import {dotnetProfile} from './dotnet.js';
 import {rawProductLabels,coveragePlan,versionedLabelSql,cnaCoverageAdapters} from './product-coverage.js';
+import {activeSubscription} from './catalogue-selection.js';
 import {publicSourceStatus} from './public-source-status-cache.js';
 import {sharedScans,ownedProductSql,overlaySharedProduct,validScopeLink} from './shared-scopes.js';
 const q=(db,sql,...args)=>db.prepare(sql).bind(...args);
@@ -103,7 +104,7 @@ export async function evidenceContext(env,userId,scope='all'){
   return keys.map(key=>({product_id:p.id,key,labels:productLabels(p),raw_labels:rawLabels,scope}));
  });
  const sources=(await env.DB.prepare('SELECT * FROM cvie_sources').all()).results||[];
- return {products,families:JSON.stringify(families),sources:Object.fromEntries(sources.map(s=>[s.id,s]))};
+ return {products,scope,families:JSON.stringify(families),sources:Object.fromEntries(sources.map(s=>[s.id,s]))};
 }
 // SQL keyset pagination limits both public evidence and private data to the requested page.
 function familiesCte(){return `WITH families AS (
@@ -123,23 +124,23 @@ function familiesCte(){return `WITH families AS (
   ON d.family_key LIKE 'name:microsoft:%'
  WHERE f.family_key='${adapter.key}' AND EXISTS(SELECT 1 FROM json_each(d.affected_json) a WHERE ${adapter.matchSql('a.value')})`).join('\n')}
 ) `;}
-function unifiedCte(env){
+function unifiedCte(env,scope='all'){
  const shared=sharedScans(env),source=shared?'nvd_records':'cvie_advisories';
  const sharedSource=shared?`, owner AS(SELECT ? AS user_id), shared_nvd AS MATERIALIZED (
   SELECT p.id AS product_id,a.cve_id,a.published,a.record_json FROM cvie_products p JOIN cvie_product_scopes m ON ${validScopeLink()}
   JOIN cvie_shared_advisories a ON a.scope_id=m.scope_id
-  WHERE p.user_id=(SELECT user_id FROM owner) AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id)
+  WHERE p.user_id=(SELECT user_id FROM owner) AND p.id IN(SELECT value FROM selected_products) AND ${activeSubscription('p',scope)}
  ), nvd_records AS (
   SELECT * FROM shared_nvd UNION ALL
   SELECT a.product_id,a.cve_id,a.published,a.record_json FROM cvie_advisories a JOIN cvie_products p ON p.id=a.product_id
-  WHERE p.user_id=(SELECT user_id FROM owner) AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id)
+  WHERE p.user_id=(SELECT user_id FROM owner) AND p.id IN(SELECT value FROM selected_products) AND ${activeSubscription('p',scope)}
   AND NOT EXISTS(SELECT 1 FROM shared_nvd n WHERE n.product_id=a.product_id AND n.cve_id=a.cve_id)
   AND NOT EXISTS(SELECT 1 FROM cvie_product_scopes m JOIN cvie_shared_scopes j ON j.id=m.scope_id
    WHERE ${validScopeLink()} AND j.seed_state='complete' AND j.history_complete_at IS NOT NULL)
  )`:'';
- return familiesCte()+sharedSource+`, links AS (
+ return familiesCte()+`, selected_products AS (SELECT value FROM json_each(?))`+sharedSource+`, links AS (
  SELECT a.product_id,a.cve_id FROM ${source} a JOIN cvie_products p ON p.id=a.product_id
- WHERE p.user_id=${shared?'(SELECT user_id FROM owner)':'?'} AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id)
+ WHERE p.user_id=${shared?'(SELECT user_id FROM owner)':'?'} AND p.id IN(SELECT value FROM selected_products) AND ${activeSubscription('p',scope)}
  AND (NOT EXISTS(SELECT 1 FROM families f WHERE f.product_id=p.id AND f.scope='windows_hyperv')
   OR (EXISTS(SELECT 1 FROM families f WHERE f.product_id=p.id AND f.family_key='cpe:'||p.cpe) AND ${hyperVStatementSql('a.record_json')}
    AND NOT EXISTS(SELECT 1 FROM cvie_disclosures c WHERE c.cve_id=a.cve_id AND c.state='PUBLISHED' AND NOT ${hyperVStatementSql('c.record_json')})))
@@ -170,7 +171,7 @@ export async function combinedPage(env,userId,cutoff,after='',productId='',now=D
   `SELECT * FROM unified WHERE (published>=? OR kev_json IS NOT NULL) AND published<=?
   AND (product_id||'/'||cve_id)>? ${productId?'AND product_id=?':''} ORDER BY product_id,cve_id LIMIT 101`;
  const args=ctx.digest?[cutoff,new Date(now).toISOString(),recent,recent,recent,recent,recent,after]:[cutoff,new Date(now).toISOString(),after,...(productId?[productId]:[])];
- const rows=(await q(env.DB,unifiedCte(env)+ranked,ctx.families,userId,...args).all()).results||[];
+ const rows=(await q(env.DB,unifiedCte(env,ctx.scope)+ranked,ctx.families,JSON.stringify(ctx.products.map(p=>p.id)),userId,...args).all()).results||[];
  const page=rows.slice(0,100),keys=JSON.stringify(page.map(r=>r.product_id+'/'+r.cve_id));
  const matches=(await q(env.DB,familiesCte()+`SELECT product_id,cve_id,affected_json FROM verified_matches
   WHERE (product_id||'/'||cve_id) IN(SELECT value FROM json_each(?)) AND applicability='affected'`,ctx.families,keys).all()).results||[];
@@ -187,11 +188,11 @@ export async function combinedPage(env,userId,cutoff,after='',productId='',now=D
 }
 export async function combinedCounts(env,userId,recent,history,now=Date.now(),context=null){
  const ctx=context||await evidenceContext(env,userId);if(!ctx)return null;
- return (await q(env.DB,unifiedCte(env)+`SELECT product_id,SUM(CASE WHEN published>=? THEN 1 ELSE 0 END) AS recent_count,
+ return (await q(env.DB,unifiedCte(env,ctx.scope)+`SELECT product_id,SUM(CASE WHEN published>=? THEN 1 ELSE 0 END) AS recent_count,
   SUM(CASE WHEN published>=? THEN 1 ELSE 0 END) AS history_count,
   SUM(CASE WHEN published<? AND kev_json IS NOT NULL THEN 1 ELSE 0 END) AS older_kev_recent_count,
   SUM(CASE WHEN published<? AND kev_json IS NOT NULL THEN 1 ELSE 0 END) AS older_kev_history_count
-  FROM unified WHERE published<=? GROUP BY product_id`,ctx.families,userId,recent,history,recent,history,new Date(now).toISOString()).all()).results||[];
+  FROM unified WHERE published<=? GROUP BY product_id`,ctx.families,JSON.stringify(ctx.products.map(p=>p.id)),userId,recent,history,recent,history,new Date(now).toISOString()).all()).results||[];
 }
 export async function withdrawnIds(env){
  if(!await evidenceReady(env))return [];
