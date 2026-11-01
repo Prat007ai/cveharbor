@@ -1,7 +1,7 @@
-# CVEHarbor Threat IP Intelligence | 2026-11-01T17:45:02.020277+00:00
+# CVEHarbor Threat IP Intelligence | 2026-11-01T18:04:26.923869+00:00
 # Permanent logical group: Suspicious IP Block
-# Cumulative indexed IPs: 2369
-# New since prior published snapshot: 14
+# Cumulative indexed IPs: 2372
+# New since prior published snapshot: 3
 # REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 # Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 # No rules or policies are created or enabled. No old IPs are removed.
@@ -14,65 +14,21 @@
 # If an address object name already exists with a different subnet, STOP.
 # Applying group membership can affect an existing deny policy immediately.
 config firewall address
-    edit "CVEH_8_220_246_195"
-        set subnet 8.220.246.195 255.255.255.255
+    edit "CVEH_79_124_58_18"
+        set subnet 79.124.58.18 255.255.255.255
     next
-    edit "CVEH_23_227_203_239"
-        set subnet 23.227.203.239 255.255.255.255
+    edit "CVEH_102_104_11_44"
+        set subnet 102.104.11.44 255.255.255.255
     next
-    edit "CVEH_43_139_187_59"
-        set subnet 43.139.187.59 255.255.255.255
-    next
-    edit "CVEH_78_128_114_162"
-        set subnet 78.128.114.162 255.255.255.255
-    next
-    edit "CVEH_84_17_60_251"
-        set subnet 84.17.60.251 255.255.255.255
-    next
-    edit "CVEH_101_126_4_240"
-        set subnet 101.126.4.240 255.255.255.255
-    next
-    edit "CVEH_101_201_38_226"
-        set subnet 101.201.38.226 255.255.255.255
-    next
-    edit "CVEH_101_254_159_210"
-        set subnet 101.254.159.210 255.255.255.255
-    next
-    edit "CVEH_102_223_58_50"
-        set subnet 102.223.58.50 255.255.255.255
-    next
-    edit "CVEH_103_111_123_245"
-        set subnet 103.111.123.245 255.255.255.255
-    next
-    edit "CVEH_103_126_218_113"
-        set subnet 103.126.218.113 255.255.255.255
-    next
-    edit "CVEH_106_75_249_202"
-        set subnet 106.75.249.202 255.255.255.255
-    next
-    edit "CVEH_128_134_0_91"
-        set subnet 128.134.0.91 255.255.255.255
-    next
-    edit "CVEH_203_205_37_233"
-        set subnet 203.205.37.233 255.255.255.255
+    edit "CVEH_103_118_85_147"
+        set subnet 103.118.85.147 255.255.255.255
     next
 end
 config firewall addrgrp
     edit "Suspicious IP Block"
-        append member "CVEH_8_220_246_195"
-        append member "CVEH_23_227_203_239"
-        append member "CVEH_43_139_187_59"
-        append member "CVEH_78_128_114_162"
-        append member "CVEH_84_17_60_251"
-        append member "CVEH_101_126_4_240"
-        append member "CVEH_101_201_38_226"
-        append member "CVEH_101_254_159_210"
-        append member "CVEH_102_223_58_50"
-        append member "CVEH_103_111_123_245"
-        append member "CVEH_103_126_218_113"
-        append member "CVEH_106_75_249_202"
-        append member "CVEH_128_134_0_91"
-        append member "CVEH_203_205_37_233"
+        append member "CVEH_79_124_58_18"
+        append member "CVEH_102_104_11_44"
+        append member "CVEH_103_118_85_147"
     next
 end
 # No firewall policy has been created. Review existing policy use.
