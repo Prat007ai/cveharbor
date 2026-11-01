@@ -116,7 +116,9 @@ function candidate(asset,cve){
 
  // Only evaluate a single unambiguous numeric range associated with the named product.
  // Any qualifiers or complex ranges remain category-only candidates.
- const mentions=affected.toLowerCase().includes(product);
+ // Inventory prefixes plugin names; publisher ranges usually omit that prefix.
+ const rangeProduct=product.replace(/^wordpress plugin:\s*/, '');
+ const mentions=norm(affected).includes(rangeProduct);
  if(!cvie&&!vendorAssessment&&!distroAsset&&mentions&&numeric(version)&&!/\b(except|unless|only when|requires|if configured)\b/i.test(affected)){
   const ranges=[...affected.matchAll(/\b(before|prior to|earlier than|through|up to)\s+(?:version\s+)?(\d+(?:\.\d+){1,3})\b/gi)];
   if(ranges.length===1){

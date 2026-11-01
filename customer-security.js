@@ -5,45 +5,50 @@ if(!$('customerDashStatus'))return;
 const reporting=!!$('customerReportBody');
 let inventory={customers:[],environments:[],assets:[]},records=[],customerReady=false,accountEmail='';
 let pluginFindings=[],pluginChecks={},pluginMonitorRows={};
+let customerDataEpoch=0,inventoryRefresh=null,pluginRefreshSequence=0;
+const upgradeHistory=new Map();
 let pluginInstallationReady=false,pluginInstallationStatuses=new Map();
 const pluginSlugOverrides={'yoast seo':'wordpress-seo','wp file manager':'wp-file-manager','wps hide login':'wps-hide-login','autoptimize':'autoptimize','wp mail smtp':'wp-mail-smtp','advanced editor tools':'tinymce-advanced','addtoany share buttons':'add-to-any','events manager':'events-manager','wp store locator':'wp-store-locator','wpbakery page builder':'js_composer'};
 const pluginSlug=name=>pluginSlugOverrides[name.toLowerCase()]||name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-async function refreshPluginFindings(draw=true){
+async function refreshPluginFindings(draw=true,allowFallback=!reporting){
+ const epoch=customerDataEpoch,sequence=++pluginRefreshSequence;
  const assets=inventory.assets.filter(a=>a.technology.startsWith('WordPress Plugin: '));
- pluginChecks={};pluginFindings=[];pluginMonitorRows={};
+ const nextChecks={},nextFindings=[],nextMonitorRows={};
  let stored=null;
  try{stored=await api('plugin-monitor')}catch(_){}
  if(stored?.ready){
   const rows=new Map((stored.checks||[]).map(r=>[r.asset_id,r]));
-  pluginMonitorRows=Object.fromEntries(rows);
+  for(const asset of assets){const row=rows.get(asset.id);if(row?.installed_version===asset.version)nextMonitorRows[asset.id]={...row,release:row.release?.installed_version===asset.version?row.release:undefined}}
   for(const asset of assets){
    const check=rows.get(asset.id);
-   if(!check||check.installed_version!==asset.version){pluginChecks[asset.id]='pending';continue}
-   pluginChecks[asset.id]=check.status||'unavailable';
+   if(!check||check.installed_version!==asset.version){nextChecks[asset.id]='pending';continue}
+   nextChecks[asset.id]=check.status||'unavailable';
    if(check.status!=='checked')continue;
-   for(const v of check.findings||[])pluginFindings.push({...v,asset_id:asset.id,technology:asset.technology,version:asset.version,
+   for(const v of check.findings||[])nextFindings.push({...v,asset_id:asset.id,technology:asset.technology,version:asset.version,
     evidence:v.level==='version_review'?'Version range candidate; confirm vendor applicability.':'Plugin advisory requires version verification.',
     comparison_detail:v.affected||'',source_label:v.sources?.[0]?.label||'WPVulnerability',
     source_url:v.sources?.[0]?.url||''});
   }
- }else if(!reporting){
+ }else if(allowFallback){
   // Preserve existing on-demand checks until the additive D1 migration is activated.
   for(let i=0;i<assets.length;i+=4){
    await Promise.all(assets.slice(i,i+4).map(async asset=>{
     const slug=pluginSlug(asset.technology.slice('WordPress Plugin: '.length));
     try{
      const result=await api('plugin-advisories?asset_id='+encodeURIComponent(asset.id)+'&slug='+encodeURIComponent(slug));
-     pluginChecks[asset.id]=result.status||'unavailable';
+     nextChecks[asset.id]=result.status||'unavailable';
      if(result.status==='checked')for(const v of result.findings||[]){
-      pluginFindings.push({...v,asset_id:asset.id,technology:asset.technology,version:asset.version,
+      nextFindings.push({...v,asset_id:asset.id,technology:asset.technology,version:asset.version,
        evidence:v.level==='version_review'?'Version range candidate; confirm applicability.':'Plugin advisory requires verification.',
        comparison_detail:v.affected||'',source_label:v.sources?.[0]?.label||'WPVulnerability',
        source_url:v.sources?.[0]?.url||''});
      }
-    }catch(_){pluginChecks[asset.id]='unavailable'}
+    }catch(_){nextChecks[asset.id]='unavailable'}
    }));
   }
  }
+ if(epoch!==customerDataEpoch||sequence!==pluginRefreshSequence)return;
+ pluginChecks=nextChecks;pluginFindings=nextFindings;pluginMonitorRows=nextMonitorRows;
  if(draw)redraw();
 }
 
@@ -159,11 +164,12 @@ function renderFindings(root,issues,readOnly){
 }
 let savedFindingsRequest=null;
 function invalidateSession(){
+ customerDataEpoch++;upgradeHistory.clear();inventoryRefresh=null;
  customerReady=false;inventory={customers:[],environments:[],assets:[]};findingStatuses.clear();findingNotes.clear();findingTickets.clear();scoreSeries.clear();
  findingStatusDrafts.clear();findingTicketDrafts.clear();
  pluginFindings=[];pluginMonitorRows={};pluginSources.clear();pluginInstallationStatuses.clear();
  $('customerDashAccess').hidden=true;$('customerDashLogin').hidden=false;
- for(const id of ['customerReportBody','customerReportAssessment','customerDashboardCves','customerSoftwareVisual','customerDashboardPlugins','customerDashRows','customerDashFindings','customerDashboardAssessment'])$(id)?.replaceChildren();
+ for(const id of ['customerReportBody','customerReportAssessment','customerDashboardCves','customerSoftwareVisual','customerDashboardPlugins','customerDashRows','customerDashFindings','customerDashboardAssessment','customerDashboardUpgradeHistory'])$(id)?.replaceChildren();
  for(const id of ['customerReportPrint','customerReportEmail','customerReportCsv'])if($(id))$(id).disabled=true;
  document.querySelectorAll('.customer-email-overlay').forEach(el=>el.remove());
  delete $('customerDashStatus').dataset.ready;
@@ -171,6 +177,7 @@ function invalidateSession(){
 }
 async function refreshSavedFindings(){
  if(savedFindingsRequest)return savedFindingsRequest;
+ const epoch=customerDataEpoch;
  savedFindingsRequest=(async()=>{
   const session=await api('me');
   if(!session.authenticated||session.email!==accountEmail){invalidateSession();throw Error('Your session changed. Reload before generating a report.')}
@@ -180,6 +187,7 @@ async function refreshSavedFindings(){
    throw Error('Sign in again before generating a report.');
   }
   if(!saved.ready||!tickets.ready)throw Error('Saved remediation records are unavailable. Try again before exporting.');
+  if(epoch!==customerDataEpoch)throw Error('Session changed; reload the page.');
   findingStatusReady=true;ticketReady=true;ticketAppendReady=!!tickets.append_ready;
   findingStatuses=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.status]));
   findingNotes=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.notes||'']));
@@ -191,7 +199,8 @@ async function prepareExport(action){
  if(exportBusy)return;exportBusy=true;
  const scope=$('customerDashFilter').value+'|'+$('customerDashEnvironment').value;
  try{
-  await refreshSavedFindings();
+  await refreshCustomerInventory();
+  await loadUpgradeHistory();
   if(scope!==$('customerDashFilter').value+'|'+$('customerDashEnvironment').value)throw Error('Selection changed. Generate the report again for the selected customer.');
   drawReport();action();
  }catch(error){window.alert('Could not generate report: '+error.message)}finally{exportBusy=false}
@@ -388,6 +397,7 @@ function drawDashboard(){
  const plugins=$('customerDashboardPlugins');plugins.replaceChildren();renderPluginMonitoring(plugins,scopedStats);
  const assessment=$('customerDashboardAssessment');assessment.replaceChildren();
  if(chosen&&all[0])renderScorePanel(assessment,all[0].customer,env,all[0].stats);
+ const historyRoot=$('customerDashboardUpgradeHistory');if(historyRoot){historyRoot.replaceChildren();renderUpgradeHistory(historyRoot,chosen,env)}
  const root=$('customerDashRows');root.replaceChildren();
  for(const {customer,stats} of all){
   const item=text('article','','ops-result');const row=text('div','','ops-result-top');
@@ -746,6 +756,7 @@ function buildCustomerPrintDocument(customer,stats,scope,date){
  }
  if(stats.issues.length>250||stats.limited)findingsSection.append(text('p','Additional candidate findings may exist beyond the report limit. Narrow by environment to review the remaining records.','customer-print-note'));
  doc.append(findingsSection);
+ const historySection=text('section','','customer-print-section');historySection.append(section('Software Upgrade History'));appendUpgradeHistory(historySection,customer.id,$('customerDashEnvironment').value,true);doc.append(historySection);
  const details=text('section','','customer-print-section');details.append(section('Report details'),table(['Generated on','Customer','Environment','Report type'],[[date,customer.name,scope,'Customer Security Review']]));doc.append(details);
  const footer=text('p','CVEHarbor  ·  Customer Confidential  ·  Inventory Based Security Review','customer-print-footer');doc.append(footer);
  return doc;
@@ -790,7 +801,7 @@ function renderPluginMonitoring(root,stats){
    });
    if(!reporting)statusCell.replaceChildren(statusSelect);
    const updateCell=monitor.tBodies[0].rows[index].cells[4];
-   if(release?.release_status==='verified'&&release.update_status==='Update Available'){
+   if(release?.installed_version===asset.version&&release.release_status==='verified'&&release.update_status==='Update Available'){
     const marker=text('span','● Update Available','customer-update-indicator');
     marker.setAttribute('role','status');
     updateCell.replaceChildren(marker);
@@ -940,6 +951,7 @@ function drawReport(){
   if(!statuses.length)row.cells[4].textContent='No recorded finding';
  }
  root.append(tableScroll(software));
+ renderUpgradeHistory(root,customer.id,env);
  root.append(reportSection('Recorded Technology Inventory'),table(['Environment','Asset','Category','Technology','Installed version','Recorded notes'],stats.assets.map(a=>[
   stats.environments.find(e=>e.id===a.environment_id)?.name||'',a.name,a.asset_type||'',a.technology,a.version||'Unknown',a.notes||''
  ])));
@@ -973,12 +985,86 @@ function drawReport(){
  root.append(details);
  collapseReportSections(root);
  const counts={'Recorded Technology Inventory':stats.assets.length+' recorded entries','Vulnerabilities Requiring Verification':stats.total+' potential matches','WordPress Plugin Monitoring':stats.assets.filter(a=>a.technology.startsWith('WordPress Plugin: ')).length+' recorded plugins','CVE Findings':stats.issues.filter(i=>!closedStatus(statusFor(i))).length+' unresolved','Advisory Evidence and References':references.size+' references'};
- for(const panel of root.querySelectorAll('.customer-report-section')){
+ for(const panel of root.querySelectorAll('.customer-report-section:not(.customer-upgrade-history)')){
   const count=text('span',counts[panel.dataset.section],'customer-section-count');
   if(panel.dataset.section==='CVE Findings'){const attention=findingAttention(stats.issues);count.dataset.level=attention.critical?'critical':attention.high?'high':'neutral'}
   if(panel.dataset.section==='Vulnerabilities Requiring Verification'&&stats.total)count.dataset.level='pending';
   panel.querySelector('summary').append(count);
  }
+}
+
+
+// Re-read the saved asset versions before recomputing findings; never infer a
+// deployed upgrade from a remediation status, a new advisory, or a stale check.
+async function refreshCustomerInventory(){
+ if(inventoryRefresh)return inventoryRefresh;
+ const epoch=customerDataEpoch;
+ const pending=(async()=>{
+  const [latest]=await Promise.all([api('inventory'),refreshSavedFindings()]);
+  if(epoch!==customerDataEpoch||!customerReady)throw Error('Session changed; reload the page.');
+  if(latest.authenticated===false){invalidateSession();throw Error('Sign in to reload current inventory.')}
+  if(!Array.isArray(latest.assets)||!Array.isArray(latest.customers)||!Array.isArray(latest.environments))throw Error('Inventory response unavailable');
+  inventory=latest;filters();upgradeHistory.clear();
+  await refreshPluginFindings(false,false);
+  if(epoch!==customerDataEpoch||!customerReady)throw Error('Session changed; reload the page.');
+  $('customerDashStatus').dataset.ready='true';
+ })();
+ inventoryRefresh=pending;
+ try{await pending}finally{if(inventoryRefresh===pending)inventoryRefresh=null}
+}
+function historyKey(customer,environment){return customer+'|'+environment}
+async function loadUpgradeHistory(customer=$('customerDashFilter').value,environment=$('customerDashEnvironment').value,more=false){
+ if(!customer)return;
+ const key=historyKey(customer,environment),prior=upgradeHistory.get(key);
+ if(prior?.pending)return prior.pending;
+ if(prior&&!more)return prior;
+ const epoch=customerDataEpoch;
+ const state={entries:more?(prior?.entries||[]):[],ready:prior?.ready??false,next:more?prior?.next:null,loading:true};
+ upgradeHistory.set(key,state);
+ state.pending=(async()=>{
+  try{
+   const result=await api('inventory/software-history?customer_id='+encodeURIComponent(customer)+(environment?'&environment_id='+encodeURIComponent(environment):'')+(more&&state.next?'&before='+state.next:''));
+   if(result.authenticated===false)throw Error('Sign in to view history.');
+   if(result.ready&&(result.customer_id!==customer||result.environment_id!==environment))throw Error('History scope changed. Reload to try again.');
+   state.ready=!!result.ready;state.entries.push(...(result.entries||[]));state.next=result.next_before||null;
+  }catch(error){state.error=error.status===404?'Software upgrade history is not available yet.':error.message}
+  finally{
+   state.loading=false;state.pending=null;
+   if(epoch===customerDataEpoch&&upgradeHistory.get(key)===state&&customerReady&&document?.getElementById('customerDashAccess'))redraw();
+  }
+  return state;
+ })();
+ return state.pending;
+}
+function appendUpgradeHistory(root,customer,environment,printing=false){
+ const state=upgradeHistory.get(historyKey(customer,environment));
+ root.append(text('p','Recorded inventory version changes. Recorded on is the time saved in CVEHarbor, not a verified deployment date. History begins when tracking is enabled.','ops-note'));
+ if(!customer){root.append(text('p','Select a customer to view software upgrade history.','ops-note'));return}
+ if(!state||state.loading&&!state.entries.length){root.append(text('p','Loading software upgrade history…','ops-note'));return}
+ if(state.error||!state.ready){root.append(text('p',state.error||'Software upgrade history tracking is not enabled yet.','ops-note'));return}
+ if(!state.entries.length){root.append(text('p','No software version changes have been recorded for this selection. Earlier upgrades cannot be reconstructed.','ops-note'));return}
+ const rows=state.entries.map(item=>[
+  new Date(item.recorded_at).toLocaleString(undefined,{timeZoneName:'short'}),
+  item.previous_technology===item.technology?item.technology:item.previous_technology+' → '+item.technology,
+  item.asset_name,inventory.environments.find(e=>e.id===item.environment_id)?.name||'Recorded environment',
+  item.previous_version||'Not recorded',item.version||'Not recorded'
+ ]);
+ const historyTable=table(['Recorded on','Software / Technology','Asset','Environment','Previous version','Recorded version'],rows);historyTable.classList.add('customer-upgrade-table');
+ root.append(printing?historyTable:tableScroll(historyTable));
+ if(state.next){
+  root.append(text('p','Showing the newest '+state.entries.length+' recorded changes. More history is available.','ops-note'));
+  if(!printing){const more=text('button',state.loading?'Loading…':'Load older changes','workspace-clear');more.type='button';more.disabled=state.loading;more.addEventListener('click',()=>void loadUpgradeHistory(customer,environment,true));root.append(more)}
+ }
+}
+function renderUpgradeHistory(root,customer,environment){
+ const panel=text('details','','customer-report-section customer-upgrade-history');panel.dataset.section='Software Upgrade History';panel.open=reportSectionStates.get(panel.dataset.section)===true;
+ const summary=text('summary','Software Upgrade History','customer-report-section-toggle');
+ const state=upgradeHistory.get(historyKey(customer,environment));
+ const count=state?.ready?state.entries.length+(state.next?'+':'')+' recorded changes':state?.loading?'Loading':customer?'History status':'Select customer';
+ summary.append(text('span',count,'customer-section-count'));
+ const contents=text('div','','customer-report-section-content');appendUpgradeHistory(contents,customer,environment);panel.append(summary,contents);root.append(panel);
+ panel.addEventListener('toggle',()=>{if(printSectionStates===null)reportSectionStates.set(panel.dataset.section,panel.open)});
+ if(customer&&!state)void loadUpgradeHistory(customer,environment);
 }
 
 function csvReport(){
@@ -1038,7 +1124,8 @@ async function init(){
    window.addEventListener('afterprint',()=>setReportPrintMode(false));
    $('customerReportPrint').addEventListener('click',()=>void prepareExport(()=>window.print()));
    $('customerReportCsv').addEventListener('click',()=>void prepareExport(csvReport));
-   $('customerReportEmail').addEventListener('click',()=>{
+   $('customerReportEmail').addEventListener('click',async()=>{
+    try{await refreshCustomerInventory();drawReport()}catch(error){window.alert('Could not refresh report: '+error.message);return}
     const customer=inventory.customers.find(c=>c.id===$('customerDashFilter').value);
     if(!customer)return;
     const emailEnvironment=$('customerDashEnvironment').value;
@@ -1103,7 +1190,19 @@ async function init(){
   }
   $('customerDashStatus').dataset.ready='true';
   $('customerDashStatus').textContent=inventory.customers.length+' customer records loaded privately. Advisory matching is preliminary.';
-  window.addEventListener('focus',()=>{if(customerReady)void refreshSavedFindings().then(redraw).catch(()=>{})});
+  const refreshCurrent=()=>{
+   if(!customerReady)return;
+   void refreshCustomerInventory().then(redraw).catch(error=>{
+    if(!customerReady)return;
+    delete $('customerDashStatus').dataset.ready;$('customerDashStatus').textContent='Could not refresh current inventory: '+error.message;
+   });
+  };
+  window.addEventListener('focus',refreshCurrent);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshCurrent()});
+  if(typeof BroadcastChannel==='function'){
+   const changes=new BroadcastChannel('cveharbor-inventory-changed');
+   changes.onmessage=event=>{if(event.data?.changed)void (inventoryRefresh||Promise.resolve()).catch(()=>{}).then(refreshCurrent)};
+  }
  }catch(e){$('customerDashLogin').hidden=false;$('customerDashStatus').textContent=(e.status===404||e.status===503)?'Customer inventory backend is not active. The D1 migration and updated Cloudflare Worker must be deployed.':'Could not reach account data. Please sign in or check the service. '+e.message}
 }
 for(const eventName of ['cveharbor:account-state','cveharbor-auth-change'])window.addEventListener(eventName,event=>{

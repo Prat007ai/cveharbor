@@ -2242,6 +2242,13 @@ body.account-page #customerReports .customer-dash-toolbar{display:grid;grid-temp
 
 /* Report composition follows the customer review mockup. All rules are scoped;
    the shared sidebar, dashboard editors and print document retain their styles. */
+:is(#customerReports,#customerDashboard) .customer-upgrade-table th:nth-child(1){width:18%}
+:is(#customerReports,#customerDashboard) .customer-upgrade-table th:nth-child(2){width:24%}
+:is(#customerReports,#customerDashboard) .customer-upgrade-table th:nth-child(3){width:14%}
+:is(#customerReports,#customerDashboard) .customer-upgrade-table th:nth-child(4){width:16%}
+:is(#customerReports,#customerDashboard) .customer-upgrade-table th:nth-child(5),
+:is(#customerReports,#customerDashboard) .customer-upgrade-table th:nth-child(6){width:14%}
+:is(#customerReports,#customerDashboard) .customer-upgrade-table td{min-width:0}
 @media screen{
  body.customer-report-page{background:#031623;color:#d9e8f1}
  body.customer-report-page .site-header{display:none}

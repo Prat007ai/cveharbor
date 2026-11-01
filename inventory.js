@@ -3,6 +3,7 @@
 const $=id=>document.getElementById(id);
 if(!$('inventoryWorkspace'))return;
 const api='https://api.cveharbor.com/v1/inventory';
+const inventoryChanges=typeof BroadcastChannel==='function'?new BroadcastChannel('cveharbor-inventory-changed'):null;
 let signedIn=false,ready=false,data={customers:[],environments:[],assets:[]};
 let pluginSources=new Map(),pluginSourceReady=false;
 let setupCustomerId='',setupEnvironmentId='',newCustomerSetup=true;
@@ -15,6 +16,7 @@ async function call(path='',method='GET',body){
  headers:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});
  const result=await res.json().catch(()=>({}));
  if(!res.ok)throw Error(result.error||'Inventory service unavailable');
+ if(method!=='GET')inventoryChanges?.postMessage({changed:true}); // No customer data crosses tabs.
  return result;
 }
 function option(select,value,label){
@@ -108,7 +110,9 @@ async function checkSavedPlugin(asset){
 function checkSavedPlugins(assets){
  let index=0;
  async function worker(){while(index<assets.length){const asset=assets[index++];await checkSavedPlugin(asset)}}
- void Promise.all(Array.from({length:Math.min(3,assets.length)},worker));
+ void Promise.all(Array.from({length:Math.min(3,assets.length)},worker)).finally(()=>{
+  if(assets.length)inventoryChanges?.postMessage({changed:true});
+ });
 }
 function setupSourceEditor(){
  const host=$('inventoryAssetForm');if(!host)return;

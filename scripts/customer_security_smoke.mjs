@@ -43,10 +43,10 @@ assert.equal(doc.querySelectorAll('#customerReportBody .customer-ticket-save').l
 assert.match(doc.querySelector('.customer-ticket-history').textContent,/DEV-10/);
 assert.equal(doc.querySelectorAll('.customer-vulnerability-table tbody tr').length,2);
 const sections=[...doc.querySelectorAll('details.customer-report-section')];
-assert.deepEqual(sections.map(el=>el.dataset.section),['Recorded Technology Inventory','Vulnerabilities Requiring Verification','WordPress Plugin Monitoring','CVE Findings','Advisory Evidence and References']);
+assert.deepEqual(sections.map(el=>el.dataset.section),['Software Upgrade History','Recorded Technology Inventory','Vulnerabilities Requiring Verification','WordPress Plugin Monitoring','CVE Findings','Advisory Evidence and References']);
 assert.ok(sections.every(el=>!el.open));
-sections[0].open=true;sections[0].dispatchEvent(new w.Event('toggle'));
-assert.equal(sections[1].open,false,'accordions expand independently');
+sections[1].open=true;sections[1].dispatchEvent(new w.Event('toggle'));
+assert.equal(sections[2].open,false,'accordions expand independently');
 filter(report,'All');
 assert.ok(doc.querySelector('[data-section="Recorded Technology Inventory"]').open,'open state survives redraw');
 assert.match(doc.querySelector('#customerReportAssessment').textContent,/Insufficient Data/,'50% coverage is insufficient');
@@ -107,7 +107,7 @@ select(report,'customerDashFilter','c2');
 assert.equal(doc.getElementById('customerDashEnvironment').value,'','customer switch discards unrelated environment');
 assert.doesNotMatch(reportText(),/WEB01|STAGE01|SITE01|Fixture Harbor|DEV-10/);
 assert.match(doc.querySelector('#customerReportAssessment').textContent,/OUT OF 100/,'existing scorer returns numeric result when eligible');
-assert.equal(doc.querySelectorAll('details.customer-report-section').length,5,'all five sections retained without WordPress');
+assert.equal(doc.querySelectorAll('details.customer-report-section').length,6,'five existing sections and upgrade history retained without WordPress');
 assert.match(doc.querySelector('[data-section="WordPress Plugin Monitoring"]').textContent,/Not applicable/);
 const mediumFixture=securityFixture();for(const a of mediumFixture.advisories)a.severity='medium';
 const mediumDashboard=await page('customer-dashboard','c1',mediumFixture);select(mediumDashboard,'customerDashEnvironment','e1');
@@ -129,3 +129,4 @@ console.log('PASS customer security: read-only reports, editable dashboard, save
 // Keep the real-route isolation regression in the existing frontend CI path.
 // A backend/tests change would also trigger the production Worker migration workflow.
 execFileSync(process.execPath,['--test',fileURLToPath(new URL('./customer_report_isolation.test.mjs',import.meta.url))],{stdio:'inherit'});
+execFileSync(process.execPath,[fileURLToPath(new URL('./software_upgrade_smoke.mjs',import.meta.url))],{stdio:'inherit'});
