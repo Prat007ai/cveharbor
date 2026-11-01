@@ -38,21 +38,30 @@ export async function subscribeProducts(env,userId,products,origin='catalogue'){
  const ids=new Map(existing.map(x=>[x.name_key,x.id]));
  const other=(await query(env.DB,'SELECT DISTINCT p.name_key FROM cvie_products p JOIN cvie_subscriptions s ON p.id=s.product_id WHERE s.user_id=? AND s.origin<>?',userId,origin).all()).results||[];
  if(new Set([...other.map(x=>x.name_key),...normalized.keys()]).size>500)throw new CvieError('CVIE product capacity reached; remove unused products before adding more',409);
- const statements=[],inserts=[];
+ const statements=[],inserts=[],changes=[];
  for(const [key,p] of normalized){
   const id=ids.get(key)||crypto.randomUUID();ids.set(key,id);
-  inserts.push(query(env.DB,'INSERT OR IGNORE INTO cvie_products(id,user_id,name_key,name,vendor,cpe) VALUES(?,?,?,?,?,?)',id,userId,key,p.name,p.vendor,p.cpe));
+  inserts.push({id,key,name:p.name,vendor:p.vendor,cpe:p.cpe});
   const prior=existing.find(x=>x.name_key===key);
   if(prior&&p.explicitCpe&&p.cpe!==prior.cpe){
-   statements.push(query(env.DB,'DELETE FROM cvie_advisories WHERE product_id=?',id));
-   statements.push(query(env.DB,"UPDATE cvie_products SET cpe=?,vendor=?,status='queued',cursor_json='{}',candidates_json='[]',recent_complete_at=NULL,history_complete_at=NULL,last_success_at=NULL,next_attempt_at=0,lease_until=0,error='' WHERE id=? AND user_id=?",p.cpe,p.vendor,id,userId));
+   changes.push({id,cpe:p.cpe,vendor:p.vendor});
   }
  }
+ statements.push(query(env.DB,`INSERT OR IGNORE INTO cvie_products(id,user_id,name_key,name,vendor,cpe)
+  SELECT json_extract(value,'$.id'),?,json_extract(value,'$.key'),json_extract(value,'$.name'),json_extract(value,'$.vendor'),json_extract(value,'$.cpe') FROM json_each(?)`,userId,JSON.stringify(inserts)));
+ if(changes.length){
+  const payload=JSON.stringify(changes);
+  statements.push(query(env.DB,"DELETE FROM cvie_advisories WHERE product_id IN(SELECT json_extract(value,'$.id') FROM json_each(?))",payload));
+  statements.push(query(env.DB,`UPDATE cvie_products SET
+   cpe=(SELECT json_extract(value,'$.cpe') FROM json_each(?) WHERE json_extract(value,'$.id')=cvie_products.id),
+   vendor=(SELECT json_extract(value,'$.vendor') FROM json_each(?) WHERE json_extract(value,'$.id')=cvie_products.id),
+   status='queued',cursor_json='{}',candidates_json='[]',recent_complete_at=NULL,history_complete_at=NULL,last_success_at=NULL,next_attempt_at=0,lease_until=0,error=''
+   WHERE user_id=? AND id IN(SELECT json_extract(value,'$.id') FROM json_each(?))`,payload,payload,userId,payload));
+ }
  statements.push(query(env.DB,'DELETE FROM cvie_subscriptions WHERE user_id=? AND origin=?',userId,origin));
- for(const key of normalized.keys())statements.push(query(env.DB,'INSERT INTO cvie_subscriptions(user_id,product_id,origin) VALUES(?,?,?)',userId,ids.get(key),origin));
+ statements.push(query(env.DB,'INSERT INTO cvie_subscriptions(user_id,product_id,origin) SELECT ?,value,? FROM json_each(?)',userId,origin,JSON.stringify([...normalized.keys()].map(key=>ids.get(key)))));
  statements.push(query(env.DB,'DELETE FROM cvie_products WHERE user_id=? AND NOT EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=cvie_products.id)',userId));
- // Smaller atomic batches stay below D1's statement limits. The subscription swap is one transaction.
- for(let i=0;i<inserts.length;i+=80)await env.DB.batch(inserts.slice(i,i+80));
+ // Set-based JSON bindings keep bulk imports within D1's per-invocation query budget.
  await env.DB.batch(statements);
  return {ready:true,queued:normalized.size};
 }
@@ -130,14 +139,16 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
    const data=await requestNvd(env,'cves',{virtualMatchString:product.cpe,pubStartDate:iso(window.start),pubEndDate:iso(window.end),startIndex:window.index,resultsPerPage:50},fetcher);
   if(!Array.isArray(data.vulnerabilities)||!Number.isSafeInteger(data.totalResults)||data.totalResults<0||data.startIndex!==window.index||
      (!data.vulnerabilities.length&&window.index<data.totalResults))throw new ProviderError('NVD returned an incomplete page; CVIE has not marked this scan complete.');
-  const statements=[];
+  const statements=[],pageRecords=[];
   for(const entry of data.vulnerabilities){
    const record=normalizeNvd(entry.cve,product);
    if(record&&Date.parse(record.published)>=monthsAgo(cursor.anchor,12)&&Date.parse(record.published)<=cursor.anchor)
-    statements.push(query(env.DB,`INSERT INTO cvie_advisories(product_id,cve_id,published,record_json,generation)
-     SELECT ?,?,?,?,? WHERE EXISTS(SELECT 1 FROM cvie_products WHERE id=? AND lease_until=? AND cpe=?)
-     ON CONFLICT(product_id,cve_id) DO UPDATE SET published=excluded.published,record_json=excluded.record_json,generation=excluded.generation`,product.id,record.id,record.published,JSON.stringify(record),cursor.generation,product.id,lease,product.cpe));
+    pageRecords.push(record);
   }
+  if(pageRecords.length)statements.push(query(env.DB,`INSERT INTO cvie_advisories(product_id,cve_id,published,record_json,generation)
+   SELECT ?,json_extract(value,'$.id'),json_extract(value,'$.published'),value,? FROM json_each(?)
+   WHERE EXISTS(SELECT 1 FROM cvie_products WHERE id=? AND lease_until=? AND cpe=?)
+   ON CONFLICT(product_id,cve_id) DO UPDATE SET published=excluded.published,record_json=excluded.record_json,generation=excluded.generation`,product.id,cursor.generation,JSON.stringify(pageRecords),product.id,lease,product.cpe));
   window.index+=data.vulnerabilities.length;window.total=data.totalResults;
   let recent=product.recent_complete_at,history=product.history_complete_at;
   if(window.index>=data.totalResults){if(cursor.position===0)recent=now;cursor.position++;}
@@ -150,11 +161,7 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
   statements.push(query(env.DB,`UPDATE cvie_products SET status=?,cursor_json=?,scan_started_at=COALESCE(scan_started_at,?),last_success_at=?,
    recent_complete_at=?,history_complete_at=?,next_attempt_at=?,lease_until=0,error='' WHERE id=? AND lease_until=?`,
    complete?'ready':'scanning',JSON.stringify(complete?{}:cursor),cursor.anchor,now,recent,history,complete?now+6*3600000:0,product.id,lease));
-  for(let i=0;i<statements.length;i+=80){
-   // A provider page has at most 100 records; D1 batch is atomic at the cursor boundary.
-   if(statements.length>80){throw new ProviderError('NVD page exceeds the configured transaction size');}
-   await env.DB.batch(statements.slice(i,i+80));
-  }
+  await env.DB.batch(statements);
   return {complete,processed:data.vulnerabilities.length};
  }catch(error){
   const delay=error instanceof ProviderError?error.delay:60000;
@@ -166,10 +173,10 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
 }
 export async function dispatchCvie(env){
  // Cron continues unfinished scans even after all browsers close. Budget is global.
- for(let i=0;i<24;i++){
+ for(let i=0;i<6;i++){
   const result=await runCvieStep(env);
   if(result.idle||result.waiting||result.ready===false)break;
-  if(i<23)await new Promise(resolve=>setTimeout(resolve,env.NVD_API_KEY?1050:6600));
+  if(i<5)await new Promise(resolve=>setTimeout(resolve,env.NVD_API_KEY?1050:6600));
  }
 }
 export async function loadCvieDigest(env,userId,now=Date.now()){

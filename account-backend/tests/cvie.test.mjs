@@ -65,6 +65,12 @@ test('legacy assets and watchlists are registered without modifying customer inv
  await syncAccountProducts(e,'a');assert.equal((await rows(e,'SELECT * FROM cvie_products')).length,3);
  assert.equal((await rows(e,'SELECT * FROM inventory_assets')).length,1);
 });
+test('bulk registration queues five hundred products within one Worker query budget',async()=>{
+ const e=env();await subscribeProducts(e,'a',Array.from({length:500},(_,i)=>({name:'Inventory Product '+i})),'inventory');
+ assert.ok(e.DB.executions<=50,'bulk registration must stay within the free Worker D1 query limit');
+ assert.equal((await rows(e,'SELECT * FROM cvie_products')).length,500);
+ assert.equal((await rows(e,'SELECT * FROM cvie_subscriptions')).length,500);
+});
 test('history scans prioritize three months, resume pagination, and only finish after every window',async()=>{
  const e=env();await subscribeProducts(e,'a',[{name:'Apache Tomcat'}]);
  const records=[cve(),cve('CVE-2026-12346'),cve('CVE-2026-12347','2026-02-01T00:00:00Z')],fetcher=provider(records,1);
@@ -77,7 +83,9 @@ test('history scans prioritize three months, resume pagination, and only finish 
 test('a full fifty-record NVD page is saved transactionally and the next page is not skipped',async()=>{
  const e=env();await subscribeProducts(e,'a',[{name:'Apache Tomcat'}]);
  const fetcher=provider(Array.from({length:51},(_,i)=>cve('CVE-2026-'+(20000+i))));
- await runCvieStep(e,fetcher,NOW);assert.equal((await rows(e,'SELECT * FROM cvie_advisories')).length,50);
+ e.DB.executions=0;await runCvieStep(e,fetcher,NOW);
+ assert.ok(e.DB.executions<=8,'six cron pages must fit in a 50-query invocation budget');
+ assert.equal((await rows(e,'SELECT * FROM cvie_advisories')).length,50);
  await runCvieStep(e,fetcher,NOW+7000);assert.equal((await rows(e,'SELECT * FROM cvie_advisories')).length,51);
  assert.ok((await first(e)).recent_complete_at);
 });

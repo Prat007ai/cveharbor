@@ -32,7 +32,7 @@ advancing the same job or contaminating a corrected product identity. Record
 writes and pagination advancement commit together. Responses are paginated, so
 the shared site's bounded public index does not truncate these product scans.
 
-An additional five-minute cron processes up to 24 source pages per tick. Browser
+An additional five-minute cron processes up to six source pages per tick. Browser
 polling can advance a job too, using the same durable rate budget. Completed
 products become due for a fresh twelve-month check after six hours. Anonymous
 NVD requests are spaced at least 6.5 seconds apart globally; an optional NVD key
@@ -40,6 +40,11 @@ uses a one-second interval. HTTP Retry-After is respected, with backoff for
 failures. Completion time depends on source availability, result volume and the
 queue; no instant-completion claim is made. A source page older than a day is
 marked overdue.
+
+Bulk registration and source-page writes use bound JSON sets rather than one
+database query per product or CVE. A 500-product import and each 50-record source
+page are tested against D1's query budget. The cron batch stays bounded for free
+Worker limits as well as paid deployments.
 
 ## Matching and coverage
 
