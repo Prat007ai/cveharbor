@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-01T18:23:04.690Z",
+  "checked_at": "2026-11-01T19:43:54.083Z",
   "read_only": true,
   "synthetic_products": true,
   "checks": [
@@ -21,56 +21,56 @@
       "stage": "source status",
       "ok": true,
       "statements": 3,
-      "rows_read": 5542,
+      "rows_read": 5140,
       "rows_written": 0
     },
     {
       "stage": "combined counts",
       "ok": true,
       "statements": 1,
-      "rows_read": 478616,
+      "rows_read": 479403,
       "rows_written": 0
     },
     {
       "stage": "advisory page",
       "ok": true,
       "statements": 2,
-      "rows_read": 919930,
+      "rows_read": 921157,
       "rows_written": 0
     },
     {
       "stage": "withdrawal exclusions",
       "ok": true,
       "statements": 1,
-      "rows_read": 474462,
+      "rows_read": 475045,
       "rows_written": 0
     },
     {
       "stage": "digest page",
       "ok": true,
       "statements": 2,
-      "rows_read": 916482,
+      "rows_read": 917738,
       "rows_written": 0
     },
     {
       "stage": "status handler and all three engine cards",
       "ok": true,
       "statements": 10,
-      "rows_read": 960028,
+      "rows_read": 961403,
       "rows_written": 0
     },
     {
       "stage": "lightweight progress handler and account-scoped products",
       "ok": true,
       "statements": 1,
-      "rows_read": 4,
+      "rows_read": 6,
       "rows_written": 0
     },
     {
       "stage": "progress SELECT on real D1 for a nonexistent synthetic account",
       "ok": true,
       "statements": 2,
-      "rows_read": 5,
+      "rows_read": 7,
       "rows_written": 0
     }
   ],

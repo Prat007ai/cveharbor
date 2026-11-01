@@ -36,7 +36,7 @@ const DB={prepare(sql){
   return {results:data.result[0].results};
  },async first(){return (await statement.all()).results[0]||null;}};return statement;
 }};
-const env={DB},now=Date.now(),recent=new Date(now-92*864e5).toISOString(),history=new Date(now-366*864e5).toISOString();
+const env={DB,CVIE_SHARED_SCANS_ENABLED:process.env.CVIE_SHARED_SCANS_ENABLED||'false'},now=Date.now(),recent=new Date(now-92*864e5).toISOString(),history=new Date(now-366*864e5).toISOString();
 const ctx={products,families:JSON.stringify(families),sources:{}};
 const report={checked_at:new Date(now).toISOString(),read_only:true,synthetic_products:true,checks:[]};
 async function check(stage,fn){
@@ -53,8 +53,8 @@ await check('withdrawal exclusions',()=>excludedProductCves(env,userId,ctx));
 await check('digest page',()=>combinedPage(env,userId,recent,'','',now,{...ctx,digest:true}));
 // Use the actual status handler, substituting only the owned-product SELECT.
 // All evidence queries still execute on real D1; writes remain prohibited.
-const statusEnv={DB:{prepare(sql){
- if(/FROM cvie_products p WHERE p.user_id=\?/.test(sql)){
+const statusEnv={...env,DB:{prepare(sql){
+ if(/^\s*SELECT p\.\*/.test(sql)&&sql.includes('WHERE p.user_id=?')){
   const statement={bind(...params){assert.ok(params.includes(userId));return statement;},async all(){return {results:products};}};return statement;
  }
  return DB.prepare(sql);

@@ -59,7 +59,7 @@ function scanProgress(p){
  const total=Number.isInteger(p.progress?.windows_total)&&p.progress.windows_total>0?p.progress.windows_total:0;
  const completed=Math.max(0,Math.min(total,Number(p.progress?.windows_complete)||0));
  const block=node('div','','cvie-progress'+(paused?' is-paused':finished?' is-complete':''));
- const heading=node('div','','cvie-progress-heading'),label=node('span',p.progress?.directory_total?'Product identity lookup':'NVD history scan');
+ const heading=node('div','','cvie-progress-heading'),label=node('span',p.progress?.directory_total?'Product identity lookup':p.shared_scan?'Shared NVD history scan':'NVD history scan');
  const activity=node('span',error?'Connection interrupted':p.status==='retrying'?'Paused · automatic retry':finished?(p.stale?'Previous check complete · refresh overdue':'History check complete'):p.status==='queued'?'Waiting to start':'Checking source records','cvie-progress-activity');
  if(running){const indicator=node('span','','cvie-activity');indicator.setAttribute('aria-hidden','true');activity.prepend(indicator);}
  heading.append(label,activity);
