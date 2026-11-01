@@ -17,6 +17,52 @@ vulnerable or a finding has been resolved.
 
 ## Scan behavior
 
+### Shared product coverage contract
+
+Every registered product, including additional products outside the public
+catalogue, now goes through `product-coverage.js`. The plan identifies its checked
+source families, original-disclosure discovery terms, component constraints,
+versioned coverage signature and limitations. Provider-specific naming is
+reviewed adapter data; history pagination, candidate discovery, retries,
+account isolation and completion use the same scanner.
+
+An exact source identity is narrower than a public catalogue topic. The catalogue
+review in [cvie-catalogue-coverage.md](cvie-catalogue-coverage.md) explicitly marks
+collections such as Linux, Azure and Application dependencies. Selecting one
+member does not establish coverage for the whole collection. The interface shows
+the selected source identities and an expandable coverage explanation; incomplete
+collection coverage and bounded discovery cannot become an unqualified zero
+result. The coverage panel retains its expanded state across polling.
+
+For every resolved product the engine checks all configured affected families and
+also discovers public CVE IDs using product terms before NVD CPE analysis.
+Candidates enter the original-disclosure queue, where structured vendor/product
+evidence is required. Original product names with a release suffix are recognized
+only when the exact label boundary, vendor identity and source version information
+agree. A name prefix alone cannot turn a connector, third-party library or a
+different Windows release into a match. Explicit CPE evidence retains precedence.
+
+Each discovery term is bounded to three pages per date window to prevent broad
+keywords from overwhelming shared provider/ingestion budgets. Reaching that limit
+sets a persistent coverage limitation. Structured affected-CPE history continues
+through every page without that truncation. Original-feed coverage timestamps and
+pending ingestion remain visible. Counts are verified available matches, not a
+claim that every historical disclosure or related product has been covered.
+
+Product-directory lookup now persists its cursor across pages and filters an
+explicit vendor. Automatic identity selection requires a complete search and an
+exact product-name match; a single unrelated result or one member of a broad
+category still needs confirmation. Very broad searches stop with a limitation
+and a request to narrow the product rather than pretending the directory was
+fully searched. Old completed scans with an older coverage signature requeue
+once while keeping their cached evidence and customer data.
+
+Registered products use verified private matches across the explorer, inventory
+reports and digests; broad public keyword tags cannot inflate their findings.
+Mappings for renames or additional families still require authoritative evidence.
+The shared contract supports those mappings but does not invent them or assert
+exhaustive coverage for an unknown product.
+
 ### Windows Hyper-V
 
 `HyperV`, `Hyper-V`, `Hyper V`, `Windows Hyper-V` and `Microsoft Hyper-V` are

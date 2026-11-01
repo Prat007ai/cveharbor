@@ -93,7 +93,8 @@ function mount(){
 function draw(){
  for(const panel of panels){
   panel.hidden=!signedIn;if(!signedIn)continue;
-  const previousOpen=panel.querySelector('.cvie-scan-details')?.open;panel.replaceChildren();
+  const previousOpen=panel.querySelector('.cvie-scan-details')?.open;
+  const previousCoverage=new Map([...panel.querySelectorAll('.cvie-coverage-details')].map(el=>[el.dataset.productId,el.open]));panel.replaceChildren();
   const header=node('div','','cvie-panel-head'),title=node('div');
   title.append(node('strong','CVIE · Vulnerability Intelligence Engine'),node('p','Source-backed product history, matched by affected product identity.','cvie-caption'));
   const label=node('label','History '),select=node('select');select.setAttribute('aria-label','CVIE vulnerability history');
@@ -131,6 +132,7 @@ function draw(){
    if(p.identity_label)row.append(node('small','Checking: '+p.identity_label));
    if(p.coverage){
     const coverage=node('details','','cvie-coverage-details');
+    coverage.dataset.productId=p.id;coverage.open=previousCoverage.get(p.id)||false;
     coverage.append(node('summary',p.coverage.limited?'Coverage review required':'Products and source coverage'));
     const description=node('div','','cvie-caption');
     for(const identity of p.coverage.identities||(p.coverage.families||[]).map(cpe=>({label:cpe.split(':').slice(3,5).join(' / ').replaceAll('_',' ')})))description.append(node('p',identity.label));

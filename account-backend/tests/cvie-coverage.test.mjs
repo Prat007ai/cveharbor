@@ -86,3 +86,15 @@ check('bounded keyword discovery is labelled partial and never truncates structu
 check('conflicting vendor metadata is explicitly flagged rather than presented as complete coverage',()=>{
  const summary=coverageSummary({...p,vendor:'Other Vendor',cursor_json:'{}'});assert.equal(summary.kind,'identity_conflict');assert.equal(summary.limited,true);assert.match(summary.notes[0],/conflicts/);
 });
+check('a stale response cannot overwrite restarted coverage even if both leases have the same timestamp',async()=>{
+ const e=env();await subscribeProducts(e,'a',[{name:p.name}]);let nextGeneration;
+ await runCvieStep(e,async()=>{
+  await q(e,"UPDATE cvie_products SET lease_until=0,cursor_json='{}',status='queued'").run();
+  await q(e,'UPDATE cvie_provider_budget SET next_request_at=0').run();
+  await runCvieStep(e,empty,NOW);
+  nextGeneration=JSON.parse((await q(e,'SELECT cursor_json FROM cvie_products').first()).cursor_json).generation;
+  return Response.json({startIndex:0,totalResults:1,vulnerabilities:[{cve:{id:'CVE-2026-12345',published:'2026-10-15T00:00:00Z',configurations:[{nodes:[{cpeMatch:[{criteria:p.cpe,vulnerable:true}]}]}]}}]});
+ },NOW);
+ assert.equal((await q(e,'SELECT COUNT(*) AS n FROM cvie_advisories').first()).n,0);
+ assert.equal(JSON.parse((await q(e,'SELECT cursor_json FROM cvie_products').first()).cursor_json).generation,nextGeneration);
+});

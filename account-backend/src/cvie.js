@@ -169,7 +169,8 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
  const budget=await query(env.DB,'UPDATE cvie_provider_budget SET next_request_at=? WHERE provider=? AND next_request_at<=?',now+(env.NVD_API_KEY?1000:6500),'nvd',now).run();
  if(budget.meta.changes!==1)return {waiting:true};
  const lease=now+120000;
- if((await query(env.DB,'UPDATE cvie_products SET lease_until=?,status=?,last_attempt_at=? WHERE id=? AND lease_until<?',lease,'scanning',now,product.id,now).run()).meta.changes!==1)return {busy:true};
+ const owner=crypto.randomUUID();
+ if((await query(env.DB,"UPDATE cvie_products SET lease_until=?,status=?,last_attempt_at=?,cursor_json=json_set(cursor_json,'$.active_scan',?) WHERE id=? AND lease_until<?",lease,'scanning',now,owner,product.id,now).run()).meta.changes!==1)return {busy:true};
  try{
   if(!product.cpe){
    const cursor=JSON.parse(product.cursor_json||'{}'),index=cursor.directory_index||0;
@@ -182,7 +183,7 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
    const sameName=candidates.length===1&&[candidates[0].cpe.split(':')[4],candidates[0].cpe.split(':').slice(3,5).join(' ')].some(x=>normalizeName(x.replaceAll('_',' '))===normalizeName(product.name));
    const cpe=finished&&sameName&&catalogueKind(product.name)==='product'?candidates[0].cpe:'';
    const status=cpe?'queued':finished||limited?'needs_identity':'scanning';
-   await query(env.DB,'UPDATE cvie_products SET cpe=?,status=?,candidates_json=?,cursor_json=?,lease_until=0,error=? WHERE id=? AND lease_until=?',cpe,status,JSON.stringify(candidates.slice(0,500)),JSON.stringify(status==='scanning'?{directory_index:next,directory_total:data.totalResults}:{}),cpe||status==='scanning'?'':limited?'The product directory is broad and only partially searched. Add the vendor or a more specific product name, or confirm an exact listed identity.':'Choose the exact vendor/product identity to continue; a name search alone is not a vulnerability match.',product.id,lease).run();
+   await query(env.DB,"UPDATE cvie_products SET cpe=?,status=?,candidates_json=?,cursor_json=?,lease_until=0,error=? WHERE id=? AND lease_until=? AND json_extract(cursor_json,'$.active_scan')=?",cpe,status,JSON.stringify(candidates.slice(0,500)),JSON.stringify(status==='scanning'?{directory_index:next,directory_total:data.totalResults}:{}),cpe||status==='scanning'?'':limited?'The product directory is broad and only partially searched. Add the vendor or a more specific product name, or confirm an exact listed identity.':'Choose the exact vendor/product identity to continue; a name search alone is not a vulnerability match.',product.id,lease,owner).run();
    return {resolved:Boolean(cpe)};
   }
   let cursor=JSON.parse(product.cursor_json||'{}');
@@ -204,8 +205,8 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
   }
   if(pageRecords.length)statements.push(query(env.DB,`INSERT INTO cvie_advisories(product_id,cve_id,published,record_json,generation)
    SELECT ?,json_extract(value,'$.id'),json_extract(value,'$.published'),value,? FROM json_each(?)
-   WHERE EXISTS(SELECT 1 FROM cvie_products WHERE id=? AND lease_until=? AND cpe=?)
-   ON CONFLICT(product_id,cve_id) DO UPDATE SET published=excluded.published,record_json=excluded.record_json,generation=excluded.generation`,product.id,cursor.generation,JSON.stringify(pageRecords),product.id,lease,product.cpe));
+   WHERE EXISTS(SELECT 1 FROM cvie_products WHERE id=? AND lease_until=? AND cpe=? AND json_extract(cursor_json,'$.active_scan')=?)
+   ON CONFLICT(product_id,cve_id) DO UPDATE SET published=excluded.published,record_json=excluded.record_json,generation=excluded.generation`,product.id,cursor.generation,JSON.stringify(pageRecords),product.id,lease,product.cpe,owner));
   window.index+=data.vulnerabilities.length;window.total=data.totalResults;
   window.pages=(window.pages||0)+1;
   let recent=product.recent_complete_at,history=product.history_complete_at;
@@ -214,19 +215,19 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
   const complete=cursor.position===cursor.windows.length;
   if(complete){
    history=now;
-   statements.push(query(env.DB,'DELETE FROM cvie_advisories WHERE product_id=? AND (generation<>? OR published<?) AND EXISTS(SELECT 1 FROM cvie_products WHERE id=? AND lease_until=? AND cpe=?)',product.id,cursor.generation,iso(monthsAgo(cursor.anchor,12)),product.id,lease,product.cpe));
+   statements.push(query(env.DB,"DELETE FROM cvie_advisories WHERE product_id=? AND (generation<>? OR published<?) AND EXISTS(SELECT 1 FROM cvie_products WHERE id=? AND lease_until=? AND cpe=? AND json_extract(cursor_json,'$.active_scan')=?)",product.id,cursor.generation,iso(monthsAgo(cursor.anchor,12)),product.id,lease,product.cpe,owner));
   }
   // Cursor + page records commit together, so a crash never advances past unsaved results.
   statements.push(query(env.DB,`UPDATE cvie_products SET status=?,cursor_json=?,scan_started_at=COALESCE(scan_started_at,?),last_success_at=?,
-   recent_complete_at=?,history_complete_at=?,next_attempt_at=?,lease_until=0,error='' WHERE id=? AND lease_until=?`,
-   complete?'ready':'scanning',JSON.stringify(complete?coverageMetadata(plan,cursor):cursor),cursor.anchor,now,recent,history,complete?now+6*3600000:0,product.id,lease));
+   recent_complete_at=?,history_complete_at=?,next_attempt_at=?,lease_until=0,error='' WHERE id=? AND lease_until=? AND json_extract(cursor_json,'$.active_scan')=?`,
+   complete?'ready':'scanning',JSON.stringify(complete?coverageMetadata(plan,cursor):cursor),cursor.anchor,now,recent,history,complete?now+6*3600000:0,product.id,lease,owner));
   await env.DB.batch(statements);
   return {complete,processed:data.vulnerabilities.length};
  }catch(error){
   const delay=error instanceof ProviderError?error.delay:60000;
   const message=error instanceof ProviderError?error.message:'CVIE could not complete the source check. Saved results remain available; retry is scheduled.';
   if(error instanceof ProviderError)await query(env.DB,'UPDATE cvie_provider_budget SET next_request_at=MAX(next_request_at,?) WHERE provider=?',now+delay,'nvd').run();
-  await query(env.DB,'UPDATE cvie_products SET status=?,error=?,next_attempt_at=?,lease_until=0 WHERE id=? AND lease_until=?','retrying',message,now+delay,product.id,lease).run();
+  await query(env.DB,"UPDATE cvie_products SET status=?,error=?,next_attempt_at=?,lease_until=0 WHERE id=? AND lease_until=? AND json_extract(cursor_json,'$.active_scan')=?",'retrying',message,now+delay,product.id,lease,owner).run();
   return {retrying:true};
  }
 }

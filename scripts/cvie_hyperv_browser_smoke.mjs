@@ -38,7 +38,7 @@ try{
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('http://127.0.0.1:8080/vulnerabilities/',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>window.CVEHARBOR_CVIE?.products[0]?.status==='needs_identity');
- const details=page.locator('#cvieExplorer details');await details.evaluate(el=>el.open=true);
+ const details=page.locator('#cvieExplorer .cvie-scan-details');await details.evaluate(el=>el.open=true);
  const chooser=page.getByRole('combobox',{name:'Product identity for HyperV'});
  assert.equal(await chooser.locator('option').count(),hyperVHosts().length+1);
  const labels=await chooser.locator('option').allTextContents();assert.ok(labels.some(x=>x==='Microsoft Windows Server 2022 · Hyper-V'));
