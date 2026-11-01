@@ -1,7 +1,7 @@
-CVEHarbor Threat IP Intelligence | 2026-11-01T18:36:05.119361+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-01T18:57:04.162089+00:00
 Permanent logical group: Suspicious IP Block
-Cumulative indexed IPs: 2380
-New since prior published snapshot: 1
+Cumulative indexed IPs: 2382
+New since prior published snapshot: 2
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 No rules or policies are created or enabled. No old IPs are removed.
@@ -9032,6 +9032,12 @@ No firewall rule is created or activated.
       <IPAddress>117.6.44.221</IPAddress>
     </IPHost>
     <IPHost>
+      <Name>CVEH_117_34_125_173</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>117.34.125.173</IPAddress>
+    </IPHost>
+    <IPHost>
       <Name>CVEH_117_50_51_198</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
@@ -14018,6 +14024,12 @@ No firewall rule is created or activated.
       <IPAddress>216.180.246.242</IPAddress>
     </IPHost>
     <IPHost>
+      <Name>CVEH_216_180_246_243</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>216.180.246.243</IPAddress>
+    </IPHost>
+    <IPHost>
       <Name>CVEH_216_180_246_246</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
@@ -15811,6 +15823,7 @@ No firewall rule is created or activated.
         <Host>CVEH_116_206_93_36</Host>
         <Host>CVEH_116_213_43_10</Host>
         <Host>CVEH_117_6_44_221</Host>
+        <Host>CVEH_117_34_125_173</Host>
         <Host>CVEH_117_50_51_198</Host>
         <Host>CVEH_117_62_22_127</Host>
         <Host>CVEH_117_91_186_55</Host>
@@ -16642,6 +16655,7 @@ No firewall rule is created or activated.
         <Host>CVEH_216_180_246_236</Host>
         <Host>CVEH_216_180_246_240</Host>
         <Host>CVEH_216_180_246_242</Host>
+        <Host>CVEH_216_180_246_243</Host>
         <Host>CVEH_216_180_246_246</Host>
         <Host>CVEH_216_180_246_247</Host>
         <Host>CVEH_216_180_246_249</Host>
