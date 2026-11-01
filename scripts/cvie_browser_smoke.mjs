@@ -14,6 +14,7 @@ const now=Date.now(),recentHistory=all.filter(x=>Date.parse(x.published)>=months
 const windowRecords=n=>all.map(x=>({...x,retained_exploited:Boolean(x.known_exploited&&Date.parse(x.published)<monthsAgo(now,n))})).filter(x=>Date.parse(x.published)>=monthsAgo(now,n)||x.retained_exploited);
 const recent=windowRecords(3),history=windowRecords(12);
 let preferences={defaults:null,products:[]},phase='scanning',authenticated=true,sourceFailure=false,withdrawnIds=[];
+let scanProgress={windows_complete:0,windows_total:5,records_checked:0,records_in_window:null};
 function sourceEvidence(){return {...(source.evidence||{}),sources:[{id:'nvd',label:'NVD product history',status:phase==='ready'?'current':'scanning',last_success_at:source.nvd_checked_at||Date.parse(source.checked_at)},...(source.evidence?.sources||[]).map(s=>sourceFailure&&s.id==='cisa_kev'?{...s,status:'unavailable',error:'Simulated source outage; last verified evidence retained'}:s)]};}
 const requests=[],errors=[];
 const id='11111111-1111-4111-8111-111111111111';
@@ -53,7 +54,7 @@ try{
    icon_slug:'apachetomcat',error:'',recent_count:phase==='ready'?recentHistory.length:0,history_count:phase==='ready'?yearHistory.length:0,
    older_kev_recent_count:recent.filter(r=>r.retained_exploited).length,older_kev_history_count:history.filter(r=>r.retained_exploited).length,
    recent_complete_at:phase==='ready'?now:null,history_complete_at:phase==='ready'?now:null,last_success_at:phase==='ready'?now:null,
-   stale:false,candidates:[],progress:{windows_complete:0,windows_total:5,records_checked:0,records_in_window:null}}))});
+   stale:false,candidates:[],next_attempt_at:phase==='retrying'?now+60000:null,progress:scanProgress}))});
   if(path==='/v1/cvie/advisories')return send({ready:true,months:Number(url.searchParams.get('months')),advisories:phase==='ready'?(url.searchParams.get('months')==='12'?history:recent).filter(r=>!withdrawnIds.includes(r.id)).map(r=>sourceFailure?{...r,exploitation_verification_stale:true,evidence_status:'CISA verification overdue; last good evidence retained'}:r):[],next:null});
   if(path==='/v1/inventory/status')return send({ready:true});
   if(path==='/v1/inventory')return send(inventory);
@@ -79,10 +80,45 @@ try{
  assert.equal(preferences.products.length,1,'Add and scan saves immediately, without a second save');
  await page.locator('#technologyManageClose').click();
  await page.evaluate(()=>{const badge=document.createElement('div');badge.id='cvieReviewBadge';badge.textContent='DEVELOPMENT PREVIEW · REAL PUBLIC ADVISORIES · SIMULATED ACCOUNT';Object.assign(badge.style,{position:'fixed',bottom:'12px',right:'12px',zIndex:'99999',background:'#16384a',color:'#baf3e8',padding:'8px 12px',borderRadius:'6px',fontSize:'11px'});document.body.append(badge);});
- await page.locator('#cvieExplorer details').evaluate(el=>{el.open=true;});
+ assert.equal(await page.locator('#cvieExplorer details').evaluate(el=>el.open),true,'active scans open their progress automatically');
+ const progress=page.locator('#cvieExplorer .cvie-progress progress');
+ assert.equal(await progress.getAttribute('value'),'0','progress starts at actual zero, not a fabricated percentage');
+ assert.equal(await progress.getAttribute('max'),'5');
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ assert.notEqual(await page.locator('#cvieExplorer .cvie-activity').evaluate(el=>getComputedStyle(el).animationName),'none');
+ await page.emulateMedia({reducedMotion:'reduce'});
+ assert.equal(await page.locator('#cvieExplorer .cvie-activity').evaluate(el=>getComputedStyle(el).animationName),'none','reduced motion disables the activity animation');
  await page.locator('#technology').scrollIntoViewIfNeeded();
  await page.screenshot({path:directory+'/CVIE-scanning-1920.png'});
+ scanProgress={windows_complete:2,windows_total:5,records_checked:100,records_in_window:250};
+ await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
+ assert.equal(await progress.getAttribute('value'),'2','progress follows completed backend windows');
+ assert.match(await page.locator('#cvieExplorer .cvie-progress').innerText(),/100 of 250 source records/);
+ for(const width of [1366,1920,2560,390]){
+  await page.setViewportSize({width,height:width===2560?1440:width===390?844:1080});
+  await page.locator('#cvieExplorer').scrollIntoViewIfNeeded();
+  await page.locator('#cvieExplorer').screenshot({path:directory+'/CVIE-progress-'+width+'.png'});
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'progress does not overflow at '+width);
+ }
+ await page.setViewportSize({width:1920,height:1080});
+ phase='retrying';await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
+ assert.equal(await progress.getAttribute('value'),'2','retrying retains the last verified progress');
+ assert.equal(await page.locator('#cvieExplorer .cvie-progress .cvie-activity').count(),0,'a paused scan does not animate as active work');
+ assert.match(await page.locator('#cvieExplorer .cvie-progress').innerText(),/Next attempt:/);
+ await page.locator('#cvieExplorer').screenshot({path:directory+'/CVIE-progress-retrying.png'});
+ await page.locator('#cvieExplorer summary').click();
+ await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
+ assert.equal(await page.locator('#cvieExplorer details').evaluate(el=>el.open),false,'refresh preserves the customer\'s collapsed status panel');
+ await page.locator('#cvieExplorer summary').click();
+ phase='queued';scanProgress={windows_complete:0,windows_total:0,records_checked:0,records_in_window:null};
+ await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
+ assert.equal(await progress.getAttribute('value'),null,'unknown work totals use an indeterminate indicator');
+ assert.match(await page.locator('#cvieExplorer .cvie-progress').innerText(),/Waiting to start/);
+ assert.equal(await progress.evaluate(el=>getComputedStyle(el).animationName),'none','reduced motion also disables indeterminate progress animation');
  phase='ready';await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
+ assert.equal(await progress.getAttribute('value'),'1');assert.equal(await progress.getAttribute('max'),'1','completed history shows a full bar even after the backend clears its cursor');
+ assert.match(await page.locator('#cvieExplorer .cvie-progress').innerText(),/History check complete/);
+ await page.locator('#cvieExplorer').screenshot({path:directory+'/CVIE-progress-complete.png'});
  await page.waitForFunction(()=>window.CVEHARBOR_CVIE.records.length>0);
  assert.equal(await page.locator('#dateRange').inputValue(),'published3m');
  const row=page.getByRole('button',{name:/^View Apache Tomcat:/});
@@ -139,6 +175,6 @@ try{
  authenticated=false;await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
  assert.equal(await page.evaluate(()=>window.CVEHARBOR_CVIE.records.length),0,'private CVIE results clear when the account session expires');
  assert.deepEqual(errors,[],'no uncaught browser errors');
- fs.writeFileSync(directory+'/verification.json',JSON.stringify({ok:true,source:'Real reconciled NVD/CNA/KEV records from isolated CVIE verification',account:'Simulated; no customer data',recent_records:recentHistory.length,history_records:yearHistory.length,retained_older_kev:history.filter(r=>r.retained_exploited).length,widths:[390,1366,1920,2560],checks:['immediate save and scan','automatic product logo','three/twelve month retrieval','three-source freshness','source failure preserves records','withdrawal suppresses stale public rows','shared report findings','expired-session clearing','horizontal overflow','uncaught browser errors']},null,2));
+ fs.writeFileSync(directory+'/verification.json',JSON.stringify({ok:true,source:'Real reconciled NVD/CNA/KEV records from isolated CVIE verification',account:'Simulated; no customer data',recent_records:recentHistory.length,history_records:yearHistory.length,retained_older_kev:history.filter(r=>r.retained_exploited).length,widths:[390,1366,1920,2560],checks:['immediate save and scan','automatic product logo','three/twelve month retrieval','three-source freshness','source failure preserves records','withdrawal suppresses stale public rows','shared report findings','expired-session clearing','horizontal overflow','uncaught browser errors','actual history-window progress','indeterminate queued work','paused progress retained with retry time','completed history progress','reduced-motion accessibility','status expansion persists across refresh']},null,2));
  console.log('PASS CVIE Chromium: three-source status, source outage retention, withdrawals, older KEV, add/scan, logo, 3/12 months, reports and session expiry; screenshots at 390/1366/1920/2560.');
 }finally{await browser.close();}

@@ -5,6 +5,17 @@
 .cvie-panel summary{cursor:pointer;padding:8px 0}.cvie-product-statuses{max-height:330px;overflow:auto}.cvie-product-status{display:flex;align-items:center;flex-wrap:wrap;gap:8px 20px;padding:13px 0;border-top:1px solid #254654}
 .cvie-source-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}.cvie-source{display:flex;flex-direction:column;gap:5px;border:1px solid #2c5263;border-left:3px solid #79e6d7;border-radius:6px;padding:10px 12px;font-size:.84rem}.cvie-source small{font-size:.73rem;color:#a3c1ce}.cvie-source.stale,.cvie-source.unavailable,.cvie-source.rate_limited,.cvie-source.setup_required{border-left-color:#f1b968}.cvie-source.pending,.cvie-source.catching_up,.cvie-source.verifying_products{border-left-color:#66b9f1}
 .cvie-product-status strong{min-width:180px}.cvie-product-status small{flex-basis:100%}.cvie-state{font-size:.87rem}.cvie-state.retrying,.cvie-state.needs_identity{color:#f2cc81}
+.cvie-progress{flex-basis:100%;min-width:0;padding:12px 14px;border:1px solid #2c5263;border-radius:8px;background:#0b2231}
+.cvie-progress-heading,.cvie-progress-detail{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;line-height:1.5}.cvie-progress-heading{color:#d9edf3}.cvie-progress-detail{color:#a3c1ce}
+.cvie-progress-activity{display:inline-flex;align-items:center;gap:7px;color:#8ee8d3}.cvie-progress.is-paused .cvie-progress-activity{color:#f2cc81}
+.cvie-panel progress{display:block;appearance:none;width:100%;height:8px;margin:10px 0;border:0;border-radius:20px;overflow:hidden;background:#234554;color:#79e6d7;accent-color:#79e6d7}
+.cvie-panel progress::-webkit-progress-bar{background:#234554;border-radius:20px}.cvie-panel progress::-webkit-progress-value{background:#79e6d7;border-radius:20px}.cvie-panel progress::-moz-progress-bar{background:#79e6d7;border-radius:20px}
+.cvie-panel .is-paused progress{accent-color:#e3b66c}.cvie-panel .is-paused progress::-webkit-progress-value{background:#e3b66c}.cvie-panel .is-paused progress::-moz-progress-bar{background:#e3b66c}
+.cvie-panel progress:indeterminate{background:linear-gradient(90deg,#234554 0 20%,#79e6d7 45% 55%,#234554 80%);background-size:240% 100%;animation:cvie-progress-sweep 2.4s linear infinite}.cvie-panel progress:indeterminate::-webkit-progress-bar{background:transparent}.cvie-panel progress:indeterminate::-moz-progress-bar{background:transparent}
+.cvie-panel .cvie-source-activity{height:4px;margin:5px 0 0}.cvie-activity{width:9px;height:9px;flex-shrink:0;border-radius:50%;background:currentColor;animation:cvie-progress-pulse 1.8s ease-in-out infinite}
+.cvie-panel .is-paused progress:indeterminate{background:#234554;animation:none}
+@keyframes cvie-progress-sweep{from{background-position:140% 0}to{background-position:-100% 0}}@keyframes cvie-progress-pulse{50%{opacity:.35}}
+@media(prefers-reduced-motion:reduce){.cvie-panel progress:indeterminate,.cvie-activity{animation:none}}
 .technology-row .cvie-row-state{display:block;font-size:.72rem;color:#8ee8d3;white-space:normal;line-height:1.4}.technology-row .cvie-row-state.retrying{color:#f2cc81}
 @media(max-width:700px){.cvie-panel{padding:14px}.cvie-panel-head{gap:10px}.cvie-product-status select{max-width:100%}.cvie-source-grid{grid-template-columns:1fr}}
 @media print{.cvie-panel{display:none!important}}

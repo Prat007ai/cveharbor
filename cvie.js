@@ -34,6 +34,29 @@ function statusFor(p){
  const older=months===12?p.older_kev_history_count:p.older_kev_recent_count;
  return (complete?(count?count+' advisories · last '+months+' months':'No published advisories found in '+months+' months'):'Preparing '+months+'-month history')+(older?' · '+older+' older KEV-listed':'');
 }
+function scanProgress(p){
+ if(p.status==='needs_identity')return null;
+ const finished=p.status==='ready',paused=p.status==='retrying'||!!error||finished&&p.stale;
+ const running=!paused&&['queued','scanning'].includes(p.status);
+ const total=Number.isInteger(p.progress?.windows_total)&&p.progress.windows_total>0?p.progress.windows_total:0;
+ const completed=Math.max(0,Math.min(total,Number(p.progress?.windows_complete)||0));
+ const block=node('div','','cvie-progress'+(paused?' is-paused':finished?' is-complete':''));
+ const heading=node('div','','cvie-progress-heading'),label=node('span','NVD history scan');
+ const activity=node('span',error?'Connection interrupted':p.status==='retrying'?'Paused · automatic retry':finished?(p.stale?'Previous check complete · refresh overdue':'History check complete'):p.status==='queued'?'Waiting to start':'Checking source records','cvie-progress-activity');
+ if(running){const indicator=node('span','','cvie-activity');indicator.setAttribute('aria-hidden','true');activity.prepend(indicator);}
+ heading.append(label,activity);
+ const bar=node('progress');bar.max=finished?1:total||1;
+ bar.setAttribute('aria-label',p.name+' NVD history scan');
+ if(finished||total)bar.value=finished?1:completed;
+ const description=finished?'History scan complete':total?completed+' of '+total+' history windows checked':'Preparing the product and history windows';
+ bar.setAttribute('aria-valuetext',description);bar.textContent=description;
+ const detail=node('div',description,'cvie-progress-detail');
+ const recordTotal=p.progress?.records_in_window,checked=p.progress?.records_checked;
+ if(!finished&&Number.isFinite(recordTotal)&&recordTotal>0&&Number.isFinite(checked))detail.append(node('span',Math.max(0,Math.min(recordTotal,checked))+' of '+recordTotal+' source records checked in the current window'));
+ if(p.status==='retrying'&&p.next_attempt_at)detail.append(node('span','Next attempt: '+new Date(p.next_attempt_at).toLocaleString()));
+ if(error)detail.append(node('span','Showing last saved progress. CVIE will reconnect automatically.'));
+ block.append(heading,bar,detail);return block;
+}
 function notify(){const signature=JSON.stringify([months,records,[...withdrawn].sort()]);const recordsChanged=signature!==lastSignature;lastSignature=signature;draw();window.dispatchEvent(new CustomEvent('cvie:updated',{detail:{recordsChanged}}));}
 async function request(path='',options={}){
  const response=await fetch(API+path,{credentials:'include',headers:{Accept:'application/json',...(options.body?{'Content-Type':'application/json'}:{})},...options});
@@ -54,7 +77,8 @@ function mount(){
 }
 function draw(){
  for(const panel of panels){
-  panel.hidden=!signedIn;if(!signedIn)continue;panel.replaceChildren();
+  panel.hidden=!signedIn;if(!signedIn)continue;
+  const previousOpen=panel.querySelector('.cvie-scan-details')?.open;panel.replaceChildren();
   const header=node('div','','cvie-panel-head'),title=node('div');
   title.append(node('strong','CVIE · Vulnerability Intelligence Engine'),node('p','Source-backed product history, matched by affected product identity.','cvie-caption'));
   const label=node('label','History '),select=node('select');select.setAttribute('aria-label','CVIE vulnerability history');
@@ -72,6 +96,9 @@ function draw(){
    if(s.pending_records)card.append(node('small',s.pending_records+' records awaiting verification'));
    if(s.status==='rate_limited'&&s.retry_at)card.append(node('small','Retry after '+new Date(s.retry_at).toLocaleString()));
    if(s.error)card.append(node('small',s.error));sourceGrid.append(card);
+   if(!error&&['scanning','catching_up','verifying_products'].includes(s.status)){
+    const activity=node('progress','','cvie-source-activity');activity.setAttribute('aria-label',(s.label||s.id)+' verification in progress');card.append(activity);
+   }
   }
   if(sourceGrid.children.length)panel.append(sourceGrid);
   const active=products.filter(p=>['queued','scanning','retrying'].includes(p.status));
@@ -82,8 +109,8 @@ function draw(){
   for(const p of products){
    const row=node('div','','cvie-product-status');
    row.append(node('strong',p.name),node('span',statusFor(p),'cvie-state '+p.status));
+   const progress=scanProgress(p);if(progress)row.append(progress);
    if(p.last_success_at)row.append(node('small','Last successful source page: '+new Date(p.last_success_at).toLocaleString()));
-   if(p.status==='scanning'&&p.progress?.windows_total)row.append(node('small',p.progress.windows_complete+' of '+p.progress.windows_total+' history windows complete'+(p.progress.records_in_window!==null?' · '+p.progress.records_checked+' of '+p.progress.records_in_window+' source records in this window':'')));
    if(p.error)row.append(node('small',p.error));
    if(p.candidates?.length){
     const choose=node('select');choose.setAttribute('aria-label','Product identity for '+p.name);
@@ -95,7 +122,8 @@ function draw(){
    }
    list.append(row);
   }
-  if(products.length){const details=node('details');details.append(node('summary','Product scan status ('+products.length+')'),list,node('p','Coverage: NVD product history, original CNA disclosures and CISA KEV. Older KEV-listed advisories remain visible outside the selected history. A completed source check does not establish that an installation is secure.','cvie-caption'));panel.append(details);}
+  if(products.length){const details=node('details','','cvie-scan-details');details.open=previousOpen??active.length>0;
+   details.append(node('summary','Product scan status ('+products.length+')'+(active.length?' · '+active.length+' in progress':'')),list,node('p','Progress updates automatically. History bars track NVD checks; original disclosures and CISA KEV verification are shown above. Scans continue if you leave this page. A completed source check does not establish that an installation is secure.','cvie-caption'));panel.append(details);}
  }
 }
 async function refresh(sync=false){

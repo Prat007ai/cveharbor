@@ -26,6 +26,14 @@ vulnerable or a finding has been resolved.
 - **Retrying:** provider failures/rate limits preserve previous results, retain
   the cursor, and show a retry message. Missing service setup has its own message.
 
+Each product has an accessible NVD history progress bar driven by completed
+history windows, with the current window's checked record count when supplied.
+Unknown totals use an indeterminate activity indicator. Retry states preserve the
+last saved position, pause the animation and show the scheduled retry time.
+Completed history has a full bar; disclosure/KEV indexing is tracked separately.
+Scan details open for an initial active scan and retain the user's expanded or
+collapsed choice across polling. Animations respect reduced-motion settings.
+
 The product/history cache is private to an account. Database leases, fenced
 writes and a shared provider request budget prevent overlapping workers from
 advancing the same job or contaminating a corrected product identity. Record
