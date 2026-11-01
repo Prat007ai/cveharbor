@@ -89,7 +89,7 @@ for attempt in range(6):
             expected=(root / "public" / route.strip("/") / "index.html").read_text(encoding="utf-8")
             for marker in required[route]:
                 if marker not in html: raise RuntimeError(f"{route} missing {marker}")
-            assets=("styles.css","homepage.css","app.js","cvie.js","cvie.css","inventory-matching.js","command-center.js","customer-security.js","inventory.js","website-monitor-page.js")
+            assets=("styles.css","homepage.css","app.js","advisory-details.js","cvie.js","cvie.css","inventory-matching.js","command-center.js","customer-security.js","inventory.js","website-monitor-page.js")
             if route=="/threats/":assets+=("threats.js","geo-map.js")
             for asset in assets:
                 m=re.search(r'/'+re.escape(asset)+r'\?v=([a-zA-Z0-9-]+)',expected)

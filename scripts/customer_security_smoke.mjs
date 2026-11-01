@@ -28,7 +28,7 @@ const settle=()=>new Promise(resolve=>setTimeout(resolve,30));
 async function page(kind,customer='c1',data=fixture){
  const dom=new JSDOM(fs.readFileSync(kind+'/index.html','utf8'),{url:'https://cveharbor.com/'+kind+'/?customer='+customer,runScripts:'outside-only'});
  const w=dom.window;w.fetch=data.request;w.alert=message=>{w.lastAlert=message};w.CVEHARBOR_DATA={advisories:data.advisories};
- for(const script of ['inventory-matching.js','customer-score.js','customer-security.js'])w.eval(fs.readFileSync(script,'utf8'));
+ for(const script of ['inventory-matching.js','customer-score.js','advisory-details.js','customer-security.js'])w.eval(fs.readFileSync(script,'utf8'));
  await settle();return dom;
 }
 function select(dom,id,value){const el=dom.window.document.getElementById(id);el.value=value;el.dispatchEvent(new dom.window.Event('change'))}
@@ -130,3 +130,5 @@ console.log('PASS customer security: read-only reports, editable dashboard, save
 // A backend/tests change would also trigger the production Worker migration workflow.
 execFileSync(process.execPath,['--test',fileURLToPath(new URL('./customer_report_isolation.test.mjs',import.meta.url))],{stdio:'inherit'});
 execFileSync(process.execPath,[fileURLToPath(new URL('./software_upgrade_smoke.mjs',import.meta.url))],{stdio:'inherit'});
+
+execFileSync(process.execPath,['scripts/customer_finding_details_smoke.mjs'],{stdio:'inherit'});

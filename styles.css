@@ -2430,3 +2430,10 @@ body.account-page #customerReports .customer-dash-toolbar{display:grid;grid-temp
  #customerReports .customer-report-section-toggle:after{display:none}
  #customerReports .customer-report>h2{font-size:14px}
 }
+
+/* CVE IDs open the shared advisory dialog without leaving the finding table. */
+.customer-cve-detail{border:0;background:transparent;padding:2px 0;color:#75e6df;font:inherit;text-align:left;text-decoration:underline;text-underline-offset:3px;cursor:pointer;overflow-wrap:anywhere}
+.customer-cve-detail:hover{color:#fff}.customer-cve-detail:focus-visible{outline:2px solid #75e6df;outline-offset:4px;border-radius:2px}
+.customer-finding-dialog h2{overflow-wrap:anywhere}.customer-finding-context{border:1px solid #386579;border-radius:9px;background:#102f42;padding:14px;margin:18px 0}
+.customer-finding-context h3{margin-top:0}.customer-finding-context p{overflow-wrap:anywhere}.customer-finding-context strong{color:#d1eaf4}
+@media print{.customer-finding-dialog{display:none!important}.customer-cve-detail{color:inherit;text-decoration:none}}

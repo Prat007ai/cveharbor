@@ -485,7 +485,7 @@ class FeedTests(unittest.TestCase):
         self.assertIn('src="/app.js?v=',html)
         self.assertIn('grid-template-columns:repeat(5,minmax(0,1fr))',css)
         self.assertIn('-webkit-line-clamp:6',css)
-        self.assertIn('block(\'Description\',x.summary)',js)
+        self.assertIn("block('Description',x.summary||x.title)",(root/'advisory-details.js').read_text())
 
     def test_recent_disclosure_badges_use_toronto_date_and_original_publication(self):
         js=(root/'app.js').read_text(encoding='utf-8')
@@ -519,7 +519,7 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
         html=(root/'index.html').read_text(encoding='utf-8')
         self.assertIn("const freshness=makeDisclosureBadge(x)",js)
         self.assertIn("idCell.append(firstPublished)",js)
-        self.assertIn("detailMarkers.append(firstPublished)",js)
+        self.assertIn("detailMarkers.append(firstPublished)",(root/'advisory-details.js').read_text())
         self.assertIn("animation:cveharborFreshDisclosurePulse",css)
         self.assertIn("@media(prefers-reduced-motion:reduce)",css)
         self.assertRegex(html, r"styles\.css\?v=[A-Za-z0-9_-]+")

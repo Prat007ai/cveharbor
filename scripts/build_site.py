@@ -14,7 +14,7 @@ if OUT.exists():
     shutil.rmtree(OUT)
 OUT.mkdir()
 
-for name in ('index.html', 'cvie.js', 'cvie.css', 'styles.css', 'homepage.css', 'app.js', 'workspace.js', 'operations.js', 'accounts.js', 'disclosure-trend.js', 'page-router.js', 'header-auth.js', 'command-center.js', 'account-page.js', 'account-security.js', 'workspace-page.js', 'workspace-dashboard.js', 'website-monitor-page.js', 'website-monitor-dashboard.js', 'lifecycle-monitor.js', 'inventory.js', 'inventory-matching.js', 'customer-security.js', 'customer-score.js', 'malware.js', 'geo-map.js', 'malware-data.js', 'data.js', 'CNAME', 'robots.txt'):
+for name in ('index.html', 'cvie.js', 'cvie.css', 'styles.css', 'homepage.css', 'app.js', 'advisory-details.js', 'workspace.js', 'operations.js', 'accounts.js', 'disclosure-trend.js', 'page-router.js', 'header-auth.js', 'command-center.js', 'account-page.js', 'account-security.js', 'workspace-page.js', 'workspace-dashboard.js', 'website-monitor-page.js', 'website-monitor-dashboard.js', 'lifecycle-monitor.js', 'inventory.js', 'inventory-matching.js', 'customer-security.js', 'customer-score.js', 'malware.js', 'geo-map.js', 'malware-data.js', 'data.js', 'CNAME', 'robots.txt'):
     shutil.copy2(ROOT / name, OUT / name)
 (OUT / 'assets').mkdir(exist_ok=True)
 shutil.copytree(ROOT / 'assets' / 'homepage', OUT / 'assets' / 'homepage')
