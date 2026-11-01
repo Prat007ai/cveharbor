@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('site_gate_deployer',ROOT/'scripts/deploy_site_gate.py')
@@ -97,3 +97,25 @@ class SiteGateDeploymentTests(unittest.TestCase):
             self.assertEqual(auth.passwd.find_user_password('CVEHarbor development','https://api.cveharbor.com/v1/me'),(None,None))
             self.assertEqual(auth.passwd.find_user_password('CVEHarbor development','https://example.test/'),(None,None))
         finally:sys.path.remove(path)
+
+    def test_pages_admin_denial_requires_an_explicit_retirement_fallback(self):
+        import sys,urllib.error
+        sys.path.insert(0,str(ROOT/'scripts'))
+        try:
+            import disable_public_pages_origin as retire
+            for fallback in ('false','true'):
+                response=MagicMock()
+                response.__enter__.return_value.read.return_value=b'{"cname":"cveharbor.com"}'
+                denied=urllib.error.HTTPError('https://api.github.com/repos/Prat007ai/cveharbor/pages',403,'Forbidden',{},None)
+                with tempfile.TemporaryDirectory() as folder,patch.dict(os.environ,{
+                    'SITE_GATE_PASSWORD':PASSWORD,'GITHUB_REPOSITORY':'Prat007ai/cveharbor',
+                    'GITHUB_TOKEN':'fixture-github-token','ALLOW_PAGES_RETIREMENT_FALLBACK':fallback,
+                    'GITHUB_OUTPUT':str(Path(folder)/'outputs'),
+                }),patch.object(retire,'probe'),patch.object(retire.urllib.request,'urlopen',side_effect=[response,denied]):
+                    if fallback=='false':
+                        with self.assertRaisesRegex(RuntimeError,'HTTP 403'):retire.main()
+                        self.assertFalse((Path(folder)/'outputs').exists())
+                    else:
+                        self.assertIs(retire.main(),False)
+                        self.assertEqual((Path(folder)/'outputs').read_text(),'retire_pages_origin=true\n')
+        finally:sys.path.remove(str(ROOT/'scripts'))

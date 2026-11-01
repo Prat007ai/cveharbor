@@ -31,6 +31,11 @@ def main():
         with urllib.request.urlopen(urllib.request.Request(url,headers=headers,method="DELETE"),timeout=25) as response:
             if response.status!=204:raise RuntimeError("Unexpected Pages-disable response")
     except urllib.error.HTTPError as exc:
+        if exc.code==403 and os.environ.get('ALLOW_PAGES_RETIREMENT_FALLBACK')=='true':
+            print('GitHub requires repository-admin access to unpublish Pages; replace its application with the retirement notice instead')
+            if os.environ.get('GITHUB_OUTPUT'):
+                with open(os.environ['GITHUB_OUTPUT'],'a') as output:output.write('retire_pages_origin=true\n')
+            return False
         raise RuntimeError("The website gate is active, but closing the old public Pages origin needs Pages-write permission: HTTP "+str(exc.code)) from None
     print("Old public GitHub Pages origin disabled after protected-site verification")
 

@@ -1,0 +1,41 @@
+name: Retire the former public application origin
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/retire-public-site-origin.yml
+      - scripts/build_retired_pages_origin.py
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: cveharbor-pages-retirement
+  cancel-in-progress: false
+jobs:
+  retire:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Require a working password-protected replacement first
+        env:
+          SITE_GATE_PASSWORD: ${{ secrets.SITE_GATE_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import os, sys
+          sys.path.insert(0,'scripts')
+          from deploy_site_gate import probe
+          probe('https://cveharbor.com',True,'cveharbor',os.environ['SITE_GATE_PASSWORD'])
+          print('Protected replacement verified before retiring the former origin')
+          PY
+      - name: Build only the retirement notice
+        run: python scripts/build_retired_pages_origin.py
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: retired-pages-origin
+      - uses: actions/deploy-pages@v4

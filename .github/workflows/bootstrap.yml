@@ -97,7 +97,7 @@ on:
   workflow_dispatch:
     inputs:
       deploy:
-        description: 'Publish the hourly advisory site now (enable Pages first)'
+        description: 'Publish the hourly advisory site now'
         required: false
         default: false
         type: boolean
@@ -183,6 +183,8 @@ jobs:
 
   sync:
     name: Collect public advisories and deploy
+    outputs:
+      retire_pages_origin: ${{ steps.origin.outputs.retire_pages_origin }}
     if: (github.ref == 'refs/heads/main') && (github.event_name == 'push' || github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true))
     runs-on: ubuntu-latest
     environment:
@@ -311,9 +313,19 @@ jobs:
       - name: Verify authenticated production pages and published assets
         run: python scripts/verify_production.py
       - name: Close the old public Pages origin after protected-site verification
+        id: origin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALLOW_PAGES_RETIREMENT_FALLBACK: 'true'
         run: python scripts/disable_public_pages_origin.py
+      - name: Prepare notice for the former public origin
+        if: steps.origin.outputs.retire_pages_origin == 'true'
+        run: python scripts/build_retired_pages_origin.py
+      - name: Upload only the retired-origin notice
+        if: steps.origin.outputs.retire_pages_origin == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: retired-pages-origin
       - name: Flag incomplete source collection
         if: always() && steps.collect.outcome == 'success'
         run: |
@@ -346,3 +358,16 @@ jobs:
               raise SystemExit('Threat IP collection degraded: ' + str(report.get('sources')))
           print('All configured threat feeds fetched successfully; unchanged counts can be legitimate.')
           PY
+
+  retire-origin:
+    name: Replace the former public application with a retirement notice
+    needs: sync
+    if: needs.sync.outputs.retire_pages_origin == 'true'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: cveharbor-pages-retirement
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/deploy-pages@v4

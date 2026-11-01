@@ -35,9 +35,11 @@ Recurring releases update the same Worker without withdrawing its live routes.
 
 Production verification authenticates with the encrypted CI password and checks
 the exact pages, scripts and feed exports against the built files. Only after
-that verification is the old public GitHub Pages origin disabled, preventing
-direct-origin access around the website gate. Pages-write permission is retained
-solely for that cleanup. No full-site public Pages artifact is uploaded.
+that verification is the old public GitHub Pages application retired, preventing
+direct-origin access around the website gate. If GitHub requires administrator
+permission to unpublish Pages, its content is replaced with a small retirement
+notice containing only a link to the protected site. Pages-write permission is
+retained solely for that cleanup. No full-site public Pages artifact is uploaded.
 
 The development activation workflow checks hosting, deploys the requested gate,
 and verifies private access before retiring Pages. It records redacted step
