@@ -5,6 +5,9 @@ on:
     paths:
       - .github/workflows/bootstrap.yml
       - site-gate/**
+      - cvie.js
+      - cvie.css
+      - scripts/cvie_browser_smoke.mjs
       - scripts/deploy_site_gate.py
       - scripts/disable_public_pages_origin.py
       - scripts/site_gate_client.py
@@ -55,6 +58,9 @@ on:
     paths:
       - .github/workflows/bootstrap.yml
       - site-gate/**
+      - cvie.js
+      - cvie.css
+      - scripts/cvie_browser_smoke.mjs
       - scripts/deploy_site_gate.py
       - scripts/disable_public_pages_origin.py
       - scripts/site_gate_client.py

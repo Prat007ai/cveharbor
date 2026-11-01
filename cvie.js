@@ -104,7 +104,7 @@ async function refresh(sync=false){
   else if(signedIn)timer=setTimeout(()=>void refresh(),products.some(p=>['queued','scanning'].includes(p.status))?8000:60000);
  }
 }
-window.CVEHARBOR_CVIE={get products(){return products;},get records(){return merge();},get months(){return months;},get ready(){return ready;},merge,refresh,statusFor,
+window.CVEHARBOR_CVIE={get products(){return products;},get records(){return merge();},get months(){return months;},get ready(){return ready;},get signedIn(){return signedIn;},merge,refresh,statusFor,
  setMonths:value=>{if(![3,12].includes(Number(value)))throw Error('Select 3 or 12 months');months=Number(value);return refresh();},
  product:name=>products.find(p=>normalize(p.name)===normalize(name))};
 mount();

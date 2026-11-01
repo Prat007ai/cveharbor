@@ -21,7 +21,7 @@ assert.equal(match.candidate(pluginAsset,finding('CVE-2026-11118','WordPress / P
 matchingDom.window.close();
 
 const html=fs.readFileSync('customer-reports/index.html','utf8');
-assert.ok(html.includes('customer-security.js?v=email-success-145'),'report loads current script');
+assert.ok(html.includes('customer-security.js?v=cvie-1'),'report loads the CVIE-aware script');
 const dom=new JSDOM(html,{url:'https://cveharbor.com/customer-reports/?customer=c1',runScripts:'outside-only'});
 const {window}=dom,doc=window.document;
 const sample={
@@ -180,7 +180,7 @@ assert.ok(reportSource.includes("stateLabel.style.setProperty('color',ink,'impor
 assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('id="customerReportEmail"'),'report email control available');
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes('customer-report-email'),'report email dialog calls authenticated service');
 
-assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('customer-security.js?v=email-success-145'),'email report loads current script');
+assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('customer-security.js?v=cvie-1'),'email report loads current script');
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes("$('customerReportEmail').addEventListener('click'"),'email report click handler is registered');
 
 assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('class="customer-report-actions"'),'report actions share aligned toolbar');
@@ -197,5 +197,5 @@ assert.ok(fs.readFileSync('customer-security.js','utf8').includes("if(!response.
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes('customer-email-success-dialog'),'successful sends render a dedicated modal');
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes("const dismiss=text('button','Close'"),'success modal has close button');
 
-assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('customer-security.js?v=email-success-145'),'report loads latest success dialog');
+assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('customer-security.js?v=cvie-1'),'report loads latest success dialog');
 assert.ok(fs.readFileSync('customer-security.js','utf8').includes("successDialog.append(check,heading,detail,dismiss)"),'success dialog contains recipient confirmation and close button');

@@ -1,30 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {DatabaseSync} from 'node:sqlite';
-import fs from 'node:fs';
+import {DB} from './helpers/d1.mjs';
 import {cvieReady,subscribeProducts,syncAccountProducts,runCvieStep,cvieRoute,normalizeNvd,monthsAgo,scanWindows,loadCvieDigest} from '../src/cvie.js';
 import {knownIdentity,productCpe,logoFor} from '../src/product-identity.js';
 import worker from '../src/index.js';
 
 const NOW=Date.parse('2026-11-01T12:00:00Z'),DAY=86400000;
-class DB{
- constructor(){
-  this.sql=new DatabaseSync(':memory:');
-  this.sql.exec(`PRAGMA foreign_keys=ON; CREATE TABLE users(id TEXT PRIMARY KEY,email TEXT); INSERT INTO users VALUES('a','a@example.test'),('b','b@example.test');
-   CREATE TABLE sessions(id TEXT,user_id TEXT,token_hash TEXT,expires_at INTEGER);
-   CREATE TABLE user_totp(user_id TEXT,enabled INTEGER);
-   CREATE TABLE inventory_assets(user_id TEXT,technology TEXT); CREATE TABLE user_stack(user_id TEXT,technology TEXT);
-   CREATE TABLE user_technology_catalogue(user_id TEXT PRIMARY KEY,preferences_json TEXT,updated_at INTEGER);`);
-  this.sql.exec(fs.readFileSync(new URL('../migrations/0019_cvie.sql',import.meta.url),'utf8'));
- }
- prepare(sql){const statement=this.sql.prepare(sql);const make=args=>({
-  bind:(...values)=>make(values),
-  first:async()=>statement.get(...args)||null,
-  all:async()=>({results:statement.all(...args)}),
-  run:async()=>({meta:{changes:Number(statement.run(...args).changes)}}),
- });return make([]);}
- async batch(statements){this.sql.exec('BEGIN');try{const values=[];for(const s of statements)values.push(await s.run());this.sql.exec('COMMIT');return values;}catch(e){this.sql.exec('ROLLBACK');throw e;}}
-}
 const env=()=>({DB:new DB()}),rows=(e,sql,...args)=>e.DB.prepare(sql).bind(...args).all().then(x=>x.results);
 const first=e=>e.DB.prepare('SELECT * FROM cvie_products ORDER BY id LIMIT 1').first();
 const cpe=knownIdentity('Apache Tomcat').cpe;

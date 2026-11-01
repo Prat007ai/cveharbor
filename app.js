@@ -63,6 +63,7 @@
   const monthCutoff=months=>{const now=new Date(),day=now.getUTCDate();now.setUTCDate(1);now.setUTCMonth(now.getUTCMonth()-months);now.setUTCDate(Math.min(day,new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+1,0)).getUTCDate()));return now.getTime();};
   const inMonths=(record,months)=>{const date=Date.parse(record.published||'');return Number.isFinite(date)&&date>=monthCutoff(months)&&date<=Date.now();};
   window.addEventListener('cvie:updated',event=>{
+    if(!window.CVEHARBOR_CVIE.signedIn){personalized=null;catalogueSignedIn=false;}
     items=window.CVEHARBOR_CVIE.merge(baseItems);
     const names=(window.CVEHARBOR_CVIE.products||[]).map(p=>p.name);
     for(const option of [...$('technologyFilter').options])if(option.dataset.cvie)option.remove();
@@ -185,7 +186,7 @@
       location.assign('/vulnerabilities/?'+params.toString()+'#advisories');
       return;
     }
-    $('advisories').scrollIntoView({behavior:'smooth',block:'start'});
+    $('advisories').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
   }
   function openTechnologyAdvisories(technology,cveOnly=false,periodOverride=null){
     const recentAvailable=items.some(x=>(x.categories||[]).includes(technology)&&newlyPublished(x,30));
@@ -258,7 +259,7 @@
         button.addEventListener('click',()=>{
           if(scope==='technologies'){
             if(location.pathname.startsWith('/intelligence')){location.assign('/vulnerabilities/#technology');return;}
-            $('technology').scrollIntoView({behavior:'smooth',block:'start'});return;
+            $('technology').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return;
           }
           state.q='';state.tech='all';state.group='all';state.severity=scope==='all'?'all':scope;state.period=chartPeriod;
           metricScope='all';listMode='list';resetPaging();
@@ -628,7 +629,7 @@
       if(scope==='technologies'){
         // Every technology is already visible in the main explorer.
         if(location.pathname.startsWith('/intelligence')){location.assign('/vulnerabilities/#technology');return;}
-        $('technology').scrollIntoView({behavior:'smooth',block:'start'});
+        $('technology').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
         return;
       }
       state.q='';state.tech='all';state.group='all';state.severity='all';state.period='all';
@@ -670,7 +671,7 @@
       row.append(remove);list.append(row);
     }
   }
-  manageButton.addEventListener('click',()=>{if(!catalogueSignedIn){$('technologySignInDialog').showModal();return}draft=JSON.parse(JSON.stringify(personalized||{defaults:defaultNames,products:[]}));drawCustomizer();$('technologyCustomizer').hidden=false;$('technologyCustomizer').scrollIntoView({block:'start',behavior:'smooth'})});
+  manageButton.addEventListener('click',()=>{if(!catalogueSignedIn){$('technologySignInDialog').showModal();return}draft=JSON.parse(JSON.stringify(personalized||{defaults:defaultNames,products:[]}));drawCustomizer();$('technologyCustomizer').hidden=false;$('technologyCustomizer').scrollIntoView({block:'start',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})});
   $('technologySignInClose').addEventListener('click',()=>$('technologySignInDialog').close());
   $('technologySignInDialog').addEventListener('click',event=>{if(event.target===$('technologySignInDialog'))$('technologySignInDialog').close()});
   $('technologyManageClose').addEventListener('click',()=>{$('technologyCustomizer').hidden=true});
@@ -691,7 +692,7 @@
       void window.CVEHARBOR_CVIE?.refresh(true);
       if(newest){const category=newest.category||inferProductCategory(newest.name)||'applications';statusMessage(newest.name+' added under '+customCategoryNames[category]+'. '+(data.cvie?.ready?'CVIE is scanning and preparing the current vulnerabilities.':data.cvie?.message||'CVIE service setup is pending; the product is safely saved.'));
         const row=[...document.querySelectorAll('.technology-just-added')].find(x=>x.dataset.customProduct===newest.name);
-        row?.scrollIntoView({behavior:'smooth',block:'center'});
+        row?.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});
         setTimeout(()=>{addedHighlight=null;document.querySelectorAll('.technology-just-added').forEach(x=>x.classList.remove('technology-just-added'))},10000);
       }else statusMessage('Saved to your CVEHarbor account.');
     }catch(e){statusMessage('Unable to save: '+e.message)}

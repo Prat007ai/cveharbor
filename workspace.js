@@ -16,7 +16,9 @@
       known_exploited:!!(prior.known_exploited||item.known_exploited)
     }:item);
   }
-  const advisories=[...records.values()];
+  const baseAdvisories=[...records.values()];
+  let advisories=window.CVEHARBOR_CVIE?window.CVEHARBOR_CVIE.merge(baseAdvisories):baseAdvisories;
+  window.addEventListener('cvie:updated',event=>{if(!event.detail?.recordsChanged)return;advisories=window.CVEHARBOR_CVIE.merge(baseAdvisories);renderStack();renderLookup();});
   const key='cveharbor.stack.v1';
   let saved=[];
   try {
