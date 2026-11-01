@@ -165,3 +165,40 @@ check('a contradictory severity label cannot hide a critical numeric CVSS score'
  const raw=disclosure();raw.containers.cna.metrics=[{cvssV3_1:{baseScore:9.8,baseSeverity:'LOW'}}];
  const record=normalizeDisclosure(raw).base;assert.equal(record.severity,'critical');assert.equal(record.cvss_label_conflict,true);
 });
+check('a new disclosure revision gets a fresh retry budget instead of inheriting an old failure backoff',async()=>{
+ const e=env();await q(e,"INSERT INTO cvie_disclosure_queue(cve_id,revision,priority,attempts,next_attempt_at,error) VALUES(?,?,1,9,?,'Old provider error')",id,'2026-10-15T00:00:00Z',NOW+DAY).run();
+ await q(e,"UPDATE cvie_sources SET next_attempt_at=? WHERE id='cisa_kev'",NOW+DAY).run();
+ const feed=[{fetchTime:new Date(NOW).toISOString(),numberOfChanges:1,new:[],updated:[{cveId:id,dateUpdated:new Date(NOW-3600000).toISOString()}],error:[]}];
+ const result=await refreshEvidence(e,async()=>Response.json(feed),NOW);assert.equal(result.ok,true);
+ const queued=await q(e,'SELECT * FROM cvie_disclosure_queue').first();assert.equal(queued.attempts,0);assert.equal(queued.next_attempt_at,0);assert.equal(queued.error,'');
+});
+check('validated CPE input is stored canonically rather than silently missing mixed-case product matches',async()=>{
+ const e=env();await subscribeProducts(e,'a',[{name:'Apache Tomcat',cpe:cpe.replace(':apache:tomcat:',':Apache:Tomcat:')}]);
+ assert.equal((await q(e,'SELECT cpe FROM cvie_products').first()).cpe,cpe);
+ await runCvieStep(e,async()=>Response.json({startIndex:0,totalResults:1,vulnerabilities:[{cve:nvd()}]}),NOW);
+ assert.equal((await q(e,'SELECT COUNT(*) AS total FROM cvie_advisories').first()).total,1);
+});
+check('large advisory responses paginate without omissions and retain account/product isolation',async()=>{
+ const e=env();await subscribeProducts(e,'a',[{name:'Apache Tomcat'},{name:'Internal Runtime',cpe}]);await subscribeProducts(e,'b',[{name:'Apache Tomcat'}]);
+ const owned=(await q(e,"SELECT * FROM cvie_products WHERE user_id='a'").all()).results;
+ const insert=e.DB.sql.prepare('INSERT INTO cvie_advisories VALUES(?,?,?,?,?)');
+ for(const p of owned)for(let i=0;i<250;i++){
+  const record=normalizeNvd({...nvd(),id:'CVE-2026-'+(30000+i)},{name:p.name,cpe});insert.run(p.id,record.id,record.published,JSON.stringify(record),'fixture');
+ }
+ let after='',all=[],pages=0;
+ do{const response=await(await cvieRoute(new Request('https://api.cveharbor.com/v1/cvie/advisories?months=3'+(after?'&after='+encodeURIComponent(after):'')),e,{id:'a'})).json();
+  assert.equal(response.account_id,'a');all.push(...response.advisories);after=response.next||'';pages++;assert.ok(pages<=5);
+ }while(after);
+ assert.equal(all.length,500);assert.equal(new Set(all.map(r=>r.cvie_products[0]+'/'+r.id)).size,500);
+ const other=await(await cvieRoute(new Request('https://api.cveharbor.com/v1/cvie/advisories?months=3&product='+owned[0].id),e,{id:'b'})).json();assert.equal(other.advisories.length,0);
+});
+check('an expired scan lease can recover without a late original response overwriting its result',async()=>{
+ const e=env();await subscribeProducts(e,'a',[{name:'Apache Tomcat'}]);let release;
+ const pending=runCvieStep(e,()=>new Promise(resolve=>{release=()=>resolve(Response.json({startIndex:0,totalResults:1,vulnerabilities:[{cve:nvd()}]}));}),NOW);
+ for(let i=0;!release&&i<20;i++)await Promise.resolve();assert.ok(release);
+ const fresh=nvd();fresh.metrics={cvssMetricV31:[{type:'Primary',cvssData:{baseScore:9.8}}]};
+ await runCvieStep(e,async()=>Response.json({startIndex:0,totalResults:1,vulnerabilities:[{cve:fresh}]}),NOW+130000);
+ release();await pending;
+ assert.equal(JSON.parse((await q(e,'SELECT record_json FROM cvie_advisories').first()).record_json).cvss,9.8);
+ assert.equal((await q(e,'SELECT last_success_at FROM cvie_products').first()).last_success_at,NOW+130000);
+});

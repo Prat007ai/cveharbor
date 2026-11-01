@@ -33,7 +33,7 @@ export async function subscribeProducts(env,userId,products,origin='catalogue'){
   const name=String(item.name||item.technology||'').trim(),vendor=String(item.vendor||'').trim();
   if(!name||name.length>120||vendor.length>100||/[\u0000-\u001f]/.test(name+vendor))throw new CvieError('Invalid product identity');
   if(item.cpe&&!productCpe(item.cpe))throw new CvieError('Use a product-family CPE 2.3 identifier with wildcard versions');
-  normalized.set(normalizeName(name),{name,vendor,cpe:item.cpe||knownIdentity(name,vendor)?.cpe||'',explicitCpe:Boolean(item.cpe),vendorProvided:item.vendor!==undefined});
+  normalized.set(normalizeName(name),{name,vendor,cpe:item.cpe?productCpe(item.cpe):knownIdentity(name,vendor)?.cpe||'',explicitCpe:Boolean(item.cpe),vendorProvided:item.vendor!==undefined});
  }
  if(normalized.size>500)throw new CvieError('CVIE supports up to 500 distinct products per account',409);
  const existing=(await query(env.DB,'SELECT id,name_key,cpe,vendor FROM cvie_products WHERE user_id=?',userId).all()).results||[];

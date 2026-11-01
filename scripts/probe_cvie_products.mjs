@@ -6,8 +6,10 @@ const env={DB:new DB(),NVD_API_KEY:process.env.NVD_API_KEY};
 const report={checked_at:new Date().toISOString(),ok:false,scope:'NVD recent-history integration for four real product families; disposable account/database',products:[]};
 try{
  await subscribeProducts(env,'a',[{name:'Apache Tomcat',vendor:'Apache'},{name:'PHP',vendor:'PHP'},{name:'WordPress',vendor:'WordPress'},{name:'Windows Server 2022',vendor:'Microsoft'}]);
+ // Respect the provider budget after the separate three-source probe as well.
+ await new Promise(resolve=>setTimeout(resolve,env.NVD_API_KEY?1100:6700));
  for(let request=0;request<60;request++){
-  const result=await runCvieStep(env);if(result.retrying)throw Error('A real product history check requires a provider retry');
+  const result=await runCvieStep(env);if(result.retrying)report.provider_retries=(report.provider_retries||0)+1;
   const pending=await env.DB.prepare('SELECT COUNT(*) AS total FROM cvie_products WHERE recent_complete_at IS NULL').first();
   if(!pending.total){report.ok=true;report.requests=request+1;break;}
   await new Promise(resolve=>setTimeout(resolve,env.NVD_API_KEY?1100:6700));

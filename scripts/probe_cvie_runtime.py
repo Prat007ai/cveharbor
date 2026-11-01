@@ -10,6 +10,8 @@ try:
     report["sources"]=query("SELECT id,status,last_attempt_at,last_success_at,publisher_at,coverage_start_at,error FROM cvie_sources ORDER BY id")
     report["counts"]=query("SELECT (SELECT COUNT(*) FROM cvie_kev) AS kev_records, (SELECT COUNT(*) FROM cvie_disclosures) AS disclosures, (SELECT COUNT(*) FROM cvie_disclosure_queue) AS pending_records, (SELECT COUNT(*) FROM cvie_disclosure_queue WHERE attempts>0) AS retrying_records")[0]
     report["retry_examples"]=query("SELECT cve_id,error,attempts FROM cvie_disclosure_queue WHERE attempts>0 ORDER BY attempts DESC LIMIT 5")
+    report["product_job_health"]=query("SELECT status,error,COUNT(*) AS products,MAX(last_attempt_at) AS last_attempt_at,MAX(last_success_at) AS last_success_at FROM cvie_products GROUP BY status,error ORDER BY status")
+    report["production_nvd_observed"]=any(row["last_success_at"] for row in report["product_job_health"])
     report["ok"]={s["id"] for s in report["sources"] if s["status"]=="ok" and s["last_success_at"] and 0<=time.time()*1000-s["last_success_at"]<(30 if s["id"]=="cisa_kev" else 15)*60000}=={"cisa_kev","cve_program"} and report["counts"]["kev_records"]>0 and report["counts"]["disclosures"]>0
     report["indexing_complete"]=report["counts"]["pending_records"]==0
 except Exception as error:

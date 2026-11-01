@@ -134,6 +134,8 @@ function queueSql(env,items,sourceId=null,lease=null){
   ${sourceId?'AND EXISTS(SELECT 1 FROM cvie_sources WHERE id=? AND lease_until=?)':''}
   ON CONFLICT(cve_id) DO UPDATE SET priority=MIN(priority,excluded.priority),
    next_attempt_at=CASE WHEN excluded.revision>revision THEN 0 ELSE next_attempt_at END,
+   attempts=CASE WHEN excluded.revision>revision THEN 0 ELSE attempts END,
+   error=CASE WHEN excluded.revision>revision THEN '' ELSE error END,
    revision=MAX(revision,excluded.revision)`,JSON.stringify(items),...(sourceId?[sourceId,lease]:[]));
 }
 export function relevantKev(kev,products){

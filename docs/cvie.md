@@ -5,6 +5,9 @@ records it in inventory (including imported assets), or saves it in the account
 watchlist. Existing account products are registered on the next authenticated
 CVIE sync. It reads public advisory sources; it does not scan customer networks.
 
+See [the reliability audit](cvie-reliability-audit.md) for additional edge-case
+tests, hardening changes and remaining coverage/capacity limits.
+
 The explorer's default disclosure period is three calendar months, with an
 explicit twelve-month option. Product cards, advisory search, inventory matching,
 customer dashboards/reports, and existing opt-in digests consume the shared
@@ -164,6 +167,7 @@ node scripts/browser_smoke.mjs
 node scripts/customer_security_smoke.mjs
 node scripts/customer_score_smoke.mjs
 node scripts/threat_health_smoke.mjs
+node scripts/cvie_client_smoke.mjs
 ```
 
 Real Chromium review, after installing Playwright and starting a local server
