@@ -107,7 +107,7 @@ export function normalizeNvd(cve,product){
 async function prepareHyperVHosts(env,userId,products){
  const candidates=JSON.stringify(hyperVHosts());
  const repairs=products.filter(p=>isHyperV(p)&&!hyperVHost(p.cpe)&&
-  (p.cpe||p.status!=='needs_identity'||p.candidates_json!==candidates)).map(p=>({id:p.id,cpe:p.cpe,candidates:p.candidates_json}));
+  (p.cpe||p.status!=='needs_identity'||p.candidates_json!==candidates)).map(p=>({id:p.id,cpe:p.cpe,vendor:p.vendor,candidates:p.candidates_json}));
  if(!repairs.length)return false;
  // Repair only this account's unresolved/invalid component identities. A host chosen
  // concurrently wins; valid existing Microsoft host selections are preserved.
@@ -115,7 +115,8 @@ async function prepareHyperVHosts(env,userId,products){
   query(env.DB,`UPDATE cvie_products SET cpe='',status='needs_identity',candidates_json=?,cursor_json='{}',
    recent_complete_at=NULL,history_complete_at=NULL,last_success_at=NULL,next_attempt_at=0,lease_until=0,error=?
    WHERE user_id=? AND EXISTS(SELECT 1 FROM json_each(?) r WHERE json_extract(r.value,'$.id')=cvie_products.id
-    AND json_extract(r.value,'$.cpe')=cvie_products.cpe AND json_extract(r.value,'$.candidates')=cvie_products.candidates_json)`,candidates,hyperVHelp,userId,JSON.stringify(repairs)),
+    AND json_extract(r.value,'$.cpe')=cvie_products.cpe AND json_extract(r.value,'$.vendor')=cvie_products.vendor
+    AND json_extract(r.value,'$.candidates')=cvie_products.candidates_json)`,candidates,hyperVHelp,userId,JSON.stringify(repairs)),
   query(env.DB,`DELETE FROM cvie_advisories WHERE product_id IN(SELECT id FROM cvie_products WHERE user_id=? AND cpe=''
    AND status='needs_identity' AND candidates_json=? AND id IN(SELECT json_extract(value,'$.id') FROM json_each(?)))`,userId,candidates,JSON.stringify(repairs)),
  ]);

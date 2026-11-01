@@ -73,6 +73,17 @@ check('legacy unrelated selections cannot be submitted and invalid cached identi
  assert.equal((await state(e)).products[0].status,'needs_identity');
  assert.equal((await q(e,'SELECT COUNT(*) AS total FROM cvie_advisories').first()).total,0);
 });
+check('a concurrent explicit vendor correction wins over the old Hyper-V chooser repair',async t=>{
+ const e=env();await subscribeProducts(e,'a',[{name:'HyperV'}]);
+ const batch=e.DB.batch.bind(e.DB);let pending=true;
+ t.mock.method(e.DB,'batch',async statements=>{
+  if(pending){pending=false;await subscribeProducts(e,'a',[{name:'HyperV',vendor:'Other Vendor'}]);}
+  return batch(statements);
+ });
+ await state(e);
+ const p=await q(e,'SELECT * FROM cvie_products').first();
+ assert.equal(p.vendor,'Other Vendor');assert.equal(p.status,'queued');assert.equal(p.candidates_json,'[]');
+});
 check('NVD matching requires both a selected affected host and an explicit Windows Hyper-V statement',()=>{
  const product={name:'HyperV',cpe:host};assert.ok(normalizeNvd(nvd(),product));
  assert.equal(normalizeNvd(nvd(undefined,'Windows kernel advisory fixture.'),product),null);
