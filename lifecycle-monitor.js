@@ -172,20 +172,33 @@ function renderFeed(){
  }
  const filtered=matches.filter(slug=>directoryCategory==='All Products'||categoryOf(slug)===directoryCategory);
  const filters=$('lifecycleDirectoryFilters');
- if(filters){filters.replaceChildren();for(const label of ['All Products','Microsoft','Linux','Web & CMS','Databases','Other']){const button=make('button','',label+' '+matches.filter(slug=>label==='All Products'||categoryOf(slug)===label).length);button.type='button';button.setAttribute('aria-pressed',String(label===directoryCategory));button.addEventListener('click',()=>{directoryCategory=label;renderFeed()});filters.append(button)}}
+ if(filters){filters.replaceChildren();for(const label of ['All Products','Microsoft','Linux','Web & CMS','Databases','Other']){const button=make('button','',label);button.append(make('span','filter-count',matches.filter(slug=>label==='All Products'||categoryOf(slug)===label).length));button.type='button';button.setAttribute('aria-pressed',String(label===directoryCategory));button.addEventListener('click',()=>{directoryCategory=label;renderFeed()});filters.append(button)}}
  for(const slug of filtered.slice(0,MAX_ROWS)){
   const known=catalog.cycles.filter(x=>x.slug===slug);
   const title=known[0]?.product||staticProducts.find(x=>x[0]===slug)?.[1]||titleCase(slug);
   const row=make('div','lifecycle-source-row lifecycle-source-interactive');
-  row.append(make('span','lifecycle-product-mark',categoryOf(slug)==='Microsoft'?'⊞':title.slice(0,2).toUpperCase()));
-  row.append(make('strong','',title));
-  const description=known.length?
-   known.length+' release cycles in the collected snapshot. Latest: '+(known[0].cycle||'Unknown')+
-    '. Select to review support dates and versions.':
-   'Additional product found in the lifecycle directory. Select to load its release history.';
-  row.append(make('p','ops-note',description));
-  const published=known.find(c=>/^\d{4}-\d{2}-\d{2}$/.test(c.eol_date||''));
-  row.append(make('span','lifecycle-support-summary',published?'Published support end: '+published.eol_date+' · '+published.cycle:'Support milestone: Unknown / Not Published'));
+  const mark=make('span','lifecycle-product-mark');mark.setAttribute('aria-hidden','true');
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 48 48');
+  // Fixed local artwork only; vendor data is never interpreted as SVG/HTML.
+  const brands={windows:'<path fill="#08b7ff" d="m2 9 19-3v17H2Zm22-3 22-4v21H24ZM2 26h19v17L2 40Zm22 0h22v21l-22-4Z"/>',
+   wordpress:'<circle cx="24" cy="24" r="22" fill="#0b6289" stroke="#a6e9ff"/><text x="24" y="35" text-anchor="middle" fill="white" font-size="35" font-family="Georgia">W</text>',
+   'mssqlserver':'<ellipse cx="25" cy="11" rx="17" ry="7" fill="#e4edf3"/><path d="M8 11v26c0 10 34 10 34 0V11c0 10-34 10-34 0" fill="#a9bdce"/><path d="m3 17 39-9-4 21L1 38Z" fill="#c53550"/><text x="20" y="28" text-anchor="middle" fill="white" font-size="13" font-family="Georgia">SQL</text>',
+   sharepoint:'<circle cx="30" cy="15" r="13" fill="#13b9be"/><circle cx="35" cy="31" r="11" fill="#0c969c"/><circle cx="23" cy="39" r="9" fill="#22cddd"/><rect x="2" y="13" width="26" height="28" rx="3" fill="#087d8b"/><text x="15" y="34" text-anchor="middle" fill="white" font-size="24" font-family="Arial">S</text>',
+   dotnet:'<rect width="48" height="48" rx="8" fill="#6542bf"/><text x="24" y="30" text-anchor="middle" fill="white" font-size="17" font-family="Arial">.NET</text>'};
+  const brand=slug.startsWith('windows')?brands.windows:brands[slug];if(brand){svg.innerHTML=brand;mark.append(svg)}else mark.textContent=title.slice(0,2).toUpperCase();row.append(mark);
+  const copy=make('div','lifecycle-product-copy'),heading=make('div');heading.append(make('strong','',title));if(categoryOf(slug)==='Microsoft')heading.append(make('span','lifecycle-vendor','Microsoft'));copy.append(heading);
+  copy.append(make('p','ops-note',known.length?known.length+' release cycles. Latest: '+(known[0].cycle||'Unknown')+'.':'Source verification required. Open release history.'));
+  const published=known[0],validDate=value=>/^\d{4}-\d{2}-\d{2}$/.test(value||'')&&Number.isFinite(Date.parse(value));
+  const end=validDate(published?.eol_date)?Date.parse(published.eol_date+'T00:00:00Z'):null;
+  const years=end===null?null:(end-Date.now())/(365.25*86400000),ended=years!==null&&years<=0;
+  copy.append(make('span','lifecycle-support-pill'+(ended?' ended':''),end===null?'Support date not published':ended?'Published support ended':'Published support dates'));row.append(copy);
+  const countdown=make('div','lifecycle-countdown');countdown.dataset.state=end===null?'unknown':ended?'ended':years<1?'soon':'future';
+  const ring=make('div','lifecycle-ring'),value=make('span','',end===null?'?':ended?'0':years.toFixed(1));value.append(make('small','',end===null?'unknown':'years'));ring.append(value);ring.title='Time to the published end of support for '+(published?.cycle||title)+'. Ring is a visual indicator, not a support percentage.';
+  const caption=make('div','lifecycle-countdown-label',end===null?'Not published':ended?'Support ended':'Until support end');if(end!==null){const time=make('time','',new Date(end).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric',timeZone:'UTC'}));time.dateTime=published.eol_date;caption.append(time);}countdown.append(ring,caption);row.append(countdown);
+  const timeline=make('div','lifecycle-timeline');timeline.append(make('small','','Published milestones'));
+  const milestones=[['Release',published?.release_date],['Support',published?.support_date],['End',published?.eol_date]];
+  const verified=milestones.filter(([,date])=>validDate(date));
+  if(verified.length>=2){const track=make('div','lifecycle-timeline-track'),legend=make('div','lifecycle-timeline-legend');for(const [label,date] of verified){const dot=make('i');dot.title=label+': '+date;track.append(dot);const item=make('span','',label);item.title=date;legend.append(item);}timeline.append(track,legend);}else timeline.append(make('div','lifecycle-timeline-unknown',end===null?'Dates not published':'End: '+published.eol_date));row.append(timeline);
   const btn=make('button','ops-download lifecycle-view-details','View lifecycle details');
   btn.type='button';btn.addEventListener('click',()=>openRemote(slug,title));
   row.append(btn);results.append(row);
@@ -194,6 +207,7 @@ function renderFeed(){
  $('lifecycleSearchStatus').textContent=query?
   filtered.length+' products found; showing up to '+MAX_ROWS+'. Select a product for its detailed release history.':
   'Browse the monitored product catalogue or search by any name in the extended directory.';
+ if($('lifecycleDirectoryCount'))$('lifecycleDirectoryCount').textContent=catalogList.length+' products';
  const failures=(catalog.errors||[]).length;
  $('lifecyclePublicSearch').placeholder=catalogList.length?'Search '+catalogList.length+' directory products…':'Search products or release branches…';
  $('lifecycleFreshness').textContent=!catalog.checked_at?'Source snapshot unavailable. Product counts and dates cannot be confirmed.':'Snapshot: '+catalog.checked_at+
@@ -228,6 +242,7 @@ function queueKey(w){
  return [w.slug,w.cycle,w.product.toLowerCase(),w.custom_eol_date].join('|');
 }
 function renderQueue(){
+ document.querySelector('.lifecycle-watch-queue').hidden=queued.length===0;
  const root=$('lifecycleQueueItems');root.replaceChildren();
  $('lifecycleQueueCount').textContent=queued.length+' selected';
  for(const [index,watch] of queued.entries()){
@@ -275,12 +290,12 @@ function renderUser(){
  if(prefs.delivery_mode&&$('productMonitorCadence'))$('productMonitorCadence').value=prefs.delivery_mode;
  $('lifecycleDeliveryState').textContent=delivery
   ? 'Scheduled monitoring is operating. Email requires your saved consent; provider acceptance and delivery are recorded separately.'
-  : 'Monitoring Not Yet Active for email. Saved preferences do not activate scheduled checks or delivery.';
+  : 'Email monitoring is not active yet. Your preferences remain saved.';
  updateActions();
- if(!signed||!ready){results.append(make('p','ops-note','You can choose products and versions above. Sign in and complete the D1 migration to save monitoring and notifications.'));return;}
+ if(!signed||!ready){results.append(make('p','ops-note','You can choose products and versions above. Sign in to save your private watchlist.'));return;}
  if(!logged.length){results.append(make('p','ops-note','No saved product lifecycle watches. Choose a monitored product or add your own verified support date.'));return;}
  for(const watch of logged){
-  const div=make('article','ops-result');
+  const div=make('article','ops-result');div.dataset.productMark=watch.slug==='wordpress'?'W':watch.product.slice(0,2);
   const top=make('div','ops-result-top');
   top.append(make('strong','',watch.product+(watch.cycle?' · '+watch.cycle:'')));
   const del=make('button','ops-remove','Remove');del.type='button';
@@ -332,6 +347,7 @@ function renderUser(){
   if(info?.source&&info.source.startsWith('https://')){
    const a=make('a','ops-link','Check source');a.href=info.source;a.target='_blank';a.rel='noopener noreferrer';div.append(a);
   }
+  const details=make('details','monitor-watch-details');details.append(make('summary','','Release and check details'));for(const paragraph of [...div.querySelectorAll(':scope > p')])details.append(paragraph);div.append(details);
   results.append(div);
  }
 }

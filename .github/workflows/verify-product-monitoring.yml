@@ -1,7 +1,7 @@
 name: Validate isolated product monitoring and inspect readiness without changing production
 on:
   push:
-    branches: [feat/product-lifecycle-monitoring]
+    branches: [feat/product-lifecycle-monitoring, fix/lifecycle-mockup-and-approved-tests]
     paths: ['account-backend/**', 'lifecycle-monitor*', 'product-monitoring.js', 'scripts/*monitor*', '.github/workflows/verify-product-monitoring.yml']
   pull_request:
     paths: ['account-backend/src/monitor*', 'lifecycle-monitor*', 'product-monitoring.js', 'account-backend/migrations/0023_lifecycle_monitoring.sql']
@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: '22'
       - run: npm test --prefix account-backend
-      - run: npm install --no-save --no-package-lock jsdom@26
+      - run: npm install --no-save --no-package-lock jsdom@26 playwright-core@1.56.1
       - run: python scripts/build_site.py && node scripts/browser_smoke.mjs && node scripts/product_monitoring_smoke.mjs && node scripts/worker_release_smoke.mjs
       - name: Probe only the reviewed vendor endpoints, without subscriptions or email
         run: node scripts/probe_monitor_sources.mjs
@@ -40,3 +40,28 @@ jobs:
           print(json.dumps(report))
           with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as output:output.write('Read-only readiness metadata; no customer rows or secret values.\n\n```json\n'+json.dumps(report,indent=2)+'\n```\n')
           PY
+
+      - name: Read published directory snapshot for visual validation
+        env:
+          SITE_GATE_USERNAME: cveharbor
+          SITE_GATE_PASSWORD: ${{ secrets.SITE_GATE_PASSWORD }}
+        run: |
+          python - <<'PYCODE'
+          import sys,urllib.request,pathlib,os,base64
+          sys.path.insert(0,'scripts')
+          from site_gate_client import install_site_auth
+          install_site_auth()
+          headers={'User-Agent':'CVEHarbor-Production-Verifier/1.0','Cache-Control':'no-cache','Authorization':'Basic '+base64.b64encode(('cveharbor:'+os.environ['SITE_GATE_PASSWORD']).encode()).decode()}
+          request=urllib.request.Request('https://cveharbor.com/lifecycle.js',headers=headers)
+          with urllib.request.urlopen(request,timeout=30) as response:
+              pathlib.Path('public/lifecycle.js').write_bytes(response.read(2000000))
+          PYCODE
+      - name: Capture reference, wide and mobile lifecycle layouts
+        run: node scripts/lifecycle_visual_check.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lifecycle-design-evidence
+          path: |
+            work/lifecycle-*.png
+            public/lifecycle.js
