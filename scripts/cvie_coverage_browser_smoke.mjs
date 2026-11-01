@@ -35,9 +35,11 @@ try{
  });
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('http://127.0.0.1:8080/vulnerabilities/',{waitUntil:'domcontentloaded'});
- await page.waitForFunction(()=>window.CVEHARBOR_CVIE?.products.length===3);
+ await page.waitForFunction(()=>window.CVEHARBOR_CVIE?.products.length===3&&!window.CVEHARBOR_CVIE.loading);
+ assert.equal(await page.locator('#cvieExplorer .cvie-source').count(),3,'all three source engines have visible status cards');
  await page.locator('#cvieExplorer .cvie-scan-details').evaluate(el=>el.open=true);
  const linux=page.locator('#cvieExplorer .cvie-product-status').filter({has:page.locator('strong',{hasText:/^Linux$/})});
+ await linux.waitFor({state:'visible'});
  assert.match(await linux.innerText(),/Coverage limited/);assert.match(await linux.innerText(),/linux \/ linux kernel/);
  await linux.locator('.cvie-coverage-details summary').click();
  assert.match(await linux.innerText(),/Only the selected product is checked/);
