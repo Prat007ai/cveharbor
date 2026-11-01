@@ -8,6 +8,14 @@ records. The live-source and runtime evidence files below record their own check
 times. A green source check means the provider was checked successfully, not that
 every vulnerability or every historical original record has been indexed.
 
+At the 03:46 UTC production inspection, both public feeds were healthy and no
+original-record fetches were retrying. Six registered entries had completed NVD
+scans, but **50 entries still required an exact product identity**. The original
+record cache contained 255 disclosures and 1,766 KEV entries, with 4,200 records
+still queued. These observations establish active collection and successful NVD
+work, **not complete product coverage**. Pending identities need vendor/product
+confirmation; ambiguous names must not be guessed just to turn a status green.
+
 ## Scope
 
 Reviewed product registration, identity changes, account subscriptions, NVD
@@ -71,6 +79,9 @@ Evidence:
    a complete twelve-month original-record archive. NVD supplies historical
    product coverage, while the CNA stream adds ongoing disclosures/corrections.
    Initial indexing and individual retry backlogs remain visible.
+   The production entries awaiting identification are an additional operational
+   coverage gap that must be resolved before claiming all registered products
+   are monitored.
 2. **An advisory match is not confirmed exposure.** Backported packages, custom
    version ordering, architectures and deployment prerequisites require vendor
    or human verification. CVIE does not scan endpoints or mark systems patched.
