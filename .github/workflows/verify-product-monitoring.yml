@@ -43,7 +43,7 @@ jobs:
 
       - name: Read published directory snapshot for visual validation
         env:
-          SITE_GATE_USERNAME: ${{ secrets.SITE_GATE_USERNAME }}
+          SITE_GATE_USERNAME: cveharbor
           SITE_GATE_PASSWORD: ${{ secrets.SITE_GATE_PASSWORD }}
         run: |
           python - <<'PYCODE'

@@ -35,7 +35,7 @@ function merge(base=[]){
   return {...record,cvie_excluded_products:names,categories:(record.categories||[]).filter(name=>!names.some(product=>normalize(product)===normalize(name)))};
  });
 }
-function clearPrivate(){catalogueNames=null;products=[];records=[];withdrawn=new Set();excluded=[];accountId='';evidence={sources:[]};ready=false;lastFullAt=0;recordsMonths=0;}
+function clearPrivate(){identityDialog?.close();catalogueNames=null;products=[];records=[];withdrawn=new Set();excluded=[];accountId='';evidence={sources:[]};ready=false;lastFullAt=0;recordsMonths=0;}
 function statusFor(p){
  if(!p)return 'Waiting for CVIE registration';
  if(p.status==='needs_identity')return 'Choose the exact product';
@@ -78,7 +78,55 @@ function scanProgress(p){
  if(error)detail.append(node('span','Showing last saved progress. CVIE will reconnect automatically.'));
  block.append(heading,bar,detail);return block;
 }
-function notify(){const signature=JSON.stringify([months,records,[...withdrawn].sort(),excluded]);const recordsChanged=signature!==lastSignature;lastSignature=signature;draw();window.dispatchEvent(new CustomEvent('cvie:updated',{detail:{recordsChanged}}));}
+let identityDialog=null,identityProductId='',identityBusy=false,identityOptionsSignature='',identityOpener=null,identityError='',identityGeneration=0;
+function drawIdentity(){
+ if(!identityDialog?.open)return;
+ const p=products.find(x=>x.id===identityProductId);
+ if(!p){identityDialog.close();return;}
+ const status=identityDialog.querySelector('[role="status"]'),query=identityDialog.querySelector('input[type="search"]').value.toLowerCase();
+ const choices=(p.candidates||[]).filter(x=>x.label.toLowerCase().includes(query));
+ const signature=JSON.stringify([choices,identityBusy]);
+ if(signature!==identityOptionsSignature){
+  identityOptionsSignature=signature;const list=identityDialog.querySelector('.cvie-identity-options');list.replaceChildren();
+  for(const item of choices){
+   const label=node('label','','cvie-identity-option'),radio=node('input');radio.type='radio';radio.name='cvie-identity';radio.value=item.cpe;radio.disabled=identityBusy;
+   const words=node('span'),title=node('strong',item.label);words.append(title);label.append(radio,words);list.append(label);
+  }
+  if(!choices.length)list.append(node('p',query?'No matching options. Try another search.':p.status==='needs_identity'?'No identities were returned. Retry the directory lookup, or add a more specific product name and vendor in Customize technologies.':'Looking up product identities. You can leave this dialog open or return later.'));
+ }
+ if(!identityBusy)status.textContent=identityError||choices.length+' of '+(p.candidates?.length||0)+' available identities'+(p.directory_limited?' · Directory search is partial.':p.directory_complete?' · Directory search complete.':['queued','scanning'].includes(p.status)?' · Directory lookup in progress.':'');
+ identityDialog.querySelector('[data-confirm]').disabled=identityBusy||!identityDialog.querySelector('input[type="radio"]:checked');
+ identityDialog.querySelector('[data-retry]').disabled=identityBusy||['queued','scanning'].includes(p.status);
+}
+async function lookupIdentity(retry=false){
+ if(identityBusy)return;identityError='';identityBusy=true;drawIdentity();
+ const id=identityProductId,generation=identityGeneration;
+ try{await request('/products/'+id+'/identity-options',{method:'POST',body:JSON.stringify({retry})});await refresh();}
+ catch(e){if(identityDialog.open&&identityProductId===id&&generation===identityGeneration)identityError=e.message;}
+ finally{if(generation===identityGeneration){identityBusy=false;identityOptionsSignature='';drawIdentity();}}
+}
+function openIdentity(name){
+ const p=products.find(x=>normalize(x.name)===normalize(name));if(!p)return;
+ if(!identityDialog){
+  identityDialog=node('dialog','','cvie-identity-dialog');identityDialog.setAttribute('aria-labelledby','cvieIdentityTitle');
+  const header=node('div','','cvie-identity-head'),title=node('h2');title.id='cvieIdentityTitle';const close=node('button','×');close.type='button';close.setAttribute('aria-label','Close product chooser');close.onclick=()=>identityDialog.close();header.append(title,close);
+  const search=node('input');search.type='search';search.placeholder='Search available products…';search.setAttribute('aria-label','Search product identities');search.oninput=drawIdentity;
+  const status=node('p');status.setAttribute('role','status');const options=node('div','','cvie-identity-options');
+  const actions=node('div','','cvie-identity-actions'),retry=node('button','Refresh options'),confirm=node('button','Use selected product');retry.type=confirm.type='button';retry.dataset.retry='';confirm.dataset.confirm='';retry.onclick=()=>void lookupIdentity(true);
+  options.onchange=()=>{confirm.disabled=identityBusy||!options.querySelector('input:checked')};
+  confirm.onclick=async()=>{
+   const selected=options.querySelector('input:checked');if(!selected||identityBusy)return;identityBusy=true;const id=identityProductId,generation=identityGeneration;confirm.disabled=true;retry.disabled=true;options.querySelectorAll('input').forEach(x=>x.disabled=true);status.textContent='Saving product identity…';
+   try{await request('/products/'+id+'/identity',{method:'PUT',body:JSON.stringify({cpe:selected.value})});if(generation===identityGeneration)identityDialog.close();await refresh();}
+   catch(e){if(generation===identityGeneration)status.textContent=e.message;}
+   finally{if(generation===identityGeneration){identityBusy=false;confirm.disabled=false;retry.disabled=false;options.querySelectorAll('input').forEach(x=>x.disabled=false);}}
+  };
+  actions.append(retry,confirm);identityDialog.append(header,node('p','Choose the product you use. These identities come from the NVD product directory; the list may include older releases. Version applicability is checked separately.'),search,status,options,actions);document.body.append(identityDialog);
+  identityDialog.addEventListener('close',()=>{identityGeneration++;identityBusy=false;identityOptionsSignature='';if(identityOpener?.isConnected)identityOpener.focus();else document.getElementById('technologyManageButton')?.focus()});
+ }
+ identityGeneration++;identityBusy=false;identityError='';identityProductId=p.id;identityOpener=document.activeElement;identityOptionsSignature='';identityDialog.querySelector('h2').textContent='Choose exact product · '+p.name;identityDialog.querySelector('input[type="search"]').value='';identityDialog.showModal();drawIdentity();void lookupIdentity();
+}
+
+function notify(){const signature=JSON.stringify([months,records,[...withdrawn].sort(),excluded]);const recordsChanged=signature!==lastSignature;lastSignature=signature;draw();drawIdentity();window.dispatchEvent(new CustomEvent('cvie:updated',{detail:{recordsChanged}}));}
 async function request(path='',options={}){
  const epoch=authEpoch;
  const response=await fetch(API+path+(path.includes('?')?'&':'?')+'scope='+scope,{credentials:'include',...(globalThis.AbortSignal?.timeout?{signal:AbortSignal.timeout(20000)}:{}),headers:{Accept:'application/json',...(options.body?{'Content-Type':'application/json'}:{})},...options});
@@ -130,7 +178,7 @@ function draw(){
   if(sourceGrid.children.length)panel.append(sourceGrid);
   const active=products.filter(p=>['queued','scanning','retrying'].includes(p.status));
   const attention=(evidence.sources||[]).some(s=>['pending','stale','unavailable','rate_limited','setup_required','catching_up','verifying_products'].includes(s.status));
-  const message=error||(busy?(checkingProgress?'Updating scan status...':'Loading '+months+'-month results...'):!ready?'Preparing CVIE...':!products.length?(scope==='catalogue'?'No selected catalogue products. Save technologies to start personalized checks; shared sources continue independently.':'No inventory products registered for checking.'):products.some(p=>p.status==='needs_identity')?'Some products need an exact identity. Expand product status to choose; saved results for resolved products remain available.':attention?'Shared sources are being verified or need attention. Saved results remain available; check each source status.':products.some(p=>p.status==='retrying')?'A source check is unavailable. Saved results remain available; CVIE will retry automatically.':products.some(p=>p.status==='ready'&&p.stale)?'Some source checks are overdue. Saved results remain available while CVIE refreshes them.':active.length?active.length+' product'+(active.length===1?' is':'s are')+' being prepared. Results appear as source pages finish.':'Product checks complete. Review the source and installed version before acting.');
+  const message=error||(busy?(checkingProgress?'Updating scan status...':'Loading '+months+'-month results...'):!ready?'Preparing CVIE...':!products.length?(scope==='catalogue'?'No selected catalogue products. Save technologies to start personalized checks; shared sources continue independently.':'No inventory products registered for checking.'):products.some(p=>p.status==='needs_identity')?'Some products need an exact identity. Choose directly from a technology card or product status; saved results for resolved products remain available.':attention?'Shared sources are being verified or need attention. Saved results remain available; check each source status.':products.some(p=>p.status==='retrying')?'A source check is unavailable. Saved results remain available; CVIE will retry automatically.':products.some(p=>p.status==='ready'&&p.stale)?'Some source checks are overdue. Saved results remain available while CVIE refreshes them.':active.length?active.length+' product'+(active.length===1?' is':'s are')+' being prepared. Results appear as source pages finish.':'Product checks complete. Review the source and installed version before acting.');
   const status=node('p',message,'cvie-status');status.setAttribute('role','status');panel.append(status);
   const completed=products.filter(p=>p.status==='ready'&&!p.stale).length,failed=products.filter(p=>p.status==='retrying').length,verification=products.filter(p=>p.status==='needs_identity'||p.coverage?.limited).length;
   if(scope==='catalogue')panel.append(node('p',(scope==='catalogue'?'Selected catalogue products: ':'Inventory products: ')+products.length+' · Queued/checking: '+products.filter(p=>['queued','scanning'].includes(p.status)).length+' · History complete: '+completed+' · Review required: '+verification+' · Failed/retrying: '+failed,'cvie-scope-summary'));
@@ -151,13 +199,8 @@ function draw(){
     for(const note of p.coverage.notes||[])description.append(node('p',note));
     coverage.append(description);row.append(coverage);
    }
-   if(p.candidates?.length){
-    const choose=node('select');choose.setAttribute('aria-label','Product identity for '+p.name);
-    choose.append(node('option',p.identity_prompt||'Select the correct vendor and product'));
-    for(const item of p.candidates){const o=node('option',item.label);o.value=item.cpe;choose.append(o);}
-    choose.options[0].value='';
-    choose.addEventListener('change',async()=>{if(!choose.value)return;choose.disabled=true;try{await request('/products/'+p.id+'/identity',{method:'PUT',body:JSON.stringify({cpe:choose.value})});await refresh();}catch(e){error=e.message;notify();}});
-    row.append(choose);
+   if(p.status==='needs_identity'||!p.cpe&&p.candidates?.length){
+    const choose=node('button','Choose exact product','cvie-choose-product');choose.type='button';choose.setAttribute('aria-label','Choose exact product for '+p.name);choose.addEventListener('click',()=>openIdentity(p.name));row.append(choose);
    }
    list.append(row);
   }
@@ -216,7 +259,7 @@ function applyCatalogue(preferences){
  notify();void refresh();
 }
 const scopedProducts=rows=>catalogueNames&&scope==='catalogue'?rows.filter(p=>catalogueNames.has(normalize(p.name))):rows;
-window.CVEHARBOR_CVIE={get sessionKnown(){return sessionKnown;},scope,applyCatalogue,get products(){return products;},get records(){return merge();},get evidence(){return evidence;},get months(){return months;},get ready(){return ready;},get signedIn(){return signedIn;},get loading(){return busy;},merge,refresh,statusFor,
+window.CVEHARBOR_CVIE={get sessionKnown(){return sessionKnown;},scope,applyCatalogue,openIdentity,get products(){return products;},get records(){return merge();},get evidence(){return evidence;},get months(){return months;},get ready(){return ready;},get signedIn(){return signedIn;},get loading(){return busy;},merge,refresh,statusFor,
  setMonths:value=>{if(![3,12].includes(Number(value)))throw Error('Select 3 or 12 months');months=Number(value);return refresh();},
  product:name=>products.find(p=>normalize(p.name)===normalize(name))};
 mount();

@@ -5,6 +5,7 @@ import path from 'node:path';
 const {chromium}=await import(process.env.CVEHARBOR_PLAYWRIGHT_MODULE||'playwright');
 import {DB} from '../account-backend/tests/helpers/d1.mjs';
 import worker from '../account-backend/src/index.js';
+import {identityCandidates} from '../account-backend/src/product-identity.js';
 import {catalogueRevision} from '../account-backend/src/catalogue-selection.js';
 const env={DB:new DB(),CVIE_SHARED_SCANS_ENABLED:'true'},token='a'.repeat(64);
 env.DB.sql.prepare('INSERT INTO sessions VALUES(?,?,?,?)').run('s','a',await catalogueRevision(token),Date.now()/1000+3600);
@@ -49,10 +50,33 @@ try{
  await page.waitForFunction(()=>window.CVEHARBOR_CVIE.products.length===2&&!window.CVEHARBOR_CVIE.loading);
  assert.deepEqual((await page.locator('.technology-row-name').allTextContents()).sort(),['.NET Core','Windows Server OS']);
  assert.deepEqual((await page.locator('#cvieExplorer .cvie-product-status > strong').allTextContents()).sort(),['.NET Core','Windows Server OS']);
- for(const width of [390,768,1440]){await page.setViewportSize({width,height:1050});await page.screenshot({path:directory+'/two-products-'+width+'.png',fullPage:true})}
+ // Actual API chooser and card removal, with synthetic provider-directory records.
+ const family=name=>'cpe:2.3:o:microsoft:'+name+':*:*:*:*:*:*:*:*';
+ const options=identityCandidates({products:['windows_server_2025','windows_server_2022','windows_server_2012_r2'].map(name=>({cpe:{cpeName:family(name)}}))},{name:'Windows Server OS'});
+ env.DB.sql.prepare("UPDATE cvie_products SET status='needs_identity',candidates_json=?,cursor_json=? WHERE name='Windows Server OS'").run(JSON.stringify(options),JSON.stringify({directory_query:'Microsoft Windows Server',directory_complete:true}));
+ await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
+ await page.locator('.technology-row').filter({hasText:'Windows Server OS'}).getByRole('button',{name:'Choose the exact product',exact:true}).click();
+ await page.waitForSelector('.cvie-identity-options input');
+ assert.equal(await page.locator('.cvie-identity-options input').count(),3);
+ await page.getByRole('searchbox',{name:'Search product identities'}).fill('2025');assert.equal(await page.locator('.cvie-identity-options input').count(),1);
+ await page.locator('.cvie-identity-options input').check();
+ await page.screenshot({path:directory+'/identity-dialog.png'});
+ await page.getByRole('button',{name:'Use selected product',exact:true}).click();await page.waitForFunction(()=>!document.querySelector('.cvie-identity-dialog').open);
+ assert.equal(env.DB.sql.prepare("SELECT cpe FROM cvie_products WHERE name='Windows Server OS'").get().cpe,family('windows_server_2025'));
+ const remove=page.getByRole('button',{name:'Remove Windows Server OS from my catalogue',exact:true});
+ await remove.focus();assert.equal(await remove.evaluate(el=>getComputedStyle(el).opacity),'1');
+ failSave=true;await remove.click();await page.waitForFunction(()=>document.getElementById('technologyActionStatus').textContent.includes('Unable to save'));assert.equal(await page.locator('.technology-row').count(),2);failSave=false;
+ for(const width of [390,768,1440]){await page.setViewportSize({width,height:1050});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:directory+'/two-products-'+width+'.png',fullPage:true})}
+ await page.locator('.technology-add-details summary').click();
+ await page.locator('#technologyAddName').fill('Maria DB');await page.locator('#technologyAddVersion').fill('10.6.28');await page.getByRole('button',{name:'Add and scan product',exact:true}).click();
+ await page.waitForFunction(()=>window.CVEHARBOR_CVIE.products.length===3&&!window.CVEHARBOR_CVIE.loading);
+ await page.getByRole('button',{name:'Remove Maria DB from my catalogue',exact:true}).focus();await page.getByRole('button',{name:'Remove Maria DB from my catalogue',exact:true}).click();
+ await page.waitForFunction(()=>window.CVEHARBOR_CVIE.products.length===2&&!window.CVEHARBOR_CVIE.loading);
+ assert.equal(JSON.parse(env.DB.sql.prepare("SELECT preferences_json FROM user_technology_catalogue WHERE user_id='a'").get().preferences_json).products.find(p=>p.name==='Maria DB').enabled,false);
+ assert.equal(env.DB.sql.prepare('SELECT count(*) n FROM inventory_assets').get().n,1);
  await page.reload();await page.waitForFunction(()=>window.CVEHARBOR_CVIE.products.length===2&&!window.CVEHARBOR_CVIE.loading);
  assert.equal(await page.locator('.technology-row').count(),2);
- await page.locator('#technologyManageButton').click();await page.locator('#technologyCustomizer').getByLabel('Windows Server OS',{exact:true}).uncheck();await page.locator('#technologySaveButton').click();
+ await page.getByRole('button',{name:'Remove Windows Server OS from my catalogue',exact:true}).focus();await page.getByRole('button',{name:'Remove Windows Server OS from my catalogue',exact:true}).click();await page.locator('#technologyManageButton').click();
  await page.waitForFunction(()=>window.CVEHARBOR_CVIE.products.length===1&&!window.CVEHARBOR_CVIE.loading);
  await page.locator('#technologyCustomizer').getByLabel('WordPress / Plugins',{exact:true}).check();await page.locator('#technologySaveButton').click();await page.waitForFunction(()=>window.CVEHARBOR_CVIE.products.length===2&&!window.CVEHARBOR_CVIE.loading);
  failSave=true;await page.locator('#technologyCustomizer').getByLabel('.NET Core',{exact:true}).uncheck();await page.locator('#technologySaveButton').click();await page.waitForFunction(()=>document.getElementById('technologyCustomizeStatus').textContent.includes('Unable to save'));assert.equal(await page.locator('.technology-row').count(),2);failSave=false;

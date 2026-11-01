@@ -1,7 +1,7 @@
 name: Verify catalogue scope on production D1 without writes
 on:
   push:
-    branches: [codex/catalogue-scan-scope]
+    branches: [codex/catalogue-scan-scope, codex/catalogue-product-controls]
 permissions:
   contents: read
 jobs:
@@ -17,3 +17,8 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: node scripts/verify_catalogue_scope_d1.mjs
+      - name: Verify public Windows Server product choices without customer writes
+        if: github.ref == 'refs/heads/codex/catalogue-product-controls'
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: node scripts/verify_product_directory.mjs
