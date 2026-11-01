@@ -11,6 +11,8 @@ import time
 import urllib.error
 import urllib.request
 
+stage = "initialization"
+
 DATABASE = "46710e51-7ca4-4571-b89c-921b9969de0b"
 TABLES = {"cvie_products", "cvie_subscriptions", "cvie_advisories",
           "cvie_provider_budget", "cvie_sources", "cvie_disclosures",
@@ -36,24 +38,31 @@ def query(sql):
 
 
 def main():
+    global stage
     parser = argparse.ArgumentParser()
     parser.add_argument("--wait-for-feeds", type=int, default=900)
     args = parser.parse_args()
-    with urllib.request.urlopen("https://api.cveharbor.com/v1/health", timeout=30) as response:
+    stage = "account API health"
+    health = urllib.request.Request("https://api.cveharbor.com/v1/health", headers={"Accept": "application/json", "User-Agent": "CVEHarbor-Production-Verifier/1.0"})
+    with urllib.request.urlopen(health, timeout=30) as response:
         if json.load(response).get("accounts") != "configured":
             raise RuntimeError("Production account API is not configured")
+    stage = "private CVIE authentication"
     try:
-        urllib.request.urlopen("https://api.cveharbor.com/v1/cvie", timeout=30).close()
+        endpoint = urllib.request.Request("https://api.cveharbor.com/v1/cvie", headers={"Accept": "application/json", "User-Agent": "CVEHarbor-Production-Verifier/1.0"})
+        urllib.request.urlopen(endpoint, timeout=30).close()
     except urllib.error.HTTPError as exc:
         if exc.code != 401:
             raise RuntimeError(f"Private CVIE route returned unexpected HTTP {exc.code}") from None
     else:
         raise RuntimeError("Private CVIE route did not require authentication")
+    stage = "production CVIE schema"
     names = {row["name"] for row in query("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'cvie_%'")}
     if not TABLES <= names:
         raise RuntimeError("CVIE migration is incomplete: " + ", ".join(sorted(TABLES - names)))
     print("PASS: account API healthy, private CVIE route protected and all nine CVIE tables exist", flush=True)
     deadline = time.monotonic() + max(0, args.wait_for_feeds)
+    stage = "scheduled source ingestion"
     while True:
         sources = query("SELECT id,status,last_success_at,error FROM cvie_sources ORDER BY id")
         totals = query("SELECT (SELECT COUNT(*) FROM cvie_kev) AS kev_records, (SELECT COUNT(*) FROM cvie_disclosures) AS disclosures, (SELECT COUNT(*) FROM cvie_disclosure_queue) AS pending_records")[0]
@@ -72,4 +81,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as error:
+        message = (stage + ": " + str(error)).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+        print("::error title=CVIE production check::" + message, flush=True)
+        raise SystemExit(1) from None
