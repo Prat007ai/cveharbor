@@ -1,0 +1,31 @@
+name: Inspect CVIE production source health without changing data
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/check-cvie-runtime.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    environment: cloudflare-worker-production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read only public source health and record counts
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          sys.path.insert(0, 'scripts')
+          from verify_cvie_production import query
+          sources=query('SELECT id,status,last_attempt_at,last_success_at,publisher_at,checkpoint,error FROM cvie_sources ORDER BY id')
+          totals=query('SELECT (SELECT COUNT(*) FROM cvie_kev) AS kev_records, (SELECT COUNT(*) FROM cvie_disclosures) AS disclosures, (SELECT COUNT(*) FROM cvie_disclosure_queue) AS pending_records, (SELECT COUNT(*) FROM cvie_disclosure_queue WHERE attempts>0) AS retrying_records')[0]
+          result=json.dumps({'sources':sources,'public_record_counts':totals})
+          message=result.replace('%','%25').replace('\r','%0D').replace('\n','%0A')
+          print('::notice title=Public CVIE runtime health::'+message)
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as output:
+              output.write('Read-only production CVIE public-source metadata. No customer rows were queried.\n\n```json\n'+json.dumps(json.loads(result),indent=2)+'\n```\n')
+          PY
