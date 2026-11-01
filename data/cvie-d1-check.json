@@ -1,39 +1,77 @@
 {
-  "checked_at": "2026-11-01T18:00:38.160Z",
+  "checked_at": "2026-11-01T18:18:38.310Z",
   "read_only": true,
   "synthetic_products": true,
   "checks": [
     {
       "stage": "source schema",
-      "ok": true
+      "ok": true,
+      "statements": 1,
+      "rows_read": 0,
+      "rows_written": 0
     },
     {
       "stage": "saved scan JSON integrity",
-      "ok": true
+      "ok": true,
+      "statements": 1,
+      "rows_read": 56,
+      "rows_written": 0
     },
     {
       "stage": "source status",
-      "ok": true
+      "ok": true,
+      "statements": 3,
+      "rows_read": 5562,
+      "rows_written": 0
     },
     {
       "stage": "combined counts",
-      "ok": true
+      "ok": true,
+      "statements": 1,
+      "rows_read": 478599,
+      "rows_written": 0
     },
     {
       "stage": "advisory page",
-      "ok": true
+      "ok": true,
+      "statements": 2,
+      "rows_read": 919896,
+      "rows_written": 0
     },
     {
       "stage": "withdrawal exclusions",
-      "ok": true
+      "ok": true,
+      "statements": 1,
+      "rows_read": 474445,
+      "rows_written": 0
     },
     {
       "stage": "digest page",
-      "ok": true
+      "ok": true,
+      "statements": 2,
+      "rows_read": 916448,
+      "rows_written": 0
     },
     {
       "stage": "status handler and all three engine cards",
-      "ok": true
+      "ok": true,
+      "statements": 10,
+      "rows_read": 959994,
+      "rows_written": 0
+    },
+    {
+      "stage": "lightweight progress handler and account-scoped products",
+      "ok": true,
+      "statements": 1,
+      "rows_read": 4,
+      "rows_written": 0
+    },
+    {
+      "stage": "progress SELECT on real D1 for a nonexistent synthetic account",
+      "ok": true,
+      "statements": 2,
+      "rows_read": 5,
+      "rows_written": 0
     }
   ],
   "source_columns": [
@@ -54,5 +92,5 @@
     "invalid": 0
   },
   "ok": true,
-  "queries": 21
+  "queries": 24
 }
