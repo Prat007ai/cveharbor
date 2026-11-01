@@ -2,7 +2,7 @@
 // Every external URL is fixed here. Customer hosts/versions are never scanned or sent.
 import {normalizeName,productCpe,cpeFamily,knownIdentity,logoFor,identityCandidates} from './product-identity.js';
 import {queueRelevantKev} from './cvie-evidence.js';
-import {combinedPage,combinedCounts,evidenceContext,sourceHealth,withdrawnIds} from './cvie-records.js';
+import {combinedPage,combinedCounts,evidenceContext,sourceHealth,withdrawnIds,excludedProductCves} from './cvie-records.js';
 const ORIGIN='https://cveharbor.com',DAY=86400000;
 const iso=value=>new Date(value).toISOString();
 const query=(db,sql,...args)=>db.prepare(sql).bind(...args);
@@ -33,10 +33,10 @@ export async function subscribeProducts(env,userId,products,origin='catalogue'){
   const name=String(item.name||item.technology||'').trim(),vendor=String(item.vendor||'').trim();
   if(!name||name.length>120||vendor.length>100||/[\u0000-\u001f]/.test(name+vendor))throw new CvieError('Invalid product identity');
   if(item.cpe&&!productCpe(item.cpe))throw new CvieError('Use a product-family CPE 2.3 identifier with wildcard versions');
-  normalized.set(normalizeName(name),{name,vendor,cpe:item.cpe||knownIdentity(name)?.cpe||'',explicitCpe:Boolean(item.cpe)});
+  normalized.set(normalizeName(name),{name,vendor,cpe:item.cpe||knownIdentity(name,vendor)?.cpe||'',explicitCpe:Boolean(item.cpe),vendorProvided:item.vendor!==undefined});
  }
  if(normalized.size>500)throw new CvieError('CVIE supports up to 500 distinct products per account',409);
- const existing=(await query(env.DB,'SELECT id,name_key,cpe FROM cvie_products WHERE user_id=?',userId).all()).results||[];
+ const existing=(await query(env.DB,'SELECT id,name_key,cpe,vendor FROM cvie_products WHERE user_id=?',userId).all()).results||[];
  const ids=new Map(existing.map(x=>[x.name_key,x.id]));
  const other=(await query(env.DB,'SELECT DISTINCT p.name_key FROM cvie_products p JOIN cvie_subscriptions s ON p.id=s.product_id WHERE s.user_id=? AND s.origin<>?',userId,origin).all()).results||[];
  if(new Set([...other.map(x=>x.name_key),...normalized.keys()]).size>500)throw new CvieError('CVIE product capacity reached; remove unused products before adding more',409);
@@ -45,8 +45,8 @@ export async function subscribeProducts(env,userId,products,origin='catalogue'){
   const id=ids.get(key)||crypto.randomUUID();ids.set(key,id);
   inserts.push({id,key,name:p.name,vendor:p.vendor,cpe:p.cpe});
   const prior=existing.find(x=>x.name_key===key);
-  if(prior&&p.explicitCpe&&p.cpe!==prior.cpe){
-   changes.push({id,cpe:p.cpe,vendor:p.vendor});
+  if(prior&&(p.explicitCpe&&p.cpe!==prior.cpe||p.vendorProvided&&p.vendor!==prior.vendor)){
+   changes.push({id,cpe:p.explicitCpe?p.cpe:knownIdentity(p.name,p.vendor)?.cpe||'',vendor:p.vendorProvided?p.vendor:prior.vendor});
   }
  }
  statements.push(query(env.DB,`INSERT OR IGNORE INTO cvie_products(id,user_id,name_key,name,vendor,cpe)
@@ -87,8 +87,9 @@ export function normalizeNvd(cve,product){
  const matches=configurations(cve).filter(m=>cpeFamily(m.criteria)===product.cpe);
  if(!matches.length)return null; // Mentioning a product in the summary is insufficient evidence.
  const published=Date.parse(cve.published);if(!Number.isFinite(published))return null;
- const metric=cve.metrics?.cvssMetricV40?.[0]?.cvssData||cve.metrics?.cvssMetricV31?.[0]?.cvssData||cve.metrics?.cvssMetricV30?.[0]?.cvssData||cve.metrics?.cvssMetricV2?.[0]?.cvssData;
- const score=Number(metric?.baseScore),cvss=Number.isFinite(score)&&score>=0&&score<=10?score:null;
+ const metrics=['cvssMetricV40','cvssMetricV31','cvssMetricV30','cvssMetricV2'].flatMap(key=>[...(cve.metrics?.[key]||[])].sort((a,b)=>Number(b.type==='Primary')-Number(a.type==='Primary')));
+ const metric=metrics.find(m=>typeof m.cvssData?.baseScore==='number'&&Number.isFinite(m.cvssData.baseScore)&&m.cvssData.baseScore>=0&&m.cvssData.baseScore<=10)?.cvssData;
+ const score=metric?.baseScore,cvss=typeof score==='number'&&Number.isFinite(score)&&score>=0&&score<=10?score:null;
  const severity=cvss===null?'unrated':cvss>=9?'critical':cvss>=7?'high':cvss>=4?'medium':'low';
  const summary=String(cve.descriptions?.find(x=>x.lang==='en')?.value||cve.descriptions?.[0]?.value||'See the source advisory for details.').slice(0,12000);
  const sources=[{label:'NVD CVE record',url:'https://nvd.nist.gov/vuln/detail/'+cve.id}];
@@ -120,7 +121,7 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
  if(!await cvieReady(env))return {ready:false};
  const product=await query(env.DB,`SELECT p.* FROM cvie_products p WHERE p.status<>'needs_identity' AND p.next_attempt_at<=? AND p.lease_until<?
   AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) ${userId?'AND p.user_id=?':''}
-  ORDER BY CASE WHEN p.recent_complete_at IS NULL THEN 0 WHEN p.history_complete_at IS NULL THEN 1 ELSE 2 END,p.next_attempt_at,p.id LIMIT 1`,now,now,...(userId?[userId]:[])).first();
+  ORDER BY CASE WHEN p.recent_complete_at IS NULL THEN 0 WHEN p.history_complete_at IS NULL THEN 1 ELSE 2 END,p.next_attempt_at,COALESCE(p.last_attempt_at,0),p.id LIMIT 1`,now,now,...(userId?[userId]:[])).first();
  if(!product)return {idle:true};
  const budget=await query(env.DB,'UPDATE cvie_provider_budget SET next_request_at=? WHERE provider=? AND next_request_at<=?',now+(env.NVD_API_KEY?1000:6500),'nvd',now).run();
  if(budget.meta.changes!==1)return {waiting:true};
@@ -141,7 +142,7 @@ export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null){
   const window=cursor.windows[cursor.position];
    const data=await requestNvd(env,'cves',{virtualMatchString:product.cpe,pubStartDate:iso(window.start),pubEndDate:iso(window.end),startIndex:window.index,resultsPerPage:50},fetcher);
   if(!Array.isArray(data.vulnerabilities)||!Number.isSafeInteger(data.totalResults)||data.totalResults<0||data.startIndex!==window.index||
-     (!data.vulnerabilities.length&&window.index<data.totalResults))throw new ProviderError('NVD returned an incomplete page; CVIE has not marked this scan complete.');
+     (!data.vulnerabilities.length&&window.index<data.totalResults)||data.vulnerabilities.some(entry=>!/^CVE-\d{4}-\d{4,10}$/i.test(entry?.cve?.id||'')||!Number.isFinite(Date.parse(entry.cve.published))||Date.parse(entry.cve.published)<window.start||Date.parse(entry.cve.published)>window.end))throw new ProviderError('NVD returned an incomplete page; CVIE has not marked this scan complete.');
   const statements=[],pageRecords=[];
   for(const entry of data.vulnerabilities){
    const record=normalizeNvd(entry.cve,product);
@@ -182,14 +183,16 @@ export async function dispatchCvie(env){
   if(i<5)await new Promise(resolve=>setTimeout(resolve,env.NVD_API_KEY?1050:6600));
  }
 }
-export async function loadCvieDigest(env,userId,now=Date.now()){
- if(!await cvieReady(env))return {records:[],degraded:false,coverageLimited:false};
+export async function loadCvieDigest(env,userId,now=Date.now(),selected=null){
+ if(!await cvieReady(env))return {records:[],degraded:true,coverageLimited:false};
  const ctx=await evidenceContext(env,userId);
  if(ctx){
+  if(selected){const names=new Set(selected.map(normalizeName));ctx.products=ctx.products.filter(p=>names.has(normalizeName(p.name)));const ids=new Set(ctx.products.map(p=>p.id));ctx.families=JSON.stringify(JSON.parse(ctx.families).filter(f=>ids.has(f.product_id)));}
+  ctx.digest=true;
   const cutoff=iso(monthsAgo(now,12));let after='',records=[];
   do{const page=await combinedPage(env,userId,cutoff,after,'',now,ctx);records.push(...page.advisories);after=page.next||'';}while(after&&records.length<1000);
   const health=await sourceHealth(env,now);
-  return {records,withdrawn_ids:await withdrawnIds(env),degraded:health.sources.some(s=>s.status!=='current')||ctx.products.some(p=>p.status!=='ready'||!p.last_success_at||now-p.last_success_at>DAY),coverageLimited:Boolean(after)};
+  return {records,withdrawn_ids:await withdrawnIds(env),excluded_product_cves:await excludedProductCves(env,userId,ctx),degraded:health.sources.some(s=>s.status!=='current')||ctx.products.some(p=>p.status!=='ready'||!p.last_success_at||now-p.last_success_at>DAY),coverageLimited:Boolean(after)};
  }
  const recent=iso(now-30*DAY);
  const result=await query(env.DB,`SELECT a.record_json FROM cvie_advisories a JOIN cvie_products p ON p.id=a.product_id
@@ -238,20 +241,20 @@ export async function cvieRoute(req,env,user,ctx,data={}){
   evidence.sources.unshift({id:'nvd',label:'NVD product history',url:'https://nvd.nist.gov/',
    status:!products.length?'no_products':products.some(p=>p.status==='retrying')?'unavailable':products.some(p=>p.stale&&p.status==='ready')?'stale':products.some(p=>p.status!=='ready')?'scanning':'current',
    last_success_at:attempted.length?Math.min(...attempted):null});
-  ctx?.waitUntil(runCvieStep(env,fetch,now,user.id));return json({ready:true,engine:'CVIE',products,evidence,withdrawn_ids:withdrawn,default_months:3});
+  ctx?.waitUntil(runCvieStep(env,fetch,now,user.id));return json({ready:true,engine:'CVIE',account_id:user.id,products,evidence,withdrawn_ids:withdrawn,excluded_product_cves:await excludedProductCves(env,user.id,evidenceCtx),default_months:3});
  }
  if(path==='/v1/cvie/advisories'&&req.method==='GET'){
   const months=Number(url.searchParams.get('months')||3),after=url.searchParams.get('after')||'';
   if(![3,12].includes(months)||after.length>100)throw new CvieError('Choose a 3 or 12 month history');
   const product=url.searchParams.get('product')||'';
   const combined=await combinedPage(env,user.id,iso(monthsAgo(Date.now(),months)),after,product);
-  if(combined)return json({ready:true,months,...combined});
+  if(combined)return json({ready:true,account_id:user.id,months,...combined});
   const rows=(await query(env.DB,`SELECT a.product_id,a.cve_id,a.record_json FROM cvie_advisories a JOIN cvie_products p ON p.id=a.product_id
    WHERE p.user_id=? AND a.published>=? AND a.published<=? AND (a.product_id||'/'||a.cve_id)>?
    AND EXISTS(SELECT 1 FROM cvie_subscriptions s WHERE s.product_id=p.id) ${product?'AND p.id=?':''}
    ORDER BY a.product_id,a.cve_id LIMIT 101`,user.id,iso(monthsAgo(Date.now(),months)),iso(Date.now()),after,...(product?[product]:[])).all()).results||[];
   const page=rows.slice(0,100),last=page.at(-1);
-  return json({ready:true,months,advisories:page.map(row=>JSON.parse(row.record_json)),next:rows.length>100?last.product_id+'/'+last.cve_id:null});
+  return json({ready:true,account_id:user.id,months,advisories:page.map(row=>JSON.parse(row.record_json)),next:rows.length>100?last.product_id+'/'+last.cve_id:null});
  }
  return json({error:'CVIE endpoint not found'},404);
 }

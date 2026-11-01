@@ -1,6 +1,11 @@
 // Explicit identities avoid inventing a vendor/product from descriptive text.
 import brands from './brand-registry.js';
 export const normalizeName=value=>String(value||'').normalize('NFKC').trim().toLowerCase().replace(/\s+/g,' ');
+export function vendorKey(value){
+ const key=normalizeName(value).replace(/[^a-z0-9]/g,'');
+ const aliases={apachesoftwarefoundation:'apache',theapachesoftwarefoundation:'apache',microsoftcorporation:'microsoft',thephpgroup:'php',phpgroup:'php',postgresqlglobaldevelopmentgroup:'postgresql'};
+ return aliases[key]||key;
+}
 export function productCpe(value){
  const parts=String(value||'').split(':');
  if(parts.length!==13||parts[0]!=='cpe'||parts[1]!=='2.3'||!['a','o','h'].includes(parts[2])||
@@ -27,8 +32,9 @@ const known=[
  [/^python$/,'a','python','python','python'],[/^drupal$/,'a','drupal','drupal','drupal'],
  [/^linux kernel$/,'o','linux','linux_kernel','linux'],
 ];
-export function knownIdentity(name){
+export function knownIdentity(name,vendor=''){
  const found=known.find(([pattern])=>pattern.test(normalizeName(name)));
+ if(found&&vendor&&vendorKey(vendor)!==vendorKey(found[2]))return null;
  return found?{cpe:['cpe','2.3',found[1],found[2],found[3],...Array(8).fill('*')].join(':'),icon:found[4]}:null;
 }
 export function logoFor(name,cpe=''){

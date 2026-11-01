@@ -10,7 +10,7 @@ const categories={
  'kubernetes':['Docker / Kubernetes'],'linux':['Linux'],
  'ubuntu':['Linux'],'ubuntu linux':['Linux'],'debian':['Linux'],'debian linux':['Linux'],'sitefinity':['Progress Sitefinity']
 };
-const norm=x=>String(x||'').trim().toLowerCase().replace(/\s+/g,' ');
+const norm=x=>String(x||'').normalize('NFKC').trim().toLowerCase().replace(/\s+/g,' ');
 const numeric=x=>/^\d+(?:\.\d+){1,3}$/.test(x);
 function compare(a,b){
  if(!numeric(a)||!numeric(b))return null;
@@ -79,6 +79,7 @@ function preciseProductMatch(asset,cve){
 function candidate(asset,cve){
  const product=norm(asset.technology);
  if(!product||!/^(CVE-\d{4}-\d{4,}|GHSA-[a-z0-9-]+)$/i.test(String(cve.id||'')))return null;
+ if((cve.cvie_excluded_products||[]).some(name=>norm(name)===product))return null;
  if(/rejected|withdrawn/i.test(String(cve.status||'')))return null;
  const cvie=/^cvie_/.test(cve.source_type||'')&&(cve.cvie_products||[]).some(name=>norm(name)===product);
  const tags=(cve.categories||[]).map(norm);
@@ -96,7 +97,7 @@ function candidate(asset,cve){
   const text=String(cve.affected||'');
   if(!/\bphp\s+(?:before|prior to|earlier than|through|up to)\s+(?:version\s+)?\d+\.\d+/i.test(text))return null;
  }
- const vendorAssessment=phpVendorAssessment(product,version,cve);
+ const vendorAssessment=cvie?null:phpVendorAssessment(product,version,cve);
  if(vendorAssessment?.exclude)return null;
  if(vendorAssessment){level=vendorAssessment.level;evidence=vendorAssessment.evidence;comparisonDetail=vendorAssessment.comparison_detail;}
  if(cvie){
@@ -133,6 +134,7 @@ function candidate(asset,cve){
   }
  }
  if(cve.verification_pending)evidence+=' A newer source record is still being verified.';
+ if(cve.disclosure_verification_stale)evidence+=' The original disclosure feed is pending or overdue; verify the latest vendor information.';
  if(cve.exploitation_verification_stale&&cve.known_exploited)evidence+=' Current CISA verification is pending or overdue.';
  return {id:String(cve.id),title:String(cve.title||cve.summary||cve.id),
  severity:String(cve.severity||'unknown'),known_exploited:!!cve.known_exploited,

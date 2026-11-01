@@ -1,9 +1,14 @@
 // Original CVE Program records from vendors/authorized CNAs and independent CISA KEV.
 // URLs from provider content are never fetched: all request destinations are fixed.
 import {cveMirrorUrl,simplifyCve,normalizeCveId} from './cve-lookup.js';
-import {cpeFamily} from './product-identity.js';
+import {cpeFamily,vendorKey} from './product-identity.js';
 const q=(db,sql,...args)=>db.prepare(sql).bind(...args);
 const DAY=86400000;
+const validAddedDate=(value,now)=>{
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(value||''))return false;
+ const date=Date.parse(value+'T00:00:00Z');
+ return Number.isFinite(date)&&date<=now&&new Date(date).toISOString().slice(0,10)===value;
+};
 class SourceError extends Error{
  constructor(response){super('Source returned HTTP '+response.status);const value=response.headers.get('Retry-After');
   const delay=/^\d+$/.test(value||'')?Number(value)*1000:Date.parse(value||'')-Date.now();
@@ -15,8 +20,11 @@ export const SOURCE_URLS={
  cisa_kev:'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json',
 };
 export const wordKey=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[^a-z0-9]/g,'');
-const vendors={apachesoftwarefoundation:'apache',theapachesoftwarefoundation:'apache',microsoftcorporation:'microsoft',thephpgroup:'php',phpgroup:'php',postgresqlglobaldevelopmentgroup:'postgresql'};
-const vendorKey=value=>vendors[wordKey(value)]||wordKey(value);
+export const productLabel=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[\s_]/g,'');
+export function productLabels(product){
+ const parts=String(product.cpe||'').split(':');
+ return [...new Set((parts.length===13?[parts[4],parts[3]+parts[4]]:[product.name]).map(productLabel))];
+}
 function jsonChunks(values,max=800000){
  const chunks=[];let items=[],size=2;
  for(const value of values){const encoded=JSON.stringify(value),bytes=new TextEncoder().encode(encoded).length+1;
@@ -42,12 +50,14 @@ export function affectedFamilies(affected){
  return vendor&&product&&!['na','unknown','unspecified'].includes(vendor)&&!['na','unknown','unspecified'].includes(product)?['name:'+vendor+':'+product]:[];
 }
 export function cnaApplicability(rows){
- return rows.every(row=>row.defaultStatus==='unaffected'&&!(row.versions||[]).some(v=>v.status==='affected'))?'unaffected':'affected';
+ return rows.every(row=>row.defaultStatus==='unaffected'&&(row.versions||[]).every(v=>v.status==='unaffected'))?'unaffected':'affected';
 }
 export function normalizeDisclosure(raw){
  const simple=simplifyCve(raw,'CVE Program / CNA disclosure');
  if(!simple||!['published','rejected'].includes(simple.status))throw Error('CVE Program record is not published or rejected');
  const metadata=raw.cveMetadata,cna=raw.containers?.cna||{};
+ const original=simplifyCve({...raw,containers:{cna}},'CVE Program / CNA disclosure');
+ const scored=original?.cvss!==null?original:simple;
  const updated=Date.parse(metadata.dateUpdated||metadata.datePublished);
  if(!Number.isFinite(updated)||updated>Date.now()+300000)throw Error('CVE Program record has no valid revision timestamp');
  if(simple.status==='rejected')return {id:simple.id,state:'REJECTED',published:null,updated_at:new Date(updated).toISOString(),base:{id:simple.id,status:'rejected'},families:[]};
@@ -60,7 +70,9 @@ export function normalizeDisclosure(raw){
  const references=[{label:'CVE Program / original CNA record',url:'https://www.cve.org/CVERecord?id='+simple.id},...simple.references];
  return {id:simple.id,state:'PUBLISHED',published:new Date(published).toISOString(),updated_at:new Date(updated).toISOString(),
   base:{id:simple.id,kind:'cve',title:simple.title,summary:String(cna.descriptions?.find(x=>x.lang==='en')?.value||simple.description).slice(0,12000),
-   published:new Date(published).toISOString(),updated:new Date(updated).toISOString(),severity:simple.severity,cvss:simple.cvss,
+   published:new Date(published).toISOString(),updated:new Date(updated).toISOString(),severity:scored.severity,cvss:scored.cvss,
+   cvss_provider:original?.cvss!==null?'CVE Program / CNA':'CVE Program / ADP',
+   cvss_label_conflict:Boolean(scored.cvssSeverityLabel&&scored.cvssSeverityLabel!==scored.severity),
    remediation:simple.remediation||'Review the original vendor advisory for affected versions and the appropriate fix.',
    action:'Verify the installed product, version and prerequisites against the original advisory.',
    status:'Published CNA disclosure',source_type:'cvie_cna',sources:references},
@@ -112,6 +124,7 @@ export async function readDeltaLog(response,checkpoint,now=Date.now()){
  }finally{await reader.cancel().catch(()=>{});reader.releaseLock();}
  if(!started||(!ended&&!boundary)||object||!newest)throw Error('Truncated CVE change feed; checkpoint unchanged');
  if(checkpoint&&ended&&!boundary)throw Error('CVE change history does not reach the saved checkpoint; coverage gap needs review');
+ if(checkpoint&&newest<checkpoint)throw Error('CVE publisher snapshot is older than the saved checkpoint; prior evidence retained');
  return {entries:[...entries.values()],newest,oldest,coverageStart:checkpoint?undefined:oldest};
 }
 function queueSql(env,items,sourceId=null,lease=null){
@@ -154,9 +167,10 @@ export async function refreshEvidence(env,fetcher=fetch,now=Date.now()){
    const feed=await fetchJson(SOURCE_URLS.cisa_kev,fetcher);
    publisher=Date.parse(feed.dateReleased);
    if(!Array.isArray(feed.vulnerabilities)||!feed.vulnerabilities.length||feed.count!==feed.vulnerabilities.length||!Number.isFinite(publisher)||publisher>now+300000)throw Error('CISA KEV catalogue is empty or incomplete');
+   if(source.publisher_at&&publisher<source.publisher_at)throw Error('CISA publisher snapshot is older than the saved catalogue; prior evidence retained');
    const seen=new Set();
    for(const k of feed.vulnerabilities){
-    if(!normalizeCveId(k.cveID)||seen.has(k.cveID)||!/^\d{4}-\d{2}-\d{2}$/.test(k.dateAdded||'')||!Number.isFinite(Date.parse(k.dateAdded))||typeof k.vendorProject!=='string'||typeof k.product!=='string')throw Error('Invalid CISA KEV entry');seen.add(k.cveID);
+    if(!normalizeCveId(k.cveID)||seen.has(k.cveID)||!validAddedDate(k.dateAdded,now)||typeof k.vendorProject!=='string'||typeof k.product!=='string')throw Error('Invalid CISA KEV entry');seen.add(k.cveID);
    }
    const old=await env.DB.prepare('SELECT COUNT(*) AS total FROM cvie_kev').first();
    if(old.total>10&&feed.count<old.total/2)throw Error('Unexpected large CISA catalogue reduction; saved evidence retained for review');
@@ -195,17 +209,23 @@ export async function ingestDisclosures(env,fetcher=fetch,now=Date.now(),limit=1
   }catch(error){if(error.throttled)throttledUntil=Math.max(throttledUntil,now+error.delay);failures.push({id:job.cve_id,error:String(error.message).slice(0,180),delay:Math.max(error.delay||60000,Math.min(6*3600000,60000*2**Math.min(job.attempts,9)))});}
  }));
  const records=successes.map(r=>({id:r.id,state:r.state,published:r.published,updated:r.updated_at,record:r.base}));
- const families=successes.flatMap(r=>r.families.map(f=>({id:r.id,key:f.family_key,applicability:f.applicability,rows:f.rows})));
+ const families=successes.flatMap(r=>r.families.map(f=>({id:r.id,updated:r.updated_at,key:f.family_key,applicability:f.applicability,rows:f.rows})));
+ const revisions=JSON.stringify(successes.map(r=>({id:r.id,updated:r.updated_at})));
  const successIds=JSON.stringify(successes.map(r=>r.id));
  const statements=[];
  for(const chunk of jsonChunks(records))statements.push(q(env.DB,`INSERT INTO cvie_disclosures(cve_id,state,published,updated_at,record_json,checked_at)
    SELECT json_extract(value,'$.id'),json_extract(value,'$.state'),json_extract(value,'$.published'),json_extract(value,'$.updated'),json_extract(value,'$.record'),?
    FROM json_each(?) WHERE EXISTS(SELECT 1 FROM cvie_disclosure_queue j WHERE j.cve_id=json_extract(value,'$.id') AND j.lease_until=?)
-   ON CONFLICT(cve_id) DO UPDATE SET state=excluded.state,published=COALESCE(excluded.published,published),updated_at=excluded.updated_at,record_json=excluded.record_json,checked_at=excluded.checked_at`,now,chunk,lease));
- statements.push(q(env.DB,'DELETE FROM cvie_disclosure_products WHERE cve_id IN(SELECT value FROM json_each(?)) AND EXISTS(SELECT 1 FROM cvie_disclosure_queue j WHERE j.cve_id=cvie_disclosure_products.cve_id AND j.lease_until=?)',successIds,lease));
+   ON CONFLICT(cve_id) DO UPDATE SET state=excluded.state,published=COALESCE(excluded.published,published),updated_at=excluded.updated_at,record_json=excluded.record_json,checked_at=excluded.checked_at
+   WHERE excluded.updated_at>=cvie_disclosures.updated_at`,now,chunk,lease));
+ statements.push(q(env.DB,`DELETE FROM cvie_disclosure_products WHERE cve_id IN(SELECT value FROM json_each(?))
+  AND EXISTS(SELECT 1 FROM cvie_disclosure_queue j WHERE j.cve_id=cvie_disclosure_products.cve_id AND j.lease_until=?)
+  AND EXISTS(SELECT 1 FROM cvie_disclosures d JOIN json_each(?) r ON json_extract(r.value,'$.id')=d.cve_id
+   WHERE d.cve_id=cvie_disclosure_products.cve_id AND d.updated_at=json_extract(r.value,'$.updated') AND d.checked_at=?)`,successIds,lease,revisions,now));
  for(const chunk of jsonChunks(families))statements.push(q(env.DB,`INSERT INTO cvie_disclosure_products(cve_id,family_key,applicability,affected_json)
    SELECT json_extract(value,'$.id'),json_extract(value,'$.key'),json_extract(value,'$.applicability'),json_extract(value,'$.rows') FROM json_each(?)
-   WHERE EXISTS(SELECT 1 FROM cvie_disclosure_queue j WHERE j.cve_id=json_extract(value,'$.id') AND j.lease_until=?)`,chunk,lease));
+   WHERE EXISTS(SELECT 1 FROM cvie_disclosure_queue j WHERE j.cve_id=json_extract(value,'$.id') AND j.lease_until=?)
+   AND EXISTS(SELECT 1 FROM cvie_disclosures d WHERE d.cve_id=json_extract(value,'$.id') AND d.updated_at=json_extract(value,'$.updated') AND d.checked_at=?)`,chunk,lease,now));
  statements.push(q(env.DB,`DELETE FROM cvie_disclosure_queue WHERE cve_id IN(SELECT value FROM json_each(?)) AND lease_until=?
    AND revision<=(SELECT updated_at FROM cvie_disclosures d WHERE d.cve_id=cvie_disclosure_queue.cve_id)`,successIds,lease),
   q(env.DB,`UPDATE cvie_disclosure_queue SET lease_until=0,next_attempt_at=?+COALESCE((SELECT json_extract(value,'$.delay') FROM json_each(?) WHERE json_extract(value,'$.id')=cvie_disclosure_queue.cve_id),60000),attempts=attempts+1,

@@ -123,8 +123,8 @@ export async function dispatchDueDigests(env, currentDate = new Date()) {
       const stack = await env.DB.prepare('SELECT technology FROM user_stack WHERE user_id=? ORDER BY technology').bind(user.id).all();
       const selected = (stack.results || []).map(r => r.technology);
       const history = await previousRevisions(env, user.id);
-      const intelligence=await loadCvieDigest(env,user.id,currentDate.getTime());
-      const digest = selectDigest(mergeDigestEvidence(feed.records,intelligence.records,intelligence.withdrawn_ids), selected, user.severity, history, currentDate.getTime());
+      const intelligence=await loadCvieDigest(env,user.id,currentDate.getTime(),selected);
+      const digest = selectDigest(mergeDigestEvidence(feed.records,intelligence.records,intelligence.withdrawn_ids,intelligence.excluded_product_cves), selected, user.severity, history, currentDate.getTime());
       if (!digest.items.length) { await finishDigest(env, user.id, user.slot, 'empty'); empty++; continue; }
       const url = unsubscribeLink(user.unsubscribe_token);
       const report = renderDigest({ ...digest, cadence: user.frequency, date: currentDate,
@@ -156,8 +156,8 @@ export async function sendUserSample(env, user) {
   const selected = (rows.results || []).map(x => x.technology);
   if (!selected.length) return json({ error: 'Upload a technology selection to your account before requesting a sample.' }, 409);
   const feed = await loadPublicFeed();
-  const intelligence=await loadCvieDigest(env,user.id);
-  const digest = selectDigest(mergeDigestEvidence(feed.records,intelligence.records,intelligence.withdrawn_ids), selected, prefs.severity, new Map(), Date.now(), 10);
+  const intelligence=await loadCvieDigest(env,user.id,Date.now(),selected);
+  const digest = selectDigest(mergeDigestEvidence(feed.records,intelligence.records,intelligence.withdrawn_ids,intelligence.excluded_product_cves), selected, prefs.severity, new Map(), Date.now(), 10);
   const subscribed = await env.DB.prepare('SELECT unsubscribe_token FROM alert_optins WHERE user_id=?').bind(user.id).first();
   const unsubscribe = subscribed?.unsubscribe_token ? unsubscribeLink(subscribed.unsubscribe_token) : '';
   const report = renderDigest({ ...digest, cadence: prefs.frequency, date: new Date(),

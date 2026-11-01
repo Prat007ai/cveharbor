@@ -5,6 +5,8 @@ let products=[],records=[],months=3,error='',ready=false,signedIn=false,timer=nu
 const panels=[];
 let lastSignature='';
 let evidence={sources:[]},withdrawn=new Set();
+let excluded=[],accountId='',accountEmail='',authEpoch=0;
+class SessionChanged extends Error{}
 const node=(tag,value,cls)=>{const el=document.createElement(tag);if(value)el.textContent=value;if(cls)el.className=cls;return el;};
 const normalize=value=>String(value||'').normalize('NFKC').trim().toLowerCase().replace(/\s+/g,' ');
 function merge(base=[]){
@@ -20,8 +22,13 @@ function merge(base=[]){
    cvie_identities:[...(prior.cvie_identities||[]),...(record.cvie_identities||[])],
    affected_cpes:[...(prior.affected_cpes||[]),...(record.affected_cpes||[])],sources:[...source.values()]});
  }
- return [...result.values()];
+ return [...result.values()].map(record=>{
+  const names=excluded.filter(item=>item.id===record.id).map(item=>item.product);
+  if(!names.length)return record;
+  return {...record,cvie_excluded_products:names,categories:(record.categories||[]).filter(name=>!names.some(product=>normalize(product)===normalize(name)))};
+ });
 }
+function clearPrivate(){products=[];records=[];withdrawn=new Set();excluded=[];accountId='';evidence={sources:[]};ready=false;}
 function statusFor(p){
  if(!p)return 'Waiting for CVIE registration';
  if(p.status==='needs_identity')return 'Choose the exact product';
@@ -57,12 +64,14 @@ function scanProgress(p){
  if(error)detail.append(node('span','Showing last saved progress. CVIE will reconnect automatically.'));
  block.append(heading,bar,detail);return block;
 }
-function notify(){const signature=JSON.stringify([months,records,[...withdrawn].sort()]);const recordsChanged=signature!==lastSignature;lastSignature=signature;draw();window.dispatchEvent(new CustomEvent('cvie:updated',{detail:{recordsChanged}}));}
+function notify(){const signature=JSON.stringify([months,records,[...withdrawn].sort(),excluded]);const recordsChanged=signature!==lastSignature;lastSignature=signature;draw();window.dispatchEvent(new CustomEvent('cvie:updated',{detail:{recordsChanged}}));}
 async function request(path='',options={}){
- const response=await fetch(API+path,{credentials:'include',headers:{Accept:'application/json',...(options.body?{'Content-Type':'application/json'}:{})},...options});
- if(response.status===401){signedIn=false;products=[];records=[];withdrawn=new Set();evidence={sources:[]};ready=false;throw Error('Sign in to use private CVIE monitoring.');}
- signedIn=true;
+ const epoch=authEpoch;
+ const response=await fetch(API+path,{credentials:'include',...(globalThis.AbortSignal?.timeout?{signal:AbortSignal.timeout(20000)}:{}),headers:{Accept:'application/json',...(options.body?{'Content-Type':'application/json'}:{})},...options});
+ if(epoch!==authEpoch)throw new SessionChanged();
+ if(response.status===401){authEpoch++;signedIn=false;clearPrivate();throw Error('Sign in to use private CVIE monitoring.');}
  const data=await response.json();
+ if(epoch!==authEpoch)throw new SessionChanged();
  if(!response.ok)throw Error(data.error||'CVIE is temporarily unavailable. Saved results may be incomplete.');
  signedIn=true;return data;
 }
@@ -131,16 +140,20 @@ async function refresh(sync=false){
  const requestedMonths=months;
  try{
   if(sync)await request('/sync',{method:'POST',body:'{}'});
-  const state=await request();products=state.products||[];ready=state.ready;evidence=state.evidence||{sources:[]};withdrawn=new Set(state.withdrawn_ids||[]);error='';
-  const incoming=[];let after='';
+  const state=await request();
+  if(accountId&&accountId!==state.account_id){clearPrivate();notify();}accountId=state.account_id||'';
+  products=state.products||[];ready=state.ready;evidence=state.evidence||{sources:[]};withdrawn=new Set(state.withdrawn_ids||[]);excluded=state.excluded_product_cves||[];error='';draw();
+  const incoming=[],visited=new Set();let after='';
   do{
    const page=await request('/advisories?months='+requestedMonths+(after?'&after='+encodeURIComponent(after):''));
+   if(accountId&&page.account_id&&page.account_id!==accountId){authEpoch++;clearPrivate();pending=true;throw new SessionChanged();}
    incoming.push(...(page.advisories||[]));
-   if(page.next&&page.next===after)throw Error('CVIE pagination stalled. Saved results remain available.');
+   if(page.next&&visited.has(page.next))throw Error('CVIE pagination stalled. Saved results remain available.');
+   if(page.next)visited.add(page.next);
    after=page.next||'';
   }while(after);
   if(requestedMonths===months){records=incoming;notify();}else pending=true;
- }catch(e){error=e.message;notify();}
+ }catch(e){if(!(e instanceof SessionChanged)){error=e.name==='TimeoutError'?'The CVIE request timed out. Saved results remain available; automatic retry is scheduled.':e.message;notify();}}
  finally{
   busy=false;draw();
   if(pending){const syncNext=pendingSync;pending=false;pendingSync=false;timer=setTimeout(()=>void refresh(syncNext),250);}
@@ -152,7 +165,11 @@ window.CVEHARBOR_CVIE={get products(){return products;},get records(){return mer
  product:name=>products.find(p=>normalize(p.name)===normalize(name))};
 mount();
 window.addEventListener('cveharbor:inventory-loaded',()=>void refresh(true));
-window.addEventListener('cveharbor:account-state',()=>void refresh(true));
+window.addEventListener('cveharbor:account-state',event=>{
+ const email=normalize(event.detail?.email||'');
+ if(!event.detail?.authenticated||email!==accountEmail){authEpoch++;clearPrivate();accountEmail=email;signedIn=!!event.detail?.authenticated;error='';notify();}
+ if(event.detail?.authenticated)void refresh(true);else{pending=false;pendingSync=false;clearTimeout(timer);}
+});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&signedIn)void refresh();});
 if(typeof fetch==='function')void refresh(true);
 })();
