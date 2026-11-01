@@ -1,0 +1,212 @@
+{
+  "checked_at": "2026-11-01T14:10:35.107Z",
+  "ok": true,
+  "operation": "Microsoft Windows Hyper-V host selection and 12-month scan in a disposable account/database; no production writes",
+  "pages_checked": 5,
+  "host": {
+    "cpe": "cpe:2.3:o:microsoft:windows_server_2022:*:*:*:*:*:*:*:*",
+    "label": "Microsoft Windows Server 2022 · Hyper-V"
+  },
+  "status": "ready",
+  "history_count": 42,
+  "recent_count": 23,
+  "cna_and_nvd_combined": [
+    "CVE-2026-88071",
+    "CVE-2026-97813"
+  ],
+  "cisa_kev_checked": true,
+  "sample": [
+    {
+      "id": "CVE-2025-60706",
+      "kind": "cve",
+      "title": "Out-of-bounds read in Windows Hyper-V allows an authorized attacker to disclose information locally.",
+      "summary": "Out-of-bounds read in Windows Hyper-V allows an authorized attacker to disclose information locally.",
+      "published": "2025-11-11T18:15:38.403Z",
+      "updated": "2026-06-17T09:50:00.480",
+      "severity": "medium",
+      "cvss": 5.5,
+      "known_exploited": false,
+      "status": "Analyzed",
+      "source_type": "cvie_combined",
+      "categories": [
+        "HyperV"
+      ],
+      "cvie_products": [
+        "HyperV"
+      ],
+      "cvie_identities": [
+        {
+          "name": "HyperV",
+          "cpe": "cpe:2.3:o:microsoft:windows_server_2022:*:*:*:*:*:*:*:*"
+        }
+      ],
+      "affected_cpes": [
+        {
+          "vulnerable": true,
+          "criteria": "cpe:2.3:o:microsoft:windows_server_2022:*:*:*:*:*:*:*:*",
+          "versionEndExcluding": "10.0.20348.4346",
+          "matchCriteriaId": "5791ADD5-7D67-4659-9DA2-09337A1D82C1"
+        }
+      ],
+      "affected": "HyperV < 10.0.20348.4346",
+      "remediation": "Review the linked vendor advisory for affected versions, prerequisites and the appropriate fix.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-60706"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2025-60706"
+        }
+      ],
+      "action": "Confirm the installed version and deployment prerequisites before remediation.",
+      "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
+      "nvd_checked_at": 1793542263714,
+      "source_updated_at": "2026-06-17T09:50:00.480Z",
+      "kev_verified_at": 1793542271695,
+      "provenance": [
+        {
+          "source": "nvd",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-60706",
+          "checked_at": 1793542263714,
+          "updated": "2026-06-17T09:50:00.480"
+        }
+      ],
+      "retained_exploited": false,
+      "exploitation_verification_stale": false,
+      "verification_pending": false,
+      "disclosure_verification_stale": false,
+      "evidence_status": "Source-backed evidence",
+      "source_conflicts": []
+    },
+    {
+      "id": "CVE-2025-62567",
+      "kind": "cve",
+      "title": "Integer underflow (wrap or wraparound) in Windows Hyper-V allows an authorized attacker to deny service over a network.",
+      "summary": "Integer underflow (wrap or wraparound) in Windows Hyper-V allows an authorized attacker to deny service over a network.",
+      "published": "2025-12-09T18:16:02.827Z",
+      "updated": "2026-06-17T09:52:04.763",
+      "severity": "medium",
+      "cvss": 5.3,
+      "known_exploited": false,
+      "status": "Analyzed",
+      "source_type": "cvie_combined",
+      "categories": [
+        "HyperV"
+      ],
+      "cvie_products": [
+        "HyperV"
+      ],
+      "cvie_identities": [
+        {
+          "name": "HyperV",
+          "cpe": "cpe:2.3:o:microsoft:windows_server_2022:*:*:*:*:*:*:*:*"
+        }
+      ],
+      "affected_cpes": [
+        {
+          "vulnerable": true,
+          "criteria": "cpe:2.3:o:microsoft:windows_server_2022:*:*:*:*:*:*:*:*",
+          "versionEndExcluding": "10.0.20348.4467",
+          "matchCriteriaId": "C552FBB4-8F98-492E-A084-AF14C9514A67"
+        }
+      ],
+      "affected": "HyperV < 10.0.20348.4467",
+      "remediation": "Review the linked vendor advisory for affected versions, prerequisites and the appropriate fix.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-62567"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2025-62567"
+        }
+      ],
+      "action": "Confirm the installed version and deployment prerequisites before remediation.",
+      "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
+      "nvd_checked_at": 1793542263714,
+      "source_updated_at": "2026-06-17T09:52:04.763Z",
+      "kev_verified_at": 1793542271695,
+      "provenance": [
+        {
+          "source": "nvd",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-62567",
+          "checked_at": 1793542263714,
+          "updated": "2026-06-17T09:52:04.763"
+        }
+      ],
+      "retained_exploited": false,
+      "exploitation_verification_stale": false,
+      "verification_pending": false,
+      "disclosure_verification_stale": false,
+      "evidence_status": "Source-backed evidence",
+      "source_conflicts": []
+    },
+    {
+      "id": "CVE-2026-102214",
+      "kind": "cve",
+      "title": "Use after free in Windows Hyper-V allows an authorized attacker to execute code locally.",
+      "summary": "Use after free in Windows Hyper-V allows an authorized attacker to execute code locally.",
+      "published": "2026-10-13T19:17:46.843Z",
+      "updated": "2026-10-21T19:45:32.873",
+      "severity": "high",
+      "cvss": 8.8,
+      "known_exploited": false,
+      "status": "Analyzed",
+      "source_type": "cvie_combined",
+      "categories": [
+        "HyperV"
+      ],
+      "cvie_products": [
+        "HyperV"
+      ],
+      "cvie_identities": [
+        {
+          "name": "HyperV",
+          "cpe": "cpe:2.3:o:microsoft:windows_server_2022:*:*:*:*:*:*:*:*"
+        }
+      ],
+      "affected_cpes": [
+        {
+          "vulnerable": true,
+          "criteria": "cpe:2.3:o:microsoft:windows_server_2022:*:*:*:*:*:*:x64:*",
+          "versionEndExcluding": "10.0.20348.5761",
+          "matchCriteriaId": "A98E694F-9390-488A-A7FB-3E7BF7E988F8"
+        }
+      ],
+      "affected": "HyperV < 10.0.20348.5761",
+      "remediation": "Review the linked vendor advisory for affected versions, prerequisites and the appropriate fix.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-102214"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102214"
+        }
+      ],
+      "action": "Confirm the installed version and deployment prerequisites before remediation.",
+      "exploitation": "No confirmed exploitation claim from the checked CISA catalogue",
+      "nvd_checked_at": 1793542241836,
+      "source_updated_at": "2026-10-21T19:45:32.873Z",
+      "kev_verified_at": 1793542271695,
+      "provenance": [
+        {
+          "source": "nvd",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-102214",
+          "checked_at": 1793542241836,
+          "updated": "2026-10-21T19:45:32.873"
+        }
+      ],
+      "retained_exploited": false,
+      "exploitation_verification_stale": false,
+      "verification_pending": false,
+      "disclosure_verification_stale": false,
+      "evidence_status": "Source-backed evidence",
+      "source_conflicts": []
+    }
+  ]
+}
