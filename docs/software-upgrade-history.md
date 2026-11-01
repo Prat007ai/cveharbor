@@ -34,7 +34,7 @@ WHERE name IN ('inventory_software_history',
                'inventory_software_version_changed');
 ```
 
-Expected: one table, one index, one trigger. No production query or setup was executed during this task.
+Expected: one table, one index, one trigger. Production setup is verified through a SELECT-only deployment preflight; this task does not execute the setup SQL.
 
 ## API and performance
 
@@ -53,7 +53,7 @@ Reads fetch at most 101 indexed rows to return 100 plus a next-page cursor. Ther
 
 ## Deployment and conflicts
 
-Not deployed. D1 setup remains a manual user action. The existing `deploy-worker-code.yml` automatically runs CVIE setup/maintenance SQL when backend files reach main. Do not merge this branch blindly: coordinate a code-only inventory Worker release so unrelated CVIE maintenance is not executed as a side effect. No workflow, CVIE engine, scan scheduler or ingestion module is changed here. Frontend may show history unavailable until the new read endpoint and D1 setup are present.
+D1 setup remains a manual user action. The Worker workflow detects this inventory-only change set and requires a read-only history-schema/reader preflight before deploying code. It skips CVIE migrations, secret changes, cached-evidence resets and collection jobs for this release. Other backend changes and manual runs retain their existing deployment path. A branch workflow checks the same prerequisite before merge. No CVIE engine, scan scheduler or ingestion module is changed. Frontend may show history unavailable until the new read endpoint and D1 setup are present.
 
 Likely shared-file conflicts: `customer-security.js`, inventory frontend/matcher, `account-backend/src/inventory.js` and report HTML/styles. The new schema is a separate named file; existing migrations are untouched. Integration must preserve concurrent CVIE fixes and rerun the upgrade and ownership regressions.
 
