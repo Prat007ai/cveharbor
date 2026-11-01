@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 import {JSDOM} from 'jsdom';
 
 // Product-specific matching must not inflate a PHP inventory with unrelated software.
@@ -20,182 +22,110 @@ assert.ok(match.candidate(pluginAsset,finding('CVE-2026-11117','WordPress / Plug
 assert.equal(match.candidate(pluginAsset,finding('CVE-2026-11118','WordPress / Plugins','Gravity Forms plugin vulnerability')),null);
 matchingDom.window.close();
 
-const html=fs.readFileSync('customer-reports/index.html','utf8');
-assert.ok(html.includes('customer-security.js?v=cvie-1'),'report loads the CVIE-aware script');
-const dom=new JSDOM(html,{url:'https://cveharbor.com/customer-reports/?customer=c1',runScripts:'outside-only'});
-const {window}=dom,doc=window.document;
-const sample={
- customers:[{id:'c1',name:'Customer A'},{id:'c2',name:'Customer B'}],
- environments:[{id:'e1',customer_id:'c1',name:'Production',kind:'Production'},
- {id:'e2',customer_id:'c2',name:'Staging',kind:'Staging'}],
- assets:[{id:'a1',environment_id:'e1',name:'WEB01',asset_type:'Server',technology:'PHP',version:'8.4.26'},
- {id:'a2',environment_id:'e2',name:'WEB02',asset_type:'Server',technology:'Python',version:'3.11.1'}]
-};
-window.CVEHARBOR_DATA={advisories:[{id:'CVE-2026-32101',categories:['PHP'],severity:'critical',
- title:'Test PHP vulnerability',affected:'PHP before 8.4.27',sources:[{url:'https://example.com/cve'}]}]};
-window.CVEHARBOR_CATALOG={advisories:[]};
-window.CVEHARBOR_INVENTORY_MATCH={evaluate(assets){
- return {items:assets.filter(x=>x.technology==='PHP').map(x=>({id:'CVE-2026-32101',title:'Test PHP vulnerability',
- asset_id:x.id,technology:'PHP',version:x.version,severity:'critical',known_exploited:false,
- level:'version_review',evidence:'Version review required',affected:'PHP before 8.4.27',comparison_detail:'Installed 8.4.26 before 8.4.27',summary:'Test  PHP\n vulnerability with   irregular spacing',remediation:'Upgrade to 8.4.27',source_label:'Test advisory',published:'2026-10-24',source_url:'https://example.com/cve'})),total:assets.filter(x=>x.technology==='PHP').length,limited:false};
-}};
-const seen=[];
-const statusWrites=[];
-let savedStatus='Needs Review';
-window.fetch=async (url,options={})=>{
- seen.push(String(url));
- if(String(url).endsWith('/me'))return {ok:true,json:async()=>({authenticated:true,email:'admin@example.com'})};
- if(String(url).endsWith('/inventory/status'))return {ok:true,json:async()=>({ready:true})};
- if(String(url).endsWith('/inventory'))return {ok:true,json:async()=>sample};
- if(String(url).endsWith('/finding-tickets'))return {ok:true,json:async()=>({ready:true,append_ready:true,tickets:[]})};
- if(String(url).includes('/finding-tickets/')&&options.method==='POST'){statusWrites.push({ticket:JSON.parse(options.body).ticket_number});return {ok:true,json:async()=>({saved:true})}}
- if(String(url).endsWith('/plugin-installation-status'))return {ok:true,json:async()=>({ready:true,statuses:[]})};
- if(String(url).endsWith('/plugin-sources'))return {ok:true,json:async()=>({ready:true,sources:[]})};
- if(String(url).endsWith('/finding-statuses'))return {ok:true,json:async()=>({ready:true,statuses:[]})};
- if(String(url).includes('/finding-statuses/')&&options.method==='PUT'){
-  const body=JSON.parse(options.body);statusWrites.push({url:String(url),...body});savedStatus=body.status;
-  return {ok:true,json:async()=>({saved:true})};
- }
- return {ok:false,json:async()=>({error:'Unexpected endpoint'})};
-};
-window.eval(fs.readFileSync('customer-security.js','utf8'));
-await new Promise(resolve=>setTimeout(resolve,20));
-assert.equal(doc.querySelector('#customerDashFilter').value,'c1','customer selected using a valid scoped query');
-assert.match(doc.querySelector('#customerReportBody').textContent,/Customer A/);
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes('How is this score calculated?'),'report explains security scoring methodology');
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes("card.className='customer-security-score-panel'"),'scorecard is collapsible');
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes('customer-score-seal-number'),'scorecard has professional seal');
-assert.match(doc.querySelector('#customerReportBody').textContent,/CVE-2026-32101/);
-assert.match(doc.querySelector('#customerReportBody').textContent,/PHP before 8.4.27/);
-assert.match(doc.querySelector('#customerReportBody').textContent,/2026-10-24/);
-assert.match(doc.querySelector('.customer-report-table:nth-of-type(3)')?.textContent||doc.querySelector('#customerReportBody').textContent,/Test PHP vulnerability with irregular spacing/,'summary whitespace is normalized');
-assert.ok(!doc.querySelector('#customerReportBody').textContent.includes('Test  PHP'),'report does not expose repeated whitespace');
-assert.match(fs.readFileSync('customer-security.js','utf8'),/f\.published\|\|'Not available',shortSummary\(f\)/,'CSV has explicit missing publication date fallback');
-assert.deepEqual([...doc.querySelectorAll('.customer-vulnerability-table thead th')].map(x=>x.textContent.replace(/[▲▼⇅]/g,'').trim()),['CVE','Published','Severity','Software / Asset','Vulnerability summary','Vulnerability Fix Status','DevOps Ticket #']);
-for(const key of ['Published','Severity','Software / Asset','Vulnerability Fix Status']){
- const header=[...doc.querySelectorAll('.customer-report-sort')].find(b=>b.textContent.startsWith(key));
- assert.ok(header,'sortable report header exists: '+key);
- header.click();
- assert.equal(doc.querySelector('.customer-vulnerability-table th[aria-sort="ascending"]')?.textContent.includes(key),true);
+const {securityFixture}=await import('./customer_security_fixture.mjs');
+const fixture=securityFixture();
+const settle=()=>new Promise(resolve=>setTimeout(resolve,30));
+async function page(kind,customer='c1',data=fixture){
+ const dom=new JSDOM(fs.readFileSync(kind+'/index.html','utf8'),{url:'https://cveharbor.com/'+kind+'/?customer='+customer,runScripts:'outside-only'});
+ const w=dom.window;w.fetch=data.request;w.alert=message=>{w.lastAlert=message};w.CVEHARBOR_DATA={advisories:data.advisories};
+ for(const script of ['inventory-matching.js','customer-score.js','customer-security.js'])w.eval(fs.readFileSync(script,'utf8'));
+ await settle();return dom;
 }
-const expectedSections=['Recorded Technology Inventory','Vulnerabilities Requiring Verification','CVE Findings','Advisory Evidence and References'];
-for(const label of expectedSections){
- const section=[...doc.querySelectorAll('#customerReportBody details.customer-report-section')].find(el=>el.dataset.section===label);
- assert.ok(section,'report has collapsible section: '+label);
- assert.equal(section.open,false,'section collapsed by default: '+label);
-}
-assert.ok([...doc.querySelectorAll('#customerReportBody h2')].some(el=>el.textContent==='Executive Summary'),'executive summary stays visible');
-let findingsPanel=[...doc.querySelectorAll('#customerReportBody details.customer-report-section')].find(el=>el.dataset.section==='CVE Findings');
-findingsPanel.open=true;
-findingsPanel.dispatchEvent(new window.Event('toggle'));
-await new Promise(resolve=>setTimeout(resolve,5));
-doc.querySelector('.customer-report-sort').click();
-findingsPanel=[...doc.querySelectorAll('#customerReportBody details.customer-report-section')].find(el=>el.dataset.section==='CVE Findings');
-assert.equal(findingsPanel.open,true,'expanded state survives report redraw');
-window.dispatchEvent(new window.Event('beforeprint'));
-assert.ok([...doc.querySelectorAll('#customerReportBody details.customer-report-section')].every(el=>el.open),'all sections expand for printing');
-window.dispatchEvent(new window.Event('afterprint'));
-assert.equal([...doc.querySelectorAll('#customerReportBody details.customer-report-section')].find(el=>el.dataset.section==='Recorded Technology Inventory').open,false,'previous collapsed state restored after printing');
-assert.equal(doc.querySelectorAll('#customerReportBody .customer-report-finding').length,1);
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes('plugin-monitor/refresh-batch'),'report includes authenticated plugin recheck action');
-const ticketInput=doc.querySelector('.customer-ticket-input');
-assert.ok(ticketInput&&!ticketInput.disabled,'DevOps ticket field is editable');
-ticketInput.value='WOODBINE-123';
-doc.querySelector('.customer-ticket-save').click();
-await new Promise(resolve=>setTimeout(resolve,20));
-assert.ok(statusWrites.some(x=>x.ticket==='WOODBINE-123'),'ticket reference saved');
-assert.match(doc.querySelector('.customer-ticket-history').textContent,/WOODBINE-123/,'previous ticket preserved as read only');
-const second=doc.querySelector('.customer-ticket-input');second.value='WOODBINE-124';doc.querySelector('.customer-ticket-save').click();
-await new Promise(resolve=>setTimeout(resolve,20));
-assert.deepEqual(statusWrites.filter(x=>x.ticket).map(x=>x.ticket),['WOODBINE-123','WOODBINE-124']);
-assert.match(doc.querySelector('.customer-ticket-history').textContent,/WOODBINE-123.*WOODBINE-124/,'multiple immutable tickets displayed');
-assert.ok(doc.querySelector('.customer-ticket-save'),'ticket reference action present');
-const statusSelect=doc.querySelector('.customer-finding-status-select');
-assert.ok(statusSelect&&!statusSelect.disabled,'status is editable when D1 tracking is ready');
-assert.deepEqual([...statusSelect.options].map(o=>o.value),['Needs Review','Fix in Progress','Fixed/Patched','Not Applicable','Accepted Risk']);
-statusSelect.value='Fixed/Patched';
-statusSelect.dispatchEvent(new window.Event('change'));
-await new Promise(resolve=>setTimeout(resolve,20));
-assert.equal(statusWrites.filter(x=>x.status).length,1,'status saved with an authenticated PUT');
-assert.match(statusWrites.find(x=>x.status).url,/\/finding-statuses\/a1\/CVE-2026-32101$/);
-assert.equal(statusWrites.find(x=>x.status).status,'Fixed/Patched');
-assert.equal(doc.querySelectorAll('.customer-vulnerability-table tbody tr').length,0,'patched finding is filtered from unresolved view');
-doc.querySelectorAll('.customer-finding-filter')[0].click();
-assert.equal(doc.querySelector('.customer-finding-status-select').value,'Fixed/Patched','status persists in browser after redraw');
-assert.doesNotMatch(doc.querySelector('#customerReportBody').textContent,/Customer B|WEB02/,'other customer inventory never appears in report');
-assert.equal(doc.querySelector('#customerReportPrint').disabled,false);
-const overviewHtml=fs.readFileSync('customer-dashboard/index.html','utf8');
-assert.ok(overviewHtml.includes('id="customerAttentionVisual"'));
-assert.ok(overviewHtml.includes('id="customerSeverityVisual"'));
-assert.ok(overviewHtml.includes('id="customerSoftwareVisual"'));
-const overviewDom=new JSDOM(overviewHtml,{url:'https://cveharbor.com/customer-dashboard/?customer=c1',runScripts:'outside-only'});
-const ow=overviewDom.window,od=ow.document;
-ow.CVEHARBOR_DATA=window.CVEHARBOR_DATA;
-ow.CVEHARBOR_CATALOG=window.CVEHARBOR_CATALOG;
-ow.CVEHARBOR_INVENTORY_MATCH=window.CVEHARBOR_INVENTORY_MATCH;
-ow.CVEHARBOR_LIFECYCLE={cycles:[{slug:'php',cycle:'8.4',eol_date:'2027-12-31'}]};
-ow.fetch=window.fetch;
-ow.eval(fs.readFileSync('customer-security.js','utf8'));
-await new Promise(resolve=>setTimeout(resolve,20));
-assert.equal(od.getElementById('customerDashFilter').value,'c1');
-assert.match(od.getElementById('customerSeverityVisual').textContent,/Critical candidates/);
-assert.equal(od.querySelectorAll('.customer-software-card').length,1,'chosen customer only renders its own software');
-od.querySelector('.customer-software-card').click();
-assert.match(od.getElementById('customerDashFindings').textContent,/CVE-2026-32101/);
-assert.equal(od.querySelectorAll('#customerDashFindings details').length,1);
-assert.ok(od.querySelector('#customerDashFindings a[href="https://example.com/cve"]'));
-overviewDom.window.close();
+function select(dom,id,value){const el=dom.window.document.getElementById(id);el.value=value;el.dispatchEvent(new dom.window.Event('change'))}
+function filter(dom,label){[...dom.window.document.querySelectorAll('.customer-finding-filter')].find(el=>el.textContent.startsWith(label+' (')).click()}
+const report=await page('customer-reports'),w=report.window,doc=w.document;
+select(report,'customerDashEnvironment','e1');
+const reportText=()=>doc.querySelector('#customerReportBody').textContent;
+assert.match(reportText(),/Fixture Harbor/);
+assert.doesNotMatch(reportText(),/OTHER01|Other Customer|STAGE01/);
+assert.equal(doc.querySelectorAll('#customerReportBody input,#customerReportBody select').length,0,'no report editors, including plugins');
+assert.equal(doc.querySelectorAll('#customerReportBody .customer-ticket-save').length,0);
+assert.match(doc.querySelector('.customer-ticket-history').textContent,/DEV-10/);
+assert.equal(doc.querySelectorAll('.customer-vulnerability-table tbody tr').length,2);
+const sections=[...doc.querySelectorAll('details.customer-report-section')];
+assert.deepEqual(sections.map(el=>el.dataset.section),['Recorded Technology Inventory','Vulnerabilities Requiring Verification','WordPress Plugin Monitoring','CVE Findings','Advisory Evidence and References']);
+assert.ok(sections.every(el=>!el.open));
+sections[0].open=true;sections[0].dispatchEvent(new w.Event('toggle'));
+assert.equal(sections[1].open,false,'accordions expand independently');
+filter(report,'All');
+assert.ok(doc.querySelector('[data-section="Recorded Technology Inventory"]').open,'open state survives redraw');
+assert.match(doc.querySelector('#customerReportAssessment').textContent,/Insufficient Data/,'50% coverage is insufficient');
+assert.match(doc.querySelector('#customerReportAssessment').textContent,/Low/);
+assert.match(doc.querySelector('#customerReportAssessment').textContent,/50%/);
+const historyCount=fixture.seen.filter(x=>x.path==='customer-score-history').length;
+filter(report,'Unresolved');filter(report,'All');await settle();
+assert.equal(fixture.seen.filter(x=>x.path==='customer-score-history').length,historyCount,'history cached by scope');
+assert.equal(fixture.writes.length,0,'report rendering, sorting, and filters never write remediation or score history');
+const published=[...doc.querySelectorAll('.customer-report-sort')].find(el=>el.textContent.startsWith('Published'));published.click();
+assert.match(doc.querySelector('.customer-vulnerability-table tbody tr').textContent,/CVE-2026-12346/,'date sort uses actual dates');
+for(const id of ['customerReportPrint','customerReportEmail','customerReportCsv'])assert.equal(doc.getElementById(id).disabled,false);
+const dashboard=await page('customer-dashboard'),dw=dashboard.window,dd=dw.document;
+select(dashboard,'customerDashEnvironment','e1');
+assert.equal(dd.querySelectorAll('#customerSoftwareSection,#customerFindingsSection').length,2);
+assert.ok(!dd.getElementById('customerSoftwareSection').open&&!dd.getElementById('customerFindingsSection').open);
+assert.match(dd.getElementById('customerFindingsAttention').textContent,/1 critical, 1 high/);
+assert.equal(dd.querySelectorAll('.customer-software-attention').length,1,'unresolved critical finding gives its software card red attention');
+assert.ok(dd.querySelector('#customerDashboardPlugins select'),'plugin editing preserved on dashboard');
+assert.ok(dd.querySelector('#customerDashboardPlugins input[type=url]'),'vendor URL editing preserved');
+const draft=dd.querySelector('.customer-ticket-input');draft.value='Draft kept';draft.dispatchEvent(new dw.Event('input'));
+filter(dashboard,'All');assert.equal(dd.querySelector('.customer-ticket-input').value,'Draft kept','draft survives redraw');filter(dashboard,'Unresolved');
+const input=dd.querySelector('.customer-ticket-input');input.value='DEV-11';dd.querySelector('#customerDashboardCves .customer-ticket-save').click();await settle();
+assert.deepEqual(fixture.tickets.map(x=>x.ticket_number),['DEV-10','DEV-11']);
+let status=dd.querySelector('#customerDashboardCves .customer-finding-status-select');
+assert.deepEqual([...status.options].map(x=>x.value),['Needs Review','Fix in Progress','Fixed/Patched','Not Applicable','Accepted Risk']);
+status.value='Fixed/Patched';dd.querySelector('.customer-status-save').click();await settle();
+assert.equal(fixture.statuses.get('a1|CVE-2026-12345').notes,'Retain reviewer evidence','status-only edit retains saved notes');
+assert.match(dd.getElementById('customerFindingsAttention').textContent,/0 critical, 1 high/);
+assert.equal(dd.querySelector('#customerFindingsAttention .customer-attention-badge').dataset.level,'high');
+assert.equal(dd.querySelectorAll('.customer-software-attention').length,0,'fixed critical finding removes red software attention');
+assert.equal(dd.querySelectorAll('.customer-software-progress').length,1,'remaining unresolved high finding uses amber attention');
+status=dd.querySelector('#customerDashboardCves .customer-finding-status-select');status.value='Accepted Risk';dd.querySelector('.customer-status-save').click();await settle();
+assert.match(dd.getElementById('customerFindingsAttention').textContent,/No current unresolved findings/);
+assert.equal(dd.querySelector('#customerFindingsAttention .customer-attention-badge').dataset.level,'neutral');
+w.dispatchEvent(new w.Event('focus'));await settle();filter(report,'All');
+assert.match(doc.querySelector('.customer-vulnerability-table').textContent,/Fixed\/Patched/);
+assert.match(doc.querySelector('.customer-vulnerability-table').textContent,/DEV-10.*DEV-11/);
+const reloaded=await page('customer-reports');select(reloaded,'customerDashEnvironment','e1');filter(reloaded,'All');
+assert.match(reloaded.window.document.querySelector('.customer-vulnerability-table').textContent,/Fixed\/Patched/,'new report reads persisted dashboard status');
+filter(report,'Fixed/Patched');
+let csv='';w.Blob=class{constructor(parts){csv=parts.join('')}};w.URL.createObjectURL=()=> 'blob:fixture';w.URL.revokeObjectURL=()=>{};w.HTMLAnchorElement.prototype.click=()=>{};
+doc.getElementById('customerReportCsv').click();await settle();
+assert.match(csv,/CVE-2026-12345/);assert.doesNotMatch(csv,/CVE-2026-12346|OTHER01|STAGE01/);
+assert.match(csv,/Fixed\/Patched.*DEV-10 \| DEV-11/);
+let prints=0;w.print=()=>{prints++;w.dispatchEvent(new w.Event('beforeprint'))};
+doc.getElementById('customerReportPrint').click();await settle();
+assert.equal(prints,1);assert.ok([...doc.querySelectorAll('details.customer-report-section')].every(el=>el.open));
+assert.match(doc.querySelector('.customer-print-document').textContent,/Insufficient Data.*No Score/);
+assert.match(doc.querySelector('.customer-print-document').textContent,/DEV-10, DEV-11/);
+assert.match(doc.querySelector('.customer-print-document').textContent,/Report details/);
+const frozen=doc.querySelector('.customer-print-document').textContent;
+w.dispatchEvent(new w.CustomEvent('cvie:updated',{detail:{recordsChanged:true}}));
+assert.equal(doc.querySelector('.customer-print-document').textContent,frozen,'print contents remain stable during updates');
+w.dispatchEvent(new w.Event('afterprint'));
+assert.equal(doc.querySelector('[data-section="WordPress Plugin Monitoring"]').open,false);
+select(report,'customerDashFilter','c2');
+assert.equal(doc.getElementById('customerDashEnvironment').value,'','customer switch discards unrelated environment');
+assert.doesNotMatch(reportText(),/WEB01|STAGE01|SITE01|Fixture Harbor|DEV-10/);
+assert.match(doc.querySelector('#customerReportAssessment').textContent,/OUT OF 100/,'existing scorer returns numeric result when eligible');
+assert.equal(doc.querySelectorAll('details.customer-report-section').length,5,'all five sections retained without WordPress');
+assert.match(doc.querySelector('[data-section="WordPress Plugin Monitoring"]').textContent,/Not applicable/);
+const mediumFixture=securityFixture();for(const a of mediumFixture.advisories)a.severity='medium';
+const mediumDashboard=await page('customer-dashboard','c1',mediumFixture);select(mediumDashboard,'customerDashEnvironment','e1');
+assert.equal(mediumDashboard.window.document.querySelectorAll('.customer-software-attention,.customer-software-progress').length,0,'medium-only needs-review findings do not receive critical/high styling');
+assert.equal(mediumDashboard.window.document.querySelector('#customerFindingsAttention .customer-attention-badge').dataset.level,'other');
+mediumDashboard.window.close();
+fixture.setReady(false);const writesBefore=fixture.writes.length;doc.getElementById('customerReportCsv').click();await settle();
+assert.match(w.lastAlert,/unavailable/);assert.equal(fixture.writes.length,writesBefore);
+fixture.setAuthenticated(false);w.dispatchEvent(new w.Event('focus'));await settle();
+assert.equal(doc.querySelector('#customerReportBody').textContent,'','expired session clears private print/report DOM');
+assert.equal(doc.querySelector('#customerReportPrint').disabled,true);
+const unauth=await page('customer-reports');
+assert.equal(unauth.window.document.getElementById('customerDashLogin').hidden,false);
+assert.equal(unauth.window.document.getElementById('customerDashAccess').hidden,true);
+assert.ok(fixture.seen.every(x=>x.method==='GET'||['finding-statuses/a1/CVE-2026-12345','finding-statuses/a1/CVE-2026-12346','finding-tickets/a1/CVE-2026-12345'].includes(x.path)));
+for(const dom of [report,dashboard,reloaded,unauth])dom.window.close();
+console.log('PASS customer security: read-only reports, editable dashboard, saved statuses/tickets, notes retention, all accordions, scope isolation, scoring, filtered CSV, print snapshot, unavailable and signed-out states.');
 
-assert.ok(seen.every(x=>x.startsWith('https://api.cveharbor.com/v1/')),'only authenticated account API used for private reads');
-window.close();
-const unauth=new JSDOM(html,{url:'https://cveharbor.com/customer-reports/',runScripts:'outside-only'});
-unauth.window.fetch=async()=>({ok:false,status:401,json:async()=>({error:'Sign in required'})});
-unauth.window.eval(fs.readFileSync('customer-security.js','utf8'));
-await new Promise(resolve=>setTimeout(resolve,20));
-assert.equal(unauth.window.document.getElementById('customerDashLogin').hidden,false,'signed out users see login action');
-assert.match(unauth.window.document.getElementById('customerDashStatus').textContent,/Sign in required/);
-unauth.window.close();
-console.log('Customer reports remain scoped to selected customer and include candidate evidence');
-
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes("card.classList.add('customer-software-progress')"),'in progress findings turn cards yellow');
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes("card.classList.add('customer-software-accepted')"),'accepted risks turn cards gray');
-
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes('buildCustomerPrintDocument(customer,stats'),'report builds dedicated print document');
-assert.ok(fs.readFileSync('styles.css','utf8').includes('.customer-report>:not(.customer-print-document)'),'print mode hides interactive report');
-
-const printCSS=fs.readFileSync('styles.css','utf8');
-assert.ok(!printCSS.includes('.customer-report *{color:#111!important;background:#fff!important}'),'legacy print rules must not override branded cover');
-assert.ok(printCSS.includes('.customer-print-cover *{background-color:transparent!important'),'cover children remain transparent');
-
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes('block.dataset.status=statusTheme[findingStatus]'),'print finding cards use remediation status themes');
-assert.ok(fs.readFileSync('styles.css','utf8').includes('customer-print-finding[data-status=accepted]'),'accepted risk print theme exists');
-
-assert.ok(fs.readFileSync('styles.css','utf8').includes('border-left-width:6px!important'),'PDF status borders remain visible when backgrounds are suppressed');
-
-const reportSource=fs.readFileSync('customer-security.js','utf8');
-assert.ok(reportSource.includes("block.style.setProperty('background-color',surface,'important')"),'print status card background is set inline');
-assert.ok(reportSource.includes("block.style.setProperty('border-left','6px solid '+edge,'important')"),'printed status borders are explicitly set');
-assert.ok(reportSource.includes("stateLabel.style.setProperty('color',ink,'important')"),'status labels receive matching ink');
-
-assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('id="customerReportEmail"'),'report email control available');
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes('customer-report-email'),'report email dialog calls authenticated service');
-
-assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('customer-security.js?v=cvie-1'),'email report loads current script');
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes("$('customerReportEmail').addEventListener('click'"),'email report click handler is registered');
-
-assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('class="customer-report-actions"'),'report actions share aligned toolbar');
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes('emailButton.disabled=!customer'),'email action enabled for selected customer');
-
-const clientSource=fs.readFileSync('customer-security.js','utf8');
-const serverSource=fs.readFileSync('account-backend/src/index.js','utf8');
-assert.ok(clientSource.includes('address.checkValidity()'),'browser email validation is used');
-assert.ok(serverSource.includes("address.split('@').length!==2"),'Worker validates address structure');
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes('address.checkValidity()'),'client uses browser email validation');
-assert.ok(fs.readFileSync('account-backend/src/index.js','utf8').includes("address.split('@').length!==2"),'Worker validates recipient structure');
-
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes("if(!response.ok||!result.sent)throw Error"),'report success requires server acceptance');
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes('customer-email-success-dialog'),'successful sends render a dedicated modal');
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes("const dismiss=text('button','Close'"),'success modal has close button');
-
-assert.ok(fs.readFileSync('customer-reports/index.html','utf8').includes('customer-security.js?v=cvie-1'),'report loads latest success dialog');
-assert.ok(fs.readFileSync('customer-security.js','utf8').includes("successDialog.append(check,heading,detail,dismiss)"),'success dialog contains recipient confirmation and close button');
+// Keep the real-route isolation regression in the existing frontend CI path.
+// A backend/tests change would also trigger the production Worker migration workflow.
+execFileSync(process.execPath,['--test',fileURLToPath(new URL('./customer_report_isolation.test.mjs',import.meta.url))],{stdio:'inherit'});
