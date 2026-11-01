@@ -41,10 +41,10 @@ permission to unpublish Pages, its content is replaced with a small retirement
 notice containing only a link to the protected site. Pages-write permission is
 retained solely for that cleanup. No full-site public Pages artifact is uploaded.
 
-The development activation workflow checks hosting, deploys the requested gate,
-and verifies private access before retiring Pages. It records redacted step
-results on its development branch so deployment failures can be diagnosed
-without revealing passwords or API tokens.
+The read-only `Check temporary site gate hosting` development workflow reports
+token permissions and password readiness as booleans, without secret values.
+It does not deploy feature-branch code to production. Production publishing
+continues through the normal main-branch workflow.
 
 ## Removing the gate when ready
 
