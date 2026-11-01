@@ -107,8 +107,8 @@ export async function seedSharedHistory(env,scope,normalize,now=Date.now()){
  const owner=crypto.randomUUID(),lease=now+120000;
  const claimed=await q(env.DB,"UPDATE cvie_shared_scopes SET lease_until=?,cursor_json=json_set(cursor_json,'$.active_scan',?) WHERE id=? AND seed_token=? AND seed_state='pending' AND lease_until<?",lease,owner,scope.id,scope.seed_token,now).run();
  if(claimed.meta.changes!==1)return {busy:true,no_provider:true};
- const seed=await q(env.DB,`SELECT x.*,p.name AS donor_name,p.vendor AS donor_vendor,p.cpe AS donor_cpe FROM cvie_shared_seeds x LEFT JOIN cvie_products p ON p.id=x.product_id WHERE x.scope_id=? AND x.token=?`,scope.id,scope.seed_token).first();
- const valid=seed&&seed.source_name===seed.donor_name&&seed.source_vendor===seed.donor_vendor&&seed.source_cpe===seed.donor_cpe;
+ const seed=await q(env.DB,`SELECT x.*,p.name AS donor_name,p.vendor AS donor_vendor,p.cpe AS donor_cpe,p.cursor_json AS donor_cursor_json FROM cvie_shared_seeds x LEFT JOIN cvie_products p ON p.id=x.product_id WHERE x.scope_id=? AND x.token=?`,scope.id,scope.seed_token).first();
+ const valid=seed&&seed.source_name===seed.donor_name&&seed.source_vendor===seed.donor_vendor&&seed.source_cpe===seed.donor_cpe&&seed.donor_generation===(readCursor(seed.donor_cursor_json).generation||'');
  const rows=valid?(await q(env.DB,'SELECT * FROM cvie_advisories WHERE product_id=? AND cve_id>? ORDER BY cve_id LIMIT 101',seed.product_id,seed.after_cve).all()).results:[];
  const page=rows.slice(0,100),records=[];let invalid=valid?seed.invalid_records:1;
  for(const row of page){try{const old=JSON.parse(row.record_json),input=publicInput(old),record=input&&normalize(input,scope);
@@ -124,12 +124,14 @@ export async function seedSharedHistory(env,scope,normalize,now=Date.now()){
  if(complete){
   const metadata=JSON.stringify(coverageMetadata(coveragePlan(scope)));
   statements.push(q(env.DB,`UPDATE cvie_shared_seeds SET invalid_records=CASE WHEN EXISTS(SELECT 1 FROM cvie_products p
-   WHERE p.id=product_id AND p.name=source_name AND p.vendor=source_vendor AND p.cpe=source_cpe) THEN MAX(invalid_records,?) ELSE 1 END
+   WHERE p.id=product_id AND p.name=source_name AND p.vendor=source_vendor AND p.cpe=source_cpe
+   AND COALESCE(json_extract(p.cursor_json,'$.generation'),'')=donor_generation) THEN MAX(invalid_records,?) ELSE 1 END
    WHERE scope_id=? AND token=? AND EXISTS(SELECT 1 FROM cvie_shared_scopes s WHERE s.id=scope_id AND s.lease_until=? AND json_extract(s.cursor_json,'$.active_scan')=?)`,invalid,scope.id,scope.seed_token,lease,owner));
   const reset="COALESCE((SELECT invalid_records FROM cvie_shared_seeds WHERE scope_id=cvie_shared_scopes.id),1)>0";
   statements.push(q(env.DB,`UPDATE cvie_shared_scopes SET seed_state='complete',seed_token='',lease_until=0,
    status=CASE WHEN ${reset} THEN 'queued' ELSE ? END,cursor_json=CASE WHEN ${reset} THEN ? ELSE json_remove(cursor_json,'$.active_scan') END,
    recent_complete_at=CASE WHEN ${reset} THEN NULL ELSE recent_complete_at END,history_complete_at=CASE WHEN ${reset} THEN NULL ELSE history_complete_at END,
+   last_success_at=CASE WHEN ${reset} THEN NULL ELSE last_success_at END,
    next_attempt_at=CASE WHEN ${reset} THEN 0 ELSE next_attempt_at END WHERE id=? AND seed_token=? AND lease_until=? AND json_extract(cursor_json,'$.active_scan')=?`,seed?.resume_status||'queued',metadata,scope.id,scope.seed_token,lease,owner));
   statements.push(q(env.DB,"DELETE FROM cvie_shared_seeds WHERE scope_id=? AND token=? AND EXISTS(SELECT 1 FROM cvie_shared_scopes s WHERE s.id=scope_id AND s.seed_state='complete')",scope.id,scope.seed_token));
  }else{
@@ -138,3 +140,4 @@ export async function seedSharedHistory(env,scope,normalize,now=Date.now()){
  }
  await env.DB.batch(statements);return {seeded:records.length,seed_complete:complete,no_provider:true};
 }
+

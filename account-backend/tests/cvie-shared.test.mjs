@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {DB} from './helpers/d1.mjs';
 import {subscribeProducts,runCvieStep,cvieRoute,normalizeNvd,loadCvieDigest} from '../src/cvie.js';
 import {combinedPage} from '../src/cvie-records.js';
@@ -138,3 +139,71 @@ check('bulk subscription links use set operations rather than a database write p
  assert.equal((await q(e,'SELECT COUNT(*) AS n FROM cvie_shared_scopes').first()).n,1);
  assert.equal((await q(e,'SELECT COUNT(*) AS n FROM cvie_product_scopes').first()).n,500);
 });
+
+async function migrationFixture(count=150){
+ const e=env();e.CVIE_SHARED_SCANS_ENABLED='false';await subscribeProducts(e,'a',[product('Private migration donor')]);
+ const p=await q(e,'SELECT * FROM cvie_products').first();
+ await q(e,"UPDATE cvie_products SET status='ready',cursor_json=?,last_success_at=?,recent_complete_at=?,history_complete_at=?,next_attempt_at=? WHERE id=?",JSON.stringify({...coverageMetadata(coveragePlan(p)),generation:'donor-generation'}),NOW,NOW,NOW,NOW+21600000,p.id).run();
+ for(let i=0;i<count;i++){const record=normalizeNvd(raw('CVE-2026-'+(20000+i)),p);await q(e,'INSERT INTO cvie_advisories VALUES(?,?,?,?,?)',p.id,record.id,record.published,JSON.stringify(record),'donor-generation').run();}
+ e.CVIE_SHARED_SCANS_ENABLED='true';await reconcileSharedScopes(e,null,NOW+1);
+ return {e,p,scope:await q(e,'SELECT * FROM cvie_shared_scopes').first()};
+}
+check('a donor refresh between import pages discards inherited completion and schedules a full public scan',async()=>{
+ const {e,p,scope}=await migrationFixture();
+ assert.equal((await seedSharedHistory(e,scope,normalizeNvd,NOW+1)).seed_complete,false);
+ await q(e,"UPDATE cvie_products SET cursor_json=json_set(cursor_json,'$.generation','replacement-generation') WHERE id=?",p.id).run();
+ await seedSharedHistory(e,await q(e,'SELECT * FROM cvie_shared_scopes').first(),normalizeNvd,NOW+2);
+ const current=await q(e,'SELECT * FROM cvie_shared_scopes').first();
+ assert.equal(current.seed_state,'complete');assert.equal(current.status,'queued');assert.equal(current.history_complete_at,null);assert.equal(current.recent_complete_at,null);assert.equal(current.last_success_at,null);assert.equal(current.next_attempt_at,0);
+ assert.equal((await q(e,'SELECT COUNT(*) AS n FROM cvie_advisories').first()).n,150);
+});
+check('a donor refresh during the final page cannot commit inherited completion',async()=>{
+ const {e,p,scope}=await migrationFixture(1),batch=e.DB.batch.bind(e.DB);
+ e.DB.batch=async statements=>{
+  await q(e,"UPDATE cvie_products SET cursor_json=json_set(cursor_json,'$.generation','replacement-generation') WHERE id=?",p.id).run();
+  return batch(statements);
+ };
+ await seedSharedHistory(e,scope,normalizeNvd,NOW+1);
+ const current=await q(e,'SELECT * FROM cvie_shared_scopes').first();assert.equal(current.status,'queued');assert.equal(current.history_complete_at,null);assert.equal(current.last_success_at,null);
+});
+check('an interrupted import rolls back its page and resumes without missing or duplicating evidence',async()=>{
+ const {e,scope}=await migrationFixture(),batch=e.DB.batch.bind(e.DB);
+ e.DB.batch=statements=>batch([...statements,q(e,"INSERT INTO users VALUES('a','duplicate@example.test')")]);
+ await assert.rejects(seedSharedHistory(e,scope,normalizeNvd,NOW+1));
+ assert.equal((await q(e,'SELECT COUNT(*) AS n FROM cvie_shared_advisories').first()).n,0);
+ assert.equal((await q(e,'SELECT after_cve FROM cvie_shared_seeds').first()).after_cve,'');
+ e.DB.batch=batch;
+ assert.equal((await seedSharedHistory(e,scope,normalizeNvd,NOW+2)).busy,true);
+ await seedSharedHistory(e,scope,normalizeNvd,NOW+120002);
+ await seedSharedHistory(e,await q(e,'SELECT * FROM cvie_shared_scopes').first(),normalizeNvd,NOW+120003);
+ assert.equal((await q(e,'SELECT COUNT(*) AS n FROM cvie_shared_advisories').first()).n,150);
+ assert.equal((await q(e,'SELECT * FROM cvie_shared_scopes').first()).status,'ready');
+});
+check('a replaced import lease blocks stale evidence writes and cursor completion',async()=>{
+ const {e,scope}=await migrationFixture(1),batch=e.DB.batch.bind(e.DB);
+ e.DB.batch=async statements=>{
+  await q(e,"UPDATE cvie_shared_scopes SET cursor_json=json_set(cursor_json,'$.active_scan','new-owner'),lease_until=? WHERE id=?",NOW+240000,scope.id).run();
+  return batch(statements);
+ };
+ await seedSharedHistory(e,scope,normalizeNvd,NOW+1);
+ assert.equal((await q(e,'SELECT COUNT(*) AS n FROM cvie_shared_advisories').first()).n,0);
+ const current=await q(e,'SELECT * FROM cvie_shared_scopes').first();assert.equal(current.seed_state,'pending');assert.equal(JSON.parse(current.cursor_json).active_scan,'new-owner');
+ assert.equal((await q(e,'SELECT after_cve FROM cvie_shared_seeds').first()).after_cve,'');
+});
+check('retrying the additive schema preserves shared evidence and private bridges',async()=>{
+ const {e,scope}=await migrationFixture(1);await seedSharedHistory(e,scope,normalizeNvd,NOW+1);
+ const before={scopes:(await q(e,'SELECT * FROM cvie_shared_scopes').all()).results,links:(await q(e,'SELECT * FROM cvie_product_scopes').all()).results,records:(await q(e,'SELECT * FROM cvie_shared_advisories').all()).results};
+ e.DB.sql.exec(fs.readFileSync(new URL('../migrations/0022_cvie_shared_scans.sql',import.meta.url),'utf8'));
+ assert.deepEqual({scopes:(await q(e,'SELECT * FROM cvie_shared_scopes').all()).results,links:(await q(e,'SELECT * FROM cvie_product_scopes').all()).results,records:(await q(e,'SELECT * FROM cvie_shared_advisories').all()).results},before);
+ assert.deepEqual(e.DB.sql.prepare('PRAGMA foreign_key_check').all(),[]);
+});
+for(const mutation of ['malformed record','changed identity'])check('migration recovers safely from '+mutation,async()=>{
+ const {e,p,scope}=await migrationFixture(1);
+ if(mutation==='malformed record')await q(e,"UPDATE cvie_advisories SET record_json='invalid json' WHERE product_id=?",p.id).run();
+ else await q(e,"UPDATE cvie_products SET name='Changed private label' WHERE id=?",p.id).run();
+ await seedSharedHistory(e,scope,normalizeNvd,NOW+1);
+ const current=await q(e,'SELECT * FROM cvie_shared_scopes').first();assert.equal(current.status,'queued');assert.equal(current.last_success_at,null);assert.equal(current.history_complete_at,null);
+ assert.equal((await q(e,'SELECT COUNT(*) AS n FROM cvie_advisories').first()).n,1);
+ assert.equal((await q(e,'SELECT COUNT(*) AS n FROM cvie_shared_advisories').first()).n,0);
+});
+
