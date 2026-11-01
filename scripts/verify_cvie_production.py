@@ -60,7 +60,9 @@ def main():
     names = {row["name"] for row in query("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'cvie_%'")}
     if not TABLES <= names:
         raise RuntimeError("CVIE migration is incomplete: " + ", ".join(sorted(TABLES - names)))
-    print("PASS: account API healthy, private CVIE route protected and all nine CVIE tables exist", flush=True)
+    if not query("SELECT key FROM cvie_maintenance WHERE key='cvie-audit-v1'"):
+        raise RuntimeError("The one-time CVIE audit cache refresh was not recorded")
+    print("PASS: account API healthy, private CVIE route protected, core tables present and audit cache refresh recorded", flush=True)
     deadline = time.monotonic() + max(0, args.wait_for_feeds)
     stage = "scheduled source ingestion"
     while True:
@@ -69,6 +71,9 @@ def main():
         print(json.dumps({"sources": sources, "public_record_counts": totals}), flush=True)
         fresh = {s["id"] for s in sources if s["status"] == "ok" and s["last_success_at"] and time.time()*1000-s["last_success_at"] < 30*60000}
         if {"cve_program", "cisa_kev"} <= fresh and totals["kev_records"] > 0 and totals["disclosures"] > 0:
+            jobs=query("SELECT status,COUNT(*) AS products FROM cvie_products GROUP BY status ORDER BY status")
+            health=json.dumps({"sources":sources,"public_record_counts":totals,"product_jobs":jobs,"audit_cache_refresh_recorded":True})
+            print("::notice title=CVIE release verification::"+health.replace("%","%25").replace("\r","%0D").replace("\n","%0A"),flush=True)
             print("PASS: production scheduled jobs collected original CVE disclosures and CISA KEV; remaining indexing stays visible", flush=True)
             summary = os.environ.get("GITHUB_STEP_SUMMARY")
             if summary:

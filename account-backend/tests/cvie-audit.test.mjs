@@ -16,7 +16,7 @@ function disclosure(date='2026-10-20T00:00:00Z'){
  return {dataType:'CVE_RECORD',dataVersion:'5.1',cveMetadata:{cveId:id,state:'PUBLISHED',datePublished:'2026-10-15T00:00:00Z',dateUpdated:date},containers:{cna:{title:'Audit fixture',descriptions:[{lang:'en',value:'Synthetic regression fixture.'}],affected:[{vendor:'Apache Software Foundation',product:'Tomcat',defaultStatus:'unaffected',versions:[{version:'10.1.0',lessThan:'10.1.30',status:'affected',versionType:'semver'}]}]}}};
 }
 async function store(e,raw,revision=raw.cveMetadata.dateUpdated){
- await q(e,`INSERT INTO cvie_disclosure_queue(cve_id,revision,priority) VALUES(?,?,0) ON CONFLICT(cve_id) DO UPDATE SET revision=excluded.revision,next_attempt_at=0,lease_until=0`,id,revision).run();
+ await q(e,`INSERT INTO cvie_disclosure_queue(cve_id,revision,priority) VALUES(?,?,0) ON CONFLICT(cve_id) DO UPDATE SET revision=excluded.revision,next_attempt_at=0,lease_until=0`,id,revision?new Date(revision).toISOString():'').run();
  return ingestDisclosures(e,async()=>Response.json(raw),NOW);
 }
 function nvd(){return {id,published:'2026-10-15T00:00:00Z',lastModified:'2026-10-20T00:00:00Z',vulnStatus:'Analyzed',descriptions:[{lang:'en',value:'NVD fixture'}],configurations:[{nodes:[{cpeMatch:[{criteria:cpe,vulnerable:true,versionEndExcluding:'10.1.30'}]}]}]};}
@@ -201,4 +201,24 @@ check('an expired scan lease can recover without a late original response overwr
  release();await pending;
  assert.equal(JSON.parse((await q(e,'SELECT record_json FROM cvie_advisories').first()).record_json).cvss,9.8);
  assert.equal((await q(e,'SELECT last_success_at FROM cvie_products').first()).last_success_at,NOW+130000);
+});
+check('release cache refresh preserves evidence/customer data, fences old work and only runs once',async()=>{
+ const e=env();await subscribeProducts(e,'a',[{name:'Apache Tomcat'}]);
+ const raw=disclosure();raw.containers.cna.affected[0].versions[0].status='unknown';await store(e,raw);
+ await q(e,"UPDATE cvie_disclosure_products SET applicability='unaffected'").run();
+ const record=normalizeNvd(nvd(),{name:'Apache Tomcat',cpe}),p=await q(e,'SELECT * FROM cvie_products').first();
+ e.DB.sql.prepare('INSERT INTO cvie_advisories VALUES(?,?,?,?,?)').run(p.id,id,record.published,JSON.stringify(record),'previous');
+ e.DB.sql.exec("INSERT INTO inventory_assets VALUES('a','Apache Tomcat')");
+ await q(e,"UPDATE cvie_products SET status='scanning',lease_until=?,cursor_json='{}'",NOW+120000).run();
+ await q(e,'INSERT INTO cvie_disclosure_queue(cve_id,revision,priority,lease_until) VALUES(?,?,1,?)',id,'2026-10-31T00:00:00.000Z',NOW+120000).run();
+ const sql=fs.readFileSync(new URL('../migrations/0021_cvie_audit_refresh.sql',import.meta.url),'utf8');e.DB.sql.exec(sql);
+ assert.equal((await q(e,'SELECT applicability FROM cvie_disclosure_products').first()).applicability,'affected');
+ const queued=await q(e,'SELECT * FROM cvie_disclosure_queue').first();assert.equal(queued.lease_until,0);assert.equal(queued.revision,'2026-10-31T00:00:00.000Z');
+ assert.equal((await q(e,'SELECT status FROM cvie_products').first()).status,'queued');
+ assert.equal((await q(e,'SELECT COUNT(*) AS total FROM cvie_advisories').first()).total,1);
+ assert.equal((await q(e,'SELECT COUNT(*) AS total FROM inventory_assets').first()).total,1);
+ await q(e,'DELETE FROM cvie_disclosure_queue').run();await q(e,"UPDATE cvie_products SET status='ready',next_attempt_at=?",NOW+DAY).run();
+ e.DB.sql.exec(sql);assert.equal((await q(e,'SELECT COUNT(*) AS total FROM cvie_disclosure_queue').first()).total,0);
+ assert.equal((await q(e,'SELECT status FROM cvie_products').first()).status,'ready');
+ assert.equal((await q(e,'SELECT COUNT(*) AS total FROM cvie_maintenance').first()).total,1);
 });

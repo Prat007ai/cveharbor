@@ -2,9 +2,13 @@
 
 ## Release status
 
-The production engine is running. The hardening changes described here are on
-`fix/cvie-reliability-audit`; this audit does not deploy them or modify customer
-records. The live-source and runtime evidence files below record their own check
+The production engine is running. The hardening changes were developed on
+`fix/cvie-reliability-audit` and have now been approved for production release.
+The release workflow verifies API protection, source collection and a one-time
+refresh of derived CVIE evidence. This refresh retains existing advisories,
+rechecks resolved products and preserves inventory and review decisions. Its
+maintenance marker prevents repeated resets on later deployments.
+The live-source and runtime evidence files below record their own check
 times. A green source check means the provider was checked successfully, not that
 every vulnerability or every historical original record has been indexed.
 
@@ -50,6 +54,9 @@ account changes, report integration and opt-in alert selection.
   The initial 12 scenarios were reproduced failing before their fixes.
   Additional checks cover lease expiry/recovery and 500 paginated advisory
   associations without omissions or cross-account access.
+- One additional release-maintenance test covers cached unknown-version
+  corrections, stale-lease fencing, evidence/inventory preservation and
+  idempotence of the one-time refresh (30 checks in this test file in total).
 - Existing account, CVIE, digest and security-related backend test files.
 - 112 Python data/build tests and the existing site/report/score/threat smoke checks.
 - `scripts/cvie_client_smoke.mjs`: deferred-response logout/account races,
@@ -98,5 +105,5 @@ Evidence:
    private data was used for the audit.
 
 The supported conclusion is that the observed engine paths are tested and the
-identified weaknesses are fixed on the audit branch. No finite review can make
+identified weaknesses are addressed by the approved hardening release. No finite review can make
 an upstream-data service “bulletproof” or promise it finds every vulnerability.

@@ -142,6 +142,13 @@ closed with a service-setup message. Existing `NVD_API_KEY`, if configured in
 GitHub, is copied over stdin to an encrypted Worker secret; otherwise anonymous
 NVD access works with the lower request budget.
 
+After the corrected Worker is deployed, the guarded
+`account-backend/migrations/0021_cvie_audit_refresh.sql` applies the new
+applicability rules to cached affected-product rows, queues canonical records
+for re-normalization and restarts resolved NVD jobs without deleting their last
+verified advisories. It does not alter inventory, review statuses or tickets.
+The maintenance marker makes subsequent deployments leave completed work alone.
+
 After deployment, `scripts/verify_cvie_production.py` checks API health,
 unauthenticated CVIE rejection, the nine CVIE tables and actual scheduled
 disclosure/KEV ingestion. It reads schema and public feed metadata only. It allows
