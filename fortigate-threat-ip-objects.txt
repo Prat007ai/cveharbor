@@ -1,7 +1,7 @@
-# CVEHarbor Threat IP Intelligence | 2026-11-01T13:49:55.837919+00:00
+# CVEHarbor Threat IP Intelligence | 2026-11-01T13:56:05.658421+00:00
 # Permanent logical group: Suspicious IP Block
-# Cumulative indexed IPs: 2275
-# New since prior published snapshot: 109
+# Cumulative indexed IPs: 2276
+# New since prior published snapshot: 1
 # REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 # Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 # No rules or policies are created or enabled. No old IPs are removed.
@@ -5342,6 +5342,9 @@ config firewall address
     edit "CVEH_171_104_143_176"
         set subnet 171.104.143.176 255.255.255.255
     next
+    edit "CVEH_171_220_244_134"
+        set subnet 171.220.244.134 255.255.255.255
+    next
     edit "CVEH_171_244_47_232"
         set subnet 171.244.47.232 255.255.255.255
     next
@@ -8619,6 +8622,7 @@ config firewall addrgrp
         append member "CVEH_170_205_52_130"
         append member "CVEH_170_205_52_146"
         append member "CVEH_171_104_143_176"
+        append member "CVEH_171_220_244_134"
         append member "CVEH_171_244_47_232"
         append member "CVEH_172_81_61_139"
         append member "CVEH_172_86_127_187"
