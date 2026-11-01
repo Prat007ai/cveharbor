@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {inventoryOnly,catalogueOnly} from './worker_release_mode.mjs';
+import {inventoryOnly,catalogueOnly,monitorCodeOnly} from './worker_release_mode.mjs';
 import {verifyHistory} from './verify_software_history_d1.mjs';
 const inventory='account-backend/src/inventory.js';
 assert.equal(inventoryOnly([inventory,'customer-security.js']),true);
@@ -28,3 +28,8 @@ try{
 
 assert.equal(catalogueOnly(['account-backend/src/catalogue-selection.js','account-backend/src/cvie.js']),true);
 assert.equal(catalogueOnly(['account-backend/src/catalogue-selection.js','account-backend/migrations/0022_cvie_shared_scans.sql']),false);
+
+
+assert.equal(monitorCodeOnly(['account-backend/src/monitoring.js','account-backend/src/index.js','account-backend/migrations/0023_lifecycle_monitoring.sql','index.html']),true);
+assert.equal(monitorCodeOnly(['account-backend/src/monitoring.js','account-backend/src/cvie.js']),false);
+assert.equal(monitorCodeOnly(['account-backend/src/index.js']),false);

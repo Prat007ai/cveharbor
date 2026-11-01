@@ -7,6 +7,8 @@ import {cvieRoute,subscribeProducts,syncAccountProducts,runCvieStep,dispatchCvie
 import {dispatchEvidence} from './cvie-evidence.js';
 import {productCpe,normalizeName} from './product-identity.js';
 import { handler as lifecycleHandler, LifecycleError, dispatchLifecycle } from './lifecycle.js';
+import {monitoringHandler,MonitorError,dispatchProductMonitoring,dispatchProductMonitorMail} from './monitoring.js';
+import {smtp2goWebhook,unsubscribeMonitor} from './monitor-mail.js';
 import { inventoryRoute, InventoryError } from './inventory.js';
 import {route as websiteMonitorRoute,scanDue as scanWebsiteDue} from './website-monitor.js';
 import { customerScoreRoute } from './customer-score.js';
@@ -41,6 +43,12 @@ export default {async fetch(req,env,ctx){
  const url=new URL(req.url),origin=req.headers.get('origin');
  if(req.method==='OPTIONS'){if(origin!==ALLOWED_ORIGIN)return response({error:'Forbidden'},403);return new Response(null,{status:204,headers:{'Access-Control-Allow-Origin':ALLOWED_ORIGIN,'Access-Control-Allow-Credentials':'true','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST,PUT,DELETE,OPTIONS','Vary':'Origin'}})}
  if(!url.pathname.startsWith('/v1/'))return response({error:'Not found'},404);
+ if(url.pathname==='/v1/monitoring/webhooks/smtp2go'){
+  if(!env.DB)return response({error:'Monitoring unavailable'},503);
+  try{return await smtp2goWebhook(req,env);}catch{return response({error:'Event reconciliation unavailable; retry later'},503);}
+ }
+ const monitorUnsub=/^\/v1\/monitoring\/unsubscribe\/([a-f0-9-]{72})$/.exec(url.pathname);
+ if(monitorUnsub){try{return await unsubscribeMonitor(req,env,monitorUnsub[1]);}catch{return response({error:'Unsubscribe unavailable; retry later'},503);}}
  const unsub=/^\/v1\/unsubscribe\/([a-f0-9]{64})$/.exec(url.pathname);
  if(unsub && (req.method==='GET'||req.method==='POST')) {
   if(!env.DB)return response({error:'Account database unavailable'},503);
@@ -242,6 +250,7 @@ export default {async fetch(req,env,ctx){
     return response({sent:true,message:'Report emailed successfully.'});
   }
   if(path==='/v1/auth/logout'&&req.method==='POST'){await env.DB.prepare('DELETE FROM sessions WHERE id=?').bind(user.sid).run();return response({authenticated:false},200,{'Set-Cookie':setCookie('',0)})}
+  if(path.startsWith('/v1/monitoring'))return await monitoringHandler(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/lifecycle'))return await lifecycleHandler(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/finding-tickets'))return await findingTicketRoute(req,env,user,path,req.method==='POST'?await body(req):{});
   if(path.startsWith('/v1/finding-statuses'))return await findingStatusRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
@@ -331,14 +340,16 @@ export default {async fetch(req,env,ctx){
    await env.DB.prepare('DELETE FROM users WHERE id=?').bind(user.id).run();return response({deleted:true},200,{'Set-Cookie':setCookie('',0)});
   }
   return response({error:'Not found'},404);
- }catch(error){if(error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
+ }catch(error){if(error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
-  if(_event.cron==='* * * * *'){ctx.waitUntil(dispatchEvidence(env));return;}
+  if(_event.cron==='* * * * *'){ctx.waitUntil(dispatchEvidence(env));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}
   if(_event.cron==='*/5 * * * *'){ctx.waitUntil(dispatchCvie(env));return;}
   if(env.ALERT_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchDueDigests(env));
   if(env.LIFECYCLE_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchLifecycle(env));
+  if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true')ctx.waitUntil(dispatchProductMonitoring(env));
   if(env.PLUGIN_MONITOR_ENABLED==='true')ctx.waitUntil(scanDue(env));
   if(env.WEBSITE_MONITOR_ENABLED==='true')ctx.waitUntil(scanWebsiteDue(env));
  }
 };
+

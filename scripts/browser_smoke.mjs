@@ -177,14 +177,14 @@ assert.ok(html.includes('id="lifecycleEmailOptin"')&&html.includes('id="lifecycl
 assert.ok(html.includes('id="lifecycleWatchQueue"')&&html.includes('id="lifecycleSaveAll"'),'multiple lifecycle watch queue is available');
 assert.ok(html.includes('src="/patch-notes.js"'),'vendor release evidence is loaded on lifecycle pages');
 
-assert.ok(html.includes('lifecycle-monitor.js?v=multiwatch-3'),'versioned lifecycle monitor script loads');
+assert.ok(html.includes('lifecycle-monitor.js?v=product-monitor-1'),'versioned lifecycle monitor script loads');
 const lifecycleDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 lifecycleDom.window.CVEHARBOR_LIFECYCLE={checked_at:new Date().toISOString(),cycles:[{slug:'php',product:'PHP',cycle:'8.4',eol_date:'2027-12-31',latest:'8.4.27',url:'https://endoflife.date/php'}],errors:[]};
 lifecycleDom.window.eval(fs.readFileSync('lifecycle-monitor.js','utf8'));
 assert.match(lifecycleDom.window.document.getElementById('lifecycleUserStatus').textContent,/Sign in/);
 assert.match(lifecycleDom.window.document.getElementById('lifecyclePublished').textContent,/PHP/);
 assert.ok(html.includes('id="lifecycleDetailDialog"'),'on-site product support modal exists');
-assert.ok(html.includes('lifecycle-monitor.js?v=multiwatch-3'),'lifecycle popup script cache-busted');
+assert.ok(html.includes('lifecycle-monitor.js?v=product-monitor-1'),'lifecycle popup script cache-busted');
 const popup=lifecycleDom.window.document.getElementById('lifecycleDetailDialog');
 const first=lifecycleDom.window.document.querySelector('#lifecyclePublished .lifecycle-view-details');
 assert.ok(first,'each lifecycle result offers a popup');
@@ -1100,3 +1100,4 @@ assert.ok(fs.existsSync('public/assets/homepage/platform-explorer.png'),'public 
 assert.match(fs.readFileSync('homepage.css','utf8'),/prefers-reduced-motion/,'homepage animation supports reduced motion');
 assert.doesNotMatch(fs.readFileSync('homepage.css','utf8'),/!important|\.command-sidebar|\.command-nav-link/,'homepage CSS preserves navigation styles and avoids overrides');
 assert.match(fs.readFileSync('page-router.js','utf8'),/dashboard:'\/intelligence\/'/,'legacy overview bookmarks route to the new page');
+

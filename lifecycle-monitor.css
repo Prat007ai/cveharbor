@@ -1,0 +1,55 @@
+/* Scoped lifecycle workspace; shared navigation and other pages are unchanged. */
+#lifecycleMonitor{position:relative;isolation:isolate}
+body[data-page="lifecycle"] .page-section-intro{display:none!important}
+#lifecycleMonitor .section-heading{max-width:62%;min-height:155px;align-items:flex-start;margin-bottom:24px}
+#lifecycleMonitor .section-heading h1{font-size:clamp(28px,3vw,45px);letter-spacing:-1.2px;margin:7px 0 12px;color:#f3f7ff}
+#lifecycleMonitor .section-sub{font-size:14px;line-height:1.7;color:#b6d1e2}
+#lifecycleMonitor .eyebrow{color:#38f0da;letter-spacing:1.3px}
+.lifecycle-hero-art{position:absolute;z-index:-1;right:0;top:0;width:40%;height:205px;display:flex;justify-content:center;align-items:flex-end;gap:22px;color:#29dfd4;overflow:hidden;border-radius:20px;background:radial-gradient(ellipse at center,#076c8052,transparent 68%)}
+.lifecycle-hero-art svg{position:absolute;top:0;left:calc(50% - 82px);width:165px;height:160px;filter:drop-shadow(0 0 15px #19d9dc70)}
+.lifecycle-hero-art span{font-size:11px;padding:8px 0;color:#acd7e6}
+.lifecycle-orbit{position:absolute;width:360px;height:170px;border:1px solid #1a9db655;border-radius:50%;transform:rotate(-18deg);background-image:radial-gradient(#1baab533 1px,transparent 1px);background-size:8px 8px}
+.lifecycle-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:20px}
+.lifecycle-metric{display:flex;gap:15px;align-items:center;padding:17px 20px;border:1px solid #23516b;border-radius:12px;background:linear-gradient(120deg,#092137,#071c2c);box-shadow:inset 0 1px #2a7a8c22}
+.lifecycle-metric>span{font-size:25px;color:#28e6d8;display:grid;place-items:center;width:42px;height:42px;border-radius:10px;background:#08667532}
+.lifecycle-metric strong{display:block;font-size:27px;color:#edf6ff;line-height:1.1}
+.lifecycle-metric small{display:block;color:#a8c5d8;margin-top:7px;font-size:11px}
+#lifecycleMonitor .lifecycle-grid{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(370px,1fr);gap:20px;align-items:start}
+#lifecycleMonitor .data-panel{padding:23px;border:1px solid #265872;border-radius:16px;background:linear-gradient(135deg,#092236ef,#061b2a);box-shadow:0 12px 35px #0002}
+#lifecycleMonitor h3{font-size:19px;color:#e9f2fc;line-height:1.35;margin:0 0 10px}
+#lifecycleMonitor h4{color:#e6f5fc;margin:16px 0 10px}
+#lifecycleMonitor .ops-note{font-size:12px;line-height:1.65;color:#a7c6da}
+#lifecycleMonitor label{font-size:12px;line-height:1.5;color:#bad4e5}
+#lifecycleMonitor input,#lifecycleMonitor select{background:#082336;border:1px solid #286078;border-radius:8px;color:#cde6f2;padding:10px 12px;min-height:39px;width:100%}
+#lifecycleMonitor input[type=checkbox]{width:auto;min-height:0;accent-color:#11d5bd}
+#lifecycleMonitor .ops-form{grid-template-columns:1fr 1fr;gap:12px}
+#lifecycleMonitor .ops-form label{display:flex;flex-direction:column;gap:5px}
+#lifecycleMonitor .ops-download{background:linear-gradient(140deg,#0e3d52,#08263b);border:1px solid #227594;border-radius:8px;color:#42f0ed;font-size:12px;padding:10px 13px;cursor:pointer}
+#lifecycleMonitor #lifecycleWatchQueue{color:#002b2a;background:linear-gradient(110deg,#00ecb9,#4cf7df);font-weight:700;border-color:#26eed0}
+#lifecycleMonitor button:disabled{opacity:.5;cursor:not-allowed}
+.lifecycle-filter-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.lifecycle-filter-tabs button{color:#b7d8e9;border:1px solid #22526a;background:#082638;border-radius:8px;padding:9px 13px;font-size:12px;cursor:pointer}
+.lifecycle-filter-tabs button[aria-pressed=true]{border-color:#1de4d4;color:#46f7dd;box-shadow:inset 0 0 12px #0ff2}
+#lifecycleMonitor .lifecycle-public-results{max-height:790px;overflow:auto;padding-right:4px}
+#lifecycleMonitor .lifecycle-source-row{display:grid;grid-template-columns:46px minmax(0,1fr) auto;align-items:center;gap:6px 15px;padding:17px 14px;border:1px solid #1c4b60;border-radius:11px;background:linear-gradient(110deg,#082738,#06202e);margin-bottom:9px}
+.lifecycle-product-mark{grid-row:1/4;display:grid;place-items:center;width:43px;height:43px;color:#20d9ed;background:#064c6333;border:1px solid #11667b55;border-radius:11px;font-weight:750;font-size:16px}
+#lifecycleMonitor .lifecycle-source-row strong{font-size:15px;color:#edf4fe}
+#lifecycleMonitor .lifecycle-source-row p{grid-column:2;margin:0}
+#lifecycleMonitor .lifecycle-source-row button{grid-column:3;grid-row:1/4}
+.lifecycle-support-summary{grid-column:2;color:#44d8c8;font-size:11px}
+.monitor-activation{border:1px solid #806528;background:#6c4b181f;border-radius:8px;color:#e5c889;padding:10px 12px;font-size:12px;line-height:1.6}
+.monitor-activation.is-operating{border-color:#15795f;background:#007d6018;color:#47e5bd}
+.monitor-tabs{display:flex;gap:5px;flex-wrap:wrap;border-bottom:1px solid #21485c;padding:6px 0 12px;margin-bottom:15px}
+.monitor-tabs button{background:transparent;border:0;border-radius:6px;color:#91b6ca;font-size:12px;padding:8px;cursor:pointer}
+.monitor-tabs button[aria-pressed=true]{color:#42efd8;background:#0b71612b}
+.monitor-tabs button[hidden],#lifecycleMonitor [hidden]{display:none!important}
+.monitor-type-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;border:1px solid #255169;border-radius:8px;padding:13px;margin:16px 0}
+.monitor-type-options legend{font-size:12px;color:#b4d3e2}
+.monitor-type-options label{display:flex;align-items:center;gap:7px}
+.monitor-state-tag{display:inline-block;padding:3px 8px;border-radius:20px;background:#0b9b8325;border:1px solid #14a9966b;color:#42dcc1;font-size:11px;margin:6px 0}
+.monitor-history article{padding:12px;border:1px solid #244d61;border-radius:9px;margin:10px 0;background:#081f30}
+.monitor-history p{font-size:12px;color:#a5c8da;line-height:1.6;overflow-wrap:anywhere}
+.monitor-watch-controls{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+@media(min-width:1700px){#lifecycleMonitor .lifecycle-grid{grid-template-columns:minmax(0,1.85fr) minmax(460px,1fr)}}
+@media(max-width:1050px){#lifecycleMonitor .lifecycle-grid{grid-template-columns:minmax(0,1fr)}.lifecycle-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}#lifecycleMonitor .section-heading{max-width:100%;min-height:0}.lifecycle-hero-art{display:none}}
+@media(max-width:600px){#lifecycleMonitor .data-panel{padding:16px}.lifecycle-metric{padding:12px;gap:9px}.lifecycle-metric strong{font-size:22px}.lifecycle-metric>span{display:none}#lifecycleMonitor .ops-form,.monitor-type-options{grid-template-columns:1fr}#lifecycleMonitor .lifecycle-source-row{grid-template-columns:36px minmax(0,1fr)}#lifecycleMonitor .lifecycle-source-row button{grid-column:2;grid-row:auto;justify-self:start}.lifecycle-product-mark{width:34px;height:38px}}

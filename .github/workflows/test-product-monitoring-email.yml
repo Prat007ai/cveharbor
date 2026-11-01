@@ -1,0 +1,32 @@
+name: One approved SMTP2GO monitoring test per authorized recipient
+on:
+  push:
+    branches: [feat/product-lifecycle-monitoring]
+    paths: ['.github/workflows/test-product-monitoring-email.yml']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: cveharbor-approved-product-monitor-test
+  cancel-in-progress: false
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Submit only the two expressly approved test messages if an existing CI key is available
+        env:
+          SMTP2GO_API_KEY: ${{ secrets.ALERT_SMTP2GO_API_KEY || secrets.SMTP2GO_API_KEY }}
+          EMAIL_FROM: alerts@cveharbor.com
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: node scripts/test_monitor_smtp2go.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: product-monitoring-approved-test-20261101
+          path: work/product-monitoring-smtp-test.json
+          retention-days: 30
