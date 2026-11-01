@@ -6,7 +6,7 @@ const panels=[];
 let lastSignature='';
 let evidence={sources:[]},withdrawn=new Set();
 let excluded=[],accountId='',accountEmail='',authEpoch=0;
-let lastFullAt=0,recordsMonths=0;
+let lastFullAt=0,recordsMonths=0,checkingProgress=false;
 const ACTIVE_POLL=30000,IDLE_POLL=60000,RESULT_MAX_AGE=60000;
 class SessionChanged extends Error{}
 const node=(tag,value,cls)=>{const el=document.createElement(tag);if(value)el.textContent=value;if(cls)el.className=cls;return el;};
@@ -126,7 +126,7 @@ function draw(){
   if(sourceGrid.children.length)panel.append(sourceGrid);
   const active=products.filter(p=>['queued','scanning','retrying'].includes(p.status));
   const attention=(evidence.sources||[]).some(s=>['pending','stale','unavailable','rate_limited','setup_required','catching_up','verifying_products'].includes(s.status));
-  const message=error||(busy?'Loading '+months+'-month results...':!ready?'Preparing CVIE...':!products.length?'Add a product or register an asset to start CVIE.':attention?'Some sources are still being verified or need attention. Available results are shown below; check each source status.':products.some(p=>p.status==='needs_identity')?'Some products need an exact identity before CVIE can scan. Expand product status to choose.':products.some(p=>p.status==='retrying')?'A source check is unavailable. Saved results remain available; CVIE will retry automatically.':products.some(p=>p.status==='ready'&&p.stale)?'Some source checks are overdue. Saved results remain available while CVIE refreshes them.':active.length?active.length+' product'+(active.length===1?' is':'s are')+' being prepared. Results appear as source pages finish.':'Product checks complete. Review the source and installed version before acting.');
+  const message=error||(busy?(checkingProgress?'Updating scan status...':'Loading '+months+'-month results...'):!ready?'Preparing CVIE...':!products.length?'Add a product or register an asset to start CVIE.':attention?'Some sources are still being verified or need attention. Available results are shown below; check each source status.':products.some(p=>p.status==='needs_identity')?'Some products need an exact identity before CVIE can scan. Expand product status to choose.':products.some(p=>p.status==='retrying')?'A source check is unavailable. Saved results remain available; CVIE will retry automatically.':products.some(p=>p.status==='ready'&&p.stale)?'Some source checks are overdue. Saved results remain available while CVIE refreshes them.':active.length?active.length+' product'+(active.length===1?' is':'s are')+' being prepared. Results appear as source pages finish.':'Product checks complete. Review the source and installed version before acting.');
   const status=node('p',message,'cvie-status');status.setAttribute('role','status');panel.append(status);
   const list=node('div','','cvie-product-statuses');
   for(const p of products){
@@ -163,7 +163,7 @@ const identitySignature=rows=>JSON.stringify(rows.map(p=>[p.id,p.name,p.vendor,p
 const resultSignature=rows=>JSON.stringify(rows.map(p=>[p.id,p.status,p.last_success_at,p.recent_complete_at,p.history_complete_at]));
 async function refresh(sync=false,progressOnly=false){
  if(progressOnly&&document.visibilityState==='hidden')return;
- if(busy){pending=true;pendingSync=pendingSync||sync;return;}busy=true;clearTimeout(timer);draw();
+ if(busy){pending=true;pendingSync=pendingSync||sync;return;}busy=true;checkingProgress=progressOnly&&ready;clearTimeout(timer);draw();
  const requestedMonths=months;
  try{
   if(sync)await request('/sync',{method:'POST',body:'{}'});
@@ -178,6 +178,7 @@ async function refresh(sync=false,progressOnly=false){
     if(!recovering&&!changed&&recordsMonths===requestedMonths&&lastFullAt&&Date.now()-lastFullAt<RESULT_MAX_AGE)return;
    }
   }
+  checkingProgress=false;
   const state=await request();
   if(accountId&&accountId!==state.account_id){clearPrivate();notify();}accountId=state.account_id||'';
   products=state.products||[];ready=state.ready;evidence=state.evidence||{sources:[]};withdrawn=new Set(state.withdrawn_ids||[]);excluded=state.excluded_product_cves||[];error='';draw();
@@ -193,7 +194,7 @@ async function refresh(sync=false,progressOnly=false){
   if(requestedMonths===months){records=incoming;recordsMonths=requestedMonths;lastFullAt=Date.now();notify();}else pending=true;
  }catch(e){if(!(e instanceof SessionChanged)){error=e.name==='TimeoutError'?'The CVIE request timed out. Saved results remain available; automatic retry is scheduled.':e.message;notify();}}
  finally{
-  busy=false;draw();
+  busy=false;checkingProgress=false;draw();
   if(pending){const syncNext=pendingSync;pending=false;pendingSync=false;timer=setTimeout(()=>void refresh(syncNext),250);}
   else if(signedIn&&document.visibilityState!=='hidden')timer=setTimeout(()=>void refresh(false,true),products.some(p=>['queued','scanning'].includes(p.status))?ACTIVE_POLL:IDLE_POLL);
  }

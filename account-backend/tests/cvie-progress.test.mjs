@@ -4,8 +4,13 @@ import {DB} from './helpers/d1.mjs';
 import {subscribeProducts,cvieRoute,runCvieStep} from '../src/cvie.js';
 import {sourceHealth} from '../src/cvie-records.js';
 import {publicSourceStatus,invalidatePublicSourceStatus,PUBLIC_STATUS_TTL} from '../src/public-source-status-cache.js';
+import worker from '../src/index.js';
 const NOW=Date.parse('2026-11-01T18:00:00Z');
 const route=(env,user='a',path='/v1/cvie/progress')=>cvieRoute(new Request('https://api.cveharbor.com'+path),env,{id:user});
+test('the new progress route requires an authenticated session',async()=>{
+ const response=await worker.fetch(new Request('https://api.cveharbor.com/v1/cvie/progress'),{DB:new DB()},{waitUntil(){}});
+ assert.equal(response.status,401);
+});
 test('warm progress polls use two read statements, omit advisory matching and never cross accounts',async()=>{
  const env={DB:new DB()};await subscribeProducts(env,'a',[{name:'Apache Tomcat'}]);await subscribeProducts(env,'b',[{name:'PHP'}]);
  await runCvieStep(env,()=>Response.json({startIndex:0,totalResults:0,vulnerabilities:[]}),Date.now());
