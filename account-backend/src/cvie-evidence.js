@@ -162,11 +162,25 @@ export function relevantKev(kev,products){
   return [wordKey(parts[4]),wordKey(p.name)].filter(Boolean).some(value=>value===name||value.startsWith(name)||name===vendor+value);
  });
 }
+// Public catalogue only, bounded by the validated 3 MB feed limit. Coalesce cold
+// reads within an isolate; no customer matches or private product fields cached.
+const kevCatalogues=new WeakMap();
+export const KEV_CATALOGUE_TTL=30000;
+export function invalidateKevCatalogue(env){kevCatalogues.delete(env.CVIE_UNWRAPPED_DB||env.DB);}
+export async function publicKevCatalogue(env,now=Date.now()){
+ const key=env.CVIE_UNWRAPPED_DB||env.DB;let entry=kevCatalogues.get(key);
+ if(!entry||now<entry.started||now>=entry.expires){
+  entry={started:now,expires:now+KEV_CATALOGUE_TTL};
+  entry.promise=Promise.resolve().then(()=>env.DB.prepare('SELECT record_json FROM cvie_kev').all()).then(r=>(r.results||[]).map(row=>JSON.parse(row.record_json)));
+  kevCatalogues.set(key,entry);
+ }
+ try{return await entry.promise;}catch(error){if(kevCatalogues.get(key)===entry)kevCatalogues.delete(key);throw error;}
+}
 export async function queueRelevantKev(env,products){
  if(!products.length||!await evidenceReady(env))return;
- const rows=(await env.DB.prepare('SELECT record_json FROM cvie_kev').all()).results||[];
- const items=rows.map(row=>JSON.parse(row.record_json)).filter(k=>relevantKev(k,products)).map(k=>({id:k.cveID,revision:'',priority:0}));
- if(items.length){await queueSql(env,items).run();invalidatePublicSourceStatus(env);}
+ const rows=await publicKevCatalogue(env);
+ const items=rows.filter(k=>relevantKev(k,products)).map(k=>({id:k.cveID,revision:'',priority:0}));
+ if(items.length){const result=await queueSql(env,items).run();if(result.meta.changes)invalidatePublicSourceStatus(env);}
 }
 // Canonical public-content hash ignores object key order and fetch timestamps.
 export function stableContent(value){
@@ -224,7 +238,7 @@ export async function refreshEvidence(env,fetcher=fetch,now=Date.now()){
   }
   statements.push(q(env.DB,`UPDATE cvie_sources SET status='ok',last_success_at=?,publisher_at=?,checkpoint=?,coverage_start_at=?,
    next_attempt_at=?,lease_until=0,error='',source_url=? WHERE id=? AND lease_until=?`,now,publisher,checkpoint,coverage,now+(source.id==='cisa_kev'?15:5)*60000,SOURCE_URLS[source.id],source.id,lease));
-  await env.DB.batch(statements);invalidatePublicSourceStatus(env);return {source:source.id,ok:true};
+  await env.DB.batch(statements);invalidatePublicSourceStatus(env);if(source.id==='cisa_kev')invalidateKevCatalogue(env);return {source:source.id,ok:true};
  }catch(error){
   const retry=now+(error.delay||60000);
   await q(env.DB,"UPDATE cvie_sources SET status='unavailable',error=?,next_attempt_at=?,record_retry_at=MAX(record_retry_at,?),lease_until=0 WHERE id=? AND lease_until=?",String(error.message).slice(0,220),retry,source.id==='cve_program'&&error.throttled?retry:0,source.id,lease).run();invalidatePublicSourceStatus(env);return {source:source.id,ok:false};

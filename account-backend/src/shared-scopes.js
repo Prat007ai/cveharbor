@@ -90,9 +90,12 @@ export async function reconcileSharedScopes(env,userId=null,now=Date.now(),limit
   ON CONFLICT(product_id) DO UPDATE SET scope_id=excluded.scope_id,candidate_scope_id=excluded.candidate_scope_id,source_name=excluded.source_name,source_vendor=excluded.source_vendor,source_cpe=excluded.source_cpe,version=excluded.version`,SHARED_VERSION,payload));
  if(missing.length)statements.push(q(env.DB,`UPDATE cvie_product_scopes SET scope_id=candidate_scope_id WHERE scope_id IS NULL
   AND candidate_scope_id IN(SELECT value FROM json_each(?)) AND version=? AND EXISTS(SELECT 1 FROM cvie_products p WHERE ${validScopeLink('p','cvie_product_scopes')})`,JSON.stringify(missing.map(d=>d.id)),SHARED_VERSION));
- statements.push(q(env.DB,`UPDATE cvie_products SET lease_until=0,cursor_json=json_remove(cursor_json,'$.active_scan') WHERE lease_until<>0 AND (
+ // Restrict lease cleanup to affected products/donors and newly promoted scopes.
+ // Existing indexed membership avoids a full private-products scan per save.
+ statements.push(q(env.DB,`UPDATE cvie_products SET lease_until=0,cursor_json=json_remove(cursor_json,'$.active_scan') WHERE id IN(
+  SELECT value FROM json_each(?) UNION SELECT product_id FROM cvie_product_scopes WHERE scope_id IN(SELECT value FROM json_each(?))) AND lease_until<>0 AND (
   EXISTS(SELECT 1 FROM cvie_product_scopes m WHERE ${validScopeLink('cvie_products')} AND m.scope_id IS NOT NULL)
-  OR id IN(SELECT product_id FROM cvie_shared_seeds))`));
+  OR id IN(SELECT product_id FROM cvie_shared_seeds))`,JSON.stringify([...entries.map(({p})=>p.id),...seeds.map(s=>s.product_id)]),JSON.stringify(missing.map(d=>d.id))));
  await env.DB.batch(statements);
  return {linked:entries.length,scopes_created:scopes.length};
 }

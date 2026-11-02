@@ -41,7 +41,9 @@ export async function runIdentityIndexWork(env,identityId=null,now=Date.now(),ur
  const db=env.DB,job=await db.prepare(`SELECT * FROM cvie_identity_index_jobs WHERE complete=0 ${urgent?'':'AND next_attempt_at<=?'} AND lease_until<? ${identityId?'AND identity_id=?':''} ORDER BY next_attempt_at,identity_id LIMIT 1`).bind(...(urgent?[]:[now]),now,...(identityId?[identityId]:[])).first();
  if(!job)return {processed:0};
  const token=crypto.randomUUID();
- const claimed=await db.prepare('UPDATE cvie_identity_index_jobs SET lease_until=?,lease_token=? WHERE identity_id=? AND lease_until<?').bind(now+120000,token,job.identity_id,now).run();
+ const claimed=await db.prepare(`UPDATE cvie_identity_index_jobs SET lease_until=?,lease_token=?
+  WHERE identity_id=? AND lease_until<? AND complete=0 AND cursor_json=? AND next_attempt_at=?`)
+  .bind(now+120000,token,job.identity_id,now,job.cursor_json,job.next_attempt_at).run();
  if(!claimed.meta.changes)return {busy:true};
  const guard='EXISTS(SELECT 1 FROM cvie_identity_index_jobs j WHERE j.identity_id=? AND j.lease_token=?)';
  try{

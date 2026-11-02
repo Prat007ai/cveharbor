@@ -193,10 +193,13 @@ INSERT INTO cvie_identity_members VALUES('microsoft-windows-server','microsoft-w
 INSERT INTO cvie_identity_members VALUES('microsoft-windows-server','microsoft-windows-server-2022','release_variant',1);
 
 -- Projection changes commit atomically with their source rows. No request-time JSON joins.
+-- Populate the initial page key in the insert, avoiding a second row/index write.
 CREATE TRIGGER cvie_fast_nvd_insert AFTER INSERT ON cvie_shared_advisories BEGIN
- INSERT INTO cvie_identity_evidence(identity_id,cve_id,nvd_scope_id)
- SELECT i.identity_id,NEW.cve_id,NEW.scope_id FROM cvie_shared_scopes s
- JOIN cvie_identity_identifiers i ON i.scheme='cpe' AND i.value=s.cpe
+ INSERT INTO cvie_identity_evidence(identity_id,cve_id,nvd_scope_id,sort_date)
+ SELECT i.identity_id,NEW.cve_id,NEW.scope_id,
+ CASE WHEN EXISTS(SELECT 1 FROM cvie_disclosures d WHERE d.cve_id=NEW.cve_id AND d.state='REJECTED') THEN ''
+ WHEN EXISTS(SELECT 1 FROM cvie_kev k WHERE k.cve_id=NEW.cve_id) THEN '9999-12-31T23:59:59.999Z' ELSE NEW.published END
+ FROM cvie_shared_scopes s JOIN cvie_identity_identifiers i ON i.scheme='cpe' AND i.value=s.cpe
  WHERE s.id=NEW.scope_id AND json_array_length(json_extract(s.signature,'$[1]'))=1
  ON CONFLICT(identity_id,cve_id) DO UPDATE SET nvd_scope_id=excluded.nvd_scope_id WHERE nvd_scope_id IS NOT excluded.nvd_scope_id;
 END;
@@ -204,13 +207,21 @@ CREATE TRIGGER cvie_fast_nvd_delete AFTER DELETE ON cvie_shared_advisories BEGIN
  UPDATE cvie_identity_evidence SET nvd_scope_id=NULL WHERE cve_id=OLD.cve_id AND nvd_scope_id=OLD.scope_id;
  DELETE FROM cvie_identity_evidence WHERE cve_id=OLD.cve_id AND nvd_scope_id IS NULL AND cna_affected_json IS NULL;
 END;
-CREATE TRIGGER cvie_fast_cna_insert AFTER INSERT ON cvie_disclosure_products BEGIN
- INSERT INTO cvie_identity_evidence(identity_id,cve_id,cna_affected_json)
- SELECT i.identity_id,NEW.cve_id,(
-  SELECT json_group_array(json(a.value)) FROM cvie_disclosure_products d
-  JOIN cvie_identity_families f ON f.family_key=d.family_key AND f.identity_id=i.identity_id,json_each(d.affected_json) a WHERE d.cve_id=NEW.cve_id)
- FROM cvie_identity_families i WHERE i.family_key=NEW.family_key
- ON CONFLICT(identity_id,cve_id) DO UPDATE SET cna_affected_json=excluded.cna_affected_json WHERE cna_affected_json IS NOT excluded.cna_affected_json;
+CREATE TRIGGER cvie_fast_cna_insert AFTER INSERT ON cvie_disclosure_products
+ WHEN EXISTS(SELECT 1 FROM cvie_identity_families WHERE family_key=NEW.family_key) BEGIN
+ INSERT INTO cvie_identity_evidence(identity_id,cve_id,cna_affected_json,sort_date)
+ SELECT i.identity_id,NEW.cve_id,i.affected,
+ CASE WHEN d.state='REJECTED' OR NOT EXISTS(SELECT 1 FROM json_each(i.affected) a
+  WHERE COALESCE(json_extract(a.value,'$.defaultStatus'),'unknown')<>'unaffected'
+  OR EXISTS(SELECT 1 FROM json_each(json_extract(a.value,'$.versions')) v WHERE COALESCE(json_extract(v.value,'$.status'),'unknown')<>'unaffected')) THEN ''
+ WHEN EXISTS(SELECT 1 FROM cvie_kev k WHERE k.cve_id=NEW.cve_id) THEN '9999-12-31T23:59:59.999Z'
+ ELSE COALESCE(d.published,(SELECT n.published FROM cvie_identity_evidence e JOIN cvie_shared_advisories n ON n.scope_id=e.nvd_scope_id AND n.cve_id=e.cve_id WHERE e.identity_id=i.identity_id AND e.cve_id=NEW.cve_id),'') END
+ FROM (SELECT f.identity_id,(SELECT json_group_array(json(a.value)) FROM cvie_disclosure_products p
+  JOIN cvie_identity_families m ON m.family_key=p.family_key AND m.identity_id=f.identity_id,json_each(p.affected_json) a
+  WHERE p.cve_id=NEW.cve_id) AS affected FROM cvie_identity_families f WHERE f.family_key=NEW.family_key) i
+ JOIN cvie_disclosures d ON d.cve_id=NEW.cve_id WHERE 1
+ ON CONFLICT(identity_id,cve_id) DO UPDATE SET cna_affected_json=excluded.cna_affected_json,sort_date=excluded.sort_date
+ WHERE cna_affected_json IS NOT excluded.cna_affected_json OR sort_date IS NOT excluded.sort_date;
 END;
 CREATE TRIGGER cvie_fast_cna_delete AFTER DELETE ON cvie_disclosure_products BEGIN
  UPDATE cvie_identity_evidence SET cna_affected_json=(
@@ -248,7 +259,8 @@ CREATE TRIGGER cvie_fast_sort_link_update AFTER UPDATE OF cna_affected_json,nvd_
  (SELECT published FROM cvie_shared_advisories n WHERE n.scope_id=cvie_identity_evidence.nvd_scope_id AND n.cve_id=cvie_identity_evidence.cve_id),'') END);
 END;
 
-CREATE TRIGGER cvie_fast_sort_disclosure_revision AFTER UPDATE OF state,published ON cvie_disclosures BEGIN
+CREATE TRIGGER cvie_fast_sort_disclosure_revision AFTER UPDATE OF state,published ON cvie_disclosures
+ WHEN NEW.state IS NOT OLD.state OR NEW.published IS NOT OLD.published BEGIN
  UPDATE cvie_identity_evidence SET sort_date=CASE WHEN EXISTS(SELECT 1 FROM cvie_disclosures d WHERE d.cve_id=cvie_identity_evidence.cve_id AND d.state='REJECTED')
  OR (cna_affected_json IS NOT NULL AND NOT EXISTS(SELECT 1 FROM json_each(cna_affected_json) a WHERE COALESCE(json_extract(a.value,'$.defaultStatus'),'unknown')<>'unaffected'
  OR EXISTS(SELECT 1 FROM json_each(json_extract(a.value,'$.versions')) v WHERE COALESCE(json_extract(v.value,'$.status'),'unknown')<>'unaffected'))) THEN ''
@@ -290,7 +302,8 @@ CREATE TRIGGER cvie_fast_sort_kev_remove AFTER DELETE ON cvie_kev BEGIN
  (SELECT published FROM cvie_shared_advisories n WHERE n.scope_id=cvie_identity_evidence.nvd_scope_id AND n.cve_id=cvie_identity_evidence.cve_id),'') END);
 END;
 
-CREATE TRIGGER cvie_fast_sort_nvd_date AFTER UPDATE OF published ON cvie_shared_advisories BEGIN
+CREATE TRIGGER cvie_fast_sort_nvd_date AFTER UPDATE OF published ON cvie_shared_advisories
+ WHEN NEW.published IS NOT OLD.published BEGIN
  UPDATE cvie_identity_evidence SET sort_date=CASE WHEN EXISTS(SELECT 1 FROM cvie_disclosures d WHERE d.cve_id=cvie_identity_evidence.cve_id AND d.state='REJECTED')
  OR (cna_affected_json IS NOT NULL AND NOT EXISTS(SELECT 1 FROM json_each(cna_affected_json) a WHERE COALESCE(json_extract(a.value,'$.defaultStatus'),'unknown')<>'unaffected'
  OR EXISTS(SELECT 1 FROM json_each(json_extract(a.value,'$.versions')) v WHERE COALESCE(json_extract(v.value,'$.status'),'unknown')<>'unaffected'))) THEN ''
@@ -304,13 +317,22 @@ CREATE TRIGGER cvie_fast_sort_nvd_date AFTER UPDATE OF published ON cvie_shared_
  (SELECT published FROM cvie_shared_advisories n WHERE n.scope_id=cvie_identity_evidence.nvd_scope_id AND n.cve_id=cvie_identity_evidence.cve_id),'') END);
 END;
 
-CREATE TRIGGER cvie_fast_cna_update AFTER UPDATE OF applicability,affected_json ON cvie_disclosure_products BEGIN
- INSERT INTO cvie_identity_evidence(identity_id,cve_id,cna_affected_json)
- SELECT i.identity_id,NEW.cve_id,(
-  SELECT json_group_array(json(a.value)) FROM cvie_disclosure_products d
-  JOIN cvie_identity_families f ON f.family_key=d.family_key AND f.identity_id=i.identity_id,json_each(d.affected_json) a WHERE d.cve_id=NEW.cve_id)
- FROM cvie_identity_families i WHERE i.family_key=NEW.family_key
- ON CONFLICT(identity_id,cve_id) DO UPDATE SET cna_affected_json=excluded.cna_affected_json WHERE cna_affected_json IS NOT excluded.cna_affected_json;
+CREATE TRIGGER cvie_fast_cna_update AFTER UPDATE OF applicability,affected_json ON cvie_disclosure_products
+ WHEN (NEW.applicability IS NOT OLD.applicability OR NEW.affected_json IS NOT OLD.affected_json)
+ AND EXISTS(SELECT 1 FROM cvie_identity_families WHERE family_key=NEW.family_key) BEGIN
+ INSERT INTO cvie_identity_evidence(identity_id,cve_id,cna_affected_json,sort_date)
+ SELECT i.identity_id,NEW.cve_id,i.affected,
+ CASE WHEN d.state='REJECTED' OR NOT EXISTS(SELECT 1 FROM json_each(i.affected) a
+  WHERE COALESCE(json_extract(a.value,'$.defaultStatus'),'unknown')<>'unaffected'
+  OR EXISTS(SELECT 1 FROM json_each(json_extract(a.value,'$.versions')) v WHERE COALESCE(json_extract(v.value,'$.status'),'unknown')<>'unaffected')) THEN ''
+ WHEN EXISTS(SELECT 1 FROM cvie_kev k WHERE k.cve_id=NEW.cve_id) THEN '9999-12-31T23:59:59.999Z'
+ ELSE COALESCE(d.published,(SELECT n.published FROM cvie_identity_evidence e JOIN cvie_shared_advisories n ON n.scope_id=e.nvd_scope_id AND n.cve_id=e.cve_id WHERE e.identity_id=i.identity_id AND e.cve_id=NEW.cve_id),'') END
+ FROM (SELECT f.identity_id,(SELECT json_group_array(json(a.value)) FROM cvie_disclosure_products p
+  JOIN cvie_identity_families m ON m.family_key=p.family_key AND m.identity_id=f.identity_id,json_each(p.affected_json) a
+  WHERE p.cve_id=NEW.cve_id) AS affected FROM cvie_identity_families f WHERE f.family_key=NEW.family_key) i
+ JOIN cvie_disclosures d ON d.cve_id=NEW.cve_id WHERE 1
+ ON CONFLICT(identity_id,cve_id) DO UPDATE SET cna_affected_json=excluded.cna_affected_json,sort_date=excluded.sort_date
+ WHERE cna_affected_json IS NOT excluded.cna_affected_json OR sort_date IS NOT excluded.sort_date;
 END;
 
 -- Shared local-index work for newly verified long-tail identities; no provider calls.

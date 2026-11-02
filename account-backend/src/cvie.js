@@ -51,10 +51,15 @@ export async function subscribeProducts(env,userId,products,origin='catalogue',e
   normalized.set(normalizeName(name),{name,vendor,cpe,explicitCpe:Boolean(item.cpe),vendorProvided:item.vendor!==undefined});
  }
  if(normalized.size>500)throw new CvieError('CVIE supports up to 500 distinct products per account',409);
- const existing=(await query(env.DB,'SELECT id,name_key,cpe,vendor FROM cvie_products WHERE user_id=?',userId).all()).results||[];
- const subscribed=(await query(env.DB,'SELECT product_id FROM cvie_subscriptions WHERE user_id=? AND origin=?',userId,origin).all()).results||[];
+ // One consistent read snapshot and one D1 round trip for private subscription state.
+ const [savedProducts,savedSubscriptions,otherSubscriptions]=await env.DB.batch([
+  query(env.DB,'SELECT id,name_key,cpe,vendor FROM cvie_products WHERE user_id=?',userId),
+  query(env.DB,'SELECT product_id FROM cvie_subscriptions WHERE user_id=? AND origin=?',userId,origin),
+  query(env.DB,'SELECT DISTINCT p.name_key FROM cvie_products p JOIN cvie_subscriptions s ON p.id=s.product_id WHERE s.user_id=? AND s.origin<>?',userId,origin)
+ ]);
+ const existing=savedProducts.results||[],subscribed=savedSubscriptions.results||[];
  const ids=new Map(existing.map(x=>[x.name_key,x.id]));
- const other=(await query(env.DB,'SELECT DISTINCT p.name_key FROM cvie_products p JOIN cvie_subscriptions s ON p.id=s.product_id WHERE s.user_id=? AND s.origin<>?',userId,origin).all()).results||[];
+ const other=otherSubscriptions.results||[];
  if(new Set([...other.map(x=>x.name_key),...normalized.keys()]).size>500)throw new CvieError('CVIE product capacity reached; remove unused products before adding more',409);
  const guard=origin==='catalogue'&&expectedCatalogue!==null;
  const guardSql=guard?' AND EXISTS(SELECT 1 FROM user_technology_catalogue WHERE user_id=? AND preferences_json=?)':'';

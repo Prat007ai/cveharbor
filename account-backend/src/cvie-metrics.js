@@ -18,7 +18,7 @@ export async function observeCvie(env,operation,work){
  });
  const DB={prepare(sql){return wrap(env.DB.prepare(sql));},async batch(statements){return capture(await env.DB.batch(statements.map(s=>s.inner||s)));}};
  let ok=false;
- try{const result=await work({...env,DB,CVIE_METRIC_CONTEXT:metric,CVIE_UNWRAPPED_DB:env.DB});ok=!(result instanceof Response)||result.ok;for(const key of ['processed','failed'])if(Number.isFinite(result?.[key]))metric['records_'+key]=result[key];return result;}
+ try{const result=await work({...env,DB,CVIE_METRIC_CONTEXT:metric,CVIE_UNWRAPPED_DB:env.CVIE_UNWRAPPED_DB||env.DB});ok=!(result instanceof Response)||result.ok;for(const key of ['processed','failed'])if(Number.isFinite(result?.[key]))metric['records_'+key]=result[key];return result;}
  finally{
   metric.ok=ok;metric.duration_ms=Math.round((performance.now()-start)*100)/100;
   if(!metric.metadata_complete){metric.rows_read=null;metric.rows_written=null;}

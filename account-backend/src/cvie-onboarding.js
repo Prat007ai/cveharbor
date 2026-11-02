@@ -7,7 +7,11 @@ const q=(env,sql,...args)=>env.DB.prepare(sql).bind(...args);
 export const fastEvidenceEnabled=env=>registryEnabled(env)&&env.CVIE_FAST_EVIDENCE_ENABLED==='true';
 export async function bindProductIdentities(env,userId){
  if(!registryEnabled(env))return;
- const rows=(await q(env,'SELECT id,name,vendor,cpe FROM cvie_products WHERE user_id=?',userId).all()).results||[];
+ const rows=(await q(env,`SELECT p.id,p.name,p.vendor,p.cpe FROM cvie_products p
+  LEFT JOIN cvie_product_identities b ON b.product_id=p.id AND b.source_name=p.name
+   AND b.source_vendor=p.vendor AND b.source_cpe=p.cpe
+   AND b.revision=(SELECT revision FROM cvie_identities i WHERE i.identity_id=b.identity_id)
+  WHERE p.user_id=? AND b.product_id IS NULL`,userId).all()).results||[];
  const statements=[];
  for(const p of rows){
   const plan=coveragePlan(p);

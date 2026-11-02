@@ -1,30 +1,42 @@
-# Task 2B: CVIE Core Improvements — Phases 0–2 Implementation and Deployment Report
+# Task 2B: CVIE Core Improvements — Implementation and Readiness Follow-up
 
-Date: 2 November 2026. Status: **implemented on a dedicated branch; validation incomplete; NOT approved for production rollout.**
+Updated 2 November 2026 (America/Toronto). **Local optimization and regression validation completed; ready for isolated staging review, not approved for production.**
 
-- Draft pull request: [#243](https://github.com/Prat007ai/cveharbor/pull/243).
-- Branch: `codex/cvie-core-phase012`.
-- Initial main baseline: `3b9dfce`; integrated main through `1abc7cddc9e4ea5c4f3f6bf84792dac31393bb01`, including PR #242.
-- Task 2 assessment baseline: `4004859b66a37942fa606b7d8fbaeddd4c674c8f`.
-- Implementation reference: [full approved Task 2 design](https://chatgpt.com/space/page_0a2d074c11588191a26655dd7767980b), especially sections 10 and 11. This document contains the full Task 2B implementation report, rather than a link-only placeholder or Task 1 report.
+- Existing draft PR: [#243](https://github.com/Prat007ai/cveharbor/pull/243).
+- Existing branch: `codex/cvie-core-phase012`. No merge into main or production deployment.
+- Follow-up comparison baseline: `a2e4597`, the previously reviewed Task 2B implementation.
+- Main integrated through `b080025`, including the subsequent remediation UI work. No overlapping CVIE backend changes were found. Integration occurred into this development branch only.
+- Original main baseline: `3b9dfce`; assessment baseline: `4004859b66a37942fa606b7d8fbaeddd4c674c8f`.
+- Reference: [full approved Task 2 design](https://chatgpt.com/space/page_0a2d074c11588191a26655dd7767980b). This is the complete updated Task 2B report, not a Task 1 document or link-only placeholder.
 
-## 1. Outcome and release decision
+## 1. Current readiness decision
 
-The branch implements opt-in canonical product identification, bounded immediate access to stored CVEs, shared discovery reuse, differential KEV ingestion, rejection/withdrawal corrections, and operation-level D1 telemetry. It adds the minimum indexed serving path requested for Phase 2; it does not implement the complete Phase 4 architecture.
+The follow-up addresses the measured local bottlenecks without starting Task 3 or implementing the broader Phases 3–7 architecture.
 
-The measured evidence-read target passes in local Miniflare D1: **409 rows read, zero rows written per 100-result page at p95**, with both 10,000 and 100,000 synthetic CVEs. An unchanged 1,766-entry KEV snapshot produces **zero KEV content rewrites** and two source-state writes, versus 5,300 total writes in the baseline fixture.
+**Measured local results:** the authenticated Worker save-to-first-evidence API sequence has p95 latency of **25 ms, 148 ms and 263 ms** at 1, 10 and 50 concurrent customers. The 100-result evidence lookup still reads **409 D1 rows and writes zero** at both 10,000 and 100,000 synthetic CVEs. An unchanged 1,766-entry KEV snapshot still writes **zero KEV records** and two source-state rows.
 
-These results do **not** establish production readiness. Fifty-account local concurrency deduplicates work correctly but shows approximately **6.7 seconds p95 service orchestration latency**, above the save/first-page targets. Remote staging, end-to-end browser latency, a representative held-out accuracy corpus, and full 5,000-asset account validation remain outstanding. New indexes also increase measured ingestion writes; their production cost has not been approved.
+The original 10%-mapped ingestion fixture now writes **58,000 rows instead of 70,000**, versus 53,000 in the legacy schema. Thus its additional write overhead falls from **32.1% to 9.4%**. This is workload-dependent: a separate all-mapped fixture still has 62.5% more writes than legacy storage because every CVE needs maintained serving associations. Those costs and the feature-off behavior are explicit below.
 
-No production deployment, migration, configuration change, historical rescan, or load test was performed. Production access was limited to fixed read-only aggregate diagnostics. No customer names, asset details, versions, emails, or credentials are included in the evidence artifacts.
+The earlier 6.7-second result was a Node-to-Miniflare per-statement orchestration measurement, not a deployed Worker request. The same host harness still takes approximately 5.3 seconds after optimization; changing the measurement environment alone must not be represented as a code speedup. The new comparison runs both reviewed and optimized application code inside the same local Worker runtime.
 
-## 2. Repository review and overlapping work
+**Remote readiness remains unverified.** No isolated staging Worker/D1, staging credentials or approved frontend/API origin routing were available. Local Worker tests exclude real client-network latency and browser rendering, so they do not certify the production click-to-render target. No production deployment, migration, rescan, load test, resource creation or Cloudflare configuration change was performed. Current tests use synthetic identities and records; the earlier read-only production baseline remains historical evidence only.
 
-Implementation uses a dedicated worktree and branch; the original checkout and unrelated generated files were not committed. Main was reviewed against the assessment baseline before editing. PRs #239–241 added confirmation-domain, reviewer-progress and live-probe changes; later main changes from PR #242 were merged without conflicts. CVIE core files had not changed from the assessment baseline during that review.
+## 2. Follow-up changes and profiling findings
 
-Migration `0027` already belongs to assignment progress. This branch uses additive `0028` and `0029`. Recheck numbering immediately before merging because other development sessions can add migrations. Existing open PRs #92/#93 overlap Linux/public advisory collection; their older feed changes need explicit reconciliation with `scripts/update.py`, not a blind merge.
+| Finding | Implemented improvement | Integrity safeguard |
+|---|---|---|
+| Three sequential reads of a customer's product/subscription state | One D1 read batch and consistent snapshot | Account/origin predicates retained; the separate mutation batch remains atomic. |
+| Every new subscription downloads the entire KEV catalogue from D1 | Public-only, 30-second per-binding cache with concurrent miss coalescing | No private matches, aliases, versions or account data cached; failures evict; accepted KEV refresh invalidates; other isolates expire within 30 seconds. |
+| A verified KEV match invalidated source status even when queue insertion changed nothing | Invalidate status only when the queue actually changes | Relevant missing work is still queued; existing verified records do not trigger redundant status aggregation. |
+| Every save reprocessed valid private registry bindings | Select only missing/stale bindings using input snapshots and registry revision | Changed name/vendor/CPE invalidates the old binding; unresolved records remain visible. |
+| Shared-scope lease cleanup scanned the complete private product table | Restrict cleanup to changed products, donor products and newly promoted indexed scope memberships | Existing leases for unrelated accounts are untouched; donor/scope commit checks remain. |
+| State index covered every disclosure although the global lookup only needs rejected records | Partial `cvie_disclosure_state` index for `state='REJECTED'` | Rejection query plan still uses the index; primary-key CVE joins and page indexes remain. |
+| New evidence associations were inserted and immediately updated to set their page key | Calculate the initial key in the source insert; skip irrelevant CNA trigger work and unchanged state/date updates | Rejection, unaffected assertions, KEV add/remove and publication-date correction tests remain green. |
+| A previously selected hydration job could be claimed after another worker advanced its cursor | Compare cursor, due time and completion state during lease acquisition | Existing lease-token fencing remains; stale claims cannot rewind checkpoints. |
 
-The branch preserves existing private product IDs, customer selections, subscriptions, installed versions, finding decisions, remediation history, notification preferences, and report API shapes. It introduces no automatic finding reopening/closing and no new notification sends. This preservation is verified in local regression fixtures; a remote staging snapshot comparison is still required.
+The warm benchmark performs authentication, catalogue validation/revision handling, durable product registration, shared-scope reconciliation, progress/source reads, and the first stored evidence page through the actual Worker handlers. It reports D1 engine time, binding calls/batches and route-stage elapsed time separately. Warm cases do not run index hydration or call providers. Separate cold-scope and long-tail hydration measurements cover those operations.
+
+No new database, Queue, KV namespace or other infrastructure was introduced. No existing customer decision or notification policy was changed.
 
 ## 3. Implemented behavior
 
@@ -93,158 +105,228 @@ Catalogue / inventory / lifecycle selection
 
 Existing authentication and ownership checks apply before private routes. Evidence authorization checks the account, product and active subscription scope. Sign-out clears private client state; stale account/history-window responses cannot be applied to a new session. Public registry and source cache keys contain no tenant-specific asset or version information.
 
-## 5. Actual baseline and performance measurements
+## 5. Updated measurements
 
-### 5.1 Production: read-only baseline, not an after-deployment result
+### 5.1 Method and the original latency discrepancy
 
-Evidence: [production-baseline.json](cvie-evidence/production-baseline.json), captured **2026-11-02 20:00:19 UTC** through the existing CI credentials. The diagnostic workflow ran only fixed read-only queries and reported zero writes for every statement.
+All follow-up performance values are **local measurements using Miniflare 4.20260730.0 and real emulator D1 metadata**, not remote D1 billing or production measurements. The Worker harness is bundled with esbuild 0.25.12. Its supported compatibility date is `2026-08-06`; production's configured date is `2026-10-28`, another reason to validate remotely before release.
 
-| Observation | Measured result |
-|---|---:|
-| Existing public PHP reconciliation lookup | 5 returned CVEs; 2 statements; **336,509 rows read**, **0 written**; 621.10 ms elapsed |
-| KEV records | 1,766 |
-| Original disclosure records | 7,838 |
-| Rejected disclosures | 4 |
-| Pending disclosure queue | 97 |
-| Queue breakdown | 96 priority-1 unattempted; 1 priority-2 retrying, maximum 9 attempts |
-| Shared NVD records | 201 |
-| Shared scan states | 8 ready, 1 scanning |
-| KEV and CVE Program source status | Both `ok` in stored status; no stored error flag at observation |
+`scripts/cvie-followup-profile.mjs` invokes the actual authenticated catalogue PUT, bounded progress GET and evidence GET in sequence within a local Worker benchmark request. It seeds valid synthetic sessions rather than bypassing the application's ownership checks. There are 20 single-customer samples, five waves of 10 customers and three waves of 50 customers. The fixture has 10,000 CVEs, 1,000 related records and 1,766 KEV entries, including ten related already-verified KEVs. Source scopes are fresh and indexed.
 
-The 97 pending records are the current baseline, not the earlier screenshot count of 2,276. Their reduction is **not attributed to this branch**, which has not been deployed. The retry cause, actual enqueue age of legacy items, sustained processing rate, and end-to-end source completeness were not established by these aggregate queries. A successful source status alone does not establish complete history.
+The benchmark omits the browser, three real browser-to-server network trips and login/email enrollment. It includes source-status reads and any background service work started by the route. Providers are intercepted locally, and the warm benchmark asserts **zero external requests**. Account fixture creation and initial fixture seeding are excluded from onboarding timing.
 
-The checked-in artifact retains exact attempt/success/publisher/checkpoint timestamps. Publisher age is not queue age. Daily billing analytics, table/index bytes, peak write contributors and production onboarding/browser p95 remain unavailable. This report does not attribute the prior 100,000-write incident to CVIE without operational evidence.
+The old harness executes application code in Node and bridges each statement into Miniflare, accumulating serialization/RPC overhead under concurrency. Its original 50-account p95 was 6,678.78 ms; the follow-up equivalent is 5,273.56 ms at 10,000 CVEs and 4,774.38 ms at 100,000. These are useful harness measurements, but cannot be treated as server or browser latency. The new Worker-based comparison is the relevant local server-path evidence.
 
-### 5.2 Equivalent local D1 workloads
+### 5.2 Authenticated save to first stored page
 
-These measurements use **Miniflare 4.20260730.0 D1 metadata**, not hand-counted SQL, ordinary SQLite estimates, remote staging metrics, or Cloudflare billing. Twenty equivalent page/identical-save samples were taken per dataset. Data is synthetic and public, with 10% relevant CVEs, 50 synthetic accounts and 5,000 minimal synthetic inventory rows. The latter are not a certification of complete inventory API pagination or package-heavy assets.
+| Concurrent customers | Samples | Reviewed p50 / p95 | Optimized p50 / p95 | Reviewed / optimized p95 D1 reads for the complete sequence |
+|---|---:|---:|---:|---:|
+| 1 | 20 | 30 / 38 ms | **21 / 25 ms** | 2,404 / **616** |
+| 10 | 50 | 169 / 215 ms | **132 / 148 ms** | 2,447 / **616** |
+| 50 | 150 | 702 / 984 ms | **232 / 263 ms** | 2,595 / **616** |
 
-The baseline uses the existing legacy reconciliation query and feature-disabled save path; the old KEV refresh implementation is loaded from `3b9dfce`. Helper imports use compatible current modules. These are operation benchmarks, not a byte-for-byte deployment of the entire old Worker. Durations include local Node/Miniflare RPC overhead and exclude browser/network rendering.
+Every new-account sequence writes 14 D1 rows in this fixture both before and after; optimization does not eliminate necessary private account/subscription records. A cold public cache miss costs more: the maximum optimized sequence reads 2,387 rows because it loads the 1,766-row KEV catalogue once. The 616-read figure is therefore not a universal cold-isolate guarantee. Concurrent requests share the cache load in one isolate; separate isolates may each load it.
 
-| Equivalent workload | Before | After | Assessment |
-|---|---:|---:|---|
-| 100-result page, 10,000 CVEs: p95 reads | 45,254 | **409** | 99.10% fewer reads; zero writes both paths. |
-| Same page: p95 duration | 102.44 ms | 71.42 ms | Local service duration only. |
-| 100-result page, 100,000 CVEs: p95 reads | 450,254 | **409** | 99.91% fewer reads; zero writes both paths. |
-| Same page: p95 duration | 246.88 ms | 71.71 ms | Fixed page cost remained stable at 10× evidence. |
-| Unchanged 1,766-record KEV snapshot: reads | 10,610 | 11 | No repeated catalogue scan in new path. |
-| Same snapshot: total writes | 5,300 | **2** | Two source-state writes; **zero KEV content writes**. |
-| Cold identity save, 10,000-CVE fixture: reads/writes | 35 / 14 | 37 / 17 | Identity binding adds cost; not a write reduction. |
-| Same single cold save: duration | 178.84 ms | 193.27 ms | One sample, not p95. |
-| Identical save, 10,000-CVE fixture: p95 reads/writes | 9 / 0 | 11 / 0 | No duplicate subscription or discovery scope. |
-| Same identical save: p95 duration | 59.85 ms | 90.20 ms | Local overhead increased; report explicitly. |
-| Synthetic 10,000-CVE ingestion: index-inclusive writes | 53,000 | 70,000 | **32.1% increase** for indexing/projection. |
-| Synthetic 100,000-CVE ingestion: index-inclusive writes | 530,000 | 700,000 | Same proportional write increase. |
+At 50 customers, optimized p95 route times are 125 ms for catalogue save, 78 ms for progress/source status, and 110 ms for evidence. Quantiles are not additive. The p95 sum of D1-reported statement execution time is only 4 ms, while the complete sequence is 263 ms; the remaining time includes binding transport, runtime scheduling, JavaScript and contention. It is not valid to attribute that difference entirely to D1 query execution.
 
-First KEV import also costs more when projected associations exist: 3,534 baseline total writes versus 5,536 in the 10,000-CVE new fixture and 7,068 in the 100,000-CVE new fixture. Membership changes maintain the serving index. Do not extrapolate unchanged-refresh savings to initial imports or changed source batches without measuring their mix.
+The complete sequence drops from up to 33 binding calls/batches to 27 at p95. Batching reduces round trips, not the number of SQL statements or required transactional writes. The full profile artifacts include per-stage and grouped query counts, read/write totals and elapsed time:
 
-The production PHP result and synthetic benchmark are different corpora. They must not be combined into a claimed production before/after percentage. No production after-measurement exists.
+- [Reviewed Worker profile](cvie-evidence/followup-worker-before.json)
+- [Optimized Worker profile](cvie-evidence/followup-worker-after.json)
 
-Artifacts: [10,000-CVE measurements](cvie-evidence/local-d1-10k.json), [100,000-CVE measurements](cvie-evidence/local-d1-100k.json). `evidence_read_target_met_local` refers only to the bounded evidence read/write target, not overall readiness.
+### 5.3 Evidence retrieval, repeated saves and KEV refresh
 
-### 5.3 Query plans and concurrency
+| Equivalent local workload | Legacy / previously reviewed | Optimized follow-up |
+|---|---:|---:|
+| 100-result page at 10,000 CVEs: p95 reads | Legacy 45,254; reviewed 409 | **409**, zero writes |
+| 100-result page at 100,000 CVEs: p95 reads | Legacy 450,254; reviewed 409 | **409**, zero writes |
+| Unchanged 1,766-entry KEV snapshot: reads | Legacy 10,610; reviewed 11 | **11** |
+| Same snapshot: total writes | Legacy 5,300; reviewed 2 | **2**, zero KEV content writes |
+| Repeated identical product save | Previously zero writes | Still **zero writes**, no additional subscription/scope |
 
-The new query plan seeks `cvie_identity_evidence_page` by identity/date/cursor and then performs primary-key lookups on shared NVD advisories, disclosures, KEV and pending work. The plan's `SCAN p` scans the bounded materialized page, not the complete CVE store. Detailed plans are included in both local artifacts. The old reconciliation path retains family/JSON reconciliation and scales from 45,254 to 450,254 reads in the fixed-page fixtures; it remains available for legacy consumers.
+The page index and primary-key source joins were retained. New plans continue to seek `cvie_identity_evidence_page` and join bounded source rows, without a complete CVE table scan or JSON-family reconciliation per page. `SCAN p` in the plan scans only the materialized bounded page.
 
-The concurrency fixture first saves one account, then runs 49 new account saves in parallel for the same identity. It ends with **one shared scope**, not 50 scans. Measured service orchestration p95 is **6,678.78 ms** at 10,000 CVEs and **6,707.62 ms** at 100,000 CVEs. Functional tests also exercise 50-account sharing, identical saves and stale lease fencing.
+Artifacts: [10,000-CVE follow-up](cvie-evidence/followup-d1-10k.json), [100,000-CVE follow-up](cvie-evidence/followup-d1-100k.json). Their page timings use the host harness and should not be substituted for the Worker latency table.
 
-Deduplication passes locally. The ≤1-second server save and ≤2-second user-visible targets do **not** pass this concurrent local harness. It is not a browser test or remote 50-session soak; emulator serialization can contribute, but that is not evidence that production meets the target. Profile statement round trips, batch sizes and contention in isolated staging before rollout. Do not mask this with full reconciliation or additional unapproved infrastructure.
+### 5.4 Exact ingestion write attribution
 
-## 6. Tests and acceptance gates
+For 10,000 incoming disclosures, 10,000 affected-family rows, and 1,000 mapped/shared NVD rows:
 
-Final local backend result: **351 tests in 34 files, zero failures**; [machine-readable results](cvie-evidence/backend-tests.json). Full Python discovery: **122 tests passed**. Focused public-feed suite: 78 tests passed. Read-only SQL guard test passed.
+| Source operation, including triggered/index writes | Legacy | Reviewed Task 2B | Optimized |
+|---|---:|---:|---:|
+| Insert disclosure rows | 20,000 | 30,000 | **20,000** |
+| Insert affected relationships and derived serving links | 30,000 | 36,000 | **34,000** |
+| Insert shared NVD rows/update source pointers | 3,000 | 4,000 | **4,000** |
+| **Total** | **53,000** | **70,000** | **58,000** |
 
-Browser/JSDOM smoke checks passed for legacy CVIE client behavior, lightweight polling, new fast onboarding, customer security (including upgrade/finding/report isolation and catalogue paths), product monitoring, and workspace. Existing backend suites cover account isolation, inventory, lifecycle, finding/remediation decisions, delivery/digests and notification behavior. These are automated regressions, not remote delivery or live provider certification.
+Of the original 17,000 additional writes, 10,000 came from indexing all disclosure states; 2,000 were avoidable follow-up sort-key updates. The remaining 5,000 maintain 1,000 serving associations and their source pointers. Essential primary, reverse-CVE and ordered-page indexes remain.
 
-Representative fixtures cover .NET Framework/Runtime/ASP.NET Core/SDK/package separation, WordPress Core versus plugins, PHP, Python, Windows Server, SQL Server, MySQL versus MariaDB, Ubuntu and Debian; typo suggestions, ambiguity, conflicting/missing vendors, missing versions, exact package identifiers and unsupported comparisons. Additional fixtures cover tenant authorization, 100-row pagination, older KEV retention/removal, rejection, unaffected assertions, provider outages, unchanged CNA payloads, dynamic identity hydration, resumable index pages, cache invalidation and stale claim fencing.
+At 100,000 disclosures with the same 10% mapping density, the corresponding totals are **530,000 → 700,000 → 580,000**. The optimized ingestion path is 17.1% cheaper in writes than the reviewed implementation, with 9.4% overhead versus legacy storage in this fixture. In the main profile, ingestion reads also fall from **69,090 to 64,090**.
 
-| Required target | Result | Evidence or remaining gate |
+Other schema costs are separate: `cvie_scope_cpe` adds index maintenance when creating/changing shared scopes; registry reverse indexes apply when identities/aliases/families change; private binding rows are maintained only for changed bindings. Queue observation rows add enqueue/first-attempt/deletion accounting for actual queue work. Hydration jobs have their own unique/due indexes and lease/checkpoint writes. Logging itself adds no D1 writes.
+
+### 5.5 Density, total consumption and flags disabled
+
+An additional schema experiment varies the percentage of incoming CVEs that map to the registry. Each case has 10,000 disclosures and 10,000 affected relationships; corresponding NVD rows are inserted for the mapped subset. It verifies all 30,000 disclosure/relationship rows across the three cases are retained in each database.
+
+| Mapped CVEs | Legacy reads / writes | Reviewed reads / writes | Optimized reads / writes | Optimized write overhead vs legacy |
+|---|---:|---:|---:|---:|
+| 0% | 20,002 / 50,000 | 40,003 / 60,000 | **30,003 / 50,000** | 0% |
+| 10% | 21,002 / 53,000 | 60,002 / 70,000 | **55,002 / 58,000** | 9.4% |
+| 100% | 30,001 / 80,000 | 240,001 / 160,000 | **280,001 / 130,000** | 62.5% |
+
+The dense case exposes a real tradeoff: computing correct initial page keys reduces writes but increases ingestion reads versus the reviewed implementation when all CVEs map. The optimized dense case reads 16.7% more than the reviewed case, while writing 18.75% less. Lookup-heavy workloads benefit, but this is not a claim that every ingestion workload becomes cheaper in every dimension. Multiple identities per CVE can add more associations. Actual staging density and ingestion-to-lookup ratio must be measured before billing conclusions.
+
+For the **measured combined profile subset**—10,000-record ingestion plus 220 authenticated new-account save/first-page sequences—the reviewed implementation totals **617,869 reads / 73,080 writes**, versus **201,351 reads / 61,080 writes** optimized. This excludes account/session fixture setup, initial KEV fixture import, additional exports and unrelated application activity. It is an observed defined workload, not a monthly cost projection.
+
+**Flags disabled:** SQL indexes and triggers cannot read Worker environment flags. The optimized schema experiment produces exactly the same ingestion read/write totals with serving conceptually disabled, and the runtime rollback regression confirms source inserts still maintain the projection while both serving flags are false. Disabling flags stops new serving/registry job behavior; it does not remove database index or trigger overhead. Initial backfill and source changes continue to have real costs.
+
+Artifact and reproducible experiment: [density/flag behavior](cvie-evidence/followup-ingestion-density.json), `scripts/cvie-ingestion-cost.mjs`. No essential retrieval index was removed to obtain these results.
+
+### 5.6 Cold shared scope and dynamic identity hydration
+
+A separate local Worker service test creates the first shared scope from 50 simultaneous customer subscriptions. Both implementations produce **one scope**, with 605 total writes. Reviewed reads are 3,396 versus **1,770** optimized; statement counts are 739 versus 654. This single-wave p95 is 90 ms reviewed and 248 ms optimized: it remains under target but is **not** evidence of a latency improvement for that particular cold sample. Scheduling variation and the read-batch transaction warrant remote confirmation.
+
+For a newly verified long-tail CPE with 105 stored original disclosures, the 1-, 10- and 50-request hydration cases each create **one public job**, index the first **100 records**, preserve the cursor for the remaining records and make **zero provider calls**. Optimized p95 service times are 9, 7 and 7 ms; each cohort writes 620 rows in total, not 620 per customer. Initial bounded hydration still uses the fallback sort-key trigger and has greater per-association cost than steady-state source inserts. It is one shared resumable operation, not a full rescan or per-customer history copy.
+
+Artifacts: [reviewed cold operations](cvie-evidence/followup-hydration-before.json), [optimized cold operations](cvie-evidence/followup-hydration-after.json). These are single-cohort service samples, not authentication/browser latency distributions. The concurrency regression additionally verifies stale claims cannot rewind completed or advanced hydration checkpoints.
+
+### 5.7 Earlier production baseline remains historical
+
+The original read-only diagnostic at **3:00:19 p.m. Toronto time on 2 November 2026** measured 336,509 rows read and zero written for five PHP CVEs through the existing reconciliation path. It observed 1,766 KEVs, 7,838 disclosures, four rejected records, 97 queued disclosures (96 unattempted and one retrying with nine attempts), eight ready shared scopes and one scanning scope.
+
+This is the [earlier baseline artifact](cvie-evidence/production-baseline.json), not an after-deployment result. No backlog reduction is attributed to this undeployed branch. Actual historical queue ages, sustained processing rate, daily billing/write contributors and production browser latency were not established. Existing PR checks may repeat their fixed read-only diagnostic; they do not apply migrations or run scans. No new production benchmark was initiated for this follow-up.
+
+## 6. Coverage, correctness and regression results
+
+**361 backend tests across 35 files passed locally.** Full Python discovery passed **122 tests**. Twelve targeted JS/DOM/release checks passed, covering CVIE client/polling/fast onboarding, catalogue scope, customer security, security scores, finding details, software upgrades, product monitoring, workspace, Worker release behavior and the read-only SQL guard. The public site build and general interaction smoke check were also repeated after the final cache refinement.
+
+The backend suite retains inventory, tenant isolation, finding status, remediation workflow/history, assignment, lifecycle, digest and email regression coverage. New follow-up tests verify:
+
+- Fifty callers share one public KEV cache read; expiration, separate DB bindings, refresh invalidation and failure recovery work.
+- A queue check that changes nothing does not invalidate public source status.
+- Product/subscription mutation batches roll back together if a later statement fails.
+- Valid private identity bindings are reused; unrelated account leases are preserved.
+- An initial projected association has its correct sort key without an extra update.
+- Rejection and reinstatement still change visibility correctly through the selective index.
+- Serving-flag rollback retains private subscriptions, catalogue state and source checkpoints; subsequent source updates maintain the index; rejected CVEs stay excluded after re-enabling.
+- Actual authenticated save and evidence handlers return stored CVEs while an external discovery promise is still unresolved.
+- Vendor-conflicting, ambiguous, misspelled and private unknown names create no speculative shared history scope.
+- A stale hydration selection cannot reclaim an advanced/completed checkpoint.
+
+The existing representative-product tests cover .NET Framework, Runtime, ASP.NET Core, SDK/package separation, WordPress Core versus plugins, PHP, Python, Windows Server, SQL Server, MySQL, MariaDB, Ubuntu and Debian. Suggestions require confirmation. Missing vendors/components can remain unresolved; missing versions do not prevent candidate evidence but do prevent a confirmed installed-version verdict. All fast candidates retain `requires_version_review` and `indexed_partial`; lack of evidence never becomes a safe status.
+
+No customer finding is automatically reopened or closed; no remediation owner, note, decision or notification preference is rewritten. Dedicated reports retain their existing compatible path. Partial pages still cannot overwrite a complete customer security score. These assertions have local regression evidence; live remote account/report/email delivery behavior has not been certified.
+
+Artifacts: [backend results](cvie-evidence/followup-backend-tests.json), [targeted frontend/release checks](cvie-evidence/followup-smoke-tests.json). The current PR checks must also pass before any merge consideration.
+
+## 7. Migration review and exact staging requirements
+
+### 7.1 Migration status and impact
+
+`0028_cvie_source_efficiency.sql` and `0029_cvie_identity_registry.sql` are **unreleased migrations in this draft PR**. No remote application of either was performed in this work. Their definitions were refined in place: the state index is selective, and the source projection triggers avoid redundant initial updates. Existing table/customer layouts are not replaced.
+
+If an operator has already applied the earlier versions in another environment, **do not rerun or mark these edited files as newly applied**. Compare `sqlite_schema` and the migration ledger first; that environment needs a reviewed forward schema patch for the changed index/triggers. No such remote patch was executed. A fresh isolated staging database or pre-0028 sanitized staging schema is the intended validation starting point.
+
+| Schema object | Purpose | Active when serving flags are off? |
 |---|---|---|
-| ≤1,000 D1 reads p95 per 100-result page | **Pass locally** | 409 at both dataset sizes, zero writes; remote staging confirmation missing. |
-| Zero KEV content writes for unchanged snapshot | **Pass locally** | 1,766 unchanged entries; two total source-state writes remain. |
-| Suggestion/status/evidence GETs cause no D1 writes | **Pass in regression fixtures** | GET repair removed; directory, status and evidence assertions. Whole production request telemetry still needed. |
-| Identical saves create no duplicate subscriptions/scans | **Pass locally** | Zero-write repeated saves and one shared scope across accounts. |
-| First stored results do not wait for provider/full download | **Pass functionally** | Fast-path smoke test and provider-outage fixtures. End-to-end ≤2-second p95 unmeasured. |
-| Save ≤1 second server / ≤2 seconds click-to-saved | **Not met in concurrency harness** | Approximately 6.7-second local p95; remote profiling required. |
-| Suggestions ≤300 ms API / ≤500 ms UI | **Unverified latency gate** | Functional and zero-write checks pass; no agreed-network p95. |
-| Unresolved products remain visible and not “safe” | **Pass in fixtures** | Identity/package/coverage guidance, no fuzzy auto-bind. |
-| ≥99% identity precision; matching precision/recall targets | **Unverified** | Requested examples pass; no independently labeled 500-example held-out corpus. |
-| Full configuration/backport/version truth evaluation | **Deferred, explicit unknown** | Raw evidence preserved; Phase 5 semantic engines not implemented. |
-| Actual sustained disclosure rate / queue age | **Incomplete baseline** | Current count/status known; legacy age unknown, throughput requires observations. |
-| Freshness/backlog/history completion targets | **Unverified / later phase** | Existing scheduler retained; five-record disclosure batch limit remains, not the design's ≥30/minute target. |
-| Index write amplification acceptable | **Measured, not approved** | 32.1% fixture increase; source mix/storage headroom need staging measurement. |
-| 50 sessions / 5,000 assets | **Not certified** | Local dedupe and synthetic rows only; full staged soak pending. Existing 3,000-row per-account inventory cap remains. |
-| Existing decisions/history/email consent preserved | **Pass local regression; remote comparison pending** | Additive schema, stable private IDs, no new sends. |
-| Staging migrations and remote rollback | **Blocked** | No staging Worker/D1 target or credentials supplied. |
-| Production release | **Blocked** | Do not deploy automatically. |
+| `cvie_source_snapshots` | Accepted source content hashes | Yes, source ingestion uses it. |
+| Partial `cvie_disclosure_state` | Indexed global rejection listing | Yes; only rejected entries are indexed. Building it still reads existing disclosures once. |
+| `cvie_queue_observations` and insert/attempt triggers | New queue enqueue/first-attempt timestamps | Yes, when queue work changes. Legacy ages remain unknown. |
+| Registry/alias/identifier/member/family tables and reverse indexes | Shared public identities | Stored data/indexes remain; ordinary source ingestion does not continually rewrite registry rows. |
+| `cvie_product_identities` | Private snapshot binding | New binding work is gated; existing rows remain. |
+| Evidence primary, page and reverse-CVE indexes | Bounded lookup and correction routing | Yes, source changes maintain them. |
+| `cvie_fast_nvd_*`, `cvie_fast_cna_*`, `cvie_fast_sort_*` triggers | Atomic source/association/page-key consistency | **Yes.** Flags do not disable SQL triggers. |
+| `cvie_index_state` | Explicit bounded migration backfill checkpoints | Retained; helper is never a GET side effect. |
+| `cvie_identity_index_jobs` and due index | Shared bounded identity hydration | New processing is registry-gated; jobs/checkpoints remain. |
+| `cvie_scope_cpe` | Indexed scope lookup for hydration | Yes, shared-scope writes maintain the index. |
 
-Final implementation CI: [CVIE verification](https://github.com/Prat007ai/cveharbor/actions/runs/41517556166) passed for commit `d3ca2488456df02d00304e1acb5ee72892cf070b`, including all 351 backend tests, 78 focused feed tests, SQL guard and client smoke tests. The production diagnostic job also passed with zero writes. [Repository checks](https://github.com/Prat007ai/cveharbor/actions/runs/41517556058) and [product monitoring](https://github.com/Prat007ai/cveharbor/actions/runs/41517555989) are the companion runs for that commit; verify their final status before merging. The preceding implementation commit passed all three workflows. Production collection/deployment jobs are skipped for these pull-request runs.
+Trigger changes remain within the source transaction; they cannot commit partial evidence separately from the source row. The existing batch rollback tests and new failed-subscription-batch test pass. Existing private IDs and accepted source checkpoints are retained.
 
-## 7. Migrations, flags and staging runbook
+### 7.2 What the repository can reuse
 
-### Additive migrations
+The repository has **one account Worker production configuration** in `account-backend/wrangler.toml`, with the `DB` binding pointing to `cveharbor-accounts`. There is no `[env.staging]` section, isolated staging D1 binding, staging account deployment workflow or supplied staging secret set. `site-gate/wrangler.json` belongs to another purpose and is not an account/CVIE staging substitute.
 
-1. `account-backend/migrations/0028_cvie_source_efficiency.sql`: source content hashes, disclosure state index and queue observation timestamps/triggers. No deletion or replacement of accepted intelligence.
-2. `account-backend/migrations/0029_cvie_identity_registry.sql`: public registry/aliases/identifiers/members/families; private binding snapshots; compact identity evidence; indexed page lookup; source-change projection triggers; bounded backfill checkpoints; per-identity leased hydration jobs and indexes.
+Reusable pieces are the Worker entrypoint, existing schema SQL and migration chain, backend/DOM tests, local Miniflare profiling scripts, fixture builders and release checks. Existing deploy/read-only verification workflows target production; do not repurpose or dispatch them as staging deployments. In particular, merging backend code into main can trigger the production deployment workflow, so this PR remains a draft.
 
-Apply in order after existing migrations through `0027`. Neither migration updates customer decisions or automatically sends notifications. Existing stored source rows require a bounded association backfill; creating tables alone is not evidence of complete index coverage.
+The current managed environment has no Cloudflare runtime credentials or outbound identity configured, and its network policy does not currently permit the Cloudflare API/staging endpoints. Existing production CI secrets are not a staging credential set and must not be used to select the production DB as a substitute.
 
-`backfillEvidenceIndex(env, 'nvd'|'cna', limit)` accepts pages of at most 100 source records and persists checkpoints. Run it only against an explicitly selected staging binding first. It reads existing stored intelligence and does not fetch upstream providers. The helper is not an unauthenticated HTTP route and is never invoked by GETs. The global migration backfill should have one operator; per-identity runtime jobs use a lease token to fence stale commits.
+### 7.3 Information and approval needed from the owner
 
-Migration and backfill fixture tests pass, including resumed work and preserved source rows. No remote migration or remote rollback has run.
-
-### Feature flags
-
-| Flag | Purpose and dependency |
+| Requirement | Exact information/setup needed |
 |---|---|
-| `CVIE_METRICS_ENABLED=true` | Redacted operation metrics; default off. |
-| `CVIE_REGISTRY_ENABLED=true` | Registry-first binding and bounded local index work; requires `0028`/`0029`. |
-| `CVIE_FAST_EVIDENCE_ENABLED=true` | New immediate evidence serving/client contract; requires registry flag and hydrated associations. |
+| Isolated Worker | Approved staging Worker name, account, HTTPS URL and intended runtime compatibility date. It must be a different deployment from the production account Worker. |
+| Isolated D1 | Approved staging database name and ID, bound as `DB`, with no production/customer data. Creating it requires separate approval; none was created here. |
+| Staging configuration | An explicitly reviewed separate Wrangler configuration or environment block with those exact bindings. Never rely on the repository's default production binding. No configuration file/settings were changed for this follow-up. |
+| Deployment credentials | Staging-scoped CI/environment credentials capable of Worker deployment and D1 migration/fixture writes, with secret storage and protected approvals. Confirm available scope limitations in Cloudflare; do not assume tokens are database-granular. No secret values should be put in this report or source control. |
+| Network access | Approved access to `api.cloudflare.com` and the specific staging HTTPS endpoint. Provider endpoints are needed only for the separately controlled live-source portion; fixture tests need no live provider scans. |
+| Schema and fixtures | Base schema and existing auxiliary schemas/migrations through `0027`, then the revised `0028` and `0029`. Use synthetic accounts, sessions, assets, CVEs, findings, decisions and preferences. Existing schema files include inventory, TOTP, finding status/tickets, remediation, lifecycle and alert schemas; this is more than the minimal performance harness schema. |
+| Auth isolation | Independent staging MFA encryption secret if real enrollment is exercised, or valid synthetic staging sessions for API tests. Never copy production sessions, credentials or MFA secrets. |
+| Email/cron isolation | Explicitly disable all alert, lifecycle, product-monitoring and assignment delivery paths; omit production mail credentials. Begin with no automatic Cron Triggers. Approved fixture-driven invocation comes first. Retain remediation audit-compatible code/flags required by migration `0026`. |
+| Browser routing | Approve staging frontend and API origins. `accounts.js`, `cvie.js`, `inventory.js` and `customer-security.js` contain production API URLs; `account-backend/src/index.js` and the CVIE serializer allow the production frontend origin. A real browser staging run needs reviewed endpoint/CORS/cookie routing for both sides. No origin wiring was changed without approval. A copied production frontend must not accidentally send staging tests to production. |
+| Acceptance environment | Agreed region/client network, fixture sizes/mapping density, provider failure simulations, and a measurement window for p50/p95/p99. No production load test is needed or authorized. |
 
-No `wrangler.toml` or production flag changes are included. Existing Worker/D1 architecture, shared scans, Cron scheduling and source credentials are retained. No new database, Queue, KV namespace or other infrastructure was created. Phase 1 source correctness changes are backend behavior changes, not all guarded by the new serving flags; review them separately in deployment/rollback.
+An owner can supply an existing isolated environment or approve creating these resources/configuration separately. Until then, remote staging results must remain **not run**.
 
-### Required staging sequence before production approval
+### 7.4 Staging validation sequence after the environment is approved
 
-1. Identify an existing isolated staging Worker and D1, confirm bindings explicitly, and use synthetic/sanitized data. No staging target is currently available. Do not use the production binding as a substitute.
-2. Capture schema versions, row counts and hashes of private subscriptions/decisions/preferences before migration. Record actual D1 storage/index bytes and source table sizes.
-3. Apply `0028`, then `0029`. Deploy branch code to staging only. Enable telemetry first, then registry, then bounded serving after stored associations are hydrated. Keep external providers stubbed initially.
-4. Run bounded stored-data backfill; stop/resume it and compare canonical CVE IDs, provenance, rejection and negative assertions with the legacy path. Classify intentional differences. Do not run a provider historical rescan as an indexing shortcut.
-5. Verify exact/ambiguous/unresolved onboarding through catalogue, inventory and lifecycle UI; missing versions remain unknown. Test first page while providers time out and while later pages exist.
-6. Replay unchanged/changed KEV and CNA fixtures and inspect actual remote D1 metadata. Include removals, same-date corrections, rejected/reinstated CVEs and independent withdrawn advisories.
-7. Run the approved isolated 50-session workload and both 5,000-asset account layouts. Measure p50/p95/p99 latency, failure rate, rows read/written, projection ingestion overhead and source lag. The existing 3,000 per-account cap must be explicitly resolved in its approved later-phase scope before claiming the single-account capacity target.
-8. Verify subscription/finding/remediation/report/notification parity from before/after snapshots. Test account isolation, sign-out, frozen report behavior and duplicate-notification prevention without sending real customer emails.
-9. Exercise the rollback below, confirm existing records remain readable, and attach remote results. Production rollout requires a separate review and approval after blockers are resolved.
+1. Independently verify the selected Worker, D1 ID/name, migration ledger and API origin are staging. Fail closed if a target matches production or is ambiguous. Inspect binding names without logging secrets.
+2. Load the complete synthetic schema through `0027`; record private-table counts/checksums, source checkpoints and migration state. Keep a staging-only export for recovery. Do not copy production customer data.
+3. Apply revised `0028` then `0029` only if not previously applied. Capture remote D1 metadata for index creation and seed writes. Deploy the compatible branch code to staging, with all delivery and automatic Cron paths disabled.
+4. Enable CVIE telemetry, then registry, then bounded serving. Hydrate existing stored intelligence using `backfillEvidenceIndex` in pages of at most 100, testing interruption/resumption. Do not use an external historical rescan as a backfill shortcut.
+5. Repeat the 1/10/50 authenticated save-to-render scenarios with known indexed products, cold public caches, cold shared scopes and dynamic stored-data hydration. Exercise expired sessions and cross-account requests. Include real browser timing; the local 263 ms value is not the browser gate.
+6. Measure remote rows read/written and latency at 10,000 and 100,000 CVEs with representative mapping density. Include unchanged/changed KEV, corrections/removals, rejected/reinstated disclosures, duplicate saves and source outages. Compare total ingestion-plus-serving consumption, not only one query.
+7. Compare inventory, subscription, finding-status, remediation/history, catalogue, lifecycle and notification-preference snapshots before/after. Verify report compatibility and zero real email sends.
+8. Execute the rollback procedure below, then re-enable and verify retained checkpoints and source corrections. Attach remote results to this report before requesting production approval.
 
-## 8. Rollback and recovery
+## 8. Tested local rollback and staging procedure
 
-- Turn off `CVIE_FAST_EVIDENCE_ENABLED` to restore the compatible legacy serving contract. The existing API/storage remains available; legacy query costs return and should be monitored.
-- Turn off `CVIE_REGISTRY_ENABLED` to stop registry-first onboarding and new local index job processing. Preserve identity tables, cursors, source evidence and private bindings for investigation. New identities without a legacy mapping must stay visible as unresolved, not disappear.
-- Disable metrics independently if their overhead is material. Preserve redaction and captured aggregate evidence.
-- Do **not** drop the additive tables/indexes or restore a whole database snapshot over newer customer changes as an ordinary rollback. The source projection triggers remain until a separately reviewed migration changes them; disabling serving flags does not remove their write overhead.
-- Do **not** roll back rejection tombstones, authoritative KEV removals or independent withdrawal handling to resurrect invalid records. If a Phase 1 refresh regresses, pause that refresh through an approved operational change and forward-fix it. Blind deployment of old ingestion code can reintroduce full KEV rewrites and is not the recommended rollback.
-- Index hydration resumes from durable cursors; runtime stale owners cannot commit after a newer lease token. Existing provider recovery limits are unchanged. No claim is made that all Phase 3 crash/outage recovery cases are solved.
+The executable local rollback regression is `feature rollback preserves private data/checkpoints, maintains projection on new source data and never revives rejected CVEs` in `account-backend/tests/cvie-followup.test.mjs`. It snapshots private CVIE products/subscriptions/scope bindings, catalogue state and source checkpoints; disables both serving flags; inserts new valid and rejected source records; exercises the legacy read route; confirms the snapshots are unchanged; and re-enables fast evidence, which returns valid evidence while excluding the rejected CVE. It passes. Existing wider regression suites cover finding/remediation/history behavior independently.
 
-Local feature-disabled compatibility, migration/backfill resume and private-state regression tests pass. Remote staging rollback and restored latency have **not** been validated.
+**This is a locally tested procedure prepared for staging, not a claim of remote staging rollback.** Once isolated staging is available:
 
-## 9. Remaining limitations and dependencies
+1. Stop staged test admission and record aggregate operation metrics, private-data checksums, pending job cursors/leases, source checkpoints and migration versions. Wait for bounded in-flight requests to finish rather than deleting their state.
+2. Disable `CVIE_FAST_EVIDENCE_ENABLED`; use the compatible legacy API/read path. Expect legacy reconciliation costs to return. This does not pause accepted source corrections.
+3. Disable `CVIE_REGISTRY_ENABLED` to stop registry-first onboarding and new local hydration job execution. Retain public identities, private bindings, source records and hydration/backfill cursors. New identities lacking a legacy mapping remain unresolved, never silently safe.
+4. Disable `CVIE_METRICS_ENABLED` independently only if needed for overhead investigation. No schema change is required for these flags.
+5. Verify private subscriptions, findings/decisions, remediation history, report behavior and notification preferences against the staging snapshots. Verify rejection tombstones and authoritative KEV removals remain effective.
+6. Insert controlled staging source corrections while flags are off and confirm projection triggers still maintain correct sort/membership. This overhead remains and is intentional for consistency on re-enable.
+7. Re-enable compatible registry/serving flags, resume bounded existing cursors, and confirm no duplicate work, missing corrections, changed private decisions or notification sends.
 
-**Immediate release blockers:** no remote staging environment; concurrent local save latency above target; no remote index-inclusive cost/storage validation; no held-out identity accuracy corpus; no full account-layout capacity and decision/report parity exercise. These are not waived by green unit tests.
+Do not drop tables, delete checkpoints, reset source watermarks to now, or restore a whole database snapshot over newer customer activity. Do not roll back to an ingestion writer that resurrects rejected CVEs or restores complete KEV replacement. A serving-flag rollback does not require an old binary. If source ingestion itself regresses, use a reviewed pause/forward fix while preserving accepted evidence.
 
-**Phase 3:** full incremental NVD modification synchronization, weighted/fair source scheduling, durable provider gap recovery, disclosure quarantine/backlog throughput and comprehensive failure boundaries remain deferred. NVD historical generations can still rewrite returned records. The new local index job does not replace the existing provider scheduler.
+**Overhead flags cannot disable:** maintained SQL indexes, source projection triggers, queue observation triggers and source content-hash state. Stopping those requires an explicitly reviewed schema/ingestion change with a catch-up plan before re-enabling serving; no such destructive or remote rollback was performed. An old writer that deletes/rebuilds affected relationships can also reintroduce additional projection churn and is not the recommended rollback target.
 
-**Phase 4:** full shared canonical serving/materialization, revision-only client refresh, complete legacy report/query conversion and broad cross-product projections remain deferred. This branch implements only the minimal identity page index. Legacy reports and other full reconciliation consumers can still be expensive. The public advisory archive cap is unchanged.
+## 9. Acceptance status and scope limits
 
-**Phase 5:** configuration truth evaluation, ecosystem-specific version comparators, Debian/Ubuntu vendor backports, Microsoft build exceptions and complete inventory/package pagination remain deferred. Current candidate results preserve uncertainty; they do not certify installed-version vulnerability or safety. The per-account 3,000 inventory cap prevents claiming 5,000 assets in one MSP account.
+| Gate | Current conclusion |
+|---|---|
+| Resolved product save + first stored evidence under two seconds | **Pass for the measured local Worker API sequence** at 1/10/50 customers. Real browser/network and remote D1 gate still unverified. |
+| ≤1,000 reads p95 per 100-result evidence page | **Pass locally: 409** at both 10,000 and 100,000 CVEs. Remote confirmation required. |
+| No unnecessary KEV rewrites | **Pass locally:** zero catalogue writes for unchanged content; two source-state writes remain. |
+| Lower total D1 consumption | **Pass in the defined mixed fixture**, with density-dependent ingestion tradeoffs disclosed. No production billing claim. |
+| Shared discovery/index work | **Pass locally:** one cold shared scope and one hydration job per identity; stale claim fencing tested. |
+| Exact/ambiguous/unresolved identity and coverage guidance | **Pass representative fixtures.** No fuzzy auto-bind or missing-data “safe” outcome. |
+| Product relevance versus installed applicability | **Preserved:** candidate evidence stays `requires_version_review`; full semantic engines remain outside this follow-up. |
+| Data, decisions, reports and remediation compatibility | **Local regressions pass.** Remote synthetic account parity/rollback still required. |
+| Staging resources, origin routing, migrations and rollback | **Not run remotely; requirements documented.** No resources/configuration created. |
+| Production rollout | **Blocked pending staging validation and separate approval.** PR remains draft. |
 
-**Phase 6:** incremental tenant assessments, report snapshots/manifests, complete exports and revision-based notification policy remain deferred. Existing customer decisions remain authoritative. Partial bounded pages do not update complete security scores.
+No Task 3 work was started. Full incremental NVD ingestion/backlog recovery (Phase 3), comprehensive shared serving/report materialization (Phase 4), ecosystem/version/backport evaluation and full inventory pagination (Phase 5), incremental tenant assessments/report snapshots (Phase 6), and broader scale/production observation (Phase 7) remain deferred. The public archive cap, legacy report query costs and existing 3,000-row per-account inventory limit remain. The local minimal 5,000-row fixture does not certify a complete 5,000-asset MSP account.
 
-**Phase 7:** remote 50-session/5,000-asset soak, failure recovery matrix, storage growth, migration rollback and approved production observation remain deferred until staging is available and release blockers are resolved.
+The independent 500-example identity corpus, broad precision/recall targets, sustained provider throughput/freshness and long outage recovery remain unverified; this focused follow-up does not claim them. No Queues or additional databases were introduced to hide a local performance issue.
 
-Queues, archives or separate D1 databases are conditional later proposals requiring separate approval. No such infrastructure was introduced. Daily D1 savings remain workload-dependent; local index-inclusive measurements cannot establish monthly billing or attribute the earlier write-limit incident.
+## 10. Reproduction and exact changed files
 
-## 10. Exact changed files
+The local profiling scripts read no Cloudflare credentials and never call the Cloudflare management API. They instantiate disposable Miniflare databases; outbound provider calls are intercepted. Install pinned test tools outside the repository, then provide `CVIE_MINIFLARE_MODULE` and `CVIE_ESBUILD_MODULE` paths. No runtime dependency was added to the application.
 
-The following files comprise this branch relative to integrated main. Paths are repository-relative; generated `public/`, caches and local dependencies are excluded.
+- `scripts/cvie-followup-profile.mjs`: complete local authenticated API sequence at 1/10/50 customers. Set `CVIE_PROFILE_ROOT` to an archived `a2e4597` tree for the reviewed comparison, or the current worktree for optimized behavior.
+- `scripts/cvie-hydration-profile.mjs`: cold 50-customer scope creation and 1/10/50 public identity hydration.
+- `scripts/cvie-ingestion-cost.mjs`: legacy/reviewed/optimized schema comparison at 0/10/100% mapped density. Retains the pinned reviewed migration definitions via `git show a2e4597`.
+- `scripts/cvie-local-benchmark.mjs`: legacy versus indexed page/KEV tests at 10,000 CVEs; set `CVIE_BENCHMARK_CVES=100000` for the larger fixture.
+- `npm test --prefix account-backend`, `python -m unittest discover -s tests`, and the checked-in smoke scripts cover regression behavior. No remote load command is supplied or run implicitly.
+
+The following paths comprise the PR relative to integrated main `b080025`. Generated public build output, local dependencies and caches are excluded.
 
 - [`.github/workflows/cvie-phase012.yml`](../.github/workflows/cvie-phase012.yml)
 - [`account-backend/data/cvie-identities.json`](../account-backend/data/cvie-identities.json)
@@ -264,16 +346,31 @@ The following files comprise this branch relative to integrated main. Paths are 
 - [`account-backend/tests/cvie-core-phase012.test.mjs`](../account-backend/tests/cvie-core-phase012.test.mjs)
 - [`account-backend/tests/cvie-coverage.test.mjs`](../account-backend/tests/cvie-coverage.test.mjs)
 - [`account-backend/tests/cvie-dotnet.test.mjs`](../account-backend/tests/cvie-dotnet.test.mjs)
+- [`account-backend/tests/cvie-followup.test.mjs`](../account-backend/tests/cvie-followup.test.mjs)
 - [`account-backend/tests/cvie-hyperv.test.mjs`](../account-backend/tests/cvie-hyperv.test.mjs)
+- [`account-backend/tests/helpers/d1.mjs`](../account-backend/tests/helpers/d1.mjs)
 - [`app.js`](../app.js)
 - [`customer-security.js`](../customer-security.js)
 - [`cvie.css`](../cvie.css)
 - [`cvie.js`](../cvie.js)
 - [`docs/cvie-core-phase012.md`](../docs/cvie-core-phase012.md)
 - [`docs/cvie-evidence/backend-tests.json`](../docs/cvie-evidence/backend-tests.json)
+- [`docs/cvie-evidence/followup-backend-tests.json`](../docs/cvie-evidence/followup-backend-tests.json)
+- [`docs/cvie-evidence/followup-d1-100k.json`](../docs/cvie-evidence/followup-d1-100k.json)
+- [`docs/cvie-evidence/followup-d1-10k.json`](../docs/cvie-evidence/followup-d1-10k.json)
+- [`docs/cvie-evidence/followup-hydration-after.json`](../docs/cvie-evidence/followup-hydration-after.json)
+- [`docs/cvie-evidence/followup-hydration-before.json`](../docs/cvie-evidence/followup-hydration-before.json)
+- [`docs/cvie-evidence/followup-ingestion-density.json`](../docs/cvie-evidence/followup-ingestion-density.json)
+- [`docs/cvie-evidence/followup-smoke-tests.json`](../docs/cvie-evidence/followup-smoke-tests.json)
+- [`docs/cvie-evidence/followup-validation.json`](../docs/cvie-evidence/followup-validation.json)
+- [`docs/cvie-evidence/followup-worker-after.json`](../docs/cvie-evidence/followup-worker-after.json)
+- [`docs/cvie-evidence/followup-worker-before.json`](../docs/cvie-evidence/followup-worker-before.json)
 - [`docs/cvie-evidence/local-d1-100k.json`](../docs/cvie-evidence/local-d1-100k.json)
 - [`docs/cvie-evidence/local-d1-10k.json`](../docs/cvie-evidence/local-d1-10k.json)
 - [`docs/cvie-evidence/production-baseline.json`](../docs/cvie-evidence/production-baseline.json)
+- [`scripts/cvie-followup-profile.mjs`](../scripts/cvie-followup-profile.mjs)
+- [`scripts/cvie-hydration-profile.mjs`](../scripts/cvie-hydration-profile.mjs)
+- [`scripts/cvie-ingestion-cost.mjs`](../scripts/cvie-ingestion-cost.mjs)
 - [`scripts/cvie-local-benchmark.mjs`](../scripts/cvie-local-benchmark.mjs)
 - [`scripts/cvie-readonly-baseline.mjs`](../scripts/cvie-readonly-baseline.mjs)
 - [`scripts/cvie_fast_onboarding_smoke.mjs`](../scripts/cvie_fast_onboarding_smoke.mjs)
