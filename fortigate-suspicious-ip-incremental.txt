@@ -1,7 +1,7 @@
-# CVEHarbor Threat IP Intelligence | 2026-11-02T10:19:13.473000+00:00
+# CVEHarbor Threat IP Intelligence | 2026-11-02T12:04:00.848430+00:00
 # Permanent logical group: Suspicious IP Block
-# Cumulative indexed IPs: 2634
-# New since prior published snapshot: 5
+# Cumulative indexed IPs: 2663
+# New since prior published snapshot: 29
 # REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 # Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 # No rules or policies are created or enabled. No old IPs are removed.
@@ -14,29 +14,125 @@
 # If an address object name already exists with a different subnet, STOP.
 # Applying group membership can affect an existing deny policy immediately.
 config firewall address
-    edit "CVEH_89_187_187_77"
-        set subnet 89.187.187.77 255.255.255.255
+    edit "CVEH_36_103_243_179"
+        set subnet 36.103.243.179 255.255.255.255
     next
-    edit "CVEH_101_33_208_231"
-        set subnet 101.33.208.231 255.255.255.255
+    edit "CVEH_62_60_134_212"
+        set subnet 62.60.134.212 255.255.255.255
     next
-    edit "CVEH_102_129_52_21"
-        set subnet 102.129.52.21 255.255.255.255
+    edit "CVEH_62_210_142_164"
+        set subnet 62.210.142.164 255.255.255.255
     next
-    edit "CVEH_103_161_232_38"
-        set subnet 103.161.232.38 255.255.255.255
+    edit "CVEH_62_210_142_174"
+        set subnet 62.210.142.174 255.255.255.255
     next
-    edit "CVEH_178_175_130_243"
-        set subnet 178.175.130.243 255.255.255.255
+    edit "CVEH_64_89_160_235"
+        set subnet 64.89.160.235 255.255.255.255
+    next
+    edit "CVEH_86_38_225_163"
+        set subnet 86.38.225.163 255.255.255.255
+    next
+    edit "CVEH_101_200_237_22"
+        set subnet 101.200.237.22 255.255.255.255
+    next
+    edit "CVEH_102_0_42_34"
+        set subnet 102.0.42.34 255.255.255.255
+    next
+    edit "CVEH_102_53_15_180"
+        set subnet 102.53.15.180 255.255.255.255
+    next
+    edit "CVEH_102_64_40_117"
+        set subnet 102.64.40.117 255.255.255.255
+    next
+    edit "CVEH_102_64_45_166"
+        set subnet 102.64.45.166 255.255.255.255
+    next
+    edit "CVEH_102_110_7_34"
+        set subnet 102.110.7.34 255.255.255.255
+    next
+    edit "CVEH_102_129_62_92"
+        set subnet 102.129.62.92 255.255.255.255
+    next
+    edit "CVEH_103_17_12_27"
+        set subnet 103.17.12.27 255.255.255.255
+    next
+    edit "CVEH_103_17_12_212"
+        set subnet 103.17.12.212 255.255.255.255
+    next
+    edit "CVEH_103_124_140_24"
+        set subnet 103.124.140.24 255.255.255.255
+    next
+    edit "CVEH_103_133_228_181"
+        set subnet 103.133.228.181 255.255.255.255
+    next
+    edit "CVEH_103_138_127_4"
+        set subnet 103.138.127.4 255.255.255.255
+    next
+    edit "CVEH_103_187_178_26"
+        set subnet 103.187.178.26 255.255.255.255
+    next
+    edit "CVEH_120_48_175_69"
+        set subnet 120.48.175.69 255.255.255.255
+    next
+    edit "CVEH_122_13_25_186"
+        set subnet 122.13.25.186 255.255.255.255
+    next
+    edit "CVEH_122_155_28_15"
+        set subnet 122.155.28.15 255.255.255.255
+    next
+    edit "CVEH_156_146_55_165"
+        set subnet 156.146.55.165 255.255.255.255
+    next
+    edit "CVEH_156_146_55_167"
+        set subnet 156.146.55.167 255.255.255.255
+    next
+    edit "CVEH_185_253_160_132"
+        set subnet 185.253.160.132 255.255.255.255
+    next
+    edit "CVEH_216_180_246_33"
+        set subnet 216.180.246.33 255.255.255.255
+    next
+    edit "CVEH_216_180_246_153"
+        set subnet 216.180.246.153 255.255.255.255
+    next
+    edit "CVEH_216_180_246_248"
+        set subnet 216.180.246.248 255.255.255.255
+    next
+    edit "CVEH_223_15_242_2"
+        set subnet 223.15.242.2 255.255.255.255
     next
 end
 config firewall addrgrp
     edit "Suspicious IP Block"
-        append member "CVEH_89_187_187_77"
-        append member "CVEH_101_33_208_231"
-        append member "CVEH_102_129_52_21"
-        append member "CVEH_103_161_232_38"
-        append member "CVEH_178_175_130_243"
+        append member "CVEH_36_103_243_179"
+        append member "CVEH_62_60_134_212"
+        append member "CVEH_62_210_142_164"
+        append member "CVEH_62_210_142_174"
+        append member "CVEH_64_89_160_235"
+        append member "CVEH_86_38_225_163"
+        append member "CVEH_101_200_237_22"
+        append member "CVEH_102_0_42_34"
+        append member "CVEH_102_53_15_180"
+        append member "CVEH_102_64_40_117"
+        append member "CVEH_102_64_45_166"
+        append member "CVEH_102_110_7_34"
+        append member "CVEH_102_129_62_92"
+        append member "CVEH_103_17_12_27"
+        append member "CVEH_103_17_12_212"
+        append member "CVEH_103_124_140_24"
+        append member "CVEH_103_133_228_181"
+        append member "CVEH_103_138_127_4"
+        append member "CVEH_103_187_178_26"
+        append member "CVEH_120_48_175_69"
+        append member "CVEH_122_13_25_186"
+        append member "CVEH_122_155_28_15"
+        append member "CVEH_156_146_55_165"
+        append member "CVEH_156_146_55_167"
+        append member "CVEH_185_253_160_132"
+        append member "CVEH_216_180_246_33"
+        append member "CVEH_216_180_246_153"
+        append member "CVEH_216_180_246_248"
+        append member "CVEH_223_15_242_2"
     next
 end
 # No firewall policy has been created. Review existing policy use.
