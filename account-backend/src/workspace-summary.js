@@ -8,14 +8,15 @@ export async function workspaceRoute(req,env,user){
  if(req.method!=='GET')return json({error:'Read only'},405);
  const url=new URL(req.url);
  if(url.pathname==='/v1/workspace/summary'){
-  const [inventory,remediation,findings,monitoring,notifications]=await Promise.all([
+  const [inventory,remediation,findings,monitoring,notifications,providerDelivery]=await Promise.all([
    read(env,`SELECT (SELECT COUNT(*) FROM inventory_customers WHERE user_id=?) customers,(SELECT COUNT(*) FROM inventory_environments e JOIN inventory_customers c ON c.id=e.customer_id AND c.user_id=e.user_id WHERE e.user_id=?) environments,(SELECT COUNT(*) FROM inventory_assets a ${ownership} WHERE a.user_id=?) inventory_entries`,[user.id,user.id,user.id]),
    read(env,`SELECT status,COUNT(*) count,SUM(CASE WHEN status IN ('Open','Investigating') AND due<>'' AND date(due)<date('now') THEN 1 ELSE 0 END) overdue FROM remediations WHERE user_id=? GROUP BY status`,[user.id]),
    read(env,`SELECT s.status,COUNT(*) count FROM customer_finding_statuses s JOIN inventory_assets a ON a.id=s.asset_id AND a.user_id=s.user_id ${ownership} WHERE s.user_id=? GROUP BY s.status`,[user.id]),
    read(env,`SELECT COUNT(*) registered,SUM(CASE WHEN enabled=1 THEN 1 ELSE 0 END) enabled,MAX(last_checked_at) last_checked_at,SUM(CASE WHEN enabled=1 AND last_error IS NOT NULL AND last_error<>'' THEN 1 ELSE 0 END) errors,SUM(CASE WHEN enabled=1 AND last_checked_at IS NULL THEN 1 ELSE 0 END) unchecked FROM website_monitors WHERE user_id=?`,[user.id]),
-   read(env,`SELECT status,completed_at,item_count FROM alert_digest_runs WHERE user_id=? ORDER BY claimed_at DESC LIMIT 1`,[user.id])
+   read(env,`SELECT status,completed_at,item_count FROM alert_digest_runs WHERE user_id=? ORDER BY claimed_at DESC LIMIT 1`,[user.id]),
+   read(env,`SELECT state,COUNT(*) count,MAX(delivered_at) last_delivered_at FROM lifecycle_monitor_messages WHERE user_id=? AND created_at>=? GROUP BY state`,[user.id,Date.now()-30*86400000])
   ]);
-  return json({generated_at:new Date().toISOString(),scope:'account',inventory:{available:inventory.available,...inventory.rows[0]},remediation,findings,monitoring:{available:monitoring.available,...monitoring.rows[0]},notifications:{available:notifications.available,last_submission:notifications.rows[0]||null},capabilities:{active_environments:false,monitored_assets:false,asset_coverage:false,report_archive:false,report_schedules:false,report_drafts:false,export_archive:false,provider_delivery:false}});
+  return json({generated_at:new Date().toISOString(),scope:'account',inventory:{available:inventory.available,...inventory.rows[0]},remediation,findings,monitoring:{available:monitoring.available,...monitoring.rows[0]},notifications:{available:notifications.available,last_submission:notifications.rows[0]||null},provider_delivery:providerDelivery,capabilities:{active_environments:false,monitored_assets:false,asset_coverage:false,report_archive:false,report_schedules:false,report_drafts:false,export_archive:false,provider_delivery:providerDelivery.available}});
  }
  if(url.pathname==='/v1/workspace/items'){
   const view=url.searchParams.get('view')||'activity',raw=url.searchParams.get('offset')||'0';
