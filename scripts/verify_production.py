@@ -21,7 +21,7 @@ root=Path(__file__).resolve().parents[1]
 base="https://cveharbor.com"
 routes=["/", "/intelligence/", "/vulnerabilities/","/threats/","/account/","/workspace/","/customer-reports/","/customer-dashboard/","/environments/","/website-monitor/","/lifecycle/"]
 required={
- "/lifecycle/":["lifecycleMonitorTitle","productMonitorActivation","productMonitorHistory","lifecycle-monitor.css?v=product-monitor-3","product-monitoring.js?v=product-monitor-2"],
+ "/lifecycle/":["lifecycleMonitorTitle","productMonitorActivation","productMonitorHistory","lifecycle-monitor.css?v=product-monitor-4","product-monitoring.js?v=product-monitor-2"],
  "/":["homepageFeatures", "marketing-story", "asset-onboarding", "findings-table", "homepage.css?v=brochure-216"],
  "/intelligence/":["overviewTitle", "techBars", "chartInsights", "feedStatus"],
  "/vulnerabilities/":["technology-kpis","technologyManageButton","technologyCustomizer","categoryGrid","command-center.js?v=brochure-216"],

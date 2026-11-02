@@ -14,7 +14,7 @@ body[data-page="lifecycle"] .page-section-intro{display:none!important}
 .lifecycle-metric>span{font-size:25px;color:#28e6d8;display:grid;place-items:center;width:42px;height:42px;border-radius:10px;background:#08667532}
 .lifecycle-metric strong{display:block;font-size:27px;color:#edf6ff;line-height:1.1}
 .lifecycle-metric small{display:block;color:#a8c5d8;margin-top:7px;font-size:11px}
-#lifecycleMonitor .lifecycle-grid{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(370px,1fr);gap:20px;align-items:start}
+#lifecycleMonitor .lifecycle-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}
 #lifecycleMonitor .data-panel{padding:23px;border:1px solid #265872;border-radius:16px;background:linear-gradient(135deg,#092236ef,#061b2a);box-shadow:0 12px 35px #0002}
 #lifecycleMonitor h3{font-size:19px;color:#e9f2fc;line-height:1.35;margin:0 0 10px}
 #lifecycleMonitor h4{color:#e6f5fc;margin:16px 0 10px}
@@ -50,7 +50,7 @@ body[data-page="lifecycle"] .page-section-intro{display:none!important}
 .monitor-history article{padding:12px;border:1px solid #244d61;border-radius:9px;margin:10px 0;background:#081f30}
 .monitor-history p{font-size:12px;color:#a5c8da;line-height:1.6;overflow-wrap:anywhere}
 .monitor-watch-controls{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
-@media(min-width:1700px){#lifecycleMonitor .lifecycle-grid{grid-template-columns:minmax(0,1.85fr) minmax(460px,1fr)}}
+@media(min-width:1700px){#lifecycleMonitor .lifecycle-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:1050px){#lifecycleMonitor .lifecycle-grid{grid-template-columns:minmax(0,1fr)}.lifecycle-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}#lifecycleMonitor .section-heading{max-width:100%;min-height:0}.lifecycle-hero-art{display:none}}
 @media(max-width:600px){#lifecycleMonitor .data-panel{padding:16px}.lifecycle-metric{padding:12px;gap:9px}.lifecycle-metric strong{font-size:22px}.lifecycle-metric>span{display:none}#lifecycleMonitor .ops-form,.monitor-type-options{grid-template-columns:1fr}#lifecycleMonitor .lifecycle-source-row{grid-template-columns:36px minmax(0,1fr)}#lifecycleMonitor .lifecycle-source-row button{grid-column:2;grid-row:auto;justify-self:start}.lifecycle-product-mark{width:34px;height:38px}}
 /* Reference layout: compact workspace, bounded width, real milestone graphics. */
@@ -67,7 +67,7 @@ body[data-page="lifecycle"]{background:#031421;background-image:radial-gradient(
 #lifecycleMonitor .lifecycle-metrics{width:66%;gap:12px;margin:15px 0 16px}
 #lifecycleMonitor .lifecycle-metric{padding:11px 13px;gap:11px;min-height:62px;border-radius:10px;background:linear-gradient(125deg,#06273b,#031c2c);position:relative;overflow:hidden}
 #lifecycleMonitor .lifecycle-metric strong{font-size:21px}#lifecycleMonitor .lifecycle-metric small{font-size:10px;line-height:1.3;margin-top:3px}#lifecycleMonitor .lifecycle-metric>span{width:34px;height:36px;flex-shrink:0;font-size:26px}
-#lifecycleMonitor .lifecycle-grid{grid-template-columns:minmax(0,1.93fr) minmax(420px,1fr);gap:22px}
+#lifecycleMonitor .lifecycle-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
 #lifecycleMonitor .data-panel{padding:16px;border-radius:14px;background:linear-gradient(120deg,#062033ed,#031827f5);box-shadow:inset 0 1px 0 #2e849c14}
 #lifecycleMonitor h3{font-size:16px;display:flex;align-items:center;gap:10px;margin:0 0 4px;letter-spacing:0}
 .lifecycle-heading-icon{font-size:26px;color:#34f0eb;line-height:1.1}
@@ -101,7 +101,7 @@ body[data-page="lifecycle"]{background:#031421;background-image:radial-gradient(
 #lifecycleMonitor #lifecycleDeliveryState{font-size:9px;line-height:1.45;margin:8px 0 0}
 #lifecycleMonitor .lifecycle-watch-queue{padding:10px;border:1px solid #266177;border-radius:8px;font-size:11px}
 @media(min-width:761px){body[data-page="lifecycle"].command-center-app{padding-left:90px}body[data-page="lifecycle"] .command-sidebar{width:90px;background:linear-gradient(#041827,#021320);gap:16px;padding:12px 8px}body[data-page="lifecycle"] .command-nav-link{width:72px;height:auto;min-height:51px;display:flex;flex-direction:column;justify-content:center;gap:5px;padding:7px 1px}body[data-page="lifecycle"] .command-nav-link span{position:static;opacity:1;visibility:visible;transform:none;white-space:normal;text-align:center;font-size:9px;line-height:1.2;background:none;border:0;padding:0;pointer-events:none}body[data-page="lifecycle"] .command-nav-section{display:none}body[data-page="lifecycle"] .command-sidebar-toggle{display:none}body[data-page="lifecycle"] .site-header{background:#031725;border-bottom:1px solid #15384c}body[data-page="lifecycle"] .topbar{min-height:64px;max-width:none}body[data-page="lifecycle"] .topnav{display:none}body[data-page="lifecycle"] .brand-type{font-size:23px}body[data-page="lifecycle"] .brand-type small{font-size:9px}.lifecycle-header-search{display:flex;align-items:center;max-width:435px;flex:1;margin:0 auto}.lifecycle-header-search input{width:100%;background:#052236;border:1px solid #24556d;border-radius:7px;color:#cbe6f1;padding:10px 13px;font-size:11px}}
-@media(max-width:1400px) and (min-width:1051px){#lifecycleMonitor .lifecycle-grid{grid-template-columns:minmax(0,1.6fr) 400px;gap:16px}#lifecycleMonitor .lifecycle-source-row{grid-template-columns:38px minmax(150px,1fr) 125px 100px;gap:8px}.lifecycle-timeline{display:none}#lifecycleMonitor .lifecycle-product-mark svg{width:36px}.lifecycle-ring{width:52px;height:52px}#lifecycleMonitor .lifecycle-metrics{width:70%}#lifecycleMonitor .section-heading h1{font-size:30px}.lifecycle-hero-steps{min-width:250px}.lifecycle-header-search{max-width:320px}}
+@media(max-width:1400px) and (min-width:1051px){#lifecycleMonitor .lifecycle-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}#lifecycleMonitor .lifecycle-source-row{grid-template-columns:38px minmax(150px,1fr) 125px 100px;gap:8px}.lifecycle-timeline{display:none}#lifecycleMonitor .lifecycle-product-mark svg{width:36px}.lifecycle-ring{width:52px;height:52px}#lifecycleMonitor .lifecycle-metrics{width:70%}#lifecycleMonitor .section-heading h1{font-size:30px}.lifecycle-hero-steps{min-width:250px}.lifecycle-header-search{max-width:320px}}
 @media(max-width:1050px){#lifecycleMonitor{max-width:none}#lifecycleMonitor .section-heading{max-width:100%;min-height:0}#lifecycleMonitor .lifecycle-hero-art{display:none}#lifecycleMonitor .lifecycle-metrics{width:100%;grid-template-columns:repeat(4,1fr)}#lifecycleMonitor .lifecycle-grid{grid-template-columns:1fr}#lifecycleMonitor .lifecycle-source-row{grid-template-columns:40px minmax(160px,1fr) 140px 125px}.lifecycle-timeline{display:none}.lifecycle-header-search{max-width:250px}.lifecycle-public-results{max-height:394px}}
 @media(max-width:650px){#lifecycleMonitor{padding-top:18px}#lifecycleMonitor .section-heading h1{font-size:26px}#lifecycleMonitor .lifecycle-metrics{grid-template-columns:repeat(2,1fr)}#lifecycleMonitor .lifecycle-source-row{grid-template-columns:38px minmax(0,1fr) 100px;padding:10px 8px;gap:8px}#lifecycleMonitor .lifecycle-source-row button{grid-column:2/4;justify-self:end}.lifecycle-countdown{gap:0;justify-content:center}.lifecycle-countdown-label{display:none}.lifecycle-ring{width:54px;height:54px}.lifecycle-search-row .result-pill{display:none}#lifecycleMonitor .ops-form{grid-template-columns:1fr 1fr}#lifecycleMonitor .data-panel{padding:14px}.lifecycle-filter-tabs button{padding:7px}.lifecycle-header-search{display:none}.lifecycle-source-footer{margin:12px -14px -14px}.lifecycle-selected-heading{flex-wrap:wrap}}
 #lifecycleMonitor .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
@@ -140,14 +140,14 @@ body[data-page="lifecycle"] .footer-status{padding-left:0;padding-right:0}
 #lifecycleMonitor .lifecycle-timeline-track i{transform:translateX(-50%)}
 #lifecycleMonitor #lifecycleWatches .ops-link{margin-left:6px}
 @media(min-width:1700px){
- #lifecycleMonitor .lifecycle-grid{grid-template-columns:minmax(0,1fr) clamp(460px,30vw,900px)}
+ #lifecycleMonitor .lifecycle-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
  #lifecycleMonitor .lifecycle-metrics{width:calc(100% - clamp(460px,30vw,900px) - var(--lifecycle-gap))}
  #lifecycleMonitor .lifecycle-hero-steps{width:clamp(350px,28vw,850px)}
- #lifecycleMonitor .lifecycle-source-row{grid-template-columns:48px minmax(0,1fr) 170px 175px 140px;gap:14px}
+ #lifecycleMonitor .lifecycle-source-row{grid-template-columns:38px minmax(0,1fr) 126px 116px 100px;gap:8px}
  #lifecycleMonitor .data-panel{padding:20px}
  #lifecycleMonitor .lifecycle-source-footer{margin:12px -20px -20px;padding:14px 20px}
 }
-@media(min-width:2300px){
+@media(min-width:3100px){
  #lifecycleMonitor .lifecycle-public-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-content:start}
  #lifecycleMonitor .lifecycle-source-row{grid-template-columns:38px minmax(0,1fr) 126px 116px 100px;gap:8px;margin:0;min-height:112px;padding:12px 10px}
  #lifecycleMonitor .lifecycle-product-mark,#lifecycleMonitor .lifecycle-product-mark svg{width:38px}
@@ -155,7 +155,7 @@ body[data-page="lifecycle"] .footer-status{padding-left:0;padding-right:0}
  #lifecycleMonitor .lifecycle-countdown{gap:6px}
  #lifecycleMonitor .lifecycle-timeline{padding-left:8px}
 }
-@media(min-width:3100px){
+@media(min-width:4100px){
  #lifecycleMonitor .lifecycle-source-row{grid-template-columns:48px minmax(0,1fr) 165px 165px 135px;gap:12px}
  #lifecycleMonitor .lifecycle-product-mark,#lifecycleMonitor .lifecycle-product-mark svg{width:45px}
  #lifecycleMonitor .lifecycle-ring{width:62px;height:62px}
@@ -181,4 +181,19 @@ body[data-page="lifecycle"] .footer-status{padding-left:0;padding-right:0}
  #lifecycleMonitor .lifecycle-prefs-form{grid-template-columns:minmax(0,1fr) auto!important}
  #lifecycleMonitor .lifecycle-search-row{gap:8px}
  #lifecycleMonitor .lifecycle-save-actions{gap:8px}
+}
+
+/* Equal workspace panels; compact directory rows when half the screen is narrow. */
+@media(min-width:1051px) and (max-width:1699px){
+ #lifecycleMonitor .lifecycle-source-row{grid-template-columns:38px minmax(0,1fr) 66px;gap:8px}
+ #lifecycleMonitor .lifecycle-source-row button{grid-column:2/4;justify-self:end}
+ #lifecycleMonitor .lifecycle-timeline,#lifecycleMonitor .lifecycle-countdown-label{display:none}
+ #lifecycleMonitor .lifecycle-countdown{justify-content:center;gap:0}
+ #lifecycleMonitor .lifecycle-product-mark,#lifecycleMonitor .lifecycle-product-mark svg{width:36px}
+}
+@media(min-width:1700px) and (max-width:4099px){
+ #lifecycleMonitor .lifecycle-product-mark,#lifecycleMonitor .lifecycle-product-mark svg{width:38px}
+ #lifecycleMonitor .lifecycle-ring{width:54px;height:54px}
+ #lifecycleMonitor .lifecycle-countdown{gap:6px}
+ #lifecycleMonitor .lifecycle-timeline{padding-left:8px}
 }
