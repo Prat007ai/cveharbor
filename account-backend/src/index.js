@@ -1,3 +1,4 @@
+import {observeCvie} from './cvie-metrics.js';
 import {reviewerRoute,reviewActivity} from './assignment-progress.js';
 import {ReviewError} from './assignment-progress-common.js';
 import {scheduleProgress,retryProgress} from './assignment-progress-mail.js';
@@ -278,10 +279,13 @@ export default {async fetch(req,env,ctx){
   if(path.startsWith('/v1/website-monitor'))return await websiteMonitorRoute(req,env,user,path,req.method==='POST'&&path==='/v1/website-monitor'?await body(req):{});
   if(path.startsWith('/v1/plugin-monitor'))return await monitorRoute(req,env,user,path,req.method==='POST'?await body(req):{});
   if(path==='/v1/plugin-advisories'&&req.method==='GET')return await pluginAdvisoryRoute(req,env,user);
-  if(path.startsWith('/v1/cvie'))return await cvieRoute(req,env,user,ctx,req.method==='PUT'||req.method==='POST'?await body(req):{});
+  if(path.startsWith('/v1/cvie')){const data=req.method==='PUT'||req.method==='POST'?await body(req):{};return observeCvie(env,req.method!=='GET'?'onboard':path.endsWith('/progress')?'progress':path.includes('advisories')||path.includes('/evidence')?'evidence':path.includes('/directory')?'directory':'status',measured=>cvieRoute(req,measured,user,ctx,data));}
   if(path.startsWith('/v1/inventory')){
    const result=await inventoryRoute(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
-   if(result.ok&&['POST','PUT','DELETE'].includes(req.method))ctx?.waitUntil(syncAccountProducts(env,user.id).then(()=>runCvieStep(env,fetch,Date.now(),user.id)).catch(()=>console.warn('CVIE inventory synchronization will retry on the next account sync')));
+   if(result.ok&&['POST','PUT','DELETE'].includes(req.method)&&(/\/assets(?:\/|$)/.test(path)||req.method==='DELETE')){
+    const sync=observeCvie(env,'inventory',measured=>syncAccountProducts(measured,user.id,'inventory')).then(s=>{if(s.changed)ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id,'inventory'));}).catch(()=>console.warn('CVIE inventory synchronization will retry on the next account sync'));
+    if(env.CVIE_REGISTRY_ENABLED==='true')await sync;else ctx?.waitUntil(sync);
+   }
    return result;
   }
   if(path==='/v1/technology-catalogue'&&req.method==='GET'){
@@ -305,7 +309,7 @@ export default {async fetch(req,env,ctx){
     await env.DB.prepare('INSERT OR IGNORE INTO user_technology_catalogue(user_id,preferences_json,updated_at) VALUES(?,?,?)').bind(user.id,payload,Math.floor(Date.now()/1000)).run();
    if(saved.meta.changes!==1)return response({error:'Your catalogue changed while saving. Reload the saved catalogue and try again.'},409);
    const nextRevision=await catalogueRevision(payload);
-   try{const cvie=await subscribeProducts(env,user.id,selected,'catalogue',payload);if(cvie.changed)ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id,'catalogue'));return response({saved:true,revision:nextRevision,cvie:{...cvie,status:cvie.ready?'updated':'setup_required'}});}
+   try{const cvie=await observeCvie(env,'catalogue',measured=>subscribeProducts(measured,user.id,selected,'catalogue',payload));if(cvie.changed)ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id,'catalogue'));return response({saved:true,revision:nextRevision,cvie:{...cvie,status:cvie.ready?'updated':'setup_required'}});}
    catch{return response({saved:true,revision:nextRevision,cvie:{ready:false,status:'sync_required',message:'Catalogue saved. CVIE synchronization will retry from the intelligence panel.'}});}
   }
   if(path==='/v1/stack'&&req.method==='GET'){const rows=await env.DB.prepare('SELECT technology,product_version FROM user_stack WHERE user_id=? ORDER BY technology').bind(user.id).all();return response({stack:rows.results})}
@@ -313,9 +317,13 @@ export default {async fetch(req,env,ctx){
    const data=await body(req);if(!Array.isArray(data.stack)||data.stack.length>100)return response({error:'Invalid stack'},400);
    const rows=data.stack.map(x=>({technology:String(x.technology||'').trim().slice(0,120),product_version:String(x.product_version||'').trim().slice(0,80)}));
    if(rows.some(x=>!x.technology))return response({error:'Invalid technology'},400);
-   const ops=[env.DB.prepare('DELETE FROM user_stack WHERE user_id=?').bind(user.id),...rows.map(x=>env.DB.prepare('INSERT INTO user_stack(user_id,technology,product_version) VALUES(?,?,?)').bind(user.id,x.technology,x.product_version))];
+   if(new Set(rows.map(r=>r.technology)).size!==rows.length)return response({error:'Duplicate technology'},400);
+   const prior=(await env.DB.prepare('SELECT technology,product_version FROM user_stack WHERE user_id=?').bind(user.id).all()).results||[];
+   const ops=prior.filter(p=>!rows.some(r=>r.technology===p.technology)).map(p=>env.DB.prepare('DELETE FROM user_stack WHERE user_id=? AND technology=?').bind(user.id,p.technology));
+   for(const row of rows)if(!prior.some(p=>p.technology===row.technology&&p.product_version===row.product_version))ops.push(env.DB.prepare(`INSERT INTO user_stack(user_id,technology,product_version) VALUES(?,?,?) ON CONFLICT(user_id,technology) DO UPDATE SET product_version=excluded.product_version WHERE product_version<>excluded.product_version`).bind(user.id,row.technology,row.product_version));
+   if(!ops.length)return response({saved:rows.length,unchanged:true});
    await env.DB.batch(ops);
-   ctx?.waitUntil(syncAccountProducts(env,user.id).then(()=>runCvieStep(env,fetch,Date.now(),user.id)).catch(()=>console.warn('CVIE watchlist synchronization will retry on the next account sync')));
+   ctx?.waitUntil(observeCvie(env,path.startsWith('/v1/inventory')?'inventory':'stack',measured=>syncAccountProducts(measured,user.id)).then(()=>runCvieStep(env,fetch,Date.now(),user.id)).catch(()=>console.warn('CVIE watchlist synchronization will retry on the next account sync')));
    return response({saved:rows.length});
   }
   if(path==='/v1/remediations/features'&&req.method==='GET')return await capabilities(env);
@@ -375,8 +383,8 @@ export default {async fetch(req,env,ctx){
  }catch(error){if(error instanceof ReviewError||error instanceof WorkflowError||error instanceof FyiError||error instanceof AssignmentError||error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
-  if(_event.cron==='* * * * *'){scheduleProgress(env,ctx);scheduleFyi(env,ctx);ctx.waitUntil(approvedTest(env));ctx.waitUntil(dispatchEvidence(env));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}
-  if(_event.cron==='*/5 * * * *'){ctx.waitUntil(dispatchCvie(env));return;}
+  if(_event.cron==='* * * * *'){scheduleProgress(env,ctx);scheduleFyi(env,ctx);ctx.waitUntil(approvedTest(env));ctx.waitUntil(observeCvie(env,'disclosure_dispatch',dispatchEvidence));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}
+  if(_event.cron==='*/5 * * * *'){ctx.waitUntil(observeCvie(env,'nvd_dispatch',dispatchCvie));return;}
   if(env.ALERT_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchDueDigests(env));
   if(env.LIFECYCLE_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchLifecycle(env));
   if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true')ctx.waitUntil(dispatchProductMonitoring(env));

@@ -1,3 +1,5 @@
+import {registryEnabled,resolveRegistry,searchRegistry,searchDirectory,registerVerifiedCpe} from './product-registry.js';
+import {bindProductIdentities,fastEvidenceEnabled,immediateEvidence} from './cvie-onboarding.js';
 import {catalogueProducts,activeSubscription} from './catalogue-selection.js';
 // CVIE: durable, account-scoped product identity resolution and NVD history.
 // Every external URL is fixed here. Customer hosts/versions are never scanned or sent.
@@ -40,7 +42,9 @@ export async function subscribeProducts(env,userId,products,origin='catalogue',e
   if(!name||name.length>120||vendor.length>100||/[\u0000-\u001f]/.test(name+vendor))throw new CvieError('Invalid product identity');
   if(item.cpe&&!productCpe(item.cpe))throw new CvieError('Use a product-family CPE 2.3 identifier with wildcard versions');
   if(item.cpe&&vendor&&vendorKey(vendor)!==vendorKey(productCpe(item.cpe).split(':')[3]))throw new CvieError('The vendor does not match the selected source identity');
-  const selected=item.cpe?productCpe(item.cpe):knownIdentity(name,vendor)?.cpe||'';
+  const registry=registryEnabled(env)?resolveRegistry(item)||(await searchDirectory(env,{q:name,vendor})).identity:null;
+  if(item.identity_id&&(!registry||registry.id!==item.identity_id))throw new CvieError('Select a compatible verified identity');
+  const selected=item.cpe?productCpe(item.cpe):registry?.cpe||knownIdentity(name,vendor)?.cpe||'';
   // A reviewed multi-family scope has one durable primary identity. Replaying a
   // saved legacy member must not undo the scope upgrade and restart its history.
   const cpe=coveragePlan({name,vendor,cpe:selected}).primary||selected;
@@ -78,7 +82,7 @@ export async function subscribeProducts(env,userId,products,origin='catalogue',e
  const desired=new Set([...normalized.keys()].map(key=>ids.get(key))),current=new Set(subscribed.map(s=>s.product_id));
  const added=[...desired].filter(id=>!current.has(id)),removed=[...current].filter(id=>!desired.has(id));
  if(removed.length)statements.push(guarded('DELETE FROM cvie_subscriptions WHERE user_id=? AND origin=? AND product_id IN(SELECT value FROM json_each(?))',userId,origin,JSON.stringify(removed)));
- if(added.length)statements.push(guarded('INSERT OR IGNORE INTO cvie_subscriptions(user_id,product_id,origin) SELECT ?,value,? FROM json_each(?) WHERE 1=1',userId,origin,JSON.stringify(added)));
+ if(added.length)statements.push(guarded('INSERT OR IGNORE INTO cvie_subscriptions(user_id,product_id,origin) SELECT ?,p.id,? FROM cvie_products p WHERE p.user_id=? AND p.name_key IN(SELECT value FROM json_each(?))',userId,origin,userId,JSON.stringify([...normalized.keys()])));
  // Retain historical evidence; revoke only obsolete private work's commit lease.
  if(removed.length)statements.push(guarded(`UPDATE cvie_products SET lease_until=0,cursor_json=json_remove(cursor_json,'$.active_scan') WHERE user_id=? AND lease_until<>0 AND NOT ${activeSubscription('cvie_products')}`,userId));
  // Set-based JSON bindings keep bulk imports within D1's per-invocation query budget.
@@ -87,8 +91,15 @@ export async function subscribeProducts(env,userId,products,origin='catalogue',e
  const updatedIds=new Set([...inserts,...changes].map(p=>p.id));
  const relevant=[...normalized.entries()].filter(([key])=>updatedIds.has(ids.get(key))).map(([,p])=>p);
  if(relevant.length)await queueRelevantKev(env,relevant);
+ if(registryEnabled(env))await bindProductIdentities(env,userId);
  if(updatedIds.size&&sharedScans(env))await reconcileSharedScopes(env,userId);
  return {ready:true,queued:updatedIds.size,changed:statements.length>0};
+}
+export async function repairAccountCoverage(env,userId,scope='all'){
+ const repairRows=(await query(env.DB,`SELECT p.* FROM cvie_products p WHERE p.user_id=? AND ${activeSubscription('p',scope)}`,userId).all()).results||[];
+ const hostRepair=await prepareHyperVHosts(env,userId,repairRows);
+ const coverageRepair=await prepareProductCoverage(env,userId,repairRows);
+ return hostRepair||coverageRepair;
 }
 export async function syncAccountProducts(env,userId,scope='all'){
  const results=[];
@@ -104,8 +115,9 @@ export async function syncAccountProducts(env,userId,scope='all'){
   const stack=await query(env.DB,'SELECT technology FROM user_stack WHERE user_id=?',userId).all();
   results.push(await subscribeProducts(env,userId,(stack.results||[]).map(x=>({name:x.technology})),'stack'));
  }
+ const repaired=await repairAccountCoverage(env,userId,scope);
  const shared=await reconcileSharedScopes(env,userId);
- return {ready:results.every(r=>r.ready),changed:results.some(r=>r.changed)||shared.linked>0,queued:results.reduce((n,r)=>n+(r.queued||0),0)};
+ return {ready:results.every(r=>r.ready),changed:results.some(r=>r.changed)||shared.linked>0||Boolean(repaired),queued:results.reduce((n,r)=>n+(r.queued||0),0)};
 }
 function configurations(cve){
  const result=[];
@@ -128,7 +140,7 @@ export function normalizeNvd(cve,product){
  for(const ref of cve.references||[]){try{const url=new URL(ref.url);if(url.protocol==='https:'&&!url.username&&!url.password&&sources.length<12)sources.push({label:(ref.tags||[]).includes('Vendor Advisory')?'Vendor advisory':'Source reference',url:url.href});}catch{}}
  return {id:cve.id,kind:'cve',title:summary.slice(0,180),summary,published:iso(published),updated:cve.lastModified||cve.published,
   severity,cvss,known_exploited:Boolean(cve.cisaExploitAdd),status:cve.vulnStatus||'NVD indexed CVE',source_type:'cvie_nvd',
-  categories:[product.name],cvie_products:[product.name],cvie_identities:[...new Set(matches.map(m=>cpeFamily(m.criteria)))].map(cpe=>({name:product.name,cpe})),affected_cpes:matches,
+  categories:[product.name],cvie_products:[product.name],cvie_identities:[...new Set(matches.map(m=>cpeFamily(m.criteria)))].map(cpe=>({name:product.name,cpe})),affected_cpes:matches,nvd_configurations:cve.configurations||[],
   affected:matches.map(m=>(plan.families.length>1?plan.familyLabel(m.criteria):product.name)+' '+[m.versionStartIncluding&&'>= '+m.versionStartIncluding,m.versionStartExcluding&&'> '+m.versionStartExcluding,m.versionEndIncluding&&'<= '+m.versionEndIncluding,m.versionEndExcluding&&'< '+m.versionEndExcluding].filter(Boolean).join(', ')).join('; '),
   remediation:'Review the linked vendor advisory for affected versions, prerequisites and the appropriate fix.',sources,
   action:'Confirm the installed version and deployment prerequisites before remediation.',
@@ -359,16 +371,22 @@ export async function cvieRoute(req,env,user,ctx,data={}){
  if(!await cvieReady(env))return json({ready:false,error:'CVIE database setup is required. Your saved products and inventory are unchanged.'},503);
  const url=new URL(req.url),path=url.pathname,scope=url.searchParams.get('scope')||'all';
  if(!['all','catalogue','inventory','stack'].includes(scope))throw new CvieError('Invalid product scope');
+ if(path==='/v1/cvie/directory'&&req.method==='GET')return json(registryEnabled(env)?await searchDirectory(env,{q:url.searchParams.get('q')||'',vendor:url.searchParams.get('vendor')||'',ecosystem:url.searchParams.get('ecosystem')||'',identifier:url.searchParams.get('identifier')||'',scheme:url.searchParams.get('scheme')||''}):{enabled:false,candidates:[]});
+ const fast=/^\/v1\/cvie\/products\/([a-f0-9-]{36})\/evidence$/.exec(path);
+ if(fast&&req.method==='GET'){
+  const result=await immediateEvidence(env,user.id,fast[1],{scope,after:url.searchParams.get('after')||'',months:Number(url.searchParams.get('months')||12),limit:Number(url.searchParams.get('limit')||100)});
+  return json({...result,account_id:user.id},result.not_found?404:result.enabled?200:503);
+ }
  if(path==='/v1/cvie/sync'&&req.method==='POST'){
   const sync=await syncAccountProducts(env,user.id,scope);
   if(sync.changed)ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id,scope));
   return json({...sync,status:sync.changed?'updated':'unchanged'},sync.changed?202:200);
  }
- if(path==='/v1/cvie/progress'&&req.method==='GET'){
+ if((path==='/v1/cvie/progress'||path==='/v1/cvie'&&url.searchParams.get('view')==='bounded'&&fastEvidenceEnabled(env))&&req.method==='GET'){
   const now=Date.now();
  const rows=(await query(env.DB,ownedProductSql(env,'p.*',scope),user.id).all()).results||[];
   const products=rows.map(overlaySharedProduct).map(p=>savedProgress(p,now));
-  return json({ready:true,account_id:user.id,products,evidence:await productSourceHealth(env,products,now)});
+  return json({ready:true,fast_evidence:fastEvidenceEnabled(env),account_id:user.id,products,...(fastEvidenceEnabled(env)?{withdrawn_ids:await withdrawnIds(env)}:{}),evidence:await productSourceHealth(env,products,now)});
  }
  const options=/^\/v1\/cvie\/products\/([a-f0-9-]{36})\/identity-options$/.exec(path);
  if(options&&['GET','POST'].includes(req.method)){
@@ -399,9 +417,11 @@ export async function cvieRoute(req,env,user,ctx,data={}){
   const cpe=productCpe(data.cpe);
   if(!cpe||!JSON.parse(product.candidates_json).some(x=>x.cpe===cpe))throw new CvieError('Select an identity returned by the product directory');
   if(isHyperV(product)&&!hyperVHost(cpe))throw new CvieError('Select the Microsoft Windows host running Hyper-V');
+  if(registryEnabled(env))await registerVerifiedCpe(env,cpe);
   const saved=await query(env.DB,`UPDATE cvie_products SET cpe=?,status='queued',cursor_json='{}',candidates_json='[]',lease_until=0,error='',next_attempt_at=0
    WHERE id=? AND user_id=? AND cpe=? AND candidates_json=? AND ${activeSubscription('cvie_products',scope)}`,cpe,product.id,user.id,product.cpe,product.candidates_json).run();
   if(!saved.meta.changes)throw new CvieError('The product changed while you were choosing. Refresh options and try again.',409);
+  if(registryEnabled(env))await bindProductIdentities(env,user.id);
   if(sharedScans(env))await reconcileSharedScopes(env,user.id);
   ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id,scope));return json({queued:true},202);
  }
@@ -411,9 +431,7 @@ export async function cvieRoute(req,env,user,ctx,data={}){
    (SELECT COUNT(*) FROM cvie_advisories a WHERE a.product_id=p.id AND a.published>=?) AS recent_count,
    (SELECT COUNT(*) FROM cvie_advisories a WHERE a.product_id=p.id AND a.published>=?) AS history_count
    FROM cvie_products p WHERE p.user_id=? AND ${activeSubscription('p',scope)} ORDER BY p.name`,iso(monthsAgo(now,3)),iso(monthsAgo(now,12)),user.id).all();
-  let result=await loadProducts();
-  const repairedHyperV=await prepareHyperVHosts(env,user.id,result.results||[]),repairedCoverage=await prepareProductCoverage(env,user.id,result.results||[]);
-  if(repairedHyperV||repairedCoverage)result=await loadProducts();
+  const result=await loadProducts(); // GET is strictly read-only; repairs run on sync/scan work.
   const evidenceCtx=await evidenceContext(env,user.id,scope),counts=evidenceCtx?await combinedCounts(env,user.id,iso(monthsAgo(now,3)),iso(monthsAgo(now,12)),now,evidenceCtx):null;
   const products=(result.results||[]).map(p=>{
    return {...savedProgress(p,now),icon_slug:logoFor(p.name,p.cpe),

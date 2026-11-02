@@ -530,7 +530,7 @@ def kev_items() -> list[dict]:
     data = get_json(SOURCES["cisa_kev"], "cisa_kev")
     if not isinstance(data, dict) or not isinstance(data.get("vulnerabilities"), list):
         raise ValueError("CISA KEV response missing vulnerabilities")
-    if len(data["vulnerabilities"]) < 100:
+    if data.get("count") != len(data["vulnerabilities"]) or len(data["vulnerabilities"]) < 100:
         raise RuntimeError("CISA KEV returned an unexpectedly small catalog")
     return data["vulnerabilities"]
 
@@ -889,6 +889,96 @@ def merge_record(old: dict, new: dict) -> dict:
     return enforce_authoritative_categories(merged)
 
 
+def observation_key(source, item):
+    if source in ("github", "php_upstream"):
+        return source + ":" + str(item.get("ghsa_id") or item.get("id") or "unknown")
+    return source
+
+
+def source_observation(record):
+    return {k:v for k,v in record.items() if k != "source_observations"}
+
+
+def observe_record(old, new, key):
+    """Keep independent current assertions so withdrawing one cannot erase another."""
+    observations = dict((old or {}).get("source_observations") or {})
+    if old and not observations:
+        observations[old.get("source_type") or "legacy_unverified"] = source_observation(old)
+    observations[key] = source_observation(new)
+    combined = None
+    for value in observations.values():
+        combined = merge_record(combined, value)
+    combined["source_observations"] = observations
+    return combined
+
+
+def withdraw_observation(merged, rid, source, key):
+    old = merged.get(rid)
+    if not old:
+        return
+    observations = dict(old.get("source_observations") or {})
+    if observations:
+        observations.pop(key, None)
+        # Legacy snapshots did not identify individual GHSA observations.
+        if source in observations and observations[source].get("source_type") == source:
+            observations.pop(source, None)
+        combined = None
+        for value in observations.values():
+            combined = merge_record(combined, value)
+        if combined:
+            combined["source_observations"] = observations
+            merged[rid] = combined
+        else:
+            merged.pop(rid, None)
+        return
+    # For old snapshots, source payloads cannot be reconstructed from URLs.
+    # Retain independently attributed evidence with an explicit review state.
+    other = [r for r in old.get("sources", []) if source != "github" or "github.com/advisories/" not in r.get("url", "")]
+    if old.get("source_type") == source and not other:
+        merged.pop(rid, None)
+    elif old.get("source_type") == source:
+        merged[rid] = {**old, "sources":other, "title":rid, "summary":"An advisory was withdrawn. Independent source references remain; verify their current applicability.",
+                       "affected":"Review independent source assertions; legacy merged applicability is unverified.",
+                       "remediation":"Consult the remaining original sources.", "status":"Requires source review", "source_type":"legacy_unverified"}
+
+
+def apply_source_batch(merged, tombstones, name, batch, transform):
+    converted = 0
+    kev_ids = None
+    if name == "cisa_kev":
+        kev_ids = {str(item.get("cveID") or "") for item in batch}
+        if not batch or len(kev_ids) != len(batch) or any(not CVERE.match(i) for i in kev_ids):
+            raise ValueError("Invalid or incomplete KEV membership snapshot")
+    for item in batch:
+        if name == "nvd":
+            raw = item.get("cve") or {}
+            rid, revision = raw.get("id"), raw.get("lastModified") or ""
+            if rid and CVERE.match(rid) and raw.get("vulnStatus") == "Rejected":
+                if revision >= tombstones.get(rid, ""):
+                    tombstones[rid] = revision
+                    merged.pop(rid, None)
+                continue
+            if rid in tombstones and revision > tombstones[rid]:
+                tombstones.pop(rid)
+        if name in ("github", "php_upstream") and (item.get("withdrawn_at") or item.get("state") == "withdrawn"):
+            rid = item.get("cve_id") or item.get("ghsa_id")
+            withdraw_observation(merged, rid, name, observation_key(name, item))
+            continue
+        record = transform(item)
+        if not record or not record.get("categories") or record["id"] in tombstones:
+            continue
+        rid = record["id"]
+        merged[rid] = observe_record(merged.get(rid), record, observation_key(name, item))
+        converted += 1
+    if kev_ids is not None:
+        for rid, record in merged.items():
+            record["known_exploited"] = rid in kev_ids
+            for observation in [record, *record.get("source_observations", {}).values()]:
+                observation["known_exploited"] = rid in kev_ids
+                observation["exploitation"] = "Confirmed: listed in CISA KEV" if rid in kev_ids else "Not in the current checked CISA KEV catalogue; absence does not establish safety"
+    return converted
+
+
 def choose_records(merged: dict[str,dict], baseline_ids: set[str]) -> list[dict]:
     """Prioritize original disclosure dates and retain separately revised issues."""
     # Prioritize genuinely NEW CVEs before older records with recent metadata
@@ -1002,13 +1092,17 @@ def run() -> int:
         if migrated.get("categories"):
             previous[migrated["id"]] = migrated
     merged = dict(previous)
+    tombstones = dict(prev.get("rejected_cves") or {})
+    for rid in tombstones:
+        merged.pop(rid, None)
     # Seed historically verified vendor advisories as baseline records. They
     # retain original disclosure dates and are not treated as new feed events.
     baseline = vendor_baseline_items()
     baseline_ids = {record["id"] for record in baseline}
     for record in baseline:
         rid = record["id"]
-        merged[rid] = merge_record(merged.get(rid), record)
+        if rid not in tombstones:
+            merged[rid] = observe_record(merged.get(rid), record, "vendor_baseline")
     sources = dict(prev.get("sources") or {})
     operations = (("github", ghsa_items, from_ghsa),
                   ("php_upstream", php_upstream_items, from_php_upstream),
@@ -1042,14 +1136,11 @@ def run() -> int:
     for name, fetch, transform in operations:
         try:
             batch = fetch()
-            converted = 0
-            for item in batch:
-                record = transform(item)
-                if not record or not record.get("categories"):
-                    continue
-                rid = record["id"]
-                merged[rid] = merge_record(merged.get(rid), record)
-                converted += 1
+            # Commit a source only after its complete response validates.
+            trial = json.loads(json.dumps(merged))
+            trial_tombstones = dict(tombstones)
+            converted = apply_source_batch(trial, trial_tombstones, name, batch, transform)
+            merged, tombstones = trial, trial_tombstones
             sources[name] = {"ok": True, "last_success": utc_iso(), "last_attempt": utc_iso(), "items_processed": converted, "url": SOURCES[name]}
             good += 1
             print(f"{name}: {len(batch)} fetched, {converted} categorized", flush=True)
@@ -1061,7 +1152,7 @@ def run() -> int:
         # A failed sync must not publish a new green successful timestamp.
         # Still exit non-zero so operator receives a workflow failure signal.
         fail = {"siteName":"CVEHarbor", "snapshotDate": datepart(prev.get("snapshotDate")), "mode":"degraded", "categories":CATEGORIES,
-                "advisories": list(merged.values()), "sources":sources,
+                "advisories": list(merged.values()), "sources":sources, "rejected_cves":tombstones,
                 "last_checked_at": utc_iso(), "last_successful_update": prev.get("last_successful_update")}
         publish(fail)
         return 1
@@ -1070,7 +1161,7 @@ def run() -> int:
     result = {"siteName":"CVEHarbor", "snapshotDate": NOW.date().isoformat(),
               "mode":"live" if good == len(operations) and sources.get("epss",{}).get("ok") else "partial",
               "coverage_limited":len(merged)>len(records),
-              "candidate_records":len(merged),
+              "candidate_records":len(merged), "rejected_cves":tombstones,
               "categories":CATEGORIES, "advisories":records,
               "sources":sources, "last_checked_at":utc_iso(), "last_successful_update":utc_iso(),
               "note":"Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."}

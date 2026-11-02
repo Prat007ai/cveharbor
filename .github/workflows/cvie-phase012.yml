@@ -1,0 +1,36 @@
+name: CVIE phase 0-2 isolated verification
+on:
+  push:
+    branches: [codex/cvie-core-phase012]
+    paths: ['account-backend/**', 'scripts/cvie-readonly-baseline.mjs', 'scripts/cvie-local-benchmark.mjs', 'scripts/cvie_fast_onboarding_smoke.mjs', 'cvie.js', '.github/workflows/cvie-phase012.yml']
+permissions:
+  contents: read
+jobs:
+  local-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm test --prefix account-backend
+      - run: python -m unittest discover -s tests -p test_update.py
+      - run: npm install --no-save --no-package-lock jsdom@26 miniflare@4.20260730.0
+      - run: node scripts/cvie_client_smoke.mjs && node scripts/cvie_polling_smoke.mjs && node scripts/cvie_fast_onboarding_smoke.mjs
+  read-only-baseline:
+    if: github.repository == 'Prat007ai/cveharbor'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Fixed aggregate diagnostics only; no migrations or provider scans
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/cvie-readonly-baseline.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cvie-phase012-readonly-baseline
+          path: artifacts/cvie-readonly-baseline.json

@@ -717,3 +717,33 @@ console.log(JSON.stringify(dates.map(record=>disclosureAgeLabel(record,now))));
         self.assertEqual(u.clean_url('https://nvd.nist.gov/'),'https://nvd.nist.gov/')
 
 if __name__=='__main__':unittest.main()
+
+class SourceWithdrawalTests(unittest.TestCase):
+    def record(self, source, rid='CVE-2026-12345'):
+        return {'id':rid,'source_type':source,'categories':['PHP'],'title':source,'published':'2026-01-01','updated':'2026-01-01','sources':[{'label':source,'url':'https://example.test/'+source}],'known_exploited':False}
+    def test_rejection_persists_and_prevents_later_feed_resurrection(self):
+        rows={'CVE-2026-12345':self.record('nvd')}; rejected={}
+        u.apply_source_batch(rows,rejected,'nvd',[{'cve':{'id':'CVE-2026-12345','vulnStatus':'Rejected','lastModified':'2026-01-02'}}],lambda _:None)
+        self.assertFalse(rows)
+        u.apply_source_batch(rows,rejected,'github',[{}],lambda _:self.record('github'))
+        self.assertFalse(rows)
+        u.apply_source_batch(rows,rejected,'nvd',[{'cve':{'id':'CVE-2026-12345','vulnStatus':'Analyzed','lastModified':'2026-01-03'}}],lambda _:self.record('nvd'))
+        self.assertIn('CVE-2026-12345',rows)
+    def test_withdrawal_keeps_independent_payload_and_other_ghsa(self):
+        old=u.observe_record(None,self.record('nvd'),'nvd')
+        old=u.observe_record(old,self.record('github'),'github:GHSA-aaaa-bbbb-cccc')
+        rows={old['id']:old}
+        u.withdraw_observation(rows,old['id'],'github','github:GHSA-aaaa-bbbb-cccc')
+        self.assertEqual(rows[old['id']]['title'],'nvd')
+        u.withdraw_observation(rows,old['id'],'nvd','nvd')
+        self.assertFalse(rows)
+    def test_current_kev_removal_survives_later_source_merge(self):
+        rows={'CVE-2026-12345':u.observe_record(None,{**self.record('cisa_kev'),'known_exploited':True},'cisa_kev')}
+        u.apply_source_batch(rows,{},'cisa_kev',[{'cveID':'CVE-2026-99999'}],lambda _:None)
+        self.assertFalse(rows['CVE-2026-12345']['known_exploited'])
+        result=u.observe_record(rows['CVE-2026-12345'],self.record('github'),'github:test')
+        self.assertFalse(result['known_exploited'])
+    def test_invalid_membership_does_not_clear_prior_records(self):
+        rows={'CVE-2026-12345':self.record('nvd')}
+        with self.assertRaises(ValueError):u.apply_source_batch(rows,{},'cisa_kev',[],lambda _:None)
+        self.assertIn('CVE-2026-12345',rows)

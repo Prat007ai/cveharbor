@@ -1,3 +1,4 @@
+import {registryCpe} from './product-registry.js';
 import {activeSubscription} from './catalogue-selection.js';
 // Shared tables contain public source identities/history only. The separate
 // product bridge and seed cursor are private and always joined through an owner.
@@ -14,7 +15,7 @@ const readCursor=value=>{try{return JSON.parse(value||'{}');}catch{return {};}};
 export const publicIdentityProof=(p='p')=>`EXISTS(SELECT 1 FROM cvie_advisories proof WHERE proof.product_id=${p}.id
  AND json_extract(proof.record_json,'$.source_type')='cvie_nvd' AND EXISTS(SELECT 1 FROM json_each(json_extract(proof.record_json,'$.cvie_identities')) i WHERE json_extract(i.value,'$.cpe')=${p}.cpe))`;
 export function trustedSharedIdentity(product){
- return curatedProductFamily(product.cpe)||Boolean(hyperVHost(product.cpe))||Boolean(dotnetProfile({name:'.NET Core',cpe:product.cpe,vendor:product.cpe?.split(':')[3]}))||Boolean(product.public_identity_verified)||
+ return Boolean(registryCpe(product.cpe))||curatedProductFamily(product.cpe)||Boolean(hyperVHost(product.cpe))||Boolean(dotnetProfile({name:'.NET Core',cpe:product.cpe,vendor:product.cpe?.split(':')[3]}))||Boolean(product.public_identity_verified)||
   Boolean(readCursor(product.candidates_json)?.some?.(choice=>choice.cpe===product.cpe));
 }
 export async function sharedDescriptor(product){
@@ -55,7 +56,8 @@ function inheritedState(donor,descriptor,now){
 function chunks(rows,size=50){const out=[];for(let i=0;i<rows.length;i+=size)out.push(JSON.stringify(rows.slice(i,i+size)));return out;}
 export async function reconcileSharedScopes(env,userId=null,now=Date.now(),limit=userId?500:100){
  if(!sharedScans(env))return {linked:0};
- const rows=(await q(env.DB,`SELECT p.*,${publicIdentityProof()} AS public_identity_verified FROM cvie_products p LEFT JOIN cvie_product_scopes m ON ${validScopeLink()}
+ const registryProof=env.CVIE_REGISTRY_ENABLED==='true'?" OR EXISTS(SELECT 1 FROM cvie_identity_identifiers ri WHERE ri.scheme='cpe' AND ri.value=p.cpe)":'';
+ const rows=(await q(env.DB,`SELECT p.*,(${publicIdentityProof()}${registryProof}) AS public_identity_verified FROM cvie_products p LEFT JOIN cvie_product_scopes m ON ${validScopeLink()}
   WHERE (m.product_id IS NULL OR (m.scope_id IS NULL AND m.candidate_scope_id IS NOT NULL AND ${publicIdentityProof()}))
   AND ${activeSubscription()} ${userId?'AND p.user_id=?':''}
   ORDER BY p.history_complete_at DESC,p.last_success_at DESC,p.id LIMIT ?`,...(userId?[userId]:[]),limit).all()).results||[];

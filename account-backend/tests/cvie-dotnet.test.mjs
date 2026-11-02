@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DB} from './helpers/d1.mjs';
-import {subscribeProducts,runCvieStep,cvieRoute,normalizeNvd,loadCvieDigest} from '../src/cvie.js';
+import {repairAccountCoverage,subscribeProducts,runCvieStep,cvieRoute,normalizeNvd,loadCvieDigest} from '../src/cvie.js';
 import {ingestDisclosures,productFamilies} from '../src/cvie-evidence.js';
 import {combinedPage,combinedCounts,mergeDigestEvidence} from '../src/cvie-records.js';
 import {dotnetProfile,DOTNET_PROFILE,DOTNET_FAMILY} from '../src/dotnet.js';
@@ -39,7 +39,7 @@ check('a completed legacy-only scan is requeued once, preserves saved evidence a
  const p=await first(e),legacy=profile.families.find(x=>x.split(':')[4]==='.net_core');
  await q(e,"UPDATE cvie_products SET cpe=?,status='ready',recent_complete_at=?,history_complete_at=?,last_success_at=?",legacy,NOW,NOW,NOW).run();
  const r=normalizeNvd(nvd(),product);await q(e,'INSERT INTO cvie_advisories VALUES(?,?,?,?,?)',p.id,r.id,r.published,JSON.stringify(r),'old').run();
- const s=await state(e);assert.equal(s.products[0].status,'queued');assert.equal(s.products[0].recent_complete_at,null);assert.match(s.products[0].identity_label,/ASP.NET Core/);
+ await repairAccountCoverage(e,'a');const s=await state(e);assert.equal(s.products[0].status,'queued');assert.equal(s.products[0].recent_complete_at,null);assert.match(s.products[0].identity_label,/ASP.NET Core/);
  assert.equal((await q(e,"SELECT status FROM cvie_products WHERE user_id='b'").first()).status,'ready');
  assert.equal((await q(e,'SELECT COUNT(*) AS total FROM cvie_advisories').first()).total,1,'existing verified results remain while coverage expands');
  await q(e,"UPDATE cvie_products SET status='ready' WHERE user_id='a'").run();await state(e);
@@ -121,5 +121,5 @@ check('a concurrent explicit vendor edit cannot be overwritten by coverage repai
   }
   return original(sql);
  });
- await state(e);const p=await first(e);assert.equal(p.vendor,'Other Vendor');assert.equal(p.cpe,'');assert.equal(p.cursor_json,'{}');
+ await repairAccountCoverage(e,'a');await state(e);const p=await first(e);assert.equal(p.vendor,'Other Vendor');assert.equal(p.cpe,'');assert.equal(p.cursor_json,'{}');
 });

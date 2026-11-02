@@ -1,0 +1,356 @@
+{
+  "revision": 1,
+  "identities": [
+    {
+      "id": "microsoft-dotnet-framework",
+      "name": "Microsoft .NET Framework",
+      "vendor": "microsoft",
+      "kind": "product",
+      "ecosystem": "",
+      "version_scheme": "vendor",
+      "cpe": "cpe:2.3:a:microsoft:.net_framework:*:*:*:*:*:*:*:*",
+      "aliases": [
+        ".NET Framework",
+        "dotnet framework",
+        ".NET"
+      ],
+      "identifiers": [],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    },
+    {
+      "id": "microsoft-dotnet-runtime",
+      "name": "Microsoft .NET Runtime",
+      "vendor": "microsoft",
+      "kind": "component",
+      "ecosystem": "",
+      "version_scheme": "vendor",
+      "cpe": "cpe:2.3:a:microsoft:.net:*:*:*:*:*:*:*:*",
+      "aliases": [
+        ".NET Runtime",
+        "dotnet runtime",
+        ".NET"
+      ],
+      "identifiers": [],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    },
+    {
+      "id": "microsoft-aspnet-core",
+      "name": "Microsoft ASP.NET Core",
+      "vendor": "microsoft",
+      "kind": "component",
+      "ecosystem": "",
+      "version_scheme": "vendor",
+      "cpe": "cpe:2.3:a:microsoft:asp.net_core:*:*:*:*:*:*:*:*",
+      "aliases": [
+        "ASP.NET Core",
+        "ASP.NET Core Runtime"
+      ],
+      "identifiers": [],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    },
+    {
+      "id": "microsoft-dotnet-sdk",
+      "name": "Microsoft .NET Core SDK",
+      "vendor": "microsoft",
+      "kind": "package",
+      "ecosystem": "",
+      "version_scheme": "vendor",
+      "cpe": "cpe:2.3:a:microsoft:.net_core_sdk:*:*:*:*:*:*:*:*",
+      "aliases": [
+        ".NET Core SDK",
+        ".NET SDK",
+        ".NET"
+      ],
+      "identifiers": [],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    },
+    {
+      "id": "wordpress-core",
+      "name": "WordPress Core",
+      "vendor": "wordpress",
+      "kind": "product",
+      "ecosystem": "wordpress",
+      "version_scheme": "numeric",
+      "cpe": "cpe:2.3:a:wordpress:wordpress:*:*:*:*:*:*:*:*",
+      "aliases": [
+        "WordPress"
+      ],
+      "identifiers": [
+        {
+          "scheme": "lifecycle",
+          "value": "wordpress"
+        }
+      ],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    },
+    {
+      "id": "wordpress-woocommerce",
+      "name": "WooCommerce",
+      "vendor": "automattic",
+      "kind": "package",
+      "ecosystem": "wordpress",
+      "version_scheme": "numeric",
+      "cpe": "",
+      "aliases": [
+        "WordPress WooCommerce",
+        "WooCommerce plugin"
+      ],
+      "identifiers": [
+        {
+          "scheme": "wordpress-slug",
+          "value": "woocommerce"
+        }
+      ],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    },
+    {
+      "id": "php",
+      "name": "PHP",
+      "vendor": "php",
+      "kind": "product",
+      "ecosystem": "",
+      "version_scheme": "numeric",
+      "cpe": "cpe:2.3:a:php:php:*:*:*:*:*:*:*:*",
+      "aliases": [
+        "PHP runtime"
+      ],
+      "identifiers": [
+        {
+          "scheme": "lifecycle",
+          "value": "php"
+        }
+      ],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    },
+    {
+      "id": "python",
+      "name": "Python",
+      "vendor": "python",
+      "kind": "product",
+      "ecosystem": "",
+      "version_scheme": "pep440",
+      "cpe": "cpe:2.3:a:python:python:*:*:*:*:*:*:*:*",
+      "aliases": [
+        "CPython",
+        "Python runtime"
+      ],
+      "identifiers": [
+        {
+          "scheme": "lifecycle",
+          "value": "python"
+        }
+      ],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    },
+    {
+      "id": "microsoft-windows-server",
+      "name": "Windows Server",
+      "vendor": "microsoft",
+      "kind": "group",
+      "ecosystem": "",
+      "version_scheme": "vendor",
+      "cpe": "",
+      "aliases": [
+        "Microsoft Windows Server",
+        "Windows Server OS"
+      ],
+      "identifiers": [],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    },
+    {
+      "id": "microsoft-windows-server-2016",
+      "name": "Windows Server 2016",
+      "vendor": "microsoft",
+      "kind": "release_variant",
+      "ecosystem": "",
+      "version_scheme": "vendor",
+      "cpe": "cpe:2.3:o:microsoft:windows_server_2016:*:*:*:*:*:*:*:*",
+      "aliases": [
+        "Microsoft Windows Server 2016"
+      ],
+      "identifiers": [],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    },
+    {
+      "id": "microsoft-windows-server-2019",
+      "name": "Windows Server 2019",
+      "vendor": "microsoft",
+      "kind": "release_variant",
+      "ecosystem": "",
+      "version_scheme": "vendor",
+      "cpe": "cpe:2.3:o:microsoft:windows_server_2019:*:*:*:*:*:*:*:*",
+      "aliases": [
+        "Microsoft Windows Server 2019"
+      ],
+      "identifiers": [],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    },
+    {
+      "id": "microsoft-windows-server-2022",
+      "name": "Windows Server 2022",
+      "vendor": "microsoft",
+      "kind": "release_variant",
+      "ecosystem": "",
+      "version_scheme": "vendor",
+      "cpe": "cpe:2.3:o:microsoft:windows_server_2022:*:*:*:*:*:*:*:*",
+      "aliases": [
+        "Microsoft Windows Server 2022"
+      ],
+      "identifiers": [],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    },
+    {
+      "id": "microsoft-sql-server",
+      "name": "SQL Server",
+      "vendor": "microsoft",
+      "kind": "product",
+      "ecosystem": "",
+      "version_scheme": "vendor",
+      "cpe": "cpe:2.3:a:microsoft:sql_server:*:*:*:*:*:*:*:*",
+      "aliases": [
+        "Microsoft SQL Server",
+        "MSSQL",
+        "SQL"
+      ],
+      "identifiers": [],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    },
+    {
+      "id": "oracle-mysql",
+      "name": "MySQL",
+      "vendor": "oracle",
+      "kind": "product",
+      "ecosystem": "",
+      "version_scheme": "numeric",
+      "cpe": "cpe:2.3:a:oracle:mysql:*:*:*:*:*:*:*:*",
+      "aliases": [
+        "Oracle MySQL",
+        "SQL"
+      ],
+      "identifiers": [
+        {
+          "scheme": "lifecycle",
+          "value": "mysql"
+        }
+      ],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    },
+    {
+      "id": "mariadb",
+      "name": "MariaDB",
+      "vendor": "mariadb",
+      "kind": "product",
+      "ecosystem": "",
+      "version_scheme": "numeric",
+      "cpe": "cpe:2.3:a:mariadb:mariadb:*:*:*:*:*:*:*:*",
+      "aliases": [
+        "MariaDB Server",
+        "SQL"
+      ],
+      "identifiers": [
+        {
+          "scheme": "lifecycle",
+          "value": "mariadb"
+        }
+      ],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    },
+    {
+      "id": "ubuntu",
+      "name": "Ubuntu",
+      "vendor": "canonical",
+      "kind": "product",
+      "ecosystem": "",
+      "version_scheme": "debian",
+      "cpe": "cpe:2.3:o:canonical:ubuntu_linux:*:*:*:*:*:*:*:*",
+      "aliases": [
+        "Ubuntu Linux",
+        "Canonical Ubuntu",
+        "Linux"
+      ],
+      "identifiers": [
+        {
+          "scheme": "lifecycle",
+          "value": "ubuntu"
+        }
+      ],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    },
+    {
+      "id": "debian",
+      "name": "Debian",
+      "vendor": "debian",
+      "kind": "product",
+      "ecosystem": "",
+      "version_scheme": "debian",
+      "cpe": "cpe:2.3:o:debian:debian_linux:*:*:*:*:*:*:*:*",
+      "aliases": [
+        "Debian Linux",
+        "GNU/Linux Debian",
+        "Linux"
+      ],
+      "identifiers": [
+        {
+          "scheme": "lifecycle",
+          "value": "debian"
+        }
+      ],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    },
+    {
+      "id": "drupal",
+      "name": "Drupal",
+      "vendor": "drupal",
+      "kind": "product",
+      "ecosystem": "",
+      "version_scheme": "numeric",
+      "cpe": "cpe:2.3:a:drupal:drupal:*:*:*:*:*:*:*:*",
+      "aliases": [
+        "Drupal CMS"
+      ],
+      "identifiers": [
+        {
+          "scheme": "lifecycle",
+          "value": "drupal"
+        }
+      ],
+      "revision": 1,
+      "provenance": "Reviewed common-product mapping; exact source-family association only",
+      "source_url": "https://nvd.nist.gov/products/cpe/search"
+    }
+  ]
+}

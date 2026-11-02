@@ -85,7 +85,12 @@ async function loadSourceHealth(env,now){
  const rows=(await env.DB.prepare('SELECT * FROM cvie_sources ORDER BY id').all()).results||[];
  const pending=await env.DB.prepare(`SELECT COUNT(*) AS total,SUM(CASE WHEN priority<=1 THEN 1 ELSE 0 END) AS current,
   SUM(CASE WHEN priority=0 THEN 1 ELSE 0 END) AS relevant_kev,SUM(CASE WHEN attempts>0 THEN 1 ELSE 0 END) AS failed FROM cvie_disclosure_queue`).first();
- return {ready:true,pending_records:pending.total,failed_records:pending.failed||0,sources:rows.map(row=>({
+ let queueAge={oldest_known_enqueued_at:null,age_unknown_records:pending.total};
+ if(env.CVIE_METRICS_ENABLED==='true')try{queueAge=await env.DB.prepare(`SELECT MIN(o.enqueued_at) AS oldest_known_enqueued_at,
+  SUM(CASE WHEN o.cve_id IS NULL THEN 1 ELSE 0 END) AS age_unknown_records,
+  SUM(CASE WHEN j.attempts>0 THEN 1 ELSE 0 END) AS retrying_records,MAX(j.attempts) AS maximum_attempts
+  FROM cvie_disclosure_queue j LEFT JOIN cvie_queue_observations o ON o.cve_id=j.cve_id`).first();}catch{/* Additive telemetry migration may not be installed yet. */}
+ return {ready:true,queue_age:queueAge,pending_records:pending.total,failed_records:pending.failed||0,sources:rows.map(row=>({
   id:row.id,label:row.id==='cisa_kev'?'CISA KEV':'CVE Program / original disclosures',url:row.source_url||SOURCE_URLS[row.id],
   status:row.status==='unavailable'?'unavailable':row.record_retry_at>now?'rate_limited':!row.last_success_at?'pending':now-row.last_success_at>(row.id==='cisa_kev'?30:15)*60000?'stale':
    row.id==='cve_program'&&pending.current>0?'catching_up':row.id==='cisa_kev'&&pending.relevant_kev>0?'verifying_products':'current',

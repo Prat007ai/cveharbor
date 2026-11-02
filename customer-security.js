@@ -575,6 +575,7 @@ const scoreSeries=new Map();
 function renderScorePanel(root,customer,scope,stats){
  const engine=window.CVEHARBOR_SCORE;
  if(!engine)return;
+ if(window.CVEHARBOR_CVIE?.coverageLimited){root.append(text('p','Security score unavailable: stored vulnerability evidence is a partial page. Review source coverage before assessment.','ops-note'));return}
  if(!findingStatusReady){root.append(text('p','Inventory Based Security Assessment unavailable: saved remediation data could not be loaded. No score is shown.','ops-note'));return}
  const statuses=Object.fromEntries(findingStatuses.entries());
  const checks=Object.fromEntries(stats.assets.map(a=>[a.id,pluginMonitorRows[a.id]||null]));
@@ -709,7 +710,7 @@ function renderScorePanel(root,customer,scope,stats){
 }
 function intelligenceSourceSummary(){
  const labels={current:'checked',scanning:'scan in progress',catching_up:'indexing updates',verifying_products:'verifying applicability',unavailable:'source unavailable',stale:'check overdue',pending:'first check pending',rate_limited:'rate limited; retry scheduled',setup_required:'setup pending',no_products:'no products registered'};
- return (window.CVEHARBOR_CVIE?.evidence?.sources||[]).map(s=>(s.label||s.id)+': '+(labels[s.status]||s.status)+(s.last_success_at?' (checked '+new Date(s.last_success_at).toLocaleString()+')':'')).join(' · ');
+ return (window.CVEHARBOR_CVIE?.coverageLimited?'Partial indexed evidence; this report does not contain every candidate CVE. ':'')+(window.CVEHARBOR_CVIE?.evidence?.sources||[]).map(s=>(s.label||s.id)+': '+(labels[s.status]||s.status)+(s.last_success_at?' (checked '+new Date(s.last_success_at).toLocaleString()+')':'')).join(' · ');
 }
 function buildCustomerPrintDocument(customer,stats,scope,date){
  const doc=text('div','','customer-print-document');
@@ -748,7 +749,7 @@ function buildCustomerPrintDocument(customer,stats,scope,date){
  counts.append(text('p','Prioritization is preliminary. A recorded status does not independently verify whether a patch has been deployed.','customer-print-note'));
  doc.append(counts);
  const assessment=window.CVEHARBOR_SCORE?.assessCustomer({assets:stats.assets,issues:stats.issues,checks:Object.fromEntries(stats.assets.map(a=>[a.id,pluginMonitorRows[a.id]||null])),statuses:Object.fromEntries(findingStatuses)});
- if(assessment){
+ if(assessment&&!window.CVEHARBOR_CVIE?.coverageLimited){
   const score=text('section','','customer-print-section customer-print-assessment');score.append(section('Inventory Based Security Assessment'));
   score.append(text('strong',assessment.score===null?'Insufficient Data — No Score':assessment.score+' / 100','customer-print-score'));
   score.append(text('p','Assessment confidence: '+assessment.confidence+' · Monitoring coverage: '+assessment.coverage+'%','customer-print-note'),text('p',assessment.explanation,'customer-print-note'));
