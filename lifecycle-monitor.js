@@ -46,7 +46,13 @@ function summary(watch){
 const MAX_ROWS=60;
 let directoryCategory='All Products';
 const commonProducts=window.CVEHARBOR_COMMON_PRODUCTS||[],sharedProducts=[],lookupCycles=new Map();
-const productChoices=()=>[...new Map([...catalogList.map(slug=>({slug,name:titleCase(slug),category:'Other',aliases:[]})),...staticProducts.filter(([slug])=>!commonProducts.some(p=>p.aliases.includes(slug))).map(([slug,name])=>({slug,name,category:'Other',aliases:[]})),...sharedProducts,...commonProducts].map(p=>[p.slug,p])).values()];
+// Initial browsing highlights familiar products; typed searches keep relevance ranking.
+const featuredProducts=['windows-server','ubuntu','php','wordpress','dotnet','mssqlserver','mysql','mariadb','debian','rhel','rocky-linux','almalinux','sles','amazon-linux'];
+const productChoices=()=>{
+ const entries=[...new Map([...catalogList.map(slug=>({slug,name:titleCase(slug),category:'Other',aliases:[]})),...staticProducts.filter(([slug])=>!commonProducts.some(p=>p.aliases.includes(slug))).map(([slug,name])=>({slug,name,category:'Other',aliases:[]})),...sharedProducts,...commonProducts].map(p=>[p.slug,p])).values()];
+ const priority=new Map([...new Set([...featuredProducts,...commonProducts.map(p=>p.slug)])].map((slug,index)=>[slug,index]));
+ return entries.sort((a,b)=>(priority.get(a.slug)??Infinity)-(priority.get(b.slug)??Infinity)||a.name.localeCompare(b.name));
+};
 const searchProducts=query=>window.CVEHARBOR_DIRECTORY_SEARCH?.search(productChoices(),query)||productChoices().filter(p=>(p.name+' '+p.slug).toLowerCase().includes(query.toLowerCase())).map(product=>({product}));
 const categoryOf=slug=>commonProducts.find(p=>p.slug===slug)?.category||'Other';
 const catalogList=Array.isArray(catalog.available_products)?catalog.available_products:[];
