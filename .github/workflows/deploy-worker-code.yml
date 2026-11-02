@@ -26,6 +26,8 @@ on:
       - 'account-backend/migrations/0026_remediation_workflow.sql'
       - 'scripts/verify_remediation_workflow_d1.mjs'
       - 'account-backend/migrations/0027_assignment_progress.sql'
+      - 'account-backend/migrations/0028_unified_findings.sql'
+      - 'scripts/verify_unified_findings_d1.mjs'
       - 'scripts/verify_assignment_progress_d1.mjs'
       - 'scripts/verify_assignment_fyi_d1.mjs'
       - '.github/workflows/deploy-worker-code.yml'
@@ -173,6 +175,16 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: node scripts/verify_assignment_progress_d1.mjs
+      - name: Record recovery point and apply unified findings migration
+        if: steps.mode.outputs.unified_findings == 'true'
+        working-directory: account-backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx --yes wrangler@4.156.0 d1 time-travel info cveharbor-accounts --json
+          npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0028_unified_findings.sql
+          node ../scripts/verify_unified_findings_d1.mjs
       - name: Deploy Worker source
         working-directory: account-backend
         env:
@@ -289,3 +301,9 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: node scripts/verify_assignment_progress_d1.mjs --after
+      - name: Verify shared remediation production routes
+        if: steps.mode.outputs.unified_findings == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify_unified_findings_d1.mjs --after

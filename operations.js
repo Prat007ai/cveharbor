@@ -5,6 +5,9 @@ if(!$('operationsCentre'))return;
 const key='cveharbor.remediation.v1',API='https://api.cveharbor.com/v1',
   src=window.CVEHARBOR_DATA||{},base=window.CVEHARBOR_CATALOG||{},threats=window.CVEHARBOR_THREATS||{};
 const elem=(tag,cls,value)=>{const x=document.createElement(tag);if(cls)x.className=cls;if(value!==undefined)x.textContent=String(value);return x;};
+const displayCve=id=>String(id||'').split('~')[0];
+const validWork=id=>/^CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?$/.test(String(id||''));
+let assignmentKey='',assignmentScope=null;
 const valid=id=>/^CVE-\d{4}-\d{4,}$/i.test(String(id||''))&&String(id).length<=28;
 const headerTools=document.querySelector('.rt-header-tools');
 if(headerTools&&/^\/remediation(?:\/|$)/.test(location.pathname))headerTools.hidden=false;
@@ -60,6 +63,7 @@ function uiMode(){
   }
 }
 function editRecord(task){
+  if(task.scope){window.CVEHARBOR_SHARED.open(task.id);return;}
   $('remediationCve').value=task.id;
   $('remediationStatus').value=task.status||'Open';
   $('remediationOwner').value=task.owner||'';
@@ -124,8 +128,9 @@ function render(){
     const labels=['Last updated','CVE ID','Title','Severity','Status','Owner','Target date','Acknowledgement','Latest status change','Actions'];
     const cell=(value)=>{const td=elem('td'),label=elem('span','rt-cell-label',labels[row.children.length]);label.setAttribute('aria-hidden','true');td.setAttribute('role','cell');td.append(label);if(value!==undefined)td.append(document.createTextNode(String(value)));row.append(td);return td;};
     cell(displayTime(task.updated));
-    const link=elem('a','',task.id);link.href='https://www.cve.org/CVERecord?id='+encodeURIComponent(task.id);link.addEventListener('click',event=>{if(window.CVEHARBOR_ADVISORY_DETAILS){event.preventDefault();openAdvisory(task.id);}});cell().append(link);
-    const advisory=records.get(task.id),title=cell(advisory?.title||'Advisory details not available');
+    const link=elem('a','',displayCve(task.id));link.href='https://www.cve.org/CVERecord?id='+encodeURIComponent(displayCve(task.id));link.addEventListener('click',event=>{if(window.CVEHARBOR_ADVISORY_DETAILS){event.preventDefault();openAdvisory(displayCve(task.id));}});cell().append(link);
+    const advisory=records.get(displayCve(task.id)),title=cell(advisory?.title||'Advisory details not available');
+    if(task.scope)title.append(elem('p','',scopeText(task.scope)));
     if(task.notes||task.assigned_to){
       const details=elem('details');details.append(elem('summary','','Record details'));
       if(task.notes)details.append(elem('p','',task.notes));
@@ -138,7 +143,7 @@ function render(){
     rating.append(badge(severityLabel(assigned||(['critical','high','medium','low','info'].includes(severity)?severity:'')),assigned||severity));
     rating.append(elem('small','',assigned?'Assigned · requester assessment':'Published severity'));
     if(assigned)rating.append(elem('small','','Published: '+severityLabel(severity)));
-    cell().append(badge(task.status||'Not recorded',statusTones[task.status]));
+    cell().append(badge(task.scope?({Open:'Needs Review',Investigating:'Fix in Progress',Remediated:'Fixed/Patched'}[task.status]||task.status):(task.status||'Not recorded'),statusTones[task.status]));
     const owner=cell(task.owner||'Unassigned');if(!task.owner)owner.append(elem('small','','Owner required when editing'));
     cell(task.due||'Not set');
     const ack=cell(),summary=task.acknowledgements;
@@ -168,7 +173,7 @@ function render(){
       }else{
         tasks=tasks.filter(x=>x.id!==task.id);persistLegacy();render();msg(task.id+' removed from this browser.');
       }
-    });actions.append(remove);target.append(row);
+    });if(!task.scope)actions.append(remove);if(capabilities?.shared_records_available){const shared=elem('button','','View record');shared.type='button';shared.addEventListener('click',()=>window.CVEHARBOR_SHARED.open(task.id));actions.prepend(shared);}target.append(row);
   }
   uiMode();
 }
@@ -177,8 +182,8 @@ async function refreshRecords(epoch=accountEpoch){
   const data=await api('/remediations');
   if(epoch!==accountEpoch||!authenticated)return;
   ackDataAvailable=data.acknowledgements_available===true;
-  tasks=(data.remediations||[]).filter(x=>valid(x.id)).slice(0,250);
-  loading=false;render();
+  tasks=(data.remediations||[]).filter(x=>validWork(x.id)).slice(0,250);
+  loading=false;render();renderRecentActivity();
 }
 let progressRefreshTimer=null;
 async function accountState(data){
@@ -194,7 +199,7 @@ async function accountState(data){
   updateNotesCount();updateReason();validateOwner(false);msg('');
   for(const id of ['remediationAssignDialog','remediationConfirmDialog','remediationSuccessDialog'])closeCvhDialog(id);
   $('remediationAssignForm').reset();$('remediationSendAssignment').disabled=true;
-  tasks=authenticated?[]:readLegacy();legacy=readLegacy();render();
+  tasks=authenticated?[]:readLegacy();legacy=readLegacy();render();$('remediationRecentActivity')?.replaceChildren();
   if(!authenticated)return;
   try{
     const features=await api('/remediations/features');
@@ -205,18 +210,23 @@ async function accountState(data){
     await refreshRecords(epoch);
     if(epoch!==accountEpoch)return;
     msg('');
+    const requested=new URLSearchParams(location.search).get('record');if(requested&&tasks.some(t=>t.id===requested)){if(new URLSearchParams(location.search).get('assign')==='1')openAssign(requested);else window.CVEHARBOR_SHARED?.open(requested);history.replaceState(null,'',location.pathname);}
   }catch(_){
     if(epoch!==accountEpoch)return;
     cloudMode=false;capabilities=null;tasks=[];loading=false;render();
     msg('Unable to load your cloud records. Reload this page to retry.');
   }
 }
-function openAssign(id){
+function renderRecentActivity(){let panel=$('remediationRecentActivity');if(!panel){panel=elem('section','rt-panel rt-recent-activity');panel.id='remediationRecentActivity';$('remediationTracker').append(panel);}panel.replaceChildren(elem('h2','','Recent activity'));const list=elem('ul');for(const t of [...tasks].sort((a,b)=>String(b.updated).localeCompare(String(a.updated))).slice(0,8)){const li=elem('li'),b=elem('button','',displayCve(t.id)+(t.scope?' · '+t.scope.asset_name:'')+' — '+(t.latest_status_change? t.latest_status_change.new_status:'Record updated')+' · '+displayTime(t.updated));b.type='button';b.addEventListener('click',()=>window.CVEHARBOR_SHARED.open(t.id));li.append(b);list.append(li);}panel.append(list);}
+function scopeText(s){return s?[s.customer_name,s.environment_name,s.asset_name,s.technology,s.version].filter(Boolean).join(' · '):'';}
+function openAssign(id,scope){
   const cve=String(id||'').trim().toUpperCase();
-  if(!valid(cve)){msg('Enter a complete CVE ID before assigning.');return;}
+  if(!validWork(cve)){msg('Enter a complete CVE ID before assigning.');return;}
   const modal=$('remediationAssignDialog');
   if(!modal)return;
-  $('remediationAssignCve').value=cve;
+  assignmentKey=cve;assignmentScope=scope||tasks.find(x=>x.id===cve)?.scope||null;
+  $('remediationAssignCve').value=displayCve(cve);
+  let context=$('remediationAssignScope');if(!context){context=elem('p');context.id='remediationAssignScope';$('remediationAssignForm').prepend(context);}context.textContent=scopeText(assignmentScope);
   $('remediationAssignConfirm').checked=false;
   $('remediationAssignResend').checked=false;
   $('remediationResendLabel').hidden=!capabilities?.acknowledgements_available;
@@ -241,6 +251,8 @@ function openAssign(id){
 $('remediationAssignFyi').addEventListener('input',()=>{$('remediationFyiError').textContent='';$('remediationAssignFyi').removeAttribute('aria-invalid');});
 $('remediationAssignNotes').addEventListener('input',()=>{$('remediationAssignNotesCount').textContent=$('remediationAssignNotes').value.length+'/1000 characters'});
 window.CVEHARBOR_REMEDIATION={openAssign};
+window.addEventListener('cveharbor:remediation-changed',()=>{if(cloudMode)void refreshRecords();});
+if(typeof BroadcastChannel==='function'){const channel=new BroadcastChannel('cveharbor-remediation-changed');channel.onmessage=()=>{if(cloudMode)void refreshRecords();};}
 window.addEventListener('cveharbor:assign-remediation',event=>openAssign(event.detail?.id));
 window.addEventListener('cveharbor:account-state',event=>{void accountState(event.detail||{});});
 $('remediationAssign').addEventListener('click',()=>openAssign($('remediationCve').value));
@@ -262,6 +274,7 @@ function openCvhDialog(id){
  else dialog.setAttribute('open','');
 }
 function confirmReviewRequest(cve,email,fyi=[],severity=''){
+ cve=displayCve(cve)+(assignmentScope?' — '+scopeText(assignmentScope):'');
  return new Promise(resolve=>{
   const dialog=$('remediationConfirmDialog');
   $('remediationConfirmText').textContent='Send the '+cve+' vulnerability review request to '+email+'?'+(fyi.length?' Send separate FYI and receipt-update emails to: '+fyi.join(', ')+'.':'')+(severity?' Assigned severity: '+severityLabel(severity)+' (requester assessment).':'')+(capabilities?.reviewer_updates_available?' The reviewer can verify their email to post progress. Critical/High assignments receive one reminder after 24 hours without progress; Medium after 48 hours. Listed FYI recipients receive a separate manager notice at the same threshold.':'');
@@ -295,7 +308,7 @@ for(const id of ['remediationSuccessClose','remediationSuccessX'])
  });
 $('remediationAssignForm').addEventListener('submit',async event=>{
  event.preventDefault();
- const cve=$('remediationAssignCve').value;
+ const cve=assignmentKey||$('remediationAssignCve').value;
  const email=$('remediationAssignEmail').value.trim().toLowerCase();
  const send=$('remediationSendAssignment'),status=$('remediationAssignMessage');
  if(!cloudMode||!capabilities?.assignments_available||!capabilities?.assignment_email_enabled){
@@ -380,7 +393,7 @@ document.addEventListener('visibilitychange',refreshReviewerProgress);
 const ackTimestamp=value=>value?displayTime(value*1000):'Not recorded';
 async function openHistory(cve){
   historyCve=cve;historyBefore=null;historyEpoch++;
-  $('remediationHistoryTitle').textContent=cve+' · Assignments';$('remediationHistoryRows').replaceChildren();
+  $('remediationHistoryTitle').textContent=displayCve(cve)+' · Assignments';$('remediationHistoryRows').replaceChildren();
   openCvhDialog('remediationHistoryDialog');await loadHistory();
 }
 async function loadHistory(){
@@ -442,7 +455,7 @@ $('remediationStatusHistoryMore').addEventListener('click',()=>loadStatusHistory
 $('remediationStatusHistoryClose').addEventListener('click',()=>{statusEpoch++;closeCvhDialog('remediationStatusHistoryDialog');});
 async function openProgress(cve){
  progressCve=cve;progressBefore=null;progressEpoch++;
- $('remediationProgressTitle').textContent=cve+' · Progress and reminders';
+ $('remediationProgressTitle').textContent=displayCve(cve)+' · Progress and reminders';
  for(const id of ['remediationProgressRows','remediationProgressInvitations','remediationProgressNotifications'])$(id).replaceChildren();
  openCvhDialog('remediationProgressDialog');await loadProgress();
 }
@@ -473,8 +486,8 @@ $('remediationExport').addEventListener('click',()=>{
     if(/^[\s]*[=+\-@]/.test(s))s="'"+s;
     return '"'+s.replaceAll('"','""')+'"';
   };
-  const csv=[['CVE','Status','Owner','Target Date','Notes','Updated','Assigned Email','Email Status','Acknowledgements (current recipients)','Assigned Severity','Last Status Change','Status Change Reason','Status Changed By'],
-    ...tasks.map(x=>[x.id,x.status,x.owner,x.due,x.notes,x.updated,x.assigned_to||'',x.assignment_status||'',x.acknowledgements?Object.entries(x.acknowledgements.states).map(([state,count])=>state+': '+count).join('; '):'Not requested',x.assigned_severity||'',x.latest_status_change?.changed_at||'',x.latest_status_change?.reason||'',x.latest_status_change?.changed_by||''])]
+  const csv=[['CVE','Status','Owner','Target Date','Notes','Updated','Assigned Email','Email Status','Acknowledgements (current recipients)','Assigned Severity','Last Status Change','Status Change Reason','Status Changed By','Customer','Environment','Software / Asset'],
+    ...tasks.map(x=>[displayCve(x.id),x.scope?({Open:'Needs Review',Investigating:'Fix in Progress',Remediated:'Fixed/Patched'}[x.status]||x.status):x.status,x.owner,x.due,x.notes,x.updated,x.assigned_to||'',x.assignment_status||'',x.acknowledgements?Object.entries(x.acknowledgements.states).map(([state,count])=>state+': '+count).join('; '):'Not requested',x.assigned_severity||'',x.latest_status_change?.changed_at||'',x.latest_status_change?.reason||'',x.latest_status_change?.changed_by||'',x.scope?.customer_name||'',x.scope?.environment_name||'',x.scope?[x.scope.asset_name,x.scope.technology,x.scope.version].filter(Boolean).join(' · '):''])]
     .map(fields=>fields.map(quote).join(',')).join('\r\n');
   const link=elem('a');link.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   link.download='cveharbor-remediation.csv';document.body.append(link);link.click();link.remove();

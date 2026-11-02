@@ -1,12 +1,14 @@
+import {publicCve} from './remediation-identity.js';
 import {sendEmail} from './delivery.js';import {escapeHtml as e} from './assignment-template.js';
 import {reviewNow as now,reviewHash as hash,reviewQuota,progressReady,reviewLink,ReviewError} from './assignment-progress-common.js';
 const utc=n=>new Date(n*1000).toISOString().replace('T',' ').replace('.000Z',' UTC');
 const statusLabel=s=>s==='Investigating'?'In progress':s==='Remediated'?'Completed / Remediated':s;
 export function renderManagerReminder(row){
+ row={...row,cve_id:publicCve(row.cve_id),record_id:row.record_id||row.cve_id};
  let advisory={};try{advisory=JSON.parse(row.public_advisory_json||'{}')}catch{}
  const severity=String(row.assigned_severity||advisory.severity||'Unknown').toUpperCase();
  const urgent=['CRITICAL','HIGH'].includes(severity),hours=row.interval_seconds/3600;
- const tracker='https://cveharbor.com/remediation/';
+ const tracker='https://cveharbor.com/remediation/'+(row.record_id.includes('~')?'?record='+encodeURIComponent(row.record_id):'');
  const subject='Manager Attention Required: Vulnerability Status Update Overdue for '+row.cve_id;
  const greeting='Hi '+row.recipient_email+',';
  const summary='The vulnerability '+row.cve_id+' is currently assigned to '+row.assigned_recipient+', and no progress update or status change has been recorded within the expected '+hours+'-hour period.';
@@ -39,6 +41,7 @@ export function renderManagerReminder(row){
  return {subject,html,text};
 }
 export function renderProgressNotice(row){
+ row={...row,cve_id:publicCve(row.cve_id),record_id:row.record_id||row.cve_id};
  if(row.kind==='reminder'&&row.assigned_recipient&&row.recipient_email!==row.assigned_recipient)return renderManagerReminder(row);
  const reminder=row.kind==='reminder',heading=reminder?'Please update your CVE assignment':'Assignment progress updated';
  const summary=reminder?'No progress update has been recorded for '+row.cve_id+' since '+utc(row.last_progress_at)+'. This assignment has a '+row.interval_seconds/3600+'-hour update interval. Please share your progress, any blockers, or the remediation outcome.':row.actor_email+' posted an update for '+row.cve_id+' at '+utc(row.created_at)+'.';

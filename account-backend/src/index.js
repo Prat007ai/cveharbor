@@ -1,3 +1,4 @@
+import {sharedRoute} from './finding-remediation.js';
 import {reviewerRoute,reviewActivity} from './assignment-progress.js';
 import {ReviewError} from './assignment-progress-common.js';
 import {scheduleProgress,retryProgress} from './assignment-progress-mail.js';
@@ -271,6 +272,7 @@ export default {async fetch(req,env,ctx){
   if(path.startsWith('/v1/monitoring'))return await monitoringHandler(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/lifecycle'))return await lifecycleHandler(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/finding-tickets'))return await findingTicketRoute(req,env,user,path,req.method==='POST'?await body(req):{});
+  if(path.startsWith('/v1/finding-remediations/')||path.startsWith('/v1/remediation-records/'))return await sharedRoute(req,env,user,path,req.method==='POST'?await body(req):{});
   if(path.startsWith('/v1/finding-statuses'))return await findingStatusRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/plugin-installation-status'))return await sourceRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/plugin-sources'))return await sourceRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
@@ -324,21 +326,21 @@ export default {async fetch(req,env,ctx){
    const data=await body(req);
    return await importLegacy(env,user,data.remediations);
   }
-  const progressRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})\/review-activity$/.exec(path);
+  const progressRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)\/review-activity$/.exec(path);
   if(progressRoute&&req.method==='GET')return response(await reviewActivity(env,user,progressRoute[1],url));
-  const progressRetry=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})\/review-notifications\/(\d{1,16})\/retry$/.exec(path);
+  const progressRetry=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)\/review-notifications\/(\d{1,16})\/retry$/.exec(path);
   if(progressRetry&&req.method==='POST'){const result=await retryProgress(env,user,progressRetry[1],Number(progressRetry[2]));scheduleProgress(env,ctx);return response(result);}
-  const statusRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})\/status-history$/.exec(path);
+  const statusRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)\/status-history$/.exec(path);
   if(statusRoute&&req.method==='GET')return response(await statusHistory(env,user,statusRoute[1],url));
-  const fyiRetry=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})\/assignments\/([a-f0-9-]{36})\/fyi\/retry$/.exec(path);
+  const fyiRetry=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)\/assignments\/([a-f0-9-]{36})\/fyi\/retry$/.exec(path);
   if(fyiRetry&&req.method==='POST'){const result=await retryFyi(env,user,fyiRetry[1],fyiRetry[2]);scheduleFyi(env,ctx);return response(result);}
-  const assignmentRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})\/assignments(?:\/([a-f0-9-]{36})\/revoke)?$/.exec(path);
+  const assignmentRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)\/assignments(?:\/([a-f0-9-]{36})\/revoke)?$/.exec(path);
   if(assignmentRoute){
    if(!assignmentRoute[2]&&req.method==='GET')return await assignmentHistory(env,user,assignmentRoute[1],url);
    if(assignmentRoute[2]&&req.method==='POST')return await revokeAssignment(env,user,assignmentRoute[1],assignmentRoute[2]);
    return response({error:'Method not allowed'},405);
   }
-  const remediationRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})(\/assign)?$/.exec(path);
+  const remediationRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)(\/assign)?$/.exec(path);
   if(remediationRoute){
    const id=remediationRoute[1];
    if(remediationRoute[2]&&req.method==='POST'){const result=await assignRemediation(env,user,id,await body(req));if(result.ok)scheduleFyi(env,ctx);return result;}

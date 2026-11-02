@@ -1,3 +1,4 @@
+import {publicCve} from './remediation-identity.js';
 import {workflowReady} from './remediation-workflow.js';
 import {sendEmail} from './delivery.js';
 import {escapeHtml,advisoryFields,trustedReference} from './assignment-template.js';
@@ -23,6 +24,7 @@ export async function fyiReady(env){
 }
 const utc=value=>new Date(value*1000).toISOString().replace('T',' ').replace('.000Z',' UTC');
 export function renderFyiNotice(row){
+ row={...row,cve_id:publicCve(row.cve_id),record_id:row.record_id||row.cve_id};
  const e=escapeHtml;let a={};try{a=JSON.parse(row.public_advisory_json||'{}')}catch{}
  const ack=row.kind==='acknowledged';
  const heading=ack?'Assignment receipt acknowledged':'Vulnerability review assigned';

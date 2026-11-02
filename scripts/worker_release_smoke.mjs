@@ -82,3 +82,9 @@ const managerFiles=['account-backend/src/assignment-progress-mail.js','account-b
 assert.equal(assignmentProgressCodeOnly(managerFiles),true);
 for(const file of ['account-backend/migrations/0027_assignment_progress.sql','account-backend/wrangler.toml','account-backend/src/index.js','scripts/bootstrap_cvie_shared.mjs'])assert.equal(assignmentProgressCodeOnly([...managerFiles,file]),false);
 console.log('PASS: manager reminder release deploys notification code without migrations or unrelated maintenance');
+
+const {unifiedFindingsRelease}=await import('./worker_release_mode.mjs');
+const unifiedFiles=['account-backend/src/finding-remediation.js','account-backend/src/remediation-identity.js','account-backend/migrations/0028_unified_findings.sql','account-backend/tests/unified-findings.test.mjs'];
+assert.equal(unifiedFindingsRelease(unifiedFiles),true);
+for(const f of ['account-backend/wrangler.toml','account-backend/src/cvie.js','scripts/bootstrap_cvie_shared.mjs'])assert.equal(unifiedFindingsRelease([...unifiedFiles,f]),false);
+assert.equal(unifiedFindingsRelease(unifiedFiles.filter(f=>!f.endsWith('.sql'))),false);

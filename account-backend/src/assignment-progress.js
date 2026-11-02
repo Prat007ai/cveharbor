@@ -1,3 +1,4 @@
+import {recordScope,scopeLabel} from './remediation-identity.js';
 import {sendEmail} from './delivery.js';
 import {reviewPage} from './assignment-progress-page.js';
 import {REVIEW_ORIGIN,reviewNow as now,reviewHash as hash,reviewToken,reviewQuota,progressReady,activeReviewSQL,ReviewError} from './assignment-progress-common.js';
@@ -61,6 +62,7 @@ export async function reviewerRoute(req,env){
   if(!session)return reviewPage();
   const before=url.searchParams.get('before');if(before!==null&&(!/^\d{1,16}$/.test(before)||!Number.isSafeInteger(Number(before))||Number(before)<1))throw new ReviewError('Invalid activity cursor.');
   const activities=await env.DB.prepare('SELECT id,previous_status,new_status,reason,comment,created_at FROM remediation_review_activity WHERE assignment_id=? AND id<? ORDER BY id DESC LIMIT 21').bind(id,before?Number(before):Number.MAX_SAFE_INTEGER).all(),activity=(activities.results||[]).slice(0,20);
+  row.scope_label=scopeLabel(await recordScope(env,row.user_id,row.cve_id));
   return reviewPage({row,verified:true,proof:session.proof,activity,next:(activities.results||[]).length>20?activity.at(-1).id:null,message:url.searchParams.get('saved')==='1'?'Your progress update has been saved. The requester can see it in the tracker.':''});
  }catch(error){if(error instanceof ReviewError)return reviewPage({row,verified:!!session,proof:session?.proof||'',challenge,message:error.message},error.status);return reviewPage({unavailable:true,message:'Assignment updates are temporarily unavailable. Please try again later.'},503);}
 }
