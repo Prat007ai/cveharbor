@@ -195,7 +195,7 @@ Artifacts: [reviewed cold operations](cvie-evidence/followup-hydration-before.js
 
 The original read-only diagnostic at **3:00:19 p.m. Toronto time on 2 November 2026** measured 336,509 rows read and zero written for five PHP CVEs through the existing reconciliation path. It observed 1,766 KEVs, 7,838 disclosures, four rejected records, 97 queued disclosures (96 unattempted and one retrying with nine attempts), eight ready shared scopes and one scanning scope.
 
-This is the [earlier baseline artifact](cvie-evidence/production-baseline.json), not an after-deployment result. No backlog reduction is attributed to this undeployed branch. Actual historical queue ages, sustained processing rate, daily billing/write contributors and production browser latency were not established. Existing PR checks may repeat their fixed read-only diagnostic; they do not apply migrations or run scans. No new production benchmark was initiated for this follow-up.
+This is the [earlier baseline artifact](cvie-evidence/production-baseline.json), not an after-deployment result. No backlog reduction is attributed to this undeployed branch. Actual historical queue ages, sustained processing rate, daily billing/write contributors and production browser latency were not established. Existing PR checks may repeat their fixed read-only diagnostic; they do not apply migrations or run scans. Follow-up performance comparisons use local data only; no production load scenario or rescan was run.
 
 ## 6. Coverage, correctness and regression results
 
@@ -218,7 +218,7 @@ The existing representative-product tests cover .NET Framework, Runtime, ASP.NET
 
 No customer finding is automatically reopened or closed; no remediation owner, note, decision or notification preference is rewritten. Dedicated reports retain their existing compatible path. Partial pages still cannot overwrite a complete customer security score. These assertions have local regression evidence; live remote account/report/email delivery behavior has not been certified.
 
-Artifacts: [backend results](cvie-evidence/followup-backend-tests.json), [targeted frontend/release checks](cvie-evidence/followup-smoke-tests.json). The current PR checks must also pass before any merge consideration.
+Artifacts: [backend results](cvie-evidence/followup-backend-tests.json), [targeted frontend/release checks](cvie-evidence/followup-smoke-tests.json). For implementation commit `ea7fa077b3128ce024603f5e2abfd5afd9896d82`, all three CI workflows passed: [CVIE verification](https://github.com/Prat007ai/cveharbor/actions/runs/41538948132), [website/build checks](https://github.com/Prat007ai/cveharbor/actions/runs/41538948223), and [product-monitoring verification](https://github.com/Prat007ai/cveharbor/actions/runs/41538948632). Production deployment jobs were skipped. This is test evidence, not production approval.
 
 ## 7. Migration review and exact staging requirements
 
