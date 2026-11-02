@@ -15,6 +15,8 @@ function distance(a,b){
 }
 export function searchRegistry({q='',vendor='',ecosystem='',identifier='',scheme=''}={}){
  if([q,vendor,ecosystem,identifier,scheme].some(s=>typeof s!=='string'||s.length>200||/[\u0000-\u001f]/.test(s)))throw Error('Invalid product search');
+ if(!identifier&&q.startsWith('pkg:')){identifier=q;scheme='purl';}
+ if(!identifier&&q.startsWith('cpe:')){identifier=q;scheme='cpe';}
  const term=normalizeName(q),candidates=seed.identities.filter(p=>(!vendor||vendorKey(vendor)===vendorKey(p.vendor))&&(!ecosystem||p.ecosystem===ecosystem));
  const ranked=candidates.map(p=>{
   const names=keys(p),exact=identifier?scheme==='cpe'?p.cpe===identifier:p.identifiers.some(i=>i.scheme===scheme&&i.value===identifier):names.includes(term);

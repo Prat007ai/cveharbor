@@ -41,7 +41,8 @@ export async function immediateEvidence(env,userId,productId,{after='',limit=100
   WHERE p.id=? AND p.user_id=? AND ${activeSubscription('p',scope)}`,productId,userId).first();
  if(!p)return {not_found:true};
  const identity=p.identity_id?await storedRegistryIdentity(env,{id:p.identity_id}):null;
- if(!identity)return {enabled:true,advisories:[],next:null,coverage:'identity_required',guidance:'Confirm the exact vendor and product. No result does not establish safety.'};
+ if(!identity||identity.kind==='group')return {enabled:true,advisories:[],next:null,coverage:'identity_required',guidance:'Confirm the exact vendor, product and release or component. No result does not establish safety.'};
+ if(!identity.cpe)return {enabled:true,advisories:[],next:null,coverage:'package_sources_required',guidance:'Use the verified package identifier and installed version in package or plugin monitoring. This source index has incomplete package coverage.'};
  const now=Date.now(),cutoff=new Date(now),day=cutoff.getUTCDate();cutoff.setUTCDate(1);cutoff.setUTCMonth(cutoff.getUTCMonth()-months);cutoff.setUTCDate(Math.min(day,new Date(Date.UTC(cutoff.getUTCFullYear(),cutoff.getUTCMonth()+1,0)).getUTCDate()));
  let cursor=['~','~'];
  if(after){try{cursor=JSON.parse(atob(after));}catch{throw Error('Invalid evidence cursor');}if(!Array.isArray(cursor)||cursor.length!==2||typeof cursor[0]!=='string'||!Number.isFinite(Date.parse(cursor[0]))||!/^CVE-\d{4}-\d{4,}$/.test(cursor[1]))throw Error('Invalid evidence cursor');}

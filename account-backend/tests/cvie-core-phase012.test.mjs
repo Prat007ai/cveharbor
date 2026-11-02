@@ -150,3 +150,11 @@ test('a stale source selection cannot fetch again after another worker advances 
  e.DB.prepare=sql=>{if(sql.startsWith('UPDATE cvie_sources SET last_attempt_at'))e.DB.sql.prepare("UPDATE cvie_sources SET next_attempt_at=? WHERE id='cisa_kev'").run(now+1e6);return prepare(sql);};
  assert.equal((await refreshEvidence(e,async()=>{fetched++;throw Error('Unexpected provider call');},now)).busy,true);assert.equal(fetched,0);
 });
+
+test('PURL packages, WordPress plugin slugs and unresolved release groups cannot become runtime/core coverage',async()=>{
+ const e=env(),purl='pkg:nuget/Microsoft.NETCore.App.Runtime.win-x64';
+ assert.equal(searchRegistry({q:purl}).identity.id,'microsoft-net-runtime-win-x64-package');
+ assert.notEqual(searchRegistry({q:purl}).identity.id,searchRegistry({q:'.NET Runtime'}).identity.id);
+ await subscribeProducts(e,'a',[{name:'Microsoft.NETCore.App.Runtime.win-x64'}]);assert.equal((await immediateEvidence(e,'a',(await product(e)).id)).coverage,'package_sources_required');
+ await subscribeProducts(e,'b',[{name:'Windows Server'}]);assert.equal((await immediateEvidence(e,'b',(await product(e,'b')).id)).coverage,'identity_required');
+});

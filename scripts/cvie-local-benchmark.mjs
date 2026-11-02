@@ -63,7 +63,7 @@ try{
    const feed=async()=>Response.json({dateReleased:new Date(t).toISOString(),count:items.length,vulnerabilities:items});
    results.samples[name+'_kev_first']=(await measured(env,'disclosure_dispatch',e=>(name==='NEW'?refreshEvidence:baselineRefresh)(e,feed,t))).metric;
    results.samples[name+'_kev_unchanged']=(await measured(env,'disclosure_dispatch',e=>(name==='NEW'?refreshEvidence:baselineRefresh)(e,feed,t+16*60000))).metric;
-   if(name==='NEW')results.target_met_local=results.samples.NEW_100_result_page.rows_read_p95<=1000&&results.samples.NEW_100_result_page.rows_written_p95===0;
+   if(name==='NEW')results.evidence_read_target_met_local=results.samples.NEW_100_result_page.rows_read_p95<=1000&&results.samples.NEW_100_result_page.rows_written_p95===0;
   }
  }
  const out=process.argv[2];if(out)fs.writeFileSync(out,JSON.stringify(results,null,2)+'\n');console.log(JSON.stringify(results,null,2));

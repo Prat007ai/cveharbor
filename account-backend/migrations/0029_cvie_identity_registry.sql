@@ -322,3 +322,9 @@ CREATE TABLE cvie_identity_index_jobs (
  complete INTEGER NOT NULL DEFAULT 0,failed INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX cvie_identity_index_due ON cvie_identity_index_jobs(complete,next_attempt_at,lease_until);
+
+-- A package identity is distinct from its runtime family and platform siblings.
+INSERT INTO cvie_identities(identity_id,vendor,name,kind,ecosystem,version_scheme,revision,provenance)
+ VALUES('microsoft-net-runtime-win-x64-package','microsoft','Microsoft.NETCore.App.Runtime.win-x64','package','nuget','semver',1,'https://www.nuget.org/packages/Microsoft.NETCore.App.Runtime.win-x64/');
+INSERT INTO cvie_identity_aliases VALUES('microsoft.netcore.app.runtime.win-x64','microsoft-net-runtime-win-x64-package','https://www.nuget.org/packages/Microsoft.NETCore.App.Runtime.win-x64/',1);
+INSERT INTO cvie_identity_identifiers VALUES('purl','pkg:nuget/Microsoft.NETCore.App.Runtime.win-x64','microsoft-net-runtime-win-x64-package','https://www.nuget.org/packages/Microsoft.NETCore.App.Runtime.win-x64/',1);
