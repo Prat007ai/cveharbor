@@ -330,6 +330,7 @@ opsDom.window.CVEHARBOR_THREATS={indicators:[]};
 opsDom.window.eval(fs.readFileSync('operations.js','utf8'));
 const opsDoc=opsDom.window.document;
 assert.equal(opsDoc.querySelectorAll('#versionEcosystem option').length,8,'package ecosystems available');
+opsDoc.getElementById('remediationOwner').value='Test owner';
 opsDoc.getElementById('remediationCve').value='CVE-2026-12345';
 opsDoc.getElementById('remediationForm').dispatchEvent(new opsDom.window.Event('submit',{bubbles:true,cancelable:true}));
 assert.match(opsDoc.getElementById('remediationCount').textContent,/1 tracked/,'legacy browser records remain available before backend activation');
