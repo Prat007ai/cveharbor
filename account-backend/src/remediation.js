@@ -1,3 +1,4 @@
+import {assignWithAcknowledgement,acknowledgementReady,assignmentSummary} from './assignment-acknowledgement.js';
 // CVEHarbor's authenticated remediation records, private D1 storage, and
 // tightly controlled email assignment notifications. No Azure DevOps access
 // or customer inventory is collected by this service.
@@ -42,7 +43,7 @@ export function assignmentReady(env){
 }
 export async function capabilities(env){
   return reply({storage:'d1',version:2,assignments_available:await isMigrated(env),
-    assignment_email_enabled:assignmentReady(env)});
+    assignment_email_enabled:assignmentReady(env),acknowledgements_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await acknowledgementReady(env)});
 }
 export async function listRemediations(env,user){
   const migrated=await isMigrated(env);
@@ -50,7 +51,9 @@ export async function listRemediations(env,user){
     ? 'SELECT r.cve_id AS id,r.status,r.owner,r.due,r.notes,r.updated_at AS updated,a.assignee_email AS assigned_to,a.state AS assignment_status,a.last_sent_at AS notified_at FROM remediations r LEFT JOIN remediation_assignments a ON r.user_id=a.user_id AND r.cve_id=a.cve_id WHERE r.user_id=? ORDER BY r.updated_at DESC LIMIT 250'
     : 'SELECT cve_id AS id,status,owner,due,notes,updated_at AS updated FROM remediations WHERE user_id=? ORDER BY updated_at DESC LIMIT 250';
   const rows=await env.DB.prepare(sql).bind(user.id).all();
-  return reply({remediations:rows.results||[],assignments_available:migrated});
+  let acknowledgements=new Map(),acknowledgementsAvailable=false;
+  if(env.ASSIGNMENT_ACK_ENABLED==='true'){try{acknowledgements=await assignmentSummary(env,user);acknowledgementsAvailable=true;}catch{}}
+  return reply({remediations:(rows.results||[]).map(row=>({...row,acknowledgements:acknowledgements.get(row.id)||null})),assignments_available:migrated,acknowledgements_available:acknowledgementsAvailable});
 }
 async function capacity(env,userId,id){
   const existing=await env.DB.prepare('SELECT cve_id FROM remediations WHERE user_id=? AND cve_id=?').bind(userId,id).first();
@@ -177,6 +180,7 @@ export async function assignRemediation(env,user,id,raw){
     throw new RemediationError('Enter a valid CVE ID and recipient email');
   if(!await isMigrated(env))throw new RemediationError('Assignment database migration is required',503);
   if(!assignmentReady(env))throw new RemediationError('Assignment email delivery is not enabled',503);
+  if(env.ASSIGNMENT_ACK_ENABLED==='true')return assignWithAcknowledgement(env,user,cve,recipient,reviewerNotes,raw||{});
   const prior=await env.DB.prepare(
     'SELECT assignee_email,state,claimed_at,last_sent_at FROM remediation_assignments WHERE user_id=? AND cve_id=?'
   ).bind(user.id,cve).first();

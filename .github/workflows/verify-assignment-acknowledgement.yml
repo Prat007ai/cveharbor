@@ -1,0 +1,34 @@
+name: Verify assignment email and acknowledgement (no deployment)
+on:
+  push:
+    branches: [feat/assignment-acknowledgement]
+  pull_request:
+    paths: ['account-backend/src/assignment-*.js', 'account-backend/src/remediation.js', 'account-backend/migrations/0024_assignment_acknowledgements.sql', 'account-backend/tests/assignment-*.mjs', 'account-backend/tests/helpers/assignment-db.mjs', 'scripts/assignment_ack_browser.mjs', 'scripts/verify_assignment_ack_d1.mjs', '.github/workflows/verify-assignment-acknowledgement.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm install --no-save --no-package-lock jsdom@26 playwright-core@1.56.1
+      - run: npm test --prefix account-backend
+      - run: python -m unittest discover -s tests
+      - run: python scripts/build_site.py && python scripts/verify_production.py --preflight
+      - run: node scripts/worker_release_smoke.mjs && node scripts/browser_smoke.mjs
+      - name: Validate Worker packaging and native rate limiting binding without deployment
+        working-directory: account-backend
+        run: npx --yes wrangler@4.156.0 deploy --dry-run --outdir ../work/acknowledgement-worker
+      - name: Exercise guest confirmation and render email/page/tracker review screenshots
+        run: node scripts/assignment_ack_browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: acknowledgement-review-synthetic-data
+          path: work/acknowledgement-review/
