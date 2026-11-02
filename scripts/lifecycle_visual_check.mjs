@@ -39,12 +39,14 @@ try{
     panels:[...document.querySelectorAll('.lifecycle-grid > .data-panel')].map(panel=>panel.getBoundingClientRect().toJSON()),
     cards:cards.slice(0,2).map(card=>card.getBoundingClientRect().toJSON()),
     overflowingCards:cards.filter(card=>card.scrollWidth>card.clientWidth+1).length,
+    overflowDetail:cards.filter(card=>card.scrollWidth>card.clientWidth+1).slice(0,1).map(card=>({width:card.clientWidth,scroll:card.scrollWidth,children:[...card.children].map(n=>({class:n.className,width:n.clientWidth,scroll:n.scrollWidth}))})),
     installed:document.getElementById('lifecycleInstalled').value};
   });
   assert.ok(layout.pageWidth<=layout.viewport+1,name+' must not overflow horizontally');
   assert.ok(layout.root.left-layout.sidebar<=41&&layout.viewport-layout.root.right<=41,name+' must use the available width with small gutters');
   assert.ok(Math.abs(layout.header.left-layout.root.left)<=1&&Math.abs(layout.header.width-layout.root.width)<=1,name+' header aligns with workspace');
   assert.ok(Math.abs(layout.footer.width-layout.root.width)<=1,name+' footer uses available width');
+  if(layout.overflowingCards)console.error(name,JSON.stringify(layout.overflowDetail));
   assert.equal(layout.overflowingCards,0,name+' product card content must fit');
   if(width>760)assert.ok(layout.header.top<1,name+' desktop sidebar must not occupy a horizontal row');
   assert.equal(layout.installed,'resize-preserves-input',name+' preserves in-progress form while resizing');

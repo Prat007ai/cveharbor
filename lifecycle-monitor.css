@@ -209,3 +209,7 @@ body[data-page="lifecycle"] .lifecycle-source-actions{display:grid;gap:6px;min-w
 @media(max-width:700px){body[data-page="lifecycle"] .lifecycle-product-suggestions{grid-template-columns:1fr}body[data-page="lifecycle"] .lifecycle-source-actions{grid-column:2/-1}}
 
 @media(min-width:1051px) and (max-width:1699px){body[data-page="lifecycle"] .lifecycle-source-actions{grid-column:2/4}}
+/* Action labels wrap inside the reserved grid track at every font/viewport size. */
+#lifecycleMonitor .lifecycle-source-actions{grid-template-columns:minmax(0,1fr);max-width:100%}
+#lifecycleMonitor .lifecycle-source-actions button{grid-column:1;grid-row:auto;justify-self:stretch;width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;box-sizing:border-box}
+#lifecycleMonitor .lifecycle-source-row>.lifecycle-product-copy,#lifecycleMonitor .lifecycle-source-row>.lifecycle-timeline{min-width:0;overflow-wrap:anywhere}
