@@ -83,3 +83,6 @@ body.workspace-operations{--ws-line:#19465b;--ws-muted:#a1bfd0;--ws-cyan:#25e2dc
 .ws-heading-beam{position:absolute;inset:0;width:100%;height:100%;z-index:-1;overflow:hidden;pointer-events:none}
 .workspace-operations:not(.workspace-authenticated) .ws-heading-beam{display:none}
 .workspace-authenticated .account-hero-left h1{text-shadow:0 0 22px #34c9ce24}
+/* Keep finding labels readable when the overview is the initial mobile view. */
+.ws-rem-stats>div>div{min-width:0;overflow-wrap:anywhere}
+@media(max-width:420px){.ws-donut-layout{grid-template-columns:minmax(0,1fr)}.ws-donut{justify-self:center}.ws-rem-stats>div{flex-direction:column;gap:4px;text-align:center}}
