@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-02",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6470,
+  "candidate_records": 6494,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -314,7 +314,7 @@
     },
     {
       "id": "CVE-2026-120339",
-      "title": "A security flaw has been discovered in mathurvishal CloudClassroom-PHP-Project",
+      "title": "A security flaw has been discovered in mathurvishal CloudClassroom-PHP-Project. This...",
       "severity": "low",
       "categories": [
         "PHP"
@@ -322,27 +322,39 @@
       "published": "2026-11-02",
       "updated": "2026-11-02",
       "summary": "A security flaw has been discovered in mathurvishal CloudClassroom-PHP-Project. This vulnerability affects unknown code of the file updatedetailsfromfaculty.php. Performing a manipulation of the argument fname results in cross site scripting. The attack may be initiated remotely. The exploit has been released to the public and may be used for attacks. This product uses a rolling release model to deliver continuous updates. As a result, specific version information for affected or updated releases is not available. The vendor was contacted early about this disclosure but did not respond in any way.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120339"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-272h-74mj-53qp"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/vinniboy021-blip/Advisory/blob/main/updatedetailsfromfaculty-stored-xss.md"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://vuldb.com/cve/CVE-2026-120339"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": "2.1",
-      "status": "NVD indexed CVE",
+      "cvss": "4.3",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-02T05:14:09Z",
-      "source_updated_at": "2026-11-02T04:16:53.440",
-      "source_type": "nvd",
+      "source_updated_at": "2026-11-02T06:31:19Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-120340",
-      "title": "A weakness has been identified in mathurvishal CloudClassroom-PHP-Project",
+      "title": "A weakness has been identified in mathurvishal CloudClassroom-PHP-Project. This issue affects...",
       "severity": "low",
       "categories": [
         "PHP"
@@ -350,27 +362,39 @@
       "published": "2026-11-02",
       "updated": "2026-11-02",
       "summary": "A weakness has been identified in mathurvishal CloudClassroom-PHP-Project. This issue affects some unknown processing of the component Global Session Handler. Executing a manipulation can lead to session expiration. The attack may be launched remotely. A high complexity level is associated with this attack. The exploitability is assessed as difficult. The exploit has been made available to the public and could be used for attacks. This product operates on a rolling release basis, ensuring continuous delivery. Consequently, there are no version details for either affected or updated releases. The vendor was contacted early about this disclosure but did not respond in any way.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120340"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-wrh5-2293-frmr"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/vinniboy021-blip/Advisory/blob/main/session-cookie-logout.md"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://vuldb.com/cve/CVE-2026-120340"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": "2.9",
-      "status": "NVD indexed CVE",
+      "cvss": "3.7",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-02T06:17:25Z",
-      "source_updated_at": "2026-11-02T05:18:22.723",
-      "source_type": "nvd",
+      "source_updated_at": "2026-11-02T06:31:15Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-120341",
-      "title": "A security vulnerability has been detected in mathurvishal CloudClassroom-PHP-Project",
+      "title": "A security vulnerability has been detected in mathurvishal CloudClassroom-PHP-Project. Impacted...",
       "severity": "medium",
       "categories": [
         "PHP"
@@ -378,27 +402,39 @@
       "published": "2026-11-02",
       "updated": "2026-11-02",
       "summary": "A security vulnerability has been detected in mathurvishal CloudClassroom-PHP-Project. Impacted is an unknown function of the file studentdetails.php. The manipulation leads to execution after redirect. Remote exploitation of the attack is possible. The exploit has been disclosed publicly and may be used. This product follows a rolling release approach for continuous delivery, so version details for affected or updated releases are not provided. The vendor was contacted early about this disclosure but did not respond in any way.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120341"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-xj65-2697-58c2"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/vinniboy021-blip/Advisory/blob/main/details-plaintext-disclosure.md"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://vuldb.com/cve/CVE-2026-120341"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
+      "cvss": "7.3",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-02T06:17:25Z",
-      "source_updated_at": "2026-11-02T05:18:23.700",
-      "source_type": "nvd",
+      "source_updated_at": "2026-11-02T06:31:15Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-120342",
-      "title": "A vulnerability was detected in mathurvishal CloudClassroom-PHP-Project",
+      "title": "A vulnerability was detected in mathurvishal CloudClassroom-PHP-Project. The affected element is...",
       "severity": "medium",
       "categories": [
         "PHP"
@@ -406,27 +442,39 @@
       "published": "2026-11-02",
       "updated": "2026-11-02",
       "summary": "A vulnerability was detected in mathurvishal CloudClassroom-PHP-Project. The affected element is an unknown function of the file viewquery.php. The manipulation of the argument eid results in sql injection. The attack can be executed remotely. The exploit is now public and may be used. This product implements a rolling release for ongoing delivery, which means version information for affected or updated releases is unavailable. The vendor was contacted early about this disclosure but did not respond in any way.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120342"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-j2v3-rvjg-3vwx"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/luan-oliveira01/Advisory-CloudClassroom-PHP-Project-1.0/tree/main/viewquery-sqli"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://vuldb.com/cve/CVE-2026-120342"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
+      "cvss": "7.3",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-02T06:17:25Z",
-      "source_updated_at": "2026-11-02T05:18:24.310",
-      "source_type": "nvd",
+      "source_updated_at": "2026-11-02T06:31:19Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-120343",
-      "title": "A flaw has been found in mathurvishal CloudClassroom-PHP-Project",
+      "title": "A flaw has been found in mathurvishal CloudClassroom-PHP-Project. The impacted element is an...",
       "severity": "low",
       "categories": [
         "PHP"
@@ -434,21 +482,885 @@
       "published": "2026-11-02",
       "updated": "2026-11-02",
       "summary": "A flaw has been found in mathurvishal CloudClassroom-PHP-Project. The impacted element is an unknown function of the file manageassessment2.php. This manipulation of the argument ExamName/Q1/Q2/Q3/Q4/Q5 causes cross site scripting. The attack is possible to be carried out remotely. The exploit has been published and may be used. This product adopts a rolling release strategy to maintain continuous delivery. Therefore, version details for affected or updated releases cannot be specified. The vendor was contacted early about this disclosure but did not respond in any way.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120343"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-hv93-gxq2-x4cw"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/capivara-research/manageassessment2-stored-xss/blob/main/manageassessment2-stored-xss.md"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://vuldb.com/cve/CVE-2026-120343"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.3",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-02T06:17:25Z",
+      "source_updated_at": "2026-11-02T06:31:15Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-120348",
+      "title": "A vulnerability was identified in dayrui XunRuiCMS up to 4.7.4. Affected by this vulnerability is...",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "A vulnerability was identified in dayrui XunRuiCMS up to 4.7.4. Affected by this vulnerability is the function _get_tpl_content of the file dayrui/Fcms/Library/Notice.php of the component Email Template Rendering. The manipulation leads to code injection. The attack can be initiated remotely. The exploit is publicly available and might be used. The vendor was contacted early about this disclosure but did not respond in any way.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-r9m4-crch-98pw"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120348"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/tiranbge/disclosure-xunruicms-4.7.2/blob/master/reports/1.md"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://vuldb.com/cve/CVE-2026-120348"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.3",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:19Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-120347",
+      "title": "A vulnerability was determined in dayrui XunRuiCMS up to 4.7.4. Affected is the function View of...",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "A vulnerability was determined in dayrui XunRuiCMS up to 4.7.4. Affected is the function View of the file dayrui/Fcms/Core/View.php of the component Member Module. Executing a manipulation of the argument catid can lead to sql injection. It is possible to launch the attack remotely. The exploit has been publicly disclosed and may be utilized. This patch is called 9b6ea0cf9c6e8cdc9a5260c38b95da5fed4c4231. The affected component should be upgraded.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-rq2r-g99g-gxmf"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120347"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://gitee.com/dayrui/xunruicms"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://gitee.com/dayrui/xunruicms/commit/9b6ea0cf9c6e8cdc9a5260c38b95da5fed4c4231"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.3",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:19Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-8wmf-9cp5-g5hq",
+      "title": "Malicious code in wallet-tracking (PyPI)",
+      "severity": "bulletin",
+      "categories": [
+        "Python / PyPI",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "Malicious package. `wallet-tracking` is a PyPI cryptocurrency-wallet information stealer. It collects wallet data on the victim host and exfiltrates it to an attacker-controlled Discord webhook. The source also still contains an unconfigured placeholder webhook URL (.../api/webhooks/YOUR_URL) beside the live one, indicating a copy-paste stealer template. Classification: information stealer. The package provides no legitimate functionality, so all published versions are malicious. First observed by wormsign on 2026-05-30. Full indicators are published at the reference below. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/f63470f52b3707cb0ecb4ced35a983237466e281/osv/malicious/pypi/wallet-tracking/MAL-2026-18443.json))",
+      "affected": "pip: wallet-tracking (> 0); pip: wallet-tracking (= 1.0.0); pip: wallet-tracking (= 1.0.1); pip: wallet-tracking (= 1.0.3); pip: wallet-tracking (= 1.0.4); pip: wallet-tracking (= 1.0.5); pip: wallet-tracking (= 1.0.6)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-8wmf-9cp5-g5hq"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/f63470f52b3707cb0ecb4ced35a983237466e281/osv/malicious/pypi/wallet-tracking/MAL-2026-18443.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://pypi.org/project/wallet-tracking"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wormsign.io/portfolio/wallet-tracking"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:35Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-8cq9-2c2q-58ww",
+      "title": "Malicious code in @notrainer/nobtrainer-sdk (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "Malicious package. `@notrainer/nobtrainer-sdk` is an npm package that exfiltrates sensitive data on the victim host to an attacker-controlled Discord webhook. The same Discord webhook endpoint (ID 1433690093175967776) is also used by the npm package `@johnruff215-dev/solana-wallet-tracker`, indicating both belong to a single actor/campaign. Classification: information stealer. The package provides no legitimate functionality, so all published versions are malicious. Full indicators are published at the reference below. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/fb9c4145c8aa6387c0e41e8db8b54b1a839905a5/osv/malicious/npm/@notrainer/nobtrainer-sdk/MAL-2026-18446.json))",
+      "affected": "npm: @notrainer/nobtrainer-sdk (> 0); npm: @notrainer/nobtrainer-sdk (= 1.0.2); npm: @notrainer/nobtrainer-sdk (= 1.0.3); npm: @notrainer/nobtrainer-sdk (= 1.0.4); npm: @notrainer/nobtrainer-sdk (= 1.0.5)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-8cq9-2c2q-58ww"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/fb9c4145c8aa6387c0e41e8db8b54b1a839905a5/osv/malicious/npm/@notrainer/nobtrainer-sdk/MAL-2026-18446.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wormsign.io/portfolio/@notrainer/nobtrainer-sdk"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@notrainer/nobtrainer-sdk"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:35Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-354j-r6m9-986p",
+      "title": "Malicious code in self-v8 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "Malicious package. `self-v8` is an npm package that harvests sensitive data on the victim host and exfiltrates it to an attacker-controlled Discord webhook. Classification: information stealer. The package provides no legitimate functionality, so all published versions are malicious. Full indicators are published at the reference below. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/a38319c2597366c8d504c9bec7995b65d3721d77/osv/malicious/npm/self-v8/MAL-2026-18445.json))",
+      "affected": "npm: self-v8 (> 0); npm: self-v8 (= 1.0.0); npm: self-v8 (= 2.1.8); npm: self-v8 (= 2.1.9); npm: self-v8 (= 8.1.9); npm: self-v8 (= 8.3.9); npm: self-v8 (= 8.5.9); npm: self-v8 (= 8.7.9); npm: self-v8 (= 8.9.9)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-354j-r6m9-986p"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/a38319c2597366c8d504c9bec7995b65d3721d77/osv/malicious/npm/self-v8/MAL-2026-18445.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wormsign.io/portfolio/self-v8"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/self-v8"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-9jxw-2pvm-5q9f",
+      "title": "Malicious code in litecore-lib-ltc (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "Malicious package. `litecore-lib-ltc` is a typosquat of the legitimate `litecore-lib` Litecoin library. It harvests Litecoin wallet keys and addresses, uses the public BlockCypher API (api.blockcypher.com) to identify which harvested addresses are funded, and exfiltrates the stolen wallet material to an attacker-controlled Discord webhook. Classification: cryptocurrency-wallet information stealer. The package provides no legitimate functionality distinct from this theft, so all published versions are malicious. Full indicators (including the complete webhook URL) are published at the reference below. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/92f4861bbd643ecbcd781e15145b7207b465a8c2/osv/malicious/npm/litecore-lib-ltc/MAL-2026-18442.json))",
+      "affected": "npm: litecore-lib-ltc (> 0); npm: litecore-lib-ltc (= 1.0.0); npm: litecore-lib-ltc (= 1.9.3); npm: litecore-lib-ltc (= 1.9.4); npm: litecore-lib-ltc (= 1.9.5); npm: litecore-lib-ltc (= 1.9.6); npm: litecore-lib-ltc (= 1.9.7); npm: litecore-lib-ltc (= 1.9.8); npm: litecore-lib-ltc (= 1.9.9); npm: litecore-lib-ltc (= 1.9.10); npm: litecore-lib-ltc (= 1.9.11); npm: litecore-lib-ltc (= 1.9.12); npm: litecore-lib-ltc (= 1.9.13); npm: litecore-lib-ltc (= 1.9.14)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-9jxw-2pvm-5q9f"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/92f4861bbd643ecbcd781e15145b7207b465a8c2/osv/malicious/npm/litecore-lib-ltc/MAL-2026-18442.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wormsign.io/portfolio/litecore-lib-ltc"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/litecore-lib-ltc"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:30Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-q54x-hhg5-963x",
+      "title": "Malicious code in @mobile-platform/magnetic-components (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "@mobile-platform/magnetic-components is a dependency-confusion package: its description says the scoped name is referenced in the Meraki Dashboard Android app's bundled JavaScript and was unclaimed on the public registry, so a build that resolves `@mobile-platform` from npm runs its code instead of the intended private package. Its preinstall script runs `node preinstall.js` on npm install; in 0.0.1 and 0.0.2 it writes `DEPENDENCY_CONFUSION_POC_MARKER.txt` into the working directory, and in 0.0.3 it makes a DNS lookup of a fixed subdomain of `dbhmeq71af5395un3p70tujr84cuwuyg7.oast.me`, an interactsh callback host, signalling that the package was installed. It sends no host data beyond the lookup itself, but unreviewed code from an outside publisher has run with the installing user's privileges. The npm account io-8 published the three versions on 2026-10-29. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/e337d7cc24f5a587a1bfcf04b87fb2d9db5484fd/osv/malicious/npm/@mobile-platform/magnetic-components/MAL-2026-18448.json))",
+      "affected": "npm: @mobile-platform/magnetic-components (= 0.0.1); npm: @mobile-platform/magnetic-components (= 0.0.2); npm: @mobile-platform/magnetic-components (= 0.0.3)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-q54x-hhg5-963x"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/e337d7cc24f5a587a1bfcf04b87fb2d9db5484fd/osv/malicious/npm/@mobile-platform/magnetic-components/MAL-2026-18448.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@mobile-platform/magnetic-components"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:35Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-v7f8-27g9-qx88",
+      "title": "Malicious code in contracts-upgradeable (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "contracts-upgradeable takes the unscoped name of @openzeppelin/contracts-upgradeable and has no functional code. Its preinstall script runs `node preinstall.js` on npm install, which POSTs the machine's hostname, the OS username and the local time to the Discord webhook `https://canary.discord.com/api/webhooks/1566232728179843243/pM5rDIrCRrEpQRbA7ibaiQk1XOQlIftmBacA5s8jD8NvXn5W-rS832DOWHQS-G-j3N6U` as \"PC Notifier\". It was published on 2026-11-02 by the npm account bigdevin55, which published sol-wallet-adapter 1.0.7 with the same script the same day; the account cutekitten05 used the same webhook in packages published on 2026-11-01. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/7e6485dab9208bce713a67e0cb84a84599d212a0/osv/malicious/npm/contracts-upgradeable/MAL-2026-18451.json))",
+      "affected": "npm: contracts-upgradeable (= 1.0.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-v7f8-27g9-qx88"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/7e6485dab9208bce713a67e0cb84a84599d212a0/osv/malicious/npm/contracts-upgradeable/MAL-2026-18451.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/contracts-upgradeable"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:35Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-543q-wq5f-hmgh",
+      "title": "Malicious code in scdn-jquery (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "jQuery / Bootstrap",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "Version 0.1.6 contains an obfuscated loader in libs/18.2.0.js. When a website serves this file as a browser script, the injected code decodes and loads https://oomcsn.cc/assets/js/m.js. That remote script loads a beacon and inserts an invisible iframe pointing to https://oomcsn.cc/assets/js/group.html, which selects iOS exploit code based on the visitor's device version. The loader is embedded in a file presented as jQuery and executes when that browser script runs. No npm install-time execution was identified. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/6007f07e3dbabcc1eaa382552bd73171cfe8f30a/osv/malicious/npm/scdn-jquery/MAL-2026-18455.json))",
+      "affected": "npm: scdn-jquery (= 0.1.6)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-543q-wq5f-hmgh"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/6007f07e3dbabcc1eaa382552bd73171cfe8f30a/osv/malicious/npm/scdn-jquery/MAL-2026-18455.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-j2hf-rv9p-8jvr",
+      "title": "Malicious code in bigbob22-test (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "bigbob22-test@1.0.0 has no functional code and an empty README. Its preinstall script runs `node preinstall.js` on npm install, which POSTs the machine's hostname, the OS username and the local time to the Discord webhook `https://canary.discord.com/api/webhooks/1566232728179843243/pM5rDIrCRrEpQRbA7ibaiQk1XOQlIftmBacA5s8jD8NvXn5W-rS832DOWHQS-G-j3N6U` as \"PC Notifier\". It was published by the npm account cutekitten05, which used the same script in wallet-adapter-base, axelarjs-sdk, cutekitten-test and sol-wallet-adapter on 2026-11-01. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/b87b7ad667d6be1bcf780b798acca098969ee0e7/osv/malicious/npm/bigbob22-test/MAL-2026-18457.json))",
+      "affected": "npm: bigbob22-test (= 1.0.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-j2hf-rv9p-8jvr"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/b87b7ad667d6be1bcf780b798acca098969ee0e7/osv/malicious/npm/bigbob22-test/MAL-2026-18457.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/bigbob22-test"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-q9p6-j8q4-8qh9",
+      "title": "Malicious code in ms-client-portal (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "ms-client-portal is a dependency-confusion package with no functional code; its README says the name is an internal project name exposed in the production web bundle of a health-sector client portal. Its preinstall and postinstall scripts each run a `node -e` one-liner on npm install that sends an HTTP GET to `http://38.242.235.206/depconf/ms-client-portal/preinstall` (and `/postinstall`) with the user name (`USER` or `USERNAME`), hostname and working directory in the query string. The npm account amahrou1a published versions 1.0.0 and 10.0.0 on 2026-10-31, and earlier the same day two more packages, internal-renderers and pandafortunerush, with the same beacon to the same server. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/76d9972934d78e9e71144d57c681280fa323f6c4/osv/malicious/npm/ms-client-portal/MAL-2026-18449.json))",
+      "affected": "npm: ms-client-portal (= 1.0.0); npm: ms-client-portal (= 10.0.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-q9p6-j8q4-8qh9"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/76d9972934d78e9e71144d57c681280fa323f6c4/osv/malicious/npm/ms-client-portal/MAL-2026-18449.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/ms-client-portal"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-pw4j-9v86-8c3g",
+      "title": "Malicious code in cutekitten-test (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "cutekitten-test@1.0.1 describes itself as a security test package for a school project and has no functional code. Its preinstall script runs `node preinstall.js` on npm install, which POSTs the machine's hostname, the OS username and the local time to the Discord webhook `https://canary.discord.com/api/webhooks/1566232728179843243/pM5rDIrCRrEpQRbA7ibaiQk1XOQlIftmBacA5s8jD8NvXn5W-rS832DOWHQS-G-j3N6U` as \"PC Notifier\". It was published by the npm account cutekitten05, which used the same script in wallet-adapter-base, axelarjs-sdk, bigbob22-test and sol-wallet-adapter on 2026-11-01. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/b87b7ad667d6be1bcf780b798acca098969ee0e7/osv/malicious/npm/cutekitten-test/MAL-2026-18458.json))",
+      "affected": "npm: cutekitten-test (= 1.0.1)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-pw4j-9v86-8c3g"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/b87b7ad667d6be1bcf780b798acca098969ee0e7/osv/malicious/npm/cutekitten-test/MAL-2026-18458.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/cutekitten-test"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-r89f-jjgp-3q97",
+      "title": "Malicious code in wallet-adapter-base (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "wallet-adapter-base takes the unscoped name of @solana/wallet-adapter-base and has no functional code. Its preinstall script runs `node preinstall.js` on npm install, which POSTs the machine's hostname, the OS username and the local time to the Discord webhook `https://canary.discord.com/api/webhooks/1566232728179843243/pM5rDIrCRrEpQRbA7ibaiQk1XOQlIftmBacA5s8jD8NvXn5W-rS832DOWHQS-G-j3N6U` as \"PC Notifier\". It was published by the npm account cutekitten05, which published axelarjs-sdk, cutekitten-test, bigbob22-test and sol-wallet-adapter with the same script on 2026-11-01. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/b87b7ad667d6be1bcf780b798acca098969ee0e7/osv/malicious/npm/wallet-adapter-base/MAL-2026-18459.json))",
+      "affected": "npm: wallet-adapter-base (= 1.0.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-r89f-jjgp-3q97"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/b87b7ad667d6be1bcf780b798acca098969ee0e7/osv/malicious/npm/wallet-adapter-base/MAL-2026-18459.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/wallet-adapter-base"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:34Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-w48h-24q2-rjqx",
+      "title": "Malicious code in @johnruff215-dev/solana-wallet-tracker (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "Malicious package. `@johnruff215-dev/solana-wallet-tracker` is an npm Solana cryptocurrency-wallet information stealer that exfiltrates wallet data to an attacker-controlled Discord webhook. The same Discord webhook endpoint (ID 1433690093175967776) is also used by the npm package `@notrainer/nobtrainer-sdk`, indicating both belong to a single actor/campaign. Classification: information stealer. The package provides no legitimate functionality, so all published versions are malicious. Full indicators are published at the reference below. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/b337921a81b02c069c24c0237e55afc334800d7b/osv/malicious/npm/@johnruff215-dev/solana-wallet-tracker/MAL-2026-18444.json))",
+      "affected": "npm: @johnruff215-dev/solana-wallet-tracker (> 0); npm: @johnruff215-dev/solana-wallet-tracker (= 1.0.0); npm: @johnruff215-dev/solana-wallet-tracker (= 1.0.1)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-w48h-24q2-rjqx"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/b337921a81b02c069c24c0237e55afc334800d7b/osv/malicious/npm/@johnruff215-dev/solana-wallet-tracker/MAL-2026-18444.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wormsign.io/portfolio/@johnruff215-dev/solana-wallet-tracker"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@johnruff215-dev/solana-wallet-tracker"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:29Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-xpgj-8rc5-pq44",
+      "title": "Malicious code in zystcdemo (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "zystcdemo presents itself as a simple date formatting utility and runs its postinstall payload on npm install with `node postinstall.js`. The payload collects the `whoami` result, hostname, platform, and current time, then sends them in a POST request to `https://srctest.zystcc.cn/collect`; npm account `zyst` published it on 2026-10-29 (UTC). --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/d14f5c184e0fa7acf2343c56b9bb72068b95e1bc/osv/malicious/npm/zystcdemo/MAL-2026-18447.json))",
+      "affected": "npm: zystcdemo (= 1.0.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-xpgj-8rc5-pq44"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/d14f5c184e0fa7acf2343c56b9bb72068b95e1bc/osv/malicious/npm/zystcdemo/MAL-2026-18447.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/zystcdemo"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:29Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-p373-68vj-fvrh",
+      "title": "Malicious code in calculator-preinstall-hook-demo (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "calculator-preinstall-hook-demo@1.1.2 presents itself as a test fixture for npm lifecycle hooks. Its preinstall script runs `node preinstall.js` on npm install, which POSTs the machine's hostname and the OS username to the Discord webhook `https://discord.com/api/webhooks/1566215853794394162/xsqpEbSn-cc3DU2AKWdzqWnXX5hjTfV-gUePQZ4evrHGlZctMd40TKCrN42qnJd7moc1`. It was published by the npm account bigdevin55 together with calculator-preinstall-chain-demo@1.1.2, which pulls it in as a dependency. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/5a3735a9d2ea3c7c6a95e61ffedf5ba2aefddfc0/osv/malicious/npm/calculator-preinstall-hook-demo/MAL-2026-18454.json))",
+      "affected": "npm: calculator-preinstall-hook-demo (= 1.1.2)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-p373-68vj-fvrh"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/5a3735a9d2ea3c7c6a95e61ffedf5ba2aefddfc0/osv/malicious/npm/calculator-preinstall-hook-demo/MAL-2026-18454.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/calculator-preinstall-hook-demo"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:29Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-3x3m-5j3w-83rj",
+      "title": "Malicious code in claims-ac1 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "claims-ac1 1.0.0 contains only a package.json declaring a single dependency, node-ac2, that is not fetched from the npm registry but from a tarball in the GitHub repository `GamerD11/ping_test` (`https://github.com/GamerD11/ping_test/raw/main/node-ac2.tgz`). That tarball has no code and in turn depends on node-ac3, another tarball in the same repository (`https://github.com/GamerD11/ping_test/raw/main/node-ac3.tgz`), whose `preinstall` script runs `node index.js` and silently ignores errors. The script reads a collector host name from `https://raw.githubusercontent.com/GamerD11/ping_test/main/test.txt` (an oastify.com host when observed) and does nothing if the file is empty; otherwise it sends an HTTPS POST to that host on port 443, path `/health`, with certificate verification disabled, containing the Node.js version, home directory, working directory, platform and architecture. The package has no legitimate functionality, the data is collected without the user's knowledge, and because the install-time code and the collector host live in a GitHub repository outside the npm package, the publisher can change them at any time without a new npm release. The same repository and mechanism are used by claims-acct-unlock (MAL-2026-18404) and dependencykfeg (MAL-2026-18416). Any machine",
+      "affected": "npm: claims-ac1 (= 1.0.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-3x3m-5j3w-83rj"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/8383d885ddd959b9450b06b8ab41a20b0caa7238/osv/malicious/npm/claims-ac1/MAL-2026-18450.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/claims-ac1"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:29Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-j62h-2r3r-ggh9",
+      "title": "Malicious code in sol-wallet-adapter (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "sol-wallet-adapter takes the unscoped name of @project-serum/sol-wallet-adapter and has no functional code. Its preinstall script runs `node preinstall.js` on npm install, which POSTs the machine's hostname, the OS username and the local time to the Discord webhook `https://canary.discord.com/api/webhooks/1566232728179843243/pM5rDIrCRrEpQRbA7ibaiQk1XOQlIftmBacA5s8jD8NvXn5W-rS832DOWHQS-G-j3N6U` as \"PC Notifier\". Versions 1.0.0 and 1.0.1 were published on 2026-11-01 by the npm account cutekitten05; after they were removed, the account bigdevin55 re-created the name and published 1.0.7 with the same script on 2026-11-02, alongside contracts-upgradeable.## Source: ossf-package-analysis (07cf0cd27f95e20e7fe52b859d73556e78f15ca06afdcab19eb43a2616895dab) The OpenSSF Package Analysis project identified 'sol-wallet-adapter' @ 1.0.7 (npm) as malicious. It is considered malicious because: - The package communicates with a domain associated with malicious activity. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/af37b0d0bcd7755fbd3de21aea4d43feaa29fc85/osv/malicious/npm/sol-wallet-adapter/MAL-2026-18452.json))",
+      "affected": "npm: sol-wallet-adapter (= 1.0.0); npm: sol-wallet-adapter (= 1.0.1); npm: sol-wallet-adapter (= 1.0.7)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-j62h-2r3r-ggh9"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/af37b0d0bcd7755fbd3de21aea4d43feaa29fc85/osv/malicious/npm/sol-wallet-adapter/MAL-2026-18452.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/sol-wallet-adapter"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:28Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-69w5-x7cm-v78h",
+      "title": "Malicious code in axelarjs-sdk (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "axelarjs-sdk@1.0.1 takes the unscoped name of @axelar-network/axelarjs-sdk and has no functional code. Its preinstall script runs `node preinstall.js` on npm install, which POSTs the machine's hostname, the OS username and the local time to the Discord webhook `https://canary.discord.com/api/webhooks/1566232728179843243/pM5rDIrCRrEpQRbA7ibaiQk1XOQlIftmBacA5s8jD8NvXn5W-rS832DOWHQS-G-j3N6U` as \"PC Notifier\". It was published by the npm account cutekitten05, which published wallet-adapter-base, cutekitten-test, bigbob22-test and sol-wallet-adapter with the same script on 2026-11-01. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/b87b7ad667d6be1bcf780b798acca098969ee0e7/osv/malicious/npm/axelarjs-sdk/MAL-2026-18456.json))",
+      "affected": "npm: axelarjs-sdk (= 1.0.1)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-69w5-x7cm-v78h"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/b87b7ad667d6be1bcf780b798acca098969ee0e7/osv/malicious/npm/axelarjs-sdk/MAL-2026-18456.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/axelarjs-sdk"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:28Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-v764-465v-vh59",
+      "title": "Malicious code in dependencykfee-2 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "## Source: ossf-package-analysis (bb75f6ebc23c1e1ea6fc3ae422db80b65e8f9b8d7c21faa2de9c58ba049e9d89) The OpenSSF Package Analysis project identified 'dependencykfee-2' @ 1.0.0 (npm) as malicious. It is considered malicious because: - The package executes one or more commands associated with malicious behavior. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/af37b0d0bcd7755fbd3de21aea4d43feaa29fc85/osv/malicious/npm/dependencykfee-2/MAL-2026-18460.json))",
+      "affected": "npm: dependencykfee-2 (= 1.0.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-v764-465v-vh59"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/af37b0d0bcd7755fbd3de21aea4d43feaa29fc85/osv/malicious/npm/dependencykfee-2/MAL-2026-18460.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:28Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-5mwr-h84x-47h6",
+      "title": "Malicious code in calculator-preinstall-chain-demo (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "calculator-preinstall-chain-demo@1.1.2 has no install script of its own but depends on exactly calculator-preinstall-hook-demo@1.1.2, so npm install runs that package's preinstall script (`node preinstall.js`). The script POSTs the machine's hostname and the OS username to the Discord webhook `https://discord.com/api/webhooks/1566215853794394162/xsqpEbSn-cc3DU2AKWdzqWnXX5hjTfV-gUePQZ4evrHGlZctMd40TKCrN42qnJd7moc1`. Both packages were published by the npm account bigdevin55 on 2026-11-01.## Source: ossf-package-analysis (88c07c18a13b451e734355c6d2bb4ca05dc4c76209fe483b97403c968c09c0ea) The OpenSSF Package Analysis project identified 'calculator-preinstall-chain-demo' @ 1.1.1 (npm) as malicious. It is considered malicious because: - The package communicates with a domain associated with malicious activity. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/af37b0d0bcd7755fbd3de21aea4d43feaa29fc85/osv/malicious/npm/calculator-preinstall-chain-demo/MAL-2026-18453.json))",
+      "affected": "npm: calculator-preinstall-chain-demo (= 1.1.2); npm: calculator-preinstall-chain-demo (= 1.1.1)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-5mwr-h84x-47h6"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/af37b0d0bcd7755fbd3de21aea4d43feaa29fc85/osv/malicious/npm/calculator-preinstall-chain-demo/MAL-2026-18453.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/calculator-preinstall-chain-demo"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T06:31:28Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-120349",
+      "title": "A security flaw has been discovered in dayrui XunRuiCMS up to 4.7.4",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "A security flaw has been discovered in dayrui XunRuiCMS up to 4.7.4. Affected by this issue is the function str_replace of the file /var/www/html/zzmob/index.php of the component Mobile Site Directory. The manipulation of the argument dirname results in code injection. The attack can be launched remotely. The exploit has been released to the public and may be used for attacks. The vendor was contacted early about this disclosure but did not respond in any way.",
       "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
       "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
       "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
       "sources": [
         {
           "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120343"
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120349"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": "2.1",
+      "cvss": "5.5",
       "status": "NVD indexed CVE",
-      "first_seen_at": "2026-11-02T06:17:25Z",
-      "source_updated_at": "2026-11-02T05:18:24.860",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T07:18:03.843",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-103310",
+      "title": "The PayHere Payment Gateway WordPress plugin from 2.4.0 through 2.4.5 does not verify the authenticity of payment notifications when the merchant secret is unset, which is the",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "The PayHere Payment Gateway WordPress plugin from 2.4.0 through 2.4.5 does not verify the authenticity of payment notifications when the merchant secret is unset, which is the default state, allowing unauthenticated attackers to forge a payment confirmation and mark any order as paid without payment.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-103310"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T08:17:35.927",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -100778,42 +101690,6 @@
       "epss_as_of": "2026-11-02"
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60771,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -100852,6 +101728,42 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55905,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60771,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -130081,6 +130993,34 @@
       "epss_as_of": "2026-11-02"
     },
     {
+      "id": "CVE-2026-81799",
+      "title": "Missing Authorization vulnerability in WP Swings Return Refund and Exchange For WooCommerce woo-refund-and-exchange-lite allows Exploiting Incorrectly Configured Access Contro",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-09-10",
+      "updated": "2026-11-02",
+      "summary": "Missing Authorization vulnerability in WP Swings Return Refund and Exchange For WooCommerce woo-refund-and-exchange-lite allows Exploiting Incorrectly Configured Access Control Security Levels.This issue affects Return Refund and Exchange For WooCommerce: from n/a through 4.6.4.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-81799"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T08:30:42Z",
+      "source_updated_at": "2026-11-02T07:18:04.467",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-80925",
       "title": "In the Linux kernel, the following vulnerability has been resolved: vlan: fix skb_under_panic and races when toggling HW VLAN offload Toggling hardware VLAN TX offload (NETIF_",
       "severity": "bulletin",
@@ -130147,7 +131087,7 @@
       "cvss": "8.5",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-10-30T03:33:03Z",
+      "source_updated_at": "2026-11-02T06:32:20Z",
       "source_type": "github",
       "known_exploited": false,
       "epss": 0.00658,
@@ -131620,7 +132560,7 @@
         "Linux"
       ],
       "published": "2026-09-02",
-      "updated": "2026-10-30",
+      "updated": "2026-11-02",
       "summary": "A flaw was found in util-linux. Restricted bind mounts take the source path from fstab but do not pin that source before the privileged mount. A local unprivileged user who can replace the authorized source or a writable ancestor can redirect SUID mount(8) to bind another host directory. If the fstab entry also sets X-mount.owner, X-mount.group, or X-mount.mode, root then changes ownership or mode on that redirected inode.",
       "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
       "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
@@ -131636,7 +132576,7 @@
       "cvss": "7.8",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T14:25:53Z",
-      "source_updated_at": "2026-10-30T14:17:10.000",
+      "source_updated_at": "2026-11-02T06:17:45.710",
       "source_type": "nvd",
       "known_exploited": false,
       "epss": 0.00162,
@@ -142306,17 +143246,17 @@
     },
     {
       "id": "CVE-2026-13595",
-      "title": "A flaw was found in the libblkid library of util-linux",
+      "title": "A flaw was found in the libblkid library of util-linux. During nested partition probing, the BSD,...",
       "severity": "medium",
       "categories": [
         "Linux"
       ],
       "published": "2026-06-29",
-      "updated": "2026-10-30",
+      "updated": "2026-11-02",
       "summary": "A flaw was found in the libblkid library of util-linux. During nested partition probing, the BSD, Minix, Solaris x86, and UnixWare partition probers cache a raw pointer to a parent partition entry in a dynamically allocated array. When subsequent partition additions cause the array to be reallocated, this pointer becomes stale, leading to a heap use-after-free read. An attacker who can present a crafted block device image (for example, via USB insertion or a loop-mounted disk image) can trigger this flaw without user interaction, as libblkid is invoked automatically by udev/udisks as root on block-device hot-plug events. This could lead to limited information disclosure or denial of service.",
-      "affected": "Products identified in NVD configurations: redhat hardened_images; redhat openshift_container_platform; redhat enterprise_linux; kernel util-linux",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
@@ -142333,15 +143273,19 @@
         {
           "label": "Vendor advisory",
           "url": "https://bugzilla.redhat.com/show_bug.cgi?id=2494101"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-qpmf-9p9c-455w"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": "5.3",
-      "status": "NVD indexed CVE",
+      "cvss": "6.8",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T14:25:53Z",
-      "source_updated_at": "2026-10-30T14:17:05.323",
-      "source_type": "nvd",
+      "source_updated_at": "2026-11-02T06:31:13Z",
+      "source_type": "github",
       "known_exploited": false,
       "epss": 0.00144,
       "epss_percentile": 0.03713,
@@ -151961,37 +152905,6 @@
       "epss_as_of": "2026-11-02"
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.11772,
-      "epss_percentile": 0.96077,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2025-7624",
       "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
@@ -152020,6 +152933,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.10514,
       "epss_percentile": 0.95766,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.11772,
+      "epss_percentile": 0.96077,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -168553,836 +169497,90 @@
       "epss": 0.01058,
       "epss_percentile": 0.64484,
       "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2021-0920",
-      "title": "Android Kernel Race Condition Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-05-23",
-      "summary": "Android kernel contains a race condition, which allows for a use-after-free vulnerability. Exploitation can allow for privilege escalation.",
-      "affected": "Android Kernel. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-05-23",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.00867,
-      "epss_percentile": 0.58746,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2020-1027",
-      "title": "Microsoft Windows Kernel Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-05-23",
-      "summary": "An elevation of privilege vulnerability exists in the way that the Windows Kernel handles objects in memory. An attacker who successfully exploited the vulnerability could execute code with elevated permissions.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-05-23",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.04723,
-      "epss_percentile": 0.91839,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2019-7287",
-      "title": "Apple iOS Memory Corruption Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2022-05-23",
-      "summary": "Apple iOS contains a memory corruption vulnerability which could allow an attacker to perform remote code execution.",
-      "affected": "Apple iOS. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-05-23",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.04579,
-      "epss_percentile": 0.9163,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2019-0703",
-      "title": "Microsoft Windows SMB Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-05-23",
-      "summary": "An information disclosure vulnerability exists in the way that the Windows SMB Server handles certain requests, which could lead to information disclosure from the server.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-05-23",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.09385,
-      "epss_percentile": 0.95403,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2019-0880",
-      "title": "Microsoft Windows Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-05-23",
-      "summary": "A local elevation of privilege vulnerability exists in how splwow64.exe handles certain calls. An attacker who successfully exploited the vulnerability could elevate privileges on an affected system from low-integrity to medium-integrity.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-05-23",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.02308,
-      "epss_percentile": 0.83366,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2019-1385",
-      "title": "Microsoft Windows AppX Deployment Extensions Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-05-23",
-      "summary": "A privilege escalation vulnerability exists when the Windows AppX Deployment Extensions improperly performs privilege management, resulting in access to system files.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-05-23",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.03604,
-      "epss_percentile": 0.8947,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2019-1130",
-      "title": "Microsoft Windows AppX Deployment Service Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-05-23",
-      "summary": "A privilege escalation vulnerability exists when Windows AppX Deployment Service (AppXSVC) improperly handles hard links.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-05-23",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.01719,
-      "epss_percentile": 0.77464,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2022-22947",
-      "title": "VMware Spring Cloud Gateway Code Injection Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2022-05-16",
-      "summary": "Spring Cloud Gateway applications are vulnerable to a code injection attack when the Gateway Actuator endpoint is enabled, exposed and unsecured.",
-      "affected": "VMware Spring Cloud Gateway. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-05-16",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.98253,
-      "epss_percentile": 0.99916,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2022-26904",
-      "title": "Microsoft Windows User Profile Service Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-04-25",
-      "summary": "Microsoft Windows User Profile Service contains an unspecified vulnerability that allows for privilege escalation.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-04-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.16948,
-      "epss_percentile": 0.97064,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2022-21919",
-      "title": "Microsoft Windows User Profile Service Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-04-25",
-      "summary": "Microsoft Windows User Profile Service contains an unspecified vulnerability that allows for privilege escalation.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-04-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.02434,
-      "epss_percentile": 0.84273,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2022-0847",
-      "title": "Linux Kernel Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "",
-      "updated": "2022-04-25",
-      "summary": "Linux kernel contains an improper initialization vulnerability where an unprivileged local user could escalate their privileges on the system. This vulnerability has the moniker of \"Dirty Pipe.\"",
-      "affected": "Linux Kernel. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-04-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.92795,
-      "epss_percentile": 0.99829,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2022-22718",
-      "title": "Microsoft Windows Print Spooler Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-04-19",
-      "summary": "Microsoft Windows Print Spooler contains an unspecified vulnerability which allow for privilege escalation.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-04-19",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.18464,
-      "epss_percentile": 0.97242,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2022-22960",
-      "title": "VMware Multiple Products Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2022-04-15",
-      "summary": "VMware Workspace ONE Access, Identity Manager and vRealize Automation contain a privilege escalation vulnerability due to improper permissions in support scripts.",
-      "affected": "VMware Multiple Products. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-04-15",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.35519,
-      "epss_percentile": 0.98453,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2022-22954",
-      "title": "VMware Workspace ONE Access and Identity Manager Server-Side Template Injection Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2022-04-14",
-      "summary": "VMware Workspace ONE Access and Identity Manager allow for remote code execution due to server-side template injection.",
-      "affected": "VMware Workspace ONE Access and Identity Manager. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-04-14",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99998,
-      "epss_percentile": 0.99989,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2022-24521",
-      "title": "Microsoft Windows CLFS Driver Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-04-13",
-      "summary": "Microsoft Windows Common Log File System (CLFS) Driver contains an unspecified vulnerability that allows for privilege escalation.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-04-13",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.07134,
-      "epss_percentile": 0.94265,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2018-7602",
-      "title": "Drupal Core Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Drupal / CMS"
-      ],
-      "published": "",
-      "updated": "2022-04-13",
-      "summary": "A remote code execution vulnerability exists within multiple subsystems of Drupal that can allow attackers to exploit multiple attack vectors on a Drupal site.",
-      "affected": "Drupal Core. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-04-13",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99172,
-      "epss_percentile": 0.99934,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2021-22600",
-      "title": "Linux Kernel Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "",
-      "updated": "2022-04-11",
-      "summary": "Linux Kernel contains a flaw in the packet socket (AF_PACKET) implementation which could lead to incorrectly freeing memory. A local user could exploit this for denial-of-service (DoS) or possibly for privilege escalation.",
-      "affected": "Linux Kernel. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-04-11",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.06586,
-      "epss_percentile": 0.93841,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2017-11317",
-      "title": "Telerik UI for ASP.NET AJAX Unrestricted File Upload Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        ".NET / ASP.NET",
-        "Progress Telerik"
-      ],
-      "published": "",
-      "updated": "2022-04-11",
-      "summary": "Telerik.Web.UI in Progress Telerik UI for ASP.NET AJAX allows remote attackers to perform arbitrary file uploads or execute arbitrary code.",
-      "affected": "Telerik User Interface (UI) for ASP.NET AJAX. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-04-11",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.84175,
-      "epss_percentile": 0.99695,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2022-22965",
-      "title": "Spring Framework JDK 9+ Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2022-04-04",
-      "summary": "Spring MVC or Spring WebFlux application running on JDK 9+ may be vulnerable to remote code execution (RCE) via data binding.",
-      "affected": "VMware Spring Framework. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-04-04",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99638,
-      "epss_percentile": 0.9995,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2022-1040",
-      "title": "Sophos Firewall Authentication Bypass Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "",
-      "updated": "2022-03-31",
-      "summary": "An authentication bypass vulnerability in User Portal and Webadmin of Sophos Firewall allows for remote code execution.",
-      "affected": "Sophos Firewall. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-31",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99796,
-      "epss_percentile": 0.99958,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2021-34484",
-      "title": "Microsoft Windows User Profile Service Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-31",
-      "summary": "Microsoft Windows User Profile Service contains an unspecified vulnerability that allows for privilege escalation.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-31",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.21827,
-      "epss_percentile": 0.97643,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2022-0543",
-      "title": "Debian-specific Redis Server Lua Sandbox Escape Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Linux",
-        "NoSQL / MongoDB"
-      ],
-      "published": "",
-      "updated": "2022-03-28",
-      "summary": "Redis is prone to a (Debian-specific) Lua sandbox escape, which could result in remote code execution.",
-      "affected": "Redis Debian-specific Redis Servers. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-28",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99351,
-      "epss_percentile": 0.99939,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2021-34486",
-      "title": "Microsoft Windows Event Tracing Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-28",
-      "summary": "Microsoft Windows Event Tracing contains an unspecified vulnerability which can allow for privilege escalation.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-28",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.09328,
-      "epss_percentile": 0.95381,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2018-8440",
-      "title": "Microsoft Windows Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-28",
-      "summary": "An elevation of privilege vulnerability exists when Windows improperly handles calls to Advanced Local Procedure Call (ALPC).",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-28",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.1853,
-      "epss_percentile": 0.9725,
-      "epss_as_of": "2026-11-02"
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-02T06:17:25Z",
-      "last_attempt": "2026-11-02T06:17:25Z",
-      "items_processed": 212,
+      "last_success": "2026-11-02T08:30:42Z",
+      "last_attempt": "2026-11-02T08:30:42Z",
+      "items_processed": 216,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-02T06:17:25Z",
-      "last_attempt": "2026-11-02T06:17:25Z",
+      "last_success": "2026-11-02T08:30:42Z",
+      "last_attempt": "2026-11-02T08:30:42Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-02T06:17:25Z",
-      "last_attempt": "2026-11-02T06:17:25Z",
-      "items_processed": 80,
+      "last_success": "2026-11-02T08:30:42Z",
+      "last_attempt": "2026-11-02T08:30:42Z",
+      "items_processed": 43,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-02T06:17:25Z",
-      "last_attempt": "2026-11-02T06:17:25Z",
+      "last_success": "2026-11-02T08:30:42Z",
+      "last_attempt": "2026-11-02T08:30:42Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-02T06:17:25Z",
-      "last_attempt": "2026-11-02T06:17:25Z",
+      "last_success": "2026-11-02T08:30:42Z",
+      "last_attempt": "2026-11-02T08:30:42Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-02T06:17:25Z",
-      "last_attempt": "2026-11-02T06:17:25Z",
+      "last_success": "2026-11-02T08:30:42Z",
+      "last_attempt": "2026-11-02T08:30:42Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-02T06:17:25Z",
-      "last_attempt": "2026-11-02T06:17:25Z",
+      "last_success": "2026-11-02T08:30:42Z",
+      "last_attempt": "2026-11-02T08:30:42Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-02T06:17:25Z",
-      "last_attempt": "2026-11-02T06:17:25Z",
+      "last_success": "2026-11-02T08:30:42Z",
+      "last_attempt": "2026-11-02T08:30:42Z",
       "items_processed": 52,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-02T06:17:25Z",
-      "last_attempt": "2026-11-02T06:17:25Z",
+      "last_success": "2026-11-02T08:30:42Z",
+      "last_attempt": "2026-11-02T08:30:42Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-02T06:17:25Z",
-      "last_attempt": "2026-11-02T06:17:25Z",
+      "last_success": "2026-11-02T08:30:42Z",
+      "last_attempt": "2026-11-02T08:30:42Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-02T06:17:25Z",
-      "last_attempt": "2026-11-02T06:17:25Z",
+      "last_success": "2026-11-02T08:30:42Z",
+      "last_attempt": "2026-11-02T08:30:42Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-02T06:17:25Z",
-      "last_attempt": "2026-11-02T06:17:25Z",
+      "last_success": "2026-11-02T08:30:42Z",
+      "last_attempt": "2026-11-02T08:30:42Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -169394,7 +169592,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-02T06:17:25Z",
-  "last_successful_update": "2026-11-02T06:17:25Z",
+  "last_checked_at": "2026-11-02T08:30:42Z",
+  "last_successful_update": "2026-11-02T08:30:42Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
