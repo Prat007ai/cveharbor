@@ -203,6 +203,7 @@ function openAssign(id){
   if(typeof modal.showModal==='function')modal.showModal();else modal.setAttribute('open','');
   $('remediationAssignEmail').focus();
 }
+$('remediationAssignFyi').addEventListener('input',()=>{$('remediationFyiError').textContent='';$('remediationAssignFyi').removeAttribute('aria-invalid');});
 $('remediationAssignNotes').addEventListener('input',()=>{$('remediationAssignNotesCount').textContent=$('remediationAssignNotes').value.length+'/1000 characters'});
 window.CVEHARBOR_REMEDIATION={openAssign};
 window.addEventListener('cveharbor:assign-remediation',event=>openAssign(event.detail?.id));
