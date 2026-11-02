@@ -69,3 +69,10 @@ assert.equal(remediationWorkflowRelease(workflowFiles),true);
 assert.equal(remediationWorkflowRelease([...workflowFiles,'account-backend/src/cvie.js']),false);
 assert.equal(remediationWorkflowRelease([...workflowFiles,'scripts/bootstrap_cvie_shared.mjs']),false);
 assert.equal(remediationWorkflowRelease(workflowFiles.filter(x=>!x.endsWith('.sql'))),false);
+
+const {assignmentProgressRelease}=await import('./worker_release_mode.mjs');
+const progressFiles=['account-backend/src/assignment-progress.js','account-backend/src/index.js','account-backend/migrations/0027_assignment_progress.sql','account-backend/wrangler.toml'];
+assert.equal(assignmentProgressRelease(progressFiles),true);
+for(const file of ['account-backend/src/cvie.js','account-backend/migrations/0026_remediation_workflow.sql','scripts/bootstrap_cvie_shared.mjs','scripts/verify_cvie_d1.mjs'])assert.equal(assignmentProgressRelease([...progressFiles,file]),false);
+assert.equal(assignmentProgressRelease(progressFiles.filter(f=>!f.endsWith('.sql'))),false);
+console.log('PASS: assignment progress release applies only migration 0027 and skips unrelated maintenance');

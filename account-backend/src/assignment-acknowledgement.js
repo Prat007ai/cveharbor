@@ -1,3 +1,4 @@
+import {progressReady,reminderInterval,reviewLink} from './assignment-progress-common.js';
 import {workflowReady,assignedSeverity} from './remediation-workflow.js';
 import {acknowledgementLink,confirmationRequest} from './confirmation-host.js';
 import {normalizeFyi,fyiReady,addFyiHistory,scheduleFyi} from './assignment-fyi.js';
@@ -46,7 +47,8 @@ async function quota(env,key,seconds,max){
  return result.meta?.changes===1;
 }
 export async function assignWithAcknowledgement(env,user,cve,recipient,notes,raw){
- const fyi=normalizeFyi(raw.fyi_recipients,recipient),workflow=await workflowReady(env);
+ const fyi=normalizeFyi(raw.fyi_recipients,recipient),workflow=await workflowReady(env),progress=await progressReady(env);
+ if(env.ASSIGNMENT_PROGRESS_ENABLED==='true'&&!progress)throw new AssignmentError('Reviewer updates are temporarily unavailable. No email was sent.',503);
  if(raw.assigned_severity!==undefined){assignedSeverity(raw.assigned_severity);if(!workflow)throw new AssignmentError('Assigned severity is temporarily unavailable. No email was sent.',503);}
  const existingMeta=workflow?await env.DB.prepare('SELECT assigned_severity FROM remediation_record_metadata WHERE user_id=? AND cve_id=?').bind(user.id,cve).first():null;
  const selectedSeverity=raw.assigned_severity===undefined?(existingMeta?.assigned_severity||''):raw.assigned_severity;
@@ -70,7 +72,9 @@ export async function assignWithAcknowledgement(env,user,cve,recipient,notes,raw
   await env.DB.prepare("INSERT INTO remediation_assignment_requests(id,user_id,cve_id,recipient_email,requester_email,token_hash,delivery_status,public_advisory_json,created_at,expires_at) VALUES(?,?,?,?,?,?,'sending',?,?,?)").bind(id,user.id,cve,recipient,user.email,hash,JSON.stringify(advisory),time,expires).run();
   if(fyi.length)await env.DB.batch(fyi.map(email=>env.DB.prepare('INSERT INTO remediation_assignment_fyi(assignment_id,recipient_email,created_at) VALUES(?,?,?)').bind(id,email,time)));
   if(workflow)await env.DB.prepare('INSERT INTO remediation_assignment_metadata(assignment_id,assigned_severity) VALUES(?,?)').bind(id,selectedSeverity).run();
-  const report=renderAssignmentNotice({advisory,assignedSeverity:selectedSeverity,requester:user.email,notes,due:record?.due||'',url:acknowledgementLink(env,token),expiresAt:expires});
+  const interval=reminderInterval(selectedSeverity||advisory.severity);
+  if(progress)await env.DB.prepare('INSERT INTO remediation_review_access(assignment_id,expires_at,interval_seconds,last_progress_at) VALUES(?,?,?,?)').bind(id,time+2592000,interval,time).run();
+  const report=renderAssignmentNotice({advisory,manageUrl:progress?reviewLink(id):'',reminderHours:interval?interval/3600:null,assignedSeverity:selectedSeverity,requester:user.email,notes,due:record?.due||'',url:acknowledgementLink(env,token),expiresAt:expires});
   const senderEnv={EMAIL_FROM:env.EMAIL_FROM,SMTP2GO_API_KEY:env.SMTP2GO_API_KEY,ALERT_SMTP2GO_API_KEY:env.ASSIGNMENT_SMTP2GO_API_KEY||env.SMTP2GO_API_KEY};
   const providerId=await sendEmail(senderEnv,recipient,report),sent=now();
   // Atomically publish the accepted email and invalidate earlier links for this recipient only.

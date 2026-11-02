@@ -1,3 +1,4 @@
+import {progressReady} from './assignment-progress-common.js';
 import {workflowReady,requireWorkflow,workflowWriteStatements,runWorkflowWrite,recordMetadata} from './remediation-workflow.js';
 import {normalizeFyi,fyiReady} from './assignment-fyi.js';
 import {assignWithAcknowledgement,acknowledgementReady,assignmentSummary} from './assignment-acknowledgement.js';
@@ -45,7 +46,7 @@ export function assignmentReady(env){
 }
 export async function capabilities(env){
   return reply({storage:'d1',version:2,assignments_available:await isMigrated(env),
-    assignment_email_enabled:assignmentReady(env),workflow_available:await workflowReady(env),fyi_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await fyiReady(env),acknowledgements_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await acknowledgementReady(env)});
+    assignment_email_enabled:assignmentReady(env),reviewer_updates_available:await progressReady(env),workflow_available:await workflowReady(env),fyi_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await fyiReady(env),acknowledgements_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await acknowledgementReady(env)});
 }
 export async function listRemediations(env,user){
   const migrated=await isMigrated(env);
@@ -57,7 +58,9 @@ export async function listRemediations(env,user){
   if(env.ASSIGNMENT_ACK_ENABLED==='true'){try{acknowledgements=await assignmentSummary(env,user);acknowledgementsAvailable=true;}catch{}}
   let details={metadata:new Map(),changes:new Map()},workflowAvailable=await workflowReady(env);
   if(workflowAvailable)details=await recordMetadata(env,user);
-  return reply({workflow_available:workflowAvailable,remediations:(rows.results||[]).map(row=>({...row,...(details.metadata.get(row.id)||{}),latest_status_change:details.changes.get(row.id)||null,acknowledgements:acknowledgements.get(row.id)||null})),assignments_available:migrated,acknowledgements_available:acknowledgementsAvailable});
+  const reviewAvailable=await progressReady(env),reviewCounts=reviewAvailable?await env.DB.prepare('SELECT cve_id,COUNT(*) AS total,MAX(created_at) AS latest FROM remediation_review_activity WHERE user_id=? GROUP BY cve_id').bind(user.id).all():{results:[]};
+  const reviewProgress=new Map((reviewCounts.results||[]).map(r=>[r.cve_id,{total:r.total,latest:r.latest}]));
+  return reply({workflow_available:workflowAvailable,remediations:(rows.results||[]).map(row=>({...row,review_progress:reviewProgress.get(row.id)||null,...(details.metadata.get(row.id)||{}),latest_status_change:details.changes.get(row.id)||null,acknowledgements:acknowledgements.get(row.id)||null})),assignments_available:migrated,acknowledgements_available:acknowledgementsAvailable});
 }
 async function capacity(env,userId,id){
   const existing=await env.DB.prepare('SELECT cve_id FROM remediations WHERE user_id=? AND cve_id=?').bind(userId,id).first();

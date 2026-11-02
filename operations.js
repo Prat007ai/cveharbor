@@ -31,7 +31,7 @@ const readLegacy=()=>{
 };
 let legacy=readLegacy(),tasks=[...legacy],cloudMode=false,authenticated=false,
   accountEmail='',capabilities=null,imported=false,accountEpoch=0,showAll=false,loading=false,ackDataAvailable=false,historyCve="",historyBefore=null,historyEpoch=0;
-let editing=null,statusCve='',statusBefore=null,statusEpoch=0;
+let editing=null,statusCve='',statusBefore=null,statusEpoch=0,progressCve='',progressBefore=null,progressEpoch=0;
 const msg=value=>{$('remediationMessage').textContent=value};
 const storage=value=>{$('remediationStorage').textContent=value};
 async function api(path,method='GET',payload){
@@ -131,6 +131,7 @@ function render(){
       if(task.assigned_to)details.append(elem('p','remediation-assignee','Assigned by email to: '+task.assigned_to+' · Notification: '+(task.assignment_status||'Unknown')));
       title.append(details);
     }
+    if(cloudMode&&capabilities?.reviewer_updates_available){const updates=elem('button','rt-history-link','View updates'+(task.review_progress?.total?' ('+task.review_progress.total+')':''));updates.type='button';updates.setAttribute('aria-label','Reviewer updates for '+task.id);updates.addEventListener('click',()=>openProgress(task.id));title.append(updates);if(task.review_progress?.latest)title.append(elem('small','','Reviewer update: '+displayTime(task.review_progress.latest*1000)));}
     const severity=String(advisory?.severity||'').toLowerCase();
     const rating=cell(),assigned=task.assigned_severity||'';
     rating.append(badge(severityLabel(assigned||(['critical','high','medium','low','info'].includes(severity)?severity:'')),assigned||severity));
@@ -177,8 +178,11 @@ async function refreshRecords(epoch=accountEpoch){
   tasks=(data.remediations||[]).filter(x=>valid(x.id)).slice(0,250);
   loading=false;render();
 }
+let progressRefreshTimer=null;
 async function accountState(data){
-  const epoch=++accountEpoch;historyEpoch++;statusEpoch++;editing=null;ackDataAvailable=false;
+  if(progressRefreshTimer!==null){window.clearInterval(progressRefreshTimer);progressRefreshTimer=null;}
+  const epoch=++accountEpoch;historyEpoch++;statusEpoch++;progressEpoch++;
+  for(const id of ['remediationProgressRows','remediationProgressInvitations','remediationProgressNotifications'])$(id).replaceChildren();closeCvhDialog('remediationProgressDialog');editing=null;ackDataAvailable=false;
   $('remediationStatusHistoryRows').replaceChildren();closeCvhDialog('remediationStatusHistoryDialog');
   $('remediationHistoryRows').replaceChildren();closeCvhDialog('remediationHistoryDialog');
   authenticated=!!data.authenticated;accountEmail=authenticated?(data.email||''):'';
@@ -195,6 +199,7 @@ async function accountState(data){
     if(epoch!==accountEpoch)return;
     if(features.storage!=='d1'||features.version!==2)throw Error('Updated cloud service is not available');
     capabilities=features;cloudMode=true;
+    if(features.reviewer_updates_available)progressRefreshTimer=window.setInterval(refreshReviewerProgress,60000);
     await refreshRecords(epoch);
     if(epoch!==accountEpoch)return;
     msg('');
@@ -213,6 +218,7 @@ function openAssign(id){
   $('remediationAssignConfirm').checked=false;
   $('remediationAssignResend').checked=false;
   $('remediationResendLabel').hidden=!capabilities?.acknowledgements_available;
+  $('remediationProgressPolicy').hidden=!capabilities?.reviewer_updates_available;
   $('remediationSeverityLabel').hidden=!capabilities?.workflow_available;
   $('remediationAssignSeverity').value=tasks.find(x=>x.id===cve)?.assigned_severity||'';
   $('remediationAssignEmail').value='';
@@ -256,7 +262,7 @@ function openCvhDialog(id){
 function confirmReviewRequest(cve,email,fyi=[],severity=''){
  return new Promise(resolve=>{
   const dialog=$('remediationConfirmDialog');
-  $('remediationConfirmText').textContent='Send the '+cve+' vulnerability review request to '+email+'?'+(fyi.length?' Send separate FYI and receipt-update emails to: '+fyi.join(', ')+'.':'')+(severity?' Assigned severity: '+severityLabel(severity)+' (requester assessment).':'');
+  $('remediationConfirmText').textContent='Send the '+cve+' vulnerability review request to '+email+'?'+(fyi.length?' Send separate FYI and receipt-update emails to: '+fyi.join(', ')+'.':'')+(severity?' Assigned severity: '+severityLabel(severity)+' (requester assessment).':'')+(capabilities?.reviewer_updates_available?' The reviewer can verify their email to post progress. Critical/High assignments receive one reminder after 24 hours without progress; Medium after 48 hours.':'');
   const send=$('remediationConfirmSend'),cancel=$('remediationConfirmCancel'),x=$('remediationConfirmX');
   let settled=false;
   function finish(value){
@@ -361,6 +367,14 @@ $('remediationRefresh').addEventListener('click',async()=>{
   try{await refreshRecords(epoch);if(epoch===accountEpoch)msg('Records refreshed. Acknowledgements confirm receipt only.');}
   catch(error){if(epoch===accountEpoch){loading=false;render();msg('Unable to refresh: '+error.message);}}
 });
+let progressRefreshBusy=false;
+async function refreshReviewerProgress(){
+ if(progressRefreshBusy||!authenticated||!cloudMode||!capabilities?.reviewer_updates_available||loading||document.visibilityState==='hidden'||!$('remediationTracker').getClientRects().length||document.querySelector('dialog[open]'))return;
+ progressRefreshBusy=true;try{await refreshRecords(accountEpoch);}catch{}finally{progressRefreshBusy=false;}
+}
+// Keep an open Recent Records view current without disturbing an edit dialog.
+window.addEventListener('focus',refreshReviewerProgress);
+document.addEventListener('visibilitychange',refreshReviewerProgress);
 const ackTimestamp=value=>value?displayTime(value*1000):'Not recorded';
 async function openHistory(cve){
   historyCve=cve;historyBefore=null;historyEpoch++;
@@ -424,6 +438,32 @@ async function loadStatusHistory(){
 }
 $('remediationStatusHistoryMore').addEventListener('click',()=>loadStatusHistory());
 $('remediationStatusHistoryClose').addEventListener('click',()=>{statusEpoch++;closeCvhDialog('remediationStatusHistoryDialog');});
+async function openProgress(cve){
+ progressCve=cve;progressBefore=null;progressEpoch++;
+ $('remediationProgressTitle').textContent=cve+' · Progress and reminders';
+ for(const id of ['remediationProgressRows','remediationProgressInvitations','remediationProgressNotifications'])$(id).replaceChildren();
+ openCvhDialog('remediationProgressDialog');await loadProgress();
+}
+async function loadProgress(){
+ const epoch=progressEpoch,account=accountEpoch,cve=progressCve;
+ $('remediationProgressMore').hidden=true;$('remediationProgressMessage').textContent='Loading reviewer updates…';
+ try{
+  const data=await api('/remediations/'+cve+'/review-activity'+(progressBefore?'?before='+progressBefore:''));
+  if(epoch!==progressEpoch||account!==accountEpoch)return;
+  for(const item of data.activity||[]){const row=elem('article','rt-assignment-item');row.append(elem('strong','',item.author_email),elem('small','','Email verified · '+displayTime(item.created_at*1000)),elem('p','',item.previous_status+' → '+item.new_status));if(item.reason)row.append(elem('p','rt-history-reason','Reason: '+item.reason));if(item.comment)row.append(elem('p','rt-history-reason',item.comment));$('remediationProgressRows').append(row);}
+  if(!$('remediationProgressRows').childElementCount)$('remediationProgressRows').append(elem('p','ops-note','No reviewer progress updates have been recorded.'));
+  $('remediationProgressInvitations').replaceChildren();
+  for(const invite of data.assignments||[]){const row=elem('article','rt-assignment-item'),task=tasks.find(x=>x.id===cve),active=!invite.revoked_at&&invite.expires_at>Date.now()/1000&&invite.delivery_status==='sent';row.append(elem('strong','',invite.recipient_email),elem('small','','Access: '+(active?'Active':invite.revoked_at?'Revoked':invite.delivery_status!=='sent'?'Email not confirmed as sent':'Expired')+' · Expires '+displayTime(invite.expires_at*1000)),elem('p','ops-note','Last recorded progress: '+displayTime(invite.last_progress_at*1000)));row.append(elem('p','ops-note',!active?'Reminders stopped.':!['Open','Investigating'].includes(task?.status)?'Reminders stopped for the current status.':invite.interval_seconds?'One reminder after '+invite.interval_seconds/3600+' hours without progress. Progress resets the interval.':'No automatic reminders for this severity.'));$('remediationProgressInvitations').append(row);}
+  $('remediationProgressNotifications').replaceChildren();
+  const labels={queued:'Queued',sending:'Sending',sent:'Accepted by email provider',unconfirmed:'Delivery unconfirmed',cancelled:'Cancelled'};
+  for(const n of data.notifications||[]){const row=elem('article','rt-assignment-item');row.append(elem('strong','',n.kind==='reminder'?'Update reminder':'Progress notification'),elem('p','ops-note',n.recipient_email+' · '+(labels[n.state]||n.state)),elem('small','',displayTime((n.completed_at||n.created_at)*1000)));if(n.state==='unconfirmed'&&n.attempts<3){const retry=elem('button','ops-download','Retry notification');retry.type='button';retry.addEventListener('click',async()=>{if(!window.confirm('Retry this unconfirmed notification? A duplicate may be received if an earlier attempt was accepted.'))return;retry.disabled=true;try{await api('/remediations/'+cve+'/review-notifications/'+n.id+'/retry','POST',{});if(account===accountEpoch&&epoch===progressEpoch)await openProgress(cve);}catch(error){if(account===accountEpoch)$('remediationProgressMessage').textContent=error.message;}finally{retry.disabled=false;}});row.append(retry);}$('remediationProgressNotifications').append(row);}
+  if(!data.notifications?.length)$('remediationProgressNotifications').append(elem('p','ops-note','No progress or reminder notifications yet.'));
+  progressBefore=data.next||null;$('remediationProgressMore').hidden=!progressBefore;
+  $('remediationProgressMessage').textContent=data.available===false?'Reviewer updates are unavailable.':data.assignments?.length?'Comments stay private to your account and the reviewer who posted them. Showing the latest 50 invitations and notifications.':'Send a new assignment invitation to enable secure reviewer updates and severity-based reminders. Existing invitations are not enrolled automatically.';
+ }catch(error){if(epoch===progressEpoch&&account===accountEpoch)$('remediationProgressMessage').textContent='Unable to load updates: '+error.message;}
+}
+$('remediationProgressMore').addEventListener('click',()=>loadProgress());
+$('remediationProgressClose').addEventListener('click',()=>{progressEpoch++;closeCvhDialog('remediationProgressDialog');});
 $('remediationExport').addEventListener('click',()=>{
   const quote=value=>{
     let s=String(value||'');
