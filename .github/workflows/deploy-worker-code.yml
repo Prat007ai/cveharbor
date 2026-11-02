@@ -19,6 +19,7 @@ on:
       - 'scripts/worker_release_mode.mjs'
       - 'scripts/worker_release_smoke.mjs'
       - 'scripts/verify_software_history_d1.mjs'
+      - 'scripts/verify_workspace_d1.mjs'
       - '.github/workflows/deploy-worker-code.yml'
   workflow_dispatch:
 
@@ -41,7 +42,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Determine whether only inventory code needs deployment
+      - name: Determine code-only release scope
         id: mode
         run: node scripts/worker_release_smoke.mjs && node scripts/worker_release_mode.mjs
       - name: Verify account backend
@@ -112,6 +113,12 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: node scripts/verify_monitoring_inactive.mjs
+      - name: Verify workspace queries with SELECT-only production probes
+        if: steps.mode.outputs.workspace_only == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify_workspace_d1.mjs
       - name: Deploy Worker source
         working-directory: account-backend
         env:
@@ -181,3 +188,10 @@ jobs:
         with:
           name: approved-worker-monitor-tests
           path: work/approved-monitor-tests.json
+
+      - name: Confirm workspace API authentication and read-only query compatibility
+        if: steps.mode.outputs.workspace_only == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify_workspace_d1.mjs --after

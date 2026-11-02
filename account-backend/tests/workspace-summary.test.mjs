@@ -26,3 +26,12 @@ test('invalid cursors, views, writes and unsigned requests are rejected',async()
 test('actual Worker route uses authenticated MFA session and performs only SELECTs',async()=>{const DB=setup(),token='a'.repeat(64),hash=Buffer.from(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token))).toString('hex');DB.sql.prepare('INSERT INTO sessions(id,user_id,token_hash,expires_at,created_at) VALUES(?,?,?,?,?)').run('sid','a',hash,Math.floor(Date.now()/1000)+300,1);DB.sql.exec("INSERT INTO user_totp(user_id,encrypted_secret,enabled,last_counter,created_at) VALUES('a','test',1,-1,1)");const r=await worker.fetch(new Request('https://api.cveharbor.com/v1/workspace/summary?user_id=b',{headers:{Cookie:'cvh_session='+token}}),{DB},{});assert.equal(r.status,200);assert.equal((await r.json()).inventory.customers,1);assert.ok(DB.reads.every(x=>x.startsWith('SELECT')));});
 
 test('existing lifecycle provider evidence is read per account without claiming inbox placement',async()=>{const DB=setup();DB.sql.exec(fs.readFileSync(new URL('../migrations/0023_lifecycle_monitoring.sql',import.meta.url),'utf8'));const insert=DB.sql.prepare('INSERT INTO lifecycle_monitor_messages(id,user_id,recipient,slot,state,created_at,delivered_at) VALUES(?,?,?,?,?,?,?)'),now=Date.now();insert.run('ma','a','a@example.test','test','delivered',now,now);insert.run('mb','b','b@example.test','test','failed',now,null);insert.run('old','a','a@example.test','old','failed',now-31*86400000,null);const data=await(await workspaceRoute(req('summary'),{DB},{id:'a'})).json();assert.equal(data.provider_delivery.available,true);assert.deepEqual(data.provider_delivery.rows,[{state:'delivered',count:1,last_delivered_at:now}]);});
+
+// Production probes use the same queries without loading any existing account's rows.
+test('workspace release probe validates live-query contracts without writes',async()=>{
+ const {verifyWorkspace}=await import('../../scripts/verify_workspace_d1.mjs');const DB=setup();
+ const before=DB.sql.prepare('SELECT total_changes() n').get().n;
+ assert.equal((await verifyWorkspace(DB)).ok,true);
+ assert.equal(DB.sql.prepare('SELECT total_changes() n').get().n,before);
+ DB.sql.exec('DROP TABLE remediations');await assert.rejects(()=>verifyWorkspace(DB),/Required workspace query unavailable/);
+});

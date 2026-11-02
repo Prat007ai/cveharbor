@@ -74,3 +74,11 @@ Follow-up review tightened the composition against the original 1672px mockup: t
 The date uses the browser's actual local date. Decorative artwork is not a data series. No invented trends, percentage health gauges, report history, or unread-alert badges were added. The search control links to the existing vulnerability search; it does not promise an unsupported cross-customer global search. No backend, query, authorization or schema changes were needed for this visual refinement.
 
 Revalidated the build, frontend interaction checks, existing browser/Worker smoke checks, and Chromium layouts at 11 widths from 320px to 3840px. Review images use intercepted synthetic private records and the public advisory snapshot; they do not show production customer data.
+
+## Approved production release preparation
+
+The user approved merging and deploying the complete reviewed workspace on November 2, 2026. Reconciled the newer lifecycle picker/dialog and global dropdown-contrast changes from main without replacing them. The workspace stylesheet reference retains the new shared stylesheet cache version.
+
+Added a narrowly scoped `workspaceCodeOnly` Worker release classification and SELECT-only pre/post-deployment probes (`scripts/verify_workspace_d1.mjs`). This release skips unrelated CVIE migrations, cache refreshes, bootstrap jobs, secret configuration and monitoring activation. The probe exercises the shipped queries on D1 under a verified nonexistent account, checks empty scoped results, reports optional-source availability and verifies the unauthenticated API boundary after deployment. It creates no login sessions or customer records. A regression test verifies the probe's read-only behavior and failure on a missing required table.
+
+Production website verification now checks the operational workspace markers and exact published dashboard JS/CSS, lighthouse SVG and bounded intelligence snapshot. Deployment continues through the existing protected Cloudflare website and account Worker workflows. No new schema, services or runtime feature flags are introduced.

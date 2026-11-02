@@ -177,14 +177,14 @@ assert.ok(html.includes('id="lifecycleEmailOptin"')&&html.includes('id="lifecycl
 assert.ok(html.includes('id="lifecycleWatchQueue"')&&html.includes('id="lifecycleSaveAll"'),'multiple lifecycle watch queue is available');
 assert.ok(html.includes('src="/patch-notes.js"'),'vendor release evidence is loaded on lifecycle pages');
 
-assert.ok(html.includes('lifecycle-monitor.js?v=product-directory-1'),'versioned lifecycle monitor script loads');
+assert.ok(html.includes('lifecycle-monitor.js?v=branded-confirmation-1'),'versioned lifecycle monitor script loads');
 const lifecycleDom=new JSDOM(html,{url:'https://cveharbor.com/',runScripts:'outside-only'});
 lifecycleDom.window.CVEHARBOR_LIFECYCLE={checked_at:new Date().toISOString(),cycles:[{slug:'php',product:'PHP',cycle:'8.4',eol_date:'2027-12-31',latest:'8.4.27',url:'https://endoflife.date/php'}],errors:[]};
 lifecycleDom.window.eval(fs.readFileSync('lifecycle-monitor.js','utf8'));
 assert.match(lifecycleDom.window.document.getElementById('lifecycleUserStatus').textContent,/Sign in/);
 assert.match(lifecycleDom.window.document.getElementById('lifecyclePublished').textContent,/PHP/);
 assert.ok(html.includes('id="lifecycleDetailDialog"'),'on-site product support modal exists');
-assert.ok(html.includes('lifecycle-monitor.js?v=product-directory-1'),'lifecycle popup script cache-busted');
+assert.ok(html.includes('lifecycle-monitor.js?v=branded-confirmation-1'),'lifecycle popup script cache-busted');
 const popup=lifecycleDom.window.document.getElementById('lifecycleDetailDialog');
 const first=[...lifecycleDom.window.document.querySelectorAll('#lifecyclePublished .lifecycle-source-row')].find(row=>row.textContent.includes('PHP'))?.querySelector('.lifecycle-view-details');
 assert.ok(first,'each lifecycle result offers a popup');
@@ -1048,7 +1048,7 @@ assert.ok(fs.readFileSync('styles.css','utf8').includes('grid-template-columns:r
 
 // Changed styles and the explorer script retain explicit cache versions.
 const explorerSource=fs.readFileSync('index.html','utf8');
-assert.match(explorerSource,/\/styles\.css\?v=identity-options-2/,'technology layout stylesheet must refresh');
+assert.match(explorerSource,/\/styles\.css\?v=dropdown-contrast-1/,'technology layout stylesheet must refresh');
 assert.match(explorerSource,/\/app\.js\?v=identity-options-2/,'interactive explorer script must refresh');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"\/vulnerabilities\/":\["technology-kpis"/,'live verifier checks technology explorer page');
 assert.match(fs.readFileSync('scripts/verify_production.py','utf8'),/"styles.css","homepage.css","app.js"/,'live verifier validates explorer JavaScript');

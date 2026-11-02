@@ -21,6 +21,40 @@ const make=(tag,cls,value)=>{
  const node=document.createElement(tag);if(cls)node.className=cls;if(value!==undefined)node.textContent=String(value);return node;
 };
 const message=value=>{$('lifecycleUserStatus').textContent=value};
+let dismissConfirmation=null,preferencesSaving=false;
+function confirmLifecycle({title,description,acceptLabel}){
+ if(dismissConfirmation)return Promise.resolve(false);
+ return new Promise(resolve=>{
+  const previous=document.activeElement,dialog=make('dialog','detail-dialog cvh-small-dialog');
+  dialog.id='lifecycleConfirmDialog';
+  dialog.setAttribute('aria-labelledby','lifecycleConfirmTitle');
+  dialog.setAttribute('aria-describedby','lifecycleConfirmText');
+  dialog.innerHTML='<div class="dialog-layout"><button type="button" class="close-dialog" aria-label="Close confirmation">×</button><div class="cvh-dialog-symbol" aria-hidden="true">C</div><p class="eyebrow">CVEHarbor</p><h2 id="lifecycleConfirmTitle"></h2><p id="lifecycleConfirmText" class="ops-note"></p><div class="cvh-dialog-actions"><button type="button" class="ops-download cvh-secondary-action" id="lifecycleConfirmCancel">Cancel</button><button type="button" class="ops-download" id="lifecycleConfirmAccept"></button></div></div>';
+  dialog.querySelector('h2').textContent=title;
+  dialog.querySelector('#lifecycleConfirmText').textContent=description;
+  const accept=dialog.querySelector('#lifecycleConfirmAccept'),cancel=dialog.querySelector('#lifecycleConfirmCancel');
+  accept.textContent=acceptLabel;
+  let settled=false;
+  function finish(confirmed){
+   if(settled)return;settled=true;dismissConfirmation=null;
+   if(dialog.open&&typeof dialog.close==='function')dialog.close();
+   dialog.remove();
+   if(previous?.isConnected)previous.focus();
+   resolve(confirmed);
+  }
+  dismissConfirmation=()=>finish(false);
+  accept.addEventListener('click',()=>finish(true));
+  cancel.addEventListener('click',()=>finish(false));
+  dialog.querySelector('.close-dialog').addEventListener('click',()=>finish(false));
+  dialog.addEventListener('cancel',event=>{event.preventDefault();finish(false)});
+  dialog.addEventListener('close',()=>finish(false));
+  dialog.addEventListener('click',event=>{if(event.target===dialog)finish(false)});
+  document.body.append(dialog);
+  if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','');
+  cancel.focus();
+ });
+}
+
 async function call(path='',method='GET',data){
  const epoch=authEpoch;
  const res=await fetch((enhanced?'https://api.cveharbor.com/v1/monitoring':endpoint)+path,{method,credentials:'include',
@@ -46,7 +80,13 @@ function summary(watch){
 const MAX_ROWS=60;
 let directoryCategory='All Products';
 const commonProducts=window.CVEHARBOR_COMMON_PRODUCTS||[],sharedProducts=[],lookupCycles=new Map();
-const productChoices=()=>[...new Map([...catalogList.map(slug=>({slug,name:titleCase(slug),category:'Other',aliases:[]})),...staticProducts.filter(([slug])=>!commonProducts.some(p=>p.aliases.includes(slug))).map(([slug,name])=>({slug,name,category:'Other',aliases:[]})),...sharedProducts,...commonProducts].map(p=>[p.slug,p])).values()];
+// Initial browsing highlights familiar products; typed searches keep relevance ranking.
+const featuredProducts=['windows-server','ubuntu','php','wordpress','dotnet','mssqlserver','mysql','mariadb','debian','rhel','rocky-linux','almalinux','sles','amazon-linux'];
+const productChoices=()=>{
+ const entries=[...new Map([...catalogList.map(slug=>({slug,name:titleCase(slug),category:'Other',aliases:[]})),...staticProducts.filter(([slug])=>!commonProducts.some(p=>p.aliases.includes(slug))).map(([slug,name])=>({slug,name,category:'Other',aliases:[]})),...sharedProducts,...commonProducts].map(p=>[p.slug,p])).values()];
+ const priority=new Map([...new Set([...featuredProducts,...commonProducts.map(p=>p.slug)])].map((slug,index)=>[slug,index]));
+ return entries.sort((a,b)=>(priority.get(a.slug)??Infinity)-(priority.get(b.slug)??Infinity)||a.name.localeCompare(b.name));
+};
 const searchProducts=query=>window.CVEHARBOR_DIRECTORY_SEARCH?.search(productChoices(),query)||productChoices().filter(p=>(p.name+' '+p.slug).toLowerCase().includes(query.toLowerCase())).map(product=>({product}));
 const categoryOf=slug=>commonProducts.find(p=>p.slug===slug)?.category||'Other';
 const catalogList=Array.isArray(catalog.available_products)?catalog.available_products:[];
@@ -332,9 +372,13 @@ function renderUser(){
   top.append(make('strong','',watch.product+(watch.cycle?' · '+watch.cycle:'')));
   const del=make('button','ops-remove','Remove');del.type='button';
   del.addEventListener('click',async()=>{
-   if(!window.confirm('Stop monitoring '+watch.product+'?'))return;
+   const epoch=authEpoch;
+   if(!await confirmLifecycle({title:'Remove product watch?',description:'Stop monitoring '+watch.product+'? This removes it from your saved watchlist.',acceptLabel:'Remove watch'}))return;
+   if(epoch!==authEpoch||!signed||!ready)return;
+   del.disabled=true;
    try{await call('/watches/'+watch.id,'DELETE');await load();message('Watch removed.')}
    catch(e){message(e.message)}
+   finally{del.disabled=false}
   });
   top.append(del);div.append(top);
   if(!watch.source_id){
@@ -408,7 +452,7 @@ async function load(){
 }
 window.addEventListener('cveharbor:account-state',async event=>{
  const email=String(event.detail?.email||'').toLowerCase();
- if(!event.detail?.authenticated||email!==accountEmail){authEpoch++;lookupGeneration++;lookupBusy=false;if($('lifecycleLookupProduct'))$('lifecycleLookupProduct').disabled=false;if($('lifecycleLookupStatus'))$('lifecycleLookupStatus').textContent='';ready=false;logged=[];queued.splice(0);prefs={email_enabled:0,lead_days:90};enhanced=false;delivery=false;monitorFlags={};accountEmail=email;renderQueue();renderUser();}
+ if(!event.detail?.authenticated||email!==accountEmail){authEpoch++;dismissConfirmation?.();lookupGeneration++;lookupBusy=false;if($('lifecycleLookupProduct'))$('lifecycleLookupProduct').disabled=false;if($('lifecycleLookupStatus'))$('lifecycleLookupStatus').textContent='';ready=false;logged=[];queued.splice(0);prefs={email_enabled:0,lead_days:90};enhanced=false;delivery=false;monitorFlags={};accountEmail=email;renderQueue();renderUser();}
  signed=!!event.detail?.authenticated;
  // Keep selection and custom product fields browsable for everyone.
  // Only account mutations require sign in and the D1 migration.
@@ -441,14 +485,18 @@ $('lifecycleWatchForm').addEventListener('submit',async event=>{
 $('lifecyclePreferencesForm').addEventListener('submit',async event=>{
  event.preventDefault();
  if(!signed||!ready){message('Sign in and complete lifecycle D1 migration first.');return;}
- const enabled=$('lifecycleEmailOptin').checked,lead=Number($('lifecycleLead').value);
- if(enabled&&!window.confirm('Enable lifecycle email notices for the products saved in your watchlist?'))return;
- const button=$('lifecyclePrefsSave');button.disabled=true;
+ if(preferencesSaving)return;
+ const enabled=$('lifecycleEmailOptin').checked,lead=Number($('lifecycleLead').value),epoch=authEpoch;
+ const payload={email_enabled:enabled,lead_days:lead,...(enhanced?{alert_types:[...document.querySelectorAll('#productMonitorTypes input:checked')].map(c=>c.value),delivery_mode:$('productMonitorCadence')?.value||'daily'}:{})};
+ const button=$('lifecyclePrefsSave');preferencesSaving=true;
  try{
-  await call('/preferences','PUT',{email_enabled:enabled,lead_days:lead,...(enhanced?{alert_types:[...document.querySelectorAll('#productMonitorTypes input:checked')].map(c=>c.value),delivery_mode:$('productMonitorCadence')?.value||'daily'}:{})});
+  if(enabled&&!await confirmLifecycle({title:'Enable lifecycle email notices?',description:'Save your consent to receive lifecycle email notices for products in your watchlist. Emails are sent only when scheduled monitoring and delivery are active.',acceptLabel:'Enable notices'}))return;
+  if(epoch!==authEpoch||!signed||!ready)return;
+  button.disabled=true;
+  await call('/preferences','PUT',payload);
   await load();message(enabled?'Email preference saved. Scheduled sending requires separate backend activation.':'Lifecycle email notices disabled.');
  }catch(e){message(e.message)}
- finally{button.disabled=false}
+ finally{preferencesSaving=false;button.disabled=!signed||!ready}
 });
 renderFeed();renderSuggestions();renderQueue();renderUser();
 window.CVEHARBOR_LIFECYCLE_MONITOR={refresh:load};
