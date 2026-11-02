@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-02",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6465,
+  "candidate_records": 6466,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -202,8 +202,8 @@
       "title": "Malicious code in @bil-rgb/baileys (npm)",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-11-02",
       "updated": "2026-11-02",
@@ -243,8 +243,8 @@
       "title": "Malicious code in @axo_cuy/baileys (npm)",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-11-02",
       "updated": "2026-11-02",
@@ -280,8 +280,8 @@
       "title": "Malicious code in @an1mshnpmb9c84920/pipeprobe-obf-m19n5 (npm)",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-11-02",
       "updated": "2026-11-02",
@@ -310,6 +310,34 @@
       "first_seen_at": "2026-11-02T04:08:37Z",
       "source_updated_at": "2026-11-02T03:30:45Z",
       "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-120339",
+      "title": "A security flaw has been discovered in mathurvishal CloudClassroom-PHP-Project",
+      "severity": "low",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "A security flaw has been discovered in mathurvishal CloudClassroom-PHP-Project. This vulnerability affects unknown code of the file updatedetailsfromfaculty.php. Performing a manipulation of the argument fname results in cross site scripting. The attack may be initiated remotely. The exploit has been released to the public and may be used for attacks. This product uses a rolling release model to deliver continuous updates. As a result, specific version information for affected or updated releases is not available. The vendor was contacted early about this disclosure but did not respond in any way.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120339"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "2.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T05:14:09Z",
+      "source_updated_at": "2026-11-02T04:16:53.440",
+      "source_type": "nvd",
       "known_exploited": false
     },
     {
@@ -65417,8 +65445,8 @@
       "title": "Malicious code in @conduitops/logview-archive (npm)",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-10-22",
       "updated": "2026-11-02",
@@ -80065,51 +80093,6 @@
       "epss_as_of": "2026-11-02"
     },
     {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        "Windows",
-        "Windows 11 OS",
-        "Windows Server OS"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
-        },
-        {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.09813,
-      "epss_percentile": 0.95551,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2026-102870",
       "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
       "severity": "high",
@@ -80152,6 +80135,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00906,
       "epss_percentile": 0.59861,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+        },
+        {
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.09813,
+      "epss_percentile": 0.95551,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -129979,7 +130007,7 @@
         "Python / PyPI"
       ],
       "published": "2026-09-08",
-      "updated": "2026-10-30",
+      "updated": "2026-11-02",
       "summary": "A flaw was found in libxml2 with Python bindings enabled. A remote attacker could exploit this vulnerability by providing a specially crafted XML document containing a Document Type Definition (DTD) with enumerated attribute values. This triggers a double-free error in the SAX attributeDecl callback handler, where a string is freed twice. This flaw can lead to a denial of service (DoS) due to a reproducible crash in Python applications using the libxml2 SAX bindings.",
       "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
       "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
@@ -151821,37 +151849,6 @@
       "epss_as_of": "2026-11-02"
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.11772,
-      "epss_percentile": 0.96077,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2025-7624",
       "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
@@ -151880,6 +151877,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.10514,
       "epss_percentile": 0.95766,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.11772,
+      "epss_percentile": 0.96077,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -169283,121 +169311,90 @@
       "epss": 0.86576,
       "epss_percentile": 0.99738,
       "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2010-4398",
-      "title": "Microsoft Windows Kernel Stack-Based Buffer Overflow Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-28",
-      "summary": "Stack-based buffer overflow in the RtlQueryRegistryValues function in win32k.sys in Microsoft Windows allows local users to gain privileges, and bypass the User Account Control (UAC) feature.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-28",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.08661,
-      "epss_percentile": 0.95117,
-      "epss_as_of": "2026-11-02"
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-02T04:08:37Z",
-      "last_attempt": "2026-11-02T04:08:37Z",
+      "last_success": "2026-11-02T05:14:09Z",
+      "last_attempt": "2026-11-02T05:14:09Z",
       "items_processed": 212,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-02T04:08:37Z",
-      "last_attempt": "2026-11-02T04:08:37Z",
+      "last_success": "2026-11-02T05:14:09Z",
+      "last_attempt": "2026-11-02T05:14:09Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-02T04:08:37Z",
-      "last_attempt": "2026-11-02T04:08:37Z",
-      "items_processed": 92,
+      "last_success": "2026-11-02T05:14:09Z",
+      "last_attempt": "2026-11-02T05:14:09Z",
+      "items_processed": 94,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-02T04:08:37Z",
-      "last_attempt": "2026-11-02T04:08:37Z",
+      "last_success": "2026-11-02T05:14:09Z",
+      "last_attempt": "2026-11-02T05:14:09Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-02T04:08:37Z",
-      "last_attempt": "2026-11-02T04:08:37Z",
+      "last_success": "2026-11-02T05:14:09Z",
+      "last_attempt": "2026-11-02T05:14:09Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-02T04:08:37Z",
-      "last_attempt": "2026-11-02T04:08:37Z",
+      "last_success": "2026-11-02T05:14:09Z",
+      "last_attempt": "2026-11-02T05:14:09Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-02T04:08:37Z",
-      "last_attempt": "2026-11-02T04:08:37Z",
+      "last_success": "2026-11-02T05:14:09Z",
+      "last_attempt": "2026-11-02T05:14:09Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-02T04:08:37Z",
-      "last_attempt": "2026-11-02T04:08:37Z",
+      "last_success": "2026-11-02T05:14:09Z",
+      "last_attempt": "2026-11-02T05:14:09Z",
       "items_processed": 52,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-02T04:08:37Z",
-      "last_attempt": "2026-11-02T04:08:37Z",
+      "last_success": "2026-11-02T05:14:09Z",
+      "last_attempt": "2026-11-02T05:14:09Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-02T04:08:37Z",
-      "last_attempt": "2026-11-02T04:08:37Z",
+      "last_success": "2026-11-02T05:14:09Z",
+      "last_attempt": "2026-11-02T05:14:09Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-02T04:08:37Z",
-      "last_attempt": "2026-11-02T04:08:37Z",
+      "last_success": "2026-11-02T05:14:09Z",
+      "last_attempt": "2026-11-02T05:14:09Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-02T04:08:37Z",
-      "last_attempt": "2026-11-02T04:08:37Z",
+      "last_success": "2026-11-02T05:14:09Z",
+      "last_attempt": "2026-11-02T05:14:09Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -169409,7 +169406,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-02T04:08:37Z",
-  "last_successful_update": "2026-11-02T04:08:37Z",
+  "last_checked_at": "2026-11-02T05:14:09Z",
+  "last_successful_update": "2026-11-02T05:14:09Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
