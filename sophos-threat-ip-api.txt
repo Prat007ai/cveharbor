@@ -1,7 +1,7 @@
-CVEHarbor Threat IP Intelligence | 2026-11-02T00:04:15.033967+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-02T00:21:56.986230+00:00
 Permanent logical group: Suspicious IP Block
-Cumulative indexed IPs: 2448
-New since prior published snapshot: 2
+Cumulative indexed IPs: 2451
+New since prior published snapshot: 3
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 No rules or policies are created or enabled. No old IPs are removed.
@@ -390,6 +390,18 @@ No firewall rule is created or activated.
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
       <IPAddress>8.140.253.117</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_8_160_165_56</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>8.160.165.56</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_8_217_254_211</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>8.217.254.211</IPAddress>
     </IPHost>
     <IPHost>
       <Name>CVEH_8_220_246_195</Name>
@@ -8186,6 +8198,12 @@ No firewall rule is created or activated.
       <IPAddress>103.163.118.115</IPAddress>
     </IPHost>
     <IPHost>
+      <Name>CVEH_103_163_171_28</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>103.163.171.28</IPAddress>
+    </IPHost>
+    <IPHost>
       <Name>CVEH_103_164_19_247</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
@@ -14779,6 +14797,8 @@ No firewall rule is created or activated.
         <Host>CVEH_5_189_160_21</Host>
         <Host>CVEH_5_230_34_221</Host>
         <Host>CVEH_8_140_253_117</Host>
+        <Host>CVEH_8_160_165_56</Host>
+        <Host>CVEH_8_217_254_211</Host>
         <Host>CVEH_8_220_246_195</Host>
         <Host>CVEH_12_156_67_18</Host>
         <Host>CVEH_13_39_80_102</Host>
@@ -16078,6 +16098,7 @@ No firewall rule is created or activated.
         <Host>CVEH_103_163_44_10</Host>
         <Host>CVEH_103_163_106_146</Host>
         <Host>CVEH_103_163_118_115</Host>
+        <Host>CVEH_103_163_171_28</Host>
         <Host>CVEH_103_164_19_247</Host>
         <Host>CVEH_103_164_35_51</Host>
         <Host>CVEH_103_164_211_132</Host>

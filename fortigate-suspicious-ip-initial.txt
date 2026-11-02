@@ -1,7 +1,7 @@
-# CVEHarbor Threat IP Intelligence | 2026-11-02T00:04:15.033967+00:00
+# CVEHarbor Threat IP Intelligence | 2026-11-02T00:21:56.986230+00:00
 # Permanent logical group: Suspicious IP Block
-# Cumulative indexed IPs: 2448
-# New since prior published snapshot: 2
+# Cumulative indexed IPs: 2451
+# New since prior published snapshot: 3
 # REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 # Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 # No rules or policies are created or enabled. No old IPs are removed.
@@ -196,6 +196,12 @@ config firewall address
     next
     edit "CVEH_8_140_253_117"
         set subnet 8.140.253.117 255.255.255.255
+    next
+    edit "CVEH_8_160_165_56"
+        set subnet 8.160.165.56 255.255.255.255
+    next
+    edit "CVEH_8_217_254_211"
+        set subnet 8.217.254.211 255.255.255.255
     next
     edit "CVEH_8_220_246_195"
         set subnet 8.220.246.195 255.255.255.255
@@ -4094,6 +4100,9 @@ config firewall address
     edit "CVEH_103_163_118_115"
         set subnet 103.163.118.115 255.255.255.255
     next
+    edit "CVEH_103_163_171_28"
+        set subnet 103.163.171.28 255.255.255.255
+    next
     edit "CVEH_103_164_19_247"
         set subnet 103.164.19.247 255.255.255.255
     next
@@ -7423,6 +7432,8 @@ config firewall addrgrp
         append member "CVEH_5_189_160_21"
         append member "CVEH_5_230_34_221"
         append member "CVEH_8_140_253_117"
+        append member "CVEH_8_160_165_56"
+        append member "CVEH_8_217_254_211"
         append member "CVEH_8_220_246_195"
         append member "CVEH_12_156_67_18"
         append member "CVEH_13_39_80_102"
@@ -8722,6 +8733,7 @@ config firewall addrgrp
         append member "CVEH_103_163_44_10"
         append member "CVEH_103_163_106_146"
         append member "CVEH_103_163_118_115"
+        append member "CVEH_103_163_171_28"
         append member "CVEH_103_164_19_247"
         append member "CVEH_103_164_35_51"
         append member "CVEH_103_164_211_132"
