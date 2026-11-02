@@ -1,7 +1,7 @@
-CVEHarbor Threat IP Intelligence | 2026-11-02T00:54:40.165322+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-02T01:14:46.552880+00:00
 Permanent logical group: Suspicious IP Block
-Cumulative indexed IPs: 2455
-New since prior published snapshot: 0
+Cumulative indexed IPs: 2457
+New since prior published snapshot: 2
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 No rules or policies are created or enabled. No old IPs are removed.
@@ -1230,6 +1230,12 @@ No firewall rule is created or activated.
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
       <IPAddress>38.255.61.219</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_39_98_232_38</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>39.98.232.38</IPAddress>
     </IPHost>
     <IPHost>
       <Name>CVEH_39_100_64_125</Name>
@@ -10148,6 +10154,12 @@ No firewall rule is created or activated.
       <IPAddress>144.91.96.171</IPAddress>
     </IPHost>
     <IPHost>
+      <Name>CVEH_144_126_207_90</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>144.126.207.90</IPAddress>
+    </IPHost>
+    <IPHost>
       <Name>CVEH_144_126_207_108</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
@@ -14961,6 +14973,7 @@ No firewall rule is created or activated.
         <Host>CVEH_38_207_177_71</Host>
         <Host>CVEH_38_240_56_40</Host>
         <Host>CVEH_38_255_61_219</Host>
+        <Host>CVEH_39_98_232_38</Host>
         <Host>CVEH_39_100_64_125</Host>
         <Host>CVEH_39_103_169_109</Host>
         <Host>CVEH_39_105_15_222</Host>
@@ -16447,6 +16460,7 @@ No firewall rule is created or activated.
         <Host>CVEH_144_31_223_247</Host>
         <Host>CVEH_144_91_81_181</Host>
         <Host>CVEH_144_91_96_171</Host>
+        <Host>CVEH_144_126_207_90</Host>
         <Host>CVEH_144_126_207_108</Host>
         <Host>CVEH_144_172_85_176</Host>
         <Host>CVEH_144_172_86_31</Host>
