@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-02",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6461,
+  "candidate_records": 6465,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -197,6 +197,163 @@
     }
   ],
   "advisories": [
+    {
+      "id": "GHSA-9xq2-7mfg-rrmx",
+      "title": "Malicious code in @bil-rgb/baileys (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "## Source: amazon-inspector (3bcbf6493a6aa37ccc827723d6fd73b082c66d10a549af2413aba2a8a6f47b7f) package.json for @bil-rgb/baileys@1.0.0 declares its `libsignal` dependency as `github:tenka-san/libsignal-node` with no commit SHA, no tag, and no integrity check. `npm install` resolves this value by cloning whatever currently exists at HEAD of that personal GitHub user's repository and running any lifecycle scripts contained in it. The resolution target is a personal user account unrelated to the upstream signalapp/libsignal-node or WhiskeySockets Baileys publisher, so the code that executes on an installer's machine at install time is whatever that account chooses to place in the referenced branch at the moment of install, independent of this package's own tarball contents. The remainder of the package body (lib/Utils/generics.js and surrounding files) is a Baileys fork; the install-time attacker control is produced by the manifest line itself. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/621e59475f79dd797486cd454f8c3d6c7d851f62/osv/malicious/npm/@bil-rgb/baileys/MAL-2026-18441.json))",
+      "affected": "npm: @bil-rgb/baileys (= 1.0.0); npm: @bil-rgb/baileys (= 1.0.1)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-9xq2-7mfg-rrmx"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/621e59475f79dd797486cd454f8c3d6c7d851f62/osv/malicious/npm/@bil-rgb/baileys/MAL-2026-18441.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@bil-rgb/baileys/v/1.0.0"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@bil-rgb/baileys/v/1.0.1"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T04:08:37Z",
+      "source_updated_at": "2026-11-02T03:30:45Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-rqw8-93vw-v2h5",
+      "title": "Malicious code in @axo_cuy/baileys (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "## Source: amazon-inspector (0b32f937714cfd8023a0123f7e15dbeb6a2146fd7f3a22f9cb5ff6728b9d3f48) package.json declares a hard dependency `libsignal` with the source `github:tenka-san/libsignal-node`. This is an off-registry dependency source: `npm install` resolves it to the current HEAD of that third-party GitHub repository with no version/commit pin and no integrity check, and executes any lifecycle scripts shipped by that repository on the installer's machine. The owner of `tenka-san/libsignal-node` can change the installed code at any time without republishing this package. The target repository is not the upstream Baileys/libsignal publisher, so installation introduces a third-party code path that bypasses registry review and dependency pinning. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/621e59475f79dd797486cd454f8c3d6c7d851f62/osv/malicious/npm/@axo_cuy/baileys/MAL-2026-18440.json))",
+      "affected": "npm: @axo_cuy/baileys (= 1.0.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-rqw8-93vw-v2h5"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/621e59475f79dd797486cd454f8c3d6c7d851f62/osv/malicious/npm/@axo_cuy/baileys/MAL-2026-18440.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@axo_cuy/baileys/v/1.0.0"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T04:08:37Z",
+      "source_updated_at": "2026-11-02T03:30:45Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-xq83-5ggr-7222",
+      "title": "Malicious code in @an1mshnpmb9c84920/pipeprobe-obf-m19n5 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "## Source: amazon-inspector (66025f4cca9a4269af1b3b1278d850c9454b62d8e9ec90ad6e4ba8ac73c0fce2) The package's `prepare` lifecycle script executes `node index.js`, which reconstructs the hostname `npmp19n5--768.oob.awss.dev` by joining a string array and issues a DNS lookup via `require('dns').lookup(...)`. The destination is an out-of-band application-security-testing callback host carrying a unique per-package label, so installing the package confirms code execution on the installer's machine to the operator of that domain. The hostname is assembled from an array of fragments at runtime rather than appearing as a plain literal, concealing the destination from static scanners. The package provides no legitimate functionality consistent with a lifecycle-time DNS callback to an external token-bearing host. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/621e59475f79dd797486cd454f8c3d6c7d851f62/osv/malicious/npm/@an1mshnpmb9c84920/pipeprobe-obf-m19n5/MAL-2026-18439.json))",
+      "affected": "npm: @an1mshnpmb9c84920/pipeprobe-obf-m19n5 (= 1.0.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-xq83-5ggr-7222"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/621e59475f79dd797486cd454f8c3d6c7d851f62/osv/malicious/npm/@an1mshnpmb9c84920/pipeprobe-obf-m19n5/MAL-2026-18439.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@an1mshnpmb9c84920/pipeprobe-obf-m19n5/v/1.0.0"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T04:08:37Z",
+      "source_updated_at": "2026-11-02T03:30:45Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-jh68-cxw4-pfj2",
+      "title": "Malicious code in @axon-web/icons (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "AWS",
+        "Application dependencies",
+        "Node.js / npm"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-02",
+      "summary": "## Source: amazon-inspector (579025dc4de76ecd9400215e99d550cb4579ab6eb7d78e4c3c91a2299ff59c91) On require, index.js constructs an identifier from os.hostname() and process.env.USER/USERNAME and issues a DNS resolve against a subdomain of nxsqlpejfpamagxctjyv4c9qj1gfdtzwi.oast.fun — an interactsh/OAST out-of-band collector — leaking the installer's hostname and OS username to an attacker-controlled DNS server as a side effect of module load. The same file enumerates process.env keys matching /token|secret|key|pass|aws|github|npm/i and writes the matching key names to stdout, which is reconnaissance of credential-bearing environment variables. The package presents as an icons library at version 99.0.0 with no icon content, consistent with a dependency-confusion or typosquat payload rather than a legitimate library. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/2803af2aa0daf7e4fd833385a7509baa41ec0757/osv/malicious/npm/@axon-web/icons/MAL-2026-18433.json))",
+      "affected": "npm: @axon-web/icons (= 99.0.0); npm: @axon-web/icons (= 2.0.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-jh68-cxw4-pfj2"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/2803af2aa0daf7e4fd833385a7509baa41ec0757/osv/malicious/npm/@axon-web/icons/MAL-2026-18433.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@axon-web/icons/v/99.0.0"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/621e59475f79dd797486cd454f8c3d6c7d851f62/osv/malicious/npm/@axon-web/icons/MAL-2026-18433.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-01T09:55:22Z",
+      "source_updated_at": "2026-11-02T03:31:40Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
     {
       "id": "CVE-2026-120185",
       "title": "A security flaw has been discovered in ken678 YznCMS up to 2.2.0. The affected element is the...",
@@ -591,44 +748,6 @@
         {
           "label": "Additional advisory",
           "url": "https://www.npmjs.com/package/hs-framework/v/999.9.2"
-        }
-      ],
-      "exploitation": "Malicious software distribution advisory; investigate exposure",
-      "kind": "advisory",
-      "cvss": null,
-      "status": "GitHub malware advisory",
-      "first_seen_at": "2026-11-01T09:55:22Z",
-      "source_updated_at": "2026-11-01T09:30:28Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "GHSA-jh68-cxw4-pfj2",
-      "title": "Malicious code in @axon-web/icons (npm)",
-      "severity": "bulletin",
-      "categories": [
-        "AWS",
-        "Application dependencies",
-        "Node.js / npm"
-      ],
-      "published": "2026-11-01",
-      "updated": "2026-11-01",
-      "summary": "## Source: amazon-inspector (579025dc4de76ecd9400215e99d550cb4579ab6eb7d78e4c3c91a2299ff59c91) On require, index.js constructs an identifier from os.hostname() and process.env.USER/USERNAME and issues a DNS resolve against a subdomain of nxsqlpejfpamagxctjyv4c9qj1gfdtzwi.oast.fun — an interactsh/OAST out-of-band collector — leaking the installer's hostname and OS username to an attacker-controlled DNS server as a side effect of module load. The same file enumerates process.env keys matching /token|secret|key|pass|aws|github|npm/i and writes the matching key names to stdout, which is reconnaissance of credential-bearing environment variables. The package presents as an icons library at version 99.0.0 with no icon content, consistent with a dependency-confusion or typosquat payload rather than a legitimate library. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/2803af2aa0daf7e4fd833385a7509baa41ec0757/osv/malicious/npm/@axon-web/icons/MAL-2026-18433.json))",
-      "affected": "npm: @axon-web/icons (= 99.0.0)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub malware advisory",
-          "url": "https://github.com/advisories/GHSA-jh68-cxw4-pfj2"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/2803af2aa0daf7e4fd833385a7509baa41ec0757/osv/malicious/npm/@axon-web/icons/MAL-2026-18433.json"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.npmjs.com/package/@axon-web/icons/v/99.0.0"
         }
       ],
       "exploitation": "Malicious software distribution advisory; investigate exposure",
@@ -65294,6 +65413,47 @@
       "epss_as_of": "2026-11-02"
     },
     {
+      "id": "GHSA-qxg9-x88v-w2gv",
+      "title": "Malicious code in @conduitops/logview-archive (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-10-22",
+      "updated": "2026-11-02",
+      "summary": "## Source: amazon-inspector (f20036e315be6c5dd925bdedc87120af27adb007a4c2b6653c95cb386acd9009) On install, package.json's postinstall hook runs install.js, which invokes `npm install @conduit/logview-cli@2.2.0 --registry <URL>` where the registry URL is stored as a base64+XOR-masked string in lib/toolchain.json and decoded in memory by lib/origin.js (XOR key `c0ndu1t-ops`). The decoded destination is a plain-HTTP bare IP (http://139.196.94.195:8080/dl/npm/), not the public npm registry, a known publisher host, or an internal-DNS name consistent with the package's self-claimed `conduit.internal` provenance. npm will fetch and execute the lifecycle scripts of whatever package the attacker serves at that endpoint, giving arbitrary install-time code execution on the installer's host. A comment in lib/origin.js states the masking is intended so the downloaded package `carries no readable address`, confirming the concealment is deliberate rather than incidental. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/f17c406fb7ee5243da902499814340765fd9b86a/osv/malicious/npm/@conduitops/logview-archive/MAL-2026-18183.json))",
+      "affected": "npm: @conduitops/logview-archive (= 1.0.1); npm: @conduitops/logview-archive (= 1.0.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-qxg9-x88v-w2gv"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/f17c406fb7ee5243da902499814340765fd9b86a/osv/malicious/npm/@conduitops/logview-archive/MAL-2026-18183.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@conduitops/logview-archive/v/1.0.1"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/f35c4d2c3d8494a150f127dd2998ba1622e8a587/osv/malicious/npm/@conduitops/logview-archive/MAL-2026-18183.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T04:08:37Z",
+      "source_updated_at": "2026-11-02T03:30:37Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
       "id": "GHSA-9j83-qj34-g5vc",
       "title": "Malware in @factiii/runner",
       "severity": "bulletin",
@@ -67967,53 +68127,6 @@
       "epss_as_of": "2026-11-02"
     },
     {
-      "id": "CVE-2026-109619",
-      "title": "RCE via stale global state",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-10-30",
-      "summary": "## Summary PHP contains various global state, such as error, session, object and extension state that is retained by a worker but points to memory owned by one request. That state must be reset before the request memory is released. Some input, configuration, session and error handling operations run before normal initialization of the next request. They inadvertently access stale state not reset by the previous request before initialization has a chance to replace it, causing a use after free. A strategically crafted heap layout can produce full remote code execution (RCE). State can survive for more than one reason. A fatal error, including one caused by memory exhaustion, can abandon an operation before it performs its matching reset. A warning or other nonfatal diagnostic can also repopulate error state after that state was already cleared during shutdown. The request heap is then freed while the worker global field still refers to it. A later operation that runs before normal request initialization can consume the stale value. Successful exploitation of this vulnerability requires both a producer and a consumer. The producer is a PHP operation that stores state owned by one request in a location PHP can access later in a subsequent request. The consumer is a subsequent PHP o",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "PHP upstream security advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-6wmf-4rv5-p3rp"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:13Z",
-      "source_type": "php_upstream",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99999,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2026-109618",
       "title": "RCE via OOM corruption",
       "severity": "critical",
@@ -68058,6 +68171,53 @@
       "known_exploited": true,
       "epss": 0.99999,
       "epss_percentile": 0.99998,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-109619",
+      "title": "RCE via stale global state",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-10-30",
+      "summary": "## Summary PHP contains various global state, such as error, session, object and extension state that is retained by a worker but points to memory owned by one request. That state must be reset before the request memory is released. Some input, configuration, session and error handling operations run before normal initialization of the next request. They inadvertently access stale state not reset by the previous request before initialization has a chance to replace it, causing a use after free. A strategically crafted heap layout can produce full remote code execution (RCE). State can survive for more than one reason. A fatal error, including one caused by memory exhaustion, can abandon an operation before it performs its matching reset. A warning or other nonfatal diagnostic can also repopulate error state after that state was already cleared during shutdown. The request heap is then freed while the worker global field still refers to it. A later operation that runs before normal request initialization can consume the stale value. Successful exploitation of this vulnerability requires both a producer and a consumer. The producer is a PHP operation that stores state owned by one request in a location PHP can access later in a subsequent request. The consumer is a subsequent PHP o",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "PHP upstream security advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-6wmf-4rv5-p3rp"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:13Z",
+      "source_type": "php_upstream",
+      "known_exploited": true,
+      "epss": 0.99999,
+      "epss_percentile": 0.99999,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -151661,37 +151821,6 @@
       "epss_as_of": "2026-11-02"
     },
     {
-      "id": "CVE-2025-7624",
-      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
-      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
-      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.10514,
-      "epss_percentile": 0.95766,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2025-6704",
       "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
       "severity": "critical",
@@ -151720,6 +151849,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.11772,
       "epss_percentile": 0.96077,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2025-7624",
+      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
+      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
+      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.10514,
+      "epss_percentile": 0.95766,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -169154,215 +169314,90 @@
       "epss": 0.08661,
       "epss_percentile": 0.95117,
       "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2022-21999",
-      "title": "Microsoft Windows Print Spooler Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-03-25",
-      "summary": "Microsoft Windows Print Spooler contains an unspecified vulnerability which can allow for privilege escalation.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.41007,
-      "epss_percentile": 0.9866,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2020-5410",
-      "title": "VMware Tanzu Spring Cloud Config Directory Traversal Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2022-03-25",
-      "summary": "Spring, by VMware Tanzu, Cloud Config contains a path traversal vulnerability that allows applications to serve arbitrary configuration files.",
-      "affected": "VMware Tanzu Spring Cloud Configuration (Config) Server. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.95586,
-      "epss_percentile": 0.9987,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2019-6340",
-      "title": "Drupal Core Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Drupal / CMS",
-        "PHP"
-      ],
-      "published": "",
-      "updated": "2022-03-25",
-      "summary": "In Drupal Core, some field types do not properly sanitize data from non-form sources. This can lead to arbitrary PHP code execution in some cases.",
-      "affected": "Drupal Core. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.92017,
-      "epss_percentile": 0.9982,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2019-11043",
-      "title": "PHP FastCGI Process Manager (FPM) Buffer Overflow Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "PHP"
-      ],
-      "published": "",
-      "updated": "2022-03-25",
-      "summary": "In some versions of PHP in certain configurations of FPM setup, it is possible to cause FPM module to write past allocated buffers allowing the possibility of remote code execution.",
-      "affected": "PHP FastCGI Process Manager (FPM). Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-03-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99783,
-      "epss_percentile": 0.99956,
-      "epss_as_of": "2026-11-02"
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-02T03:00:17Z",
-      "last_attempt": "2026-11-02T03:00:17Z",
-      "items_processed": 237,
+      "last_success": "2026-11-02T04:08:37Z",
+      "last_attempt": "2026-11-02T04:08:37Z",
+      "items_processed": 212,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-02T03:00:17Z",
-      "last_attempt": "2026-11-02T03:00:17Z",
+      "last_success": "2026-11-02T04:08:37Z",
+      "last_attempt": "2026-11-02T04:08:37Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-02T03:00:17Z",
-      "last_attempt": "2026-11-02T03:00:17Z",
+      "last_success": "2026-11-02T04:08:37Z",
+      "last_attempt": "2026-11-02T04:08:37Z",
       "items_processed": 92,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-02T03:00:17Z",
-      "last_attempt": "2026-11-02T03:00:17Z",
+      "last_success": "2026-11-02T04:08:37Z",
+      "last_attempt": "2026-11-02T04:08:37Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-02T03:00:17Z",
-      "last_attempt": "2026-11-02T03:00:17Z",
+      "last_success": "2026-11-02T04:08:37Z",
+      "last_attempt": "2026-11-02T04:08:37Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-02T03:00:17Z",
-      "last_attempt": "2026-11-02T03:00:17Z",
+      "last_success": "2026-11-02T04:08:37Z",
+      "last_attempt": "2026-11-02T04:08:37Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-02T03:00:17Z",
-      "last_attempt": "2026-11-02T03:00:17Z",
+      "last_success": "2026-11-02T04:08:37Z",
+      "last_attempt": "2026-11-02T04:08:37Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-02T03:00:17Z",
-      "last_attempt": "2026-11-02T03:00:17Z",
+      "last_success": "2026-11-02T04:08:37Z",
+      "last_attempt": "2026-11-02T04:08:37Z",
       "items_processed": 52,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-02T03:00:17Z",
-      "last_attempt": "2026-11-02T03:00:17Z",
+      "last_success": "2026-11-02T04:08:37Z",
+      "last_attempt": "2026-11-02T04:08:37Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-02T03:00:17Z",
-      "last_attempt": "2026-11-02T03:00:17Z",
+      "last_success": "2026-11-02T04:08:37Z",
+      "last_attempt": "2026-11-02T04:08:37Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-02T03:00:17Z",
-      "last_attempt": "2026-11-02T03:00:17Z",
+      "last_success": "2026-11-02T04:08:37Z",
+      "last_attempt": "2026-11-02T04:08:37Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-02T03:00:17Z",
-      "last_attempt": "2026-11-02T03:00:17Z",
+      "last_success": "2026-11-02T04:08:37Z",
+      "last_attempt": "2026-11-02T04:08:37Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -169374,7 +169409,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-02T03:00:17Z",
-  "last_successful_update": "2026-11-02T03:00:17Z",
+  "last_checked_at": "2026-11-02T04:08:37Z",
+  "last_successful_update": "2026-11-02T04:08:37Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
