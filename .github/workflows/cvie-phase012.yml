@@ -18,7 +18,9 @@ jobs:
       - run: npm install --no-save --no-package-lock jsdom@26
       - run: node scripts/cvie_client_smoke.mjs && node scripts/cvie_polling_smoke.mjs && node scripts/cvie_fast_onboarding_smoke.mjs
   read-only-baseline:
-    if: github.repository == 'Prat007ai/cveharbor' && github.head_ref == 'codex/cvie-core-phase012' && github.event.pull_request.head.repo.full_name == github.repository
+    # Task 2C uses the dedicated staging account only. PR path filters include the
+    # entire PR diff, so a staging-only commit would otherwise re-read production.
+    if: github.event.pull_request.number != 243 && github.repository == 'Prat007ai/cveharbor' && github.head_ref == 'codex/cvie-core-phase012' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

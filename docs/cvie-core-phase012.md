@@ -222,6 +222,8 @@ Artifacts: [backend results](cvie-evidence/followup-backend-tests.json), [target
 
 ## 7. Migration review and exact staging requirements
 
+**Task 2C preparation update:** the owner has now supplied a dedicated paid staging account and approved repository preparation. Staging configurations, Access protection and local safety/build scripts are prepared on this PR; see [secure credential setup](cvie-staging-credentials.md). The sections below retain the Task 2B assessment-time findings. No staging cloud resources, remote migrations or deployments have been executed, and the local measurements above are not remote staging results.
+
 ### 7.1 Migration status and impact
 
 `0028_cvie_source_efficiency.sql` and `0029_cvie_identity_registry.sql` are **unreleased migrations in this draft PR**. No remote application of either was performed in this work. Their definitions were refined in place: the state index is selective, and the source projection triggers avoid redundant initial updates. Existing table/customer layouts are not replaced.

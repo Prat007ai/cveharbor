@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
+  "name": "cveharbor-site-staging",
+  "account_id": "9706b4d98ad72884e67fd1eb875c8a61",
+  "main": "frontend.mjs",
+  "compatibility_date": "2026-10-28",
+  "workers_dev": true,
+  "preview_urls": false,
+  "keep_vars": false,
+  "routes": [],
+  "triggers": { "crons": [] },
+  "assets": {
+    "directory": ".build/public",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "services": [{ "binding": "STAGING_API", "service": "cveharbor-accounts-staging" }],
+  "vars": {
+    "ACCESS_ISSUER": "REQUIRES_STAGING_ACCESS_TEAM_ISSUER",
+    "ACCESS_AUD": "REQUIRES_STAGING_ACCESS_APPLICATION_AUD"
+  }
+}

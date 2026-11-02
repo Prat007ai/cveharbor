@@ -1,6 +1,8 @@
 # Task 2C: CVIE Cloudflare Staging Environment and Validation Plan
 
-**Status: proposed; awaiting approval. No staging resources, configuration changes, migrations or deployments have been made.**
+**Status: resource names/account and repository preparation approved; configuration/scripts prepared on PR #243. Cloudflare resource creation, migrations and deployments remain paused pending secure credential setup.**
+
+The owner supplied staging account `9706b4d98ad72884e67fd1eb875c8a61` (Workers Paid) and `cveharbor-staging.workers.dev`. The current [credential setup and preparation guide](cvie-staging-credentials.md) supersedes the original proposed Basic Auth gate, placeholder account/hostname and planned file paths below: Cloudflare Access now protects the frontend, initial provider calls are blocked, and implementation lives under `staging/`. The remainder records the full validation plan and original assessment baseline; remote results are still not available.
 
 Prepared on 2 November 2026 for [PR #243](https://github.com/Prat007ai/cveharbor/pull/243), branch `codex/cvie-core-phase012`. Reviewed PR head: `41dc5b300b5de02e9733d78fe5566bd91c60e45a`; implementation measurements refer to `ea7fa077b3128ce024603f5e2abfd5afd9896d82`. The PR is open, draft and unmerged. This is the complete Task 2C plan, not a replacement for, or a link-only copy of, the [Task 2B implementation report](cvie-core-phase012.md).
 
@@ -10,7 +12,7 @@ Approve implementation and validation of the staging arrangement below on the ex
 
 **Recommended security boundary: an owner-designated Cloudflare account containing no production resources.** Use a new staging deployment token restricted to that account. A different database in the production account isolates runtime bindings, but an account-scoped D1 deployment token may still be able to modify production databases. Naming and command checks alone cannot remove that credential-level risk. This plan therefore does not silently substitute the production account if a separate account is unavailable. Account creation or transfer of domains is not proposed here; the owner must provide an existing isolated account or arrange one and its billing separately.
 
-Two owner-supplied identifiers remain necessary: the isolated Cloudflare account ID and its enabled Workers subdomain. Resource names below are exact proposals; the database UUID will be assigned by Cloudflare after creation. Neither identifiers nor resource availability have been verified remotely. Before deployment, record the returned UUID, account ID and final hostname in the approved target manifest and validate them against the created resources. Never infer them from production credentials.
+The account and Workers subdomain are now supplied and pinned in the preparation. The database UUID will be assigned by Cloudflare after creation. Resource availability has not been verified remotely. Before deployment, record the returned UUID and validate it against the approved account and database name. Never infer it from production credentials.
 
 ### Exact proposed resource inventory
 
@@ -208,10 +210,10 @@ Total: approximately **5–9 engineering days**, excluding account setup, owner 
 
 ### Current release blockers
 
-1. Approval of this staging resource/configuration/deployment/test plan.
-2. Owner-provided isolated account ID/subdomain, adequate plan/quota and staging-only credentials; protected CI environment and network access.
-3. Implementation and local validation of staging routing, complete email/schedule guards and full-schema fixtures.
+1. Secure credential/Access setup and owner confirmation that staging execution can begin.
+2. Protected CI environment and network access. Account ID/subdomain and Workers Paid plan are now supplied; no token has been supplied to execution.
+3. Remote bootstrap/fixture preparation and validation. Staging routing, email/schedule guards and local schema/build checks are prepared; full authenticated performance fixtures remain subsequent work.
 4. Successful remote migration, browser latency, D1 density, tenant/parity and rollback results.
 5. Separate production review and approval after the staging report. No merge or production rollout follows automatically from passing staging.
 
-**Current outcome:** repository review and staging plan prepared. Remote validation has not run. No application/configuration change or cloud operation is claimed by this document.
+**Current outcome:** staging configuration and local safety/build helpers are prepared; see the credential guide for exact current files and setup steps. Remote validation has not run and no Cloudflare resources have been created or deployed. The original implementation/validation sequence above remains the scope for subsequent work, with Access and the approved account replacing earlier placeholders.

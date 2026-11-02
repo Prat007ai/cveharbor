@@ -1,0 +1,59 @@
+name: CVIE staging preparation (no automatic deployment)
+on:
+  push:
+    branches: [codex/cvie-core-phase012]
+    paths: ['staging/**', '.github/workflows/cvie-staging.yml']
+  pull_request:
+    paths: ['staging/**', '.github/workflows/cvie-staging.yml']
+  workflow_dispatch:
+    inputs:
+      check_credentials:
+        description: 'Run staging-only read-only credential and Access checks (no creation or deployment)'
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: cvie-staging-243
+  cancel-in-progress: false
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm install --prefix staging --no-save --no-package-lock esbuild@0.25.12
+      - run: node --test staging/tests/*.test.mjs
+      - run: python staging/scripts/schema.py
+      - run: node staging/scripts/build.mjs
+      - run: node staging/scripts/check-build.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cvie-staging-preparation-${{ github.sha }}
+          path: |
+            staging/.build/manifest.json
+            staging/.build/schema/manifest.json
+          retention-days: 14
+  check-staging-credentials:
+    if: github.event_name == 'workflow_dispatch' && inputs.check_credentials == true && github.ref == 'refs/heads/codex/cvie-core-phase012' && github.repository == 'Prat007ai/cveharbor'
+    needs: prepare
+    runs-on: ubuntu-latest
+    environment: cloudflare-cvie-staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate staging credentials and Access without modifying resources
+        env:
+          CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
+          CF_STAGING_ACCOUNT_ID: ${{ vars.CF_STAGING_ACCOUNT_ID }}
+          CF_STAGING_D1_DATABASE_ID: ${{ vars.CF_STAGING_D1_DATABASE_ID }}
+          CF_STAGING_ACCESS_ISSUER: ${{ vars.CF_STAGING_ACCESS_ISSUER }}
+          CF_STAGING_ACCESS_AUD: ${{ vars.CF_STAGING_ACCESS_AUD }}
+        run: node staging/scripts/cloud.mjs check

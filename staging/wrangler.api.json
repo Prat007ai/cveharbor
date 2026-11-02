@@ -1,0 +1,47 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
+  "name": "cveharbor-accounts-staging",
+  "account_id": "9706b4d98ad72884e67fd1eb875c8a61",
+  "main": ".build/api.mjs",
+  "compatibility_date": "2026-10-28",
+  "workers_dev": false,
+  "preview_urls": false,
+  "keep_vars": false,
+  "routes": [],
+  "triggers": { "crons": [] },
+  "vars": {
+    "STAGING_MODE": "true",
+    "OUTBOUND_EMAIL_DISABLED": "true",
+    "SCHEDULED_JOBS_ENABLED": "false",
+    "CVIE_PROVIDER_MODE": "blocked",
+    "CVIE_METRICS_ENABLED": "true",
+    "CVIE_SHARED_SCANS_ENABLED": "true",
+    "CVIE_REGISTRY_ENABLED": "false",
+    "CVIE_FAST_EVIDENCE_ENABLED": "false",
+    "REMEDIATION_WORKFLOW_ENABLED": "true",
+    "ASSIGNMENT_ACK_ENABLED": "true",
+    "ASSIGNMENT_PROGRESS_ENABLED": "true",
+    "ASSIGNMENT_FYI_ENABLED": "true",
+    "ASSIGNMENT_EMAIL_ENABLED": "false",
+    "ALERT_DELIVERY_ENABLED": "false",
+    "LIFECYCLE_DELIVERY_ENABLED": "false",
+    "PRODUCT_MONITOR_DELIVERY_ENABLED": "false",
+    "PRODUCT_MONITOR_TEST_ENABLED": "false",
+    "PRODUCT_MONITOR_CHECKS_ENABLED": "false",
+    "PLUGIN_MONITOR_ENABLED": "false",
+    "WEBSITE_MONITOR_ENABLED": "false",
+    "WEBSITE_MONITOR_MANUAL_ENABLED": "false",
+    "WEB_RISK_ALERT_TEST_ENABLED": "false"
+  },
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "cveharbor-accounts-staging",
+    "database_id": "REQUIRES_NEW_STAGING_D1_UUID",
+    "migrations_dir": "../account-backend/migrations"
+  }],
+  "ratelimits": [{
+    "name": "ASSIGNMENT_ACK_RATE_LIMITER",
+    "namespace_id": "24302",
+    "simple": { "limit": 60, "period": 60 }
+  }]
+}
