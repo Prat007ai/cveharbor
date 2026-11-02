@@ -1,3 +1,4 @@
+import {updateLinkedFinding} from './finding-remediation.js';
 // Status belongs to an account-owned asset and CVE, never the global CVE alone.
 const allowed=new Set(['Needs Review','Fix in Progress','Fixed/Patched','Not Applicable','Accepted Risk']);
 const response=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{
@@ -66,6 +67,7 @@ export async function findingStatusRoute(req,env,user,path,data={}){
  if(notes.length>1200||/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(notes))throw new FindingStatusError('Invalid notes');
  const owned=await env.DB.prepare('SELECT id FROM inventory_assets WHERE id=? AND user_id=?').bind(assetId,user.id).first();
  if(!owned)throw new FindingStatusError('Asset not found in your account',404);
+ if(await updateLinkedFinding(env,user,assetId,cveId,data))return response({saved:true,asset_id:assetId,cve_id:cveId,status:data.status,notes});
  await env.DB.prepare(
   'INSERT INTO customer_finding_statuses(user_id,asset_id,cve_id,status,notes,updated_at) VALUES(?,?,?,?,?,CURRENT_TIMESTAMP) '+
   'ON CONFLICT(user_id,asset_id,cve_id) DO UPDATE SET status=excluded.status,notes=excluded.notes,updated_at=CURRENT_TIMESTAMP'

@@ -197,6 +197,7 @@ function renderFindings(root,issues,readOnly){
   const saveStatus=text('button','Save status','customer-status-save');saveStatus.type='button';saveStatus.disabled=!findingStatusReady;
   saveStatus.addEventListener('click',async()=>{saveStatus.disabled=true;await saveFindingStatus(i,select.value,select);saveStatus.disabled=!findingStatusReady});
   cell.append(select,saveStatus);
+  const shared=text('button','Assign / View remediation','shared-work-action');shared.type='button';shared.addEventListener('click',()=>window.CVEHARBOR_SHARED?.finding(i.asset_id,i.id,shared));cell.append(shared);
   const input=document.createElement('input');input.type='text';input.maxLength=64;input.placeholder='Ticket number';input.className='customer-ticket-input';
   input.setAttribute('aria-label','DevOps ticket number for '+i.id+' on '+(i.asset?.name||'asset'));input.disabled=!ticketAppendReady;
   input.value=findingTicketDrafts.get(statusKey(i))||'';
@@ -257,12 +258,13 @@ async function saveFindingStatus(i,status,select){
  if(reporting||!findingStatusReady)return;
  select.disabled=true;
  try{
+  const shared=await window.CVEHARBOR_SHARED?.statusContext(i.asset_id,i.id);let reason='';if(shared&&shared.fix_status!==status){reason=window.prompt('Reason for changing the vulnerability fix status:')||'';if(!reason.trim())return;}
   const r=await fetch('https://api.cveharbor.com/v1/finding-statuses/'+encodeURIComponent(i.asset_id)+'/'+encodeURIComponent(i.id),{
-   method:'PUT',credentials:'include',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({status,notes:findingNotes.get(statusKey(i))||''})});
+   method:'PUT',credentials:'include',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({status,notes:findingNotes.get(statusKey(i))||'',status_change_reason:reason,expected_updated:shared?.updated})});
   if(!r.ok)throw Error((await r.json().catch(()=>({}))).error||'Unable to save status');
   findingStatuses.set(statusKey(i),status);
   findingStatusDrafts.delete(statusKey(i));
-  redraw();
+  window.CVEHARBOR_SHARED?.changed();redraw();
  }catch(error){select.value=statusFor(i);window.alert('Could not save vulnerability status: '+error.message)}finally{select.disabled=false}
 }
 
@@ -1257,5 +1259,7 @@ for(const eventName of ['cveharbor:account-state','cveharbor-auth-change'])windo
  if(customerReady&&(!event.detail?.authenticated||event.detail?.email&&event.detail.email!==accountEmail))invalidateSession();
 });
 window.addEventListener('cvie:updated',event=>{if(event.detail?.recordsChanged)records=advisories();if(reportPrinting){reportRedrawPending=true;return}for(const note of document.querySelectorAll('.cvie-report-source-note'))note.textContent=intelligenceSourceSummary();if(event.detail?.recordsChanged&&customerReady)redraw();});
+window.addEventListener('cveharbor:remediation-changed',()=>{if(customerReady)void refreshSavedFindings().then(redraw).catch(()=>{});});
+if(typeof BroadcastChannel==='function'){const channel=new BroadcastChannel('cveharbor-remediation-changed');channel.onmessage=()=>{if(customerReady)void refreshSavedFindings().then(redraw).catch(()=>{});};}
 void init();
 })();

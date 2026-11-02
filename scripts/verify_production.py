@@ -21,7 +21,7 @@ root=Path(__file__).resolve().parents[1]
 base="https://cveharbor.com"
 routes=["/", "/intelligence/", "/vulnerabilities/","/threats/","/account/","/workspace/","/customer-reports/","/customer-dashboard/","/environments/","/website-monitor/","/lifecycle/","/remediation/"]
 required={
- "/remediation/":["remediationFormTitle","remediationOwnerError","remediationToolsTitle","remediationRecordsTitle","remediationOpen","remediationHistoryDialog","Acknowledgement","Owner *","remediation.css?v=tracker-fluid-2","operations.js?v=tracker-fluid-2"],
+ "/remediation/":["remediationFormTitle","remediationOwnerError","remediationToolsTitle","remediationRecordsTitle","remediationOpen","remediationHistoryDialog","Acknowledgement","Owner *","remediation.css?v=unified-findings-1","operations.js?v=unified-findings-1"],
  "/lifecycle/":["lifecycleMonitorTitle","productMonitorActivation","productMonitorHistory","lifecycleProductSearch","lifecycleAddUnlisted","lifecycle-monitor.css?v=product-directory-1","product-monitoring.js?v=product-monitor-2"],
  "/":["homepageFeatures", "marketing-story", "asset-onboarding", "findings-table", "homepage.css?v=brochure-216"],
  "/intelligence/":["overviewTitle", "techBars", "chartInsights", "feedStatus"],
@@ -91,7 +91,7 @@ for attempt in range(6):
             expected=(root / "public" / route.strip("/") / "index.html").read_text(encoding="utf-8")
             for marker in required[route]:
                 if marker not in html: raise RuntimeError(f"{route} missing {marker}")
-            assets=("styles.css","homepage.css","app.js","advisory-details.js","cvie.js","cvie.css","inventory-matching.js","command-center.js","customer-security.js","inventory.js","website-monitor-page.js")
+            assets=("shared-remediation.js","shared-remediation.css","styles.css","homepage.css","app.js","advisory-details.js","cvie.js","cvie.css","inventory-matching.js","command-center.js","customer-security.js","inventory.js","website-monitor-page.js")
             if route=="/lifecycle/":assets+=("lifecycle-products.js","lifecycle-directory-search.js","lifecycle-monitor.js","product-monitoring.js","lifecycle-monitor.css","assets/lifecycle-orbit.svg")
             if route=="/remediation/":assets+=("operations.js","remediation.css")
             if route=="/workspace/":assets+=("workspace-dashboard.js","workspace-dashboard.css")

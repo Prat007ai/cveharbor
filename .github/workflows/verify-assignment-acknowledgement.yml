@@ -3,7 +3,7 @@ on:
   push:
     branches: [feat/assignment-acknowledgement, feat/assignment-fyi, feat/remediation-workflow-polish, feat/assignment-progress-reminders, feat/manager-inactivity-notices]
   pull_request:
-    paths: ['account-backend/migrations/0027_assignment_progress.sql', 'scripts/assignment_progress_browser.mjs', 'scripts/verify_assignment_progress_d1.mjs', 'account-backend/src/remediation-workflow.js', 'account-backend/src/confirmation-host.js', 'account-backend/migrations/0026_remediation_workflow.sql', 'account-backend/tests/remediation-workflow.test.mjs', 'scripts/remediation_workflow_browser.mjs', 'scripts/verify_remediation_workflow_d1.mjs', 'account-backend/src/assignment-*.js', 'account-backend/src/remediation.js', 'account-backend/migrations/0024_assignment_acknowledgements.sql', 'account-backend/migrations/0025_assignment_fyi.sql', 'scripts/assignment_fyi_browser.mjs', 'scripts/verify_assignment_fyi_d1.mjs', 'account-backend/tests/assignment-*.mjs', 'account-backend/tests/helpers/assignment-db.mjs', 'scripts/assignment_ack_browser.mjs', 'scripts/verify_assignment_ack_d1.mjs', '.github/workflows/verify-assignment-acknowledgement.yml']
+    paths: ['account-backend/src/finding-remediation.js', 'account-backend/src/remediation-identity.js', 'account-backend/migrations/0028_unified_findings.sql', 'shared-remediation.js', 'scripts/unified_findings_browser.mjs', 'account-backend/migrations/0027_assignment_progress.sql', 'scripts/assignment_progress_browser.mjs', 'scripts/verify_assignment_progress_d1.mjs', 'account-backend/src/remediation-workflow.js', 'account-backend/src/confirmation-host.js', 'account-backend/migrations/0026_remediation_workflow.sql', 'account-backend/tests/remediation-workflow.test.mjs', 'scripts/remediation_workflow_browser.mjs', 'scripts/verify_remediation_workflow_d1.mjs', 'account-backend/src/assignment-*.js', 'account-backend/src/remediation.js', 'account-backend/migrations/0024_assignment_acknowledgements.sql', 'account-backend/migrations/0025_assignment_fyi.sql', 'scripts/assignment_fyi_browser.mjs', 'scripts/verify_assignment_fyi_d1.mjs', 'account-backend/tests/assignment-*.mjs', 'account-backend/tests/helpers/assignment-db.mjs', 'scripts/assignment_ack_browser.mjs', 'scripts/verify_assignment_ack_d1.mjs', '.github/workflows/verify-assignment-acknowledgement.yml']
 permissions:
   contents: read
 jobs:
@@ -33,6 +33,8 @@ jobs:
         run: node scripts/remediation_workflow_browser.mjs
       - name: Exercise verified reviewer progress and severity-based reminders
         run: node scripts/assignment_progress_browser.mjs
+      - name: Exercise shared customer findings and remediation records
+        run: node scripts/unified_findings_browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -42,3 +44,4 @@ jobs:
             work/fyi-review/
             work/workflow-review/
             work/progress-review/
+            work/unified-review/
