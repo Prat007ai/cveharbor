@@ -1,7 +1,7 @@
-CVEHarbor Threat IP Intelligence | 2026-11-02T10:03:32.025043+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-02T10:19:13.473000+00:00
 Permanent logical group: Suspicious IP Block
-Cumulative indexed IPs: 2629
-New since prior published snapshot: 36
+Cumulative indexed IPs: 2634
+New since prior published snapshot: 5
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 No rules or policies are created or enabled. No old IPs are removed.
@@ -26,220 +26,34 @@ No firewall rule is created or activated.
   </Login>
   <Set operation="add">
     <IPHost>
-      <Name>CVEH_5_175_253_126</Name>
+      <Name>CVEH_89_187_187_77</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>5.175.253.126</IPAddress>
+      <IPAddress>89.187.187.77</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_27_124_4_34</Name>
+      <Name>CVEH_101_33_208_231</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>27.124.4.34</IPAddress>
+      <IPAddress>101.33.208.231</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_86_124_168_245</Name>
+      <Name>CVEH_102_129_52_21</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>86.124.168.245</IPAddress>
+      <IPAddress>102.129.52.21</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_100_15_36_167</Name>
+      <Name>CVEH_103_161_232_38</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>100.15.36.167</IPAddress>
+      <IPAddress>103.161.232.38</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_101_13_6_91</Name>
+      <Name>CVEH_178_175_130_243</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>101.13.6.91</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_101_96_202_87</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>101.96.202.87</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_102_129_51_2</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>102.129.51.2</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_102_129_81_78</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>102.129.81.78</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_102_210_25_74</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>102.210.25.74</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_17_12_25</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.17.12.25</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_18_20_242</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.18.20.242</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_114_43_99</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.114.43.99</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_121_65_183</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.121.65.183</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_179_27_226</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.179.27.226</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_179_95_103</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.179.95.103</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_179_194_91</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.179.194.91</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_180_20_177</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.180.20.177</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_180_223_110</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.180.223.110</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_181_21_153</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.181.21.153</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_182_10_220</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.182.10.220</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_182_166_225</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.182.166.225</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_182_235_156</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.182.235.156</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_184_122_92</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.184.122.92</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_186_77_68</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.186.77.68</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_186_173_10</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.186.173.10</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_186_230_164</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.186.230.164</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_187_146_107</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.187.146.107</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_189_135_147</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.189.135.147</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_137_220_136_165</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>137.220.136.165</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_151_239_25_102</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>151.239.25.102</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_176_125_229_135</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>176.125.229.135</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_180_93_193_100</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>180.93.193.100</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_184_75_214_163</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>184.75.214.163</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_196_202_45_5</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>196.202.45.5</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_202_61_140_195</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>202.61.140.195</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_217_60_102_209</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>217.60.102.209</IPAddress>
+      <IPAddress>178.175.130.243</IPAddress>
     </IPHost>
   </Set>
 </Request>
@@ -252,39 +66,8 @@ Merge the newly created host names with ALL existing members, deduplicate,
 then submit an IPHostGroup edit with that complete merged HostList.
 Do not issue a group edit containing only the new IPs.
 New host names to merge:
-CVEH_5_175_253_126
-CVEH_27_124_4_34
-CVEH_86_124_168_245
-CVEH_100_15_36_167
-CVEH_101_13_6_91
-CVEH_101_96_202_87
-CVEH_102_129_51_2
-CVEH_102_129_81_78
-CVEH_102_210_25_74
-CVEH_103_17_12_25
-CVEH_103_18_20_242
-CVEH_103_114_43_99
-CVEH_103_121_65_183
-CVEH_103_179_27_226
-CVEH_103_179_95_103
-CVEH_103_179_194_91
-CVEH_103_180_20_177
-CVEH_103_180_223_110
-CVEH_103_181_21_153
-CVEH_103_182_10_220
-CVEH_103_182_166_225
-CVEH_103_182_235_156
-CVEH_103_184_122_92
-CVEH_103_186_77_68
-CVEH_103_186_173_10
-CVEH_103_186_230_164
-CVEH_103_187_146_107
-CVEH_103_189_135_147
-CVEH_137_220_136_165
-CVEH_151_239_25_102
-CVEH_176_125_229_135
-CVEH_180_93_193_100
-CVEH_184_75_214_163
-CVEH_196_202_45_5
-CVEH_202_61_140_195
-CVEH_217_60_102_209
+CVEH_89_187_187_77
+CVEH_101_33_208_231
+CVEH_102_129_52_21
+CVEH_103_161_232_38
+CVEH_178_175_130_243
