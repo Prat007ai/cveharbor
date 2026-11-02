@@ -55,7 +55,9 @@ jobs:
                   checks={
                     'assignment dialog published':'id="remediationAssignDialog"' in html,
                     'versioned tracker deployed':re.search(r'src="/operations\.js\?v=[a-zA-Z0-9-]+"',html) is not None,
-                    'cloud storage message':'private Cloudflare D1 account' in html,
+                    'private workspace message':'private CVEHarbor workspace' in html,
+                    'reviewer activity dialog':'id="remediationProgressDialog"' in html,
+                    'reviewer capability check':'reviewer_updates_available' in tracker,
                     'tracker sends authenticated requests':"credentials:'include'" in tracker,
                     'tracker uses cloud feature checks':'/remediations/features' in tracker,
                     'indexed CVE has assignment action':'cveharbor:assign-remediation' in app,
