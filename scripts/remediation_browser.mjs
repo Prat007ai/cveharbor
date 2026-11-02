@@ -23,13 +23,15 @@ try{
  assert.equal(await page.locator('.command-nav-link[aria-current="page"]').getAttribute('href'),'/remediation/');
  assert.deepEqual(await page.locator('.rt-tool').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('href'))),['/admin-tools/','/vulnerabilities/','/customer-reports/','/account/']);
  const measurements=[];
- for(const width of [1600,1672,1280,1024,820,768,390,320]){
+ for(const width of [3840,2560,1920,1600,1366,1280,1024,820,768,390,320,1920]){
   await page.setViewportSize({width,height:1000});await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
   const layout=await page.evaluate(()=>({width:innerWidth,page:document.documentElement.scrollWidth,nav:document.querySelector('.command-sidebar').getBoundingClientRect().width,overflow:[...document.querySelectorAll('.rt-panel,.rt-stat,.rt-tool')].filter(n=>n.scrollWidth>n.clientWidth+1).length}));
   assert.ok(layout.page<=width+1,'no horizontal page overflow at '+width);assert.equal(layout.overflow,0);if(width>820)assert.equal(layout.nav,74);measurements.push(layout);
-  if([1600,390].includes(width))await page.screenshot({path:directory+'/remediation-'+width+'.png',fullPage:true});
+  assert.ok(await page.locator('.rt-table-scroll').evaluate(n=>n.scrollWidth<=n.clientWidth+1),'records fit their container at '+width);assert.ok(await page.locator('#remediationRows td').first().evaluate(n=>parseFloat(getComputedStyle(n).fontSize)>=15));
+  if([2560,1366,390].includes(width))await page.screenshot({path:directory+'/remediation-'+width+'.png',fullPage:true});
  }
  await page.setViewportSize({width:1600,height:1000});
+ await page.locator('.command-sidebar-toggle').click();assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));assert.ok(await page.locator('.rt-table-scroll').evaluate(n=>n.scrollWidth<=n.clientWidth+1));await page.locator('.command-sidebar-toggle').click();
  await page.locator('#remediationCve').fill('CVE-2026-99999');await page.locator('#remediationSave').click();
  assert.equal(await page.locator('#remediationOwnerError').isVisible(),true);assert.equal(await page.locator('#remediationOwner').getAttribute('aria-invalid'),'true');assert.ok(fixture.seen.every(r=>r.method==='GET'));
  await page.locator('#remediationOwner').fill('   ');await page.locator('#remediationSave').click();assert.ok(fixture.seen.every(r=>r.method==='GET'));
@@ -48,5 +50,5 @@ try{
  fixture.setFailed(true);await page.reload();await page.waitForFunction(()=>document.getElementById('remediationMessage').textContent.includes('Unable to load'));assert.equal(await page.locator('#remediationSave').isDisabled(),true);await page.screenshot({path:directory+'/remediation-error.png',fullPage:true});
  fixture.setAuthenticated(false);await page.reload();await page.waitForFunction(()=>document.getElementById('remediationRecordsScope').textContent.includes('Browser-only'));assert.equal(await page.locator('#remediationTotal').innerText(),'—');assert.doesNotMatch(await page.locator('#remediationRows').innerText(),/Review engineer/);
  await page.locator('#remediationCve').focus();await page.keyboard.press('Tab');assert.equal(await page.locator('#remediationStatus').evaluate(n=>n===document.activeElement),true);
- assert.deepEqual(errors,[]);fs.writeFileSync(directory+'/measurements.json',JSON.stringify(measurements,null,2));console.log('PASS: 8 responsive widths, sidebar/routes, accurate stats, required owner create/edit, legacy rows, save/edit/delete, assignment, CSV, advisory search, keyboard, empty/error/signed-out states, read-only load.');
+ assert.deepEqual(errors,[]);fs.writeFileSync(directory+'/measurements.json',JSON.stringify(measurements,null,2));console.log('PASS: monitor resize sequence, expanded sidebar, readable records without horizontal scrolling, sidebar/routes, accurate stats, required owner create/edit, legacy rows, save/edit/delete, assignment, CSV, advisory search, keyboard, empty/error/signed-out states, read-only load.');
 }finally{await browser.close();}
