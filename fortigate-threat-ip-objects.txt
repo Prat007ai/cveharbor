@@ -1,7 +1,7 @@
-# CVEHarbor Threat IP Intelligence | 2026-11-02T08:31:32.411015+00:00
+# CVEHarbor Threat IP Intelligence | 2026-11-02T10:03:32.025043+00:00
 # Permanent logical group: Suspicious IP Block
-# Cumulative indexed IPs: 2593
-# New since prior published snapshot: 88
+# Cumulative indexed IPs: 2629
+# New since prior published snapshot: 36
 # REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 # Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 # No rules or policies are created or enabled. No old IPs are removed.
@@ -202,6 +202,9 @@ config firewall address
     next
     edit "CVEH_5_175_205_89"
         set subnet 5.175.205.89 255.255.255.255
+    next
+    edit "CVEH_5_175_253_126"
+        set subnet 5.175.253.126 255.255.255.255
     next
     edit "CVEH_5_182_83_231"
         set subnet 5.182.83.231 255.255.255.255
@@ -433,6 +436,9 @@ config firewall address
     next
     edit "CVEH_27_112_78_170"
         set subnet 27.112.78.170 255.255.255.255
+    next
+    edit "CVEH_27_124_4_34"
+        set subnet 27.124.4.34 255.255.255.255
     next
     edit "CVEH_27_128_171_39"
         set subnet 27.128.171.39 255.255.255.255
@@ -2021,6 +2027,9 @@ config firewall address
     edit "CVEH_86_124_92_48"
         set subnet 86.124.92.48 255.255.255.255
     next
+    edit "CVEH_86_124_168_245"
+        set subnet 86.124.168.245 255.255.255.255
+    next
     edit "CVEH_87_103_126_54"
         set subnet 87.103.126.54 255.255.255.255
     next
@@ -2384,6 +2393,9 @@ config firewall address
     edit "CVEH_100_14_168_71"
         set subnet 100.14.168.71 255.255.255.255
     next
+    edit "CVEH_100_15_36_167"
+        set subnet 100.15.36.167 255.255.255.255
+    next
     edit "CVEH_100_15_123_84"
         set subnet 100.15.123.84 255.255.255.255
     next
@@ -2533,6 +2545,9 @@ config firewall address
     next
     edit "CVEH_101_13_6_86"
         set subnet 101.13.6.86 255.255.255.255
+    next
+    edit "CVEH_101_13_6_91"
+        set subnet 101.13.6.91 255.255.255.255
     next
     edit "CVEH_101_32_240_31"
         set subnet 101.32.240.31 255.255.255.255
@@ -2746,6 +2761,9 @@ config firewall address
     next
     edit "CVEH_101_96_202_48"
         set subnet 101.96.202.48 255.255.255.255
+    next
+    edit "CVEH_101_96_202_87"
+        set subnet 101.96.202.87 255.255.255.255
     next
     edit "CVEH_101_96_202_144"
         set subnet 101.96.202.144 255.255.255.255
@@ -3341,6 +3359,9 @@ config firewall address
     edit "CVEH_102_129_50_253"
         set subnet 102.129.50.253 255.255.255.255
     next
+    edit "CVEH_102_129_51_2"
+        set subnet 102.129.51.2 255.255.255.255
+    next
     edit "CVEH_102_129_51_56"
         set subnet 102.129.51.56 255.255.255.255
     next
@@ -3623,6 +3644,9 @@ config firewall address
     edit "CVEH_102_129_81_22"
         set subnet 102.129.81.22 255.255.255.255
     next
+    edit "CVEH_102_129_81_78"
+        set subnet 102.129.81.78 255.255.255.255
+    next
     edit "CVEH_102_129_81_238"
         set subnet 102.129.81.238 255.255.255.255
     next
@@ -3694,6 +3718,9 @@ config firewall address
     next
     edit "CVEH_102_209_76_137"
         set subnet 102.209.76.137 255.255.255.255
+    next
+    edit "CVEH_102_210_25_74"
+        set subnet 102.210.25.74 255.255.255.255
     next
     edit "CVEH_102_210_64_205"
         set subnet 102.210.64.205 255.255.255.255
@@ -3860,6 +3887,12 @@ config firewall address
     edit "CVEH_103_16_71_181"
         set subnet 103.16.71.181 255.255.255.255
     next
+    edit "CVEH_103_17_12_25"
+        set subnet 103.17.12.25 255.255.255.255
+    next
+    edit "CVEH_103_18_20_242"
+        set subnet 103.18.20.242 255.255.255.255
+    next
     edit "CVEH_103_19_10_203"
         set subnet 103.19.10.203 255.255.255.255
     next
@@ -3989,6 +4022,9 @@ config firewall address
     edit "CVEH_103_112_54_86"
         set subnet 103.112.54.86 255.255.255.255
     next
+    edit "CVEH_103_114_43_99"
+        set subnet 103.114.43.99 255.255.255.255
+    next
     edit "CVEH_103_114_147_217"
         set subnet 103.114.147.217 255.255.255.255
     next
@@ -4054,6 +4090,9 @@ config firewall address
     next
     edit "CVEH_103_120_116_162"
         set subnet 103.120.116.162 255.255.255.255
+    next
+    edit "CVEH_103_121_65_183"
+        set subnet 103.121.65.183 255.255.255.255
     next
     edit "CVEH_103_121_95_23"
         set subnet 103.121.95.23 255.255.255.255
@@ -4565,20 +4604,65 @@ config firewall address
     edit "CVEH_103_178_235_51"
         set subnet 103.178.235.51 255.255.255.255
     next
+    edit "CVEH_103_179_27_226"
+        set subnet 103.179.27.226 255.255.255.255
+    next
+    edit "CVEH_103_179_95_103"
+        set subnet 103.179.95.103 255.255.255.255
+    next
     edit "CVEH_103_179_191_69"
         set subnet 103.179.191.69 255.255.255.255
+    next
+    edit "CVEH_103_179_194_91"
+        set subnet 103.179.194.91 255.255.255.255
+    next
+    edit "CVEH_103_180_20_177"
+        set subnet 103.180.20.177 255.255.255.255
+    next
+    edit "CVEH_103_180_223_110"
+        set subnet 103.180.223.110 255.255.255.255
+    next
+    edit "CVEH_103_181_21_153"
+        set subnet 103.181.21.153 255.255.255.255
     next
     edit "CVEH_103_181_26_210"
         set subnet 103.181.26.210 255.255.255.255
     next
+    edit "CVEH_103_182_10_220"
+        set subnet 103.182.10.220 255.255.255.255
+    next
     edit "CVEH_103_182_132_154"
         set subnet 103.182.132.154 255.255.255.255
+    next
+    edit "CVEH_103_182_166_225"
+        set subnet 103.182.166.225 255.255.255.255
+    next
+    edit "CVEH_103_182_235_156"
+        set subnet 103.182.235.156 255.255.255.255
+    next
+    edit "CVEH_103_184_122_92"
+        set subnet 103.184.122.92 255.255.255.255
+    next
+    edit "CVEH_103_186_77_68"
+        set subnet 103.186.77.68 255.255.255.255
+    next
+    edit "CVEH_103_186_173_10"
+        set subnet 103.186.173.10 255.255.255.255
+    next
+    edit "CVEH_103_186_230_164"
+        set subnet 103.186.230.164 255.255.255.255
+    next
+    edit "CVEH_103_187_146_107"
+        set subnet 103.187.146.107 255.255.255.255
     next
     edit "CVEH_103_187_147_214"
         set subnet 103.187.147.214 255.255.255.255
     next
     edit "CVEH_103_187_165_26"
         set subnet 103.187.165.26 255.255.255.255
+    next
+    edit "CVEH_103_189_135_147"
+        set subnet 103.189.135.147 255.255.255.255
     next
     edit "CVEH_103_189_208_13"
         set subnet 103.189.208.13 255.255.255.255
@@ -5201,6 +5285,9 @@ config firewall address
     edit "CVEH_137_184_195_106"
         set subnet 137.184.195.106 255.255.255.255
     next
+    edit "CVEH_137_220_136_165"
+        set subnet 137.220.136.165 255.255.255.255
+    next
     edit "CVEH_138_2_189_116"
         set subnet 138.2.189.116 255.255.255.255
     next
@@ -5503,6 +5590,9 @@ config firewall address
     next
     edit "CVEH_151_80_61_151"
         set subnet 151.80.61.151 255.255.255.255
+    next
+    edit "CVEH_151_239_25_102"
+        set subnet 151.239.25.102 255.255.255.255
     next
     edit "CVEH_151_242_170_42"
         set subnet 151.242.170.42 255.255.255.255
@@ -6266,6 +6356,9 @@ config firewall address
     edit "CVEH_176_124_202_224"
         set subnet 176.124.202.224 255.255.255.255
     next
+    edit "CVEH_176_125_229_135"
+        set subnet 176.125.229.135 255.255.255.255
+    next
     edit "CVEH_176_125_229_141"
         set subnet 176.125.229.141 255.255.255.255
     next
@@ -6371,6 +6464,9 @@ config firewall address
     edit "CVEH_180_93_172_213"
         set subnet 180.93.172.213 255.255.255.255
     next
+    edit "CVEH_180_93_193_100"
+        set subnet 180.93.193.100 255.255.255.255
+    next
     edit "CVEH_180_100_217_164"
         set subnet 180.100.217.164 255.255.255.255
     next
@@ -6448,6 +6544,9 @@ config firewall address
     next
     edit "CVEH_183_129_148_70"
         set subnet 183.129.148.70 255.255.255.255
+    next
+    edit "CVEH_184_75_214_163"
+        set subnet 184.75.214.163 255.255.255.255
     next
     edit "CVEH_185_34_145_173"
         set subnet 185.34.145.173 255.255.255.255
@@ -6953,6 +7052,9 @@ config firewall address
     edit "CVEH_196_189_155_89"
         set subnet 196.189.155.89 255.255.255.255
     next
+    edit "CVEH_196_202_45_5"
+        set subnet 196.202.45.5 255.255.255.255
+    next
     edit "CVEH_196_234_124_230"
         set subnet 196.234.124.230 255.255.255.255
     next
@@ -7078,6 +7180,9 @@ config firewall address
     next
     edit "CVEH_202_51_233_136"
         set subnet 202.51.233.136 255.255.255.255
+    next
+    edit "CVEH_202_61_140_195"
+        set subnet 202.61.140.195 255.255.255.255
     next
     edit "CVEH_202_61_160_233"
         set subnet 202.61.160.233 255.255.255.255
@@ -7679,6 +7784,9 @@ config firewall address
     edit "CVEH_217_60_102_58"
         set subnet 217.60.102.58 255.255.255.255
     next
+    edit "CVEH_217_60_102_209"
+        set subnet 217.60.102.209 255.255.255.255
+    next
     edit "CVEH_217_60_195_186"
         set subnet 217.60.195.186 255.255.255.255
     next
@@ -7860,6 +7968,7 @@ config firewall addrgrp
         append member "CVEH_5_175_169_209"
         append member "CVEH_5_175_182_138"
         append member "CVEH_5_175_205_89"
+        append member "CVEH_5_175_253_126"
         append member "CVEH_5_182_83_231"
         append member "CVEH_5_189_160_21"
         append member "CVEH_5_230_34_221"
@@ -7937,6 +8046,7 @@ config firewall addrgrp
         append member "CVEH_23_254_226_103"
         append member "CVEH_27_110_166_67"
         append member "CVEH_27_112_78_170"
+        append member "CVEH_27_124_4_34"
         append member "CVEH_27_128_171_39"
         append member "CVEH_27_133_154_218"
         append member "CVEH_27_150_188_148"
@@ -8466,6 +8576,7 @@ config firewall addrgrp
         append member "CVEH_86_105_9_67"
         append member "CVEH_86_106_74_243"
         append member "CVEH_86_124_92_48"
+        append member "CVEH_86_124_168_245"
         append member "CVEH_87_103_126_54"
         append member "CVEH_87_120_104_213"
         append member "CVEH_87_182_36_72"
@@ -8587,6 +8698,7 @@ config firewall addrgrp
         append member "CVEH_100_8_32_200"
         append member "CVEH_100_14_22_239"
         append member "CVEH_100_14_168_71"
+        append member "CVEH_100_15_36_167"
         append member "CVEH_100_15_123_84"
         append member "CVEH_100_16_115_186"
         append member "CVEH_100_17_139_12"
@@ -8637,6 +8749,7 @@ config firewall addrgrp
         append member "CVEH_101_13_5_39"
         append member "CVEH_101_13_5_63"
         append member "CVEH_101_13_6_86"
+        append member "CVEH_101_13_6_91"
         append member "CVEH_101_32_240_31"
         append member "CVEH_101_32_249_108"
         append member "CVEH_101_33_76_147"
@@ -8708,6 +8821,7 @@ config firewall addrgrp
         append member "CVEH_101_96_199_69"
         append member "CVEH_101_96_200_79"
         append member "CVEH_101_96_202_48"
+        append member "CVEH_101_96_202_87"
         append member "CVEH_101_96_202_144"
         append member "CVEH_101_96_202_177"
         append member "CVEH_101_96_203_141"
@@ -8906,6 +9020,7 @@ config firewall addrgrp
         append member "CVEH_102_117_171_141"
         append member "CVEH_102_117_172_43"
         append member "CVEH_102_129_50_253"
+        append member "CVEH_102_129_51_2"
         append member "CVEH_102_129_51_56"
         append member "CVEH_102_129_51_74"
         append member "CVEH_102_129_51_119"
@@ -9000,6 +9115,7 @@ config firewall addrgrp
         append member "CVEH_102_129_75_9"
         append member "CVEH_102_129_75_98"
         append member "CVEH_102_129_81_22"
+        append member "CVEH_102_129_81_78"
         append member "CVEH_102_129_81_238"
         append member "CVEH_102_129_82_35"
         append member "CVEH_102_129_82_228"
@@ -9024,6 +9140,7 @@ config firewall addrgrp
         append member "CVEH_102_205_250_52"
         append member "CVEH_102_209_76_136"
         append member "CVEH_102_209_76_137"
+        append member "CVEH_102_210_25_74"
         append member "CVEH_102_210_64_205"
         append member "CVEH_102_210_146_231"
         append member "CVEH_102_210_148_41"
@@ -9079,6 +9196,8 @@ config firewall addrgrp
         append member "CVEH_103_14_48_254"
         append member "CVEH_103_14_123_196"
         append member "CVEH_103_16_71_181"
+        append member "CVEH_103_17_12_25"
+        append member "CVEH_103_18_20_242"
         append member "CVEH_103_19_10_203"
         append member "CVEH_103_20_122_54"
         append member "CVEH_103_25_47_94"
@@ -9122,6 +9241,7 @@ config firewall addrgrp
         append member "CVEH_103_111_6_121"
         append member "CVEH_103_111_123_245"
         append member "CVEH_103_112_54_86"
+        append member "CVEH_103_114_43_99"
         append member "CVEH_103_114_147_217"
         append member "CVEH_103_114_216_113"
         append member "CVEH_103_115_56_164"
@@ -9144,6 +9264,7 @@ config firewall addrgrp
         append member "CVEH_103_118_182_66"
         append member "CVEH_103_119_240_190"
         append member "CVEH_103_120_116_162"
+        append member "CVEH_103_121_65_183"
         append member "CVEH_103_121_95_23"
         append member "CVEH_103_121_152_29"
         append member "CVEH_103_122_221_179"
@@ -9314,11 +9435,26 @@ config firewall addrgrp
         append member "CVEH_103_178_134_86"
         append member "CVEH_103_178_233_134"
         append member "CVEH_103_178_235_51"
+        append member "CVEH_103_179_27_226"
+        append member "CVEH_103_179_95_103"
         append member "CVEH_103_179_191_69"
+        append member "CVEH_103_179_194_91"
+        append member "CVEH_103_180_20_177"
+        append member "CVEH_103_180_223_110"
+        append member "CVEH_103_181_21_153"
         append member "CVEH_103_181_26_210"
+        append member "CVEH_103_182_10_220"
         append member "CVEH_103_182_132_154"
+        append member "CVEH_103_182_166_225"
+        append member "CVEH_103_182_235_156"
+        append member "CVEH_103_184_122_92"
+        append member "CVEH_103_186_77_68"
+        append member "CVEH_103_186_173_10"
+        append member "CVEH_103_186_230_164"
+        append member "CVEH_103_187_146_107"
         append member "CVEH_103_187_147_214"
         append member "CVEH_103_187_165_26"
+        append member "CVEH_103_189_135_147"
         append member "CVEH_103_189_208_13"
         append member "CVEH_103_204_174_195"
         append member "CVEH_103_210_236_62"
@@ -9526,6 +9662,7 @@ config firewall addrgrp
         append member "CVEH_137_74_246_152"
         append member "CVEH_137_184_153_245"
         append member "CVEH_137_184_195_106"
+        append member "CVEH_137_220_136_165"
         append member "CVEH_138_2_189_116"
         append member "CVEH_138_124_118_179"
         append member "CVEH_138_197_17_52"
@@ -9627,6 +9764,7 @@ config firewall addrgrp
         append member "CVEH_150_136_129_10"
         append member "CVEH_150_223_20_12"
         append member "CVEH_151_80_61_151"
+        append member "CVEH_151_239_25_102"
         append member "CVEH_151_242_170_42"
         append member "CVEH_151_243_18_107"
         append member "CVEH_151_243_213_102"
@@ -9881,6 +10019,7 @@ config firewall addrgrp
         append member "CVEH_176_65_149_174"
         append member "CVEH_176_120_22_24"
         append member "CVEH_176_124_202_224"
+        append member "CVEH_176_125_229_135"
         append member "CVEH_176_125_229_141"
         append member "CVEH_176_125_229_145"
         append member "CVEH_176_125_230_145"
@@ -9916,6 +10055,7 @@ config firewall addrgrp
         append member "CVEH_180_76_105_165"
         append member "CVEH_180_76_146_235"
         append member "CVEH_180_93_172_213"
+        append member "CVEH_180_93_193_100"
         append member "CVEH_180_100_217_164"
         append member "CVEH_180_106_83_59"
         append member "CVEH_180_108_64_6"
@@ -9942,6 +10082,7 @@ config firewall addrgrp
         append member "CVEH_183_56_216_153"
         append member "CVEH_183_91_11_36"
         append member "CVEH_183_129_148_70"
+        append member "CVEH_184_75_214_163"
         append member "CVEH_185_34_145_173"
         append member "CVEH_185_34_145_174"
         append member "CVEH_185_34_145_175"
@@ -10110,6 +10251,7 @@ config firewall addrgrp
         append member "CVEH_196_188_93_169"
         append member "CVEH_196_188_250_153"
         append member "CVEH_196_189_155_89"
+        append member "CVEH_196_202_45_5"
         append member "CVEH_196_234_124_230"
         append member "CVEH_196_251_102_55"
         append member "CVEH_196_251_122_91"
@@ -10152,6 +10294,7 @@ config firewall addrgrp
         append member "CVEH_202_51_214_98"
         append member "CVEH_202_51_214_99"
         append member "CVEH_202_51_233_136"
+        append member "CVEH_202_61_140_195"
         append member "CVEH_202_61_160_233"
         append member "CVEH_202_79_29_108"
         append member "CVEH_202_103_55_158"
@@ -10352,6 +10495,7 @@ config firewall addrgrp
         append member "CVEH_217_60_98_86"
         append member "CVEH_217_60_102_38"
         append member "CVEH_217_60_102_58"
+        append member "CVEH_217_60_102_209"
         append member "CVEH_217_60_195_186"
         append member "CVEH_217_60_195_211"
         append member "CVEH_217_77_72_249"
