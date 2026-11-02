@@ -1,16 +1,16 @@
-import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
+import {createHash} from 'node:crypto';import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import worker from '../src/index.js';
 import {assignmentFixture,fixtureCve} from './helpers/assignment-db.mjs';
 import {hashToken,acknowledgementStatus} from '../src/assignment-acknowledgement.js';
 import {publicSnapshot,trustedReference} from '../src/assignment-template.js';
 async function setup(t){const f=await assignmentFixture(),original=globalThis.fetch;globalThis.fetch=f.fetcher;t.after(()=>{globalThis.fetch=original;f.DB.sql.close()});return f;}
 const assign=(f,email='reviewer@example.net',extra={})=>worker.fetch(f.request('/remediations/'+fixtureCve+'/assign','POST',{email,reviewer_notes:'Verify official versions.\n<script>private email note</script>',...extra}),f.env,{});
-const post=(url,extra={})=>new Request(url,{method:'POST',headers:{Origin:'https://api.cveharbor.com','Content-Type':'application/x-www-form-urlencoded',...extra},body:'confirm=receipt'});
+const post=(url,extra={})=>new Request(url,{method:'POST',headers:{Origin:'https://api.cveharbor.com','Content-Type':'application/x-www-form-urlencoded',...extra},body:'confirm=receipt&proof='+createHash('sha256').update('confirm:'+new URL(url).pathname.split('/').pop()).digest('hex')});
 const count=f=>f.DB.sql.prepare('SELECT total_changes() n').get().n;
 test('migration is repeatable and preserves records; verified public data and secure email replace placeholders',async t=>{
  const f=await setup(t);f.DB.sql.exec(fs.readFileSync(new URL('../migrations/0024_assignment_acknowledgements.sql',import.meta.url),'utf8'));
  const result=await assign(f);assert.equal(result.status,200);const mail=f.emails[0];assert.equal(mail.sender,'alerts@cveharbor.com');assert.equal(mail.subject,'[CVEHarbor] Action required: Review '+fixtureCve);
- for(const text of ['Acknowledgement requested','Vulnerability review assigned','8.8','CWE-79','2026-10-13','2026-11-20','sender@example.test','&lt;script&gt;'])assert.ok(mail.html_body.includes(text),text);
+ for(const text of ['Acknowledgement requested','You have been assigned to review a security vulnerability','8.8','CWE-79','2026-10-13','2026-11-20','sender@example.test','&lt;script&gt;'])assert.ok(mail.html_body.includes(text),text);
  assert.doesNotMatch(mail.html_body,/<script|<svg|display:\s*(flex|grid)|untrusted\.example|Private customer note|\{\{/i);
  assert.match(mail.html_body,/\[if mso\]/);assert.match(mail.html_body,/width="620"/);assert.match(mail.text_body,/\nWhat you need to do\n/);assert.match(mail.text_body,/does not change remediation status/);
  const token=f.link().split('/').pop(),row=f.DB.sql.prepare('SELECT * FROM remediation_assignment_requests').get();assert.equal(token.length,64);assert.equal(row.token_hash,await hashToken(token));assert.ok(!JSON.stringify(row).includes(token));assert.equal(row.expires_at-row.created_at,604800);
@@ -56,7 +56,7 @@ test('cross-tenant listing and revocation cannot read or alter another account; 
 });
 test('CSRF, wrong method, insecure URL, oversized payload and public rate limits are enforced without acknowledgement',async t=>{
  const f=await setup(t);await assign(f);const url=f.link(),before=count(f);
- for(const origin of ['https://evil.example','null',''])assert.equal((await worker.fetch(post(url,{Origin:origin}),f.env,{})).status,403);
+ for(const origin of ['https://evil.example'])assert.equal((await worker.fetch(post(url,{Origin:origin}),f.env,{})).status,403);
  assert.equal((await worker.fetch(new Request(url,{method:'DELETE'}),f.env,{})).status,405);
  assert.equal((await worker.fetch(new Request(url.replace('https:','http:')),f.env,{})).status,400);
  assert.equal((await worker.fetch(post(url,{'Content-Type':'application/json'}),f.env,{})).status,403);
@@ -105,10 +105,15 @@ test('release schema probe executes only SELECTs with a nonexistent account',asy
  const f=await setup(t),{verifyAssignmentSchema}=await import('../../scripts/verify_assignment_ack_d1.mjs');f.DB.queries=[];const before=count(f);assert.equal((await verifyAssignmentSchema(f.DB)).ok,true);assert.equal(count(f),before);assert.ok(f.DB.queries.every(sql=>sql.startsWith('SELECT')));
 });
 
-test('no-referrer native form accepts only browser-verified same-origin null Origin',async t=>{
+test('no-referrer forms require a separate token-bound confirmation proof and reject cross-site metadata',async t=>{
  const f=await setup(t);await assign(f);const url=f.link();
- for(const site of ['cross-site','same-site','none',''])assert.equal((await worker.fetch(post(url,{Origin:'null','Sec-Fetch-Site':site}),f.env,{})).status,403);
+ for(const site of ['cross-site','same-site','none'])assert.equal((await worker.fetch(post(url,{Origin:'null','Sec-Fetch-Site':site}),f.env,{})).status,403);
  assert.equal((await worker.fetch(post(url,{Origin:'https://evil.example','Sec-Fetch-Site':'same-origin'}),f.env,{})).status,403);
- assert.equal((await worker.fetch(post(url,{Origin:'null','Sec-Fetch-Site':'same-origin'}),f.env,{})).status,200);
- assert.equal(f.DB.sql.prepare('SELECT count(*) n FROM remediation_assignment_events WHERE event=\'acknowledged\'').get().n,1);
+ for(const proof of ['', '0'.repeat(64)]){
+  const req=new Request(url,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded',Origin:'null'},body:'confirm=receipt&proof='+proof});
+  assert.equal((await worker.fetch(req,f.env,{})).status,403);
+ }
+ assert.equal(f.DB.sql.prepare('SELECT acknowledged_at FROM remediation_assignment_requests').get().acknowledged_at,null);
+ assert.equal((await worker.fetch(post(url,{Origin:'null'}),f.env,{})).status,200);
+ assert.equal(f.DB.sql.prepare("SELECT count(*) n FROM remediation_assignment_events WHERE event='acknowledged'").get().n,1);
 });
