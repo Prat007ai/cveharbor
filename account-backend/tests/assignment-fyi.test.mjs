@@ -12,7 +12,7 @@ const history=f=>worker.fetch(f.request('/remediations/'+fixtureCve+'/assignment
 const retry=(f,account='a')=>worker.fetch(f.request('/remediations/'+fixtureCve+'/assignments/'+id(f)+'/fyi/retry','POST',{},account),f.env,{});
 test('FYI recipients are optional, bounded, normalized, deduplicated and exclude the assignee',()=>{
  assert.deepEqual(normalizeFyi(undefined,'a@b.test'),[]);assert.deepEqual(normalizeFyi([' TEAM@example.net ','team@example.net','a@b.test'],'a@b.test'),['team@example.net']);
- for(const input of [null,'team@example.net',[null],['bad'],['<a@b.test>'],['a@b.test\r\nBcc:evil@example.net'],Array.from({length:6},(_,i)=>i+'@example.net')])assert.throws(()=>normalizeFyi(input,'a@b.test'));
+ for(const input of [null,'team@example.net',[null],['bad'],['a'.repeat(65)+'@example.net'],['<a@b.test>'],['a@b.test\r\nBcc:evil@example.net'],Array.from({length:6},(_,i)=>i+'@example.net')])assert.throws(()=>normalizeFyi(input,'a@b.test'));
 });
 test('invalid or unsupported FYI recipients fail before primary mail, quotas and records change',async t=>{
  const f=await setup(t),before=f.DB.sql.prepare('SELECT total_changes() n').get().n;

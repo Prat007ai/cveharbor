@@ -267,7 +267,7 @@ $('remediationAssignForm').addEventListener('submit',async event=>{
  }
  if(!$('remediationAssignConfirm').checked){status.textContent='Confirm that this is an appropriate recipient.';return;}
  const fyi=[...new Set($('remediationAssignFyi').value.split(/[,;\n]/).map(x=>x.trim().toLowerCase()).filter(Boolean))].filter(x=>x!==email);
- if(fyi.length>5||fyi.some(x=>x.length>254||! /^[^\s<>@,;]+@[^\s<>@,;]+\.[^\s<>@,;]+$/.test(x))){$('remediationFyiError').textContent='Enter up to five valid FYI email addresses.';$('remediationAssignFyi').setAttribute('aria-invalid','true');$('remediationAssignFyi').focus();return;}
+ if(fyi.length>5||fyi.some(x=>x.length>254||! /^[^\s<>@,;]{1,64}@[^\s<>@,;]{1,189}\.[^\s<>@,;]+$/.test(x))){$('remediationFyiError').textContent='Enter up to five valid FYI email addresses.';$('remediationAssignFyi').setAttribute('aria-invalid','true');$('remediationAssignFyi').focus();return;}
  $('remediationFyiError').textContent='';$('remediationAssignFyi').removeAttribute('aria-invalid');
  if(!await confirmReviewRequest(cve,email,fyi))return;
  send.disabled=true;status.textContent='Submitting your review request...';

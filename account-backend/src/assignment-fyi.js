@@ -10,7 +10,7 @@ export function normalizeFyi(value,assignee){
  for(const raw of value){
   if(typeof raw!=='string')throw new FyiError('Enter valid FYI email addresses.');
   const email=raw.trim().toLowerCase();
-  if(email.length>254||!/^[^\s<>@,;]+@[^\s<>@,;]+\.[^\s<>@,;]+$/.test(email))throw new FyiError('Enter valid FYI email addresses.');
+  if(email.length>254||!/^[^\s<>@,;]{1,64}@[^\s<>@,;]{1,189}\.[^\s<>@,;]+$/.test(email))throw new FyiError('Enter valid FYI email addresses.');
   if(email!==assignee&&!emails.includes(email))emails.push(email);
  }
  if(emails.length>5)throw new FyiError('You can notify up to five FYI recipients.');
