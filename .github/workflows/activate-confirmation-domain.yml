@@ -1,0 +1,56 @@
+name: Activate approved confirmation email hostname
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/activate-confirmation-domain.yml', 'scripts/verify_confirmation_domain.mjs', 'scripts/verify_confirmation_domain.test.mjs']
+  pull_request:
+    paths: ['.github/workflows/activate-confirmation-domain.yml', 'scripts/verify_confirmation_domain.mjs', 'scripts/verify_confirmation_domain.test.mjs']
+permissions:
+  contents: read
+concurrency:
+  group: cveharbor-worker-production
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test scripts/verify_confirmation_domain.test.mjs
+      - run: npm test --prefix account-backend
+      - name: Verify attached production hostname without changing configuration
+        run: node scripts/verify_confirmation_domain.mjs
+  activate:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: cloudflare-worker-production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Require the approved compatible Worker release
+        run: git merge-base --is-ancestor 4004859b66a37942fa606b7d8fbaeddd4c674c8f HEAD
+      - name: Verify new hostname HTTPS and guest-only routes before changing email links
+        run: node scripts/verify_confirmation_domain.mjs
+      - name: Verify migration and existing private API boundaries without customer writes
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify_remediation_workflow_d1.mjs --after
+      - name: Deploy current Worker with approved confirmation origin
+        working-directory: account-backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx --yes wrangler@4.156.0 deploy --var ASSIGNMENT_CONFIRM_ORIGIN:https://confirm.cveharbor.com
+      - name: Verify live confirmation origin and both hostname boundaries
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify_confirmation_domain.mjs --runtime
