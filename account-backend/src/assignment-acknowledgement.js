@@ -1,3 +1,4 @@
+import {normalizeFyi,fyiReady,addFyiHistory,scheduleFyi} from './assignment-fyi.js';
 import {sendEmail} from './delivery.js';
 import {lookUpPublishedCve} from './cve-lookup.js';
 import {publicSnapshot,renderAssignmentNotice,escapeHtml,advisoryFields,trustedReference} from './assignment-template.js';
@@ -29,7 +30,7 @@ export async function assignmentHistory(env,user,cve,url){
  const before=url.searchParams.get('before');if(before!==null&&(!/^\d{1,16}$/.test(before)||!Number.isSafeInteger(Number(before))||Number(before)<1))throw new AssignmentError('Invalid history cursor');
  const rows=await env.DB.prepare('SELECT a.seq,a.id,a.recipient_email,a.delivery_status,a.created_at,a.sent_at,a.expires_at,a.acknowledged_at,a.revoked_at FROM remediation_assignment_requests a JOIN remediations r ON r.user_id=a.user_id AND r.cve_id=a.cve_id WHERE a.user_id=? AND a.cve_id=? AND a.seq<? ORDER BY a.seq DESC LIMIT 51').bind(user.id,cve,before?Number(before):Number.MAX_SAFE_INTEGER).all();
  const page=(rows.results||[]).slice(0,50).map(row=>({...row,status:acknowledgementStatus(row),acknowledgement_evidence:row.acknowledged_at?'Acknowledged via emailed link':null}));
- return json({available:true,assignments:page,next:(rows.results||[]).length>50?page.at(-1).seq:null});
+ return json({available:true,assignments:await addFyiHistory(env,user,page),next:(rows.results||[]).length>50?page.at(-1).seq:null});
 }
 export async function revokeAssignment(env,user,cve,id){
  if(!/^[a-f0-9-]{36}$/.test(id))throw new AssignmentError('Invalid assignment');
@@ -44,6 +45,8 @@ async function quota(env,key,seconds,max){
  return result.meta?.changes===1;
 }
 export async function assignWithAcknowledgement(env,user,cve,recipient,notes,raw){
+ const fyi=normalizeFyi(raw.fyi_recipients,recipient);
+ if(fyi.length&&!await fyiReady(env))throw new AssignmentError('FYI notification setup is unavailable. No email was sent.',503);
  if(!await acknowledgementReady(env))throw new AssignmentError('Acknowledgement setup is unavailable. No email was sent.',503);
  const time=now(),prior=await env.DB.prepare('SELECT id,sent_at,expires_at,revoked_at,delivery_status FROM remediation_assignment_requests WHERE user_id=? AND cve_id=? AND recipient_email=? ORDER BY seq DESC LIMIT 1').bind(user.id,cve,recipient).first();
  if(raw.resend!==true&&prior?.delivery_status==='sent'&&prior.revoked_at===null&&prior.expires_at>time&&time-prior.sent_at<86400)return json({assigned:true,notified:true,duplicate:true,id:cve,assigned_to:recipient,message:'An assignment was already sent to this recipient. Choose Resend to issue a new link.'});
@@ -61,6 +64,7 @@ export async function assignWithAcknowledgement(env,user,cve,recipient,notes,raw
  try{
   const advisory=publicSnapshot(cve,await lookUpPublishedCve(cve));
   await env.DB.prepare("INSERT INTO remediation_assignment_requests(id,user_id,cve_id,recipient_email,requester_email,token_hash,delivery_status,public_advisory_json,created_at,expires_at) VALUES(?,?,?,?,?,?,'sending',?,?,?)").bind(id,user.id,cve,recipient,user.email,hash,JSON.stringify(advisory),time,expires).run();
+  if(fyi.length)await env.DB.batch(fyi.map(email=>env.DB.prepare('INSERT INTO remediation_assignment_fyi(assignment_id,recipient_email,created_at) VALUES(?,?,?)').bind(id,email,time)));
   const report=renderAssignmentNotice({advisory,requester:user.email,notes,due:record?.due||'',url:ORIGIN+PREFIX+token,expiresAt:expires});
   const senderEnv={EMAIL_FROM:env.EMAIL_FROM,SMTP2GO_API_KEY:env.SMTP2GO_API_KEY,ALERT_SMTP2GO_API_KEY:env.ASSIGNMENT_SMTP2GO_API_KEY||env.SMTP2GO_API_KEY};
   const providerId=await sendEmail(senderEnv,recipient,report),sent=now();
@@ -70,7 +74,7 @@ export async function assignWithAcknowledgement(env,user,cve,recipient,notes,raw
    env.DB.prepare("UPDATE remediation_assignment_requests SET delivery_status='sent',sent_at=?,provider_id=?,revoked_at=CASE WHEN EXISTS(SELECT 1 FROM remediation_assignment_requests newer WHERE newer.user_id=remediation_assignment_requests.user_id AND newer.cve_id=remediation_assignment_requests.cve_id AND newer.recipient_email=remediation_assignment_requests.recipient_email AND newer.seq>remediation_assignment_requests.seq AND newer.delivery_status='sent') THEN ? ELSE revoked_at END WHERE id=? AND user_id=? AND delivery_status='sending'").bind(sent,providerId,sent,id,user.id),
    env.DB.prepare("UPDATE remediation_assignments SET state='sent',last_sent_at=?,provider_id=? WHERE user_id=? AND cve_id=? AND state='sending' AND claimed_at=?").bind(sent,providerId,user.id,cve,time)
   ]);
-  return json({assigned:true,notified:true,id:cve,assigned_to:recipient,acknowledgement:'Pending',message:'Email accepted by the provider. Awaiting explicit acknowledgement via the emailed link.'});
+  return json({assigned:true,notified:true,id:cve,assigned_to:recipient,acknowledgement:'Pending',fyi_queued:fyi.length,message:'Email accepted by the provider. Awaiting explicit acknowledgement via the emailed link.'});
  }catch{
   await env.DB.batch([
    env.DB.prepare("UPDATE remediation_assignment_requests SET delivery_status='failed' WHERE id=? AND user_id=? AND delivery_status='sending'").bind(id,user.id),
@@ -93,7 +97,7 @@ export function renderAcknowledgementPage(row,state,message='',proof=''){
  return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>'+title+' | CVEHarbor</title><style>html{color-scheme:light}*{box-sizing:border-box}body{margin:0;padding:28px 14px;background:#0b253a;color:#102d44;font:15px/1.6 Arial,Helvetica,sans-serif}main{max-width:560px;margin:auto;border:1px solid #416075;border-radius:9px;overflow:hidden;background:white}header,footer{background:#041f32;color:#bed3df;padding:24px 28px}header{border-bottom:3px solid #22cabb}.brand{color:#fff;font-size:28px;font-weight:700;letter-spacing:-1px}.brand span{color:#33d8cb}.tag{font-size:10px;letter-spacing:1.4px}.content{padding:26px 28px}h1{font-size:25px;line-height:1.3;margin:15px 0 9px;text-align:center}h2{font-size:18px;margin:0}p{margin:9px 0 20px}.intro{text-align:center}.symbol{width:70px;height:70px;border-radius:50%;display:grid;place-items:center;background:#def7f1;color:#075c5b;margin:auto;font-size:35px}.details{background:#f2f7fa;border:1px solid #deebf1;border-radius:7px;padding:18px;margin:24px 0}.advisory-head{display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:start;margin-bottom:12px}.shield{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:#fbe6e9;color:#d92d3e;font-size:25px;font-weight:bold}.rating{text-align:right}.rating span{display:inline-block;color:white;border-radius:6px;padding:3px 9px;font-size:10px;font-weight:bold}.rating small{display:block;font-size:11px;margin-top:4px;white-space:nowrap}.details p{font-size:13px;margin:4px 0 14px}dl{font-size:12px;margin:0}dl div{display:grid;grid-template-columns:38% 1fr;gap:12px;padding:9px 0;border-top:1px solid #dce9f0}dt{font-weight:bold}dd{margin:0;overflow-wrap:anywhere}button,.link{display:block;width:100%;text-align:center;border-radius:6px;font:700 15px Arial;padding:16px 12px;text-decoration:none}button{cursor:pointer;background:#078c80;color:white;border:1px solid #078c80}.link{border:1px solid #387d9a;color:#07527b;background:white;font-size:13px;margin-top:18px}.notice{background:#e6f2ff;border-radius:6px;padding:14px;font-size:13px;margin-top:12px}.meta{font-size:12px;color:#4f6d7e;overflow-wrap:anywhere}footer{font-size:11px}footer .brand{font-size:18px}a:focus-visible,button:focus-visible{outline:3px solid #0089b0;outline-offset:4px}@media(max-width:420px){body{padding:12px}.content,header,footer{padding:22px 18px}h1{font-size:23px}.details{padding:14px}.advisory-head{grid-template-columns:1fr auto}.shield{display:none}h2{font-size:16px}dl div{grid-template-columns:37% 1fr;gap:10px}}</style></head><body><main><header><div class="brand">CVE<span>Harbor</span></div><div class="tag">VULNERABILITY INTELLIGENCE</div></header><div class="content"><div class="symbol" aria-hidden="true">'+(success?'✓':pending?'✓':'!')+'</div><h1>'+title+'</h1><p class="intro">'+(success?'Thank you. Receipt of this vulnerability review request has been recorded.':pending?'Confirm you have received this vulnerability review request.':e(message||'Ask the requester to send a new assignment email.'))+'</p>'+((pending||success)&&recipient?'<p class="meta intro">Emailed to '+e(recipient)+'</p>':'')+detail+(pending?'<form method="post"><input type="hidden" name="confirm" value="receipt"><input type="hidden" name="proof" value="'+e(proof)+'"><button type="submit">I acknowledge receipt</button></form>':'')+(success?'<p class="notice" role="status">Acknowledged via emailed link<br><time>'+e(stamp)+'</time></p>':'')+((pending||success)?'<p class="notice">This confirms receipt only. It does not mean the vulnerability has been investigated or fixed.</p>':'')+(ref?'<a class="link" rel="noreferrer noopener" href="'+e(ref.url)+'">View public advisory</a>':'')+'</div><footer><div class="brand">CVE<span>Harbor</span></div>Independent vulnerability intelligence<br>No CVEHarbor account required. Link use does not verify the recipient’s identity.</footer></main></body></html>';
 }
 function page(row,state,status=200,message='',extra={},proof=''){return new Response(renderAcknowledgementPage(row,state,message,proof),{status,headers:{...pageHeaders,...extra}});}
-export async function acknowledgementRoute(req,env){
+export async function acknowledgementRoute(req,env,ctx){
  const url=new URL(req.url),token=url.pathname.slice(PREFIX.length);
  if(url.protocol!=='https:'||url.origin!==ORIGIN)return page(null,'Invalid',400);
  if(!['GET','HEAD','POST'].includes(req.method))return page(null,'Invalid',405,'Only GET and POST are supported.',{Allow:'GET, HEAD, POST'});
@@ -126,6 +130,7 @@ export async function acknowledgementRoute(req,env){
    row=await env.DB.prepare(query).bind(hash).first();state=row?acknowledgementStatus(row):'Invalid';
    if(state!=='Acknowledged')return page(null,state==='Expired'?'Expired':'Invalid',410);
   }
+  if(req.method==='POST'&&state==='Acknowledged')scheduleFyi(env,ctx);
   const result=page(row,state,200,'',{},state==='Pending'?await hashToken('confirm:'+token):'');return req.method==='HEAD'?new Response(null,{headers:result.headers}):result;
  }catch{return page(null,'Unavailable',503,'The acknowledgement service is temporarily unavailable. Please retry later.');}
 }

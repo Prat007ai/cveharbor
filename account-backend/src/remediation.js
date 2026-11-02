@@ -1,3 +1,4 @@
+import {normalizeFyi,fyiReady} from './assignment-fyi.js';
 import {assignWithAcknowledgement,acknowledgementReady,assignmentSummary} from './assignment-acknowledgement.js';
 // CVEHarbor's authenticated remediation records, private D1 storage, and
 // tightly controlled email assignment notifications. No Azure DevOps access
@@ -43,7 +44,7 @@ export function assignmentReady(env){
 }
 export async function capabilities(env){
   return reply({storage:'d1',version:2,assignments_available:await isMigrated(env),
-    assignment_email_enabled:assignmentReady(env),acknowledgements_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await acknowledgementReady(env)});
+    assignment_email_enabled:assignmentReady(env),fyi_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await fyiReady(env),acknowledgements_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await acknowledgementReady(env)});
 }
 export async function listRemediations(env,user){
   const migrated=await isMigrated(env);
@@ -180,6 +181,8 @@ export async function assignRemediation(env,user,id,raw){
     throw new RemediationError('Enter a valid CVE ID and recipient email');
   if(!await isMigrated(env))throw new RemediationError('Assignment database migration is required',503);
   if(!assignmentReady(env))throw new RemediationError('Assignment email delivery is not enabled',503);
+  const fyi=normalizeFyi(raw?.fyi_recipients,recipient);
+  if(fyi.length&&env.ASSIGNMENT_ACK_ENABLED!=='true')throw new RemediationError('FYI notifications require the acknowledgement service.',503);
   if(env.ASSIGNMENT_ACK_ENABLED==='true')return assignWithAcknowledgement(env,user,cve,recipient,reviewerNotes,raw||{});
   const prior=await env.DB.prepare(
     'SELECT assignee_email,state,claimed_at,last_sent_at FROM remediation_assignments WHERE user_id=? AND cve_id=?'

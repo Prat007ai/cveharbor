@@ -189,6 +189,8 @@ function openAssign(id){
   $('remediationAssignResend').checked=false;
   $('remediationResendLabel').hidden=!capabilities?.acknowledgements_available;
   $('remediationAssignEmail').value='';
+  $('remediationAssignFyi').value='';$('remediationFyiLabel').hidden=!capabilities?.fyi_available;
+  $('remediationFyiError').textContent='';$('remediationAssignFyi').removeAttribute('aria-invalid');
   $('remediationAssignNotes').value='';
   $('remediationAssignNotesCount').textContent='0/1000 characters';
   const status=$('remediationAssignMessage'),send=$('remediationSendAssignment');
@@ -223,10 +225,10 @@ function openCvhDialog(id){
  if(typeof dialog.showModal==='function'&&!dialog.open)dialog.showModal();
  else dialog.setAttribute('open','');
 }
-function confirmReviewRequest(cve,email){
+function confirmReviewRequest(cve,email,fyi=[]){
  return new Promise(resolve=>{
   const dialog=$('remediationConfirmDialog');
-  $('remediationConfirmText').textContent='Send the '+cve+' vulnerability review request to '+email+'?';
+  $('remediationConfirmText').textContent='Send the '+cve+' vulnerability review request to '+email+'?'+(fyi.length?' Send separate FYI and receipt-update emails to: '+fyi.join(', ')+'.':'');
   const send=$('remediationConfirmSend'),cancel=$('remediationConfirmCancel'),x=$('remediationConfirmX');
   let settled=false;
   function finish(value){
@@ -246,8 +248,8 @@ function confirmReviewRequest(cve,email){
   openCvhDialog('remediationConfirmDialog');
  });
 }
-function showReviewSuccess(email){
- $('remediationSuccessText').textContent='Your request has been submitted to '+email+'.';
+function showReviewSuccess(email,fyiCount=0){
+ $('remediationSuccessText').textContent='Your request has been submitted to '+email+'.'+(fyiCount?' FYI notifications queued for '+fyiCount+' recipient(s). Delivery status is available in assignment history.':'');
  openCvhDialog('remediationSuccessDialog');
 }
 for(const id of ['remediationSuccessClose','remediationSuccessX'])
@@ -264,15 +266,18 @@ $('remediationAssignForm').addEventListener('submit',async event=>{
   status.textContent='Email assignment is currently unavailable. Please try again later.';return;
  }
  if(!$('remediationAssignConfirm').checked){status.textContent='Confirm that this is an appropriate recipient.';return;}
- if(!await confirmReviewRequest(cve,email))return;
+ const fyi=[...new Set($('remediationAssignFyi').value.split(/[,;\n]/).map(x=>x.trim().toLowerCase()).filter(Boolean))].filter(x=>x!==email);
+ if(fyi.length>5||fyi.some(x=>x.length>254||! /^[^\s<>@,;]+@[^\s<>@,;]+\.[^\s<>@,;]+$/.test(x))){$('remediationFyiError').textContent='Enter up to five valid FYI email addresses.';$('remediationAssignFyi').setAttribute('aria-invalid','true');$('remediationAssignFyi').focus();return;}
+ $('remediationFyiError').textContent='';$('remediationAssignFyi').removeAttribute('aria-invalid');
+ if(!await confirmReviewRequest(cve,email,fyi))return;
  send.disabled=true;status.textContent='Submitting your review request...';
  try{
-  const result=await api('/remediations/'+cve+'/assign','POST',{email,reviewer_notes:$('remediationAssignNotes').value.trim().slice(0,1000),resend:$('remediationAssignResend').checked});
+  const result=await api('/remediations/'+cve+'/assign','POST',{email,fyi_recipients:fyi,reviewer_notes:$('remediationAssignNotes').value.trim().slice(0,1000),resend:$('remediationAssignResend').checked});
   if(!result.assigned||!result.notified)throw Error('The request was not confirmed as sent.');
   try{await refreshRecords()}catch(_){}
   status.textContent=result.duplicate?result.message:'Request submitted successfully.';
   msg('Review request submitted for '+cve+'.');
-  if(!result.duplicate)showReviewSuccess(email);
+  if(!result.duplicate)showReviewSuccess(email,result.fyi_queued||0);
  }catch(error){
   status.textContent='Request not sent: '+error.message;
   msg('Review request could not be completed. '+error.message);
@@ -335,9 +340,21 @@ async function loadHistory(){
       row.append(elem('p','ops-note','Created '+ackTimestamp(item.created_at)+' · Sent '+ackTimestamp(item.sent_at)+' · Expires '+ackTimestamp(item.expires_at)));
       if(item.acknowledged_at)row.append(elem('p','ops-note','Acknowledged via emailed link for '+item.recipient_email+' at '+ackTimestamp(item.acknowledged_at)+'. Identity is not verified.'));
       if(item.revoked_at)row.append(elem('p','ops-note','Link revoked '+ackTimestamp(item.revoked_at)));
+      if(item.fyi?.length){
+        const box=elem('div','rt-fyi-history');box.append(elem('strong','','FYI notifications'));
+        const labels={queued:'Queued',sending:'Sending',sent:'Accepted by email provider',unconfirmed:'Delivery unconfirmed',cancelled:'Cancelled'};
+        for(const fyi of item.fyi)box.append(elem('p','ops-note',fyi.recipient_email+' · '+(fyi.kind==='acknowledged'?'Receipt update':'Assignment FYI')+': '+(labels[fyi.state]||'Not queued')+(fyi.completed_at?' · '+ackTimestamp(fyi.completed_at):'')));
+        row.append(box);
+      }
       const actions=elem('div','rt-assignment-actions');
+      if(!item.revoked_at&&item.fyi?.some(x=>x.state==='unconfirmed'&&x.attempts<3)){
+        const retry=elem('button','ops-download','Retry FYI notifications');retry.type='button';retry.addEventListener('click',async()=>{
+          if(!window.confirm('Retry unconfirmed FYI emails? If the provider accepted an earlier attempt, a duplicate may be received.'))return;
+          retry.disabled=true;try{await api('/remediations/'+cve+'/assignments/'+item.id+'/fyi/retry','POST',{});if(account!==accountEpoch)return;await openHistory(cve);}catch(error){if(account===accountEpoch)$('remediationHistoryStatus').textContent=error.message;}finally{retry.disabled=false;}
+        });actions.append(retry);
+      }
       if(capabilities?.acknowledgements_available){
-        const resend=elem('button','ops-download','Resend');resend.type='button';resend.addEventListener('click',()=>{closeCvhDialog('remediationHistoryDialog');openAssign(cve);$('remediationAssignEmail').value=item.recipient_email;$('remediationAssignResend').checked=true;});actions.append(resend);
+        const resend=elem('button','ops-download','Resend');resend.type='button';resend.addEventListener('click',()=>{closeCvhDialog('remediationHistoryDialog');openAssign(cve);$('remediationAssignEmail').value=item.recipient_email;$('remediationAssignResend').checked=true;$('remediationAssignFyi').value=[...new Set((item.fyi||[]).map(x=>x.recipient_email))].join(', ');});actions.append(resend);
         if(!item.revoked_at){const revoke=elem('button','ops-download','Revoke link');revoke.type='button';revoke.addEventListener('click',async()=>{
           if(!window.confirm('Revoke this assignment link for '+item.recipient_email+'? Receipt history will remain available.'))return;
           revoke.disabled=true;try{await api('/remediations/'+cve+'/assignments/'+item.id+'/revoke','POST',{});if(account!==accountEpoch)return;await refreshRecords();await openHistory(cve);}catch(error){if(account===accountEpoch)$('remediationHistoryStatus').textContent='Unable to revoke: '+error.message;}finally{revoke.disabled=false;}
