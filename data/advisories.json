@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-02",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6504,
+  "candidate_records": 6513,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -1504,6 +1504,205 @@
       "first_seen_at": "2026-11-02T13:22:57Z",
       "source_updated_at": "",
       "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-frgx-cf5w-vxr5",
+      "title": "Malware in atlassian-wallboard-plugin1",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: atlassian-wallboard-plugin1 (>= 0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-frgx-cf5w-vxr5"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T14:41:55Z",
+      "source_updated_at": "2026-11-02T13:34:28Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-m4gq-5vx2-5x8c",
+      "title": "Malware in atlassian-wallboard-plugin",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: atlassian-wallboard-plugin (>= 0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-m4gq-5vx2-5x8c"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T14:41:55Z",
+      "source_updated_at": "2026-11-02T13:34:33Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-p5qq-93vh-5c8h",
+      "title": "Malware in claims-ac1",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: claims-ac1 (>= 0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-p5qq-93vh-5c8h"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T14:41:55Z",
+      "source_updated_at": "2026-11-02T13:34:28Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-102802",
+      "title": "Joomla Extension - regularlabs.com - PHP code injection vector in Sourcerer extension < 17.0.1 when used with Articles Anywhere extension < 20.1.1 - Sourcerer can restrict PHP",
+      "severity": "high",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "Joomla Extension - regularlabs.com - PHP code injection vector in Sourcerer extension < 17.0.1 when used with Articles Anywhere extension < 20.1.1 - Sourcerer can restrict PHP in articles according to article-author trust; the exact creator and last-editor rule varies by release. Articles Anywhere can insert the text or full layout of one article into another. In the affected combination, when Articles Anywhere processes an inclusion before Sourcerer and Force Content Triggers is off, the included article's Sourcerer code can be evaluated using the enclosing article's trusted identity rather than the included article's own identity. The resulting gap is between the authority of the article supplying the code and the authority used to decide whether to run it. Ordinary Articles Anywhere output is not itself the issue.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-102802"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T14:41:55Z",
+      "source_updated_at": "2026-11-02T14:17:34.057",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-103420",
+      "title": "Joomla Extension - php-web-design.com - CSRF for various actions in StageIt 1.0-5.7.5, 6.0-6.3.5",
+      "severity": "high",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "Joomla Extension - php-web-design.com - CSRF for various actions in StageIt 1.0-5.7.5, 6.0-6.3.5",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-103420"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T14:41:55Z",
+      "source_updated_at": "2026-11-02T14:17:34.363",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-105600",
+      "title": "Joomla Extension - php-web-design.com - RCE via setting strings in StageIt 1.0-5.7.5, 6.0-6.3.5",
+      "severity": "high",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "Joomla Extension - php-web-design.com - RCE via setting strings in StageIt 1.0-5.7.5, 6.0-6.3.5",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-105600"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.6",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T14:41:55Z",
+      "source_updated_at": "2026-11-02T14:17:34.520",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-105601",
+      "title": "Joomla Extension - php-web-design.com - Reflected XSS in StageIt 1.0-5.7.5, 6.0-6.3.5",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "Joomla Extension - php-web-design.com - Reflected XSS in StageIt 1.0-5.7.5, 6.0-6.3.5",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-105601"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T14:41:55Z",
+      "source_updated_at": "2026-11-02T14:17:34.670",
+      "source_type": "nvd",
       "known_exploited": false
     },
     {
@@ -51816,6 +52015,42 @@
       "epss_as_of": "2026-11-02"
     },
     {
+      "id": "CVE-2026-106069",
+      "title": "Node2Shell CVEs",
+      "severity": "bulletin",
+      "categories": [
+        "Fortinet",
+        "Node.js / npm"
+      ],
+      "published": "2026-10-26",
+      "updated": "2026-11-02",
+      "summary": "<p> <strong> CVSSv3 Score: </strong> 9.8 </p> <p> CVE-2026-105482 - (high)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-105483 - (high)This vulnerability affects Node.js 26.x and 24.x.CVE-2026-106069 - (high)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-111497 - (high)A flaw in Node.js can cause Node.js Brotli decoder out-of-bounds write permits remote code execution.This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-105481 - (medium)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-106072 - (medium)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-106074 - (medium)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-106070 - (low)This vulnerability affects Node.js 26.x.CVE-2026-106071 - (low)This vulnerability affects Node.js 26.x.CVE-2026-106073 - (low)This vulnerability affects Node.js 26.x, 24.x, and 22.x. </p> <p> <em> Revised on 2026-10-30 00:00:00 </em> </p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Fortinet PSIRT",
+          "url": "https://fortiguard.fortinet.com/psirt/FG-IR-26-187"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-106069"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.4",
+      "status": "Fortinet PSIRT RSS notice",
+      "first_seen_at": "2026-10-28T12:44:30Z",
+      "source_updated_at": "2026-10-26",
+      "source_type": "fortinet_rss",
+      "known_exploited": false,
+      "epss": 0.00304,
+      "epss_percentile": 0.23245,
+      "epss_as_of": "2026-11-02"
+    },
+    {
       "id": "CVE-2026-116477",
       "title": "A security vulnerability has been detected in a2aproject a2a-dotnet up to 1.0.0-preview2",
       "severity": "medium",
@@ -56925,38 +57160,6 @@
       "epss_as_of": "2026-11-02"
     },
     {
-      "id": "CVE-2026-106069",
-      "title": "Node2Shell CVEs",
-      "severity": "bulletin",
-      "categories": [
-        "Fortinet",
-        "Node.js / npm"
-      ],
-      "published": "2026-10-26",
-      "updated": "2026-10-26",
-      "summary": "<p> <strong> CVSSv3 Score: </strong> 9.8 </p> <p> CVE-2026-105482 - (high)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-105483 - (high)This vulnerability affects Node.js 26.x and 24.x.CVE-2026-106069 - (high)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-111497 - (high)A flaw in Node.js can cause Node.js Brotli decoder out-of-bounds write permits remote code execution.This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-105481 - (medium)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-106072 - (medium)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-106074 - (medium)This vulnerability affects Node.js 26.x, 24.x, and 22.x.CVE-2026-106070 - (low)This vulnerability affects Node.js 26.x.CVE-2026-106071 - (low)This vulnerability affects Node.js 26.x.CVE-2026-106073 - (low)This vulnerability affects Node.js 26.x, 24.x, and 22.x. </p> <p> <em> Revised on 2026-10-30 00:00:00 </em> </p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Fortinet PSIRT",
-          "url": "https://fortiguard.fortinet.com/psirt/FG-IR-26-187"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Fortinet PSIRT RSS notice",
-      "first_seen_at": "2026-10-28T12:44:30Z",
-      "source_updated_at": "2026-10-26",
-      "source_type": "fortinet_rss",
-      "known_exploited": false,
-      "epss": 0.00304,
-      "epss_percentile": 0.23245,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2026-116591",
       "title": "github.com/klauspost/compress: klauspost/compress: Denial of Service via crafted zstd compressed input",
       "severity": "high",
@@ -60000,6 +60203,34 @@
       "epss": 0.00269,
       "epss_percentile": 0.19089,
       "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-115845",
+      "title": "An incomplete list of disallowed inputs in the Python code validator of the run_script tool in AWS MCP Server might allow an authenticated remote user to execute arbitrary cod",
+      "severity": "medium",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-10-23",
+      "updated": "2026-11-02",
+      "summary": "An incomplete list of disallowed inputs in the Python code validator of the run_script tool in AWS MCP Server might allow an authenticated remote user to execute arbitrary code within their own isolated session environment via a crafted script. AWS fixed this issue service-side. No customer action is required.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115845"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T14:41:55Z",
+      "source_updated_at": "2026-11-02T14:17:36.447",
+      "source_type": "nvd",
+      "known_exploited": false
     },
     {
       "id": "CVE-2026-99053",
@@ -66832,7 +67063,8 @@
       "title": "Incomplete validation of extracted archive entry paths in ast-cli's tar extraction logic on Linux and macOS (used when installing the Vorpal ASCA real-time engine and the SCA ",
       "severity": "medium",
       "categories": [
-        "Linux"
+        "Linux",
+        "Windows"
       ],
       "published": "2026-10-22",
       "updated": "2026-11-02",
@@ -66860,7 +67092,8 @@
       "title": "A flaw in the client-side encryption support of the MongoDB .NET/C# driver can cause data designated for client-side field-level encryption to be written without encryption",
       "severity": "medium",
       "categories": [
-        ".NET / ASP.NET"
+        ".NET / ASP.NET",
+        "NoSQL / MongoDB"
       ],
       "published": "2026-10-22",
       "updated": "2026-11-02",
@@ -102376,42 +102609,6 @@
       "epss_as_of": "2026-11-02"
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60771,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -102450,6 +102647,42 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55905,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60771,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -119929,6 +120162,47 @@
       "epss": 0.00364,
       "epss_percentile": 0.30272,
       "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "GHSA-v853-p72q-4cfw",
+      "title": "Quart leaks raw request body (incl. plaintext passwords) to stdout via stray debug print in Body.__await__",
+      "severity": "high",
+      "categories": [
+        "Python / PyPI",
+        "Application dependencies"
+      ],
+      "published": "2026-10-05",
+      "updated": "2026-11-02",
+      "summary": "### Summary Quart 0.23.0 contains a stray debug statement (`print(data)`) inside `Body.__await__` in `quart/wrappers/request.py`. Any request whose body is awaited — `await request.form`, `await request.get_data()`, WTForms `validate_on_submit()`, etc. — has its raw, unparsed body printed to stdout, including plaintext form fields such as passwords and CSRF tokens. Confirmed present in 0.23.0, confirmed absent in 0.22.0. ### Details In `src/quart/wrappers/request.py`, `Body.__await__` accumulates the request body into a bytearray: ​```python data = bytearray() while not self._queue.empty(): data.extend(self._queue.get_nowait()) print(data) # <-- not present in 0.22.0 if ( self._max_content_length is not None and len(data) > self._max_content_length ): raise RequestEntityTooLarge() ​``` This fires for every request that awaits its body — the overwhelming majority of POST/PUT routes in a typical Quart app (form submissions, JSON APIs via `request.get_json()`, file uploads, etc.). ### PoC 1. `pip install quart==0.23.0` (requires Python 3.13+) 2. Minimal route: ​```python @app.route(\"/login\", methods=[\"POST\"]) async def login(): form_data = await request.form ... ​``` 3. Submit a POST with form data, e.g. a login form with `staff_id`/`password` fields. 4. Observe stdout: the full raw",
+      "affected": "pip: quart (= 0.23.0)",
+      "remediation": "quart: 0.23.1",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-v853-p72q-4cfw"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/pallets/quart/security/advisories/GHSA-v853-p72q-4cfw"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/pallets/quart/commit/e8eb3b8a0cb98e7574bf3841312fc7f96883d055"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/pallets/quart/releases/tag/0.23.1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "advisory",
+      "cvss": "7.5",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-11-02T14:41:55Z",
+      "source_updated_at": "2026-11-02T13:39:16Z",
+      "source_type": "github",
+      "known_exploited": false
     },
     {
       "id": "CVE-2026-102827",
@@ -169353,370 +169627,90 @@
       "epss": 0.02923,
       "epss_percentile": 0.87052,
       "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2022-30190",
-      "title": "Microsoft Windows Support Diagnostic Tool (MSDT) Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-06-14",
-      "summary": "A remote code execution vulnerability exists when MSDT is called using the URL protocol from a calling application such as Word. An attacker who successfully exploits this vulnerability can run code with the privileges of the calling application.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-06-14",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99163,
-      "epss_percentile": 0.99934,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2012-0151",
-      "title": "Microsoft Windows Authenticode Signature Verification Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-06-08",
-      "summary": "The Authenticode Signature Verification function in Microsoft Windows (WinVerifyTrust) does not properly validate the digest of a signed portable executable (PE) file, which allows user-assisted remote attackers to execute code.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-06-08",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.87658,
-      "epss_percentile": 0.99759,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2016-3393",
-      "title": "Microsoft Windows Graphics Device Interface (GDI) Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-05-25",
-      "summary": "A remote code execution vulnerability exists due to the way the Windows GDI component handles objects in the memory. An attacker who successfully exploits this vulnerability could take control of the affected system.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-05-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.68465,
-      "epss_percentile": 0.99335,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2016-7256",
-      "title": "Microsoft Windows Open Type Font Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-05-25",
-      "summary": "A remote code execution vulnerability exists when the Windows font library improperly handles specially crafted embedded fonts. An attacker who successfully exploits this vulnerability could take control of the affected system.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-05-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.64591,
-      "epss_percentile": 0.9924,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2015-0016",
-      "title": "Microsoft Windows TS WebProxy Directory Traversal Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-05-25",
-      "summary": "Directory traversal vulnerability in the TS WebProxy (TSWbPrxy) component in Microsoft Windows allows remote attackers to escalate privileges.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-05-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.75777,
-      "epss_percentile": 0.99524,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2015-1769",
-      "title": "Microsoft Windows Mount Manager Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-05-25",
-      "summary": "A privilege escalation vulnerability exists when the Windows Mount Manager component improperly processes symbolic links.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-05-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.04078,
-      "epss_percentile": 0.90702,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2015-6175",
-      "title": "Microsoft Windows Kernel Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-05-25",
-      "summary": "The kernel in Microsoft Windows contains a vulnerability that allows local users to gain privileges via a crafted application.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-05-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.05325,
-      "epss_percentile": 0.92613,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2015-1671",
-      "title": "Microsoft Windows Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        ".NET / ASP.NET",
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-05-25",
-      "summary": "A remote code execution vulnerability exists when components of Windows, .NET Framework, Office, Lync, and Silverlight fail to properly handle TrueType fonts.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-05-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.48832,
-      "epss_percentile": 0.98877,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2014-4148",
-      "title": "Microsoft Windows Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2022-05-25",
-      "summary": "A remote code execution vulnerability exists when the Windows kernel-mode driver improperly handles TrueType fonts.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply updates per vendor instructions.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2022-05-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.5985,
-      "epss_percentile": 0.99131,
-      "epss_as_of": "2026-11-02"
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-02T13:22:57Z",
-      "last_attempt": "2026-11-02T13:22:57Z",
-      "items_processed": 219,
+      "last_success": "2026-11-02T14:41:55Z",
+      "last_attempt": "2026-11-02T14:41:55Z",
+      "items_processed": 217,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-02T13:22:57Z",
-      "last_attempt": "2026-11-02T13:22:57Z",
+      "last_success": "2026-11-02T14:41:55Z",
+      "last_attempt": "2026-11-02T14:41:55Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-02T13:22:57Z",
-      "last_attempt": "2026-11-02T13:22:57Z",
-      "items_processed": 39,
+      "last_success": "2026-11-02T14:41:55Z",
+      "last_attempt": "2026-11-02T14:41:55Z",
+      "items_processed": 45,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-02T13:22:57Z",
-      "last_attempt": "2026-11-02T13:22:57Z",
+      "last_success": "2026-11-02T14:41:55Z",
+      "last_attempt": "2026-11-02T14:41:55Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-02T13:22:57Z",
-      "last_attempt": "2026-11-02T13:22:57Z",
+      "last_success": "2026-11-02T14:41:55Z",
+      "last_attempt": "2026-11-02T14:41:55Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-02T13:22:57Z",
-      "last_attempt": "2026-11-02T13:22:57Z",
+      "last_success": "2026-11-02T14:41:55Z",
+      "last_attempt": "2026-11-02T14:41:55Z",
       "items_processed": 14,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-02T13:22:57Z",
-      "last_attempt": "2026-11-02T13:22:57Z",
+      "last_success": "2026-11-02T14:41:55Z",
+      "last_attempt": "2026-11-02T14:41:55Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-02T13:22:57Z",
-      "last_attempt": "2026-11-02T13:22:57Z",
+      "last_success": "2026-11-02T14:41:55Z",
+      "last_attempt": "2026-11-02T14:41:55Z",
       "items_processed": 52,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-02T13:22:57Z",
-      "last_attempt": "2026-11-02T13:22:57Z",
+      "last_success": "2026-11-02T14:41:55Z",
+      "last_attempt": "2026-11-02T14:41:55Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-02T13:22:57Z",
-      "last_attempt": "2026-11-02T13:22:57Z",
+      "last_success": "2026-11-02T14:41:55Z",
+      "last_attempt": "2026-11-02T14:41:55Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-02T13:22:57Z",
-      "last_attempt": "2026-11-02T13:22:57Z",
+      "last_success": "2026-11-02T14:41:55Z",
+      "last_attempt": "2026-11-02T14:41:55Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-02T13:22:57Z",
-      "last_attempt": "2026-11-02T13:22:57Z",
+      "last_success": "2026-11-02T14:41:55Z",
+      "last_attempt": "2026-11-02T14:41:55Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -169728,7 +169722,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-02T13:22:57Z",
-  "last_successful_update": "2026-11-02T13:22:57Z",
+  "last_checked_at": "2026-11-02T14:41:55Z",
+  "last_successful_update": "2026-11-02T14:41:55Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
