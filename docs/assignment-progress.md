@@ -51,10 +51,22 @@ The code-only release performs SELECT-only compatibility checks before deploymen
 
 Example manager email (values are illustrative):
 
-**Subject:** [CVEHarbor] Manager attention: update overdue for CVE-2026-81000
+**Subject:** Manager Attention Required: Vulnerability Status Update Overdue for CVE-2026-81000
 
-An update is overdue for CVE-2026-81000, assigned to alex@example.com. No status change or progress comment has been recorded for this assignment within its 24-hour update interval.
+Hi manager@example.com,
 
-**Suggested follow-up:** Confirm the reviewer’s availability, ask about progress or blockers and an expected update time, and coordinate with the requester to reassign the work if needed.
+The vulnerability CVE-2026-81000 is currently assigned to alex@example.com, and no progress update or status change has been recorded within the expected 24-hour period.
 
-This notice reflects activity recorded in CVEHarbor only. Work may be happening outside the tracker; please confirm with the reviewer before drawing conclusions.
+Given the severity of this vulnerability and its potential security impact, please check with alex@example.com on the current progress and ask them to update the remediation tracker as soon as possible.
+
+Critical and High vulnerabilities require urgent attention and should be prioritized over routine operational work, in line with your organization’s incident and change-management procedures. (Medium notices instead use a 48-hour interval and severity-appropriate prioritization wording.)
+
+If blockers, competing priorities or resource constraints are delaying remediation, please review them and determine whether additional support or reassignment is needed to address the vulnerability promptly.
+
+Please ensure alex@example.com provides regular progress updates until the vulnerability is fully remediated or an approved mitigation is documented.
+
+**[Open Remediation Tracker](https://cveharbor.com/remediation/)**
+
+The branded email uses a navy header/footer, teal accent and full-width tracker button, a severity badge, structured assignment details, and a responsive table layout with an Outlook width fallback. HTML values are escaped and a complete plain-text alternative includes the same direct tracker URL. The greeting uses only that notice’s recipient email. The subject matches the requested wording without an extra brand prefix.
+
+The tracker button requires sign-in and existing record access. FYI inclusion does not grant access to private records; recipients who cannot see the record are directed to contact the requester. This template change does not add sharing permissions. “Approved mitigation” is guidance to document the outcome; it does not add a new status or change the existing reminder-stop rules.
