@@ -1,7 +1,7 @@
-CVEHarbor Threat IP Intelligence | 2026-11-02T19:02:42.222761+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-02T19:10:32.930947+00:00
 Permanent logical group: Suspicious IP Block
-Cumulative indexed IPs: 3210
-New since prior published snapshot: 4
+Cumulative indexed IPs: 3220
+New since prior published snapshot: 10
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 No rules or policies are created or enabled. No old IPs are removed.
@@ -3450,6 +3450,12 @@ No firewall rule is created or activated.
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
       <IPAddress>68.64.183.32</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_68_65_122_95</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>68.65.122.95</IPAddress>
     </IPHost>
     <IPHost>
       <Name>CVEH_68_233_238_112</Name>
@@ -8576,6 +8582,12 @@ No firewall rule is created or activated.
       <IPAddress>102.129.62.74</IPAddress>
     </IPHost>
     <IPHost>
+      <Name>CVEH_102_129_62_83</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>102.129.62.83</IPAddress>
+    </IPHost>
+    <IPHost>
       <Name>CVEH_102_129_62_92</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
@@ -11006,6 +11018,18 @@ No firewall rule is created or activated.
       <IPAddress>103.191.208.225</IPAddress>
     </IPHost>
     <IPHost>
+      <Name>CVEH_103_191_243_96</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>103.191.243.96</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_103_192_199_108</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>103.192.199.108</IPAddress>
+    </IPHost>
+    <IPHost>
       <Name>CVEH_103_204_174_195</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
@@ -11130,6 +11154,12 @@ No firewall rule is created or activated.
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
       <IPAddress>104.194.141.99</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_104_194_158_65</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>104.194.158.65</IPAddress>
     </IPHost>
     <IPHost>
       <Name>CVEH_104_237_132_58</Name>
@@ -11844,6 +11874,12 @@ No firewall rule is created or activated.
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
       <IPAddress>109.199.107.46</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_109_224_53_140</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>109.224.53.140</IPAddress>
     </IPHost>
     <IPHost>
       <Name>CVEH_109_238_86_137</Name>
@@ -12734,6 +12770,12 @@ No firewall rule is created or activated.
       <IPAddress>132.243.222.250</IPAddress>
     </IPHost>
     <IPHost>
+      <Name>CVEH_134_122_114_138</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>134.122.114.138</IPAddress>
+    </IPHost>
+    <IPHost>
       <Name>CVEH_134_199_250_178</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
@@ -13434,6 +13476,12 @@ No firewall rule is created or activated.
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
       <IPAddress>147.50.253.184</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_147_78_243_196</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>147.78.243.196</IPAddress>
     </IPHost>
     <IPHost>
       <Name>CVEH_147_182_139_244</Name>
@@ -14586,6 +14634,12 @@ No firewall rule is created or activated.
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
       <IPAddress>154.91.55.189</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_154_93_37_228</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>154.93.37.228</IPAddress>
     </IPHost>
     <IPHost>
       <Name>CVEH_154_94_233_253</Name>
@@ -16038,6 +16092,12 @@ No firewall rule is created or activated.
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
       <IPAddress>184.75.214.163</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_185_21_136_6</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>185.21.136.6</IPAddress>
     </IPHost>
     <IPHost>
       <Name>CVEH_185_34_145_173</Name>
@@ -19861,6 +19921,7 @@ No firewall rule is created or activated.
         <Host>CVEH_66_179_30_172</Host>
         <Host>CVEH_68_64_176_76</Host>
         <Host>CVEH_68_64_183_32</Host>
+        <Host>CVEH_68_65_122_95</Host>
         <Host>CVEH_68_233_238_112</Host>
         <Host>CVEH_69_12_73_213</Host>
         <Host>CVEH_69_28_61_70</Host>
@@ -20715,6 +20776,7 @@ No firewall rule is created or activated.
         <Host>CVEH_102_129_62_10</Host>
         <Host>CVEH_102_129_62_16</Host>
         <Host>CVEH_102_129_62_74</Host>
+        <Host>CVEH_102_129_62_83</Host>
         <Host>CVEH_102_129_62_92</Host>
         <Host>CVEH_102_129_62_112</Host>
         <Host>CVEH_102_129_62_130</Host>
@@ -21120,6 +21182,8 @@ No firewall rule is created or activated.
         <Host>CVEH_103_190_204_223</Host>
         <Host>CVEH_103_191_204_229</Host>
         <Host>CVEH_103_191_208_225</Host>
+        <Host>CVEH_103_191_243_96</Host>
+        <Host>CVEH_103_192_199_108</Host>
         <Host>CVEH_103_204_174_195</Host>
         <Host>CVEH_103_210_236_62</Host>
         <Host>CVEH_103_211_217_182</Host>
@@ -21141,6 +21205,7 @@ No firewall rule is created or activated.
         <Host>CVEH_104_64_43_105</Host>
         <Host>CVEH_104_128_93_232</Host>
         <Host>CVEH_104_194_141_99</Host>
+        <Host>CVEH_104_194_158_65</Host>
         <Host>CVEH_104_237_132_58</Host>
         <Host>CVEH_104_237_132_63</Host>
         <Host>CVEH_104_237_132_65</Host>
@@ -21260,6 +21325,7 @@ No firewall rule is created or activated.
         <Host>CVEH_109_116_69_147</Host>
         <Host>CVEH_109_122_18_75</Host>
         <Host>CVEH_109_199_107_46</Host>
+        <Host>CVEH_109_224_53_140</Host>
         <Host>CVEH_109_238_86_137</Host>
         <Host>CVEH_109_238_92_50</Host>
         <Host>CVEH_110_40_170_52</Host>
@@ -21408,6 +21474,7 @@ No firewall rule is created or activated.
         <Host>CVEH_131_226_2_225</Host>
         <Host>CVEH_132_232_203_63</Host>
         <Host>CVEH_132_243_222_250</Host>
+        <Host>CVEH_134_122_114_138</Host>
         <Host>CVEH_134_199_250_178</Host>
         <Host>CVEH_134_209_235_214</Host>
         <Host>CVEH_135_125_92_30</Host>
@@ -21525,6 +21592,7 @@ No firewall rule is created or activated.
         <Host>CVEH_147_50_103_212</Host>
         <Host>CVEH_147_50_231_135</Host>
         <Host>CVEH_147_50_253_184</Host>
+        <Host>CVEH_147_78_243_196</Host>
         <Host>CVEH_147_182_139_244</Host>
         <Host>CVEH_147_182_188_228</Host>
         <Host>CVEH_147_182_241_212</Host>
@@ -21717,6 +21785,7 @@ No firewall rule is created or activated.
         <Host>CVEH_154_91_55_186</Host>
         <Host>CVEH_154_91_55_188</Host>
         <Host>CVEH_154_91_55_189</Host>
+        <Host>CVEH_154_93_37_228</Host>
         <Host>CVEH_154_94_233_253</Host>
         <Host>CVEH_154_94_233_254</Host>
         <Host>CVEH_154_94_236_63</Host>
@@ -21959,6 +22028,7 @@ No firewall rule is created or activated.
         <Host>CVEH_183_91_11_36</Host>
         <Host>CVEH_183_129_148_70</Host>
         <Host>CVEH_184_75_214_163</Host>
+        <Host>CVEH_185_21_136_6</Host>
         <Host>CVEH_185_34_145_173</Host>
         <Host>CVEH_185_34_145_174</Host>
         <Host>CVEH_185_34_145_175</Host>
