@@ -981,17 +981,17 @@ assert.ok(signedInWorkspaceCss.includes('workspace-authenticated .account-new-lo
 assert.ok(signedInWorkspaceCss.includes('workspace-authenticated #workspaceAccess{display:block!important}'),'signed in Workspace tools are displayed');
 
 const workspaceDashboardMarkup=fs.readFileSync('workspace/index.html','utf8');
-assert.ok(workspaceDashboardMarkup.includes('id="workspaceAccess"')&&workspaceDashboardMarkup.includes('workspace-kpis'),'authenticated Workspace has full dashboard');
-assert.ok(workspaceDashboardMarkup.includes('wsRecentRemediation')&&workspaceDashboardMarkup.includes('wsRecentCves'),'dashboard contains remediation and advisory panels');
-assert.ok(workspaceDashboardMarkup.includes('wsCriticalHint'),'critical count does not imply unvalidated findings');
+assert.ok(workspaceDashboardMarkup.includes('id="workspaceAccess"')&&workspaceDashboardMarkup.includes('ws-metrics'),'authenticated Workspace has full dashboard');
+assert.ok(workspaceDashboardMarkup.includes('wsRemediationPanel')&&workspaceDashboardMarkup.includes('wsIntelligencePanel'),'dashboard contains remediation and advisory panels');
+assert.ok(workspaceDashboardMarkup.includes('wsAssetsHint'),'monitored asset metric includes its data qualification');
 assert.ok(workspaceDashboardMarkup.includes('accountPageRequiredEnroll'),'mandatory MFA enrollment retained');
 assert.ok(fs.readFileSync('workspace-dashboard.js','utf8').includes("credentials:'include'"),'private dashboard fetches include account session');
 
 const workspaceDataClient=fs.readFileSync('workspace-dashboard.js','utf8');
-assert.ok(workspaceDataClient.includes("request('/inventory')"),'Workspace uses the actual account inventory read endpoint');
-assert.ok(workspaceDataClient.includes("fetch('/feed-health.json'"),'recent advisory summary uses a published JSON feed');
+assert.ok(workspaceDataClient.includes("request('/summary'"),'Workspace uses the authenticated aggregate endpoint');
+assert.ok(workspaceDataClient.includes("fetch('/workspace-intelligence.json'"),'recent advisory summary uses a bounded published JSON projection');
 assert.ok(!workspaceDataClient.includes("fetch('/data.js'"),'empty script is not treated as an advisory feed');
-assert.ok(workspaceDataClient.includes("setTimeout(start,0)"),'dashboard loads after login state is rendered');
+assert.ok(workspaceDataClient.includes("classList.contains('workspace-authenticated')"),'dashboard loads after login state is rendered');
 
 assert.ok(fs.readFileSync('account-backend/src/index.js','utf8').includes("path==='/v1/website-monitor'?await body(req):{}"),'manual website checks must not JSON parse empty POST requests');
 

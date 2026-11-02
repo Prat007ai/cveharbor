@@ -1,52 +1,70 @@
 (()=>{'use strict';
-const $=id=>document.getElementById(id);
-const API='https://api.cveharbor.com/v1';
-const request=async path=>{const response=await fetch(API+path,{credentials:'include',cache:'no-store',headers:{Accept:'application/json'}});if(!response.ok)throw Error('Unavailable');return response.json()};
-const set=(id,value,hintId,hint)=>{const node=$(id);if(node)node.textContent=value;if(hintId&&$(hintId))$(hintId).textContent=hint};
-const addRow=(parent,title,detail,url)=>{const a=document.createElement('a');a.href=url;a.className='workspace-feed-row';const strong=document.createElement('strong'),small=document.createElement('small');strong.textContent=title;small.textContent=detail;a.append(strong,small);parent.append(a)};
-async function loadPrivate(){
- try{
-  const rem=await request('/remediations');
-  const records=Array.isArray(rem.remediations)?rem.remediations:[];
-  const open=records.filter(x=>!['Remediated','Not Applicable','Accepted Risk'].includes(x.status)).length;
-  set('wsOpenRemediation',String(open),'wsRemediationHint',records.length+' tracked records');
-  const target=$('wsRecentRemediation');target.replaceChildren();
-  for(const item of records.slice(0,5))addRow(target,item.id,(item.status||'Open')+' · '+(item.owner||'Unassigned')+' · '+(item.due?'Due '+item.due:'No target date'),'/remediation/#remediationTracker');
-  if(!records.length)target.textContent='No remediation records saved yet.';
- }catch{set('wsOpenRemediation','—','wsRemediationHint','Unavailable');$('wsRecentRemediation').textContent='Remediation records are temporarily unavailable.'}
- try{
-  const response=await request('/inventory');
-  const environments=Array.isArray(response)?response:(response.environments||[]);
-  set('wsEnvironments',String(environments.length),'wsEnvironmentHint','Saved in your account');
- }catch{set('wsEnvironments','—','wsEnvironmentHint','View environments to check')}
- set('wsCritical','—','wsCriticalHint','Requires validated matching');
+const $=id=>document.getElementById(id),root=$('workspaceAccess');if(!root)return;
+const API='https://api.cveharbor.com/v1/workspace';
+const paths={users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m18 0v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/><path d="M16 3a4 4 0 0 1 0 8"/>',layers:'<path d="m12 3 10 5-10 5L2 8Zm-10 9 10 5 10-5M2 16l10 5 10-5"/>',monitor:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/>',alert:'<path d="m12 3 10 18H2ZM12 9v5m0 3h.01"/>',file:'<path d="M14 2H5v20h14V7Zm0 0v5h5M8 12h8m-8 4h8"/>',checks:'<path d="m3 6 2 2 4-4M12 6h9m-18 7 2 2 4-4m3 2h9M3 20h18"/>',search:'<circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/>',globe:'<circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/>',bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M9 21h6"/>',shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m8 12 3 3 5-6"/>',pulse:'<path d="M2 12h5l3-9 4 18 3-9h5"/>',refresh:'<path d="M20 7a8 8 0 1 0 0 10M20 2v5h-5"/>'};
+function icon(name){const span=document.createElement('span');span.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(paths[name]||paths.file)+'</svg>';return span;}
+for(const node of document.querySelectorAll('[data-ws-icon]'))node.append(icon(node.dataset.wsIcon).firstChild);
+const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
+const link=(text,url)=>{const a=el('a',text);a.href=url;return a;};
+const count=x=>Number.isFinite(Number(x))?Number(x).toLocaleString():'—';
+function date(value){if(value===null||value===undefined||value==='')return 'Not recorded';const input=typeof value==='number'?value*1000:String(value).replace(' ','T');const d=new Date(typeof input==='string'&&!/Z$|[+-]\d\d:\d\d$/.test(input)?input+'Z':input);return Number.isNaN(d.getTime())?'Not recorded':d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric',timeZone:'UTC'});}
+function empty(target,title,description,url,label='Open tool'){const wrap=el('div',undefined,'ws-empty'),mark=icon('file');mark.className='ws-empty-icon';wrap.append(mark,el('strong',title),el('span',description));if(url)wrap.append(link(label,url));target.replaceChildren(wrap);}
+function metric(key,value,hint){$('ws'+key).textContent=value;$('ws'+key).classList.remove('ws-skeleton');$('ws'+key+'Hint').textContent=hint;}
+let authenticated=false,epoch=0,controller=null,summary=null,activityView='activity',offset=0,nextOffset=null,itemEpoch=0,reportView='recent',remediationView='tracker',intel=null,intelPage=0;
+const trackerStates=[['Open','#ff536c'],['Investigating','#2b9cff'],['Remediated','#0ac4ad'],['Accepted Risk','#ddb959'],['Not Applicable','#8096b2']];
+const findingStates=[['Needs Review','#ff536c'],['Fix in Progress','#2b9cff'],['Fixed/Patched','#0ac4ad'],['Accepted Risk','#ddb959'],['Not Applicable','#8096b2']];
+async function request(path,signal){const response=await fetch(API+path,{credentials:'include',cache:'no-store',signal,headers:{Accept:'application/json'}});if(response.status===401){endSession();throw Error('Sign in required');}if(!response.ok)throw Error('Workspace data unavailable');return response.json();}
+function clear(){summary=null;intel=null;intelPage=0;nextOffset=null;offset=0;for(const key of ['Customers','Environments','Assets','OpenRemediation','Advisories'])metric(key,'—','Waiting for account data');for(const id of ['wsActivityPanel','wsRemediationPanel','wsIntelligencePanel'])$(id).replaceChildren();$('wsAccountIdentity').textContent='';$('wsScanStatus').textContent='Not available';$('wsScanDetail').textContent='No current account data.';$('wsDeliveryStatus').textContent='Not available';$('wsDeliveryDetail').textContent='No current account data.';}
+function endSession(){authenticated=false;epoch++;itemEpoch++;controller?.abort();clear();root.hidden=true;document.body.classList.remove('workspace-authenticated');$('accountPageSignedIn').hidden=true;$('accountPageSignedOut').hidden=false;$('accountPageRequest').hidden=false;$('accountPageVerify').hidden=true;$('wsRefresh').disabled=false;$('wsRefreshStatus').textContent='Sign in to load your workspace.';}
+function renderSummary(data){summary=data;const inventory=data.inventory;
+ metric('Customers',inventory.available?count(inventory.customers):'—',inventory.available?'Customers in your account':'Inventory unavailable');
+ metric('Environments','—',inventory.available?count(inventory.environments)+' registered · active state not recorded':'Active state unavailable');
+ metric('Assets','—',inventory.available?count(inventory.inventory_entries)+' inventory entries · monitored asset count unavailable':'Unique monitored assets not defined');
+ const open=data.remediation.rows.filter(r=>['Open','Investigating'].includes(r.status)).reduce((n,r)=>n+Number(r.count),0);
+ metric('OpenRemediation',data.remediation.available?count(open):'—',data.remediation.available?'Saved tracker: Open + Investigating':'Remediation records unavailable');
+ renderRemediation();
+ const m=data.monitoring;
+ $('wsScanStatus').textContent=!m.available?'Not available':!m.registered?'Not configured':m.last_checked_at?'Last check '+date(m.last_checked_at):'Awaiting first check';
+ $('wsScanDetail').textContent=!m.available?'Website monitoring records could not be loaded.':!m.registered?'No website monitors are registered.':`${count(m.enabled||0)} enabled website monitors · ${count(m.errors||0)} with errors · ${count(m.unchecked||0)} awaiting checks. Latest recorded check; not a health guarantee.`;
+ const n=data.notifications,last=n.last_submission;
+ $('wsDeliveryStatus').textContent=!n.available?'Not available':!last?'No submission history':last.status==='sent'?'Submitted to provider':last.status==='failed'?'Last submission failed':last.status==='sending'?'Submission in progress':'No matching digest items';
+ $('wsDeliveryDetail').textContent=(last?.completed_at?'Last digest: '+date(last.completed_at)+'. ':'')+'Inbox delivery is not tracked by this summary.';
 }
-async function loadPublic(){
- const target=$('wsRecentCves');
- try{
-  const response=await fetch('/feed-health.json',{cache:'no-store'});
-  if(!response.ok)throw Error('feed unavailable');
-  const feed=await response.json();
-  const indexed=Number(feed.records_indexed);
-  if(!Number.isFinite(indexed)||indexed<0)throw Error('invalid feed data');
-  set('wsAdvisories',indexed.toLocaleString(),'wsAdvisoriesHint','Indexed public advisory records');
-  target.replaceChildren();
-  const p=document.createElement('p');
-  p.textContent='The public advisory index currently contains '+indexed.toLocaleString()+' records. Open Vulnerabilities to search the current feed.';
-  target.append(p);
-  addRow(target,'Browse published CVEs','Review severity, vendor references and affected software','/vulnerabilities/');
-  if(feed.coverage_limited){
-   const note=document.createElement('p');
-   note.textContent='The advisory index has a coverage limit and is not a complete vulnerability database.';
-   target.append(note);
-  }
- }catch{
-  set('wsAdvisories','—','wsAdvisoriesHint','Feed unavailable');
-  target.textContent='Published advisory data is temporarily unavailable. Browse the public Vulnerabilities page.';
- }
+function renderRemediation(){const target=$('wsRemediationPanel'),isTracker=remediationView==='tracker',data=isTracker?summary?.remediation:summary?.findings,states=isTracker?trackerStates:findingStates;
+ if(!data?.available){empty(target,'Status data unavailable','Saved records could not be loaded. Try Refresh.',isTracker?'/remediation/#remediationTracker':'/customer-dashboard/');return;}
+ const mapped=states.map(([name,color])=>({name,color,value:data.rows.filter(r=>r.status===name).reduce((s,r)=>s+Number(r.count),0)}));
+ const unknown=data.rows.filter(r=>!states.some(([s])=>s===r.status)).reduce((s,r)=>s+Number(r.count),0);if(unknown)mapped.push({name:'Other saved status',color:'#8392a5',value:unknown});
+ const total=mapped.reduce((s,x)=>s+x.value,0);if(!total){empty(target,'No tracked records yet',isTracker?'Save a remediation record to see its progress here.':'No explicit customer finding statuses have been saved.',isTracker?'/remediation/#remediationTracker':'/customer-dashboard/');return;}
+ const layout=el('div',undefined,'ws-donut-layout'),chart=el('div',undefined,'ws-donut'),center=el('div'),legend=el('ul',undefined,'ws-legend');let at=0;const segments=[];
+ for(const row of mapped){const end=at+row.value/total*100;segments.push(`${row.color} ${at}% ${end}%`);at=end;const li=el('li'),dot=el('span',undefined,'ws-dot');dot.style.background=row.color;li.append(dot,el('span',row.name),el('b',count(row.value)));legend.append(li);}
+ chart.style.background='conic-gradient('+segments.join(',')+')';chart.setAttribute('role','img');chart.setAttribute('aria-label',mapped.map(x=>x.name+': '+x.value).join(', '));center.append(el('strong',count(total)),el('small','Saved records'));chart.append(center);layout.append(chart,legend);
+ const metrics=el('div',undefined,'ws-rem-stats');for(const [label,value] of [['Overdue',isTracker?data.rows.reduce((s,r)=>s+Number(r.overdue||0),0):null],['In progress',mapped[1].value],[isTracker?'Remediated':'Fixed/Patched',mapped[2].value]]){const m=el('div');m.append(el('strong',value===null?'—':count(value)),el('span',label));metrics.append(m);}
+ target.replaceChildren(layout,metrics,el('p',isTracker?'Account tracker records. Accepted Risk and Not Applicable are separate outcomes.':'Explicit saved asset–CVE statuses. Status alone does not verify exposure; potential matches are excluded.','ws-scope'));
 }
-let loaded=false;
-function start(){if(loaded||!$('workspaceAccess')||$('workspaceAccess').hidden)return;loaded=true;void loadPrivate();void loadPublic()}
-window.addEventListener('cveharbor-auth-change',event=>{if(event.detail?.authenticated)setTimeout(start,0)});
-fetch(API+'/me',{credentials:'include',cache:'no-store'}).then(r=>r.ok?r.json():null).then(x=>{if(x?.authenticated){setTimeout(start,0);window.setTimeout(start,600)}}).catch(()=>{});
+function table(headers,rows){const t=el('table',undefined,'ws-table'),head=el('thead'),tr=el('tr'),body=el('tbody');for(const h of headers){const th=el('th',h);th.scope='col';tr.append(th);}head.append(tr);for(const row of rows){const tr=el('tr');for(const v of row){const td=el('td');td.append(typeof v==='string'?document.createTextNode(v):v);tr.append(td);}body.append(tr);}t.append(head,body);return t;}
+async function loadItems(){const version=++itemEpoch,session=epoch;nextOffset=null;$('wsActivityPrevious').disabled=true;$('wsActivityNext').disabled=true;const target=$('wsActivityPanel');target.setAttribute('aria-busy','true');empty(target,'Loading records','Reading your account’s saved information.');
+ try{const data=await request('/items?view='+activityView+'&offset='+offset,controller?.signal);if(session!==epoch||version!==itemEpoch||!authenticated)return;
+ if(!data.available){empty(target,activityView==='activity'?'Activity history unavailable':'Records unavailable',activityView==='activity'?'Software change history is not available. Current inventory is not presented as past activity.':'This record source could not be loaded. Try Refresh.');return;}
+ if(!data.items.length){empty(target,activityView==='activity'?'No recorded activity':activityView==='review'?'No saved items need review':'No records to display',activityView==='activity'?'Recorded software changes will appear here when history is available.':activityView==='review'?'This view includes only explicitly saved Needs Review statuses.':'Add customer environments and inventory through the existing manager.','/environments/#inventoryWorkspace','Manage environments');}
+ else{const rows=data.items.map(item=>{const name=el('div');name.append(link(item.customer,'/customer-dashboard/?customer='+encodeURIComponent(item.customer_id)),el('small',item.environment||item.kind||''));const detail=el('div');detail.append(el('strong',activityView==='environments'?item.name:activityView==='review'?item.cve_id:item.name));const info=activityView==='activity'?`${item.technology}: ${item.previous_version||'Unknown'} → ${item.version||'Unknown'}`:activityView==='review'?`${item.name} · ${item.status}`:activityView==='assets'?`${item.technology} · ${item.version||'Version not recorded'}`:item.kind;detail.append(el('small',info));return [name,detail,date(item.date)];});target.replaceChildren(table(['Customer / environment',activityView==='activity'?'Recorded software change':activityView==='review'?'Saved finding':'Registered record','Recorded (UTC)'],rows));if(activityView==='assets')target.append(el('p','Inventory entries can represent multiple technologies on one asset.','ws-scope'));}
+ nextOffset=data.next_offset;
+ }catch(e){if(e.name!=='AbortError'&&session===epoch)empty(target,'Could not load records','Try Refresh or open the existing environment manager.','/environments/#inventoryWorkspace');}
+ finally{if(session===epoch&&version===itemEpoch){target.removeAttribute('aria-busy');$('wsActivityPage').textContent='Page '+(offset/5+1);$('wsActivityPrevious').disabled=offset===0;$('wsActivityNext').disabled=nextOffset===null;}}
+}
+function renderReports(){const content={recent:['Reports are generated on demand','Create a customer security report using your authorized inventory. A saved report archive is not available.'],scheduled:['No report scheduling service','Automatic report schedules are not supported in this workspace.'],drafts:['No saved report drafts','Report configuration is not stored as a draft document.'],exports:['Exports are saved to your device','PDF and CSV downloads are not retained as a server-side export history.']}[reportView];empty($('wsReportsPanel'),...content,'/customer-reports/','Generate a security report');}
+function renderIntel(){const target=$('wsIntelligencePanel');if(!intel){empty(target,'Intelligence unavailable','The published advisory snapshot could not be loaded.','/vulnerabilities/','Browse vulnerabilities');return;}
+ const items=intel.items.slice(intelPage*5,intelPage*5+5);if(!items.length){empty(target,'No advisories in this period','No indexed public records were published in the selected snapshot period.');return;}
+ const rows=items.map(item=>{const badge=el('span',item.severity,'ws-severity '+(['critical','high','medium','low'].includes(item.severity)?item.severity:'unknown'));const detail=el('div');detail.append(link(item.id,'/vulnerabilities/?cve='+encodeURIComponent(item.id)),el('small',item.technology||'See advisory'));const source=el('div');source.append(el('span','Public advisory'),el('small','Customer applicability unverified'));if(item.source?.url?.startsWith('https://')){const a=link(item.source.label||'Source',item.source.url);a.target='_blank';a.rel='noopener noreferrer';source.append(a);}return [badge,detail,source,date(item.published)];});target.replaceChildren(table(['Severity','CVE / technology','Scope / source','Published'],rows),el('p',`Snapshot period: ${date(intel.period_start)} – ${date(intel.period_end)} (UTC). ${intel.coverage_limited?'The global index has limited coverage. ':''}Showing up to ${intel.items.length} recent records.`,'ws-scope'));$('wsIntelPage').textContent='Page '+(intelPage+1);$('wsIntelPrevious').disabled=intelPage===0;$('wsIntelNext').disabled=(intelPage+1)*5>=intel.items.length;
+}
+async function refresh(){if(!authenticated)return;controller?.abort();controller=new AbortController();const session=++epoch;clear();$('wsRefresh').disabled=true;$('wsRefreshStatus').textContent='Refreshing account data…';root.setAttribute('aria-busy','true');for(const key of ['Customers','Environments','Assets','OpenRemediation','Advisories'])$('ws'+key).classList.add('ws-skeleton');$('wsAccountIdentity').textContent=$('accountPageIdentity').textContent.replace(/^Signed in as /,'');let failed=false;
+ await Promise.allSettled([
+ request('/summary',controller.signal).then(data=>{if(session===epoch){renderSummary(data);if([data.inventory,data.remediation,data.findings,data.monitoring,data.notifications].some(x=>!x.available))failed=true;}}).catch(e=>{if(e.name==='AbortError'||session!==epoch)return;failed=true;for(const key of ['Customers','Environments','Assets','OpenRemediation'])metric(key,'—','Account data unavailable');renderRemediation();}),
+ loadItems(),
+ fetch('/workspace-intelligence.json',{cache:'no-store',signal:controller.signal}).then(async r=>{if(!r.ok)throw Error('Feed unavailable');const data=await r.json();if(session!==epoch)return;if(!Array.isArray(data.items)||!Number.isInteger(data.count))throw Error('Invalid feed');intel=data;metric('Advisories',count(data.count),'Global index · 30 days through '+date(data.period_end));renderIntel();}).catch(e=>{if(e.name==='AbortError'||session!==epoch)return;failed=true;metric('Advisories','—','Public snapshot unavailable');renderIntel();})
+ ]);if(session!==epoch)return;root.removeAttribute('aria-busy');$('wsRefresh').disabled=false;$('wsRefreshStatus').textContent=failed?'Some data is unavailable. Refresh to retry.':'Updated '+new Date().toLocaleTimeString()+' · Account-scoped records';
+}
+function selectTab(button,group){for(const b of button.parentElement.querySelectorAll('[role=tab]')){const active=b===button;b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;}$('ws'+group[0].toUpperCase()+group.slice(1)+'Panel').setAttribute('aria-labelledby',button.id);if(group==='activity'){activityView=button.dataset.wsActivity;offset=0;void loadItems();}else if(group==='reports'){reportView=button.dataset.wsReports;renderReports();}else{remediationView=button.dataset.wsRemediation;renderRemediation();}}
+for(const group of ['activity','reports','remediation'])for(const b of document.querySelectorAll('[data-ws-'+group+']')){b.addEventListener('click',()=>selectTab(b,group));b.addEventListener('keydown',event=>{const buttons=[...b.parentElement.children],i=buttons.indexOf(b);let index;if(event.key==='ArrowRight')index=(i+1)%buttons.length;else if(event.key==='ArrowLeft')index=(i+buttons.length-1)%buttons.length;else if(event.key==='Home')index=0;else if(event.key==='End')index=buttons.length-1;else return;event.preventDefault();buttons[index].focus();selectTab(buttons[index],group);});}
+$('wsRefresh').addEventListener('click',refresh);$('wsActivityPrevious').addEventListener('click',()=>{offset=Math.max(0,offset-5);void loadItems();});$('wsActivityNext').addEventListener('click',()=>{if(nextOffset!==null){offset=nextOffset;void loadItems();}});$('wsIntelPrevious').addEventListener('click',()=>{intelPage=Math.max(0,intelPage-1);renderIntel();});$('wsIntelNext').addEventListener('click',()=>{if(intel&&(intelPage+1)*5<intel.items.length){intelPage++;renderIntel();}});
+renderReports();window.addEventListener('cveharbor-auth-change',event=>{if(!event.detail?.authenticated){endSession();return;}setTimeout(()=>{if(!document.body.classList.contains('workspace-authenticated'))return;authenticated=true;void refresh();},0);});
 })();
