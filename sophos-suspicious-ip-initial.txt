@@ -1,7 +1,7 @@
-CVEHarbor Threat IP Intelligence | 2026-11-01T23:44:57.202842+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-02T00:04:15.033967+00:00
 Permanent logical group: Suspicious IP Block
-Cumulative indexed IPs: 2446
-New since prior published snapshot: 7
+Cumulative indexed IPs: 2448
+New since prior published snapshot: 2
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 No rules or policies are created or enabled. No old IPs are removed.
@@ -5630,6 +5630,12 @@ No firewall rule is created or activated.
       <IPAddress>102.53.15.56</IPAddress>
     </IPHost>
     <IPHost>
+      <Name>CVEH_102_64_32_1</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>102.64.32.1</IPAddress>
+    </IPHost>
+    <IPHost>
       <Name>CVEH_102_64_32_20</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
@@ -6450,6 +6456,12 @@ No firewall rule is created or activated.
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
       <IPAddress>102.129.54.108</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_102_129_54_183</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>102.129.54.183</IPAddress>
     </IPHost>
     <IPHost>
       <Name>CVEH_102_129_54_216</Name>
@@ -15640,6 +15652,7 @@ No firewall rule is created or activated.
         <Host>CVEH_102_53_15_17</Host>
         <Host>CVEH_102_53_15_18</Host>
         <Host>CVEH_102_53_15_56</Host>
+        <Host>CVEH_102_64_32_1</Host>
         <Host>CVEH_102_64_32_20</Host>
         <Host>CVEH_102_64_32_55</Host>
         <Host>CVEH_102_64_32_74</Host>
@@ -15777,6 +15790,7 @@ No firewall rule is created or activated.
         <Host>CVEH_102_129_54_2</Host>
         <Host>CVEH_102_129_54_72</Host>
         <Host>CVEH_102_129_54_108</Host>
+        <Host>CVEH_102_129_54_183</Host>
         <Host>CVEH_102_129_54_216</Host>
         <Host>CVEH_102_129_55_42</Host>
         <Host>CVEH_102_129_55_48</Host>
