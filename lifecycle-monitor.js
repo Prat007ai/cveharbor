@@ -284,8 +284,10 @@ function renderQueue(){
  $('lifecycleSaveAll').disabled=!signed||!ready||!queued.length;
 }
 $('lifecycleWatchQueue').addEventListener('click',async()=>{
+ const epoch=authEpoch;
  try{
   if(signed&&ready&&!$('lifecycleProduct').value&&$('lifecycleCustomName').value.trim())await lookupProduct($('lifecycleCustomName').value.trim());
+  if(epoch!==authEpoch)throw Error('Account changed; selection discarded.');
   const candidate=getCandidate();
   if(queued.length>=30)throw Error('You can add 30 products in one batch.');
   if(queued.some(x=>queueKey(x)===queueKey(candidate)))throw Error('This product and release are already selected.');
@@ -421,14 +423,15 @@ window.addEventListener('cveharbor:account-state',async event=>{
   await load();message('Saved lifecycle watches loaded from your private account.');
  }catch(e){message(e.message)}
 });
-$('lifecycleProduct').addEventListener('change',()=>{syncCycles();if($('lifecycleProduct').value)void lookupProduct($('lifecycleProduct').value)});
+$('lifecycleProduct').addEventListener('change',()=>{lookupGeneration++;lookupBusy=false;$('lifecycleLookupProduct').disabled=false;syncCycles();if($('lifecycleProduct').value)void lookupProduct($('lifecycleProduct').value)});
 $('lifecyclePublicSearch').addEventListener('input',renderFeed);
 $('lifecycleWatchForm').addEventListener('submit',async event=>{
  event.preventDefault();
  if(!signed||!ready){message('Sign in and deploy the lifecycle D1 migration before saving watches.');return;}
- const button=$('lifecycleWatchSave');button.disabled=true;
+ const button=$('lifecycleWatchSave'),epoch=authEpoch;button.disabled=true;
  try{
   if(signed&&ready&&!$('lifecycleProduct').value&&$('lifecycleCustomName').value.trim())await lookupProduct($('lifecycleCustomName').value.trim());
+  if(epoch!==authEpoch)throw Error('Account changed; save cancelled.');
   const watch=getCandidate();
   await call('/watches','POST',watch);
   await load();message('Lifecycle watch saved to your D1 account.');
