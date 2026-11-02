@@ -62,3 +62,10 @@ assert.equal(fyiRelease(['account-backend/src/assignment-fyi.js','account-backen
 assert.equal(fyiRelease(['account-backend/src/assignment-fyi.js','account-backend/src/cvie.js']),false);
 assert.equal(fyiRelease(['account-backend/src/assignment-fyi.js','scripts/bootstrap_cvie_shared.mjs']),false);
 console.log('PASS: FYI release is restricted to its own additive migration and notification code');
+
+const {remediationWorkflowRelease}=await import('./worker_release_mode.mjs');
+const workflowFiles=['account-backend/src/remediation-workflow.js','account-backend/src/confirmation-host.js','account-backend/migrations/0026_remediation_workflow.sql','account-backend/wrangler.toml'];
+assert.equal(remediationWorkflowRelease(workflowFiles),true);
+assert.equal(remediationWorkflowRelease([...workflowFiles,'account-backend/src/cvie.js']),false);
+assert.equal(remediationWorkflowRelease([...workflowFiles,'scripts/bootstrap_cvie_shared.mjs']),false);
+assert.equal(remediationWorkflowRelease(workflowFiles.filter(x=>!x.endsWith('.sql'))),false);

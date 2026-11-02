@@ -31,18 +31,23 @@ export function fyiRelease(files){
  const allowed=new Set(['account-backend/src/index.js','account-backend/src/remediation.js','account-backend/src/assignment-acknowledgement.js','account-backend/src/assignment-fyi.js','account-backend/tests/assignment-fyi.test.mjs','account-backend/tests/helpers/assignment-db.mjs','account-backend/wrangler.toml','account-backend/migrations/0025_assignment_fyi.sql']);
  return files.includes('account-backend/src/assignment-fyi.js')&&files.filter(f=>f.startsWith('account-backend/')).every(f=>allowed.has(f))&&!files.some(f=>f.startsWith('scripts/bootstrap_cvie')||f.startsWith('scripts/verify_cvie'));
 }
+export function remediationWorkflowRelease(files){
+ const allowed=new Set(['index.js','remediation.js','remediation-workflow.js','confirmation-host.js','assignment-acknowledgement.js','assignment-template.js','assignment-fyi.js'].map(f=>'account-backend/src/'+f).concat(['account-backend/tests/assignment-acknowledgement.test.mjs','account-backend/tests/remediation-workflow.test.mjs','account-backend/wrangler.toml','account-backend/migrations/0026_remediation_workflow.sql']));
+ return files.includes('account-backend/src/remediation-workflow.js')&&files.includes('account-backend/migrations/0026_remediation_workflow.sql')&&files.filter(f=>f.startsWith('account-backend/')).every(f=>allowed.has(f))&&!files.some(f=>f.startsWith('scripts/bootstrap_cvie')||f.startsWith('scripts/verify_cvie'));
+}
 if(process.argv[1]&&new URL(import.meta.url).pathname===process.argv[1]){
- let codeOnly=false,catalogue=false,monitorOnly=false,workspaceOnly=false,remediationOnly=false,ackRelease=false,fyi=false;
+ let codeOnly=false,catalogue=false,monitorOnly=false,workspaceOnly=false,remediationOnly=false,ackRelease=false,fyi=false,workflow=false;
  if(process.env.GITHUB_EVENT_NAME==='push'){
   const {before,after}=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));
   if(/^[a-f0-9]{40}$/.test(before||'')&&/^[a-f0-9]{40}$/.test(after||'')&&!/^0+$/.test(before)){
    const files=execFileSync('git',['diff','--name-only',before,after],{encoding:'utf8'}).trim().split('\n');
-   codeOnly=inventoryOnly(files);catalogue=catalogueOnly(files);monitorOnly=monitorCodeOnly(files);workspaceOnly=workspaceCodeOnly(files);remediationOnly=remediationCodeOnly(files);ackRelease=acknowledgementRelease(files);fyi=fyiRelease(files);
+   codeOnly=inventoryOnly(files);catalogue=catalogueOnly(files);monitorOnly=monitorCodeOnly(files);workspaceOnly=workspaceCodeOnly(files);remediationOnly=remediationCodeOnly(files);ackRelease=acknowledgementRelease(files);fyi=fyiRelease(files);workflow=remediationWorkflowRelease(files);
   }
  }
+ fs.appendFileSync(process.env.GITHUB_OUTPUT,'remediation_workflow='+workflow+'\n');
  fs.appendFileSync(process.env.GITHUB_OUTPUT,'fyi_release='+fyi+'\n');
  fs.appendFileSync(process.env.GITHUB_OUTPUT,'inventory_only='+codeOnly+'\n');
- fs.appendFileSync(process.env.GITHUB_OUTPUT,'catalogue_only='+catalogue+'\nmonitor_code_only='+monitorOnly+'\nworkspace_only='+workspaceOnly+'\nremediation_only='+remediationOnly+'\nacknowledgement_release='+ackRelease+'\nmaintenance='+!(codeOnly||catalogue||monitorOnly||workspaceOnly||remediationOnly||ackRelease||fyi)+'\n');
- console.log(fyi?'Assignment FYI release: apply only additive migration 0025, verify private boundaries; preserve existing records and schedules.':ackRelease?'Approved assignment acknowledgement release: apply only additive migration 0024; no CVIE maintenance, customer updates or email sends.':remediationOnly?'Remediation code-only release: no migrations, rescans, secrets or activation changes.':workspaceOnly?'Workspace read-only release: Worker code and SELECT-only probes; no migrations, rescans, secrets or activation changes.':monitorOnly?'Product monitoring code-only release: no migrations, infrastructure changes, secrets or delivery activation.':catalogue?'Catalogue release: SELECT-only checks, code deployment; no migration, cache reset or bulk rescan.':codeOnly?'Inventory-only release: read-only history preflight, Worker code deployment; no CVIE maintenance.':'Existing CVIE release path retained.');
+ fs.appendFileSync(process.env.GITHUB_OUTPUT,'catalogue_only='+catalogue+'\nmonitor_code_only='+monitorOnly+'\nworkspace_only='+workspaceOnly+'\nremediation_only='+remediationOnly+'\nacknowledgement_release='+ackRelease+'\nmaintenance='+!(codeOnly||catalogue||monitorOnly||workspaceOnly||remediationOnly||ackRelease||fyi||workflow)+'\n');
+ console.log(workflow?'Remediation workflow release: migration 0026 and compatible writer, no DNS changes or email sends.':fyi?'Assignment FYI release: apply only additive migration 0025, verify private boundaries; preserve existing records and schedules.':ackRelease?'Approved assignment acknowledgement release: apply only additive migration 0024; no CVIE maintenance, customer updates or email sends.':remediationOnly?'Remediation code-only release: no migrations, rescans, secrets or activation changes.':workspaceOnly?'Workspace read-only release: Worker code and SELECT-only probes; no migrations, rescans, secrets or activation changes.':monitorOnly?'Product monitoring code-only release: no migrations, infrastructure changes, secrets or delivery activation.':catalogue?'Catalogue release: SELECT-only checks, code deployment; no migration, cache reset or bulk rescan.':codeOnly?'Inventory-only release: read-only history preflight, Worker code deployment; no CVIE maintenance.':'Existing CVIE release path retained.');
 }
 
