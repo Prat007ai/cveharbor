@@ -368,8 +368,8 @@ opsDom.window.fetch=async(url,options={})=>{
 opsDom.window.dispatchEvent(new opsDom.window.CustomEvent('cveharbor:account-state',
   {detail:{authenticated:true,email:'security@example.org'}}));
 await new Promise(resolve=>setTimeout(resolve,15));
-assert.match(opsDoc.getElementById('remediationStorage').textContent,/Cloudflare D1/,
-  'authenticated tracker uses Cloudflare D1 as canonical storage');
+assert.match(opsDoc.getElementById('remediationStorage').textContent,/private.*CVEHarbor workspace/,
+  'authenticated tracker describes private storage without provider details');
 assert.equal(opsDoc.getElementById('remediationImport').hidden,false,
   'legacy browser records can be imported explicitly without replacement');
 opsDoc.getElementById('remediationCve').value='CVE-2026-12345';
@@ -969,7 +969,7 @@ const remediationUi=fs.readFileSync('operations.js','utf8');
 const remediationStyles=fs.readFileSync('styles.css','utf8');
 assert.ok(remediationDialogs.includes('id="remediationConfirmDialog"'),'branded pre-send confirmation exists');
 assert.ok(remediationDialogs.includes('id="remediationSuccessDialog"'),'branded success dialog exists');
-assert.ok(remediationUi.includes('confirmReviewRequest(cve,email,fyi)'),'assignment invokes branded confirmation');
+assert.ok(remediationUi.includes('confirmReviewRequest(cve,email,fyi,assigned)'),'assignment invokes branded confirmation');
 assert.ok(!remediationUi.includes("window.confirm('Send the "),'native browser confirm removed for assignment');
 assert.ok(remediationUi.includes("Your request has been submitted to "),'success text contains recipient address');
 assert.ok(remediationStyles.includes('#remediationDue::-webkit-calendar-picker-indicator'),'date calendar icon has higher contrast');

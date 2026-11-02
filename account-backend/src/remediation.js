@@ -1,3 +1,4 @@
+import {workflowReady,requireWorkflow,workflowWriteStatements,runWorkflowWrite,recordMetadata} from './remediation-workflow.js';
 import {normalizeFyi,fyiReady} from './assignment-fyi.js';
 import {assignWithAcknowledgement,acknowledgementReady,assignmentSummary} from './assignment-acknowledgement.js';
 // CVEHarbor's authenticated remediation records, private D1 storage, and
@@ -44,7 +45,7 @@ export function assignmentReady(env){
 }
 export async function capabilities(env){
   return reply({storage:'d1',version:2,assignments_available:await isMigrated(env),
-    assignment_email_enabled:assignmentReady(env),fyi_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await fyiReady(env),acknowledgements_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await acknowledgementReady(env)});
+    assignment_email_enabled:assignmentReady(env),workflow_available:await workflowReady(env),fyi_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await fyiReady(env),acknowledgements_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await acknowledgementReady(env)});
 }
 export async function listRemediations(env,user){
   const migrated=await isMigrated(env);
@@ -54,7 +55,9 @@ export async function listRemediations(env,user){
   const rows=await env.DB.prepare(sql).bind(user.id).all();
   let acknowledgements=new Map(),acknowledgementsAvailable=false;
   if(env.ASSIGNMENT_ACK_ENABLED==='true'){try{acknowledgements=await assignmentSummary(env,user);acknowledgementsAvailable=true;}catch{}}
-  return reply({remediations:(rows.results||[]).map(row=>({...row,acknowledgements:acknowledgements.get(row.id)||null})),assignments_available:migrated,acknowledgements_available:acknowledgementsAvailable});
+  let details={metadata:new Map(),changes:new Map()},workflowAvailable=await workflowReady(env);
+  if(workflowAvailable)details=await recordMetadata(env,user);
+  return reply({workflow_available:workflowAvailable,remediations:(rows.results||[]).map(row=>({...row,...(details.metadata.get(row.id)||{}),latest_status_change:details.changes.get(row.id)||null,acknowledgements:acknowledgements.get(row.id)||null})),assignments_available:migrated,acknowledgements_available:acknowledgementsAvailable});
 }
 async function capacity(env,userId,id){
   const existing=await env.DB.prepare('SELECT cve_id FROM remediations WHERE user_id=? AND cve_id=?').bind(userId,id).first();
@@ -65,6 +68,10 @@ async function capacity(env,userId,id){
 export async function upsertRemediation(env,user,id,data){
   const item=normalizeRecord(id,data);
   await capacity(env,user.id,item.id);
+  if(env.REMEDIATION_WORKFLOW_ENABLED==='true'){
+    await requireWorkflow(env);await runWorkflowWrite(env,await workflowWriteStatements(env,user,item,data,new Date().toISOString()));
+    return reply({saved:true,id:item.id,storage:'d1'});
+  }
   await env.DB.prepare(
     'INSERT INTO remediations(user_id,cve_id,status,owner,due,notes,updated_at) VALUES(?,?,?,?,?,?,?) '+
     'ON CONFLICT(user_id,cve_id) DO UPDATE SET status=excluded.status,owner=excluded.owner,due=excluded.due,notes=excluded.notes,updated_at=excluded.updated_at'
@@ -88,6 +95,13 @@ export async function importLegacy(env,user,records){
   if(union.size>250)throw new RemediationError('Import would exceed the 250 record limit',409);
   if(!items.length)return reply({saved:0,storage:'d1'});
   const now=new Date().toISOString();
+  if(env.REMEDIATION_WORKFLOW_ENABLED==='true'){
+    await requireWorkflow(env);const statements=[];
+    // One context cleanup keeps a 250-record import below the per-invocation query budget.
+    for(let i=0;i<items.length;i++)statements.push(...(await workflowWriteStatements(env,user,items[i],records[i],now)).slice(0,2));
+    statements.push(env.DB.prepare('DELETE FROM remediation_change_context WHERE user_id=?').bind(user.id));
+    await runWorkflowWrite(env,statements);return reply({saved:items.length,storage:'d1',message:'Records imported successfully.'});
+  }
   const statements=items.map(item=>env.DB.prepare(
     'INSERT INTO remediations(user_id,cve_id,status,owner,due,notes,updated_at) VALUES(?,?,?,?,?,?,?) '+
     'ON CONFLICT(user_id,cve_id) DO UPDATE SET status=excluded.status,owner=excluded.owner,due=excluded.due,notes=excluded.notes,updated_at=excluded.updated_at'
@@ -179,7 +193,7 @@ export async function assignRemediation(env,user,id,raw){
   if(reviewerNotes.length>1000)throw new RemediationError('Reviewer notes must be 1000 characters or fewer');
   if(!cve||recipient.length>254||!emailPattern.test(recipient))
     throw new RemediationError('Enter a valid CVE ID and recipient email');
-  if(!await isMigrated(env))throw new RemediationError('Assignment database migration is required',503);
+  if(!await isMigrated(env))throw new RemediationError('Email assignment is temporarily unavailable. Please try again later.',503);
   if(!assignmentReady(env))throw new RemediationError('Assignment email delivery is not enabled',503);
   const fyi=normalizeFyi(raw?.fyi_recipients,recipient);
   if(fyi.length&&env.ASSIGNMENT_ACK_ENABLED!=='true')throw new RemediationError('FYI notifications require the acknowledgement service.',503);

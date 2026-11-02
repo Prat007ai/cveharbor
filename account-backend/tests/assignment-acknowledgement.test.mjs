@@ -28,12 +28,12 @@ test('explicit POST acknowledges once, records one event and never changes remed
  for(const response of results){assert.equal(response.status,200);assert.match(await response.text(),/Assignment acknowledged/);}
  const record=f.DB.sql.prepare('SELECT * FROM remediations').get();assert.equal(record.status,'Investigating');assert.equal(record.owner,'Review owner');assert.equal(record.notes,'Private customer note NEVER public');
  assert.equal(f.DB.sql.prepare("SELECT COUNT(*) n FROM remediation_assignment_events WHERE event='acknowledged'").get().n,1);
- const rows=await(await worker.fetch(f.request('/remediations'),f.env,{})).json();assert.deepEqual(rows.remediations[0].acknowledgements,{total:1,states:{Acknowledged:1}});
+ const rows=await(await worker.fetch(f.request('/remediations'),f.env,{})).json();assert.deepEqual(rows.remediations[0].acknowledgements,{total:1,states:{Acknowledged:1},latest_acknowledged_at:f.DB.sql.prepare('SELECT MAX(acknowledged_at) stamp FROM remediation_assignment_requests').get().stamp});
  const history=await(await worker.fetch(f.request('/remediations/'+fixtureCve+'/assignments'),f.env,{})).json();assert.equal(history.assignments[0].recipient_email,'reviewer@example.net');assert.ok(history.assignments[0].acknowledged_at);assert.equal(history.assignments[0].acknowledgement_evidence,'Acknowledged via emailed link');assert.doesNotMatch(JSON.stringify(history),/token_hash|provider_id|Private customer/);
 });
 test('multiple recipients are independent; resend rotates links and retains history and acknowledgements',async t=>{
  const f=await setup(t);await assign(f);const first=f.link();await worker.fetch(post(first),f.env,{});await assign(f,'second@example.net');const second=f.link();
- let summary=await(await worker.fetch(f.request('/remediations'),f.env,{})).json();assert.deepEqual(summary.remediations[0].acknowledgements,{total:2,states:{Acknowledged:1,Pending:1}});
+ let summary=await(await worker.fetch(f.request('/remediations'),f.env,{})).json();assert.deepEqual(summary.remediations[0].acknowledgements,{total:2,states:{Acknowledged:1,Pending:1},latest_acknowledged_at:f.DB.sql.prepare('SELECT MAX(acknowledged_at) stamp FROM remediation_assignment_requests').get().stamp});
  const duplicate=await(await assign(f)).json();assert.equal(duplicate.duplicate,true);assert.equal(f.emails.length,2);
  await assign(f,'reviewer@example.net',{resend:true});const rotated=f.link();assert.notEqual(first,rotated);assert.equal((await worker.fetch(post(first),f.env,{})).status,410);assert.equal((await worker.fetch(post(second),f.env,{})).status,200);assert.equal((await worker.fetch(post(rotated),f.env,{})).status,200);
  assert.equal(f.DB.sql.prepare('SELECT COUNT(*) n FROM remediation_assignment_requests').get().n,3);assert.equal(f.DB.sql.prepare("SELECT COUNT(*) n FROM remediation_assignment_events WHERE event='acknowledged'").get().n,3);
