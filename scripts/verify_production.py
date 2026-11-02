@@ -100,7 +100,7 @@ for attempt in range(6):
                 if expected_url not in html:
                     raise RuntimeError(f"{route} serves stale {asset} version; expected {expected_url}")
                 remote=fetch(expected_url)
-                local=(root/asset).read_text(encoding="utf-8")
+                local=(root/"public"/asset).read_text(encoding="utf-8")
                 if hashlib.sha256(remote.encode()).digest()!=hashlib.sha256(local.encode()).digest():
                     raise RuntimeError(f"{route} serves outdated {asset} content")
         local_threats=(root/"public"/"threat-data.js").read_bytes()
