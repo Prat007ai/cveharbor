@@ -5,6 +5,20 @@ const paths={arrow:'<path d="M5 12h14m-5-5 5 5-5 5"/>',calendar:'<rect x="3" y="
 function icon(name){const span=document.createElement('span');span.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(paths[name]||paths.file)+'</svg>';return span;}
 for(const node of document.querySelectorAll('[data-ws-icon]'))node.append(icon(node.dataset.wsIcon).firstChild);
 const today=new Date();$('wsToday').dateTime=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');$('wsToday').textContent=today.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'short',day:'numeric'});
+// Keep the lantern aimed at the heading when the viewport or font metrics change.
+const hero=document.querySelector('.account-hero-grid'),heading=$('accountPageHeading'),beam=document.querySelector('.ws-heading-beam');
+function aimHeadingBeam(){
+ const area=hero.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(heading);
+ if(!area.width||!range.getBoundingClientRect)return;
+ const title=range.getBoundingClientRect(),scale=Math.min(area.width,1500)/1500;
+ // The background SVG is 1500 × 190, bottom/right aligned with a 16px bottom bleed.
+ const x=area.width-345*scale,y=area.height-79-8*scale;
+ const left=Math.max(0,title.left-area.left),top=title.top-area.top,bottom=title.bottom-area.top;
+ beam.setAttribute('viewBox',`0 0 ${area.width} ${area.height}`);
+ $('wsHeadingBeamPath').setAttribute('d',`M${x} ${y} L${left} ${top-2} L${left} ${bottom+2} Z`);
+}
+if(typeof ResizeObserver!=='undefined'){const beamObserver=new ResizeObserver(aimHeadingBeam);beamObserver.observe(hero);beamObserver.observe(heading);}
+window.addEventListener('resize',aimHeadingBeam);document.fonts?.ready.then(aimHeadingBeam);aimHeadingBeam();
 const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
 const link=(text,url)=>{const a=el('a',text);a.href=url;return a;};
 const count=x=>Number.isFinite(Number(x))?Number(x).toLocaleString():'—';

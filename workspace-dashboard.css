@@ -3,7 +3,7 @@ body.workspace-operations{--ws-line:#19465b;--ws-muted:#a1bfd0;--ws-cyan:#25e2dc
 .workspace-operations .account-hero-header{max-width:none;width:100%;padding:14px clamp(16px,2vw,36px);border-bottom:1px solid #16394c;background:#031624d9;min-height:64px;margin:0;gap:16px}
 .workspace-operations .account-new-main{max-width:none;width:100%;padding:0 clamp(16px,2vw,36px) 30px;margin:0}
 .workspace-operations .account-hero-grid{position:relative;padding:30px 0 12px;margin:0;isolation:isolate}
-.workspace-operations .account-hero-grid:before{content:'';position:absolute;z-index:-1;inset:0 -10px;background:url('/assets/workspace-harbor.svg?v=lighthouse-2') no-repeat right top;background-size:auto 220px;pointer-events:none;opacity:.75}
+.workspace-operations .account-hero-grid:before{content:'';position:absolute;z-index:-1;inset:0 -10px;background:url('/assets/workspace-harbor.svg?v=lighthouse-3') no-repeat right top;background-size:auto 220px;pointer-events:none;opacity:.75}
 .workspace-operations .account-kicker{font-size:10px;letter-spacing:2px;color:#a3d5ec;margin:0 0 7px}
 .workspace-operations .account-hero-left h1{font-size:clamp(30px,3vw,43px);line-height:1.15;margin:0 0 10px;letter-spacing:-1.3px}
 .workspace-operations .account-hero-left h1 span{color:#22e6dc}
@@ -78,3 +78,8 @@ body.workspace-operations{--ws-line:#19465b;--ws-muted:#a1bfd0;--ws-cyan:#25e2dc
 .ws-link-arrow{display:inline-flex;vertical-align:middle}.ws-link-arrow svg{width:12px;height:12px}
 .ws-severity{white-space:nowrap}
 @media(max-width:760px){body.workspace-redesign.workspace-authenticated .account-hero-grid{display:flex!important}.ws-intelligence .ws-table th:nth-child(1){width:22%}.ws-intelligence .ws-table th:nth-child(2){width:30%}.ws-intelligence .ws-table th:nth-child(3){width:28%}.ws-intelligence .ws-table th:nth-child(4){width:20%}.ws-severity{margin-left:8px;padding-inline:3px;font-size:6.5px}.ws-severity:before{left:-8px;width:5px;height:5px}}
+
+/* Anchor the light to the actual heading and the fixed-size harbor illustration. */
+.ws-heading-beam{position:absolute;inset:0;width:100%;height:100%;z-index:-1;overflow:hidden;pointer-events:none}
+.workspace-operations:not(.workspace-authenticated) .ws-heading-beam{display:none}
+.workspace-authenticated .account-hero-left h1{text-shadow:0 0 22px #34c9ce24}
