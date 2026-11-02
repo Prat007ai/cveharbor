@@ -120,8 +120,9 @@ function render(){
   }
   const ordered=[...tasks].sort((a,b)=>String(b.updated||'').localeCompare(String(a.updated||'')));
   for(const task of (showAll?ordered:ordered.slice(0,5))){
-    const row=elem('tr');
-    const cell=(value)=>{const td=elem('td','',value);row.append(td);return td;};
+    const row=elem('tr');row.dataset.cve=task.id;row.setAttribute('role','row');
+    const labels=['Last updated','CVE ID','Title','Severity','Status','Owner','Target date','Acknowledgement','Latest status change','Actions'];
+    const cell=(value)=>{const td=elem('td'),label=elem('span','rt-cell-label',labels[row.children.length]);label.setAttribute('aria-hidden','true');td.setAttribute('role','cell');td.append(label);if(value!==undefined)td.append(document.createTextNode(String(value)));row.append(td);return td;};
     cell(displayTime(task.updated));
     const link=elem('a','',task.id);link.href='https://www.cve.org/CVERecord?id='+encodeURIComponent(task.id);link.addEventListener('click',event=>{if(window.CVEHARBOR_ADVISORY_DETAILS){event.preventDefault();openAdvisory(task.id);}});cell().append(link);
     const advisory=records.get(task.id),title=cell(advisory?.title||'Advisory details not available');
@@ -143,7 +144,8 @@ function render(){
     const ack=cell(),summary=task.acknowledgements;
     const ackText=summary?(summary.total===1?Object.keys(summary.states)[0]:(summary.states.Acknowledged||0)+' / '+summary.total+' acknowledged'):task.assigned_to?'Not requested':'Not sent';
     const status=cloudMode&&capabilities?.acknowledgements_available&&!ackDataAvailable?'Unavailable':ackText;
-    ack.append(badge(status,status==='Acknowledged'?'remediated':status==='Pending'?'risk':'neutral'));
+    const ackState=elem('div','rt-ack-state');ackState.append(badge(status,status==='Acknowledged'?'remediated':status==='Pending'?'risk':'neutral'));ack.append(ackState);
+    if(status==='Not sent'&&isPrivate&&capabilities?.acknowledgements_available&&capabilities?.assignments_available&&capabilities?.assignment_email_enabled){const request=elem('button','rt-ack-request','Request acknowledgement');request.type='button';request.setAttribute('aria-label','Request acknowledgement for '+task.id);request.addEventListener('click',()=>openAssign(task.id));ackState.append(request);}
     if(summary?.latest_acknowledged_at)ack.append(elem('small','',(summary.total>1?'Latest: ':'')+displayTime(summary.latest_acknowledged_at*1000)));
     if(summary){const history=elem('button','rt-history-link','View recipients');history.type='button';history.setAttribute('aria-label','Assignment history for '+task.id);history.addEventListener('click',()=>openHistory(task.id));ack.append(history);}
 
