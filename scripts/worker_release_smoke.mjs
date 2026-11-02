@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {inventoryOnly,catalogueOnly,monitorCodeOnly,workspaceCodeOnly,remediationCodeOnly} from './worker_release_mode.mjs';
+import {inventoryOnly,catalogueOnly,monitorCodeOnly,workspaceCodeOnly,remediationCodeOnly,acknowledgementRelease} from './worker_release_mode.mjs';
 import {verifyHistory} from './verify_software_history_d1.mjs';
 const inventory='account-backend/src/inventory.js';
 assert.equal(inventoryOnly([inventory,'customer-security.js']),true);
@@ -50,3 +50,9 @@ assert.equal(remediationCodeOnly([remediation,'account-backend/tests/remediation
 for(const path of ['account-backend/src/cvie.js','account-backend/src/index.js','account-backend/wrangler.toml','account-backend/migrations/0019_cvie.sql','scripts/bootstrap_cvie_shared.mjs','scripts/verify_cvie_d1.mjs'])assert.equal(remediationCodeOnly([remediation,path]),false,path);
 assert.equal(remediationCodeOnly(['operations.js','remediation.css']),false);
 console.log('PASS: remediation release skips maintenance only for isolated record-handler changes');
+
+const ackFiles=['account-backend/src/assignment-acknowledgement.js','account-backend/src/index.js','account-backend/src/remediation.js','account-backend/wrangler.toml','account-backend/migrations/0024_assignment_acknowledgements.sql'];
+assert.equal(acknowledgementRelease(ackFiles),true);
+for(const file of ['account-backend/src/cvie.js','account-backend/migrations/0019_cvie.sql','scripts/bootstrap_cvie_shared.mjs'])assert.equal(acknowledgementRelease([...ackFiles,file]),false);
+assert.equal(acknowledgementRelease(ackFiles.filter(f=>!f.endsWith('0024_assignment_acknowledgements.sql'))),false);
+console.log('PASS: acknowledgement release permits only its approved additive migration');

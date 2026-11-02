@@ -7,6 +7,8 @@ keep_vars = true
 CVIE_SHARED_SCANS_ENABLED = "true"
 EMAIL_FROM = "alerts@cveharbor.com"
 ASSIGNMENT_EMAIL_ENABLED = "true"
+ASSIGNMENT_ACK_ENABLED = "true"
+ASSIGNMENT_ACK_TTL_SECONDS = "604800"
 PLUGIN_MONITOR_ENABLED = "true"
 WEBSITE_MONITOR_MANUAL_ENABLED = "true"
 WEBSITE_MONITOR_ENABLED = "false"
@@ -25,3 +27,9 @@ database_id = "46710e51-7ca4-4571-b89c-921b9969de0b"
 # Hourly tick, daily deliveries at 08:00 America/Toronto. No sending until ALERT_DELIVERY_ENABLED=true.
 [triggers]
 crons = ["5 * * * *", "*/5 * * * *", "* * * * *"]
+
+# Public acknowledgement traffic; no D1 writes on GET and no token in the rate key.
+[[ratelimits]]
+name = "ASSIGNMENT_ACK_RATE_LIMITER"
+namespace_id = "23501"
+simple = { limit = 60, period = 60 }

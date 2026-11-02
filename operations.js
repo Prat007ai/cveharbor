@@ -30,7 +30,7 @@ const readLegacy=()=>{
   }catch(_){return [];}
 };
 let legacy=readLegacy(),tasks=[...legacy],cloudMode=false,authenticated=false,
-  accountEmail='',capabilities=null,imported=false,accountEpoch=0,showAll=false,loading=false;
+  accountEmail='',capabilities=null,imported=false,accountEpoch=0,showAll=false,loading=false,ackDataAvailable=false,historyCve="",historyBefore=null,historyEpoch=0;
 const msg=value=>{$('remediationMessage').textContent=value};
 const storage=value=>{$('remediationStorage').textContent=value};
 async function api(path,method='GET',payload){
@@ -93,11 +93,12 @@ function render(){
   $('remediationCount').textContent=tasks.length+' tracked'+(cloudMode?'':' · browser only');
   $('remediationSave').disabled=loading||(authenticated&&!cloudMode);
   $('remediationExport').disabled=loading||!tasks.length;
+  $('remediationRefresh').disabled=loading||!cloudMode;
   const view=$('remediationViewAll');view.textContent=showAll?'Show recent records':'View all records →';view.setAttribute('aria-expanded',String(showAll));view.disabled=tasks.length<=5;
   $('remediationRecordsScope').textContent=loading?'Loading private records…':isPrivate?'Your latest private account records.':authenticated?'Unable to load private account records.':'Browser-only records · sign in for your private account tracker.';
   target.closest('table').setAttribute('aria-busy',String(loading));
   if(!tasks.length){
-    const row=elem('tr'),cell=elem('td','rt-empty');cell.colSpan=8;
+    const row=elem('tr'),cell=elem('td','rt-empty');cell.colSpan=9;
     cell.append(elem('strong','',loading?'Loading records…':authenticated&&!cloudMode?'Records unavailable':'No remediation records yet'),elem('span','',loading?'Retrieving your private account records.':authenticated&&!cloudMode?'Reload the page to retry.':cloudMode?'Add a CVE and its owner using the form above.':'Sign in to manage private account records, or add a browser-only record above.'));
     row.append(cell);target.append(row);uiMode();return;
   }
@@ -119,6 +120,12 @@ function render(){
     cell().append(badge(task.status||'Not recorded',statusTones[task.status]));
     const owner=cell(task.owner||'Unassigned');if(!task.owner)owner.append(elem('small','','Owner required when editing'));
     cell(task.due||'Not set');
+    const ack=cell(),summary=task.acknowledgements;
+    const ackText=summary?(summary.total===1?Object.keys(summary.states)[0]:(summary.states.Acknowledged||0)+' / '+summary.total+' acknowledged'):task.assigned_to?'Not requested':'Not sent';
+    const status=cloudMode&&capabilities?.acknowledgements_available&&!ackDataAvailable?'Unavailable':ackText;
+    ack.append(badge(status,status==='Acknowledged'?'remediated':status==='Pending'?'risk':'neutral'));
+    if(summary){const history=elem('button','rt-history-link','View recipients');history.type='button';history.setAttribute('aria-label','Assignment history for '+task.id);history.addEventListener('click',()=>openHistory(task.id));ack.append(history);}
+
     const actions=elem('div','rt-row-actions');cell().append(actions);
     const edit=elem('button','ops-remove','Edit');edit.type='button';edit.setAttribute('aria-label','Edit '+task.id);
     edit.addEventListener('click',()=>editRecord(task));actions.append(edit);
@@ -142,11 +149,13 @@ async function refreshRecords(epoch=accountEpoch){
   if(!cloudMode)return;
   const data=await api('/remediations');
   if(epoch!==accountEpoch||!authenticated)return;
+  ackDataAvailable=data.acknowledgements_available===true;
   tasks=(data.remediations||[]).filter(x=>valid(x.id)).slice(0,250);
   loading=false;render();
 }
 async function accountState(data){
-  const epoch=++accountEpoch;
+  const epoch=++accountEpoch;historyEpoch++;ackDataAvailable=false;
+  $('remediationHistoryRows').replaceChildren();closeCvhDialog('remediationHistoryDialog');
   authenticated=!!data.authenticated;accountEmail=authenticated?(data.email||''):'';
   cloudMode=false;capabilities=null;imported=false;showAll=false;loading=authenticated;
   // Clear the previous account immediately, including values loaded into the edit form.
@@ -177,6 +186,8 @@ function openAssign(id){
   if(!modal)return;
   $('remediationAssignCve').value=cve;
   $('remediationAssignConfirm').checked=false;
+  $('remediationAssignResend').checked=false;
+  $('remediationResendLabel').hidden=!capabilities?.acknowledgements_available;
   $('remediationAssignEmail').value='';
   $('remediationAssignNotes').value='';
   $('remediationAssignNotesCount').textContent='0/1000 characters';
@@ -186,7 +197,7 @@ function openAssign(id){
   else if(!cloudMode)status.textContent='The updated Cloudflare Worker must be deployed before email assignments can be sent.';
   else if(!capabilities?.assignments_available)status.textContent='The D1 assignment table has not been migrated yet.';
   else if(!capabilities?.assignment_email_enabled)status.textContent='Assignment email is disabled until the verified sender and delivery provider are configured.';
-  else status.textContent='An external colleague can receive the review email. You can send up to 10 assignments per hour, subject to recipient limits.';
+  else status.textContent=capabilities?.acknowledgements_available?'The recipient can acknowledge receipt without an account. This does not change remediation status. Up to 10 assignments per hour, subject to recipient limits.':'An external colleague can receive the review email. You can send up to 10 assignments per hour, subject to recipient limits.';
   if(typeof modal.showModal==='function')modal.showModal();else modal.setAttribute('open','');
   $('remediationAssignEmail').focus();
 }
@@ -256,12 +267,12 @@ $('remediationAssignForm').addEventListener('submit',async event=>{
  if(!await confirmReviewRequest(cve,email))return;
  send.disabled=true;status.textContent='Submitting your review request...';
  try{
-  const result=await api('/remediations/'+cve+'/assign','POST',{email,reviewer_notes:$('remediationAssignNotes').value.trim().slice(0,1000)});
+  const result=await api('/remediations/'+cve+'/assign','POST',{email,reviewer_notes:$('remediationAssignNotes').value.trim().slice(0,1000),resend:$('remediationAssignResend').checked});
   if(!result.assigned||!result.notified)throw Error('The request was not confirmed as sent.');
   try{await refreshRecords()}catch(_){}
-  status.textContent='Request submitted successfully.';
+  status.textContent=result.duplicate?result.message:'Request submitted successfully.';
   msg('Review request submitted for '+cve+'.');
-  showReviewSuccess(email);
+  if(!result.duplicate)showReviewSuccess(email);
  }catch(error){
   status.textContent='Request not sent: '+error.message;
   msg('Review request could not be completed. '+error.message);
@@ -301,6 +312,45 @@ $('remediationImport').addEventListener('click',async()=>{
   }catch(error){msg('Import failed: '+error.message)}
   finally{button.disabled=false;}
 });
+$('remediationRefresh').addEventListener('click',async()=>{
+  if(!cloudMode)return;const epoch=accountEpoch;loading=true;render();
+  try{await refreshRecords(epoch);if(epoch===accountEpoch)msg('Records refreshed. Acknowledgements confirm receipt only.');}
+  catch(error){if(epoch===accountEpoch){loading=false;render();msg('Unable to refresh: '+error.message);}}
+});
+const ackTimestamp=value=>value?new Date(value*1000).toISOString().replace('T',' ').replace('.000Z',' UTC'):'Not recorded';
+async function openHistory(cve){
+  historyCve=cve;historyBefore=null;historyEpoch++;
+  $('remediationHistoryTitle').textContent=cve+' · Assignments';$('remediationHistoryRows').replaceChildren();
+  openCvhDialog('remediationHistoryDialog');await loadHistory();
+}
+async function loadHistory(){
+  const epoch=historyEpoch,account=accountEpoch,cve=historyCve;
+  $('remediationHistoryMore').hidden=true;$('remediationHistoryStatus').textContent='Loading assignment history…';
+  try{
+    const data=await api('/remediations/'+cve+'/assignments'+(historyBefore?'?before='+historyBefore:''));
+    if(epoch!==historyEpoch||account!==accountEpoch)return;
+    for(const item of data.assignments||[]){
+      const row=elem('article','rt-assignment-item');
+      row.append(elem('strong','',item.recipient_email),badge(item.status,item.status==='Acknowledged'?'remediated':item.status==='Pending'?'risk':'neutral'));
+      row.append(elem('p','ops-note','Created '+ackTimestamp(item.created_at)+' · Sent '+ackTimestamp(item.sent_at)+' · Expires '+ackTimestamp(item.expires_at)));
+      if(item.acknowledged_at)row.append(elem('p','ops-note','Acknowledged via emailed link for '+item.recipient_email+' at '+ackTimestamp(item.acknowledged_at)+'. Identity is not verified.'));
+      if(item.revoked_at)row.append(elem('p','ops-note','Link revoked '+ackTimestamp(item.revoked_at)));
+      const actions=elem('div','rt-assignment-actions');
+      if(capabilities?.acknowledgements_available){
+        const resend=elem('button','ops-download','Resend');resend.type='button';resend.addEventListener('click',()=>{closeCvhDialog('remediationHistoryDialog');openAssign(cve);$('remediationAssignEmail').value=item.recipient_email;$('remediationAssignResend').checked=true;});actions.append(resend);
+        if(!item.revoked_at){const revoke=elem('button','ops-download','Revoke link');revoke.type='button';revoke.addEventListener('click',async()=>{
+          if(!window.confirm('Revoke this assignment link for '+item.recipient_email+'? Receipt history will remain available.'))return;
+          revoke.disabled=true;try{await api('/remediations/'+cve+'/assignments/'+item.id+'/revoke','POST',{});if(account!==accountEpoch)return;await refreshRecords();await openHistory(cve);}catch(error){if(account===accountEpoch)$('remediationHistoryStatus').textContent='Unable to revoke: '+error.message;}finally{revoke.disabled=false;}
+        });actions.append(revoke);}
+      }
+      row.append(actions);$('remediationHistoryRows').append(row);
+    }
+    historyBefore=data.next||null;$('remediationHistoryMore').hidden=!historyBefore;
+    $('remediationHistoryStatus').textContent=data.available===false?'Acknowledgement history is not available.':$('remediationHistoryRows').childElementCount?'Receipt tracking is separate from remediation status.':'No acknowledgement requests have been sent.';
+  }catch(error){if(epoch===historyEpoch&&account===accountEpoch)$('remediationHistoryStatus').textContent='Unable to load history: '+error.message;}
+}
+$('remediationHistoryMore').addEventListener('click',()=>loadHistory());
+$('remediationHistoryClose').addEventListener('click',()=>{historyEpoch++;closeCvhDialog('remediationHistoryDialog');});
 $('remediationExport').addEventListener('click',()=>{
   const quote=value=>{
     let s=String(value||'');
@@ -308,8 +358,8 @@ $('remediationExport').addEventListener('click',()=>{
     if(/^[\s]*[=+\-@]/.test(s))s="'"+s;
     return '"'+s.replaceAll('"','""')+'"';
   };
-  const csv=[['CVE','Status','Owner','Target Date','Notes','Updated','Assigned Email','Email Status'],
-    ...tasks.map(x=>[x.id,x.status,x.owner,x.due,x.notes,x.updated,x.assigned_to||'',x.assignment_status||''])]
+  const csv=[['CVE','Status','Owner','Target Date','Notes','Updated','Assigned Email','Email Status','Acknowledgements (current recipients)'],
+    ...tasks.map(x=>[x.id,x.status,x.owner,x.due,x.notes,x.updated,x.assigned_to||'',x.assignment_status||'',x.acknowledgements?Object.entries(x.acknowledgements.states).map(([state,count])=>state+': '+count).join('; '):'Not requested'])]
     .map(fields=>fields.map(quote).join(',')).join('\r\n');
   const link=elem('a');link.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   link.download='cveharbor-remediation.csv';document.body.append(link);link.click();link.remove();
