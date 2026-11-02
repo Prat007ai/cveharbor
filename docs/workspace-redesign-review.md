@@ -65,3 +65,12 @@ The page deliberately displays unavailable active-environment and unique-monitor
 No historical trends are invented. Customer finding statuses and account remediation records are shown separately to avoid double counting or confusing potential matches with confirmed exposure. The aggregate may show partial/unavailable states on missing or failed optional services.
 
 Concurrent work after the baseline changed generated snapshots and production verification (`#229`), outside this PR's source edits. Recheck shared integration files against main before approval. Task 3 lifecycle storage is optional, and Customer Security Dashboard/Reports continue to own matching, generation and exports. Deploy the compatible read API before or with the new frontend only after explicit approval. This task does not merge or deploy itself.
+
+
+## Visual reference refinement
+
+Follow-up review tightened the composition against the original 1672px mockup: the overview row begins near 174px and the three operational panels near 512px. Added the current local date card, a static wireframe sea/lighthouse illustration, existing search/alerts navigation in the header, stronger icon tiles and gradients, customer/event row icons, compact severity badges, percentage labels derived from actual remediation counts, colored remediation summary tiles, and neutral circular health indicators. The donut center now shows unresolved tracker records (Open + Investigating), consistent with the overview metric; all saved statuses remain separate in the chart and legend.
+
+The date uses the browser's actual local date. Decorative artwork is not a data series. No invented trends, percentage health gauges, report history, or unread-alert badges were added. The search control links to the existing vulnerability search; it does not promise an unsupported cross-customer global search. No backend, query, authorization or schema changes were needed for this visual refinement.
+
+Revalidated the build, frontend interaction checks, existing browser/Worker smoke checks, and Chromium layouts at 11 widths from 320px to 3840px. Review images use intercepted synthetic private records and the public advisory snapshot; they do not show production customer data.
