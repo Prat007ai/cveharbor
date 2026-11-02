@@ -274,6 +274,7 @@ function openCvhDialog(id){
  else dialog.setAttribute('open','');
 }
 function confirmReviewRequest(cve,email,fyi=[],severity=''){
+ cve=displayCve(cve)+(assignmentScope?' — '+scopeText(assignmentScope):'');
  return new Promise(resolve=>{
   const dialog=$('remediationConfirmDialog');
   $('remediationConfirmText').textContent='Send the '+cve+' vulnerability review request to '+email+'?'+(fyi.length?' Send separate FYI and receipt-update emails to: '+fyi.join(', ')+'.':'')+(severity?' Assigned severity: '+severityLabel(severity)+' (requester assessment).':'')+(capabilities?.reviewer_updates_available?' The reviewer can verify their email to post progress. Critical/High assignments receive one reminder after 24 hours without progress; Medium after 48 hours. Listed FYI recipients receive a separate manager notice at the same threshold.':'');
@@ -318,7 +319,7 @@ $('remediationAssignForm').addEventListener('submit',async event=>{
  if(fyi.length>5||fyi.some(x=>x.length>254||! /^[^\s<>@,;]{1,64}@[^\s<>@,;]{1,189}\.[^\s<>@,;]+$/.test(x))){$('remediationFyiError').textContent='Enter up to five valid FYI email addresses.';$('remediationAssignFyi').setAttribute('aria-invalid','true');$('remediationAssignFyi').focus();return;}
  $('remediationFyiError').textContent='';$('remediationAssignFyi').removeAttribute('aria-invalid');
  const assigned=capabilities?.workflow_available?$('remediationAssignSeverity').value:undefined;
- if(!await confirmReviewRequest(displayCve(cve)+(assignmentScope?' — '+scopeText(assignmentScope):''),email,fyi,assigned))return;
+ if(!await confirmReviewRequest(cve,email,fyi,assigned))return;
  send.disabled=true;status.textContent='Submitting your review request...';
  try{
   const result=await api('/remediations/'+cve+'/assign','POST',{email,assigned_severity:assigned,fyi_recipients:fyi,reviewer_notes:$('remediationAssignNotes').value.trim().slice(0,1000),resend:$('remediationAssignResend').checked});
