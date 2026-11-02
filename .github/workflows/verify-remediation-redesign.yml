@@ -1,0 +1,30 @@
+name: Verify Remediation redesign (no deployment)
+on:
+  push:
+    branches: [feat/remediation-dashboard-redesign]
+  pull_request:
+    paths: ['index.html', 'remediation.css', 'operations.js', 'account-backend/src/remediation.js', 'account-backend/tests/remediation.test.mjs', 'scripts/remediation_*', 'scripts/build_site.py', '.github/workflows/verify-remediation-redesign.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm install --no-save --no-package-lock jsdom@26 playwright-core@1.56.1
+      - run: npm test --prefix account-backend
+      - run: python -m unittest discover -s tests
+      - run: python scripts/build_site.py
+      - run: node scripts/browser_smoke.mjs && node scripts/worker_release_smoke.mjs
+      - run: node scripts/remediation_browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: remediation-review-synthetic-data
+          path: work/remediation-review/

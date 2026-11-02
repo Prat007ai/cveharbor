@@ -6,8 +6,23 @@ const key='cveharbor.remediation.v1',API='https://api.cveharbor.com/v1',
   src=window.CVEHARBOR_DATA||{},base=window.CVEHARBOR_CATALOG||{},threats=window.CVEHARBOR_THREATS||{};
 const elem=(tag,cls,value)=>{const x=document.createElement(tag);if(cls)x.className=cls;if(value!==undefined)x.textContent=String(value);return x;};
 const valid=id=>/^CVE-\d{4}-\d{4,}$/i.test(String(id||''))&&String(id).length<=28;
+const headerTools=document.querySelector('.rt-header-tools');
+if(headerTools&&/^\/remediation(?:\/|$)/.test(location.pathname))headerTools.hidden=false;
 const records=new Map();
 for(const x of [...(base.advisories||[]),...(src.advisories||[])])if(x?.id)records.set(x.id,x);
+function openAdvisory(id){
+  if(!valid(id))return;
+  const advisory=records.get(id)||{id,title:id,summary:'This CVE is not present in the available advisory index. Review the official source references below. Severity and affected versions have not been verified here.'};
+  if(!window.CVEHARBOR_ADVISORY_DETAILS)return;
+  window.CVEHARBOR_ADVISORY_DETAILS.render($('dialogContent'),advisory,{onAssign:()=>{
+    closeCvhDialog('detailDialog');openAssign(id);
+  }});
+  openCvhDialog('detailDialog');
+}
+headerTools?.querySelector('form').addEventListener('submit',event=>{
+  event.preventDefault();const input=event.currentTarget.elements.cve;
+  const id=input.value.trim().toUpperCase();if(valid(id))openAdvisory(id);
+});
 const readLegacy=()=>{
   try{
     const saved=JSON.parse(localStorage.getItem(key)||'[]');
@@ -15,7 +30,7 @@ const readLegacy=()=>{
   }catch(_){return [];}
 };
 let legacy=readLegacy(),tasks=[...legacy],cloudMode=false,authenticated=false,
-  accountEmail='',capabilities=null,imported=false;
+  accountEmail='',capabilities=null,imported=false,accountEpoch=0,showAll=false,loading=false;
 const msg=value=>{$('remediationMessage').textContent=value};
 const storage=value=>{$('remediationStorage').textContent=value};
 async function api(path,method='GET',payload){
@@ -36,9 +51,9 @@ function uiMode(){
   const btn=$('remediationImport');
   btn.hidden=!cloudMode||!legacy.length||imported;
   if(cloudMode){
-    storage('Your remediation records are saved in your private Cloudflare D1 account. This device is not the main record store. Assignment emails use approved organization domains.');
+    storage('Saved privately in your Cloudflare D1 account. Email assignments request review; Azure DevOps work items are created by the recipient.');
   }else if(authenticated){
-    storage('The updated cloud remediation API is not deployed yet. Existing browser tracking is still available until the Worker is upgraded.');
+    storage('Cloud records are unavailable. Reload this page to retry. Your browser records remain available after signing out.');
   }else{
     storage('Records are currently local to this browser. Sign in above to save and manage remediations in Cloudflare D1.');
   }
@@ -50,20 +65,65 @@ function editRecord(task){
   $('remediationDue').value=task.due||'';
   $('remediationNotes').value=task.notes||'';
   msg(task.id+' loaded for editing. Save to update this record.');
+  $('remediationFormTitle').textContent='Edit Vulnerability Record';
+  updateNotesCount();validateOwner(false);
   $('remediationCve').focus();
 }
+function updateNotesCount(){
+  $('remediationNotesCount').textContent=$('remediationNotes').value.length+'/1200';
+}
+function validateOwner(showError=true){
+  const input=$('remediationOwner'),ok=!!input.value.trim();
+  input.setCustomValidity(ok?'':'Please select an owner.');
+  input.setAttribute('aria-invalid',String(!ok&&showError));
+  $('remediationOwnerError').hidden=ok||!showError;
+  return ok;
+}
+$('remediationOwner').addEventListener('input',()=>validateOwner());
+$('remediationOwner').addEventListener('invalid',()=>validateOwner());
+$('remediationNotes').addEventListener('input',updateNotesCount);
+$('remediationViewAll').addEventListener('click',()=>{showAll=!showAll;render();});
+const statusTones={'Open':'open','Investigating':'investigating','Remediated':'remediated','Accepted Risk':'risk','Not Applicable':'neutral'};
+function badge(value,tone){const node=elem('span','rt-badge',value);node.dataset.tone=tone||'neutral';return node;}
 function render(){
   const target=$('remediationRows');target.replaceChildren();
-  $('remediationCount').textContent=tasks.length+' tracked';
-  if(!tasks.length){target.append(elem('p','ops-note',cloudMode?'No records in your D1 account yet. Open a CVE and choose Assign, or add an ID below.':'No CVEs tracked yet. Add an ID below.'));uiMode();return;}
-  for(const task of tasks){
-    const row=elem('article','ops-result'),head=elem('div','ops-result-top');
-    head.append(elem('strong','',task.id),elem('span','ops-tag',task.status));
-    const edit=elem('button','ops-remove','Edit');edit.type='button';
-    edit.addEventListener('click',()=>editRecord(task));head.append(edit);
-    const assign=elem('button','ops-download remediation-row-assign','Assign');
-    assign.type='button';assign.addEventListener('click',()=>openAssign(task.id));head.append(assign);
-    const remove=elem('button','ops-remove','Remove');remove.type='button';
+  const isPrivate=authenticated&&cloudMode&&!loading;
+  const counts=[tasks.filter(x=>x.status==='Open').length,tasks.filter(x=>x.status==='Investigating').length,tasks.filter(x=>x.status==='Remediated').length,tasks.length];
+  ['remediationOpen','remediationProgress','remediationResolved','remediationTotal'].forEach((id,i)=>{$(id).textContent=isPrivate?counts[i].toLocaleString():'—';});
+  $('remediationCount').textContent=tasks.length+' tracked'+(cloudMode?'':' · browser only');
+  $('remediationSave').disabled=loading||(authenticated&&!cloudMode);
+  $('remediationExport').disabled=loading||!tasks.length;
+  const view=$('remediationViewAll');view.textContent=showAll?'Show recent records':'View all records →';view.setAttribute('aria-expanded',String(showAll));view.disabled=tasks.length<=5;
+  $('remediationRecordsScope').textContent=loading?'Loading private records…':isPrivate?'Your latest private account records.':authenticated?'Unable to load private account records.':'Browser-only records · sign in for your private account tracker.';
+  target.closest('table').setAttribute('aria-busy',String(loading));
+  if(!tasks.length){
+    const row=elem('tr'),cell=elem('td','rt-empty');cell.colSpan=8;
+    cell.append(elem('strong','',loading?'Loading records…':authenticated&&!cloudMode?'Records unavailable':'No remediation records yet'),elem('span','',loading?'Retrieving your private account records.':authenticated&&!cloudMode?'Reload the page to retry.':cloudMode?'Add a CVE and its owner using the form above.':'Sign in to manage private account records, or add a browser-only record above.'));
+    row.append(cell);target.append(row);uiMode();return;
+  }
+  const ordered=[...tasks].sort((a,b)=>String(b.updated||'').localeCompare(String(a.updated||'')));
+  for(const task of (showAll?ordered:ordered.slice(0,5))){
+    const row=elem('tr');
+    const cell=(value)=>{const td=elem('td','',value);row.append(td);return td;};
+    const date=String(task.updated||'').slice(0,10);cell(/^\d{4}-\d{2}-\d{2}$/.test(date)?date:'Not recorded');
+    const link=elem('a','',task.id);link.href='https://www.cve.org/CVERecord?id='+encodeURIComponent(task.id);link.addEventListener('click',event=>{if(window.CVEHARBOR_ADVISORY_DETAILS){event.preventDefault();openAdvisory(task.id);}});cell().append(link);
+    const advisory=records.get(task.id),title=cell(advisory?.title||'Advisory details not available');
+    if(task.notes||task.assigned_to){
+      const details=elem('details');details.append(elem('summary','','Record details'));
+      if(task.notes)details.append(elem('p','',task.notes));
+      if(task.assigned_to)details.append(elem('p','remediation-assignee','Assigned by email to: '+task.assigned_to+' · Notification: '+(task.assignment_status||'Unknown')));
+      title.append(details);
+    }
+    const severity=String(advisory?.severity||'').toLowerCase();
+    cell().append(badge(['critical','high','medium','low','info'].includes(severity)?severity[0].toUpperCase()+severity.slice(1):'Not available',severity));
+    cell().append(badge(task.status||'Not recorded',statusTones[task.status]));
+    const owner=cell(task.owner||'Unassigned');if(!task.owner)owner.append(elem('small','','Owner required when editing'));
+    cell(task.due||'Not set');
+    const actions=elem('div','rt-row-actions');cell().append(actions);
+    const edit=elem('button','ops-remove','Edit');edit.type='button';edit.setAttribute('aria-label','Edit '+task.id);
+    edit.addEventListener('click',()=>editRecord(task));actions.append(edit);
+    const assign=elem('button','remediation-row-assign','Assign');assign.type='button';assign.setAttribute('aria-label','Assign '+task.id+' by email');assign.addEventListener('click',()=>openAssign(task.id));actions.append(assign);
+    const remove=elem('button','ops-remove','Remove');remove.type='button';remove.setAttribute('aria-label','Remove '+task.id);
     remove.addEventListener('click',async()=>{
       if(!window.confirm('Remove '+task.id+' from '+(cloudMode?'your private D1 tracker':'this browser')+'?'))return;
       if(cloudMode){
@@ -72,40 +132,42 @@ function render(){
         catch(error){msg('Unable to remove record: '+error.message)}
         finally{remove.disabled=false}
       }else{
-        tasks=tasks.filter(x=>x.id!==task.id);persistLegacy();render();
-        msg(task.id+' removed from this browser.');
+        tasks=tasks.filter(x=>x.id!==task.id);persistLegacy();render();msg(task.id+' removed from this browser.');
       }
-    });head.append(remove);row.append(head);
-    row.append(elem('p','', 'Owner: '+(task.owner||'Unassigned')+' · Target: '+(task.due||'None')+' · Updated: '+(task.updated||'Unknown')));
-    if(task.assigned_to)row.append(elem('p','remediation-assignee','Assigned by email to: '+task.assigned_to+' · Notification: '+(task.assignment_status||'Unknown')));
-    if(task.notes)row.append(elem('p','',task.notes));
-    if(records.has(task.id))row.append(elem('p','ops-note',records.get(task.id).title||'Indexed vulnerability'));
-    target.append(row);
+    });actions.append(remove);target.append(row);
   }
   uiMode();
 }
-async function refreshRecords(){
+async function refreshRecords(epoch=accountEpoch){
   if(!cloudMode)return;
   const data=await api('/remediations');
+  if(epoch!==accountEpoch||!authenticated)return;
   tasks=(data.remediations||[]).filter(x=>valid(x.id)).slice(0,250);
-  render();
+  loading=false;render();
 }
 async function accountState(data){
+  const epoch=++accountEpoch;
   authenticated=!!data.authenticated;accountEmail=authenticated?(data.email||''):'';
-  if(!authenticated){
-    cloudMode=false;capabilities=null;tasks=readLegacy();legacy=[...tasks];
-    imported=false;render();
-    return;
-  }
+  cloudMode=false;capabilities=null;imported=false;showAll=false;loading=authenticated;
+  // Clear the previous account immediately, including values loaded into the edit form.
+  $('remediationForm').reset();$('remediationFormTitle').textContent='Add Vulnerability Record';
+  updateNotesCount();validateOwner(false);msg('');
+  for(const id of ['remediationAssignDialog','remediationConfirmDialog','remediationSuccessDialog'])closeCvhDialog(id);
+  $('remediationAssignForm').reset();$('remediationSendAssignment').disabled=true;
+  tasks=authenticated?[]:readLegacy();legacy=readLegacy();render();
+  if(!authenticated)return;
   try{
     const features=await api('/remediations/features');
+    if(epoch!==accountEpoch)return;
     if(features.storage!=='d1'||features.version!==2)throw Error('Updated cloud service is not available');
     capabilities=features;cloudMode=true;
-    await refreshRecords();
-    msg('Signed in. Your remediation records are managed in your Cloudflare D1 account.');
+    await refreshRecords(epoch);
+    if(epoch!==accountEpoch)return;
+    msg('');
   }catch(_){
-    cloudMode=false;capabilities=null;tasks=readLegacy();render();
-    msg('The updated Cloudflare remediation API is not ready. Local records are still available until backend deployment.');
+    if(epoch!==accountEpoch)return;
+    cloudMode=false;capabilities=null;tasks=[];loading=false;render();
+    msg('Unable to load your cloud records. Reload this page to retry.');
   }
 }
 function openAssign(id){
@@ -210,6 +272,8 @@ $('remediationForm').addEventListener('submit',async event=>{
   event.preventDefault();
   const id=$('remediationCve').value.trim().toUpperCase();
   if(!valid(id)){msg('Enter a valid CVE ID, such as CVE-2026-12345.');return;}
+  if(!validateOwner()){msg('Please select an owner.');$('remediationOwner').focus();return;}
+  if(authenticated&&!cloudMode){msg('Cloud records are unavailable. Reload this page to retry.');return;}
   const item={id,status:$('remediationStatus').value,owner:$('remediationOwner').value.trim().slice(0,100),
     due:$('remediationDue').value,notes:$('remediationNotes').value.trim().slice(0,1200),
     updated:new Date().toISOString().slice(0,10)};
@@ -227,6 +291,7 @@ $('remediationForm').addEventListener('submit',async event=>{
 });
 $('remediationImport').addEventListener('click',async()=>{
   if(!cloudMode||!legacy.length)return;
+  if(legacy.some(row=>!String(row.owner||'').trim())){msg('Some browser records need an owner. Sign out to edit those browser records, then sign in and import again. No records have been changed.');return;}
   if(!window.confirm('Import '+legacy.length+' existing browser remediation records into this account? Existing cloud records and assignments will not be removed. Matching CVE details may be updated.'))return;
   const button=$('remediationImport');button.disabled=true;
   try{

@@ -17,7 +17,7 @@ OUT.mkdir()
 (OUT / 'lifecycle-products.js').write_text('window.CVEHARBOR_COMMON_PRODUCTS = '+(ROOT / 'data/lifecycle-products.json').read_text()+';\n', encoding='utf-8')
 shutil.copy2(ROOT / 'lifecycle-directory-search.js', OUT / 'lifecycle-directory-search.js')
 
-for name in ('index.html', 'cvie.js', 'cvie.css', 'styles.css', 'homepage.css', 'app.js', 'advisory-details.js', 'workspace.js', 'operations.js', 'accounts.js', 'disclosure-trend.js', 'page-router.js', 'header-auth.js', 'command-center.js', 'account-page.js', 'account-security.js', 'workspace-page.js', 'workspace-dashboard.js', 'website-monitor-page.js', 'website-monitor-dashboard.js', 'lifecycle-monitor.js', 'product-monitoring.js', 'lifecycle-monitor.css', 'inventory.js', 'inventory-matching.js', 'customer-security.js', 'customer-score.js', 'malware.js', 'geo-map.js', 'malware-data.js', 'data.js', 'CNAME', 'robots.txt'):
+for name in ('index.html', 'cvie.js', 'cvie.css', 'styles.css', 'homepage.css', 'remediation.css', 'app.js', 'advisory-details.js', 'workspace.js', 'operations.js', 'accounts.js', 'disclosure-trend.js', 'page-router.js', 'header-auth.js', 'command-center.js', 'account-page.js', 'account-security.js', 'workspace-page.js', 'workspace-dashboard.js', 'website-monitor-page.js', 'website-monitor-dashboard.js', 'lifecycle-monitor.js', 'product-monitoring.js', 'lifecycle-monitor.css', 'inventory.js', 'inventory-matching.js', 'customer-security.js', 'customer-score.js', 'malware.js', 'geo-map.js', 'malware-data.js', 'data.js', 'CNAME', 'robots.txt'):
     shutil.copy2(ROOT / name, OUT / name)
 shutil.copy2(ROOT / 'workspace-dashboard.css', OUT / 'workspace-dashboard.css')
 (OUT / 'workspace-intelligence.json').write_text(json.dumps(project(json.loads((ROOT / 'data' / 'advisories.json').read_text())), separators=(',', ':')), encoding='utf-8')
@@ -106,6 +106,9 @@ for section, heading in SECTION_PAGES.items():
     import re
     page = re.sub(r'(src=")(?!https?://|/)([^"]+)"',
                   lambda match: match.group(1) + '/' + match.group(2) + '"', page)
+    # The tracker consumes saved records and the public index; it must not start catalogue scans.
+    if section == 'remediation':
+        page = re.sub(r'<script src="/cvie\.js[^"]*"></script>', '', page)
     page = page.replace('<title>CVEHarbor | Vulnerability Intelligence</title>',
                         f'<title>{heading} | CVEHarbor</title>', 1)
     page = page.replace('<meta name="description" content="CVEHarbor: Independent, source-backed vulnerability intelligence across application frameworks, CMS, cloud, databases and IT infrastructure.">',

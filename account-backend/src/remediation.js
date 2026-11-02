@@ -27,6 +27,7 @@ export function normalizeRecord(id,record){
   const notes=String(data.notes||'').trim().slice(0,1200);
   if(!normalizeId(id)||!states.has(status)||due&&!/^\d{4}-\d{2}-\d{2}$/.test(due))
     throw new RemediationError('Invalid remediation record');
+  if(typeof data.owner!=='string'||!owner)throw new RemediationError('Please select an owner.');
   return {id:normalizeId(id),status,owner,due,notes};
 }
 export async function isMigrated(env){
@@ -195,8 +196,8 @@ export async function assignRemediation(env,user,id,raw){
     throw new RemediationError('Recipient notification limit reached for today',429);
   await capacity(env,user.id,cve);
   await env.DB.prepare(
-    "INSERT OR IGNORE INTO remediations(user_id,cve_id,status,owner,due,notes,updated_at) VALUES(?,?,'Open','','','',?)"
-  ).bind(user.id,cve,new Date().toISOString()).run();
+    "INSERT OR IGNORE INTO remediations(user_id,cve_id,status,owner,due,notes,updated_at) VALUES(?,?,'Open',?,'','',?)"
+  ).bind(user.id,cve,recipient,new Date().toISOString()).run();
   const claim=await env.DB.prepare(
     'INSERT INTO remediation_assignments(user_id,cve_id,assignee_email,assigned_by,state,claimed_at) VALUES(?,?,?,?,?,?) '+
     'ON CONFLICT(user_id,cve_id) DO UPDATE SET assignee_email=excluded.assignee_email,assigned_by=excluded.assigned_by,'+

@@ -19,8 +19,9 @@ install_site_auth()
 
 root=Path(__file__).resolve().parents[1]
 base="https://cveharbor.com"
-routes=["/", "/intelligence/", "/vulnerabilities/","/threats/","/account/","/workspace/","/customer-reports/","/customer-dashboard/","/environments/","/website-monitor/","/lifecycle/"]
+routes=["/", "/intelligence/", "/vulnerabilities/","/threats/","/account/","/workspace/","/customer-reports/","/customer-dashboard/","/environments/","/website-monitor/","/lifecycle/","/remediation/"]
 required={
+ "/remediation/":["remediationFormTitle","remediationOwnerError","remediationToolsTitle","remediationRecordsTitle","remediationOpen","Owner *","remediation.css?v=tracker-redesign-1","operations.js?v=tracker-redesign-1"],
  "/lifecycle/":["lifecycleMonitorTitle","productMonitorActivation","productMonitorHistory","lifecycleProductSearch","lifecycleAddUnlisted","lifecycle-monitor.css?v=product-directory-1","product-monitoring.js?v=product-monitor-2"],
  "/":["homepageFeatures", "marketing-story", "asset-onboarding", "findings-table", "homepage.css?v=brochure-216"],
  "/intelligence/":["overviewTitle", "techBars", "chartInsights", "feedStatus"],
@@ -54,7 +55,7 @@ def verify_local_build():
         for marker in required[route]:
             if marker not in html:
                 raise RuntimeError(f"Generated {route} missing {marker}")
-        for asset in ("styles.css", "customer-security.js", "inventory.js", "website-monitor-page.js", "product-monitoring.js", "lifecycle-monitor.css", "threats.js", "geo-map.js"):
+        for asset in ("styles.css", "operations.js", "remediation.css", "customer-security.js", "inventory.js", "website-monitor-page.js", "product-monitoring.js", "lifecycle-monitor.css", "threats.js", "geo-map.js"):
             match = re.search(r'/'+re.escape(asset)+r'\?v=([a-zA-Z0-9-]+)', html)
             if match and not (root / "public" / asset).is_file():
                 raise RuntimeError(f"Generated {route} references missing asset {asset}")
@@ -92,6 +93,7 @@ for attempt in range(6):
                 if marker not in html: raise RuntimeError(f"{route} missing {marker}")
             assets=("styles.css","homepage.css","app.js","advisory-details.js","cvie.js","cvie.css","inventory-matching.js","command-center.js","customer-security.js","inventory.js","website-monitor-page.js")
             if route=="/lifecycle/":assets+=("lifecycle-products.js","lifecycle-directory-search.js","lifecycle-monitor.js","product-monitoring.js","lifecycle-monitor.css","assets/lifecycle-orbit.svg")
+            if route=="/remediation/":assets+=("operations.js","remediation.css")
             if route=="/workspace/":assets+=("workspace-dashboard.js","workspace-dashboard.css")
             if route=="/threats/":assets+=("threats.js","geo-map.js")
             for asset in assets:

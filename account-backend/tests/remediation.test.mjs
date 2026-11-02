@@ -40,7 +40,7 @@ class MockD1{
           if(query.includes('SELECT cve_id FROM remediations WHERE user_id=? AND cve_id=?')){
             const r=db.rows.get(db.key(args[0],args[1]));return r?{cve_id:r.id}:null;
           }
-          if(query.includes('COUNT(*) AS total FROM remediations'))return {total:db.rows.size};
+          if(query.includes('COUNT(*) AS total FROM remediations'))return {total:[...db.rows.keys()].filter(key=>key.startsWith(args[0]+'|')).length};
           if(query.includes('SELECT assignee_email,state,claimed_at,last_sent_at FROM remediation_assignments')){
             return db.assignments.get(db.key(args[0],args[1]))||null;
           }
@@ -48,14 +48,14 @@ class MockD1{
         },
         async all(){
           if(query.includes('FROM remediations r LEFT JOIN')){
-            return {results:[...db.rows.values()].map(r=>{
-              const a=db.assignments.get(db.key(user.id,r.id));
+            return {results:[...db.rows.entries()].filter(([key])=>key.startsWith(args[0]+'|')).map(([,r])=>{
+              const a=db.assignments.get(db.key(args[0],r.id));
               return {...r,assigned_to:a?.assignee_email||null,assignment_status:a?.state||null,notified_at:a?.last_sent_at||null};
             })};
           }
-          if(query.includes('FROM remediations WHERE user_id=? ORDER BY'))return {results:[...db.rows.values()]};
+          if(query.includes('FROM remediations WHERE user_id=? ORDER BY'))return {results:[...db.rows.entries()].filter(([key])=>key.startsWith(args[0]+'|')).map(([,row])=>row)};
           if(query.includes('SELECT cve_id FROM remediations WHERE user_id=?'))
-            return {results:[...db.rows.values()].map(r=>({cve_id:r.id}))};
+            return {results:[...db.rows.entries()].filter(([key])=>key.startsWith(args[0]+'|')).map(([,r])=>({cve_id:r.id}))};
           return {results:[]};
         },
         async run(){
@@ -70,8 +70,8 @@ class MockD1{
             return {meta:{changes:1}};
           }
           if(query.includes('INSERT OR IGNORE INTO remediations')){
-            const [uid,cve,updated]=args,k=db.key(uid,cve);
-            if(!db.rows.has(k))db.rows.set(k,{id:cve,status:'Open',owner:'',due:'',notes:'',updated});
+            const [uid,cve,owner,updated]=args,k=db.key(uid,cve);
+            if(!db.rows.has(k))db.rows.set(k,{id:cve,status:'Open',owner,due:'',notes:'',updated});
             return {meta:{changes:1}};
           }
           if(query.includes('DELETE FROM remediations WHERE user_id=? AND cve_id=?')){
@@ -128,7 +128,7 @@ test('validates CVE identifiers and record formats without accepting invalid dat
   assert.equal(normalizeId(' cve-2026-12345 '),id);
   assert.equal(normalizeId('CVE-2026-123'),null);
   assert.equal(normalizeId('CVE-2026-12345/../../../'),null);
-  assert.equal(normalizeRecord(id,{status:'Investigating',notes:'Test'}).id,id);
+  assert.equal(normalizeRecord(id,{status:'Investigating',owner:'Engineer',notes:'Test'}).id,id);
   assert.throws(()=>normalizeRecord(id,{status:'Administrator'}),/Invalid/);
   assert.throws(()=>normalizeRecord(id,{due:'tomorrow'}),/Invalid/);
 });
@@ -198,7 +198,7 @@ test('cloud upserts preserve private records, bulk import merges, and deletion i
   response=await worker.fetch(request('/remediations'),workerEnv);
   assert.equal((await response.json()).remediations[0].notes,record.notes);
   response=await worker.fetch(request('/remediations','PUT',{remediations:[
-    {id:'CVE-2026-23456',status:'Open',owner:'',due:'',notes:''}
+    {id:'CVE-2026-23456',status:'Open',owner:'Engineer',due:'',notes:''}
   ]}),workerEnv);
   assert.equal((await response.json()).saved,1);
   assert.equal(db.rows.size,2,'legacy import does not remove other cloud records');
@@ -207,7 +207,7 @@ test('cloud upserts preserve private records, bulk import merges, and deletion i
   assert.equal(db.rows.size,1);
 });
 
-test('assignment uses verified sender, domain allowlist, sanitized reviewer notes and repeat suppression',async()=>{
+test('assignment uses verified sender, sanitized reviewer notes and repeat suppression',async()=>{
   const db=new MockD1(),workerEnv=env(db);
   const original=globalThis.fetch;
   let count=0,submitted=null;
@@ -235,6 +235,7 @@ test('assignment uses verified sender, domain allowlist, sanitized reviewer note
     const list=await worker.fetch(request('/remediations'),workerEnv);
     const saved=(await list.json()).remediations[0];
     assert.equal(saved.assigned_to,'engineer@example.net');
+    assert.equal(saved.owner,'engineer@example.net','email-created record has a responsible owner');
     assert.equal(saved.assignment_status,'sent');
   }finally{globalThis.fetch=original;}
 });
@@ -249,7 +250,7 @@ test('external recipients are permitted but disabled delivery is refused',async(
 
 test('missing assignment table blocks mail while leaving existing cloud record storage usable',async()=>{
   const db=new MockD1(false),workerEnv=env(db);
-  let response=await worker.fetch(request('/remediations/'+id,'PUT',{status:'Open'}),workerEnv);
+  let response=await worker.fetch(request('/remediations/'+id,'PUT',{status:'Open',owner:'Engineer'}),workerEnv);
   assert.equal(response.status,200);
   response=await worker.fetch(request('/remediations/'+id+'/assign','POST',{email:'employee@example.org'}),workerEnv);
   assert.equal(response.status,503);
@@ -312,4 +313,37 @@ test('provider failure is recorded without falsely reporting email delivery',asy
     const status=db.assignments.get(db.key(user.id,id));
     assert.equal(status.state,'failed');
   }finally{globalThis.fetch=original;}
+});
+
+test('owner is mandatory for create, edit and import; legacy rows stay readable and removable',async()=>{
+  const db=new MockD1(),workerEnv=env(db),key=db.key(user.id,id);
+  for(const owner of [undefined,'','   ',null,123,{}]){
+    const response=await worker.fetch(request('/remediations/'+id,'PUT',{status:'Open',owner}),workerEnv);
+    assert.equal(response.status,400);
+    assert.equal((await response.json()).error,'Please select an owner.');
+    assert.equal(db.rows.size,0,'invalid owners never create records');
+  }
+  db.rows.set(key,{id,status:'Open',owner:'',notes:'Legacy note',due:'',updated:'2026-01-01'});
+  let response=await worker.fetch(request('/remediations'),workerEnv);
+  assert.equal(response.status,200);assert.equal((await response.json()).remediations[0].owner,'');
+  response=await worker.fetch(request('/remediations/'+id,'PUT',{status:'Remediated',owner:' '}),workerEnv);
+  assert.equal(response.status,400);assert.equal(db.rows.get(key).notes,'Legacy note');
+  response=await worker.fetch(request('/remediations','PUT',{remediations:[{id,status:'Open',owner:'Engineer'},{id:'CVE-2026-99999',owner:''}]}),workerEnv);
+  assert.equal(response.status,400);assert.equal(db.rows.size,1);assert.equal(db.rows.get(key).owner,'','invalid import is rejected before any writes');
+  response=await worker.fetch(request('/remediations/'+id,'PUT',{status:'Open',owner:'  Engineer  ',notes:'Legacy note'}),workerEnv);
+  assert.equal(response.status,200);assert.equal(db.rows.get(key).owner,'Engineer');
+  response=await worker.fetch(request('/remediations/'+id,'DELETE'),workerEnv);
+  assert.equal(response.status,200);
+});
+
+test('listing, editing and deleting remediation records remain scoped to the authenticated account',async()=>{
+  const db=new MockD1(),workerEnv=env(db),own=db.key(user.id,id),other=db.key('another-account',id);
+  db.rows.set(own,{id,status:'Open',owner:'Own engineer',notes:'Private note'});
+  db.rows.set(other,{id,status:'Remediated',owner:'Other engineer',notes:'Other private note'});
+  let response=await worker.fetch(request('/remediations'),workerEnv);
+  const body=await response.json();assert.equal(body.remediations.length,1);assert.equal(body.remediations[0].owner,'Own engineer');
+  response=await worker.fetch(request('/remediations/'+id,'PUT',{owner:'Updated owner',status:'Investigating'}),workerEnv);
+  assert.equal(response.status,200);assert.equal(db.rows.get(other).owner,'Other engineer');
+  response=await worker.fetch(request('/remediations/'+id,'DELETE'),workerEnv);
+  assert.equal(response.status,200);assert.equal(db.rows.has(own),false);assert.equal(db.rows.has(other),true);
 });

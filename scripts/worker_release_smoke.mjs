@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {inventoryOnly,catalogueOnly,monitorCodeOnly,workspaceCodeOnly} from './worker_release_mode.mjs';
+import {inventoryOnly,catalogueOnly,monitorCodeOnly,workspaceCodeOnly,remediationCodeOnly} from './worker_release_mode.mjs';
 import {verifyHistory} from './verify_software_history_d1.mjs';
 const inventory='account-backend/src/inventory.js';
 assert.equal(inventoryOnly([inventory,'customer-security.js']),true);
@@ -44,3 +44,9 @@ const workspace='account-backend/src/workspace-summary.js';
 assert.equal(workspaceCodeOnly([workspace,'account-backend/src/index.js','account-backend/tests/workspace-summary.test.mjs','workspace/index.html']),true);
 for(const path of ['account-backend/src/cvie.js','account-backend/wrangler.toml','account-backend/migrations/0023_lifecycle_monitoring.sql','scripts/bootstrap_cvie_shared.mjs'])assert.equal(workspaceCodeOnly([workspace,path]),false,path);
 assert.equal(workspaceCodeOnly(['account-backend/src/index.js']),false);
+
+const remediation='account-backend/src/remediation.js';
+assert.equal(remediationCodeOnly([remediation,'account-backend/tests/remediation.test.mjs','index.html','operations.js','remediation.css']),true);
+for(const path of ['account-backend/src/cvie.js','account-backend/src/index.js','account-backend/wrangler.toml','account-backend/migrations/0019_cvie.sql','scripts/bootstrap_cvie_shared.mjs','scripts/verify_cvie_d1.mjs'])assert.equal(remediationCodeOnly([remediation,path]),false,path);
+assert.equal(remediationCodeOnly(['operations.js','remediation.css']),false);
+console.log('PASS: remediation release skips maintenance only for isolated record-handler changes');
