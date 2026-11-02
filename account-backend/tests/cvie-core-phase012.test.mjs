@@ -139,3 +139,14 @@ test('verified long-tail identity primes existing public CNA evidence, resumes l
  assert.equal((await immediateEvidence(e,'a',(await product(e)).id)).advisories.length,1);
  const {runIdentityIndexWork}=await import('../src/cvie-index-maintenance.js');await runIdentityIndexWork(e,identity.id,Date.now()+120000);assert.equal((await q(e,'SELECT complete FROM cvie_identity_index_jobs').first()).complete,1);
 });
+
+test('telemetry wrappers retain public-status cache sharing, invalidation and failure recovery',async()=>{
+ const {publicSourceStatus,invalidatePublicSourceStatus}=await import('../src/public-source-status-cache.js');const raw={},a={DB:{},CVIE_UNWRAPPED_DB:raw},b={DB:{},CVIE_UNWRAPPED_DB:raw};let reads=0;
+ const load=()=>{reads++;return {ready:true};};await publicSourceStatus(a,1000,load);await publicSourceStatus(b,1001,load);assert.equal(reads,1);
+ invalidatePublicSourceStatus(b);await assert.rejects(()=>publicSourceStatus(a,1002,()=>{throw Error('Public source unavailable');}));await publicSourceStatus(b,1003,load);assert.equal(reads,2);
+});
+test('a stale source selection cannot fetch again after another worker advances its schedule',async()=>{
+ const e=env(),now=Date.now(),prepare=e.DB.prepare.bind(e.DB);let fetched=0;
+ e.DB.prepare=sql=>{if(sql.startsWith('UPDATE cvie_sources SET last_attempt_at'))e.DB.sql.prepare("UPDATE cvie_sources SET next_attempt_at=? WHERE id='cisa_kev'").run(now+1e6);return prepare(sql);};
+ assert.equal((await refreshEvidence(e,async()=>{fetched++;throw Error('Unexpected provider call');},now)).busy,true);assert.equal(fetched,0);
+});

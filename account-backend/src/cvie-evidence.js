@@ -181,7 +181,7 @@ export async function refreshEvidence(env,fetcher=fetch,now=Date.now()){
  if(!await evidenceReady(env))return {ready:false};
  const source=await q(env.DB,'SELECT * FROM cvie_sources WHERE next_attempt_at<=? AND lease_until<? ORDER BY next_attempt_at,id LIMIT 1',now,now).first();
  if(!source)return {idle:true};const lease=now+120000;
- const claimed=await q(env.DB,'UPDATE cvie_sources SET last_attempt_at=?,lease_until=? WHERE id=? AND lease_until<?',now,lease,source.id,now).run();
+ const claimed=await q(env.DB,'UPDATE cvie_sources SET last_attempt_at=?,lease_until=? WHERE id=? AND lease_until<? AND next_attempt_at<=?',now,lease,source.id,now,now).run();
  if(claimed.meta.changes!==1)return {busy:true};
  try{
   const statements=[];let publisher,checkpoint=source.checkpoint,coverage=source.coverage_start_at;
@@ -237,7 +237,7 @@ export async function ingestDisclosures(env,fetcher=fetch,now=Date.now(),limit=1
  const jobs=(await q(env.DB,'SELECT * FROM cvie_disclosure_queue WHERE next_attempt_at<=? AND lease_until<? ORDER BY priority,next_attempt_at,revision DESC,cve_id LIMIT ?',now,now,Math.min(15,limit)).all()).results||[];
  if(!jobs.length)return {processed:0};const lease=now+120000;
  const ids=JSON.stringify(jobs.map(j=>j.cve_id));
- const claimed=(await q(env.DB,'UPDATE cvie_disclosure_queue SET lease_until=? WHERE cve_id IN(SELECT value FROM json_each(?)) AND lease_until<? RETURNING *',lease,ids,now).all()).results||[];
+ const claimed=(await q(env.DB,'UPDATE cvie_disclosure_queue SET lease_until=? WHERE cve_id IN(SELECT value FROM json_each(?)) AND lease_until<? AND next_attempt_at<=? RETURNING *',lease,ids,now,now).all()).results||[];
  const successes=[],failures=[];let throttledUntil=0;
  // Bounded batches avoid overwhelming CVE Program endpoints or the Worker.
  for(let i=0;i<claimed.length;i+=5)await Promise.all(claimed.slice(i,i+5).map(async job=>{

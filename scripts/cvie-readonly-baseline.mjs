@@ -1,3 +1,4 @@
+import {assertReadOnlySql} from './cvie_readonly_sql.mjs';
 // Fixed read-only production diagnostics. No customer identifiers/content, provider
 // requests, migrations, scan triggers or load tests. Credentials never enter output.
 import fs from 'node:fs';
@@ -10,7 +11,7 @@ const config=fs.readFileSync(new URL('../account-backend/wrangler.toml',import.m
 const database=/database_id\s*=\s*"([a-f0-9-]+)"/.exec(config)?.[1];if(!database)throw Error('Existing database binding not found');
 const metrics=[];
 const DB={prepare(sql){
- if(!/^\s*(SELECT|EXPLAIN QUERY PLAN|WITH)\b/i.test(sql)||/\b(INSERT|UPDATE|DELETE|REPLACE|DROP|ALTER|CREATE|ATTACH|VACUUM)\b/i.test(sql))throw Error('Read-only diagnostic rejected a mutating statement');
+ assertReadOnlySql(sql);
  const make=params=>({bind:(...args)=>make(args),async all(){
   const response=await fetch(`https://api.cloudflare.com/client/v4/accounts/${account}/d1/database/${database}/query`,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({sql,params}),signal:AbortSignal.timeout(30000)});
   if(!response.ok)throw Error('Read-only D1 query failed with HTTP '+response.status);

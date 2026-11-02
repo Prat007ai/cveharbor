@@ -13,6 +13,7 @@ jobs:
         with:
           node-version: '24'
       - run: npm test --prefix account-backend
+      - run: node scripts/cvie_readonly_sql.test.mjs
       - run: python -m unittest discover -s tests -p test_update.py
       - run: npm install --no-save --no-package-lock jsdom@26
       - run: node scripts/cvie_client_smoke.mjs && node scripts/cvie_polling_smoke.mjs && node scripts/cvie_fast_onboarding_smoke.mjs
