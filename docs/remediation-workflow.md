@@ -18,7 +18,7 @@ Migration `0026_remediation_workflow.sql` adds four tables, an index and four tr
 
 Deploy and verify the compatible Worker code before adding the hostname. No static IP or manually chosen A record is used for a Cloudflare Workers Custom Domain.
 
-1. In Cloudflare, open **Workers & Pages → cveharbor-accounts → Settings → Domains & Routes → Add → Custom Domain**.
+1. In Cloudflare, open **Workers & Pages → cveharbor-accounts → Domains → Add Domain**.
 2. Enter **confirm.cveharbor.com** in the existing cveharbor.com zone and confirm the binding. Cloudflare creates/manages the DNS record and TLS certificate. Keep the existing api.cveharbor.com binding. If a conflicting record already exists, review that record before replacing it.
 3. Wait for the hostname/certificate to become active. Check `https://confirm.cveharbor.com/acknowledge/` plus 64 zero characters: it must return the branded invalid-link page with HTTP 404, `Cache-Control: no-store`, `Referrer-Policy: no-referrer`, and a restrictive Content-Security-Policy. This synthetic token cannot acknowledge any real assignment. `/v1/me` and `/v1/remediations` on this hostname must return 404 without API CORS headers. Do not use a real customer's bearer token for release checks.
 4. Only after those checks pass, add the non-secret Worker variable **ASSIGNMENT_CONFIRM_ORIGIN = https://confirm.cveharbor.com** and deploy that setting. `keep_vars=true` preserves this dashboard-managed variable because it is intentionally absent from wrangler.toml.
@@ -32,3 +32,9 @@ To switch new email links back, set ASSIGNMENT_CONFIRM_ORIGIN to https://api.cve
 `remediation-workflow.test.mjs` uses the real Worker handlers and SQLite to check migration repeatability, status enforcement/audit atomicity, concurrent writes/deletion, account isolation, pagination, severity validation/snapshot persistence, provider failure behavior, guest confirmation across both hostnames and private-route isolation. The release probe is tested as SELECT-only.
 
 `remediation_workflow_browser.mjs` intercepts every network request and provider send. It exercises reason validation, audit history, local timezone timestamps, assigned severity, FYI notification, guest confirmation, action removal, CSV export, account switching and desktop/ultrawide/mobile layouts. Existing assignment, FYI, remediation and general browser regressions remain part of verification. Screenshots contain synthetic records only. Native email-client rendering and real inbox delivery are not certified by these tests.
+
+## Approved hostname activation automation
+
+After the owner attaches the hostname and approves activation, `activate-confirmation-domain.yml` verifies the live HTTPS routes, legacy links, no-cache/no-index headers, cross-origin POST rejection and private-route isolation before any setting changes. It uses the existing production environment credentials to deploy the current compatible Worker with only the `ASSIGNMENT_CONFIRM_ORIGIN` CLI variable override. The same production concurrency group prevents overlapping Worker deployments. It performs no migration, DNS change, customer record write or real email send.
+
+The post-deployment check reads Worker settings and confirms the exact origin is active; it never prints unrelated settings or credentials. The dashboard-managed variable remains intentionally absent from wrangler.toml, and `keep_vars=true` preserves it on later normal deployments. Validation runs on PRs; activation runs only after the approved files merge to main.
