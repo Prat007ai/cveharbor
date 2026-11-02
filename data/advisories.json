@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-02",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6698,
+  "candidate_records": 6712,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -893,6 +893,10 @@
         {
           "label": "Additional advisory",
           "url": "https://www.npmjs.com/package/bigbob22-test"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/cdd9fc0c28c93bd1d9e884a6f8f56001207a6773/osv/malicious/npm/bigbob22-test/MAL-2026-18457.json"
         }
       ],
       "exploitation": "Malicious software distribution advisory; investigate exposure",
@@ -900,7 +904,7 @@
       "cvss": null,
       "status": "GitHub malware advisory",
       "first_seen_at": "2026-11-02T08:30:42Z",
-      "source_updated_at": "2026-11-02T06:31:34Z",
+      "source_updated_at": "2026-11-02T21:31:27Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -1467,6 +1471,14 @@
         {
           "label": "Additional advisory",
           "url": "https://github.com/ossf/malicious-packages/blob/ea87c0243da98df9963c5a48bdd73cb75259a747/osv/malicious/rubygems/intercom-react-native-example-e2e-tests/MAL-2026-18462.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/cdd9fc0c28c93bd1d9e884a6f8f56001207a6773/osv/malicious/rubygems/intercom-react-native-example-e2e-tests/MAL-2026-18462.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://rubygems.org/gems/intercom-react-native-example-e2e-tests/versions/1.0.1"
         }
       ],
       "exploitation": "Malicious software distribution advisory; investigate exposure",
@@ -1474,7 +1486,7 @@
       "cvss": null,
       "status": "GitHub malware advisory",
       "first_seen_at": "2026-11-02T13:22:57Z",
-      "source_updated_at": "2026-11-02T12:30:27Z",
+      "source_updated_at": "2026-11-02T21:31:28Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -4114,6 +4126,314 @@
       "first_seen_at": "2026-11-02T20:27:30Z",
       "source_updated_at": "2026-11-02T20:17:26.440",
       "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-58925",
+      "title": "The report details a heap Use-After-Free (UAF) vulnerability within the `android.hardware...",
+      "severity": "bulletin",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "The report details a heap Use-After-Free (UAF) vulnerability within the `android.hardware.automotive.evs-default` HAL service, stemming from unsynchronized access to an `std::unordered_map`. An unprivileged application with access to the EVS manager can trigger this UAF by making concurrent calls to `setExtendedInfo` and `getExtendedInfo`, potentially enabling code execution within the privileged HAL process.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-7jwp-q4f8-4wg6"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-58925"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://source.android.com/docs/security/bulletin/aaos/2026/2026-11-01"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-02T21:52:54Z",
+      "source_updated_at": "2026-11-02T21:32:15Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-58915",
+      "title": "A physical occupant on an Android Automotive OS (AAOS) Multi-User Multi-Display (MUMD) passenger...",
+      "severity": "bulletin",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "A physical occupant on an Android Automotive OS (AAOS) Multi-User Multi-Display (MUMD) passenger display can view sensitive Heads-Up Notification (HUN) content and execute actions for a secure passenger user (User N) without authenticating. This bypasses the PassengerKeyguard because the HUN system only checks the global keyguard state, which is tied to the driver's unlocked display, and the PassengerKeyguard implementation fails to suppress HUNs or intercept action PendingIntents. Consequently, private notification data is disclosed, and user-N actions are executed without credential verification.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-jgqv-5673-896c"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-58915"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://source.android.com/docs/security/bulletin/aaos/2026/2026-11-01"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-02T21:52:54Z",
+      "source_updated_at": "2026-11-02T21:32:08Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-49903",
+      "title": "The `ClusterRenderingService.dump()` method, accessible to processes holding `android.permission...",
+      "severity": "bulletin",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "The `ClusterRenderingService.dump()` method, accessible to processes holding `android.permission.DUMP` and `android.permission.PACKAGE_USAGE_STATS`, acts as a confused deputy. It allows attackers to write arbitrary values to `Settings.Global.OVERLAY_DISPLAY_DEVICES`, an operation normally requiring `android.permission.WRITE_SECURE_SETTINGS`, enabling persistent creation of system overlay displays and injection of key events into the cluster UI.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-52wh-cjj6-535h"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-49903"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://source.android.com/docs/security/bulletin/aaos/2026/2026-11-01"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-02T21:52:54Z",
+      "source_updated_at": "2026-11-02T21:32:15Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-49906",
+      "title": "An unprivileged application can bypass the `android.car.permission.CAR_DISPLAY_IN_CLUSTER`...",
+      "severity": "bulletin",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "An unprivileged application can bypass the `android.car.permission.CAR_DISPLAY_IN_CLUSTER` permission by registering an activity with the `android.car.cluster.NAVIGATION` category and requesting navigation app focus. The privileged `ClusterHomeSample` application, acting as a confused deputy, resolves and launches this arbitrary third-party activity on the safety-critical instrument cluster display without enforcing the necessary permission check, allowing for persistent display of potentially misleading or distracting content.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-27w8-h9c5-p783"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-49906"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://source.android.com/docs/security/bulletin/aaos/2026/2026-11-01"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-02T21:52:54Z",
+      "source_updated_at": "2026-11-02T21:32:14Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-4h5p-w547-9qmv",
+      "title": "Malicious code in @ifasn/mmdd-doc-mcp (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "## Source: amazon-inspector (2999c5d0dd2a35fe1dfb6bdc17da36aaed07d4f6fa7e10f9f395a4b39d1c7265) @ifasn/mmdd-doc-mcp advertises itself as a Markdown TOC/stats/table MCP server, but on startup (bin entry / `npm start`) its index.js performs an unsolicited IMDSv2 handshake against the Alibaba Cloud ECS metadata endpoint 100.100.100.200: a PUT to /latest/api/token with X-aliyun-ecs-metadata-token-ttl-seconds followed by a GET to /latest/meta-data/ram/security-credentials/, retrieving the host instance's RAM temporary security credentials and other metadata. The response is written to output/meta_v2_dump.txt in the current working directory. The behavior is unrelated to any Markdown processing. The published tarball also ships patch scripts (patch111.js, patch112.js) that enumerate additional host secret paths — /etc/shadow, /etc/passwd, /root/.ssh/id_rsa, /var/www/html/.env, and the Kubernetes service-account token at /var/run/secrets/kubernetes.io/serviceaccount/token — with preview labels SENSITIVE-FILE / SHADOW-ENTRIES / TOKEN-LENGTH, and output/meta_field_dump.txt confirms those host-path probes were previously executed. A code comment claiming '无网络上报' (no network reporting) and the 'v2 probe edition' framing are cover-story labels; the operation is unauthorized reading of install",
+      "affected": "npm: @ifasn/mmdd-doc-mcp (= 1.1.1); npm: @ifasn/mmdd-doc-mcp (= 1.0.6); npm: @ifasn/mmdd-doc-mcp (= 1.0.3); npm: @ifasn/mmdd-doc-mcp (= 1.0.4); npm: @ifasn/mmdd-doc-mcp (= 1.1.6); npm: @ifasn/mmdd-doc-mcp (= 1.0.4-2); npm: @ifasn/mmdd-doc-mcp (= 1.1.8); npm: @ifasn/mmdd-doc-mcp (= 2.0.1); npm: @ifasn/mmdd-doc-mcp (= 1.0.1); npm: @ifasn/mmdd-doc-mcp (= 1.0.5); npm: @ifasn/mmdd-doc-mcp (= 1.1.3); npm: @ifasn/mmdd-doc-mcp (= 1.1.7); npm: @ifasn/mmdd-doc-mcp (= 1.1.9-2); npm: @ifasn/mmdd-doc-mcp (= 2.0.4); npm: @ifasn/mmdd-doc-mcp (= 1.1.0); npm: @ifasn/mmdd-doc-mcp (= 1.1.2); npm: @ifasn/mmdd-doc-mcp (= 1.1.5)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-4h5p-w547-9qmv"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/cdd9fc0c28c93bd1d9e884a6f8f56001207a6773/osv/malicious/npm/@ifasn/mmdd-doc-mcp/MAL-2026-18489.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@ifasn/mmdd-doc-mcp/v/1.0.1"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@ifasn/mmdd-doc-mcp/v/1.0.3"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T21:52:54Z",
+      "source_updated_at": "2026-11-02T21:31:36Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-f826-46h5-5rcq",
+      "title": "Malicious code in @ifasn/mmd-doc-mcp (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "## Source: amazon-inspector (e3b58b8adeff2784f4fdeb4bf0e873e5797893619b3bc36c55de55b85efca1b7) On startup, bin/main probes cloud instance-metadata endpoints for AWS (including the IMDSv2 token path), GCP, Azure, and Alibaba (including the RAM `security-credentials/` role path) under variables named `HEALTH_PROBES`/`CONFIG_NODES`, then transmits the aggregated per-endpoint HTTP status codes to a hardcoded author-controlled destination via `pingTelemetry(\"?stage=report&src=mmd-doc-mcp&nodes=\" + results.join(\",\"))` to `TELEMETRY_HOSTS = [\"http://121.199.24.94.nip.io\", \"http://121.199.24.94\"]`. The returned status-code pattern uniquely identifies the installer's cloud provider and whether an attached IAM/RAM role is present. The package advertises itself as a markdown table-of-contents MCP server, a purpose that has no need to probe cloud credential metadata services. Code comments and identifiers (`configSync`, 'enterprise intranet config sync node', '健康检查只记录状态码，不收集文档内容') frame the reconnaissance as benign configuration synchronization; the probed URLs are canonical cloud IMDS/credential endpoints, not any configuration service. Traffic also uses plaintext HTTP to a bare IP wrapped in nip.io to avoid DNS registration. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages)",
+      "affected": "npm: @ifasn/mmd-doc-mcp (= 1.0.0); npm: @ifasn/mmd-doc-mcp (= 1.0.2)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-f826-46h5-5rcq"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/cdd9fc0c28c93bd1d9e884a6f8f56001207a6773/osv/malicious/npm/@ifasn/mmd-doc-mcp/MAL-2026-18488.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@ifasn/mmd-doc-mcp/v/1.0.0"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@ifasn/mmd-doc-mcp/v/1.0.2"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T21:52:54Z",
+      "source_updated_at": "2026-11-02T21:31:27Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-4q9j-4rv8-jp32",
+      "title": "Malicious code in @ifasn/mdd-doc-mcp (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "## Source: amazon-inspector (1d8295dd6d1f932aa9f2b865822f1a6f213e00fc288b35cd4b7d8fa0f07a8641) On load, index.js queries the Alibaba Cloud ECS instance metadata service at 100.100.100.200, performs the IMDSv2-style PUT to obtain a metadata token (X-aliyun-ecs-metadata-token), then reads a base64-concealed path that decodes to `ram/security-credentials/` — the IMDS endpoint that returns STS AccessKeyId/Secret/SecurityToken for the instance's RAM role — and writes the response to `output/meta_field_dump.txt`. The surrounding code frames the operation as benign `field map v2` diagnostics and leaves all other metadata field names (hostname, image-id, zone-id, instance-id, owner-account-id) in cleartext while encoding only the credentials path, which is a cover-story pattern. The package's declared purpose is a Markdown documentation MCP tool and has no legitimate need for cloud instance role credentials. Separately, package.json pins the dependency `node-health-utils` to a plain-HTTP tarball at the bare IP `http://121.199.24.94/dl/health-utils-1.0.0.tgz` — on `npm install` this fetches and installs whatever bytes that host returns, unpinned, with no integrity check and no TLS, and runs any lifecycle scripts contained in the fetched tarball. The combination gives the publisher both in",
+      "affected": "npm: @ifasn/mdd-doc-mcp (= 1.0.7); npm: @ifasn/mdd-doc-mcp (= 1.0.8); npm: @ifasn/mdd-doc-mcp (= 2.0.6)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-4q9j-4rv8-jp32"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/cdd9fc0c28c93bd1d9e884a6f8f56001207a6773/osv/malicious/npm/@ifasn/mdd-doc-mcp/MAL-2026-18487.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@ifasn/mdd-doc-mcp/v/1.0.7"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@ifasn/mdd-doc-mcp/v/1.0.8"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T21:52:54Z",
+      "source_updated_at": "2026-11-02T21:31:27Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-rvw8-22w3-342v",
+      "title": "Malicious code in @ifasn/md-doc-mcp (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "## Source: amazon-inspector (808d25733e867c0cb6808f89bbed4cc90e8362b1e1a2e52759676d51bd0273bb) The package is advertised as a markdown toolkit MCP server (TOC generation, word count, table formatting) but on require() of its main module and on startup of its md-doc-mcp bin it probes cloud-provider instance-metadata services — AWS IMDSv1/v2 (169.254.169.254), GCP, Azure, and Alibaba Cloud (100.100.100.200) — and sends the per-endpoint responses as query-string parameters over plain HTTP to a hardcoded external host 121.199.24.94, reached both as a bare IP and via the nip.io wildcard-DNS alias 121.199.24.94.nip.io. The outbound request is shaped as `?stage=report&src=md-doc-mcp&nodes=<results>`. Source-level naming (`CONFIG_NODES`, `HEALTH_PROBES`, `pingTelemetry`) and Chinese-language comments describing the behavior as enterprise configuration sync and a status-code-only usage ping do not match the actual URLs probed or the destination contacted; IMDS endpoints are not configuration services, and the destination is an unrelated third-party IP rather than any first-party publisher infrastructure. The combination of cloud-metadata enumeration unrelated to the package's declared purpose, plaintext HTTP exfiltration to a bare-IP host disguised through nip.io, and automatic execution ",
+      "affected": "npm: @ifasn/md-doc-mcp (= 1.0.5); npm: @ifasn/md-doc-mcp (= 1.0.3); npm: @ifasn/md-doc-mcp (= 1.0.4)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-rvw8-22w3-342v"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/cdd9fc0c28c93bd1d9e884a6f8f56001207a6773/osv/malicious/npm/@ifasn/md-doc-mcp/MAL-2026-18486.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@ifasn/md-doc-mcp/v/1.0.3"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@ifasn/md-doc-mcp/v/1.0.4"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T21:52:54Z",
+      "source_updated_at": "2026-11-02T21:31:26Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -10741,6 +11061,49 @@
       "known_exploited": false,
       "epss": 0.00193,
       "epss_percentile": 0.09013,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-119716",
+      "title": "pybars3 through 0.9.7 contains a code injection vulnerability in pybars/_compiler.py that allows...",
+      "severity": "critical",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-11-02",
+      "summary": "pybars3 through 0.9.7 contains a code injection vulnerability in pybars/_compiler.py that allows template authors to execute Python code via unescaped bracketed path segments. Attackers can supply Handlebars templates with crafted segments in helper or block arguments to break out of string literals and execute Python in the application process.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119716"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-xvx4-89q3-mchg"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/wbond/pybars3/issues/88"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/vladko312/advisories/blob/702e98db9642ece70d9e2150076d8014ffec2db3/pybars3.md"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.1",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-30T16:57:29Z",
+      "source_updated_at": "2026-11-02T21:32:50Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00371,
+      "epss_percentile": 0.31043,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -17394,49 +17757,6 @@
       "known_exploited": false,
       "epss": 0.00309,
       "epss_percentile": 0.23775,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-119716",
-      "title": "pybars3 through 0.9.7 contains a code injection vulnerability in pybars/_compiler.py that allows...",
-      "severity": "critical",
-      "categories": [
-        "Python / PyPI"
-      ],
-      "published": "2026-10-30",
-      "updated": "2026-10-30",
-      "summary": "pybars3 through 0.9.7 contains a code injection vulnerability in pybars/_compiler.py that allows template authors to execute Python code via unescaped bracketed path segments. Attackers can supply Handlebars templates with crafted segments in helper or block arguments to break out of string literals and execute Python in the application process.",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119716"
-        },
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-xvx4-89q3-mchg"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/wbond/pybars3/issues/88"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/vladko312/advisories/blob/702e98db9642ece70d9e2150076d8014ffec2db3/pybars3.md"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.1",
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-10-30T16:57:29Z",
-      "source_updated_at": "2026-10-30T18:32:46Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00371,
-      "epss_percentile": 0.31043,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -31031,6 +31351,68 @@
       "epss_as_of": "2026-11-02"
     },
     {
+      "id": "CVE-2026-52729",
+      "title": "Xibo is an open source digital signage platform with a web content management system and Windows display player software",
+      "severity": "high",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-11-02",
+      "summary": "Xibo is an open source digital signage platform with a web content management system and Windows display player software. Prior to 4.4.3, missing access-control checks on `PUT/DELETE /action/{id}` allow an authenticated user to modify or delete actions on any Layout. Exploitation requires the privilege to allow edits, including deletion, to all created Layouts, which is granted to non-administrators as standard. This issue concerns `Layout actions` rather than the separately reported DataSet export vulnerability. This issue is fixed in version 4.4.3.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-52729"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T14:17:49Z",
+      "source_updated_at": "2026-11-02T21:17:32.357",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00292,
+      "epss_percentile": 0.2184,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-118680",
+      "title": "SiYuan 3.8.7 through 3.8.8 fails to normalize Windows GLOBALROOT device-namespace aliases, bypassing the IsSensitivePath denylist",
+      "severity": "medium",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-11-02",
+      "summary": "SiYuan 3.8.7 through 3.8.8 fails to normalize Windows GLOBALROOT device-namespace aliases, bypassing the IsSensitivePath denylist. Attackers can invoke importStdMd with a GLOBALROOT-prefixed path to copy the API token and TLS private key into the publicly served assets directory.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118680"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T19:35:42Z",
+      "source_updated_at": "2026-11-02T21:17:28.263",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00459,
+      "epss_percentile": 0.39789,
+      "epss_as_of": "2026-11-02"
+    },
+    {
       "id": "CVE-2026-99100",
       "title": "kernel: wifi: p54: validate firmware record lengths",
       "severity": "medium",
@@ -40982,37 +41364,6 @@
       "epss_as_of": "2026-11-02"
     },
     {
-      "id": "CVE-2026-52729",
-      "title": "Xibo is an open source digital signage platform with a web content management system and Windows display player software",
-      "severity": "high",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "Xibo is an open source digital signage platform with a web content management system and Windows display player software. Prior to 4.4.3, missing access-control checks on `PUT/DELETE /action/{id}` allow an authenticated user to modify or delete actions on any Layout. Exploitation requires the privilege to allow edits, including deletion, to all created Layouts, which is granted to non-administrators as standard. This issue concerns `Layout actions` rather than the separately reported DataSet export vulnerability. This issue is fixed in version 4.4.3.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-52729"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T14:17:49Z",
-      "source_updated_at": "2026-10-28T15:24:56.033",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00292,
-      "epss_percentile": 0.2184,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2026-59185",
       "title": "identrail is a machine identity security platform for AWS, GitHub/OIDC, and Kubernetes",
       "severity": "high",
@@ -41391,37 +41742,6 @@
       "source_updated_at": "2026-10-28T18:09:49Z",
       "source_type": "github",
       "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-118680",
-      "title": "SiYuan 3.8.7 through 3.8.8 fails to normalize Windows GLOBALROOT device-namespace aliases, bypassing the IsSensitivePath denylist",
-      "severity": "medium",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "SiYuan 3.8.7 through 3.8.8 fails to normalize Windows GLOBALROOT device-namespace aliases, bypassing the IsSensitivePath denylist. Attackers can invoke importStdMd with a GLOBALROOT-prefixed path to copy the API token and TLS private key into the publicly served assets directory.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118680"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T19:35:42Z",
-      "source_updated_at": "2026-10-28T19:17:34.413",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00459,
-      "epss_percentile": 0.39789,
-      "epss_as_of": "2026-11-02"
     },
     {
       "id": "CVE-2026-118251",
@@ -55251,6 +55571,126 @@
       "epss": 0.00093,
       "epss_percentile": 0.00517,
       "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-112642",
+      "title": "An out-of-bounds read was addressed with improved bounds checking. This issue is fixed in iOS 26...",
+      "severity": "medium",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-10-26",
+      "updated": "2026-11-02",
+      "summary": "An out-of-bounds read was addressed with improved bounds checking. This issue is fixed in iOS 26.7.2 and iPadOS 26.7.2, iOS 27.2 and iPadOS 27.2, macOS Golden Gate 27.2, macOS Sequoia 15.8.2, macOS Tahoe 26.7.2, tvOS 27.2, visionOS 27.2. Processing a maliciously crafted font may result in the disclosure of process memory.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-m25w-52mj-rq96"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112642"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://support.apple.com/en-us/149227"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://support.apple.com/en-us/149230"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-02T21:52:54Z",
+      "source_updated_at": "2026-11-02T21:32:40Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-112479",
+      "title": "An out-of-bounds read was addressed with improved bounds checking. This issue is fixed in iOS 26...",
+      "severity": "medium",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-10-26",
+      "updated": "2026-11-02",
+      "summary": "An out-of-bounds read was addressed with improved bounds checking. This issue is fixed in iOS 26.7.2 and iPadOS 26.7.2, iOS 27.2 and iPadOS 27.2, macOS Golden Gate 27.2, macOS Sequoia 15.8.2, macOS Tahoe 26.7.2. A malicious USB device may be able to cause unexpected system termination or read kernel memory.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-v8c6-9rgx-p48w"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112479"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://support.apple.com/en-us/149227"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://support.apple.com/en-us/149230"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.2",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-02T21:52:54Z",
+      "source_updated_at": "2026-11-02T21:32:40Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-112414",
+      "title": "A stack overflow was addressed with improved input validation. This issue is fixed in iOS 26.7.2...",
+      "severity": "medium",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-10-26",
+      "updated": "2026-11-02",
+      "summary": "A stack overflow was addressed with improved input validation. This issue is fixed in iOS 26.7.2 and iPadOS 26.7.2, iOS 27.2 and iPadOS 27.2, macOS Golden Gate 27.2, macOS Sequoia 15.8.2, macOS Tahoe 26.7.2, visionOS 27.2. Processing a maliciously crafted message may lead to a denial-of-service.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-jvv2-x4cp-5pc6"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112414"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://support.apple.com/en-us/149227"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://support.apple.com/en-us/149230"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-02T21:52:54Z",
+      "source_updated_at": "2026-11-02T21:32:40Z",
+      "source_type": "github",
+      "known_exploited": false
     },
     {
       "id": "CVE-2026-116477",
@@ -75184,7 +75624,7 @@
     },
     {
       "id": "CVE-2026-112177",
-      "title": "A flaw was found in Ghostscript as shipped with Red Hat Enterprise Linux 8",
+      "title": "A flaw was found in Ghostscript as shipped with Red Hat Enterprise Linux 8. The correction for...",
       "severity": "high",
       "categories": [
         "Linux"
@@ -75192,22 +75632,34 @@
       "published": "2026-10-20",
       "updated": "2026-11-02",
       "summary": "A flaw was found in Ghostscript as shipped with Red Hat Enterprise Linux 8. The correction for CVE-2019-14869 was omitted during the rebase from version 9.25 to 9.27, leaving privileged .forceput operations in the .charkeys procedure insufficiently protected. Processing a specially crafted PostScript file may allow an attacker to bypass -dSAFER restrictions and access files outside the permitted paths or execute commands with the permissions of the Ghostscript process.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112177"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-4hx3-pq6p-jhg6"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ArtifexSoftware/ghostpdl/commit/485904772c5f0aa1140032746e5a0abfc40f4cef"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-112177"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "7.3",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-02T19:48:02Z",
-      "source_updated_at": "2026-11-02T19:17:51.840",
-      "source_type": "nvd",
+      "source_updated_at": "2026-11-02T21:32:36Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -84478,6 +84930,252 @@
       "epss": 0.0065,
       "epss_percentile": 0.51154,
       "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-69705",
+      "title": "CVE-2026-69705 Windows iSCSI Remote Code Execution Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-11-02",
+      "summary": "<p>Out-of-bounds write in Windows iSCSI allows an unauthorized attacker to execute code over a network.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69705"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-69705"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.8",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.0097,
+      "epss_percentile": 0.61905,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-69721",
+      "title": "CVE-2026-69721 Windows iSCSI Information Disclosure Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-11-02",
+      "summary": "Out-of-bounds read in Windows iSCSI allows an authorized attacker to disclose information locally.",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69721"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-69721"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.0047,
+      "epss_percentile": 0.40683,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-69736",
+      "title": "CVE-2026-69736 Windows Credential Manager Elevation of Privilege Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-11-02",
+      "summary": "<p>Concurrent execution using shared resource with improper synchronization ('race condition') in Windows Credential Manager allows an authorized attacker to elevate privileges locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69736"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-69736"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.0",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-28T12:31:43Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.00235,
+      "epss_percentile": 0.14554,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-69675",
+      "title": "CVE-2026-69675 Windows Network File System Information Disclosure Vulnerability",
+      "severity": "bulletin",
+      "categories": [
+        "Windows",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-11-02",
+      "summary": "<p>Out-of-bounds read in Windows Network File System allows an authorized attacker to disclose information locally.</p>",
+      "affected": "Confirm affected products and versions in the linked official vendor notice.",
+      "remediation": "Consult the official notice for fixed versions and mitigation.",
+      "action": "Check whether your installed product and version are affected.",
+      "sources": [
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69675"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-69675"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "Microsoft Security Update Guide RSS notice",
+      "first_seen_at": "2026-10-30T00:18:28Z",
+      "source_updated_at": "2026-10-13",
+      "source_type": "msrc_rss",
+      "known_exploited": false,
+      "epss": 0.0047,
+      "epss_percentile": 0.40683,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-69867",
+      "title": "Out-of-bounds read in SQLite allows an authorized attacker to elevate privileges locally.",
+      "severity": "high",
+      "categories": [
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-11-02",
+      "summary": "Out-of-bounds read in SQLite allows an authorized attacker to elevate privileges locally.",
+      "affected": "Products identified in NVD configurations: microsoft windows_10_1607; microsoft windows_10_1809; microsoft windows_10_21h2; microsoft windows_10_22h2; microsoft windows_11_23h2; microsoft windows_11_24h2; microsoft windows_11_25h2; microsoft windows_11_26h1; microsoft windows_11_26h2; microsoft windows_server_2016; microsoft windows_server_2019; microsoft windows_server_2022",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-69867"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69867"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T21:52:54Z",
+      "source_updated_at": "2026-11-02T21:10:28.310",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-69963",
+      "title": "Heap-based buffer overflow in Microsoft Streaming Service allows an authorized attacker to elevate privileges locally.",
+      "severity": "high",
+      "categories": [
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-11-02",
+      "summary": "Heap-based buffer overflow in Microsoft Streaming Service allows an authorized attacker to elevate privileges locally.",
+      "affected": "Products identified in NVD configurations: microsoft windows_10_1607; microsoft windows_10_1809; microsoft windows_10_21h2; microsoft windows_10_22h2; microsoft windows_11_23h2; microsoft windows_11_24h2; microsoft windows_11_25h2; microsoft windows_11_26h1; microsoft windows_11_26h2; microsoft windows_server_2012; microsoft windows_server_2016; microsoft windows_server_2019",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-69963"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69963"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T21:52:54Z",
+      "source_updated_at": "2026-11-02T21:14:21.503",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-69964",
+      "title": "Use after free in Microsoft Streaming Service allows an authorized attacker to elevate privileges locally.",
+      "severity": "high",
+      "categories": [
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-11-02",
+      "summary": "Use after free in Microsoft Streaming Service allows an authorized attacker to elevate privileges locally.",
+      "affected": "Products identified in NVD configurations: microsoft windows_10_1607; microsoft windows_10_1809; microsoft windows_10_21h2; microsoft windows_10_22h2; microsoft windows_11_23h2; microsoft windows_11_24h2; microsoft windows_11_25h2; microsoft windows_11_26h1; microsoft windows_11_26h2; microsoft windows_server_2012; microsoft windows_server_2016; microsoft windows_server_2019",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-69964"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69964"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.0",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T21:52:54Z",
+      "source_updated_at": "2026-11-02T21:15:30.587",
+      "source_type": "nvd",
+      "known_exploited": false
     },
     {
       "id": "CVE-2026-88137",
@@ -105708,6 +106406,42 @@
       "epss_as_of": "2026-11-02"
     },
     {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60771,
+      "epss_as_of": "2026-11-02"
+    },
+    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -105746,42 +106480,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55905,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60771,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -108464,37 +109162,6 @@
       "epss_as_of": "2026-11-02"
     },
     {
-      "id": "CVE-2026-69705",
-      "title": "CVE-2026-69705 Windows iSCSI Remote Code Execution Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Out-of-bounds write in Windows iSCSI allows an unauthorized attacker to execute code over a network.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69705"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.0097,
-      "epss_percentile": 0.61905,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2026-69634",
       "title": "CVE-2026-69634 Windows iSCSI Remote Code Execution Vulnerability",
       "severity": "bulletin",
@@ -108554,37 +109221,6 @@
       "known_exploited": false,
       "epss": 0.00949,
       "epss_percentile": 0.61239,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-69721",
-      "title": "CVE-2026-69721 Windows iSCSI Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "Out-of-bounds read in Windows iSCSI allows an authorized attacker to disclose information locally.",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69721"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.0047,
-      "epss_percentile": 0.40683,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -115145,37 +115781,6 @@
       "epss_as_of": "2026-11-02"
     },
     {
-      "id": "CVE-2026-69736",
-      "title": "CVE-2026-69736 Windows Credential Manager Elevation of Privilege Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Concurrent execution using shared resource with improper synchronization ('race condition') in Windows Credential Manager allows an authorized attacker to elevate privileges locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69736"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-28T12:31:43Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.00235,
-      "epss_percentile": 0.14554,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2026-69765",
       "title": "CVE-2026-69765 Windows Storport Miniport Driver Remote Code Execution Vulnerability",
       "severity": "bulletin",
@@ -118997,37 +119602,6 @@
       "known_exploited": false,
       "epss": 0.00484,
       "epss_percentile": 0.41684,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-69675",
-      "title": "CVE-2026-69675 Windows Network File System Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "<p>Out-of-bounds read in Windows Network File System allows an authorized attacker to disclose information locally.</p>",
-      "affected": "Confirm affected products and versions in the linked official vendor notice.",
-      "remediation": "Consult the official notice for fixed versions and mitigation.",
-      "action": "Check whether your installed product and version are affected.",
-      "sources": [
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69675"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Microsoft Security Update Guide RSS notice",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-10-13",
-      "source_type": "msrc_rss",
-      "known_exploited": false,
-      "epss": 0.0047,
-      "epss_percentile": 0.40683,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -166857,6 +167431,46 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2021-4204",
+      "title": "An out-of-bounds (OOB) memory access flaw was found in the Linux kernel's eBPF due to an Improper...",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2022-08-25",
+      "updated": "2026-11-02",
+      "summary": "An out-of-bounds (OOB) memory access flaw was found in the Linux kernel's eBPF due to an Improper Input Validation. This flaw allows a local attacker with a special privilege to crash the system or leak internal information.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-4204"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-5gx9-gr87-492v"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://access.redhat.com/security/cve/CVE-2021-4204"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://bugzilla.redhat.com/show_bug.cgi?id=2039178"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T21:32:35Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2021-4159",
       "title": "A vulnerability was found in the Linux kernel's EBPF verifier when handling internal data structures",
       "severity": "medium",
@@ -166885,34 +167499,6 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-11-02T19:48:02Z",
       "source_updated_at": "2026-11-02T19:17:46.043",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2021-4204",
-      "title": "An out-of-bounds (OOB) memory access flaw was found in the Linux kernel's eBPF due to an Improper Input Validation",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2022-08-24",
-      "updated": "2026-11-02",
-      "summary": "An out-of-bounds (OOB) memory access flaw was found in the Linux kernel's eBPF due to an Improper Input Validation. This flaw allows a local attacker with a special privilege to crash the system or leak internal information.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel; debian debian_linux; redhat enterprise_linux; netapp h300s_firmware; netapp h300s; netapp h500s_firmware; netapp h500s; netapp h700s_firmware; netapp h700s; netapp h410s_firmware; netapp h410s; netapp h410c_firmware",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-4204"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-11-02T19:48:02Z",
-      "source_updated_at": "2026-11-02T19:17:46.807",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -169641,525 +170227,90 @@
       "epss": 0.74939,
       "epss_percentile": 0.99506,
       "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-20805",
-      "title": "Microsoft Windows Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2026-01-13",
-      "summary": "Microsoft Windows Desktop Windows Manager contains an information disclosure vulnerability that allows an authorized attacker to disclose information locally.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-01-13",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.07463,
-      "epss_percentile": 0.94465,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-59718",
-      "title": "Fortinet Multiple Products Improper Verification of Cryptographic Signature Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Fortinet"
-      ],
-      "published": "",
-      "updated": "2025-12-16",
-      "summary": "Fortinet FortiOS, FortiSwitchMaster, FortiProxy, and FortiWeb contain an improper verification of cryptographic signature vulnerability that may allow an unauthenticated attacker to bypass the FortiCloud SSO login authentication via a crafted SAML message. Please be aware that CVE-2025-59719 pertains to the same problem and is mentioned in the same vendor advisory. Ensure to apply all patches mentioned in the advisory.",
-      "affected": "Fortinet Multiple Products. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-12-16",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.68293,
-      "epss_percentile": 0.99331,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-62221",
-      "title": "Microsoft Windows Use After Free Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-12-09",
-      "summary": "Microsoft Windows Cloud Files Mini Filter Driver contains a use after free vulnerability that can allow an authorized attacker to elevate privileges locally.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-12-09",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.02505,
-      "epss_percentile": 0.84732,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-48633",
-      "title": "Android Framework Information Disclosure Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2025-12-02",
-      "summary": "Android Framework contains an unspecified vulnerability that allows for information disclosure.",
-      "affected": "Android Framework. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-12-02",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.00262,
-      "epss_percentile": 0.1804,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-48572",
-      "title": "Android Framework Privilege Escalation Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2025-12-02",
-      "summary": "Android Framework contains an unspecified vulnerability that allows for privilege escalation.",
-      "affected": "Android Framework. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-12-02",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.00259,
-      "epss_percentile": 0.17632,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-58034",
-      "title": "Fortinet FortiWeb OS Command Injection Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Fortinet"
-      ],
-      "published": "",
-      "updated": "2025-11-18",
-      "summary": "Fortinet FortiWeb contains an OS command Injection vulnerability that may allow an authenticated attacker to execute unauthorized code on the underlying system via crafted HTTP requests or CLI commands.",
-      "affected": "Fortinet FortiWeb. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-11-18",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.54724,
-      "epss_percentile": 0.99021,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-64446",
-      "title": "Fortinet FortiWeb Path Traversal Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Fortinet"
-      ],
-      "published": "",
-      "updated": "2025-11-14",
-      "summary": "Fortinet FortiWeb contains a relative path traversal vulnerability that may allow an unauthenticated attacker to execute administrative commands on the system via crafted HTTP or HTTPS requests.",
-      "affected": "Fortinet FortiWeb. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-11-14",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.91078,
-      "epss_percentile": 0.99808,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-62215",
-      "title": "Microsoft Windows Race Condition Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-11-12",
-      "summary": "Microsoft Windows Kernel contains a race condition vulnerability that allows a local attacker with low-level privileges to escalate privileges. Successful exploitation of this vulnerability could enable the attacker to gain SYSTEM-level access.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-11-12",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.04464,
-      "epss_percentile": 0.91442,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-41244",
-      "title": "Broadcom VMware Aria Operations and VMware Tools Privilege Defined with Unsafe Actions Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "VMware"
-      ],
-      "published": "",
-      "updated": "2025-10-30",
-      "summary": "Broadcom VMware Aria Operations and VMware Tools contain a privilege defined with unsafe actions vulnerability. A malicious local actor with non-administrative privileges having access to a VM with VMware Tools installed and managed by Aria Operations with SDMP enabled may exploit this vulnerability to escalate privileges to root on the same VM.",
-      "affected": "Broadcom VMware Aria Operations and VMware Tools. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-10-30",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.08629,
-      "epss_percentile": 0.95102,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-59287",
-      "title": "Microsoft Windows Server Update Service (WSUS) Deserialization of Untrusted Data Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows",
-        "Windows Server OS"
-      ],
-      "published": "",
-      "updated": "2025-10-24",
-      "summary": "Microsoft Windows Server Update Service (WSUS) contains a deserialization of untrusted data vulnerability that allows for remote code execution.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-10-24",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.9998,
-      "epss_percentile": 0.99981,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-2746",
-      "title": "Kentico Xperience CMS Authentication Bypass Using an Alternate Path or Channel Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Drupal / CMS"
-      ],
-      "published": "",
-      "updated": "2025-10-20",
-      "summary": "Kentico Xperience CMS contains an authentication bypass using an alternate path or channel vulnerability that could allow an attacker to control administrative objects.",
-      "affected": "Kentico Xperience CMS. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-10-20",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.74055,
-      "epss_percentile": 0.99483,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-2747",
-      "title": "Kentico Xperience CMS Authentication Bypass Using an Alternate Path or Channel Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Drupal / CMS"
-      ],
-      "published": "",
-      "updated": "2025-10-20",
-      "summary": "Kentico Xperience CMS contains an authentication bypass using an alternate path or channel vulnerability that could allow an attacker to control administrative objects.",
-      "affected": "Kentico Xperience CMS. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-10-20",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.97166,
-      "epss_percentile": 0.99895,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-33073",
-      "title": "Microsoft Windows SMB Client Improper Access Control Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-10-20",
-      "summary": "Microsoft Windows SMB Client contains an improper access control vulnerability that could allow for privilege escalation. An attacker could execute a specially crafted malicious script to coerce the victim machine to connect back to the attack system using SMB and authenticate.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-10-20",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.82699,
-      "epss_percentile": 0.99667,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-24990",
-      "title": "Microsoft Windows Untrusted Pointer Dereference Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-10-14",
-      "summary": "Microsoft Windows Agere Modem Driver contains an untrusted pointer dereference vulnerability that allows for privilege escalation. An attacker who successfully exploited this vulnerability could gain administrator privileges.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-10-14",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.06369,
-      "epss_percentile": 0.93658,
-      "epss_as_of": "2026-11-02"
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-02T20:54:51Z",
-      "last_attempt": "2026-11-02T20:54:51Z",
-      "items_processed": 223,
+      "last_success": "2026-11-02T21:52:54Z",
+      "last_attempt": "2026-11-02T21:52:54Z",
+      "items_processed": 196,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-02T20:54:51Z",
-      "last_attempt": "2026-11-02T20:54:51Z",
+      "last_success": "2026-11-02T21:52:54Z",
+      "last_attempt": "2026-11-02T21:52:54Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-02T20:54:51Z",
-      "last_attempt": "2026-11-02T20:54:51Z",
-      "items_processed": 341,
+      "last_success": "2026-11-02T21:52:54Z",
+      "last_attempt": "2026-11-02T21:52:54Z",
+      "items_processed": 350,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-02T20:54:51Z",
-      "last_attempt": "2026-11-02T20:54:51Z",
+      "last_success": "2026-11-02T21:52:54Z",
+      "last_attempt": "2026-11-02T21:52:54Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-02T20:54:51Z",
-      "last_attempt": "2026-11-02T20:54:51Z",
+      "last_success": "2026-11-02T21:52:54Z",
+      "last_attempt": "2026-11-02T21:52:54Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-02T20:54:51Z",
-      "last_attempt": "2026-11-02T20:54:51Z",
+      "last_success": "2026-11-02T21:52:54Z",
+      "last_attempt": "2026-11-02T21:52:54Z",
       "items_processed": 15,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-02T20:54:51Z",
-      "last_attempt": "2026-11-02T20:54:51Z",
+      "last_success": "2026-11-02T21:52:54Z",
+      "last_attempt": "2026-11-02T21:52:54Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-02T20:54:51Z",
-      "last_attempt": "2026-11-02T20:54:51Z",
+      "last_success": "2026-11-02T21:52:54Z",
+      "last_attempt": "2026-11-02T21:52:54Z",
       "items_processed": 52,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-02T20:54:51Z",
-      "last_attempt": "2026-11-02T20:54:51Z",
+      "last_success": "2026-11-02T21:52:54Z",
+      "last_attempt": "2026-11-02T21:52:54Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-02T20:54:51Z",
-      "last_attempt": "2026-11-02T20:54:51Z",
+      "last_success": "2026-11-02T21:52:54Z",
+      "last_attempt": "2026-11-02T21:52:54Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-02T20:54:51Z",
-      "last_attempt": "2026-11-02T20:54:51Z",
+      "last_success": "2026-11-02T21:52:54Z",
+      "last_attempt": "2026-11-02T21:52:54Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-02T20:54:51Z",
-      "last_attempt": "2026-11-02T20:54:51Z",
+      "last_success": "2026-11-02T21:52:54Z",
+      "last_attempt": "2026-11-02T21:52:54Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -170171,7 +170322,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-02T20:54:51Z",
-  "last_successful_update": "2026-11-02T20:54:51Z",
+  "last_checked_at": "2026-11-02T21:52:54Z",
+  "last_successful_update": "2026-11-02T21:52:54Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
