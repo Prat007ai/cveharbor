@@ -1,10 +1,10 @@
 name: Validate isolated product monitoring and inspect readiness without changing production
 on:
   push:
-    branches: [feat/product-lifecycle-monitoring, fix/lifecycle-mockup-and-approved-tests, fix/lifecycle-fluid-layout, fix/lifecycle-equal-panels]
-    paths: ['account-backend/**', 'lifecycle-monitor*', 'product-monitoring.js', 'scripts/*monitor*', '.github/workflows/verify-product-monitoring.yml']
+    branches: [feat/product-lifecycle-monitoring, fix/lifecycle-mockup-and-approved-tests, fix/lifecycle-fluid-layout, fix/lifecycle-equal-panels, codex/lifecycle-product-directory]
+    paths: ['account-backend/**', 'lifecycle-monitor*', 'lifecycle-directory*', 'data/lifecycle-products.json', 'product-monitoring.js', 'scripts/*monitor*', '.github/workflows/verify-product-monitoring.yml']
   pull_request:
-    paths: ['account-backend/src/monitor*', 'lifecycle-monitor*', 'product-monitoring.js', 'account-backend/migrations/0023_lifecycle_monitoring.sql']
+    paths: ['account-backend/src/monitor*', 'lifecycle-monitor*', 'lifecycle-directory*', 'data/lifecycle-products.json', 'product-monitoring.js', 'account-backend/migrations/0023_lifecycle_monitoring.sql']
 permissions:
   contents: read
 jobs:
@@ -17,9 +17,9 @@ jobs:
           node-version: '22'
       - run: npm test --prefix account-backend
       - run: npm install --no-save --no-package-lock jsdom@26 playwright-core@1.56.1
-      - run: python scripts/build_site.py && node scripts/browser_smoke.mjs && node scripts/product_monitoring_smoke.mjs && node scripts/worker_release_smoke.mjs
+      - run: python scripts/build_site.py && node scripts/browser_smoke.mjs && node scripts/product_monitoring_smoke.mjs && node scripts/lifecycle_directory_browser.mjs && node scripts/worker_release_smoke.mjs
       - name: Probe only the reviewed vendor endpoints, without subscriptions or email
-        run: node scripts/probe_monitor_sources.mjs
+        run: node scripts/probe_monitor_sources.mjs && node scripts/probe_lifecycle_directory.mjs
       - name: Inspect deployed binding names, flags and schema metadata only
         if: github.event_name == 'push'
         env:

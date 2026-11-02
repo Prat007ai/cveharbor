@@ -1,5 +1,6 @@
 // Private lifecycle watchlist and explicit opt-in. No public customer records.
 import { sendEmail } from './delivery.js';
+import {common,cachedDirectory,lookupDirectory,directoryWatchInfo,directoryRecord} from './monitor-directory.js';
 import {monitorReady} from './monitor-engine.js';
 const SITE='https://cveharbor.com';
 const DATA=SITE+'/lifecycle.js';
@@ -17,13 +18,12 @@ export function normalizeWatch(x){
  const product=String(x?.product||'').trim(),slug=String(x?.slug||'').trim().toLowerCase(),
  cycle=String(x?.cycle||'').trim(),installed=String(x?.installed_version||'').trim(),date=String(x?.custom_eol_date||'').trim(),
  source=String(x?.custom_source_url||'').trim();
- if(!product||product.length>120||cycle.length>80||installed.length>80||
+ if(!product||product.length>120||cycle.length>80||installed.length>80||/[\u0000-\u001f]/.test(product+cycle+installed)||
    (slug&&!/^[a-z0-9-]{1,70}$/.test(slug))||
    (date&&!dateValid(date))||
-   (!slug&&!date)||
    source.length>500||
    (source&&(!/^https:\/\/[a-z0-9.-]+(?:[:\/?#]|$)/i.test(source)||source.includes('@'))))
-   throw new LifecycleError('Enter a product and either a monitored source or a verified custom support date');
+   throw new LifecycleError('Enter a valid product name, version and optional HTTPS source or support date');
  const id=String(x.id||'');
  if(id&&!/^[a-f0-9-]{36}$/i.test(id))throw new LifecycleError('Invalid watch identifier');
  return {id:id||crypto.randomUUID(),product,slug,cycle,installed_version:installed,custom_eol_date:date,custom_source_url:source};
@@ -38,10 +38,16 @@ export async function handler(req,env,user,path,data={}){
   source:'endoflife.date and explicit user supplied dates'
  });
  if(!await ready(env))throw new LifecycleError('Lifecycle D1 migration is required',503);
+ if(path==='/v1/lifecycle/directory'&&req.method==='GET')return response({products:[...new Map([...await cachedDirectory(env),...common].map(p=>[p.slug,p])).values()]});
+ if(path==='/v1/lifecycle/directory/lookup'&&req.method==='POST'){
+  const name=String(data.name||'').trim();if(!name||name.length>120||/[\u0000-\u001f]/.test(name))throw new LifecycleError('Enter the official product name');
+  try{return response(await lookupDirectory(env,name));}catch(error){throw new LifecycleError(error.message);}
+ }
  if(path==='/v1/lifecycle'&&req.method==='GET'){
   const watches=await env.DB.prepare('SELECT id,product,slug,cycle,installed_version,custom_eol_date,custom_source_url FROM lifecycle_watches WHERE user_id=? ORDER BY product,cycle LIMIT 100').bind(user.id).all();
   const prefs=await env.DB.prepare('SELECT email_enabled,lead_days FROM lifecycle_preferences WHERE user_id=?').bind(user.id).first();
-  return response({watches:watches.results||[],preferences:prefs||{email_enabled:0,lead_days:90},
+  const rows=await Promise.all((watches.results||[]).map(async w=>({...w,directory:await directoryWatchInfo(env,w)})));
+  return response({watches:rows,preferences:prefs||{email_enabled:0,lead_days:90},
     email_delivery_active:env.LIFECYCLE_DELIVERY_ENABLED==='true'});
  }
  if(path==='/v1/lifecycle/watches/bulk'&&req.method==='POST'){
@@ -72,6 +78,14 @@ export async function handler(req,env,user,path,data={}){
   await env.DB.prepare('INSERT INTO lifecycle_preferences(user_id,email_enabled,lead_days,updated_at) VALUES(?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET email_enabled=excluded.email_enabled,lead_days=excluded.lead_days,updated_at=excluded.updated_at')
    .bind(user.id,data.email_enabled?1:0,data.lead_days,now()).run();
   return response({saved:true,email_enabled:data.email_enabled,delivery_active:env.LIFECYCLE_DELIVERY_ENABLED==='true'});
+ }
+ const identity=/^\/v1\/lifecycle\/watches\/([a-f0-9-]{36})\/identity$/i.exec(path);
+ if(identity&&req.method==='PUT'){
+  const watch=await env.DB.prepare('SELECT id FROM lifecycle_watches WHERE user_id=? AND id=?').bind(user.id,identity[1]).first();
+  if(!watch)throw new LifecycleError('Watch not found',404);
+  const entry=await directoryRecord(env,String(data.slug||''));if(!entry?.cycles.some(c=>c.cycle===data.cycle))throw new LifecycleError('Choose a product and release returned by the source directory');
+  await env.DB.prepare("UPDATE lifecycle_watches SET product=?,slug=?,cycle=?,custom_eol_date='',custom_source_url='' WHERE user_id=? AND id=?").bind(entry.product.name,entry.product.slug,data.cycle,user.id,watch.id).run();
+  return response({saved:true});
  }
  const match=/^\/v1\/lifecycle\/watches\/([a-f0-9-]{36})$/i.exec(path);
  if(match&&req.method==='DELETE'){

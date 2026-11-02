@@ -11,7 +11,8 @@ export function sourceFor(slug,branch){
  if(slug==='php')return /^\d{1,2}\.\d{1,2}$/.test(branch)?{...source,id:'php:'+branch,url:source.url.replace('{branch}',branch)}:null;
  return {...source,id:slug};
 }
-export function approvedSource(source){const base=source.adapter==='php'?sourceFor('php',source.id.slice(4)):sourceFor(source.id,'');return base&&base.id===source.id&&base.url===source.url&&base.adapter===source.adapter;}
+export function lifecycleSource(slug){return /^[a-z0-9][a-z0-9-]{0,69}$/.test(slug)?{id:'lifecycle:'+slug,adapter:'lifecycle',url:'https://endoflife.date/api/'+slug+'.json'}:null;}
+export function approvedSource(source){const base=source.adapter==='lifecycle'?lifecycleSource(source.id.replace(/^lifecycle:/,'')):source.adapter==='php'?sourceFor('php',source.id.slice(4)):sourceFor(source.id,'');return base&&base.id===source.id&&base.url===source.url&&base.adapter===source.adapter;}
 const stable=value=>typeof value==='string'&&/^\d+(?:\.\d+){1,3}$/.test(value)&&value.split('.').every(n=>Number.isSafeInteger(Number(n)));
 export function compareVersions(a,b){
  if(!stable(a)||!stable(b))return null;
@@ -28,7 +29,14 @@ export function monitorIdentity(watch){
 }
 export function normalizeVendor(adapter,raw,product){
  let version='',published=null,security=false,milestones={};
- if(adapter==='dotnet'){
+ if(adapter==='lifecycle'){
+  if(!Array.isArray(raw)||raw.length>2000)throw Error('Invalid lifecycle feed');
+  const rows=raw.filter(r=>String(r?.cycle)===product.branch);if(rows.length!==1)throw Error('Release branch missing or ambiguous');
+  const row=rows[0];version=typeof row.latest==='string'?row.latest.slice(0,80):'';
+  for(const [field,label] of [['eol','eol'],['support','mainstream'],['extendedSupport','extended']])if(typeof row[field]==='string')milestones[label]=isoDate(row[field]);
+  if(row.latestReleaseDate)published=isoDate(row.latestReleaseDate);
+  return {product:product.name,vendor:product.vendor,branch:product.branch,edition:product.edition||'',version,published,security:false,milestones,source_url:'https://endoflife.date/'+product.slug,release_source_url:'https://endoflife.date/'+product.slug,lifecycle_source_url:'https://endoflife.date/'+product.slug,reliability:'community_lifecycle',source_label:'endoflife.date (community-maintained; verify vendor terms)'};
+ }else if(adapter==='dotnet'){
   if(!Array.isArray(raw?.['releases-index'])||raw['releases-index'].length>100)throw Error('Invalid Microsoft release index');
   const rows=raw['releases-index'].filter(r=>r['channel-version']===product.branch);
   if(rows.length!==1)throw Error('Microsoft release branch missing or ambiguous');

@@ -11,7 +11,7 @@ export function catalogueOnly(files){
  return (files.includes('account-backend/src/catalogue-selection.js')||files.includes('account-backend/tests/product-chooser.test.mjs'))&&files.filter(f=>f.startsWith('account-backend/')).every(f=>allowed.has(f))&&!files.some(f=>f.startsWith('scripts/bootstrap_cvie')||f.startsWith('scripts/verify_cvie'));
 }
 export function monitorCodeOnly(files){
- const allowed=new Set(['account-backend/src/index.js','account-backend/src/lifecycle.js','account-backend/src/monitoring.js','account-backend/src/monitor-engine.js','account-backend/src/monitor-mail.js','account-backend/src/monitor-approved-test.js','account-backend/tests/monitor-approved-test.test.mjs','account-backend/src/monitor-sources.js','account-backend/tests/product-monitoring.test.mjs','account-backend/migrations/0023_lifecycle_monitoring.sql']);
+ const allowed=new Set(['account-backend/src/index.js','account-backend/src/lifecycle.js','account-backend/src/monitoring.js','account-backend/src/monitor-directory.js','account-backend/tests/monitor-directory.test.mjs','account-backend/tests/lifecycle.test.mjs','account-backend/src/monitor-engine.js','account-backend/src/monitor-mail.js','account-backend/src/monitor-approved-test.js','account-backend/tests/monitor-approved-test.test.mjs','account-backend/src/monitor-sources.js','account-backend/tests/product-monitoring.test.mjs','account-backend/migrations/0023_lifecycle_monitoring.sql']);
  const backend=files.filter(f=>f.startsWith('account-backend/'));
  return backend.some(f=>f.includes('/monitor'))&&backend.every(f=>allowed.has(f));
 }

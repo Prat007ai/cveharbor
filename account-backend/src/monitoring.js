@@ -1,4 +1,5 @@
 import {monitorIdentity,SOURCE_REGISTRY,compareVersions,sameBranch,DAY} from './monitor-sources.js';
+import {common,cachedDirectory,lookupDirectory,directoryMonitor,directoryWatchStatements} from './monitor-directory.js';
 import {q,sha,json,monitorReady,ALERT_TYPES,DEFAULT_TYPES,NOTICE_DAYS,checkSubscribedSources,dailyReminders} from './monitor-engine.js';
 import {dispatchMonitorMail,submitSmtp2go,renderMonitorMail,monitorDeliveryReady} from './monitor-mail.js';
 export class MonitorError extends Error{constructor(message,status=400){super(message);this.status=status;}}
@@ -7,7 +8,7 @@ const audit=(env,user,watch,action,now)=>q(env.DB,'INSERT INTO lifecycle_monitor
 function watchInput(data){
  const product=String(data.product||'').trim(),slug=String(data.slug||'').toLowerCase(),cycle=String(data.cycle||'').trim(),installed_version=String(data.installed_version||'').trim(),edition=String(data.edition||'').trim(),custom_source_url=String(data.custom_source_url||'').trim();
  if(!product||product.length>120||!/^[a-z0-9-]{0,70}$/.test(slug)||cycle.length>80||installed_version.length>80||edition.length>80||/[\u0000-\u001f]/.test(product+cycle+installed_version+edition))throw new MonitorError('Invalid product, version or edition');
- if(!slug){let url;try{url=new URL(custom_source_url);}catch{throw new MonitorError('Custom products require an official HTTPS source');}
+ if(custom_source_url){let url;try{url=new URL(custom_source_url);}catch{throw new MonitorError('Use an official HTTPS source URL, or leave it blank');}
   if(url.protocol!=='https:'||url.username||url.password||url.port||url.hostname==='localhost'||!url.hostname.includes('.')||custom_source_url.length>500)throw new MonitorError('Use an official HTTPS source URL without credentials');}
  return {product,slug,cycle,installed_version,edition,custom_source_url,custom_eol_date:''};
 }
@@ -25,6 +26,11 @@ export async function monitoringHandler(req,env,user,path,data={},now=Date.now()
   const ready=await monitorReady(env);return json({ready,scheduler:ready?await schedulerHealth(env,now):{enabled:false,operating:false},delivery_enabled:monitorDeliveryReady(env),webhook_configured:!!env.SMTP2GO_MONITOR_WEBHOOK_TOKEN,source_adapters:Object.keys(SOURCE_REGISTRY),recipient:user.email,admin:monitorAdmin(env,user),test_allowed:env.PRODUCT_MONITOR_TEST_ENABLED==='true'&&String(env.PRODUCT_MONITOR_TEST_RECIPIENTS||'').toLowerCase().split(',').map(s=>s.trim()).includes(user.email.toLowerCase()),message:ready?'':'Monitoring Not Yet Active: enhanced monitoring schema awaits approval.'});
  }
  if(!await monitorReady(env))throw new MonitorError('Monitoring Not Yet Active: schema and activation await approval. Existing saved lifecycle preferences are preserved.',503);
+ if(path==='/v1/monitoring/directory'&&req.method==='GET')return json({products:[...new Map([...await cachedDirectory(env),...common].map(p=>[p.slug,p])).values()]});
+ if(path==='/v1/monitoring/directory/lookup'&&req.method==='POST'){
+  const name=String(data.name||'').trim();if(!name||name.length>120||/[\u0000-\u001f]/.test(name))throw new MonitorError('Enter the official product name');
+  try{return json(await lookupDirectory(env,name,now));}catch(error){throw new MonitorError(error.message);}
+ }
  if(path==='/v1/monitoring'&&req.method==='GET'){
   const rows=(await q(env.DB,`SELECT w.*,s.status AS monitoring_status,s.alert_types,s.notice_days,s.delivery_mode,s.extended_entitled,s.consented_at,
    p.edition,p.official_url,p.source_id,p.branch,p.verification_error,x.last_attempt_at,x.last_success_at,x.next_due_at,x.error AS source_error,v.record_json,
@@ -61,6 +67,9 @@ export async function monitoringHandler(req,env,user,path,data={},now=Date.now()
    const id=crypto.randomUUID();ids.push(id);
    // Unsupported and custom identities remain private, unverified references.
    p.id=await sha(p.source_id?p.id:JSON.stringify([user.id,w.product,w.cycle,w.custom_source_url]));
+   // Only identities with a checked public directory record may acquire a
+   // community lifecycle source. Unknown names remain account-private.
+   if(!p.source){const resolved=await directoryMonitor(env,w);if(resolved){p=resolved.product;statements.push(...await directoryWatchStatements(env,resolved));}}
    if(p.source)statements.push(q(env.DB,'INSERT OR IGNORE INTO lifecycle_monitor_sources(id,adapter,url) VALUES(?,?,?)',p.source_id,p.source.adapter,p.source.url));
    statements.push(q(env.DB,'INSERT OR IGNORE INTO lifecycle_monitor_products(id,source_id,slug,name,vendor,branch,edition,official_url) VALUES(?,?,?,?,?,?,?,?)',p.id,p.source_id,p.source_id?p.slug:'unverified-'+p.id,p.name,p.vendor,p.branch,p.edition,p.official_url),
     q(env.DB,'INSERT INTO lifecycle_watches(user_id,id,product,slug,cycle,installed_version,custom_eol_date,custom_source_url,created_at) SELECT ?,?,?,?,?,?,?,?,? WHERE (SELECT COUNT(*) FROM lifecycle_watches WHERE user_id=?)<100',user.id,id,w.product,w.slug,w.cycle,w.installed_version,'',w.custom_source_url,Math.floor(now/1000),user.id),
@@ -78,6 +87,18 @@ export async function monitoringHandler(req,env,user,path,data={},now=Date.now()
   }
   if(!data.email_enabled)statements.push(q(env.DB,"UPDATE lifecycle_monitor_notifications SET state='suppressed' WHERE user_id=? AND state IN('pending','queued')",user.id));
   await env.DB.batch(statements);return json({saved:true,delivery_active:env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true'});
+ }
+ const resolve=/^\/v1\/monitoring\/watches\/([a-f0-9-]{36})\/identity$/.exec(path);
+ if(resolve&&req.method==='PUT'){
+  const watch=await q(env.DB,'SELECT w.*,p.edition FROM lifecycle_watches w JOIN lifecycle_watch_settings s ON s.watch_id=w.id AND s.user_id=w.user_id JOIN lifecycle_monitor_products p ON p.id=s.product_id WHERE w.user_id=? AND w.id=?',user.id,resolve[1]).first();
+  if(!watch)throw new MonitorError('Watch not found',404);
+  const candidate=watchInput({...watch,slug:data.slug,cycle:data.cycle});
+  const resolved=await directoryMonitor(env,candidate);if(!resolved)throw new MonitorError('Choose a product and release returned by the source directory');
+  await env.DB.batch([...await directoryWatchStatements(env,resolved),
+   q(env.DB,'UPDATE lifecycle_watches SET slug=?,cycle=?,product=? WHERE user_id=? AND id=?',resolved.product.slug,resolved.product.branch,resolved.product.name,user.id,watch.id),
+   q(env.DB,'UPDATE lifecycle_watch_settings SET product_id=?,updated_at=? WHERE user_id=? AND watch_id=?',resolved.product.id,now,user.id,watch.id),
+   q(env.DB,"UPDATE lifecycle_monitor_notifications SET state='suppressed' WHERE user_id=? AND watch_id=? AND state IN('pending','queued')",user.id,watch.id),audit(env,user,watch.id,'identity_confirmed',now)]);
+  return json({saved:true});
  }
  const match=/^\/v1\/monitoring\/watches\/([a-f0-9-]{36})$/.exec(path);
  if(match&&['PUT','DELETE'].includes(req.method)){
