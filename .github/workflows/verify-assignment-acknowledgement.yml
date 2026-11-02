@@ -1,9 +1,9 @@
 name: Verify assignment email and acknowledgement (no deployment)
 on:
   push:
-    branches: [feat/assignment-acknowledgement]
+    branches: [feat/assignment-acknowledgement, feat/assignment-fyi]
   pull_request:
-    paths: ['account-backend/src/assignment-*.js', 'account-backend/src/remediation.js', 'account-backend/migrations/0024_assignment_acknowledgements.sql', 'account-backend/tests/assignment-*.mjs', 'account-backend/tests/helpers/assignment-db.mjs', 'scripts/assignment_ack_browser.mjs', 'scripts/verify_assignment_ack_d1.mjs', '.github/workflows/verify-assignment-acknowledgement.yml']
+    paths: ['account-backend/src/assignment-*.js', 'account-backend/src/remediation.js', 'account-backend/migrations/0024_assignment_acknowledgements.sql', 'account-backend/migrations/0025_assignment_fyi.sql', 'scripts/assignment_fyi_browser.mjs', 'scripts/verify_assignment_fyi_d1.mjs', 'account-backend/tests/assignment-*.mjs', 'account-backend/tests/helpers/assignment-db.mjs', 'scripts/assignment_ack_browser.mjs', 'scripts/verify_assignment_ack_d1.mjs', '.github/workflows/verify-assignment-acknowledgement.yml']
 permissions:
   contents: read
 jobs:
@@ -27,8 +27,12 @@ jobs:
         run: npx --yes wrangler@4.156.0 deploy --dry-run --outdir ../work/acknowledgement-worker
       - name: Exercise guest confirmation and render email/page/tracker review screenshots
         run: node scripts/assignment_ack_browser.mjs
+      - name: Exercise optional FYI notifications and receipt updates
+        run: node scripts/assignment_fyi_browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: acknowledgement-review-synthetic-data
-          path: work/acknowledgement-review/
+          path: |
+            work/acknowledgement-review/
+            work/fyi-review/

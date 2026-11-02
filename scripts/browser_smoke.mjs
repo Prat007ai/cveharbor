@@ -969,7 +969,7 @@ const remediationUi=fs.readFileSync('operations.js','utf8');
 const remediationStyles=fs.readFileSync('styles.css','utf8');
 assert.ok(remediationDialogs.includes('id="remediationConfirmDialog"'),'branded pre-send confirmation exists');
 assert.ok(remediationDialogs.includes('id="remediationSuccessDialog"'),'branded success dialog exists');
-assert.ok(remediationUi.includes('confirmReviewRequest(cve,email)'),'assignment invokes branded confirmation');
+assert.ok(remediationUi.includes('confirmReviewRequest(cve,email,fyi)'),'assignment invokes branded confirmation');
 assert.ok(!remediationUi.includes("window.confirm('Send the "),'native browser confirm removed for assignment');
 assert.ok(remediationUi.includes("Your request has been submitted to "),'success text contains recipient address');
 assert.ok(remediationStyles.includes('#remediationDue::-webkit-calendar-picker-indicator'),'date calendar icon has higher contrast');

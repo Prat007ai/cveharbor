@@ -56,3 +56,9 @@ assert.equal(acknowledgementRelease(ackFiles),true);
 for(const file of ['account-backend/src/cvie.js','account-backend/migrations/0019_cvie.sql','scripts/bootstrap_cvie_shared.mjs'])assert.equal(acknowledgementRelease([...ackFiles,file]),false);
 assert.equal(acknowledgementRelease(ackFiles.filter(f=>!f.endsWith('0024_assignment_acknowledgements.sql'))),false);
 console.log('PASS: acknowledgement release permits only its approved additive migration');
+
+const {fyiRelease}=await import('./worker_release_mode.mjs');
+assert.equal(fyiRelease(['account-backend/src/assignment-fyi.js','account-backend/migrations/0025_assignment_fyi.sql','account-backend/src/index.js']),true);
+assert.equal(fyiRelease(['account-backend/src/assignment-fyi.js','account-backend/src/cvie.js']),false);
+assert.equal(fyiRelease(['account-backend/src/assignment-fyi.js','scripts/bootstrap_cvie_shared.mjs']),false);
+console.log('PASS: FYI release is restricted to its own additive migration and notification code');

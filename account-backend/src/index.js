@@ -1,3 +1,4 @@
+import {FyiError,scheduleFyi,retryFyi} from './assignment-fyi.js';
 import {acknowledgementRoute,assignmentHistory,revokeAssignment,AssignmentError} from './assignment-acknowledgement.js';
 import {approvedTest} from './monitor-approved-test.js';
 import {workspaceRoute} from './workspace-summary.js';
@@ -45,7 +46,7 @@ async function emailCode(env,address,code){const response=await fetch('https://a
 export default {async fetch(req,env,ctx){
  const url=new URL(req.url),origin=req.headers.get('origin');
  // Public bearer-link flow is isolated from account sessions and all private routes.
- if(url.pathname.startsWith('/v1/acknowledge/'))return acknowledgementRoute(req,env);
+ if(url.pathname.startsWith('/v1/acknowledge/'))return acknowledgementRoute(req,env,ctx);
  if(req.method==='OPTIONS'){if(origin!==ALLOWED_ORIGIN)return response({error:'Forbidden'},403);return new Response(null,{status:204,headers:{'Access-Control-Allow-Origin':ALLOWED_ORIGIN,'Access-Control-Allow-Credentials':'true','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST,PUT,DELETE,OPTIONS','Vary':'Origin'}})}
  if(!url.pathname.startsWith('/v1/'))return response({error:'Not found'},404);
  if(url.pathname==='/v1/monitoring/webhooks/smtp2go'){
@@ -312,6 +313,8 @@ export default {async fetch(req,env,ctx){
    const data=await body(req);
    return await importLegacy(env,user,data.remediations);
   }
+  const fyiRetry=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})\/assignments\/([a-f0-9-]{36})\/fyi\/retry$/.exec(path);
+  if(fyiRetry&&req.method==='POST'){const result=await retryFyi(env,user,fyiRetry[1],fyiRetry[2]);scheduleFyi(env,ctx);return response(result);}
   const assignmentRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})\/assignments(?:\/([a-f0-9-]{36})\/revoke)?$/.exec(path);
   if(assignmentRoute){
    if(!assignmentRoute[2]&&req.method==='GET')return await assignmentHistory(env,user,assignmentRoute[1],url);
@@ -321,7 +324,7 @@ export default {async fetch(req,env,ctx){
   const remediationRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})(\/assign)?$/.exec(path);
   if(remediationRoute){
    const id=remediationRoute[1];
-   if(remediationRoute[2]&&req.method==='POST')return await assignRemediation(env,user,id,await body(req));
+   if(remediationRoute[2]&&req.method==='POST'){const result=await assignRemediation(env,user,id,await body(req));if(result.ok)scheduleFyi(env,ctx);return result;}
    if(!remediationRoute[2]&&req.method==='PUT')return await upsertRemediation(env,user,id,await body(req));
    if(!remediationRoute[2]&&req.method==='DELETE')return await removeRemediation(env,user,id);
   }
@@ -352,10 +355,10 @@ export default {async fetch(req,env,ctx){
    await env.DB.prepare('DELETE FROM users WHERE id=?').bind(user.id).run();return response({deleted:true},200,{'Set-Cookie':setCookie('',0)});
   }
   return response({error:'Not found'},404);
- }catch(error){if(error instanceof AssignmentError||error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
+ }catch(error){if(error instanceof FyiError||error instanceof AssignmentError||error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
-  if(_event.cron==='* * * * *'){ctx.waitUntil(approvedTest(env));ctx.waitUntil(dispatchEvidence(env));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}
+  if(_event.cron==='* * * * *'){scheduleFyi(env,ctx);ctx.waitUntil(approvedTest(env));ctx.waitUntil(dispatchEvidence(env));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}
   if(_event.cron==='*/5 * * * *'){ctx.waitUntil(dispatchCvie(env));return;}
   if(env.ALERT_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchDueDigests(env));
   if(env.LIFECYCLE_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchLifecycle(env));
