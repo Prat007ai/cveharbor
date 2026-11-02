@@ -76,3 +76,9 @@ assert.equal(assignmentProgressRelease(progressFiles),true);
 for(const file of ['account-backend/src/cvie.js','account-backend/migrations/0026_remediation_workflow.sql','scripts/bootstrap_cvie_shared.mjs','scripts/verify_cvie_d1.mjs'])assert.equal(assignmentProgressRelease([...progressFiles,file]),false);
 assert.equal(assignmentProgressRelease(progressFiles.filter(f=>!f.endsWith('.sql'))),false);
 console.log('PASS: assignment progress release applies only migration 0027 and skips unrelated maintenance');
+
+const {assignmentProgressCodeOnly}=await import('./worker_release_mode.mjs');
+const managerFiles=['account-backend/src/assignment-progress-mail.js','account-backend/src/assignment-progress.js','account-backend/src/assignment-progress-page.js','account-backend/src/assignment-template.js','account-backend/tests/assignment-progress.test.mjs'];
+assert.equal(assignmentProgressCodeOnly(managerFiles),true);
+for(const file of ['account-backend/migrations/0027_assignment_progress.sql','account-backend/wrangler.toml','account-backend/src/index.js','scripts/bootstrap_cvie_shared.mjs'])assert.equal(assignmentProgressCodeOnly([...managerFiles,file]),false);
+console.log('PASS: manager reminder release deploys notification code without migrations or unrelated maintenance');

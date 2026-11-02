@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-02",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6668,
+  "candidate_records": 6691,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -4027,7 +4027,63 @@
       "cvss": "9.3",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-11-02T18:07:35Z",
-      "source_updated_at": "2026-11-02T17:17:32.670",
+      "source_updated_at": "2026-11-02T19:34:23.993",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-105605",
+      "title": "Joomla Extension - dj-extensions.com - IDOR vulnerability allowing cross-account ad access in DJ-Classifieds < 3.11.3 - A “duplicate my ad” convenience feature on the new-ad f",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "Joomla Extension - dj-extensions.com - IDOR vulnerability allowing cross-account ad access in DJ-Classifieds < 3.11.3 - A “duplicate my ad” convenience feature on the new-ad form (site/models/additem.php) loaded an existing advert by its raw numeric ID with no check that the ad belonged to the requesting user, and no check of whether it was published, blocked, or still a pending draft. Any logged-in user, regardless of role, could request the new-ad form with another ad’s ID and have that ad’s full content, including the seller’s phone number, address, email, and price, rendered into the response, even for ads that had never been published. Advert IDs are small sequential integers.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-105605"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:35:33.347",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-117127",
+      "title": "Directory Traversal vulnerability in Gleez GleezCMS v.1.2.0 allows a remote attacker to obtain sensitive information via the action_serve function in media.php",
+      "severity": "bulletin",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-02",
+      "summary": "Directory Traversal vulnerability in Gleez GleezCMS v.1.2.0 allows a remote attacker to obtain sensitive information via the action_serve function in media.php",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-117127"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:35:33.347",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -4349,6 +4405,86 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-107342",
+      "title": "The Kali Forms — Contact Form & Drag-and-Drop Builder WordPress plugin before 2.4.30 does not...",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-02",
+      "summary": "The Kali Forms — Contact Form & Drag-and-Drop Builder WordPress plugin before 2.4.30 does not perform a capability check when its test-email handler resolves and returns a user's email address, relying only on a nonce that is available to any logged-in user, allowing authenticated users with minimal privileges (Subscriber and above) to disclose the email address of any registered user, including administrators.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-3h5r-7p7q-xv68"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107342"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/b315203f-0755-4c33-9335-88f788cb1fd7"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.3",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-01T07:14:08Z",
+      "source_updated_at": "2026-11-01T18:30:22Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.0014,
+      "epss_percentile": 0.03317,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-120338",
+      "title": "Prefab UI's Generative UI sandbox runs caller-supplied Python inside Pyodide, Python compiled to...",
+      "severity": "critical",
+      "categories": [
+        "JavaScript / TypeScript",
+        "Python / PyPI"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-02",
+      "summary": "Prefab UI's Generative UI sandbox runs caller-supplied Python inside Pyodide, Python compiled to WebAssembly, in a Deno subprocess. The feature is documented as isolation for untrusted code, including LLM-written UI. From prefab-ui 0.14.0 through 0.20.2 the launcher starts Deno with unrestricted --allow-read, --allow-write, and --allow-net, and the runner leaves the Deno API on the JavaScript global object. Pyodide's js module proxies that global, so the Python can call Deno.readTextFileSync and Deno.writeTextFileSync. A caller who can supply the code can read and write files as the server OS user, and can persist code execution by writing a .pth file into the server virtualenv's site-packages. The usual remote path is FastMCP's GenerativeUI provider, which registers the MCP tool generate_prefab_ui and forwards that tool's code argument into this sandbox. On a FastMCP server with no authentication configured, any client who can reach the server can call the tool. With authentication, any client allowed to call tools can. Generative UI is opt-in, and the host must have Deno installed. Confirmed on prefab-ui 0.20.2. Fixed in 0.21.0: after the runtime and Prefab sources load, the runner revokes Deno read, write, and network permission before it accepts code, the process is started w",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120338"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-3g72-rrqc-f76c"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/PrefectHQ/prefab/security/advisories/GHSA-595q-jv4r-q7j9"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/PrefectHQ/prefab/pull/538"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "10.0",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-01T16:23:12Z",
+      "source_updated_at": "2026-11-01T18:30:24Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
       "id": "GHSA-f93h-mc69-274w",
       "title": "Malicious code in pystr-codec (PyPI)",
       "severity": "bulletin",
@@ -4389,45 +4525,6 @@
       "source_updated_at": "2026-11-01T03:30:23Z",
       "source_type": "github",
       "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-107342",
-      "title": "The Kali Forms — Contact Form & Drag-and-Drop Builder WordPress plugin before 2.4.30 does not...",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-11-01",
-      "updated": "2026-11-01",
-      "summary": "The Kali Forms — Contact Form & Drag-and-Drop Builder WordPress plugin before 2.4.30 does not perform a capability check when its test-email handler resolves and returns a user's email address, relying only on a nonce that is available to any logged-in user, allowing authenticated users with minimal privileges (Subscriber and above) to disclose the email address of any registered user, including administrators.",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-3h5r-7p7q-xv68"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107342"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://wpscan.com/vulnerability/b315203f-0755-4c33-9335-88f788cb1fd7"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.3",
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-11-01T07:14:08Z",
-      "source_updated_at": "2026-11-01T18:30:22Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.0014,
-      "epss_percentile": 0.03317,
-      "epss_as_of": "2026-11-02"
     },
     {
       "id": "CVE-2026-120218",
@@ -4801,47 +4898,6 @@
       "epss": 0.00124,
       "epss_percentile": 0.02092,
       "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-120338",
-      "title": "Prefab UI's Generative UI sandbox runs caller-supplied Python inside Pyodide, Python compiled to...",
-      "severity": "critical",
-      "categories": [
-        "JavaScript / TypeScript",
-        "Python / PyPI"
-      ],
-      "published": "2026-11-01",
-      "updated": "2026-11-01",
-      "summary": "Prefab UI's Generative UI sandbox runs caller-supplied Python inside Pyodide, Python compiled to WebAssembly, in a Deno subprocess. The feature is documented as isolation for untrusted code, including LLM-written UI. From prefab-ui 0.14.0 through 0.20.2 the launcher starts Deno with unrestricted --allow-read, --allow-write, and --allow-net, and the runner leaves the Deno API on the JavaScript global object. Pyodide's js module proxies that global, so the Python can call Deno.readTextFileSync and Deno.writeTextFileSync. A caller who can supply the code can read and write files as the server OS user, and can persist code execution by writing a .pth file into the server virtualenv's site-packages. The usual remote path is FastMCP's GenerativeUI provider, which registers the MCP tool generate_prefab_ui and forwards that tool's code argument into this sandbox. On a FastMCP server with no authentication configured, any client who can reach the server can call the tool. With authentication, any client allowed to call tools can. Generative UI is opt-in, and the host must have Deno installed. Confirmed on prefab-ui 0.20.2. Fixed in 0.21.0: after the runtime and Prefab sources load, the runner revokes Deno read, write, and network permission before it accepts code, the process is started w",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120338"
-        },
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-3g72-rrqc-f76c"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/PrefectHQ/prefab/security/advisories/GHSA-595q-jv4r-q7j9"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/PrefectHQ/prefab/pull/538"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "10.0",
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-11-01T16:23:12Z",
-      "source_updated_at": "2026-11-01T18:30:24Z",
-      "source_type": "github",
-      "known_exploited": false
     },
     {
       "id": "GHSA-vj43-6r45-847h",
@@ -9553,7 +9609,7 @@
         "WordPress / Plugins"
       ],
       "published": "2026-10-31",
-      "updated": "2026-10-31",
+      "updated": "2026-11-02",
       "summary": "The PDF Invoices & Packing Slips for WooCommerce WordPress plugin from 5.16.2 before 5.16.5 does not properly escape several customer-supplied order fields — including the billing and shipping address values and the customer order note — before they are output in generated invoice and packing-slip documents, allowing unauthenticated users placing guest orders to store a malicious script that executes when a shop administrator views the document, leading to Stored Cross-Site Scripting.",
       "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
       "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
@@ -10031,7 +10087,7 @@
       "cvss": "7.8",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T20:53:09Z",
-      "source_updated_at": "2026-11-02T15:17:17.217",
+      "source_updated_at": "2026-11-02T19:14:53.030",
       "source_type": "nvd",
       "known_exploited": false,
       "epss": 0.00136,
@@ -10062,7 +10118,7 @@
       "cvss": "7.1",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T22:18:51Z",
-      "source_updated_at": "2026-11-02T15:17:35.567",
+      "source_updated_at": "2026-11-02T19:35:33.347",
       "source_type": "nvd",
       "known_exploited": false,
       "epss": 0.00411,
@@ -10387,7 +10443,7 @@
       "cvss": "7.5",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-10-30T21:29:48Z",
-      "source_updated_at": "2026-11-02T16:17:42.100",
+      "source_updated_at": "2026-11-02T19:34:23.993",
       "source_type": "nvd",
       "known_exploited": false,
       "epss": 0.00339,
@@ -10423,6 +10479,239 @@
       "known_exploited": false,
       "epss": 0.00279,
       "epss_percentile": 0.20364,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-62284",
+      "title": "OSAC operator is a Kubernetes operator",
+      "severity": "high",
+      "categories": [
+        "Docker / Kubernetes"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-11-02",
+      "summary": "OSAC operator is a Kubernetes operator. In the affected revision identified as 8220502, the `console-proxy` `RemoteConfigResolver` parses Kubernetes Secret kubeconfig data with `clientcmd.RESTConfigFromKubeConfig` without sanitizing the resulting `rest.Config`. An attacker who can create or modify a Secret labeled `osac.openshift.io/remote-cluster-kubeconfig`: \"true\" in a namespace where the proxy's RoleBinding grants Secret read access can supply `users[].user.exec`. When `rest.TransportFor` builds the HTTP transport for an upstream WebSocket connection, client-go invokes that exec credential plugin, spawning an arbitrary process as the osac-`console-proxy` service account inside the pod. Attacker-controlled `clusters[].server` also enables server-side request forgery from the proxy pod. Remote and auto VM cluster modes are affected, with auto the default; exclusively `local` mode does not read kubeconfig Secrets and is unaffected. The credential-plugin execution path is patched in commit 7e4222b; that patch does not address the described server-address SSRF path.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-62284"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.6",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T20:53:09Z",
+      "source_updated_at": "2026-11-02T19:35:33.347",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00505,
+      "epss_percentile": 0.43174,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-78402",
+      "title": "Stack-based buffer overflow and out-of-bounds write vulnerability in Thales Sentinel Keys Server...",
+      "severity": "high",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-11-02",
+      "summary": "Stack-based buffer overflow and out-of-bounds write vulnerability in Thales Sentinel Keys Server on Windows allows Overflow Buffers. Sentinel Keys Server does not check the length of the first field in the input message. A local attacker may craft an input and send it to Sentinel Keys Server. It may lead to code execution as NT AUTHORITY\\SYSTEM enabling local privilege escalation. This issue affects Sentinel Keys Server: versions lower than 1.3.8.0.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-78402"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-58x3-qrxv-fm7v"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://supportportal.thalesgroup.com/csm?id=kb_article_view&sys_kb_id=50fc9f3b3b005f10bba8b41864e45a61&sysparm_article=KB0031216"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-30T20:53:09Z",
+      "source_updated_at": "2026-10-30T21:32:35Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00147,
+      "epss_percentile": 0.03927,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-78403",
+      "title": "Stack-based buffer overflow and missing authorization vulnerability in Thales Sentinel Keys...",
+      "severity": "critical",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-11-02",
+      "summary": "Stack-based buffer overflow and missing authorization vulnerability in Thales Sentinel Keys Server on Windows allows Overflow Buffers. Sentinel Keys Server does not check the length of the first field in the HTTP request. An attacker may craft an HTTP request and send it to Sentinel Keys Server. It may lead to remote code execution as NT AUTHORITY\\SYSTEM. This issue affects Sentinel Keys Server: versions lower than 1.3.8.0.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-78403"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-fxcq-q77c-fh3w"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://supportportal.thalesgroup.com/csm?id=kb_article_view&sys_kb_id=50fc9f3b3b005f10bba8b41864e45a61&sysparm_article=KB0031216"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.8",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-30T20:53:09Z",
+      "source_updated_at": "2026-10-30T21:32:49Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00577,
+      "epss_percentile": 0.47555,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-62848",
+      "title": "Metalama is a Roslyn-based open-source patterns and architecture toolkit for C#",
+      "severity": "high",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-11-02",
+      "summary": "Metalama is a Roslyn-based open-source patterns and architecture toolkit for C#. From 2023.0.101-rc until 2025.1.18, 2026.0.25 and 2026.1.19, the Windows Visual Studio integration deserializes local named-pipe messages without restricting which CLR types can be instantiated. The pipe connects `devenv`, the out-of-process Roslyn code-analysis process and the `CodeLens` process, and has the predictable name `Metalama_{role}_{processId}_{hash(PackageVersion)}`. Releases from the first public 2023.0 line through 2026.0.x use Newtonsoft.Json with `TypeNameHandling.All`; the later `SerializationBinder` only remaps assembly names, and `BindToType` resolves arbitrary wire-supplied types without an allow-list. Releases 2026.1.0 through 2026.1.18 use typeless MessagePack with `TypelessObjectResolver` and likewise instantiate arbitrary types. A same-user local process able to write to the pipe can send crafted messages that lead to arbitrary code execution with confidentiality, integrity and availability impacts inside the affected Visual Studio process. Default Windows pipe ACLs limit writers to the same logged-in user, so this does not escalate privileges or cross a security boundary; command-line and MSBuild-only builds do not use the cha",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-62848"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T21:29:48Z",
+      "source_updated_at": "2026-11-02T19:35:33.347",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00186,
+      "epss_percentile": 0.08264,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-62863",
+      "title": "MoLing is a computer-use and browser-use based MCP server",
+      "severity": "critical",
+      "categories": [
+        "Application dependencies"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-11-02",
+      "summary": "MoLing is a computer-use and browser-use based MCP server. Prior to 0.5.0, when MoLing runs in SSE mode using `-l`, its `/sse` and `/message` HTTP endpoints do not authenticate requests and the `mcp-go` dependency sets `Access-Control-Allow-Origin: *`. A malicious web page can open a cross-origin `EventSource` to `/sse`, including a loopback listener, and read the `endpoint` event to obtain `sessionId`. After a victim running SSE mode visits that page, the attacker can use the disclosed `sessionId` against `/message` to send unauthorized MCP tool calls. Depending on the configured tools, those calls can read or write local files, execute commands or perform other actions. Binding only to loopback does not prevent this browser-mediated attack. This issue is fixed in version 0.5.0.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-62863"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.6",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T21:29:48Z",
+      "source_updated_at": "2026-11-02T19:35:33.347",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00314,
+      "epss_percentile": 0.243,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-62991",
+      "title": "Shopper is a Headless e-commerce Admin Panel",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-11-02",
+      "summary": "Shopper is a Headless e-commerce Admin Panel. Prior to 2.10.1, the customer detail route `/cpanel/customers/{user}/show` in `packages/admin/src/Livewire/Pages/Customers/Show.php` checks `read_customers` but looks up an arbitrary user ID without applying the `customers` role scope used by the listing. Authenticated staff holding `access_dashboard` and `read_customers` can change the user ID to retrieve administrator or staff profiles despite lacking `view_users`, which protects the separate team-management interface. The flaw exposes account profile data and permits user-ID enumeration through differing success, denial, and not-found responses. If the same role also holds `delete_customers`, `anonymizeAction()` operates on the unrestricted loaded user model and can enable destructive follow-up against non-customer accounts. This issue is fixed in version 2.10.1.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-62991"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T21:29:48Z",
+      "source_updated_at": "2026-11-02T19:18:08.020",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00238,
+      "epss_percentile": 0.14951,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-63121",
+      "title": "Kubewarden policies is a collection of WebAssembly policies for securing and governing Kubernetes clusters",
+      "severity": "medium",
+      "categories": [
+        "Docker / Kubernetes"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-11-02",
+      "summary": "Kubewarden policies is a collection of WebAssembly policies for securing and governing Kubernetes clusters. For versions provisionally classified as affected before 2.1.2, `trusted-repos-policy` compares an image's `registry` hostname against `reject lists` and `allow lists` case-sensitively even though `registry` DNS names are case-insensitive. An image with an uppercase or mixed-case `registry` hostname can miss a rejection rule for the equivalent lowercase host, so the admission policy accepts a resource whose container runtime pulls the same prohibited image. Only reject-list configurations have this bypass: allow-list configurations fail closed by over-denying differently cased hostnames. The security consequences depend on the configured rejection policy and deployment environment. This issue is fixed in version 2.1.2.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63121"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-30T22:18:51Z",
+      "source_updated_at": "2026-11-02T19:34:23.993",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00193,
+      "epss_percentile": 0.09013,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -19370,208 +19659,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-62284",
-      "title": "OSAC operator is a Kubernetes operator",
-      "severity": "high",
-      "categories": [
-        "Docker / Kubernetes"
-      ],
-      "published": "2026-10-30",
-      "updated": "2026-10-30",
-      "summary": "OSAC operator is a Kubernetes operator. In the affected revision identified as 8220502, the `console-proxy` `RemoteConfigResolver` parses Kubernetes Secret kubeconfig data with `clientcmd.RESTConfigFromKubeConfig` without sanitizing the resulting `rest.Config`. An attacker who can create or modify a Secret labeled `osac.openshift.io/remote-cluster-kubeconfig`: \"true\" in a namespace where the proxy's RoleBinding grants Secret read access can supply `users[].user.exec`. When `rest.TransportFor` builds the HTTP transport for an upstream WebSocket connection, client-go invokes that exec credential plugin, spawning an arbitrary process as the osac-`console-proxy` service account inside the pod. Attacker-controlled `clusters[].server` also enables server-side request forgery from the proxy pod. Remote and auto VM cluster modes are affected, with auto the default; exclusively `local` mode does not read kubeconfig Secrets and is unaffected. The credential-plugin execution path is patched in commit 7e4222b; that patch does not address the described server-address SSRF path.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-62284"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.6",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T20:53:09Z",
-      "source_updated_at": "2026-10-30T23:17:12.457",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00505,
-      "epss_percentile": 0.43174,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-78402",
-      "title": "Stack-based buffer overflow and out-of-bounds write vulnerability in Thales Sentinel Keys Server...",
-      "severity": "high",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-30",
-      "updated": "2026-10-30",
-      "summary": "Stack-based buffer overflow and out-of-bounds write vulnerability in Thales Sentinel Keys Server on Windows allows Overflow Buffers. Sentinel Keys Server does not check the length of the first field in the input message. A local attacker may craft an input and send it to Sentinel Keys Server. It may lead to code execution as NT AUTHORITY\\SYSTEM enabling local privilege escalation. This issue affects Sentinel Keys Server: versions lower than 1.3.8.0.",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-78402"
-        },
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-58x3-qrxv-fm7v"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://supportportal.thalesgroup.com/csm?id=kb_article_view&sys_kb_id=50fc9f3b3b005f10bba8b41864e45a61&sysparm_article=KB0031216"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.8",
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-10-30T20:53:09Z",
-      "source_updated_at": "2026-10-30T21:32:35Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00147,
-      "epss_percentile": 0.03927,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-78403",
-      "title": "Stack-based buffer overflow and missing authorization vulnerability in Thales Sentinel Keys...",
-      "severity": "critical",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-30",
-      "updated": "2026-10-30",
-      "summary": "Stack-based buffer overflow and missing authorization vulnerability in Thales Sentinel Keys Server on Windows allows Overflow Buffers. Sentinel Keys Server does not check the length of the first field in the HTTP request. An attacker may craft an HTTP request and send it to Sentinel Keys Server. It may lead to remote code execution as NT AUTHORITY\\SYSTEM. This issue affects Sentinel Keys Server: versions lower than 1.3.8.0.",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-78403"
-        },
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-fxcq-q77c-fh3w"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://supportportal.thalesgroup.com/csm?id=kb_article_view&sys_kb_id=50fc9f3b3b005f10bba8b41864e45a61&sysparm_article=KB0031216"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-10-30T20:53:09Z",
-      "source_updated_at": "2026-10-30T21:32:49Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00577,
-      "epss_percentile": 0.47555,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-62848",
-      "title": "Metalama is a Roslyn-based open-source patterns and architecture toolkit for C#",
-      "severity": "high",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-30",
-      "updated": "2026-10-30",
-      "summary": "Metalama is a Roslyn-based open-source patterns and architecture toolkit for C#. From 2023.0.101-rc until 2025.1.18, 2026.0.25 and 2026.1.19, the Windows Visual Studio integration deserializes local named-pipe messages without restricting which CLR types can be instantiated. The pipe connects `devenv`, the out-of-process Roslyn code-analysis process and the `CodeLens` process, and has the predictable name `Metalama_{role}_{processId}_{hash(PackageVersion)}`. Releases from the first public 2023.0 line through 2026.0.x use Newtonsoft.Json with `TypeNameHandling.All`; the later `SerializationBinder` only remaps assembly names, and `BindToType` resolves arbitrary wire-supplied types without an allow-list. Releases 2026.1.0 through 2026.1.18 use typeless MessagePack with `TypelessObjectResolver` and likewise instantiate arbitrary types. A same-user local process able to write to the pipe can send crafted messages that lead to arbitrary code execution with confidentiality, integrity and availability impacts inside the affected Visual Studio process. Default Windows pipe ACLs limit writers to the same logged-in user, so this does not escalate privileges or cross a security boundary; command-line and MSBuild-only builds do not use the cha",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-62848"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T21:29:48Z",
-      "source_updated_at": "2026-10-30T21:17:13.957",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00186,
-      "epss_percentile": 0.08264,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-62863",
-      "title": "MoLing is a computer-use and browser-use based MCP server",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies"
-      ],
-      "published": "2026-10-30",
-      "updated": "2026-10-30",
-      "summary": "MoLing is a computer-use and browser-use based MCP server. Prior to 0.5.0, when MoLing runs in SSE mode using `-l`, its `/sse` and `/message` HTTP endpoints do not authenticate requests and the `mcp-go` dependency sets `Access-Control-Allow-Origin: *`. A malicious web page can open a cross-origin `EventSource` to `/sse`, including a loopback listener, and read the `endpoint` event to obtain `sessionId`. After a victim running SSE mode visits that page, the attacker can use the disclosed `sessionId` against `/message` to send unauthorized MCP tool calls. Depending on the configured tools, those calls can read or write local files, execute commands or perform other actions. Binding only to loopback does not prevent this browser-mediated attack. This issue is fixed in version 0.5.0.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-62863"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.6",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T21:29:48Z",
-      "source_updated_at": "2026-10-30T21:17:14.547",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00314,
-      "epss_percentile": 0.243,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-62991",
-      "title": "Shopper is a Headless e-commerce Admin Panel",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-30",
-      "updated": "2026-10-30",
-      "summary": "Shopper is a Headless e-commerce Admin Panel. Prior to 2.10.1, the customer detail route `/cpanel/customers/{user}/show` in `packages/admin/src/Livewire/Pages/Customers/Show.php` checks `read_customers` but looks up an arbitrary user ID without applying the `customers` role scope used by the listing. Authenticated staff holding `access_dashboard` and `read_customers` can change the user ID to retrieve administrator or staff profiles despite lacking `view_users`, which protects the separate team-management interface. The flaw exposes account profile data and permits user-ID enumeration through differing success, denial, and not-found responses. If the same role also holds `delete_customers`, `anonymizeAction()` operates on the unrestricted loaded user model and can enable destructive follow-up against non-customer accounts. This issue is fixed in version 2.10.1.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-62991"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T21:29:48Z",
-      "source_updated_at": "2026-10-30T21:17:16.310",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00238,
-      "epss_percentile": 0.14951,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2026-119730",
       "title": "Maxthon Browser for Android before 7.5.8.103 contains an address bar spoofing vulnerability that...",
       "severity": "medium",
@@ -19612,37 +19699,6 @@
       "known_exploited": false,
       "epss": 0.00248,
       "epss_percentile": 0.16126,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-63121",
-      "title": "Kubewarden policies is a collection of WebAssembly policies for securing and governing Kubernetes clusters",
-      "severity": "medium",
-      "categories": [
-        "Docker / Kubernetes"
-      ],
-      "published": "2026-10-30",
-      "updated": "2026-10-30",
-      "summary": "Kubewarden policies is a collection of WebAssembly policies for securing and governing Kubernetes clusters. For versions provisionally classified as affected before 2.1.2, `trusted-repos-policy` compares an image's `registry` hostname against `reject lists` and `allow lists` case-sensitively even though `registry` DNS names are case-insensitive. An image with an uppercase or mixed-case `registry` hostname can miss a rejection rule for the equivalent lowercase host, so the admission policy accepts a resource whose container runtime pulls the same prohibited image. Only reject-list configurations have this bypass: allow-list configurations fail closed by over-denying differently cased hostnames. The security consequences depend on the configured rejection policy and deployment environment. This issue is fixed in version 2.1.2.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63121"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T22:18:51Z",
-      "source_updated_at": "2026-10-30T22:16:58.123",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00193,
-      "epss_percentile": 0.09013,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -23036,6 +23092,49 @@
       "epss_as_of": "2026-11-02"
     },
     {
+      "id": "CVE-2026-51831",
+      "title": "An issue in IDrive IDrive Backup for Windows Version 7.0.1.1 and below affected, remediated in...",
+      "severity": "bulletin",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-10-29",
+      "updated": "2026-11-02",
+      "summary": "An issue in IDrive IDrive Backup for Windows Version 7.0.1.1 and below affected, remediated in Version 7.0.1.2 allows a local attacker to execute arbitrary code via the id_service.exe component",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-51831"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-26x2-2m4r-23cm"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://frsecure.com/blog/idrive-vulnerabilities-cve-2026-51831-and-cve-2026-51832"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.idrive.com/release-info#win"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-29T20:55:56Z",
+      "source_updated_at": "2026-10-29T21:31:36Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00155,
+      "epss_percentile": 0.04597,
+      "epss_as_of": "2026-11-02"
+    },
+    {
       "id": "GHSA-8hr2-m7vq-fhpg",
       "title": "Malware in dsh-volcengine-provider",
       "severity": "bulletin",
@@ -24957,49 +25056,6 @@
       "known_exploited": false,
       "epss": 0.00244,
       "epss_percentile": 0.15611,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-51831",
-      "title": "An issue in IDrive IDrive Backup for Windows Version 7.0.1.1 and below affected, remediated in...",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-30",
-      "summary": "An issue in IDrive IDrive Backup for Windows Version 7.0.1.1 and below affected, remediated in Version 7.0.1.2 allows a local attacker to execute arbitrary code via the id_service.exe component",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-51831"
-        },
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-26x2-2m4r-23cm"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://frsecure.com/blog/idrive-vulnerabilities-cve-2026-51831-and-cve-2026-51832"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.idrive.com/release-info#win"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-10-29T20:55:56Z",
-      "source_updated_at": "2026-10-29T21:31:36Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00155,
-      "epss_percentile": 0.04597,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -30782,6 +30838,56 @@
       "source_updated_at": "",
       "source_type": "redhat",
       "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-116576",
+      "title": "systeminformation vulnerable to Windows command injection in services() through Unicode quotation marks",
+      "severity": "high",
+      "categories": [
+        "Application dependencies",
+        "Linux",
+        "Node.js / npm",
+        "Windows"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-11-02",
+      "summary": "### Summary On Windows, `systeminformation@5.33.15` builds a PowerShell command using the value passed to `services()`. The default sanitizer removes ASCII quotes but keeps Unicode curly quotes, spaces, and parentheses. A crafted service name can use those characters to break out of the generated filter string and run a PowerShell expression. The expression runs with the permissions of the Node.js process. This report confirms version `5.33.15`. Other package versions have not been checked. ### Details In `lib/processes.js`, `services()` sanitizes the caller's string with `sanitizeShellString()` and later inserts each resulting name into a `Get-CimInstance Win32_Service -Filter` command. The Windows branch passes that command to `util.powerShell()`. The sanitizer in `lib/util.js` removes the ASCII double quote, but it does not remove U+201C or U+201D, the left and right curly double quotation marks. It also permits spaces and parentheses when called in its default, non-strict mode. PowerShell accepts the curly marks as string delimiters, so an input can end the filter string and place a command expression in the generated command. For example, the input below uses curly quotation marks to end the generated filter string and execute `New-Item`. I reproduced this call on Windows ag",
+      "affected": "npm: systeminformation (< 5.33.16)",
+      "remediation": "systeminformation: 5.33.16",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116576"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-116576"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-3f7j-7jwc-fxfj"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/sebhildebrandt/systeminformation/security/advisories/GHSA-3f7j-7jwc-fxfj"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/sebhildebrandt/systeminformation/commit/5014c6d25cfce7363b937977327baa853cdba0bf"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "2026-10-28T22:42:50Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00145,
+      "epss_percentile": 0.03768,
+      "epss_as_of": "2026-11-02"
     },
     {
       "id": "CVE-2026-99100",
@@ -44164,56 +44270,6 @@
       "epss_as_of": "2026-11-02"
     },
     {
-      "id": "CVE-2026-116576",
-      "title": "systeminformation vulnerable to Windows command injection in services() through Unicode quotation marks",
-      "severity": "high",
-      "categories": [
-        "Application dependencies",
-        "Linux",
-        "Node.js / npm",
-        "Windows"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-28",
-      "summary": "### Summary On Windows, `systeminformation@5.33.15` builds a PowerShell command using the value passed to `services()`. The default sanitizer removes ASCII quotes but keeps Unicode curly quotes, spaces, and parentheses. A crafted service name can use those characters to break out of the generated filter string and run a PowerShell expression. The expression runs with the permissions of the Node.js process. This report confirms version `5.33.15`. Other package versions have not been checked. ### Details In `lib/processes.js`, `services()` sanitizes the caller's string with `sanitizeShellString()` and later inserts each resulting name into a `Get-CimInstance Win32_Service -Filter` command. The Windows branch passes that command to `util.powerShell()`. The sanitizer in `lib/util.js` removes the ASCII double quote, but it does not remove U+201C or U+201D, the left and right curly double quotation marks. It also permits spaces and parentheses when called in its default, non-strict mode. PowerShell accepts the curly marks as string delimiters, so an input can end the filter string and place a command expression in the generated command. For example, the input below uses curly quotation marks to end the generated filter string and execute `New-Item`. I reproduced this call on Windows ag",
-      "affected": "npm: systeminformation (< 5.33.16)",
-      "remediation": "systeminformation: 5.33.16",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116576"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-116576"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-3f7j-7jwc-fxfj"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/sebhildebrandt/systeminformation/security/advisories/GHSA-3f7j-7jwc-fxfj"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/sebhildebrandt/systeminformation/commit/5014c6d25cfce7363b937977327baa853cdba0bf"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.8",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-28T22:42:50Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00145,
-      "epss_percentile": 0.03768,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2026-115923",
       "title": "Backstage catalog rules can be bypassed for URL locations using encoded path segments",
       "severity": "medium",
@@ -45990,6 +46046,174 @@
       "known_exploited": false,
       "epss": 0.00353,
       "epss_percentile": 0.28963,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-116588",
+      "title": "Datadog dd-trace-py: ReDoS in URL query string obfuscation",
+      "severity": "high",
+      "categories": [
+        "Application dependencies",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-11-02",
+      "summary": "### Summary A regular expression used to obfuscate URL query strings can consume excessive CPU when processing certain attacker-controlled input. This can stall request processing and cause denial of service in applications using affected HTTP tracing integrations. ### Details The default query-string obfuscation pattern can exhibit excessive backtracking. The pattern is applied synchronously when recording HTTP URL metadata, allowing query-string processing to occupy application resources for an extended period. As a workaround, set both DD_TRACE_OBFUSCATION_QUERY_STRING_REGEXP and DD_TRACE_OBFUSCATION_QUERY_STRING_PATTERN to the fixed Python-compatible regex below, then restart the application. Setting both variables covers all affected ddtrace versions, including releases before 1.19.0. ``` export DD_TRACE_OBFUSCATION_QUERY_STRING_REGEXP='(?i)(?:(?:\"|%22)?)(?:(?:old[-_]?|new[-_]?)?p(?:ass)?w(?:or)?d(?:1|2)?|pass(?:[-_]?phrase)?|secret|(?:api[-_]?|private[-_]?|public[-_]?|access[-_]?|secret[-_]?|app(?:lication)?[-_]?)key(?:[-_]?id)?|token|consumer[-_]?(?:id|key|secret)|sign(?:ed|ature)?|auth(?:entication|orization)?)(?:(?:\\s|%20)*(?:=|%3D)[^&]+|(?:\"|%22)(?:\\s|%20)*(?::|%3A)(?:\\s|%20)*(?:\"|%22)(?:%2[^2]|%[^2]|[^\"%])+(?:\"|%22))|(?:bearer(?:\\s|%20)+[a-z0-9._\\-]+|token(?::|%3A)[a-z",
+      "affected": "pip: ddtrace (>= 1.5.0, < 3.19.9); pip: ddtrace (>= 4.0.0, < 4.15.6)",
+      "remediation": "ddtrace: 3.19.9; ddtrace: 4.15.6",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-3633-r77q-h3v3"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/DataDog/dd-trace-py/security/advisories/GHSA-3633-r77q-h3v3"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116588"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/DataDog/dd-trace-py/pull/20857"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "2026-10-27T15:37:32Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00468,
+      "epss_percentile": 0.40503,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-116800",
+      "title": "WWBN AVideo before 29.5.0 contains a local file inclusion vulnerability that allows unauthenticated attackers to include PHP files outside the locale directory via a crafted A",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-11-02",
+      "summary": "WWBN AVideo before 29.5.0 contains a local file inclusion vulnerability that allows unauthenticated attackers to include PHP files outside the locale directory via a crafted Accept-Language header. Attackers can use overlapping traversal sequences like ....// to bypass single-pass removal in setLanguage(), executing existing server-side PHP files in the application context.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116800"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "2026-11-02T19:17:58.183",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00506,
+      "epss_percentile": 0.43195,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-117540",
+      "title": "svg-sanitizer from 0.5.3 before 1.1.0 contains a denial of service vulnerability in Sanitizer::sanitize() that repeatedly rescans the whole input while stripping PHP tags",
+      "severity": "high",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-11-02",
+      "summary": "svg-sanitizer from 0.5.3 before 1.1.0 contains a denial of service vulnerability in Sanitizer::sanitize() that repeatedly rescans the whole input while stripping PHP tags. Unauthenticated attackers can upload SVGs with many overlapping PHP tag openers and closers, forcing quadratic preg_replace passes that exhaust worker CPU for minutes.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-117540"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.7",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "2026-11-02T19:18:01.290",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00354,
+      "epss_percentile": 0.29133,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-116603",
+      "title": "A flaw has been found in SourceCodester Online Food Ordering System 1.0",
+      "severity": "low",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-11-02",
+      "summary": "A flaw has been found in SourceCodester Online Food Ordering System 1.0. Impacted is an unknown function of the file admin/add_food.php. Executing a manipulation of the argument image can lead to unrestricted upload. The attack may be performed from remote. The exploit has been published and may be used.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116603"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "2.0",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T04:00:40Z",
+      "source_updated_at": "2026-11-02T19:17:56.590",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00292,
+      "epss_percentile": 0.21866,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-116639",
+      "title": "A vulnerability was detected in MD-MAFUJUL-HASAN Online-Payroll-Management-System up to a8902bf64575e325f6d6bf93a55f7bd273ec58cd",
+      "severity": "low",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-11-02",
+      "summary": "A vulnerability was detected in MD-MAFUJUL-HASAN Online-Payroll-Management-System up to a8902bf64575e325f6d6bf93a55f7bd273ec58cd. Affected is an unknown function of the file chat.php. Performing a manipulation of the argument ID results in cross site scripting. It is possible to initiate the attack remotely. The exploit is now public and may be used. This product is using a rolling release to provide continious delivery. Therefore, no version details for affected nor updated releases are available. The project was informed of the problem early through an issue report but has not responded yet.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116639"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "2.0",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T04:00:40Z",
+      "source_updated_at": "2026-11-02T19:17:56.997",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00199,
+      "epss_percentile": 0.09696,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -49322,50 +49546,6 @@
       "epss_as_of": "2026-11-02"
     },
     {
-      "id": "CVE-2026-116588",
-      "title": "Datadog dd-trace-py: ReDoS in URL query string obfuscation",
-      "severity": "high",
-      "categories": [
-        "Application dependencies",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "### Summary A regular expression used to obfuscate URL query strings can consume excessive CPU when processing certain attacker-controlled input. This can stall request processing and cause denial of service in applications using affected HTTP tracing integrations. ### Details The default query-string obfuscation pattern can exhibit excessive backtracking. The pattern is applied synchronously when recording HTTP URL metadata, allowing query-string processing to occupy application resources for an extended period. As a workaround, set both DD_TRACE_OBFUSCATION_QUERY_STRING_REGEXP and DD_TRACE_OBFUSCATION_QUERY_STRING_PATTERN to the fixed Python-compatible regex below, then restart the application. Setting both variables covers all affected ddtrace versions, including releases before 1.19.0. ``` export DD_TRACE_OBFUSCATION_QUERY_STRING_REGEXP='(?i)(?:(?:\"|%22)?)(?:(?:old[-_]?|new[-_]?)?p(?:ass)?w(?:or)?d(?:1|2)?|pass(?:[-_]?phrase)?|secret|(?:api[-_]?|private[-_]?|public[-_]?|access[-_]?|secret[-_]?|app(?:lication)?[-_]?)key(?:[-_]?id)?|token|consumer[-_]?(?:id|key|secret)|sign(?:ed|ature)?|auth(?:entication|orization)?)(?:(?:\\s|%20)*(?:=|%3D)[^&]+|(?:\"|%22)(?:\\s|%20)*(?::|%3A)(?:\\s|%20)*(?:\"|%22)(?:%2[^2]|%[^2]|[^\"%])+(?:\"|%22))|(?:bearer(?:\\s|%20)+[a-z0-9._\\-]+|token(?::|%3A)[a-z",
-      "affected": "pip: ddtrace (>= 1.5.0, < 3.19.9); pip: ddtrace (>= 4.0.0, < 4.15.6)",
-      "remediation": "ddtrace: 3.19.9; ddtrace: 4.15.6",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-3633-r77q-h3v3"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/DataDog/dd-trace-py/security/advisories/GHSA-3633-r77q-h3v3"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116588"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/DataDog/dd-trace-py/pull/20857"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T15:37:32Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00468,
-      "epss_percentile": 0.40503,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2026-106435",
       "title": "MongoDB Python Driver: Out-of-bounds read in BSON decoding via a malformed Regex element",
       "severity": "high",
@@ -51401,37 +51581,6 @@
       "epss_as_of": "2026-11-02"
     },
     {
-      "id": "CVE-2026-116800",
-      "title": "WWBN AVideo before 29.5.0 contains a local file inclusion vulnerability that allows unauthenticated attackers to include PHP files outside the locale directory via a crafted A",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "WWBN AVideo before 29.5.0 contains a local file inclusion vulnerability that allows unauthenticated attackers to include PHP files outside the locale directory via a crafted Accept-Language header. Attackers can use overlapping traversal sequences like ....// to bypass single-pass removal in setLanguage(), executing existing server-side PHP files in the application context.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116800"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T00:17:11.323",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00506,
-      "epss_percentile": 0.43195,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2026-106174",
       "title": "A improper locking vulnerability in Fortinet FortiOS 8.0.0, FortiOS 7.6.4 through 7.6.6 may allow an unauthenticated attacker with network access to the device to cause a deni",
       "severity": "high",
@@ -51553,37 +51702,6 @@
       "known_exploited": false,
       "epss": 0.00099,
       "epss_percentile": 0.00789,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-117540",
-      "title": "svg-sanitizer from 0.5.3 before 1.1.0 contains a denial of service vulnerability in Sanitizer::sanitize() that repeatedly rescans the whole input while stripping PHP tags",
-      "severity": "high",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "svg-sanitizer from 0.5.3 before 1.1.0 contains a denial of service vulnerability in Sanitizer::sanitize() that repeatedly rescans the whole input while stripping PHP tags. Unauthenticated attackers can upload SVGs with many overlapping PHP tag openers and closers, forcing quadratic preg_replace passes that exhaust worker CPU for minutes.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-117540"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T11:17:34.953",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00354,
-      "epss_percentile": 0.29133,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -51807,68 +51925,6 @@
       "source_updated_at": "2026-10-27T13:29:59Z",
       "source_type": "github",
       "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-116603",
-      "title": "A flaw has been found in SourceCodester Online Food Ordering System 1.0",
-      "severity": "low",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "A flaw has been found in SourceCodester Online Food Ordering System 1.0. Impacted is an unknown function of the file admin/add_food.php. Executing a manipulation of the argument image can lead to unrestricted upload. The attack may be performed from remote. The exploit has been published and may be used.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116603"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "2.0",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T04:00:40Z",
-      "source_updated_at": "2026-10-27T14:52:13.410",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00292,
-      "epss_percentile": 0.21866,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-116639",
-      "title": "A vulnerability was detected in MD-MAFUJUL-HASAN Online-Payroll-Management-System up to a8902bf64575e325f6d6bf93a55f7bd273ec58cd",
-      "severity": "low",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-27",
-      "updated": "2026-10-27",
-      "summary": "A vulnerability was detected in MD-MAFUJUL-HASAN Online-Payroll-Management-System up to a8902bf64575e325f6d6bf93a55f7bd273ec58cd. Affected is an unknown function of the file chat.php. Performing a manipulation of the argument ID results in cross site scripting. It is possible to initiate the attack remotely. The exploit is now public and may be used. This product is using a rolling release to provide continious delivery. Therefore, no version details for affected nor updated releases are available. The project was informed of the problem early through an issue report but has not responded yet.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116639"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "2.0",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T04:00:40Z",
-      "source_updated_at": "2026-10-27T14:52:13.410",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00199,
-      "epss_percentile": 0.09696,
-      "epss_as_of": "2026-11-02"
     },
     {
       "id": "CVE-2026-116620",
@@ -55012,6 +55068,99 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-116476",
+      "title": "A weakness has been identified in a2aproject a2a-dotnet up to 1.0.0-preview3",
+      "severity": "medium",
+      "categories": [
+        ".NET / ASP.NET"
+      ],
+      "published": "2026-10-26",
+      "updated": "2026-11-02",
+      "summary": "A weakness has been identified in a2aproject a2a-dotnet up to 1.0.0-preview3. The affected element is the function TaskProjection.ApplyStatus of the component TaskProjection. Executing a manipulation can lead to race condition. The attack may be performed from remote. The pull request to fix this issue awaits acceptance.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116476"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T02:56:43Z",
+      "source_updated_at": "2026-11-02T19:17:54.977",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00202,
+      "epss_percentile": 0.10181,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-116514",
+      "title": "A weakness has been identified in itsourcecode Airline Reservation System 1.0",
+      "severity": "low",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-26",
+      "updated": "2026-11-02",
+      "summary": "A weakness has been identified in itsourcecode Airline Reservation System 1.0. This affects an unknown part of the file /book_flight.php. Executing a manipulation of the argument max can lead to cross site scripting. The attack can be executed remotely. The exploit has been made available to the public and could be used for attacks.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116514"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "2.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T04:00:40Z",
+      "source_updated_at": "2026-11-02T19:17:55.637",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.00347,
+      "epss_percentile": 0.28322,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-116555",
+      "title": "A vulnerability has been found in Argilla up to 2.8.0",
+      "severity": "low",
+      "categories": [
+        "Node.js / npm"
+      ],
+      "published": "2026-10-26",
+      "updated": "2026-11-02",
+      "summary": "A vulnerability has been found in Argilla up to 2.8.0. The impacted element is an unknown function of the file argilla-frontend/components/features/annotation/container/fields/sandbox/Sandbox.vue. The manipulation of the argument template leads to cross site scripting. Remote exploitation of the attack is possible. The exploit has been disclosed to the public and may be used. The project was informed of the problem early through an issue report but has not responded yet.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116555"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "1.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-10-28T04:00:40Z",
+      "source_updated_at": "2026-11-02T19:17:55.820",
+      "source_type": "nvd",
+      "known_exploited": false,
+      "epss": 0.0021,
+      "epss_percentile": 0.1123,
+      "epss_as_of": "2026-11-02"
+    },
+    {
       "id": "CVE-2026-116477",
       "title": "A security vulnerability has been detected in a2aproject a2a-dotnet up to 1.0.0-preview2",
       "severity": "medium",
@@ -56194,68 +56343,6 @@
       "epss_as_of": "2026-11-02"
     },
     {
-      "id": "CVE-2026-116476",
-      "title": "A weakness has been identified in a2aproject a2a-dotnet up to 1.0.0-preview3",
-      "severity": "medium",
-      "categories": [
-        ".NET / ASP.NET"
-      ],
-      "published": "2026-10-26",
-      "updated": "2026-10-27",
-      "summary": "A weakness has been identified in a2aproject a2a-dotnet up to 1.0.0-preview3. The affected element is the function TaskProjection.ApplyStatus of the component TaskProjection. Executing a manipulation can lead to race condition. The attack may be performed from remote. The pull request to fix this issue awaits acceptance.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116476"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-27T14:52:13.410",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00202,
-      "epss_percentile": 0.10181,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-116514",
-      "title": "A weakness has been identified in itsourcecode Airline Reservation System 1.0",
-      "severity": "low",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-26",
-      "updated": "2026-10-27",
-      "summary": "A weakness has been identified in itsourcecode Airline Reservation System 1.0. This affects an unknown part of the file /book_flight.php. Executing a manipulation of the argument max can lead to cross site scripting. The attack can be executed remotely. The exploit has been made available to the public and could be used for attacks.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116514"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "2.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T04:00:40Z",
-      "source_updated_at": "2026-10-27T14:52:13.410",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00347,
-      "epss_percentile": 0.28322,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2026-116515",
       "title": "A security vulnerability has been detected in itsourcecode Online Book Store 1.0",
       "severity": "low",
@@ -56284,37 +56371,6 @@
       "known_exploited": false,
       "epss": 0.0025,
       "epss_percentile": 0.16357,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-116555",
-      "title": "A vulnerability has been found in Argilla up to 2.8.0",
-      "severity": "low",
-      "categories": [
-        "Node.js / npm"
-      ],
-      "published": "2026-10-26",
-      "updated": "2026-10-27",
-      "summary": "A vulnerability has been found in Argilla up to 2.8.0. The impacted element is an unknown function of the file argilla-frontend/components/features/annotation/container/fields/sandbox/Sandbox.vue. The manipulation of the argument template leads to cross site scripting. Remote exploitation of the attack is possible. The exploit has been disclosed to the public and may be used. The project was informed of the problem early through an issue report but has not responded yet.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116555"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "1.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T04:00:40Z",
-      "source_updated_at": "2026-10-27T14:52:13.410",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0021,
-      "epss_percentile": 0.1123,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -63357,6 +63413,51 @@
       "epss_as_of": "2026-11-02"
     },
     {
+      "id": "CVE-2026-106765",
+      "title": "@rog0x/mcp-docker-tools: executes arbitrary code via the handleImageList function",
+      "severity": "high",
+      "categories": [
+        "Application dependencies",
+        "Docker / Kubernetes",
+        "Node.js / npm"
+      ],
+      "published": "2026-10-23",
+      "updated": "2026-11-02",
+      "summary": "An issue in @rog0x/mcp-docker-tools 1.0.1 allows a remote attacker to execute arbitrary code via the handleImageList function.",
+      "affected": "npm: @rog0x/mcp-docker-tools (<= 1.0.1)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-fq6x-j3g6-xx83"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-106765"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/rog0x/mcp-git-tools/issues/1"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://stillosdigitalholdings.com/advisories/CVE-2026-106765.cve.json"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-30T15:45:11Z",
+      "source_updated_at": "2026-10-30T15:29:24Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00503,
+      "epss_percentile": 0.43033,
+      "epss_as_of": "2026-11-02"
+    },
+    {
       "id": "CVE-2026-99053",
       "title": "In the Linux kernel, the following vulnerability has been resolved: tipc: hold a reference to...",
       "severity": "high",
@@ -65976,51 +66077,6 @@
       "known_exploited": false,
       "epss": 0.00501,
       "epss_percentile": 0.42928,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-106765",
-      "title": "@rog0x/mcp-docker-tools: executes arbitrary code via the handleImageList function",
-      "severity": "high",
-      "categories": [
-        "Application dependencies",
-        "Docker / Kubernetes",
-        "Node.js / npm"
-      ],
-      "published": "2026-10-23",
-      "updated": "2026-10-30",
-      "summary": "An issue in @rog0x/mcp-docker-tools 1.0.1 allows a remote attacker to execute arbitrary code via the handleImageList function.",
-      "affected": "npm: @rog0x/mcp-docker-tools (<= 1.0.1)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-fq6x-j3g6-xx83"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-106765"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/rog0x/mcp-git-tools/issues/1"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://stillosdigitalholdings.com/advisories/CVE-2026-106765.cve.json"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-30T15:45:11Z",
-      "source_updated_at": "2026-10-30T15:29:24Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00503,
-      "epss_percentile": 0.43033,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -72555,53 +72611,6 @@
       "epss_as_of": "2026-11-02"
     },
     {
-      "id": "CVE-2026-109618",
-      "title": "RCE via OOM corruption",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-11-02",
-      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "Vendor advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:25Z",
-      "source_type": "php_upstream",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99998,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2026-109619",
       "title": "RCE via stale global state",
       "severity": "critical",
@@ -72646,6 +72655,53 @@
       "known_exploited": true,
       "epss": 0.99999,
       "epss_percentile": 0.99999,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-109618",
+      "title": "RCE via OOM corruption",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-11-02",
+      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:25Z",
+      "source_type": "php_upstream",
+      "known_exploited": true,
+      "epss": 0.99999,
+      "epss_percentile": 0.99998,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -75096,6 +75152,34 @@
       "epss": 0.00466,
       "epss_percentile": 0.40373,
       "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2026-112177",
+      "title": "A flaw was found in Ghostscript as shipped with Red Hat Enterprise Linux 8",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-20",
+      "updated": "2026-11-02",
+      "summary": "A flaw was found in Ghostscript as shipped with Red Hat Enterprise Linux 8. The correction for CVE-2019-14869 was omitted during the rebase from version 9.25 to 9.27, leaving privileged .forceput operations in the .charkeys procedure insufficiently protected. Processing a specially crafted PostScript file may allow an attacker to bypass -dSAFER restrictions and access files outside the permitted paths or execute commands with the permissions of the Ghostscript process.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112177"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:51.840",
+      "source_type": "nvd",
+      "known_exploited": false
     },
     {
       "id": "CVE-2026-101770",
@@ -105595,6 +105679,42 @@
       "epss_as_of": "2026-11-02"
     },
     {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60771,
+      "epss_as_of": "2026-11-02"
+    },
+    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -105633,42 +105753,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55905,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60771,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -123661,8 +123745,8 @@
       "title": "markdown-it linkify: true has two quadratic paths, so a few hundred KB of markdown blocks the event loop for tens of seconds",
       "severity": "medium",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-09-29",
       "updated": "2026-11-02",
@@ -134827,6 +134911,47 @@
       "first_seen_at": "2026-11-02T08:30:42Z",
       "source_updated_at": "2026-11-02T07:18:04.467",
       "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-59176",
+      "title": "functype-mcp-server: MCP `set_functype_version` Package Alias RCE via Unsanitized pnpm install + Dynamic Import",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-09-09",
+      "updated": "2026-11-02",
+      "summary": "## MCP `set_functype_version` Package Alias RCE via Unsanitized pnpm install + Dynamic Import ### Summary The `set_functype_version` MCP tool in `functype-mcp-server` accepts an unconstrained `version` string, interpolates it directly into an npm package specifier (`functype@<version>`), and installs it via `pnpm add` without any validation. Because npm/pnpm package specifiers support `file:`, `npm:`, and other alias syntaxes, an attacker who can send an MCP `tools/call` request to this tool can cause the server to install an arbitrary local or remote package as `functype`. Immediately after installation, the server calls `initDocsData(true)`, which dynamically imports `functype/cli` from the newly installed location, executing attacker-controlled JavaScript in the MCP server process. This results in full Remote Code Execution (RCE) with the privileges of the server process — full confidentiality, integrity, and availability impact (CVSS 7.8 High). ### Details The vulnerable code is in `packages/mcp-server/src/index.ts`. The `set_functype_version` tool is registered at line 115 and is enabled by default (no authentication required in stdio mode). **Source (user input accepted without validation):** ```ts // packages/mcp-server/src/index.ts:119-121 parameters: z.object({ version: ",
+      "affected": "npm: functype-mcp-server (<= 1.4.3)",
+      "remediation": "functype-mcp-server: 1.4.4",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-wcjj-9m6g-2fr2"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/jordanburke/functype/security/advisories/GHSA-wcjj-9m6g-2fr2"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/jordanburke/functype/commit/c0d58ad9c2a7d15c6117bd3adbbd75de37317dcf"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-59176"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:30:31Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -147037,6 +147162,47 @@
       "epss_as_of": "2026-11-02"
     },
     {
+      "id": "GHSA-62gx-5q78-wrvx",
+      "title": "obsidian-local-rest-api: Authenticated path traversal via URL-encoded %2F in /vault/{path} — arbitrary host file read/write/delete",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-07-15",
+      "updated": "2026-11-02",
+      "summary": "### Summary The Local REST API's `/vault/{path}` endpoints (GET/PUT/PATCH/POST/DELETE) percent-decode the request path *inside the handler — after* Express has already routed and normalized it, then hand it to the Obsidian vault adapter with no confinement check. A literal `../` is resolved/rejected at the routing layer (→ 404), but `%2F` is not a separator there, so `..%2F..%2F` survives routing and is only turned into a real `/` by the handler's `decodeURIComponent`, reconstituting a `../` traversal that walks out of the vault. An **authenticated** client can read, write, or delete **arbitrary files on the host** with the Obsidian process's privileges. ### Details **Framework:** Express (`import express from \"express\"`; routes registered via `this.api.route(\"/vault/*\")…`). **The vulnerable line** — in `src/requestHandler.ts`, every vault handler (`vaultGet`, `vaultPut`, `vaultPatch`, `vaultPost`, `vaultDelete`) derives the path like this: ```ts const rawPath = decodeURIComponent( req.path.slice(req.path.indexOf(\"/\", 1) + 1), ); ``` The path is `decodeURIComponent`'d **after** Express routing. A literal `../` is collapsed/rejected at the routing layer, but `%2F` isn't a separator there — so `..%2F..%2F` reaches the handler intact and this `decodeURIComponent` turns it into a rea",
+      "affected": "npm: obsidian-local-rest-api (< 4.1.3)",
+      "remediation": "obsidian-local-rest-api: 4.1.3",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-62gx-5q78-wrvx"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/coddingtonbear/obsidian-local-rest-api/security/advisories/GHSA-62gx-5q78-wrvx"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/coddingtonbear/obsidian-local-rest-api/releases/tag/4.1.3"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/coddingtonbear/obsidian-local-rest-api/commit/fdc97f9e652e0d38cb43911d31f827a12b248fc8"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "advisory",
+      "cvss": "8.8",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:26:25Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-59837",
       "title": "A stack-based buffer overflow vulnerability in Fortinet FortiOS 7.4.0 through 7.4.1, FortiOS 7.2 all versions, FortiOS 7.0 all versions, FortiOS 6.4 all versions, FortiPAM 1.8",
       "severity": "medium",
@@ -158019,37 +158185,6 @@
       "epss_as_of": "2026-11-02"
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.11772,
-      "epss_percentile": 0.96077,
-      "epss_as_of": "2026-11-02"
-    },
-    {
       "id": "CVE-2025-7624",
       "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
@@ -158078,6 +158213,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.10514,
       "epss_percentile": 0.95766,
+      "epss_as_of": "2026-11-02"
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.11772,
+      "epss_percentile": 0.96077,
       "epss_as_of": "2026-11-02"
     },
     {
@@ -166373,6 +166539,214 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2021-3826",
+      "title": "Heap/stack buffer overflow in the dlang_lname function in d-demangle.c in libiberty allows attackers to potentially cause a denial of service (segmentation fault and crash) vi",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2022-09-01",
+      "updated": "2026-11-02",
+      "summary": "Heap/stack buffer overflow in the dlang_lname function in d-demangle.c in libiberty allows attackers to potentially cause a denial of service (segmentation fault and crash) via a crafted mangled symbol.",
+      "affected": "Products identified in NVD configurations: gnu gcc; fedoraproject fedora",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3826"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://gcc.gnu.org/pipermail/gcc-patches/2021-September/579987"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:44.330",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2022-1354",
+      "title": "A heap buffer overflow flaw was found in Libtiffs' tiffinfo.c in TIFFReadRawDataStriped() function",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2022-08-31",
+      "updated": "2026-11-02",
+      "summary": "A heap buffer overflow flaw was found in Libtiffs' tiffinfo.c in TIFFReadRawDataStriped() function. This flaw allows an attacker to pass a crafted TIFF file to the tiffinfo tool, triggering a heap buffer overflow issue and causing a crash that leads to a denial of service.",
+      "affected": "Products identified in NVD configurations: libtiff libtiff; fedoraproject fedora; redhat enterprise_linux; netapp ontap_select_deploy_administration_utility; debian debian_linux",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-1354"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:47.370",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2022-1974",
+      "title": "A use-after-free flaw was found in the Linux kernel's NFC core functionality due to a race condition between kobject creation and delete",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2022-08-31",
+      "updated": "2026-11-02",
+      "summary": "A use-after-free flaw was found in the Linux kernel's NFC core functionality due to a race condition between kobject creation and delete. This vulnerability allows a local attacker with CAP_NET_ADMIN privilege to leak kernel information.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-1974"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:47.817",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2022-0171",
+      "title": "A flaw was found in the Linux kernel",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2022-08-26",
+      "updated": "2026-11-02",
+      "summary": "A flaw was found in the Linux kernel. The existing KVM SEV API has a vulnerability that allows a non-root (host) user-level application to crash the host kernel by creating a confidential guest VM instance in AMD CPU that supports Secure Encrypted Virtualization (SEV).",
+      "affected": "Products identified in NVD configurations: linux linux_kernel; redhat enterprise_linux; debian debian_linux",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-0171"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=683412ccf61294d727ead4a73d97397396e69a6b"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:47.150",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2021-4159",
+      "title": "A vulnerability was found in the Linux kernel's EBPF verifier when handling internal data structures",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2022-08-24",
+      "updated": "2026-11-02",
+      "summary": "A vulnerability was found in the Linux kernel's EBPF verifier when handling internal data structures. Internal memory locations could be returned to userspace. A local attacker with the permissions to insert eBPF code to the kernel can use this to leak internal kernel memory details defeating some of the exploit mitigations in place for the kernel.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel; redhat enterprise_linux; debian debian_linux",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-4159"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=294f2fc6da27620a506e6c050241655459ccd6bd"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.4",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:46.043",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2021-4204",
+      "title": "An out-of-bounds (OOB) memory access flaw was found in the Linux kernel's eBPF due to an Improper Input Validation",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2022-08-24",
+      "updated": "2026-11-02",
+      "summary": "An out-of-bounds (OOB) memory access flaw was found in the Linux kernel's eBPF due to an Improper Input Validation. This flaw allows a local attacker with a special privilege to crash the system or leak internal information.",
+      "affected": "Products identified in NVD configurations: linux linux_kernel; debian debian_linux; redhat enterprise_linux; netapp h300s_firmware; netapp h300s; netapp h500s_firmware; netapp h500s; netapp h700s_firmware; netapp h700s; netapp h410s_firmware; netapp h410s; netapp h410c_firmware",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-4204"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:46.807",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2021-4217",
+      "title": "A flaw was found in unzip",
+      "severity": "low",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2022-08-24",
+      "updated": "2026-11-02",
+      "summary": "A flaw was found in unzip. The vulnerability occurs due to improper handling of Unicode strings, which can lead to a null pointer dereference. This flaw allows an attacker to input a specially crafted zip file, leading to a crash or code execution.",
+      "affected": "Products identified in NVD configurations: unzip_project unzip; fedoraproject fedora; redhat enterprise_linux",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-4217"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "3.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:46.990",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2021-31566",
       "title": "An improper link resolution flaw can occur while extracting an archive leading to changing modes, times, access control lists, and flags of a file outside of the archive",
       "severity": "high",
@@ -166401,12 +166775,268 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2021-3997",
+      "title": "A flaw was found in systemd",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2022-08-23",
+      "updated": "2026-11-02",
+      "summary": "A flaw was found in systemd. An uncontrolled recursion in systemd-tmpfiles may lead to a denial of service at boot time when too many nested directories are created in /tmp.",
+      "affected": "Products identified in NVD configurations: systemd_project systemd; fedoraproject fedora; redhat enterprise_linux",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3997"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:44.970",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2022-2625",
+      "title": "A vulnerability was found in PostgreSQL",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2022-08-18",
+      "updated": "2026-11-02",
+      "summary": "A vulnerability was found in PostgreSQL. This attack requires permission to create non-temporary objects in at least one schema, the ability to lure or wait for an administrator to create or update an affected extension in that schema, and the ability to lure or wait for a victim to use the object targeted in CREATE OR REPLACE or CREATE IF NOT EXISTS. Given all three prerequisites, this flaw allows an attacker to run arbitrary code as the victim role, which may be a superuser.",
+      "affected": "Products identified in NVD configurations: postgresql postgresql; fedoraproject fedora; redhat enterprise_linux",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-2625"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://www.postgresql.org/about/news/postgresql-145-138-1212-1117-1022-and-15-beta-3-released-2496/"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.0",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:48.630",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2022-26931",
+      "title": "Windows Kerberos Elevation of Privilege Vulnerability",
+      "severity": "high",
+      "categories": [
+        "Windows 11 OS",
+        "Windows Server OS",
+        "Windows"
+      ],
+      "published": "2022-05-10",
+      "updated": "2026-11-02",
+      "summary": "Windows Kerberos Elevation of Privilege Vulnerability",
+      "affected": "Products identified in NVD configurations: microsoft windows_10; microsoft windows_11; microsoft windows_7; microsoft windows_8.1; microsoft windows_rt_8.1; microsoft windows_server; microsoft windows_server_2008; microsoft windows_server_2012; microsoft windows_server_2016; microsoft windows_server_2019",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-26931"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://portal.msrc.microsoft.com/en-US/security-guidance/advisory/CVE-2022-26931"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:48.157",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2021-4187",
+      "title": "vim is vulnerable to Use After Free",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2021-12-29",
+      "updated": "2026-11-02",
+      "summary": "vim is vulnerable to Use After Free",
+      "affected": "Products identified in NVD configurations: vim vim; fedoraproject fedora; apple mac_os_x; apple macos",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-4187"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:46.533",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2021-4173",
+      "title": "vim is vulnerable to Use After Free",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2021-12-27",
+      "updated": "2026-11-02",
+      "summary": "vim is vulnerable to Use After Free",
+      "affected": "Products identified in NVD configurations: vim vim; fedoraproject fedora; apple mac_os_x; apple macos",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-4173"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:46.227",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2021-43877",
+      "title": "ASP.NET Core and Visual Studio Elevation of Privilege Vulnerability",
+      "severity": "high",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2021-12-15",
+      "updated": "2026-11-02",
+      "summary": "ASP.NET Core and Visual Studio Elevation of Privilege Vulnerability",
+      "affected": "Products identified in NVD configurations: microsoft asp.net_core; microsoft visual_studio_2019; microsoft visual_studio_2022",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-43877"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://portal.msrc.microsoft.com/en-US/security-guidance/advisory/CVE-2021-43877"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:45.860",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2021-43809",
+      "title": "`Bundler` is a package for managing application dependencies in Ruby",
+      "severity": "high",
+      "categories": [
+        "Application dependencies"
+      ],
+      "published": "2021-12-08",
+      "updated": "2026-11-02",
+      "summary": "`Bundler` is a package for managing application dependencies in Ruby. In `bundler` versions before 2.2.33, when working with untrusted and apparently harmless `Gemfile`'s, it is not expected that they lead to execution of external code, unless that's explicit in the ruby code inside the `Gemfile` itself. However, if the `Gemfile` includes `gem` entries that use the `git` option with invalid, but seemingly harmless, values with a leading dash, this can be false. To handle dependencies that come from a Git repository instead of a registry, Bundler uses various commands, such as `git clone`. These commands are being constructed using user input (e.g. the repository URL). When building the commands, Bundler versions before 2.2.33 correctly avoid Command Injection vulnerabilities by passing an array of arguments instead of a command string. However, there is the possibility that a user input starts with a dash (`-`) and is therefore treated as an optional argument instead of a positional one. This can lead to Code Execution because some of the commands have options that can be leveraged to run arbitrary executables. Since this value comes from the `Gemfile` file, it can contain any character, including a leading dash. To exploit this v",
+      "affected": "Products identified in NVD configurations: bundler bundler",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-43809"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/rubygems/rubygems/security/advisories/GHSA-fj7f-vq84-fh43"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:45.633",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2021-41184",
+      "title": "jQuery-UI is the official jQuery user interface library",
+      "severity": "medium",
+      "categories": [
+        "Drupal / CMS",
+        "Linux"
+      ],
+      "published": "2021-10-26",
+      "updated": "2026-11-02",
+      "summary": "jQuery-UI is the official jQuery user interface library. Prior to version 1.13.0, accepting the value of the `of` option of the `.position()` util from untrusted sources may execute untrusted code. The issue is fixed in jQuery UI 1.13.0. Any string value passed to the `of` option is now treated as a CSS selector. A workaround is to not accept the value of the `of` option from untrusted sources.",
+      "affected": "Products identified in NVD configurations: jqueryui jquery_ui; fedoraproject fedora; netapp h300s_firmware; netapp h300s; netapp h500s_firmware; netapp h500s; netapp h700s_firmware; netapp h700s; netapp h300e_firmware; netapp h300e; netapp h500e_firmware; netapp h500e",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-41184"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://blog.jqueryui.com/2021/10/jquery-ui-1-13-0-released/"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/jquery/jquery-ui/commit/effa323f1505f2ce7a324e4f429fa9032c72f280"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/jquery/jquery-ui/security/advisories/GHSA-gpqq-952q-5327"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:45.147",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "GHSA-593v-wcqx-hq2w",
       "title": "Incorrect version tags linked to external repository",
       "severity": "high",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2021-09-07",
       "updated": "2026-11-02",
@@ -166442,12 +167072,105 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2021-38593",
+      "title": "Qt 5.x before 5.15.6 and 6.x through 6.1.2 has an out-of-bounds write in QOutlineMapper::convertPath (called from QRasterPaintEngine::fill and QPaintEngineEx::stroke).",
+      "severity": "high",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2021-08-12",
+      "updated": "2026-11-02",
+      "summary": "Qt 5.x before 5.15.6 and 6.x through 6.1.2 has an out-of-bounds write in QOutlineMapper::convertPath (called from QRasterPaintEngine::fill and QPaintEngineEx::stroke).",
+      "affected": "Products identified in NVD configurations: qt qt; fedoraproject fedora",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-38593"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://wiki.qt.io/Qt_5.15_Release#Known_Issues"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:44.107",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2021-34532",
+      "title": "ASP.NET Core and Visual Studio Information Disclosure Vulnerability",
+      "severity": "medium",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2021-08-12",
+      "updated": "2026-11-02",
+      "summary": "ASP.NET Core and Visual Studio Information Disclosure Vulnerability",
+      "affected": "Products identified in NVD configurations: microsoft asp.net_core; microsoft visual_studio_2019",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-34532"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://portal.msrc.microsoft.com/en-US/security-guidance/advisory/CVE-2021-34532"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:43.653",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2021-36976",
+      "title": "libarchive 3.4.1 through 3.5.1 has a use-after-free in copy_string (called from do_uncompress_block and process_block).",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2021-07-20",
+      "updated": "2026-11-02",
+      "summary": "libarchive 3.4.1 through 3.5.1 has a use-after-free in copy_string (called from do_uncompress_block and process_block).",
+      "affected": "Products identified in NVD configurations: libarchive libarchive; fedoraproject fedora; apple ipados; apple iphone_os; apple macos; apple watchos; splunk universal_forwarder",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-36976"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-02T19:48:02Z",
+      "source_updated_at": "2026-11-02T19:17:43.830",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2021-21353",
       "title": "Pug is an npm package which is a high-performance template engine",
       "severity": "critical",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2021-03-03",
       "updated": "2026-11-02",
@@ -166536,8 +167259,8 @@
       "severity": "medium",
       "categories": [
         "Drupal / CMS",
-        "jQuery / Bootstrap",
-        "Linux"
+        "Linux",
+        "jQuery / Bootstrap"
       ],
       "published": "2020-04-29",
       "updated": "2026-11-02",
@@ -167009,8 +167732,8 @@
       "title": "An attacker can use the format parameter to inject arbitrary commands in the npm package morgan < 1.9.1.",
       "severity": "critical",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2019-03-21",
       "updated": "2026-11-02",
@@ -169371,806 +170094,90 @@
       "epss": 0.01357,
       "epss_percentile": 0.7167,
       "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-48543",
-      "title": "Android Runtime Use-After-Free Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2025-09-04",
-      "summary": "Android Runtime contains a use-after-free vulnerability potentially allowing a chrome sandbox escape leading to local privilege escalation.",
-      "affected": "Android Runtime. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-09-04",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.00634,
-      "epss_percentile": 0.5041,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-43300",
-      "title": "Apple iOS, iPadOS, and macOS Out-of-Bounds Write Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "",
-      "updated": "2025-08-21",
-      "summary": "Apple iOS, iPadOS, and macOS contain an out-of-bounds write vulnerability in the Image I/O framework.",
-      "affected": "Apple iOS, iPadOS, and macOS. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-08-21",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.65159,
-      "epss_percentile": 0.99253,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-49704",
-      "title": "Microsoft SharePoint Code Injection Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365",
-        "SharePoint / SharePoint Server"
-      ],
-      "published": "",
-      "updated": "2025-07-22",
-      "summary": "Microsoft SharePoint contains a code injection vulnerability that could allow an authorized attacker to execute code over a network. This vulnerability could be chained with CVE-2025-49706. CVE-2025-53770 is a patch bypass for CVE-2025-49704, and the updates for CVE-2025-53770 include more robust protection than those for CVE-2025-49704.",
-      "affected": "Microsoft SharePoint. Consult vendor advisory for affected versions.",
-      "remediation": "Disconnect public-facing versions of SharePoint Server that have reached their end-of-life (EOL) or end-of-service (EOS) to include SharePoint Server 2013 and earlier versions. For supported versions, please follow the mitigations according to CISA (URL listed below in Notes) and vendor instructions (URL listed below in Notes). Adhere to the applicable BOD 22-01 guidance for cloud services or discontinue use of the product if mitigations are not available.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-07-22",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99995,
-      "epss_percentile": 0.99988,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-49706",
-      "title": "Microsoft SharePoint Improper Authentication Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365",
-        "SharePoint / SharePoint Server"
-      ],
-      "published": "",
-      "updated": "2025-07-22",
-      "summary": "Microsoft SharePoint contains an improper authentication vulnerability that allows an authorized attacker to perform spoofing over a network. Successfully exploitation could allow an attacker to view sensitive information and make some changes to disclosed information. This vulnerability could be chained with CVE-2025-49704. CVE-2025-53771 is a patch bypass for CVE-2025-49706, and the updates for CVE-2025-53771 include more robust protection than those for CVE-2025-49706.",
-      "affected": "Microsoft SharePoint. Consult vendor advisory for affected versions.",
-      "remediation": "Disconnect public-facing versions of SharePoint Server that have reached their end-of-life (EOL) or end-of-service (EOS) to include SharePoint Server 2013 and earlier versions. For supported versions, please follow the mitigations according to CISA (URL listed below in Notes) and vendor instructions (URL listed below in Notes). Adhere to the applicable BOD 22-01 guidance for cloud services or discontinue use of the product if mitigations are not available.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-07-22",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99057,
-      "epss_percentile": 0.99932,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-53770",
-      "title": "Microsoft SharePoint Deserialization of Untrusted Data Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Microsoft 365",
-        "SharePoint / SharePoint Server"
-      ],
-      "published": "",
-      "updated": "2025-07-20",
-      "summary": "Microsoft SharePoint Server on-premises contains a deserialization of untrusted data vulnerability that could allow an unauthorized attacker to execute code over a network. This vulnerability could be chained with CVE-2025-53771. CVE-2025-53770 is a patch bypass for CVE-2025-49704, and the updates for CVE-2025-53770 include more robust protection than those for CVE-2025-49704.",
-      "affected": "Microsoft SharePoint. Consult vendor advisory for affected versions.",
-      "remediation": "Disconnect public-facing versions of SharePoint Server that have reached their end-of-life (EOL) or end-of-service (EOS) to include SharePoint Server 2013 and earlier versions. For supported versions, please follow the mitigations according to CISA (URL listed below in Notes) and vendor instructions (URL listed below in Notes). Adhere to the applicable BOD 22-01 guidance for cloud services or discontinue use of the product if mitigations are not available.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-07-20",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99991,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-25257",
-      "title": "Fortinet FortiWeb SQL Injection Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Fortinet"
-      ],
-      "published": "",
-      "updated": "2025-07-18",
-      "summary": "Fortinet FortiWeb contains a SQL injection vulnerability that may allow an unauthenticated attacker to execute unauthorized SQL code or commands via crafted HTTP or HTTPs requests.",
-      "affected": "Fortinet FortiWeb. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-07-18",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99921,
-      "epss_percentile": 0.99968,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2016-10033",
-      "title": "PHPMailer Command Injection Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "PHP"
-      ],
-      "published": "",
-      "updated": "2025-07-07",
-      "summary": "PHPMailer contains a command injection vulnerability because it fails to sanitize user-supplied input. Specifically, this issue affects the 'mail()' function of 'class.phpmailer.php' script. An attacker can exploit this issue to execute arbitrary code within the context of the application. Failed exploit attempts will result in a denial-of-service condition.",
-      "affected": "PHP PHPMailer. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-07-07",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.99714,
-      "epss_percentile": 0.99952,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2019-6693",
-      "title": "Fortinet FortiOS Use of Hard-Coded Credentials Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Fortinet"
-      ],
-      "published": "",
-      "updated": "2025-06-25",
-      "summary": "Fortinet FortiOS contains a use of hard-coded credentials vulnerability that could allow an attacker to cipher sensitive data in FortiOS configuration backup file via knowledge of the hard-coded key.",
-      "affected": "Fortinet FortiOS. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-06-25",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.0664,
-      "epss_percentile": 0.93873,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2023-0386",
-      "title": "Linux Kernel Improper Ownership Management Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "",
-      "updated": "2025-06-17",
-      "summary": "Linux Kernel contains an improper ownership management vulnerability, where unauthorized access to the execution of the setuid file with capabilities was found in the Linux kernel’s OverlayFS subsystem in how a user copies a capable file from a nosuid mount into another mount. This uid mapping bug allows a local user to escalate their privileges on the system.",
-      "affected": "Linux Kernel. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-06-17",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.0788,
-      "epss_percentile": 0.94709,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-33053",
-      "title": "Microsoft Windows External Control of File Name or Path Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-06-10",
-      "summary": "Microsoft Windows contains an external control of file name or path vulnerability that could allow an attacker to execute code from a remote WebDAV location specified by the WorkingDirectory attribute of Internet Shortcut files.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-06-10",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.87015,
-      "epss_percentile": 0.99747,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-32756",
-      "title": "Fortinet Multiple Products Stack-Based Buffer Overflow Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Fortinet"
-      ],
-      "published": "",
-      "updated": "2025-05-14",
-      "summary": "Fortinet FortiFone, FortiVoice, FortiNDR and FortiMail contain a stack-based overflow vulnerability that may allow a remote unauthenticated attacker to execute arbitrary code or commands via crafted HTTP requests.",
-      "affected": "Fortinet Multiple Products. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-05-14",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.30944,
-      "epss_percentile": 0.98259,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-32709",
-      "title": "Microsoft Windows Ancillary Function Driver for WinSock Use-After-Free Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-05-13",
-      "summary": "Microsoft Windows Ancillary Function Driver for WinSock contains a use-after-free vulnerability that allows an authorized attacker to escalate privileges to administrator.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-05-13",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.01818,
-      "epss_percentile": 0.78717,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-30397",
-      "title": "Microsoft Windows Scripting Engine Type Confusion Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-05-13",
-      "summary": "Microsoft Windows Scripting Engine contains a type confusion vulnerability that allows an unauthorized attacker to execute code over a network via a specially crafted URL.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-05-13",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.27263,
-      "epss_percentile": 0.9806,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-32706",
-      "title": "Microsoft Windows Common Log File System (CLFS) Driver Heap-Based Buffer Overflow Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-05-13",
-      "summary": "Microsoft Windows Common Log File System (CLFS) Driver contains a heap-based buffer overflow vulnerability that allows an authorized attacker to elevate privileges locally.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-05-13",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.02333,
-      "epss_percentile": 0.83563,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-32701",
-      "title": "Microsoft Windows Common Log File System (CLFS) Driver Use-After-Free Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-05-13",
-      "summary": "Microsoft Windows Common Log File System (CLFS) Driver contains a use-after-free vulnerability that allows an authorized attacker to elevate privileges locally.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-05-13",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.01416,
-      "epss_percentile": 0.72762,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-30400",
-      "title": "Microsoft Windows DWM Core Library Use-After-Free Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-05-13",
-      "summary": "Microsoft Windows DWM Core Library contains a use-after-free vulnerability that allows an authorized attacker to elevate privileges locally.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-05-13",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.01917,
-      "epss_percentile": 0.79868,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-24054",
-      "title": "Microsoft Windows NTLM Hash Disclosure Spoofing Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-04-17",
-      "summary": "Microsoft Windows NTLM contains an external control of file name or path vulnerability that allows an unauthorized attacker to perform spoofing over a network.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-04-17",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.6227,
-      "epss_percentile": 0.99183,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2024-53150",
-      "title": "Linux Kernel Out-of-Bounds Read Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "",
-      "updated": "2025-04-09",
-      "summary": "Linux Kernel contains an out-of-bounds read vulnerability in the USB-audio driver that allows a local, privileged attacker to obtain potentially sensitive information.",
-      "affected": "Linux Kernel. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-04-09",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.01354,
-      "epss_percentile": 0.71593,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2024-53197",
-      "title": "Linux Kernel Out-of-Bounds Access Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Linux"
-      ],
-      "published": "",
-      "updated": "2025-04-09",
-      "summary": "Linux Kernel contains an out-of-bounds access vulnerability in the USB-audio driver that allows an attacker with physical access to the system to use a malicious USB device to potentially manipulate system memory, escalate privileges, or execute arbitrary code.",
-      "affected": "Linux Kernel. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-04-09",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.04117,
-      "epss_percentile": 0.90785,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-29824",
-      "title": "Microsoft Windows Common Log File System (CLFS) Driver Use-After-Free Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-04-08",
-      "summary": "Microsoft Windows Common Log File System (CLFS) Driver contains a use-after-free vulnerability that allows an authorized attacker to elevate privileges locally.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-04-08",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.19254,
-      "epss_percentile": 0.97337,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-24472",
-      "title": "Fortinet FortiOS and FortiProxy Authentication Bypass Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Fortinet"
-      ],
-      "published": "",
-      "updated": "2025-03-18",
-      "summary": "Fortinet FortiOS and FortiProxy contain an authentication bypass vulnerability that allows a remote attacker to gain super-admin privileges via crafted CSF proxy requests.",
-      "affected": "Fortinet FortiOS and FortiProxy. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-03-18",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.07235,
-      "epss_percentile": 0.94329,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-24993",
-      "title": "Microsoft Windows NTFS Heap-Based Buffer Overflow Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-03-11",
-      "summary": "Microsoft Windows New Technology File System (NTFS) contains a heap-based buffer overflow vulnerability that allows an unauthorized attacker to execute code locally.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-03-11",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.02216,
-      "epss_percentile": 0.82638,
-      "epss_as_of": "2026-11-02"
-    },
-    {
-      "id": "CVE-2025-24991",
-      "title": "Microsoft Windows NTFS Out-Of-Bounds Read Vulnerability",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "",
-      "updated": "2025-03-11",
-      "summary": "Microsoft Windows New Technology File System (NTFS) contains an out-of-bounds read vulnerability that allows an authorized attacker to disclose information locally.",
-      "affected": "Microsoft Windows. Consult vendor advisory for affected versions.",
-      "remediation": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
-      "action": "Known exploited in the wild. Confirm affected installations and prioritize vendor mitigations.",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "CISA KEV listed",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2025-03-11",
-      "source_type": "cisa_kev",
-      "known_exploited": true,
-      "epss": 0.02018,
-      "epss_percentile": 0.80934,
-      "epss_as_of": "2026-11-02"
     }
   ],
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-02T19:00:32Z",
-      "last_attempt": "2026-11-02T19:00:32Z",
-      "items_processed": 221,
+      "last_success": "2026-11-02T19:48:02Z",
+      "last_attempt": "2026-11-02T19:48:02Z",
+      "items_processed": 223,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-02T19:00:32Z",
-      "last_attempt": "2026-11-02T19:00:32Z",
+      "last_success": "2026-11-02T19:48:02Z",
+      "last_attempt": "2026-11-02T19:48:02Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-02T19:00:32Z",
-      "last_attempt": "2026-11-02T19:00:32Z",
-      "items_processed": 286,
+      "last_success": "2026-11-02T19:48:02Z",
+      "last_attempt": "2026-11-02T19:48:02Z",
+      "items_processed": 325,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-02T19:00:32Z",
-      "last_attempt": "2026-11-02T19:00:32Z",
+      "last_success": "2026-11-02T19:48:02Z",
+      "last_attempt": "2026-11-02T19:48:02Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-02T19:00:32Z",
-      "last_attempt": "2026-11-02T19:00:32Z",
+      "last_success": "2026-11-02T19:48:02Z",
+      "last_attempt": "2026-11-02T19:48:02Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-02T19:00:32Z",
-      "last_attempt": "2026-11-02T19:00:32Z",
+      "last_success": "2026-11-02T19:48:02Z",
+      "last_attempt": "2026-11-02T19:48:02Z",
       "items_processed": 15,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-02T19:00:32Z",
-      "last_attempt": "2026-11-02T19:00:32Z",
+      "last_success": "2026-11-02T19:48:02Z",
+      "last_attempt": "2026-11-02T19:48:02Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-02T19:00:32Z",
-      "last_attempt": "2026-11-02T19:00:32Z",
+      "last_success": "2026-11-02T19:48:02Z",
+      "last_attempt": "2026-11-02T19:48:02Z",
       "items_processed": 52,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-02T19:00:32Z",
-      "last_attempt": "2026-11-02T19:00:32Z",
+      "last_success": "2026-11-02T19:48:02Z",
+      "last_attempt": "2026-11-02T19:48:02Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-02T19:00:32Z",
-      "last_attempt": "2026-11-02T19:00:32Z",
+      "last_success": "2026-11-02T19:48:02Z",
+      "last_attempt": "2026-11-02T19:48:02Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-02T19:00:32Z",
-      "last_attempt": "2026-11-02T19:00:32Z",
+      "last_success": "2026-11-02T19:48:02Z",
+      "last_attempt": "2026-11-02T19:48:02Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-02T19:00:32Z",
-      "last_attempt": "2026-11-02T19:00:32Z",
+      "last_success": "2026-11-02T19:48:02Z",
+      "last_attempt": "2026-11-02T19:48:02Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -170182,7 +170189,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-02T19:00:32Z",
-  "last_successful_update": "2026-11-02T19:00:32Z",
+  "last_checked_at": "2026-11-02T19:48:02Z",
+  "last_successful_update": "2026-11-02T19:48:02Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
