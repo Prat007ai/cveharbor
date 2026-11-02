@@ -178,7 +178,7 @@ Representative fixtures cover .NET Framework/Runtime/ASP.NET Core/SDK/package se
 | Staging migrations and remote rollback | **Blocked** | No staging Worker/D1 target or credentials supplied. |
 | Production release | **Blocked** | Do not deploy automatically. |
 
-CI verification before the final report: [CVIE verification](https://github.com/Prat007ai/cveharbor/actions/runs/41515136867), [repository checks](https://github.com/Prat007ai/cveharbor/actions/runs/41515136991), and [product monitoring](https://github.com/Prat007ai/cveharbor/actions/runs/41515136818) passed for implementation commit `070cd63035622ef726c5f6cd442ea1dc2fc8f859`. The latest PR checks must also be green before merging; the local 351-test result includes the subsequent package-identity fixture.
+Final implementation CI: [CVIE verification](https://github.com/Prat007ai/cveharbor/actions/runs/41517556166) passed for commit `d3ca2488456df02d00304e1acb5ee72892cf070b`, including all 351 backend tests, 78 focused feed tests, SQL guard and client smoke tests. The production diagnostic job also passed with zero writes. [Repository checks](https://github.com/Prat007ai/cveharbor/actions/runs/41517556058) and [product monitoring](https://github.com/Prat007ai/cveharbor/actions/runs/41517555989) are the companion runs for that commit; verify their final status before merging. The preceding implementation commit passed all three workflows. Production collection/deployment jobs are skipped for these pull-request runs.
 
 ## 7. Migrations, flags and staging runbook
 
