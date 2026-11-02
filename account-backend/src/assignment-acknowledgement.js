@@ -102,7 +102,10 @@ export async function acknowledgementRoute(req,env){
   if(!allowed.success)return page(null,'Unavailable',429,'Too many attempts. Please wait a minute and try again.',{'Retry-After':'60'});
   if(!/^[a-f0-9]{64}$/.test(token))return page(null,'Invalid',404);
   if(req.method==='POST'){
-   if(req.headers.get('Origin')!==ORIGIN||!/^application\/x-www-form-urlencoded(?:;|$)/i.test(req.headers.get('Content-Type')||'')||Number(req.headers.get('Content-Length')||0)>256)return page(null,'Invalid',403);
+   // Referrer-Policy: no-referrer makes native form navigations send Origin: null.
+   // Fetch Metadata is browser-controlled; only allow that case from this same origin.
+   const sameOrigin=req.headers.get('Origin')===ORIGIN||(req.headers.get('Origin')==='null'&&req.headers.get('Sec-Fetch-Site')==='same-origin');
+   if(!sameOrigin||!/^application\/x-www-form-urlencoded(?:;|$)/i.test(req.headers.get('Content-Type')||'')||Number(req.headers.get('Content-Length')||0)>256)return page(null,'Invalid',403);
    const raw=await req.text();if(raw.length>256||new URLSearchParams(raw).get('confirm')!=='receipt')return page(null,'Invalid',400);
   }
   const hash=await hashToken(token),query='SELECT a.* FROM remediation_assignment_requests a JOIN remediations r ON r.user_id=a.user_id AND r.cve_id=a.cve_id WHERE a.token_hash=?';

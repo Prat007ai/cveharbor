@@ -104,3 +104,11 @@ test('expired link cannot replay, but an acknowledgement completed before expiry
 test('release schema probe executes only SELECTs with a nonexistent account',async t=>{
  const f=await setup(t),{verifyAssignmentSchema}=await import('../../scripts/verify_assignment_ack_d1.mjs');f.DB.queries=[];const before=count(f);assert.equal((await verifyAssignmentSchema(f.DB)).ok,true);assert.equal(count(f),before);assert.ok(f.DB.queries.every(sql=>sql.startsWith('SELECT')));
 });
+
+test('no-referrer native form accepts only browser-verified same-origin null Origin',async t=>{
+ const f=await setup(t);await assign(f);const url=f.link();
+ for(const site of ['cross-site','same-site','none',''])assert.equal((await worker.fetch(post(url,{Origin:'null','Sec-Fetch-Site':site}),f.env,{})).status,403);
+ assert.equal((await worker.fetch(post(url,{Origin:'https://evil.example','Sec-Fetch-Site':'same-origin'}),f.env,{})).status,403);
+ assert.equal((await worker.fetch(post(url,{Origin:'null','Sec-Fetch-Site':'same-origin'}),f.env,{})).status,200);
+ assert.equal(f.DB.sql.prepare('SELECT count(*) n FROM remediation_assignment_events WHERE event=\'acknowledged\'').get().n,1);
+});
