@@ -1,5 +1,5 @@
 // Local fixture account + the actual published directory. No production account mutations.
-import {chromium} from 'playwright-core';
+let chromium;try{({chromium}=await import('playwright-core'));}catch{({chromium}=await import('/opt/codex/cua_node/lib/node_modules/playwright/index.mjs'));}
 import {spawn} from 'node:child_process';
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';

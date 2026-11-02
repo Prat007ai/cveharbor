@@ -11,6 +11,8 @@ w.CVEHARBOR_LIFECYCLE.cycles.push({slug:'sharepoint',product:'SharePoint Server'
 w.fetch=async(url,options={})=>{
  const path=new URL(url).pathname,method=options.method||'GET',body=options.body?JSON.parse(options.body):{};
  if(path.endsWith('/status'))return Response.json(path.includes('/monitoring')?{ready:provisioned,scheduler:{enabled:operating,operating},recipient:owner+'@example.test',admin:false,test_allowed:testAllowed}:{ready:true});
+ if(path.endsWith('/directory'))return Response.json({products:[]});
+ if(path.endsWith('/directory/lookup'))return Response.json({status:'unavailable',message:'Source temporarily unavailable'});
  if(path.endsWith('/history'))return Response.json({history:history[owner]});
  if(path.endsWith('/preferences')&&method==='PUT'){prefs={...prefs,...body};saves++;return Response.json({saved:true});}
  if(path.endsWith('/watches')&&method==='POST'){rows[owner].push({...body,id:crypto.randomUUID(),monitoring_status:'enabled',monitoring_label:operating?'Monitoring Active':'Monitoring Not Yet Active',notice_days:[90]});saves++;return Response.json({saved:true});}
@@ -26,6 +28,7 @@ try{
  assert.match(d.getElementById('productMonitorActivation').textContent,/Not Yet Active/);assert.equal(d.getElementById('lifecycleWatchSave').disabled,true);
  auth('a@example.test');await until(()=>!d.getElementById('lifecycleWatchSave').disabled);
  d.getElementById('lifecycleProduct').value='dotnet';d.getElementById('lifecycleProduct').dispatchEvent(new w.Event('change'));d.getElementById('lifecycleCycle').value='8.0';d.getElementById('lifecycleInstalled').value='8.0.9';
+ await until(()=>!d.getElementById('lifecycleLookupProduct').disabled);
  d.getElementById('lifecycleWatchForm').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await until(()=>saves===1&&d.getElementById('lifecycleWatches').textContent.includes('8.0.9'));
  assert.match(d.getElementById('lifecycleWatches').textContent,/Monitoring Not Yet Active/);
  await w.CVEHARBOR_LIFECYCLE_MONITOR.refresh();assert.match(d.getElementById('lifecycleWatches').textContent,/8.0.9/,'watch persists after reload');

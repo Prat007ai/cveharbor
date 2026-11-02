@@ -37,3 +37,5 @@ assert.equal(monitorCodeOnly(['account-backend/src/index.js']),false);
 assert.equal(monitorCodeOnly(['account-backend/src/index.js','account-backend/src/monitor-approved-test.js','account-backend/tests/monitor-approved-test.test.mjs']),true);
 assert.equal(catalogueOnly(['account-backend/src/product-identity.js','account-backend/src/cvie.js','account-backend/tests/product-chooser.test.mjs']),true);
 assert.equal(catalogueOnly(['account-backend/tests/product-chooser.test.mjs','account-backend/wrangler.toml']),false);
+
+assert.equal(monitorCodeOnly(['account-backend/src/lifecycle.js','account-backend/src/monitor-directory.js','account-backend/tests/monitor-directory.test.mjs','account-backend/tests/lifecycle.test.mjs','data/lifecycle-products.json']),true);

@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'account-backend/src/**'
+      - 'data/lifecycle-products.json'
       - 'account-backend/tests/**'
       - 'account-backend/migrations/0019_cvie.sql'
       - 'account-backend/migrations/0020_cvie_evidence.sql'

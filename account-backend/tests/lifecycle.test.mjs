@@ -2,15 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { normalizeWatch,evaluate,dateValid,newerReleases,vendorReleaseNotices } from '../src/lifecycle.js';
 
-test('custom lifecycle watches require an explicit valid date and https evidence link',()=>{
- assert.throws(()=>normalizeWatch({product:'Custom database'}),/verified custom support date/);
- assert.throws(()=>normalizeWatch({product:'Custom database',custom_eol_date:'2026-02-30'}),/verified custom support date/);
+test('unresolved products can be saved without inventing dates; supplied dates and URLs are validated',()=>{
+ assert.equal(normalizeWatch({product:'Custom database'}).custom_eol_date,'');
+ assert.deepEqual(evaluate([normalizeWatch({product:'Custom database'})],[],90),[]);
+ assert.throws(()=>normalizeWatch({product:'Custom database',custom_eol_date:'2026-02-30'}),/valid product name/);
  const x=normalizeWatch({product:'Vendor Platform',custom_eol_date:'2027-01-01',
  custom_source_url:'https://example.org/support'});
  assert.equal(x.product,'Vendor Platform');
  assert.ok(dateValid('2027-01-01'));
  assert.throws(()=>normalizeWatch({product:'Test',custom_eol_date:'2027-01-01',
- custom_source_url:'javascript:alert(1)'}),/verified custom support date/);
+ custom_source_url:'javascript:alert(1)'}),/valid product name/);
 });
 test('support dates produce lead window notice without inventing unknown dates',()=>{
  const now=new Date('2026-10-28T12:00:00Z');

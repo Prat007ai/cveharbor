@@ -9,7 +9,7 @@ export function renderMonitorMail(rows,{test=false}={}){
   return [r.product+' · '+r.branch,'Installed version: '+(row.installed_version||'Not recorded'),
    row.kind==='security'?'Verified security release: '+r.version:row.kind==='maintenance'?'Verified branch release: '+r.version:row.kind==='test'?'Test only. No customer alert.':'Lifecycle event: '+row.kind,
    r.date?'Published support milestone: '+r.date:'Release publication date: '+(r.published||'Not published'),
-   'Official source: '+r.source_url,
+   (r.reliability==='community_lifecycle'?'Community lifecycle source (verify vendor terms): ':'Official source: ')+r.source_url,
    'Action: verify edition, compatibility, vendor prerequisites and your installed version before upgrading.',
    row.unsubscribe_token?'Disable monitoring email: https://api.cveharbor.com/v1/monitoring/unsubscribe/'+row.unsubscribe_token:''].filter(Boolean).join('\n');}),
   '', 'Manage preferences: '+SITE+'/lifecycle/','A provider-accepted message is not proof of delivery or inbox placement.'].join('\n\n');
