@@ -1,7 +1,7 @@
-CVEHarbor Threat IP Intelligence | 2026-11-02T19:49:15.897294+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-02T20:01:00.425325+00:00
 Permanent logical group: Suspicious IP Block
-Cumulative indexed IPs: 3240
-New since prior published snapshot: 20
+Cumulative indexed IPs: 3244
+New since prior published snapshot: 4
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 No rules or policies are created or enabled. No old IPs are removed.
@@ -2786,6 +2786,12 @@ No firewall rule is created or activated.
       <IPAddress>52.11.165.176</IPAddress>
     </IPHost>
     <IPHost>
+      <Name>CVEH_52_51_21_68</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>52.51.21.68</IPAddress>
+    </IPHost>
+    <IPHost>
       <Name>CVEH_52_79_233_184</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
@@ -3054,6 +3060,12 @@ No firewall rule is created or activated.
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
       <IPAddress>61.164.57.90</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_61_220_133_191</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>61.220.133.191</IPAddress>
     </IPHost>
     <IPHost>
       <Name>CVEH_61_220_235_10</Name>
@@ -9912,6 +9924,12 @@ No firewall rule is created or activated.
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
       <IPAddress>103.130.90.169</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_103_132_230_62</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>103.132.230.62</IPAddress>
     </IPHost>
     <IPHost>
       <Name>CVEH_103_132_243_250</Name>
@@ -19040,6 +19058,12 @@ No firewall rule is created or activated.
       <IPAddress>216.180.246.231</IPAddress>
     </IPHost>
     <IPHost>
+      <Name>CVEH_216_180_246_232</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>216.180.246.232</IPAddress>
+    </IPHost>
+    <IPHost>
       <Name>CVEH_216_180_246_236</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
@@ -19930,6 +19954,7 @@ No firewall rule is created or activated.
         <Host>CVEH_51_254_135_22</Host>
         <Host>CVEH_52_4_24_108</Host>
         <Host>CVEH_52_11_165_176</Host>
+        <Host>CVEH_52_51_21_68</Host>
         <Host>CVEH_52_79_233_184</Host>
         <Host>CVEH_52_136_242_156</Host>
         <Host>CVEH_52_157_89_249</Host>
@@ -19975,6 +20000,7 @@ No firewall rule is created or activated.
         <Host>CVEH_61_80_110_108</Host>
         <Host>CVEH_61_155_106_101</Host>
         <Host>CVEH_61_164_57_90</Host>
+        <Host>CVEH_61_220_133_191</Host>
         <Host>CVEH_61_220_235_10</Host>
         <Host>CVEH_61_222_211_114</Host>
         <Host>CVEH_62_60_130_91</Host>
@@ -21118,6 +21144,7 @@ No firewall rule is created or activated.
         <Host>CVEH_103_129_53_147</Host>
         <Host>CVEH_103_129_53_148</Host>
         <Host>CVEH_103_130_90_169</Host>
+        <Host>CVEH_103_132_230_62</Host>
         <Host>CVEH_103_132_243_250</Host>
         <Host>CVEH_103_133_201_241</Host>
         <Host>CVEH_103_133_228_181</Host>
@@ -22639,6 +22666,7 @@ No firewall rule is created or activated.
         <Host>CVEH_216_180_246_225</Host>
         <Host>CVEH_216_180_246_227</Host>
         <Host>CVEH_216_180_246_231</Host>
+        <Host>CVEH_216_180_246_232</Host>
         <Host>CVEH_216_180_246_236</Host>
         <Host>CVEH_216_180_246_240</Host>
         <Host>CVEH_216_180_246_241</Host>

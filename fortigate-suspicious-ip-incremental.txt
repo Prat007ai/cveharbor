@@ -1,7 +1,7 @@
-# CVEHarbor Threat IP Intelligence | 2026-11-02T19:49:15.897294+00:00
+# CVEHarbor Threat IP Intelligence | 2026-11-02T20:01:00.425325+00:00
 # Permanent logical group: Suspicious IP Block
-# Cumulative indexed IPs: 3240
-# New since prior published snapshot: 20
+# Cumulative indexed IPs: 3244
+# New since prior published snapshot: 4
 # REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 # Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 # No rules or policies are created or enabled. No old IPs are removed.
@@ -14,89 +14,25 @@
 # If an address object name already exists with a different subnet, STOP.
 # Applying group membership can affect an existing deny policy immediately.
 config firewall address
-    edit "CVEH_31_76_125_15"
-        set subnet 31.76.125.15 255.255.255.255
+    edit "CVEH_52_51_21_68"
+        set subnet 52.51.21.68 255.255.255.255
     next
-    edit "CVEH_68_183_231_242"
-        set subnet 68.183.231.242 255.255.255.255
+    edit "CVEH_61_220_133_191"
+        set subnet 61.220.133.191 255.255.255.255
     next
-    edit "CVEH_89_47_113_148"
-        set subnet 89.47.113.148 255.255.255.255
+    edit "CVEH_103_132_230_62"
+        set subnet 103.132.230.62 255.255.255.255
     next
-    edit "CVEH_93_204_218_1"
-        set subnet 93.204.218.1 255.255.255.255
-    next
-    edit "CVEH_94_249_187_165"
-        set subnet 94.249.187.165 255.255.255.255
-    next
-    edit "CVEH_95_155_151_47"
-        set subnet 95.155.151.47 255.255.255.255
-    next
-    edit "CVEH_102_64_46_144"
-        set subnet 102.64.46.144 255.255.255.255
-    next
-    edit "CVEH_102_129_53_114"
-        set subnet 102.129.53.114 255.255.255.255
-    next
-    edit "CVEH_102_129_54_34"
-        set subnet 102.129.54.34 255.255.255.255
-    next
-    edit "CVEH_103_171_185_27"
-        set subnet 103.171.185.27 255.255.255.255
-    next
-    edit "CVEH_103_192_80_81"
-        set subnet 103.192.80.81 255.255.255.255
-    next
-    edit "CVEH_124_198_132_162"
-        set subnet 124.198.132.162 255.255.255.255
-    next
-    edit "CVEH_147_182_233_50"
-        set subnet 147.182.233.50 255.255.255.255
-    next
-    edit "CVEH_168_144_40_127"
-        set subnet 168.144.40.127 255.255.255.255
-    next
-    edit "CVEH_170_187_154_248"
-        set subnet 170.187.154.248 255.255.255.255
-    next
-    edit "CVEH_207_57_167_40"
-        set subnet 207.57.167.40 255.255.255.255
-    next
-    edit "CVEH_217_60_102_82"
-        set subnet 217.60.102.82 255.255.255.255
-    next
-    edit "CVEH_217_60_103_120"
-        set subnet 217.60.103.120 255.255.255.255
-    next
-    edit "CVEH_217_60_195_157"
-        set subnet 217.60.195.157 255.255.255.255
-    next
-    edit "CVEH_217_165_0_169"
-        set subnet 217.165.0.169 255.255.255.255
+    edit "CVEH_216_180_246_232"
+        set subnet 216.180.246.232 255.255.255.255
     next
 end
 config firewall addrgrp
     edit "Suspicious IP Block"
-        append member "CVEH_31_76_125_15"
-        append member "CVEH_68_183_231_242"
-        append member "CVEH_89_47_113_148"
-        append member "CVEH_93_204_218_1"
-        append member "CVEH_94_249_187_165"
-        append member "CVEH_95_155_151_47"
-        append member "CVEH_102_64_46_144"
-        append member "CVEH_102_129_53_114"
-        append member "CVEH_102_129_54_34"
-        append member "CVEH_103_171_185_27"
-        append member "CVEH_103_192_80_81"
-        append member "CVEH_124_198_132_162"
-        append member "CVEH_147_182_233_50"
-        append member "CVEH_168_144_40_127"
-        append member "CVEH_170_187_154_248"
-        append member "CVEH_207_57_167_40"
-        append member "CVEH_217_60_102_82"
-        append member "CVEH_217_60_103_120"
-        append member "CVEH_217_60_195_157"
-        append member "CVEH_217_165_0_169"
+        append member "CVEH_52_51_21_68"
+        append member "CVEH_61_220_133_191"
+        append member "CVEH_103_132_230_62"
+        append member "CVEH_216_180_246_232"
     next
 end
 # No firewall policy has been created. Review existing policy use.
