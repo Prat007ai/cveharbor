@@ -1,7 +1,7 @@
-CVEHarbor Threat IP Intelligence | 2026-11-02T16:14:10.577793+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-02T17:15:30.385116+00:00
 Permanent logical group: Suspicious IP Block
-Cumulative indexed IPs: 3189
-New since prior published snapshot: 13
+Cumulative indexed IPs: 3195
+New since prior published snapshot: 6
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 No rules or policies are created or enabled. No old IPs are removed.
@@ -26,82 +26,40 @@ No firewall rule is created or activated.
   </Login>
   <Set operation="add">
     <IPHost>
-      <Name>CVEH_8_148_212_170</Name>
+      <Name>CVEH_101_13_4_120</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>8.148.212.170</IPAddress>
+      <IPAddress>101.13.4.120</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_94_26_68_131</Name>
+      <Name>CVEH_102_64_32_131</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>94.26.68.131</IPAddress>
+      <IPAddress>102.64.32.131</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_94_26_68_133</Name>
+      <Name>CVEH_102_129_62_10</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>94.26.68.133</IPAddress>
+      <IPAddress>102.129.62.10</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_102_64_35_57</Name>
+      <Name>CVEH_103_190_7_203</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>102.64.35.57</IPAddress>
+      <IPAddress>103.190.7.203</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_102_64_42_58</Name>
+      <Name>CVEH_103_191_204_229</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>102.64.42.58</IPAddress>
+      <IPAddress>103.191.204.229</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_102_129_61_35</Name>
+      <Name>CVEH_103_191_208_225</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>102.129.61.35</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_102_129_62_133</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>102.129.62.133</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_102_179_205_86</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>102.179.205.86</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_148_206_98</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.148.206.98</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_182_22_25</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.182.22.25</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_189_89_196</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.189.89.196</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_103_190_204_223</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>103.190.204.223</IPAddress>
-    </IPHost>
-    <IPHost>
-      <Name>CVEH_143_244_57_84</Name>
-      <IPFamily>IPv4</IPFamily>
-      <HostType>IP</HostType>
-      <IPAddress>143.244.57.84</IPAddress>
+      <IPAddress>103.191.208.225</IPAddress>
     </IPHost>
   </Set>
 </Request>
@@ -114,16 +72,9 @@ Merge the newly created host names with ALL existing members, deduplicate,
 then submit an IPHostGroup edit with that complete merged HostList.
 Do not issue a group edit containing only the new IPs.
 New host names to merge:
-CVEH_8_148_212_170
-CVEH_94_26_68_131
-CVEH_94_26_68_133
-CVEH_102_64_35_57
-CVEH_102_64_42_58
-CVEH_102_129_61_35
-CVEH_102_129_62_133
-CVEH_102_179_205_86
-CVEH_103_148_206_98
-CVEH_103_182_22_25
-CVEH_103_189_89_196
-CVEH_103_190_204_223
-CVEH_143_244_57_84
+CVEH_101_13_4_120
+CVEH_102_64_32_131
+CVEH_102_129_62_10
+CVEH_103_190_7_203
+CVEH_103_191_204_229
+CVEH_103_191_208_225
