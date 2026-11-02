@@ -25,6 +25,8 @@ on:
       - 'account-backend/migrations/0025_assignment_fyi.sql'
       - 'account-backend/migrations/0026_remediation_workflow.sql'
       - 'scripts/verify_remediation_workflow_d1.mjs'
+      - 'account-backend/migrations/0027_assignment_progress.sql'
+      - 'scripts/verify_assignment_progress_d1.mjs'
       - 'scripts/verify_assignment_fyi_d1.mjs'
       - '.github/workflows/deploy-worker-code.yml'
   workflow_dispatch:
@@ -155,6 +157,16 @@ jobs:
           npx --yes wrangler@4.156.0 d1 time-travel info cveharbor-accounts --json
           npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0026_remediation_workflow.sql
           node ../scripts/verify_remediation_workflow_d1.mjs
+      - name: Record recovery point and apply assignment progress migration
+        if: steps.mode.outputs.assignment_progress == 'true'
+        working-directory: account-backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx --yes wrangler@4.156.0 d1 time-travel info cveharbor-accounts --json
+          npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0027_assignment_progress.sql
+          node ../scripts/verify_assignment_progress_d1.mjs
       - name: Deploy Worker source
         working-directory: account-backend
         env:
@@ -265,3 +277,9 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: node scripts/verify_remediation_workflow_d1.mjs --after
+      - name: Verify reviewer access and private progress boundaries without sending mail
+        if: steps.mode.outputs.assignment_progress == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify_assignment_progress_d1.mjs --after

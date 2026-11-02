@@ -1,3 +1,6 @@
+import {reviewerRoute,reviewActivity} from './assignment-progress.js';
+import {ReviewError} from './assignment-progress-common.js';
+import {scheduleProgress,retryProgress} from './assignment-progress-mail.js';
 import {WorkflowError,statusHistory} from './remediation-workflow.js';
 import {CONFIRM_PREFIX} from './confirmation-host.js';
 import {FyiError,scheduleFyi,retryFyi} from './assignment-fyi.js';
@@ -49,6 +52,7 @@ export default {async fetch(req,env,ctx){
  const url=new URL(req.url),origin=req.headers.get('origin');
  // The confirmation hostname exposes only the guest confirmation page, never account APIs.
  if(url.hostname==='confirm.cveharbor.com'){
+  if(url.pathname.startsWith('/assignment/'))return reviewerRoute(req,env);
   if(url.pathname.startsWith(CONFIRM_PREFIX))return acknowledgementRoute(req,env,ctx);
   return new Response('Open the confirmation link in your assignment email.',{status:404,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'}});
  }
@@ -320,6 +324,10 @@ export default {async fetch(req,env,ctx){
    const data=await body(req);
    return await importLegacy(env,user,data.remediations);
   }
+  const progressRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})\/review-activity$/.exec(path);
+  if(progressRoute&&req.method==='GET')return response(await reviewActivity(env,user,progressRoute[1],url));
+  const progressRetry=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})\/review-notifications\/(\d{1,16})\/retry$/.exec(path);
+  if(progressRetry&&req.method==='POST'){const result=await retryProgress(env,user,progressRetry[1],Number(progressRetry[2]));scheduleProgress(env,ctx);return response(result);}
   const statusRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})\/status-history$/.exec(path);
   if(statusRoute&&req.method==='GET')return response(await statusHistory(env,user,statusRoute[1],url));
   const fyiRetry=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})\/assignments\/([a-f0-9-]{36})\/fyi\/retry$/.exec(path);
@@ -364,10 +372,10 @@ export default {async fetch(req,env,ctx){
    await env.DB.prepare('DELETE FROM users WHERE id=?').bind(user.id).run();return response({deleted:true},200,{'Set-Cookie':setCookie('',0)});
   }
   return response({error:'Not found'},404);
- }catch(error){if(error instanceof WorkflowError||error instanceof FyiError||error instanceof AssignmentError||error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
+ }catch(error){if(error instanceof ReviewError||error instanceof WorkflowError||error instanceof FyiError||error instanceof AssignmentError||error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
-  if(_event.cron==='* * * * *'){scheduleFyi(env,ctx);ctx.waitUntil(approvedTest(env));ctx.waitUntil(dispatchEvidence(env));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}
+  if(_event.cron==='* * * * *'){scheduleProgress(env,ctx);scheduleFyi(env,ctx);ctx.waitUntil(approvedTest(env));ctx.waitUntil(dispatchEvidence(env));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}
   if(_event.cron==='*/5 * * * *'){ctx.waitUntil(dispatchCvie(env));return;}
   if(env.ALERT_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchDueDigests(env));
   if(env.LIFECYCLE_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchLifecycle(env));
