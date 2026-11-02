@@ -23,13 +23,14 @@ try{
  assert.equal(await page.locator('.command-nav-link[aria-current="page"]').getAttribute('href'),'/remediation/');
  assert.deepEqual(await page.locator('.rt-tool').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('href'))),['/admin-tools/','/vulnerabilities/','/customer-reports/','/account/']);
  const measurements=[];
- for(const width of [3840,2560,1920,1600,1366,1280,1024,820,768,390,320,1920]){
+ for(const width of [3840,2560,1920,1600,1366,1280,1024,820,768,390,320,1920,3840]){
   await page.setViewportSize({width,height:1000});await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
-  const layout=await page.evaluate(()=>({width:innerWidth,page:document.documentElement.scrollWidth,nav:document.querySelector('.command-sidebar').getBoundingClientRect().width,overflow:[...document.querySelectorAll('.rt-panel,.rt-stat,.rt-tool')].filter(n=>n.scrollWidth>n.clientWidth+1).length}));
-  assert.ok(layout.page<=width+1,'no horizontal page overflow at '+width);assert.equal(layout.overflow,0);if(width>820)assert.equal(layout.nav,74);measurements.push(layout);
+  const layout=await page.evaluate(()=>({width:innerWidth,page:document.documentElement.scrollWidth,nav:document.querySelector('.command-sidebar').getBoundingClientRect().width,tracker:document.querySelector('#remediationTracker').getBoundingClientRect().width,overflow:[...document.querySelectorAll('.rt-panel,.rt-stat,.rt-tool')].filter(n=>n.scrollWidth>n.clientWidth+1).length}));
+  assert.ok(layout.page<=width+1,'no horizontal page overflow at '+width);assert.equal(layout.overflow,0);if(width>820){assert.equal(layout.nav,74);assert.ok(layout.tracker>=width-layout.nav-100,'tracker fills the available desktop workspace at '+width);}measurements.push(layout);
   assert.ok(await page.locator('.rt-table-scroll').evaluate(n=>n.scrollWidth<=n.clientWidth+1),'records fit their container at '+width);assert.ok(await page.locator('#remediationRows td').first().evaluate(n=>parseFloat(getComputedStyle(n).fontSize)>=15));
-  if([2560,1366,390].includes(width))await page.screenshot({path:directory+'/remediation-'+width+'.png',fullPage:true});
+  if([3840,2560,1366,390].includes(width))await page.screenshot({path:directory+'/remediation-'+width+'.png',fullPage:true});
  }
+ assert.ok(measurements.find(m=>m.width===3840).tracker-measurements.find(m=>m.width===2560).tracker>1200,'tracker expands on a larger monitor');
  await page.setViewportSize({width:1600,height:1000});
  await page.locator('.command-sidebar-toggle').click();assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));assert.ok(await page.locator('.rt-table-scroll').evaluate(n=>n.scrollWidth<=n.clientWidth+1));await page.locator('.command-sidebar-toggle').click();
  await page.locator('#remediationCve').fill('CVE-2026-99999');await page.locator('#remediationSave').click();

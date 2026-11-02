@@ -145,7 +145,7 @@ function render(){
     const ackText=summary?(summary.total===1?Object.keys(summary.states)[0]:(summary.states.Acknowledged||0)+' / '+summary.total+' acknowledged'):task.assigned_to?'Not requested':'Not sent';
     const status=cloudMode&&capabilities?.acknowledgements_available&&!ackDataAvailable?'Unavailable':ackText;
     const ackState=elem('div','rt-ack-state');ackState.append(badge(status,status==='Acknowledged'?'remediated':status==='Pending'?'risk':'neutral'));ack.append(ackState);
-    if(status==='Not sent'&&isPrivate&&capabilities?.acknowledgements_available&&capabilities?.assignments_available&&capabilities?.assignment_email_enabled){const request=elem('button','rt-ack-request','Send acknowledgement request');request.type='button';request.setAttribute('aria-label','Send acknowledgement request for '+task.id);request.addEventListener('click',()=>openAssign(task.id));ackState.append(request);}
+    if(status==='Not sent'&&isPrivate&&capabilities?.acknowledgements_available&&capabilities?.assignments_available&&capabilities?.assignment_email_enabled){const request=elem('button','rt-ack-request','Request acknowledgement');request.type='button';request.setAttribute('aria-label','Request acknowledgement for '+task.id);request.addEventListener('click',()=>openAssign(task.id));ackState.append(request);}
     if(summary?.latest_acknowledged_at)ack.append(elem('small','',(summary.total>1?'Latest: ':'')+displayTime(summary.latest_acknowledged_at*1000)));
     if(summary){const history=elem('button','rt-history-link','View recipients');history.type='button';history.setAttribute('aria-label','Assignment history for '+task.id);history.addEventListener('click',()=>openHistory(task.id));ack.append(history);}
 
