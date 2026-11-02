@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {JSDOM} from 'jsdom';
 const dom=new JSDOM(fs.readFileSync('index.html','utf8'),{url:'https://cveharbor.com/lifecycle/',runScripts:'outside-only'}),w=dom.window,d=w.document;
-let owner='a',provisioned=true,operating=false,testAllowed=false,saves=0,prefs={email_enabled:0,lead_days:90,alert_types:['security'],delivery_mode:'daily'};
+let owner='a',provisioned=true,operating=false,testAllowed=false,saves=0,deletes=0,prefs={email_enabled:0,lead_days:90,alert_types:['security'],delivery_mode:'daily'};
 const rows={a:[],b:[]},history={a:[],b:[]};
-w.confirm=()=>true;w.prompt=()=>null;
+w.confirm=()=>{throw Error('Native browser confirmation must not be used');};w.prompt=()=>null;
 w.CVEHARBOR_LIFECYCLE={checked_at:new Date().toISOString(),available_products:['dotnet','wordpress'],cycles:[{slug:'dotnet',product:'.NET',cycle:'8.0',latest:'8.0.11',eol_date:'2027-11-01',url:'https://endoflife.date/dotnet'}],errors:[]};
 w.CVEHARBOR_LIFECYCLE.cycles.push({slug:'sharepoint',product:'SharePoint Server',cycle:'subscription',eol_date:null},{slug:'sharepoint',product:'SharePoint Server',cycle:'2019',eol_date:'2026-07-14'});
 w.fetch=async(url,options={})=>{
@@ -17,6 +17,7 @@ w.fetch=async(url,options={})=>{
  if(path.endsWith('/preferences')&&method==='PUT'){prefs={...prefs,...body};saves++;return Response.json({saved:true});}
  if(path.endsWith('/watches')&&method==='POST'){rows[owner].push({...body,id:crypto.randomUUID(),monitoring_status:'enabled',monitoring_label:operating?'Monitoring Active':'Monitoring Not Yet Active',notice_days:[90]});saves++;return Response.json({saved:true});}
  if(path.match(/\/watches\/[\w-]+$/)&&method==='PUT'){const row=rows[owner].find(r=>path.endsWith(r.id));Object.assign(row,body,{monitoring_status:body.status||row.monitoring_status});return Response.json({saved:true});}
+ if(path.match(/\/watches\/[\w-]+$/)&&method==='DELETE'){rows[owner]=rows[owner].filter(r=>!path.endsWith(r.id));deletes++;return Response.json({deleted:true});}
  if(path==='/v1/monitoring'||path==='/v1/lifecycle')return Response.json({watches:rows[owner],preferences:prefs,email_delivery_active:false,scheduler:{operating,enabled:operating},recipient:owner+'@example.test'});
  throw Error('Unexpected browser request: '+path);
 };
@@ -33,13 +34,34 @@ try{
  assert.match(d.getElementById('lifecycleWatches').textContent,/Monitoring Not Yet Active/);
  await w.CVEHARBOR_LIFECYCLE_MONITOR.refresh();assert.match(d.getElementById('lifecycleWatches').textContent,/8.0.9/,'watch persists after reload');
  d.querySelector('[data-monitor-tab="settings"]').click();d.getElementById('lifecycleEmailOptin').checked=true;d.getElementById('lifecycleLead').value='14';
- d.getElementById('lifecyclePreferencesForm').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await until(()=>saves===2);assert.equal(prefs.lead_days,14);assert.deepEqual(prefs.alert_types,['security']);
+ const submitPreferences=()=>d.getElementById('lifecyclePreferencesForm').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
+ const cancelConfirmation=async cancel=>{
+  d.getElementById('lifecyclePrefsSave').focus();submitPreferences();
+  const dialog=d.getElementById('lifecycleConfirmDialog');assert.ok(dialog?.open);
+  assert.match(dialog.textContent,/CVEHarbor/);assert.equal(d.activeElement.id,'lifecycleConfirmCancel');
+  assert.equal(saves,1,'opening confirmation must not save');cancel(dialog);
+  await until(()=>!d.getElementById('lifecycleConfirmDialog'));
+  await new Promise(r=>setTimeout(r,0));
+  assert.equal(saves,1,'dismissal must not save');assert.equal(d.activeElement.id,'lifecyclePrefsSave','focus returns to trigger');
+ };
+ await cancelConfirmation(()=>d.getElementById('lifecycleConfirmCancel').click());
+ await cancelConfirmation(dialog=>dialog.dispatchEvent(new w.Event('cancel',{cancelable:true})));
+ await cancelConfirmation(dialog=>dialog.querySelector('.close-dialog').click());
+ await cancelConfirmation(dialog=>dialog.click());
+ submitPreferences();submitPreferences();assert.equal(d.querySelectorAll('#lifecycleConfirmDialog').length,1,'repeated submit opens one dialog');
+ d.getElementById('lifecycleConfirmAccept').click();await until(()=>saves===2);assert.equal(prefs.lead_days,14);assert.deepEqual(prefs.alert_types,['security']);
  d.querySelector('[data-monitor-tab="history"]').click();await until(()=>d.getElementById('productMonitorHistory').textContent.includes('No notifications'));
  assert.equal(d.getElementById('productMonitorTest').disabled,true,'unapproved test configuration cannot send');
- owner='b';auth('b@example.test');await until(()=>d.getElementById('lifecycleWatchCount').textContent==='0 monitored');assert.doesNotMatch(d.getElementById('lifecycleWatches').textContent,/8.0.9/);
+ d.getElementById('lifecyclePreferencesForm').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
+ const pendingAccept=d.getElementById('lifecycleConfirmAccept');assert.ok(pendingAccept);
+ owner='b';auth('b@example.test');
+ assert.equal(d.getElementById('lifecycleConfirmDialog'),null,'account change dismisses pending confirmation');pendingAccept.click();assert.equal(saves,2,'stale confirmation cannot save for a different account');await until(()=>d.getElementById('lifecycleWatchCount').textContent==='0 monitored');assert.doesNotMatch(d.getElementById('lifecycleWatches').textContent,/8.0.9/);
  auth('',false);assert.equal(d.getElementById('lifecycleWatchSave').disabled,true);assert.equal(d.getElementById('productMonitorHistory').textContent,'');
  provisioned=false;owner='a';auth('a@example.test');await until(()=>d.getElementById('lifecycleUserStatus').textContent.includes('loaded'));
  assert.match(d.getElementById('productMonitorActivation').textContent,/checks and email are not enabled/,'legacy saved preferences do not claim active monitoring');
+ d.querySelector('#lifecycleWatches .ops-remove').click();assert.match(d.getElementById('lifecycleConfirmText').textContent,/Stop monitoring/);
+ d.getElementById('lifecycleConfirmCancel').click();await new Promise(r=>setTimeout(r,0));assert.equal(rows.a.length,1,'cancelled removal preserves watch');assert.equal(deletes,0);
+ d.querySelector('#lifecycleWatches .ops-remove').click();d.getElementById('lifecycleConfirmAccept').click();await until(()=>deletes===1&&d.getElementById('lifecycleWatchCount').textContent==='0 monitored');
  assert.ok(d.getElementById('lifecyclePublished').textContent.includes('.NET'),'reference directory remains available');
  assert.ok(fs.readFileSync('lifecycle-monitor.css','utf8').includes('body[data-page="lifecycle"]'),'styles are scoped to the lifecycle workspace');
  console.log('PASS product monitoring UI: watch persistence, account isolation, saved alert options, truthful activation, history, test gating and reference directory.');
