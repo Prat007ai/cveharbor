@@ -55,7 +55,7 @@ try{
   results.samples[name+'_100_result_page']=stats(samples);results.samples[name+'_identical_save']=stats(saves);
   if(name==='NEW'){
    results.query_plan=(await db.prepare('EXPLAIN QUERY PLAN '+evidencePageSql).bind('php','2026-01-01T00:00:00Z','~','~',101).all()).results;
-   const start=performance.now();await Promise.all(Array.from({length:49},(_,i)=>subscribeProducts(env,'u'+(i+1),[{name:'PHP'}])));results.concurrent={accounts:50,duration_ms:performance.now()-start,scopes:(await db.prepare('SELECT COUNT(*) AS n FROM cvie_shared_scopes').first()).n};
+   const start=performance.now(),latencies=[];await Promise.all(Array.from({length:49},async(_,i)=>{const t=performance.now();await subscribeProducts(env,'u'+(i+1),[{name:'PHP'}]);latencies.push(performance.now()-t);}));results.concurrent={accounts:50,new_parallel_saves:49,service_orchestration_p95_ms:latencies.sort((a,b)=>a-b)[Math.ceil(latencies.length*.95)-1],duration_ms:performance.now()-start,scopes:(await db.prepare('SELECT COUNT(*) AS n FROM cvie_shared_scopes').first()).n};
   }
   {
    const t=Date.now(),items=Array.from({length:1766},(_,i)=>({cveID:'CVE-2026-'+(10000+i),dateAdded:'2026-01-01',vendorProject:'PHP',product:'PHP'}));

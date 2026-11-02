@@ -1,3 +1,4 @@
+import {runIdentityIndexWork} from './cvie-index-maintenance.js';
 // Original CVE Program records from vendors/authorized CNAs and independent CISA KEV.
 // URLs from provider content are never fetched: all request destinations are fixed.
 import {cveMirrorUrl,simplifyCve,normalizeCveId} from './cve-lookup.js';
@@ -277,5 +278,7 @@ export async function ingestDisclosures(env,fetcher=fetch,now=Date.now(),limit=1
 export async function dispatchEvidence(env){
  // Separate minute tick keeps this source-ingestion budget independent of NVD backfills.
  await refreshEvidence(env);await refreshEvidence(env);
- return ingestDisclosures(env,fetch,Date.now(),5);
+ const result=await ingestDisclosures(env,fetch,Date.now(),5);
+ const indexed=await runIdentityIndexWork(env);
+ return {...result,indexed:indexed.processed||0};
 }

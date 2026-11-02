@@ -127,3 +127,15 @@ test('identical original disclosure retry acknowledges the queue without rewriti
  raw.containers.cna.affected[0].versions[0].lessThan='8.5';assert.equal((await ingest(Date.now()+2000)).processed,1);
  assert.match((await q(e,'SELECT cna_affected_json FROM cvie_identity_evidence WHERE identity_id=?','php').first()).cna_affected_json,/8.5/);
 });
+
+test('verified long-tail identity primes existing public CNA evidence, resumes locally and shares one index job',async()=>{
+ const e=env(),cpe='cpe:2.3:a:acme:widget:*:*:*:*:*:*:*:*',now=new Date().toISOString();
+ await q(e,'INSERT INTO cvie_disclosures VALUES(?,?,?,?,?,?)','CVE-2026-34567','PUBLISHED',now,now,JSON.stringify({id:'CVE-2026-34567',published:now,updated:now,cvss:null,sources:[]}),Date.now()).run();
+ await q(e,'INSERT INTO cvie_disclosure_products VALUES(?,?,?,?)','CVE-2026-34567','name:acme:widget','affected',JSON.stringify([{vendor:'acme',product:'widget',defaultStatus:'affected',versions:[]}])).run();
+ const {registerVerifiedCpe}=await import('../src/product-registry.js');
+ const identity=await registerVerifiedCpe(e,cpe);assert.equal((await q(e,'SELECT COUNT(*) AS n FROM cvie_identity_evidence WHERE identity_id=?',identity.id).first()).n,1);
+ await subscribeProducts(e,'a',[{name:identity.name,cpe}]);await subscribeProducts(e,'b',[{name:identity.name,cpe}]);
+ assert.equal((await q(e,'SELECT COUNT(*) AS n FROM cvie_identity_index_jobs').first()).n,1);
+ assert.equal((await immediateEvidence(e,'a',(await product(e)).id)).advisories.length,1);
+ const {runIdentityIndexWork}=await import('../src/cvie-index-maintenance.js');await runIdentityIndexWork(e,identity.id,Date.now()+120000);assert.equal((await q(e,'SELECT complete FROM cvie_identity_index_jobs').first()).complete,1);
+});

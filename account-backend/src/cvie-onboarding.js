@@ -11,8 +11,8 @@ export async function bindProductIdentities(env,userId){
  const statements=[];
  for(const p of rows){
   const plan=coveragePlan(p);
-  let identity=plan.families.length===1&&!plan.component?resolveRegistry(p)||await storedRegistryIdentity(env,{cpe:p.cpe}):!p.cpe?resolveRegistry(p):null;
-  if(!identity&&plan.families.length===1&&!plan.component&&curatedProductFamily(p.cpe))identity=await registerVerifiedCpe(env,p.cpe);
+  let identity=plan.families.length===1&&plan.type!=='identity_conflict'&&!plan.component?resolveRegistry(p)||await storedRegistryIdentity(env,{cpe:p.cpe}):!p.cpe?resolveRegistry(p):null;
+  if(!identity&&plan.families.length===1&&plan.type!=='identity_conflict'&&!plan.component&&curatedProductFamily(p.cpe))identity=await registerVerifiedCpe(env,p.cpe);
   if(identity)statements.push(q(env,`INSERT INTO cvie_product_identities(product_id,identity_id,source_name,source_vendor,source_cpe,revision) VALUES(?,?,?,?,?,?)
    ON CONFLICT(product_id) DO UPDATE SET identity_id=excluded.identity_id,source_name=excluded.source_name,source_vendor=excluded.source_vendor,source_cpe=excluded.source_cpe,revision=excluded.revision
    WHERE identity_id IS NOT excluded.identity_id OR source_name<>excluded.source_name OR source_vendor<>excluded.source_vendor OR source_cpe<>excluded.source_cpe OR revision<>excluded.revision`,p.id,identity.id,p.name,p.vendor,p.cpe,identity.revision));

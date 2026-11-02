@@ -1,3 +1,4 @@
+import {primeIdentityIndex} from './cvie-index-maintenance.js';
 // Compact reviewed dictionary: no customer aliases, versions or keystrokes are persisted.
 import seed from '../data/cvie-identities.json' with {type:'json'};
 import {normalizeName,vendorKey,productCpe} from './product-identity.js';
@@ -49,6 +50,7 @@ export async function registerVerifiedCpe(env,cpe){
   env.DB.prepare('INSERT OR IGNORE INTO cvie_identity_aliases VALUES(?,?,?,1)').bind(normalizeName(name),id,provenance),
   ...families.map(f=>env.DB.prepare('INSERT OR IGNORE INTO cvie_identity_families VALUES(?,?)').bind(f,id))
  ]);
+ await primeIdentityIndex(env,id);
  return {id,name,vendor,cpe,kind:'product',ecosystem:'',version_scheme:'vendor',revision:1};
 }
 export async function searchDirectory(env,input){

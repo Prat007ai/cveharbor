@@ -312,3 +312,13 @@ CREATE TRIGGER cvie_fast_cna_update AFTER UPDATE OF applicability,affected_json 
  FROM cvie_identity_families i WHERE i.family_key=NEW.family_key
  ON CONFLICT(identity_id,cve_id) DO UPDATE SET cna_affected_json=excluded.cna_affected_json WHERE cna_affected_json IS NOT excluded.cna_affected_json;
 END;
+
+-- Shared local-index work for newly verified long-tail identities; no provider calls.
+CREATE INDEX cvie_scope_cpe ON cvie_shared_scopes(cpe,id);
+CREATE TABLE cvie_identity_index_jobs (
+ identity_id TEXT PRIMARY KEY REFERENCES cvie_identities(identity_id),
+ cursor_json TEXT NOT NULL DEFAULT '{}',lease_until INTEGER NOT NULL DEFAULT 0,
+ lease_token TEXT NOT NULL DEFAULT '',next_attempt_at INTEGER NOT NULL DEFAULT 0,
+ complete INTEGER NOT NULL DEFAULT 0,failed INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX cvie_identity_index_due ON cvie_identity_index_jobs(complete,next_attempt_at,lease_until);

@@ -58,7 +58,7 @@ export async function reconcileSharedScopes(env,userId=null,now=Date.now(),limit
  if(!sharedScans(env))return {linked:0};
  const registryProof=env.CVIE_REGISTRY_ENABLED==='true'?" OR EXISTS(SELECT 1 FROM cvie_identity_identifiers ri WHERE ri.scheme='cpe' AND ri.value=p.cpe)":'';
  const rows=(await q(env.DB,`SELECT p.*,(${publicIdentityProof()}${registryProof}) AS public_identity_verified FROM cvie_products p LEFT JOIN cvie_product_scopes m ON ${validScopeLink()}
-  WHERE (m.product_id IS NULL OR (m.scope_id IS NULL AND m.candidate_scope_id IS NOT NULL AND ${publicIdentityProof()}))
+  WHERE (m.product_id IS NULL OR (m.scope_id IS NULL AND m.candidate_scope_id IS NOT NULL AND (${publicIdentityProof()}${registryProof})))
   AND ${activeSubscription()} ${userId?'AND p.user_id=?':''}
   ORDER BY p.history_complete_at DESC,p.last_success_at DESC,p.id LIMIT ?`,...(userId?[userId]:[]),limit).all()).results||[];
  if(!rows.length)return {linked:0};
