@@ -1,7 +1,7 @@
-CVEHarbor Threat IP Intelligence | 2026-11-02T22:53:50.206947+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-02T23:48:55.721855+00:00
 Permanent logical group: Suspicious IP Block
-Cumulative indexed IPs: 3275
-New since prior published snapshot: 10
+Cumulative indexed IPs: 3291
+New since prior published snapshot: 16
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 No rules or policies are created or enabled. No old IPs are removed.
@@ -26,64 +26,100 @@ No firewall rule is created or activated.
   </Login>
   <Set operation="add">
     <IPHost>
-      <Name>CVEH_102_129_55_130</Name>
+      <Name>CVEH_102_64_39_12</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>102.129.55.130</IPAddress>
+      <IPAddress>102.64.39.12</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_103_187_101_50</Name>
+      <Name>CVEH_102_64_42_75</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>103.187.101.50</IPAddress>
+      <IPAddress>102.64.42.75</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_103_203_36_204</Name>
+      <Name>CVEH_102_102_157_227</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>103.203.36.204</IPAddress>
+      <IPAddress>102.102.157.227</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_103_205_253_4</Name>
+      <Name>CVEH_102_129_55_155</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>103.205.253.4</IPAddress>
+      <IPAddress>102.129.55.155</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_103_206_131_33</Name>
+      <Name>CVEH_102_129_59_6</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>103.206.131.33</IPAddress>
+      <IPAddress>102.129.59.6</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_103_206_205_73</Name>
+      <Name>CVEH_103_121_17_17</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>103.206.205.73</IPAddress>
+      <IPAddress>103.121.17.17</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_103_207_4_190</Name>
+      <Name>CVEH_103_207_4_44</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>103.207.4.190</IPAddress>
+      <IPAddress>103.207.4.44</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_154_12_118_214</Name>
+      <Name>CVEH_103_207_4_46</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>154.12.118.214</IPAddress>
+      <IPAddress>103.207.4.46</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_216_180_246_175</Name>
+      <Name>CVEH_103_207_4_54</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>216.180.246.175</IPAddress>
+      <IPAddress>103.207.4.54</IPAddress>
     </IPHost>
     <IPHost>
-      <Name>CVEH_216_180_246_229</Name>
+      <Name>CVEH_103_207_4_69</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
-      <IPAddress>216.180.246.229</IPAddress>
+      <IPAddress>103.207.4.69</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_103_207_4_214</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>103.207.4.214</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_216_180_246_3</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>216.180.246.3</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_216_180_246_15</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>216.180.246.15</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_216_180_246_19</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>216.180.246.19</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_216_180_246_77</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>216.180.246.77</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_216_180_246_195</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>216.180.246.195</IPAddress>
     </IPHost>
   </Set>
 </Request>
@@ -96,13 +132,19 @@ Merge the newly created host names with ALL existing members, deduplicate,
 then submit an IPHostGroup edit with that complete merged HostList.
 Do not issue a group edit containing only the new IPs.
 New host names to merge:
-CVEH_102_129_55_130
-CVEH_103_187_101_50
-CVEH_103_203_36_204
-CVEH_103_205_253_4
-CVEH_103_206_131_33
-CVEH_103_206_205_73
-CVEH_103_207_4_190
-CVEH_154_12_118_214
-CVEH_216_180_246_175
-CVEH_216_180_246_229
+CVEH_102_64_39_12
+CVEH_102_64_42_75
+CVEH_102_102_157_227
+CVEH_102_129_55_155
+CVEH_102_129_59_6
+CVEH_103_121_17_17
+CVEH_103_207_4_44
+CVEH_103_207_4_46
+CVEH_103_207_4_54
+CVEH_103_207_4_69
+CVEH_103_207_4_214
+CVEH_216_180_246_3
+CVEH_216_180_246_15
+CVEH_216_180_246_19
+CVEH_216_180_246_77
+CVEH_216_180_246_195
