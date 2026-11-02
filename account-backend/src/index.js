@@ -1,4 +1,5 @@
 import {approvedTest} from './monitor-approved-test.js';
+import {workspaceRoute} from './workspace-summary.js';
 import {catalogueProducts,catalogueRevision} from './catalogue-selection.js';
 // CVEHarbor account API with opt-in vulnerability digest support.
 import {newSecret,totp,verifyTotp,encryptSecret,decryptSecret,newRecoveryCodes,hashRecovery} from './totp.js';
@@ -172,6 +173,7 @@ export default {async fetch(req,env,ctx){
   const user=await me(req,env);
   if(path==='/v1/me'&&req.method==='GET')return response(user?{authenticated:true,email:user.email}:{authenticated:false},user?200:401);
   if(!user)return response({error:'Sign in required'},401);
+  if(path.startsWith('/v1/workspace/'))return await workspaceRoute(req,env,user);
   if(path==='/v1/auth/totp/status'&&req.method==='GET'){
    const row=env.TOTP_ENCRYPTION_KEY?await env.DB.prepare('SELECT enabled FROM user_totp WHERE user_id=?').bind(user.id).first():null;
    return response({available:!!env.TOTP_ENCRYPTION_KEY,enabled:row?.enabled===1});

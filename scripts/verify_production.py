@@ -27,7 +27,7 @@ required={
  "/vulnerabilities/":["technology-kpis","technologyManageButton","technologyCustomizer","categoryGrid","command-center.js?v=brochure-216"],
  "/threats/":["threatStatus","threatActivityFilter","threatGroupsTitle","threatSourceFilter","threatRows","geoMapSummary","Reported suspicious IPs and network ranges"],
  "/account/":["accountSecurityDashboard","accountSecurityRecoveryStart","account-security.js"],
- "/workspace/":["accountPageRequest","accountPageVerify","accountPageRequiredEnroll"],
+ "/workspace/":["accountPageRequest","accountPageVerify","accountPageRequiredEnroll","wsHeadingBeamPath","wsRemediationPanel","wsIntelligencePanel","ws-metrics"],
  "/customer-reports/":["customerReportEmail","customerReportPrint","customerReportCsv"],
  "/customer-dashboard/":["customerDashStatus"],
  "/environments/":["inventoryCustomerName"],
@@ -92,6 +92,7 @@ for attempt in range(6):
                 if marker not in html: raise RuntimeError(f"{route} missing {marker}")
             assets=("styles.css","homepage.css","app.js","advisory-details.js","cvie.js","cvie.css","inventory-matching.js","command-center.js","customer-security.js","inventory.js","website-monitor-page.js")
             if route=="/lifecycle/":assets+=("lifecycle-products.js","lifecycle-directory-search.js","lifecycle-monitor.js","product-monitoring.js","lifecycle-monitor.css","assets/lifecycle-orbit.svg")
+            if route=="/workspace/":assets+=("workspace-dashboard.js","workspace-dashboard.css")
             if route=="/threats/":assets+=("threats.js","geo-map.js")
             for asset in assets:
                 m=re.search(r'/'+re.escape(asset)+r'\?v=([a-zA-Z0-9-]+)',expected)
@@ -103,6 +104,11 @@ for attempt in range(6):
                 local=(root/"public"/asset).read_text(encoding="utf-8")
                 if hashlib.sha256(remote.encode()).digest()!=hashlib.sha256(local.encode()).digest():
                     raise RuntimeError(f"{route} serves outdated {asset} content")
+        for asset in ("assets/workspace-harbor.svg","workspace-intelligence.json"):
+            local=(root/"public"/asset).read_bytes()
+            fingerprint=hashlib.sha256(local).hexdigest()
+            if hashlib.sha256(fetch_bytes("/"+asset+"?release="+fingerprint[:12])).hexdigest()!=fingerprint:
+                raise RuntimeError("Published workspace asset differs from this deployment: "+asset)
         local_threats=(root/"public"/"threat-data.js").read_bytes()
         fingerprint=hashlib.sha256(local_threats).hexdigest()
         remote_threats=fetch_bytes("/threat-data.js?release="+fingerprint[:12])

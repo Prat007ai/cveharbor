@@ -1,0 +1,31 @@
+name: Verify Workspace operational dashboard (no deployment)
+on:
+  push:
+    branches: [feat/workspace-operational-dashboard]
+  pull_request:
+    paths: ['workspace/**', 'workspace-dashboard.*', 'assets/workspace-harbor.svg', 'account-backend/src/workspace-summary.js', 'account-backend/tests/workspace-summary.test.mjs', 'scripts/workspace_*', 'scripts/build_workspace_intelligence.py', 'tests/test_workspace_intelligence.py', '.github/workflows/verify-workspace-dashboard.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm install --no-save --no-package-lock jsdom@26 playwright-core@1.56.1
+      - run: npm test --prefix account-backend
+      - run: python -m unittest discover -s tests -p test_workspace_intelligence.py
+      - run: python scripts/build_site.py
+      - run: node scripts/workspace_dashboard_smoke.mjs && node scripts/browser_smoke.mjs && node scripts/worker_release_smoke.mjs
+      - name: Validate responsive layouts and capture review images with synthetic account data
+        run: node scripts/workspace_dashboard_browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: workspace-review-synthetic-data
+          path: work/workspace-review/
