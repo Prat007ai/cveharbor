@@ -8,7 +8,7 @@ on:
       operation:
         description: Exact separately approved existing-resource operation
         type: choice
-        options: [none, diagnose-schema, verify, migrate, publish-synthetic, update, recover-code, hold, freeze, resume]
+        options: [none, diagnose-schema, adopt-schema, verify, migrate, publish-synthetic, update, recover-code, hold, freeze, resume]
         default: none
 permissions:
   contents: read
@@ -27,6 +27,7 @@ jobs:
           python-version: '3.12'
       - run: npm install --prefix staging --ignore-scripts --no-package-lock
       - run: python staging/scripts/migration-plan.py
+      - run: node staging/scripts/prepare-adoption.mjs
       - run: node staging/scripts/build.mjs
       - run: node --test staging/tests/*.test.mjs
       - run: node staging/scripts/check-build.mjs
@@ -40,6 +41,8 @@ jobs:
             staging/.build/manifest.json
             staging/.build/schema/manifest.json
             staging/.build/schema/execution-plan.json
+            staging/.build/schema/adoption-batch.sql
+            staging/.build/schema/adoption-review.json
             staging/artifacts/*.json
           retention-days: 14
   release:
@@ -62,6 +65,7 @@ jobs:
       CF_STAGING_ADMIN_EMAILS: ${{ vars.CF_STAGING_ADMIN_EMAILS }}
       CF_STAGING_MANUAL_JOBS_ENABLED: ${{ vars.CF_STAGING_MANUAL_JOBS_ENABLED }}
       CF_STAGING_SCHEMA_DIAGNOSTIC_SHA256: ${{ vars.CF_STAGING_SCHEMA_DIAGNOSTIC_SHA256 }}
+      CF_STAGING_ADOPTION_SHA256: ${{ vars.CF_STAGING_ADOPTION_SHA256 }}
       CF_STAGING_SCHEMA_PLAN_SHA256: ${{ vars.CF_STAGING_SCHEMA_PLAN_SHA256 }}
       CF_STAGING_SCHEMA_RESUME_STEP: ${{ vars.CF_STAGING_SCHEMA_RESUME_STEP }}
       CF_STAGING_EXPECTED_HOLD_REVISION: ${{ vars.CF_STAGING_EXPECTED_HOLD_REVISION }}
@@ -83,7 +87,7 @@ jobs:
       - name: Validate exact reviewed source and operation before management credentials
         run: node staging/scripts/release.mjs --check
       - name: Rebuild reviewed packages without credentials
-        if: env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema'
+        if: env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema' && env.CF_STAGING_PROVISION_ACTION != 'adopt-schema'
         run: |
           npm install --prefix staging --ignore-scripts --no-package-lock
           python staging/scripts/migration-plan.py
@@ -98,7 +102,7 @@ jobs:
           CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
         run: node staging/scripts/release.mjs
       - name: Execute only the approved existing-resource operation
-        if: env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema'
+        if: env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema' && env.CF_STAGING_PROVISION_ACTION != 'adopt-schema'
         env:
           CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
           CF_STAGING_R2_ACCESS_KEY_ID: ${{ secrets.CF_STAGING_R2_ACCESS_KEY_ID }}
@@ -107,6 +111,12 @@ jobs:
           CF_STAGING_ACCESS_AUD: ${{ vars.CF_STAGING_ACCESS_AUD || secrets.CF_STAGING_ACCESS_AUD }}
           CF_STAGING_ACCESS_CLIENT_ID: ${{ secrets.CF_STAGING_ACCESS_CLIENT_ID }}
           CF_STAGING_ACCESS_CLIENT_SECRET: ${{ secrets.CF_STAGING_ACCESS_CLIENT_SECRET }}
+        run: node staging/scripts/release.mjs
+      - name: Execute only the approved original-schema adoption
+        if: env.CF_STAGING_PROVISION_ACTION == 'adopt-schema'
+        env:
+          CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
+          CF_STAGING_RECOVERY_EVIDENCE: ${{ secrets.CF_STAGING_RECOVERY_EVIDENCE }}
         run: node staging/scripts/release.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()

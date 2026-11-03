@@ -1,8 +1,8 @@
-> **Activation paused: existing partial schema reported.** The owner reports 18
-> empty application tables and existing indexes. Do not execute the step-0
-> bootstrap below. Follow the [partial-schema assessment](permanent-staging-partial-schema.md)
-> to collect exact definitions, prepare a tested forward plan and verify recovery
-> evidence before requesting migration approval.
+> **Original checkpoint 29 verified; adoption awaits approval.** Run 41707547474,
+> artifact 13275811878 verifies 18 empty tables and ten explicit indexes. Do not
+> execute the step-0 bootstrap below or set a cursor. Follow the
+> [guarded adoption and recovery procedure](permanent-staging-adoption.md).
+> Current-manifest checkpoint 37 is not installed yet.
 
 # Permanent CVEHarbor staging: implementation and activation
 

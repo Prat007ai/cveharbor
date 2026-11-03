@@ -14,8 +14,9 @@ import {migrate,loadMigrationPlan,verifySchema,migrationState} from './migrate.m
 import {hash} from './schema.mjs';
 import {d1Client} from '../../scripts/cloudflare_d1.mjs';
 import {diagnoseSchema,loadDiagnosticReference} from './schema-diagnostic.mjs';
+import {adoptSchema,loadAdoption} from './adopt-schema.mjs';
 import {holdStatus,setHold,freezeHold} from '../../scripts/recovery_control.mjs';
-export const OPERATIONS=Object.freeze(['diagnose-schema','publish-synthetic','verify','migrate','update','recover-code','hold','freeze','resume']);
+export const OPERATIONS=Object.freeze(['diagnose-schema','adopt-schema','publish-synthetic','verify','migrate','update','recover-code','hold','freeze','resume']);
 export function authorize(env,event,checkout){
  assert.equal(env.GITHUB_REPOSITORY,'Prat007ai/cveharbor');assert.equal(env.GITHUB_REF,'refs/heads/codex/cvie-core-phase012');
  assert.match(env.CF_STAGING_APPROVED_COMMIT||'',/^[a-f0-9]{40}$/);assert.equal(env.GITHUB_SHA,env.CF_STAGING_APPROVED_COMMIT);assert.equal(checkout,env.GITHUB_SHA);
@@ -23,6 +24,7 @@ export function authorize(env,event,checkout){
  assert.ok(env.GITHUB_EVENT_NAME==='workflow_dispatch'?event.inputs?.operation===action:env.GITHUB_EVENT_NAME==='push'&&Number(env.GITHUB_RUN_ATTEMPT)>1&&event.head_commit?.id===checkout&&event.head_commit?.message?.includes('[staging-release]'),'Explicit reviewed operation required');
  assert.equal(env.CF_STAGING_ACCOUNT_ID,TARGET.account);assert.equal(env.CF_STAGING_D1_DATABASE_ID,resourceManifest().permanent_database.uuid);
  if(action==='diagnose-schema')loadDiagnosticReference(env);
+ if(action==='adopt-schema'){assert.ok(!env.CF_STAGING_SCHEMA_RESUME_STEP,'Adoption does not accept a resume cursor');loadAdoption(env);}
  if(action==='migrate'){assert.match(env.CF_STAGING_SCHEMA_PLAN_SHA256||'',/^[a-f0-9]{64}$/);assert.match(env.CF_STAGING_SCHEMA_RESUME_STEP||'',/^(0|[1-9]\d*)$/);loadMigrationPlan(env);}
  if(['hold','freeze','resume'].includes(action)){assert.match(env.CF_STAGING_EXPECTED_HOLD_REVISION||'',/^\d+$/);assert.ok((env.CF_STAGING_RECOVERY_REASON||'').length>=10&&(env.CF_STAGING_RECOVERY_REASON||'').length<=500);}
  return action;
@@ -43,6 +45,7 @@ export async function probeBackend(env,transport=fetch,{held=false}={}){
 export async function executeRelease(env,event,checkout,deps={}){
  const action=authorize(env,event,checkout); // Before creating clients or touching credentials/network.
  if(action==='diagnose-schema')return (deps.schemaDiagnostic||diagnoseSchema)(env,{transport:deps.transport||fetch,record:(_name,value)=>(deps.record||(()=>{}))(value)});
+ if(action==='adopt-schema')return (deps.adoptSchema||adoptSchema)({...env,STAGING_CHANGE_APPROVED:'PR243-STAGING-ONLY'},{transport:deps.transport||fetch,record:(name,value)=>{if(deps.record)deps.record(value);else{fs.mkdirSync(path.join(root,'artifacts'),{recursive:true});fs.writeFileSync(path.join(root,'artifacts',name+'.json'),JSON.stringify(value,null,2)+'\n');}}});
  const transport=deps.transport||fetch,get=deps.get||management(env,transport),record=deps.record||(()=>{});
  const DB=deps.DB||d1Client({database:resourceManifest().permanent_database.uuid,readOnly:action==='verify',fetcher:transport,env:{CLOUDFLARE_ACCOUNT_ID:TARGET.account,CLOUDFLARE_API_TOKEN:env.CF_STAGING_API_TOKEN}});
  const report={action,source_sha:checkout,account:TARGET.account,database_id:resourceManifest().permanent_database.uuid,completed:false,steps:[]};
@@ -103,7 +106,7 @@ export async function executeRelease(env,event,checkout,deps={}){
  }catch{report.failure='Stopped without automatic rollback, resource replacement or hold release';record(report);throw Error(report.failure);}
 }
 if(process.argv[1]===fileURLToPath(import.meta.url)){
- const record=r=>{fs.mkdirSync(path.join(root,'artifacts'),{recursive:true});fs.writeFileSync(path.join(root,'artifacts',r.action==='diagnose-schema'?'schema-diagnostic.json':'release.json'),JSON.stringify(r,null,2)+'\n');};
+ const record=r=>{fs.mkdirSync(path.join(root,'artifacts'),{recursive:true});fs.writeFileSync(path.join(root,'artifacts',r.action==='diagnose-schema'?'schema-diagnostic.json':r.action==='adopt-schema'?'adoption.json':'release.json'),JSON.stringify(r,null,2)+'\n');};
  try{
   const sha=spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).stdout.trim();
   const event=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));

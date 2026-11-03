@@ -19,7 +19,7 @@ STAGING_RELEASE = "github.repository == 'Prat007ai/cveharbor' && github.ref == '
 ENVIRONMENTS = {'cloudflare-cvie-staging','cloudflare-worker-production', 'cloudflare-site-production', 'github-pages',
                 'cloudflare-production-audit', 'cloudflare-notifications-production', 'cloudflare-phase1-staging', 'cloudflare-intelligence-data'}
 SECRET_BOUNDARIES = {
-    'cloudflare-cvie-staging': {'CF_STAGING_R2_ACCESS_KEY_ID','CF_STAGING_R2_SECRET_ACCESS_KEY','CF_STAGING_API_TOKEN','CF_STAGING_ACCOUNT_ID','CF_STAGING_ACCESS_ISSUER','CF_STAGING_ACCESS_AUD','CF_STAGING_ACCESS_CLIENT_ID','CF_STAGING_ACCESS_CLIENT_SECRET'},
+    'cloudflare-cvie-staging': {'CF_STAGING_RECOVERY_EVIDENCE','CF_STAGING_R2_ACCESS_KEY_ID','CF_STAGING_R2_SECRET_ACCESS_KEY','CF_STAGING_API_TOKEN','CF_STAGING_ACCOUNT_ID','CF_STAGING_ACCESS_ISSUER','CF_STAGING_ACCESS_AUD','CF_STAGING_ACCESS_CLIENT_ID','CF_STAGING_ACCESS_CLIENT_SECRET'},
     'cloudflare-intelligence-data': {'FEED_R2_ACCESS_KEY_ID','FEED_R2_SECRET_ACCESS_KEY'},
     'cloudflare-worker-production': {'CVEHARBOR_PROD_WORKER_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID'},
     'cloudflare-site-production': {'CVEHARBOR_PROD_SITE_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID', 'CVEHARBOR_SITE_GATE_PASSWORD'},
@@ -88,6 +88,12 @@ def validate(doc, filename):
             require(filename == 'cvie-staging.yml' and name == 'release' and condition == STAGING_RELEASE, label + ': only reviewed staging release caller is permitted')
             require(job.get('needs') == 'prepare', label + ': credential-free preparation required first')
             require('scripts/provision.mjs' not in raw and 'create-database' not in raw, label + ': initial provisioning is retired')
+            runners = [s for s in job.get('steps', []) if s.get('run') == 'node staging/scripts/release.mjs']
+            expected_guards = {"env.CF_STAGING_PROVISION_ACTION == 'diagnose-schema'", "env.CF_STAGING_PROVISION_ACTION == 'adopt-schema'", "env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema' && env.CF_STAGING_PROVISION_ACTION != 'adopt-schema'"}
+            require(len(runners) == 3 and {s.get('if') for s in runners} == expected_guards, label + ': diagnostic/adoption/general dispatch must be exclusive')
+            for step in runners:
+                if step.get('if') == "env.CF_STAGING_PROVISION_ACTION == 'adopt-schema'":
+                    require(step.get('env') == {'CF_STAGING_API_TOKEN': '${{ secrets.CF_STAGING_API_TOKEN }}', 'CF_STAGING_RECOVERY_EVIDENCE': '${{ secrets.CF_STAGING_RECOVERY_EVIDENCE }}'}, label + ': adoption receives only staging D1 credential and private recovery evidence')
         if env == 'cloudflare-intelligence-data':
             require(filename == 'publish-intelligence.yml' and name == 'collect', label + ': data credential caller not allowed')
             require('PRODUCTION_DEPLOYMENTS_ENABLED' not in condition and 'needs' not in job, label + ': feed cannot depend on application release')

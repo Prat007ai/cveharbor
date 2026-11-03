@@ -59,6 +59,16 @@ class WorkflowSecurityTests(unittest.TestCase):
 if __name__=='__main__':unittest.main()
 
 class PermanentStagingSecurityTests(unittest.TestCase):
+ def test_adoption_dispatch_and_credentials_are_isolated(self):
+  source=ROOT/'.github/workflows/cvie-staging.yml'
+  doc=policy.load_workflow(source.read_text());self.assertEqual(policy.validate(doc,'cvie-staging.yml'),[])
+  for mode in ['guard','credential','fallback']:
+   doc=policy.load_workflow(source.read_text());steps=doc['jobs']['release']['steps']
+   adoption=next(s for s in steps if s.get('if')=="env.CF_STAGING_PROVISION_ACTION == 'adopt-schema'")
+   if mode=='guard':adoption['if']='true'
+   elif mode=='credential':adoption['env']['CF_STAGING_R2_ACCESS_KEY_ID']='${{ secrets.CF_STAGING_R2_ACCESS_KEY_ID }}'
+   else:next(s for s in steps if s.get('name')=='Execute only the approved existing-resource operation')['if']="env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema'"
+   self.assertTrue(policy.validate(doc,'cvie-staging.yml'))
  def test_staging_caller_cannot_weaken_guard_or_request_production_credentials(self):
   source=ROOT/'.github/workflows/cvie-staging.yml'
   for mutate in [lambda j:j.update({'if':'true'}),lambda j:j.update({'if':policy.STAGING_RELEASE+' || true'}),lambda j:j.pop('needs'),lambda j:j['steps'].append({'run':'echo forbidden','env':{'TOKEN':'${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}'}})]:

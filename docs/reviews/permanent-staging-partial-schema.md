@@ -1,5 +1,11 @@
 # Permanent staging: partial schema assessment
 
+> **Historical assessment superseded by verified evidence.** Run 41707547474,
+> artifact 13275811878 subsequently confirmed the exact original checkpoint 29.
+> Use the [adoption review package](permanent-staging-adoption.md) for current
+> instructions. The earlier pending-evidence observations below describe the
+> preceding review, not the current verification status. No migration is approved.
+
 Status: awaiting exact live schema definitions. No remote initialization approved.
 The account owner reports 18 application tables, zero rows in each, existing
 indexes and no application triggers. This supersedes the earlier empty-schema

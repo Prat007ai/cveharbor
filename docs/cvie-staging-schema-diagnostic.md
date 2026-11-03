@@ -1,5 +1,11 @@
 # Read-only schema diagnostic after run #15
 
+> **Execution completed:** run 41707547474 attempt 2, artifact 13275811878 verified
+> original checkpoint 29 with zero writes and zero storage change. See the
+> [adoption review package](reviews/permanent-staging-adoption.md) for verified
+> digests and the next separately approved operation. The preparation narrative
+> below is retained as historical context; do not rerun an old migration cursor.
+
 Prepared for separate execution approval. No remote diagnostic, migration, continuation, resource mutation or deployment was initiated while preparing this change. PR #243 remains unmerged. This update preserves the intervening permanent-staging integration; it does not activate that integration.
 
 ## Investigation and correction
