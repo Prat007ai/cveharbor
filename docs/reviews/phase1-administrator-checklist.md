@@ -1,3 +1,9 @@
+> **Permanent staging update:** use [the consolidated activation runbook](permanent-staging-activation.md)
+> for the current integrated #243 candidate. It supersedes earlier staging bootstrap,
+> publisher and email-blocking instructions in this checklist. Production approval,
+> audit, feed-transition and deployment controls below still apply. Both production
+> drafts remain separate from the integrated staging application candidate.
+
 # Phase 1 administrator configuration and release checklist
 
 **Authoritative runbook for PR #253 + integrated PR #251.** Updated November 3, 2026.
@@ -25,7 +31,7 @@ file, PRs, chat, screenshots or artifacts. Use your password manager/secure runn
 | Existing staging account | `9706b4d98ad72884e67fd1eb875c8a61` | Existing run verified identity; saved token scope remains owner-attested; reuse this account |
 | Permanent staging D1 | `cveharbor-accounts-staging`, UUID `fac61562-fc31-426d-8032-550aba63b7f6` | Existing resource/binding verified; full schema and application data tests pending |
 | Permanent staging Workers | `cveharbor-accounts-staging`, `cveharbor-site-staging` | Existing run verified bindings and 28 Access checks; reuse both |
-| Permanent staging R2 | Proposed `cveharbor-intelligence-staging`; inspect existing buckets first | Live R2 inventory unavailable; integration not configured in reviewed staging source |
+| Permanent staging R2 | Proposed `cveharbor-intelligence-staging`; inspect existing buckets first | Live R2 inventory still requires verification; integration prepared in #243 |
 | Disposable D1 | Fresh empty `cveharbor-phase1-staging-<suffix>` in the same staging account | Pending approval and inventory-guard integration; never use permanent D1 |
 | Disposable R2 | Fresh empty `cveharbor-intelligence-staging-<suffix>` in the same staging account | Pending inventory/approval; required only for empty-bucket synthetic rehearsal |
 | Production R2, later | Private `cveharbor-intelligence`, accessible in existing Workers' account | Requires separate resource/cost approval |
@@ -58,7 +64,7 @@ was made in this review.
 - [ ] Reuse an appropriate private R2 bucket if present; otherwise seek approval for
   permanent `cveharbor-intelligence-staging` in the same staging account. Standard
   storage, public access disabled, no production domain. The current staging wrapper,
-  config validator and frontend require reviewed R2 integration before bindings work.
+  config validator and frontend now support the reviewed private R2 binding in #243; activation still needs approval.
 - [ ] Keep real mail/provider egress and crons disabled. Prepare captured-email,
   provider-fixture and scheduler tests before enabling full synthetic feature testing.
   Sanitized production refresh needs a separate reviewed sanitizer/import plan and

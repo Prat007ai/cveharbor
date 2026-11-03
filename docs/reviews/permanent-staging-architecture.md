@@ -1,3 +1,10 @@
+> **Implementation update:** the integration is now prepared in draft PR #243.
+> Use [the activation runbook](permanent-staging-activation.md) for current manifest,
+> capture, R2, workflow and configuration details. The assessment below records the
+> earlier live evidence and original gaps; statements that integration is missing
+> describe that historical snapshot, not the current draft code. Live activation
+> remains unapproved and unperformed.
+
 # One permanent CVEHarbor staging environment
 
 Reviewed November 3, 2026. This supplements the [administrator checklist](phase1-administrator-checklist.md)
