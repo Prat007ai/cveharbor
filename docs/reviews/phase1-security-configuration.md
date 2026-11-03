@@ -1,5 +1,12 @@
 # Phase 1 GitHub security configuration and validation handoff
 
+> **Superseded rollout advice:** Read [the continuity and integration checklist](phase1-transition-checklist.md)
+> before applying this plan. The current draft stops hourly collection and removes committed snapshots still
+> consumed by vulnerability digests. The deployed digest loader rejects snapshots older than eight hours.
+> Do not merge #253, activate main rules that block the current updater, or remove its credentials until a
+> validated feed handoff exists. The cache/artifact design below is an incomplete proposal, not a working
+> replacement for the deployed feed readers. The newer checklist also records actual #251 merge conflicts.
+
 Reviewed 2026-11-03. Source baseline: `147d2671d993e6297205cb5816aca53969cc71b7`.
 Phase 1 PR #251 remains draft, unmerged and unchanged at
 `d791cb8e84f85f980926dd1e1acfd0b369c64b46`.
