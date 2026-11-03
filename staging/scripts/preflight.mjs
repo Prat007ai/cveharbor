@@ -5,10 +5,11 @@ import { fileURLToPath } from 'node:url';
 import { TARGET, accessSettings, databaseId } from '../target.mjs';
 import { createAccessVerifier } from '../access.mjs';
 
-export async function preflight(env, transport = fetch, { existingDatabase = false } = {}) {
+export async function preflight(env, transport = fetch, { existingDatabase = false, workerState = 'empty' } = {}) {
+  if (!['empty', 'deployed'].includes(workerState) || workerState === 'deployed' && !existingDatabase) throw Error('Explicit inventory state and existing database required');
   const checks = [], requests = [], blockers = [], limitations = [];
   const report = { account: TARGET.account, origin: TARGET.origin, checked_at: new Date().toISOString(),
-    operation: 'read-only staging preflight', checks, requests, blockers, limitations,
+    operation: 'read-only staging preflight', inventory_mode: workerState, checks, requests, blockers, limitations,
     mutation_requests: 0, production_requests: 0, ready_for_creation: false };
   const add = (name, passed, detail, required = true) => {
     checks.push({ name, status: passed ? 'pass' : required ? 'fail' : 'unverified', ...detail });
@@ -82,7 +83,8 @@ export async function preflight(env, transport = fetch, { existingDatabase = fal
   const workers = await cf('/workers/scripts', 'workers_inventory');
   const workerRows = workers.ok && Array.isArray(workers.result) ? workers.result : null;
   add('workers_read_permission', !!workerRows, { http_status: workers.status });
-  add('approved_worker_names_available', !!workerRows && !workerRows.some(w => [TARGET.api, TARGET.site].includes(w.id)), { worker_count: workerRows?.length ?? null });
+  if (workerState === 'deployed') add('expected_staging_workers_present', !!workerRows && workerRows.length === 2 && [TARGET.api, TARGET.site].every(name => workerRows.filter(w => w.id === name).length === 1), { worker_count: workerRows?.length ?? null });
+  else add('approved_worker_names_available', !!workerRows && workerRows.length === 0, { worker_count: workerRows?.length ?? null });
   const databases = await cf('/d1/database?per_page=100', 'd1_inventory');
   const dbRows = databases.ok && Array.isArray(databases.result) && databases.result.length < 100 ? databases.result : null;
   add('d1_read_permission', !!dbRows, { http_status: databases.status, database_count: dbRows?.length ?? null });
@@ -141,14 +143,14 @@ export async function preflight(env, transport = fetch, { existingDatabase = fal
   });
   const jwt = response?.headers.get('set-cookie')?.match(/(?:^|[,;]\s*)CF_Authorization=([^;]+)/)?.[1];
   const verified = jwt && await createAccessVerifier(async () => Response.json(jwks))(jwt, issuer, audience);
-  add('service_secret_end_to_end', !!verified, { http_status: response?.status ?? null, reason: verified ? 'Valid Access JWT for configured issuer/AUD' : 'No valid JWT returned; origin may not exist yet. HTTP status alone does not validate credentials.' }, false);
+  add('service_secret_end_to_end', !!verified, { http_status: response?.status ?? null, reason: verified ? 'Valid Access JWT for configured issuer/AUD' : workerState === 'deployed' ? 'No verified Access cookie JWT; use the live Worker boundary probes. HTTP status alone is inconclusive.' : 'No valid JWT returned; origin may not exist yet. HTTP status alone does not validate credentials.' }, false);
   report.read_only_checks_passed = blockers.length === 0;
-  report.ready_for_creation = blockers.length === 0 && grantsVerified && scopeVerified && serviceMetadataVerified;
+  report.ready_for_creation = workerState === 'empty' && !existingDatabase && blockers.length === 0 && grantsVerified && scopeVerified && serviceMetadataVerified;
   report.write_permissions_exercised = false;
   return report;
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const result = await preflight(process.env, undefined, { existingDatabase: !!process.env.CF_STAGING_D1_DATABASE_ID });
+  const result = await preflight(process.env, undefined, { existingDatabase: !!process.env.CF_STAGING_D1_DATABASE_ID, workerState: process.env.CF_STAGING_D1_DATABASE_ID ? 'deployed' : 'empty' });
   const destination = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../artifacts');
   fs.mkdirSync(destination, { recursive: true });
   fs.writeFileSync(path.join(destination, 'preflight.json'), JSON.stringify(result, null, 2) + '\n');

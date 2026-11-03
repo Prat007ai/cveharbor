@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { TARGET, databaseId } from '../target.mjs';
 import { root, configs } from './configure.mjs';
 import { failure, safeFailure } from './errors.mjs';
+import { readAssetGate } from './asset-gate.mjs';
 
 export async function diagnose(env, transport = fetch, record = () => {}) {
   if (env.CF_STAGING_ACCOUNT_ID !== TARGET.account || !env.CF_STAGING_API_TOKEN) throw failure('diagnostics.authorize', 'configuration');
@@ -54,7 +55,7 @@ export async function diagnose(env, transport = fetch, record = () => {}) {
       } else {
         const services = bindings.filter(b => b.type === 'service');
         worker.service_binding_matches = services.length === 1 && services[0].name === 'STAGING_API' && services[0].service === TARGET.api && (!services[0].environment || services[0].environment === 'production');
-        worker.assets_gate_matches = bindings.filter(b => b.type === 'assets' && b.name === 'ASSETS').length === 1 && settings.assets?.config?.run_worker_first === true;
+        Object.assign(worker, await readAssetGate(settings, get));
       }
       const exposure = await get(`/workers/scripts/${name}/subdomain`);
       worker.exposure_matches = exposure?.enabled === (name === TARGET.site) && exposure?.previews_enabled === false;
@@ -64,11 +65,13 @@ export async function diagnose(env, transport = fetch, record = () => {}) {
       const deployments = await get(`/workers/scripts/${name}/deployments`);
       worker.deployment_present = Array.isArray(deployments?.deployments) && deployments.deployments.length > 0;
     }
-    report.completed = true; record(report); return report;
+    report.completed = true;
+    report.verified = report.database.present && report.database.metadata_identity_matches && report.database.unexpected_count === 0 && report.unexpected_worker_count === 0 && report.workers.every(w => w.present && w.variables_match && w.unexpected_binding_count === 0 && w.exposure_matches && w.schedules_disabled && w.deployment_present && (w.name === TARGET.api ? w.d1_binding_matches && w.rate_limit_matches : w.service_binding_matches && w.assets_gate_matches === true));
+    record(report); return report;
   } catch (error) { report.failure = safeFailure(error); record(report); throw error; }
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const record = report => { fs.mkdirSync(path.join(root, 'artifacts'), { recursive: true }); fs.writeFileSync(path.join(root, 'artifacts/diagnostics.json'), JSON.stringify(report, null, 2) + '\n'); };
-  try { await diagnose(process.env, fetch, record); console.log('GET-only staging inventory recorded; no SQL or resource changes.'); }
+  try { const report = await diagnose(process.env, fetch, record); console.log('GET-only staging inventory recorded; no SQL or resource changes.'); if (!report.verified) process.exitCode = 1; }
   catch (error) { console.error(JSON.stringify(safeFailure(error))); process.exitCode = 1; }
 }

@@ -60,18 +60,29 @@ test('deploy mode verifies existing DB preflight and records failing Access befo
   }), /Staging operation stopped/);
   assert.deepEqual(artifacts, ['preflight', 'provision', 'access', 'failure']);
 });
-test('Access probe uses four fixed-host GETs, no redirects/sessions, and keeps secrets out of evidence', async () => {
+test('live boundary probe covers static classes, API session boundary and Worker-before-assets with GET only', async () => {
   const authEnv = { CF_STAGING_ACCESS_ISSUER: 'https://synthetic-stage.cloudflareaccess.com', CF_STAGING_ACCESS_AUD: 'a'.repeat(64), CF_STAGING_ACCESS_CLIENT_ID: 'secret-client', CF_STAGING_ACCESS_CLIENT_SECRET: 'secret-value' };
   let count = 0;
   const transport = async (url, init) => {
-    count++; assert.equal(new URL(url).origin, TARGET.origin); assert.equal(init.method, 'GET'); assert.equal(init.redirect, 'manual'); assert.equal(init.headers.Cookie, undefined);
+    count++; assert.equal(init.method, 'GET'); assert.equal(init.redirect, 'manual'); assert.equal(init.headers.Cookie, undefined);
+    if (new URL(url).origin !== TARGET.origin) {
+      assert.equal(url, 'https://cveharbor-accounts-staging.cveharbor-staging.workers.dev/v1/me');
+      assert.deepEqual(init.headers, {}); return new Response('', { status: 404 });
+    }
     if (!init.headers['CF-Access-Client-Secret']) return new Response('', { status: 403 });
-    const headers = { 'X-Robots-Tag': 'noindex, nofollow, noarchive' };
-    return url.endsWith('/v1/me') ? Response.json({ authenticated: false }, { status: 401, headers }) : new Response('<html>CVEHarbor</html>', { headers: { ...headers, 'Content-Type': 'text/html' } });
+    const headers = { 'X-Robots-Tag': 'noindex, nofollow, noarchive', 'Cache-Control': 'private, no-store' };
+    if (init.headers.Origin) return new Response('Forbidden origin', { status: 403, headers });
+    if (url.endsWith('/v1/me')) return Response.json({ authenticated: false }, { status: 401, headers });
+    const type = url.endsWith('.css') ? 'text/css' : url.endsWith('.js') ? 'application/javascript' : url.endsWith('.svg') ? 'image/svg+xml' : 'text/html';
+    return new Response('<html>CVEHarbor</html>', { headers: { ...headers, 'Content-Type': type } });
   };
-  const result = await probeAccess(authEnv, transport); assert.equal(result.passed, true); assert.equal(count, 4);
+  const result = await probeAccess(authEnv, transport); assert.equal(result.passed, true); assert.equal(count, 28);
   assert.doesNotMatch(JSON.stringify(result), /secret-client|secret-value/);
   assert.equal((await probeAccess(authEnv, async () => new Response('public', { status: 200 }))).passed, false);
   assert.equal((await probeAccess(authEnv, async () => Response.redirect('https://attacker.test', 302))).passed, false);
+  const bypass = await probeAccess(authEnv, async (url, init) => init.headers.Origin && url.endsWith('/styles.css') ? new Response('body{}', { headers: { 'Content-Type': 'text/css' } }) : transport(url, init));
+  assert.equal(bypass.passed, false);
+  assert.equal(bypass.checks.find(c => c.name === 'worker_runs_before_asset' && c.route === '/styles.css').passed, false);
+  const denied = await probeAccess(authEnv, async () => new Response('Cloudflare Access authentication required', { status: 403 }));
+  assert.equal(denied.passed, false); // universal denial is fail-closed, not readiness
 });
-

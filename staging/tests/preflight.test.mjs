@@ -4,7 +4,7 @@ import { preflight } from '../scripts/preflight.mjs';
 import { TARGET } from '../target.mjs';
 const env = { CF_STAGING_ACCOUNT_ID: TARGET.account, CF_STAGING_API_TOKEN: 'private-management-token', CF_STAGING_ACCESS_ISSUER: 'https://synthetic-stage.cloudflareaccess.com', CF_STAGING_ACCESS_AUD: 'a'.repeat(64), CF_STAGING_ACCESS_CLIENT_ID: 'private-service-client', CF_STAGING_ACCESS_CLIENT_SECRET: 'private-service-secret' };
 const sid = '11111111-2222-4333-8444-555555555555';
-function fixture({ metadataDenied = false, bypass = false, emptyList = false, missingDetail = false, database = null } = {}) {
+function fixture({ metadataDenied = false, bypass = false, emptyList = false, missingDetail = false, database = null, workers = [] } = {}) {
   return async (url, init) => {
     assert.equal(init.method, 'GET'); assert.equal(init.redirect, 'manual');
     const u = new URL(url); let result;
@@ -21,7 +21,7 @@ function fixture({ metadataDenied = false, bypass = false, emptyList = false, mi
       if (metadataDenied) return Response.json({ success: false }, { status: 403 });
       result = { policies: [{ effect: 'allow', resources: { ['com.cloudflare.api.account.' + TARGET.account]: '*' }, permission_groups: ['Workers Scripts Write','D1 Write','Account Settings Read','Access: Apps and Policies Read'].map(name => ({ name })) }] };
     } else if (route === '/workers/subdomain') result = { subdomain: 'cveharbor-staging' };
-    else if (route === '/workers/scripts') result = [];
+    else if (route === '/workers/scripts') result = workers;
     else if (route === '/d1/database') result = database ? [database] : [];
     else if (route === '/access/apps') result = [{ id: sid, domain: new URL(TARGET.origin).hostname, aud: env.CF_STAGING_ACCESS_AUD, type: 'self_hosted', name: 'CVEHarbor Staging' }];
     else if (route.endsWith('/policies')) result = [
@@ -72,4 +72,22 @@ test('deployment preflight accepts only the recorded staging DB and keeps diagno
   assert.equal(result.checks.find(c => c.name === 'approved_database_identity').status, 'pass');
   const wrong = await preflight(settings, fixture({ database: { name: TARGET.database, uuid: TARGET.productionDatabase } }), { existingDatabase: true });
   assert.equal(wrong.read_only_checks_passed, false);
+});
+
+
+test('deployed diagnostic accepts only both expected Workers without weakening initial creation gates', async () => {
+  const settings = { ...env, CF_STAGING_D1_DATABASE_ID: sid };
+  const options = { existingDatabase: true, workerState: 'deployed' };
+  const database = { name: TARGET.database, uuid: sid };
+  const workers = [{ id: TARGET.api }, { id: TARGET.site }];
+  const good = await preflight(settings, fixture({ database, workers }), options);
+  assert.equal(good.read_only_checks_passed, true);
+  assert.equal(good.ready_for_creation, false);
+  assert.equal(good.checks.find(c => c.name === 'expected_staging_workers_present').status, 'pass');
+  for (const rows of [[], [workers[0]], [...workers, { id: 'unexpected' }], [workers[0], workers[0]]]) {
+    const bad = await preflight(settings, fixture({ database, workers: rows }), options);
+    assert.ok(bad.blockers.includes('expected_staging_workers_present'));
+  }
+  const initial = await preflight(settings, fixture({ database, workers }), { existingDatabase: true });
+  assert.ok(initial.blockers.includes('approved_worker_names_available'));
 });

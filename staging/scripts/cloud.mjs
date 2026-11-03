@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { TARGET, accessSettings, databaseId } from '../target.mjs';
 import { root, writeConfigs } from './configure.mjs';
 import { failure, wranglerCategory } from './errors.mjs';
+import { readAssetGate } from './asset-gate.mjs';
 
 export async function runCloud(action = 'check', env = process.env, fetcher = fetch, log = console.log, runner = spawnSync) {
   if (!['check', 'create-database', 'deploy'].includes(action)) throw Error('Use check, create-database or deploy. No SQL execution is exposed.');
@@ -114,7 +115,8 @@ export async function runCloud(action = 'check', env = process.env, fetcher = fe
       const siteBindings = siteSettings.bindings || [];
       const services = siteBindings.filter(b => b.type === 'service');
       if (services.length !== 1 || services[0].name !== 'STAGING_API' || services[0].service !== TARGET.api || services[0].environment && services[0].environment !== 'production' || siteBindings.some(b => !['service', 'assets', 'plain_text'].includes(b.type))) throw Error('Frontend service binding mismatch');
-      if (siteBindings.filter(b => b.type === 'assets' && b.name === 'ASSETS').length !== 1 || siteSettings.assets?.config?.run_worker_first !== true) throw Error('Frontend assets must pass through Access gate');
+      const assetGate = await readAssetGate(siteSettings, cf);
+      if (assetGate.assets_gate_matches !== true) throw failure('verification.site.asset_gate', assetGate.assets_gate_status === 'fail' ? 'configuration' : 'metadata_unavailable');
       varsMatch(siteBindings, configs.site.vars);
       await exposure(TARGET.site, true);
       const inventory = await cf('/workers/scripts');

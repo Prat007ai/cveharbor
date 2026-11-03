@@ -53,7 +53,8 @@ function management({ deploy = false, badDB = false, unexpectedWorker = false, f
       { type: 'ratelimit', name: 'ASSIGNMENT_ACK_RATE_LIMITER', namespace_id: '24302', simple: { limit: 60, period: 60 } }, ...plain(apiVars),
       ...(failure === 'secret' ? [{ type: 'secret_text', name: 'SMTP2GO_API_KEY' }] : []),
     ] };
-    else if (route === `/workers/scripts/${TARGET.site}/settings`) result = { bindings: [{ type: 'service', name: 'STAGING_API', service: TARGET.api }, { type: 'assets', name: 'ASSETS' }, ...plain({ ACCESS_ISSUER: fixtureEnv.CF_STAGING_ACCESS_ISSUER, ACCESS_AUD: fixtureEnv.CF_STAGING_ACCESS_AUD })], assets: { config: { run_worker_first: true } } };
+    else if (route === `/workers/scripts/${TARGET.site}/settings`) result = { bindings: [{ type: 'service', name: 'STAGING_API', service: TARGET.api }, { type: 'assets', name: 'ASSETS' }, ...plain({ ACCESS_ISSUER: fixtureEnv.CF_STAGING_ACCESS_ISSUER, ACCESS_AUD: fixtureEnv.CF_STAGING_ACCESS_AUD })] };
+    else if (route === `/workers/workers/${TARGET.site}/versions/${uuid}`) result = { id: uuid, assets: { config: { run_worker_first: true } } };
     else if (route.endsWith('/deployments')) result = { deployments: [{ id: uuid, versions: [{ version_id: uuid, percentage: 100 }] }] };
     else if (route.endsWith('/subdomain')) result = { enabled: route.includes(TARGET.site) || failure === 'public-api', previews_enabled: false };
     else if (route.endsWith('/schedules')) result = { schedules: failure === 'cron' ? [{}] : [] };
