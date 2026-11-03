@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-03",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6775,
+  "candidate_records": 6777,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -398,6 +398,77 @@
       "status": "GitHub malware advisory",
       "first_seen_at": "2026-11-03T01:10:09Z",
       "source_updated_at": "2026-11-03T00:31:14Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-111464",
+      "title": "The WP Fastest Cache plugin for WordPress is vulnerable to Sensitive Information Exposure in all...",
+      "severity": "medium",
+      "categories": [
+        "PHP",
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "The WP Fastest Cache plugin for WordPress is vulnerable to Sensitive Information Exposure in all versions up to, and including, 1.5.3. The plugin caches the response of Core’s wp-activate.php without honoring its no-store/no-cache headers, the wp-activate-* cookie, or the WP_INSTALLING state, writing the credential-bearing activation response to a publicly accessible cache file. This makes it possible for unauthenticated attackers to retrieve the plaintext username and twelve-character password of the most recently activated Multisite registrant from that cached wp-activate.php response. Exploitation requires a Multisite subdirectory installation with public user and site registration enabled, and the credentials are only exposed after a genuine registrant follows their activation link.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-8338-x748-jf52"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111464"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/wp-fastest-cache/tags/1.5.2/inc/cache.php#L1027"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://plugins.trac.wordpress.org/browser/wp-fastest-cache/tags/1.5.2/inc/cache.php#L1400"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.9",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T04:02:41Z",
+      "source_updated_at": "2026-11-03T03:30:27Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-hvpp-rx4h-crg5",
+      "title": "Malware in scdn-jquery",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "jQuery / Bootstrap",
+        "Application dependencies"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: scdn-jquery (>= 0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-hvpp-rx4h-crg5"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-03T04:02:41Z",
+      "source_updated_at": "2026-11-03T03:47:14Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -86820,51 +86891,6 @@
       "epss_as_of": "2026-11-03"
     },
     {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        "Windows",
-        "Windows 11 OS",
-        "Windows Server OS"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
-        },
-        {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.09813,
-      "epss_percentile": 0.95551,
-      "epss_as_of": "2026-11-03"
-    },
-    {
       "id": "CVE-2026-102870",
       "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
       "severity": "high",
@@ -86907,6 +86933,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00906,
       "epss_percentile": 0.59854,
+      "epss_as_of": "2026-11-03"
+    },
+    {
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+        },
+        {
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.09813,
+      "epss_percentile": 0.95551,
       "epss_as_of": "2026-11-03"
     },
     {
@@ -150710,52 +150781,6 @@
       "epss_as_of": "2026-11-03"
     },
     {
-      "id": "CVE-2026-54458",
-      "title": "WWBN AVideo: Unauthenticated Stored DOM Cross-Site Scripting via Per-Client Metadata Broadcast in YPTSocket Plugin",
-      "severity": "critical",
-      "categories": [
-        "Application dependencies",
-        "JavaScript / TypeScript",
-        "PHP",
-        "jQuery / Bootstrap"
-      ],
-      "published": "2026-06-04",
-      "updated": "2026-10-29",
-      "summary": "## Summary A stored DOM Cross-Site Scripting vulnerability (CWE-79) in the AVideo YPTSocket plugin lets any unauthenticated remote attacker execute arbitrary JavaScript in the authenticated origin of every administrator currently viewing a page that renders the YPTSocket online-users debug panel. `plugin/YPTSocket/getWebSocket.json.php` issues a signed WebSocket token to any anonymous caller, and `MessageSQLiteV2::onOpen` at `plugin/YPTSocket/MessageSQLiteV2.php` lines 91 and 110 reads the attacker-controlled `webSocketSelfURI` and `page_title` query parameters from the WebSocket connection URL with no validation. Both values persist into the in-memory SQLite `connections` table and broadcast inside the `users_id_online` array sent to every connected client; on the client, `plugin/YPTSocket/script.js::updateSocketUserCard` interpolates the broadcast `page_title` into an HTML template literal that is passed to jQuery `$.append(html)`, which parses attacker bytes into live DOM nodes including `<img>` with inline event handlers. ## Details `plugin/YPTSocket/getWebSocket.json.php` issues a WebSocket token to any caller; the only gate is `AVideoPlugin::isEnabledByName(\"YPTSocket\")`. The token-issuance helper `getEncryptedInfo()` at `plugin/YPTSocket/functions.php:21-24` writes `$_REQU",
-      "affected": "composer: WWBN/AVideo (< 29.1.0)",
-      "remediation": "WWBN/AVideo: 29.1.0",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-8whc-2wmv-ww35"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/WWBN/AVideo/security/advisories/GHSA-8whc-2wmv-ww35"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/WWBN/AVideo/commit/8be71e53ccbe9b84b30870db386fb4d2b11e1c16"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-54458"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.6",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-10-29T14:42:21Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00382,
-      "epss_percentile": 0.32214,
-      "epss_as_of": "2026-11-03"
-    },
-    {
       "id": "CVE-2025-71313",
       "title": "In the Linux kernel, the following vulnerability has been resolved: PCI: endpoint: Add missing NULL check for alloc_workqueue() alloc_workqueue() can return NULL on memory all",
       "severity": "medium",
@@ -152180,41 +152205,6 @@
       "known_exploited": false,
       "epss": 0.00123,
       "epss_percentile": 0.02044,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-46300",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: net: skbuff: preserve shared-frag marker during coalescing skb_try_coalesce() can attach paged frags from @",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-05-23",
-      "updated": "2026-10-29",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: net: skbuff: preserve shared-frag marker during coalescing skb_try_coalesce() can attach paged frags from @from to @to. If @from has SKBFL_SHARED_FRAG set, the resulting @to skb can contain the same externally-owned or page-cache-backed frags, but the shared-frag marker is currently lost. That breaks the invariant relied on by later in-place writers. In particular, ESP input checks skb_has_shared_frag() before deciding whether an uncloned nonlinear skb can skip skb_cow_data(). If TCP receive coalescing has moved shared frags into an unmarked skb, ESP can see skb_has_shared_frag() as false and decrypt in place over page-cache backed frags. Propagate SKBFL_SHARED_FRAG when skb_try_coalesce() transfers paged frags. The tailroom copy path does not need the marker because it copies bytes into @to's linear data rather than transferring frag descriptors.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel; siemens simatic_s7-1500_cpu_1518-4_pn\\/dp_mfp_firmware; siemens simatic_s7-1500_cpu_1518-4_pn\\/dp_mfp; redhat openshift_container_platform; redhat enterprise_linux; redhat enterprise_linux_aus; redhat enterprise_linux_eus; redhat enterprise_linux_tus; redhat enterprise_linux_update_services_for_sap_solutions",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-46300"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "7.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T00:18:28Z",
-      "source_updated_at": "2026-10-29T17:30:34.060",
-      "source_type": "nvd",
-      "known_exploited": true,
-      "epss": 0.1613,
-      "epss_percentile": 0.96928,
       "epss_as_of": "2026-11-03"
     },
     {
@@ -170761,85 +170751,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-03T03:00:26Z",
-      "last_attempt": "2026-11-03T03:00:26Z",
-      "items_processed": 209,
+      "last_success": "2026-11-03T04:02:41Z",
+      "last_attempt": "2026-11-03T04:02:41Z",
+      "items_processed": 210,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-03T03:00:26Z",
-      "last_attempt": "2026-11-03T03:00:26Z",
+      "last_success": "2026-11-03T04:02:41Z",
+      "last_attempt": "2026-11-03T04:02:41Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-03T03:00:26Z",
-      "last_attempt": "2026-11-03T03:00:26Z",
-      "items_processed": 380,
+      "last_success": "2026-11-03T04:02:41Z",
+      "last_attempt": "2026-11-03T04:02:41Z",
+      "items_processed": 379,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-03T03:00:26Z",
-      "last_attempt": "2026-11-03T03:00:26Z",
+      "last_success": "2026-11-03T04:02:41Z",
+      "last_attempt": "2026-11-03T04:02:41Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-03T03:00:26Z",
-      "last_attempt": "2026-11-03T03:00:26Z",
+      "last_success": "2026-11-03T04:02:41Z",
+      "last_attempt": "2026-11-03T04:02:41Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-03T03:00:26Z",
-      "last_attempt": "2026-11-03T03:00:26Z",
+      "last_success": "2026-11-03T04:02:41Z",
+      "last_attempt": "2026-11-03T04:02:41Z",
       "items_processed": 15,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-03T03:00:26Z",
-      "last_attempt": "2026-11-03T03:00:26Z",
+      "last_success": "2026-11-03T04:02:41Z",
+      "last_attempt": "2026-11-03T04:02:41Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-03T03:00:26Z",
-      "last_attempt": "2026-11-03T03:00:26Z",
+      "last_success": "2026-11-03T04:02:41Z",
+      "last_attempt": "2026-11-03T04:02:41Z",
       "items_processed": 47,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-03T03:00:26Z",
-      "last_attempt": "2026-11-03T03:00:26Z",
+      "last_success": "2026-11-03T04:02:41Z",
+      "last_attempt": "2026-11-03T04:02:41Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-03T03:00:26Z",
-      "last_attempt": "2026-11-03T03:00:26Z",
+      "last_success": "2026-11-03T04:02:41Z",
+      "last_attempt": "2026-11-03T04:02:41Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-03T03:00:26Z",
-      "last_attempt": "2026-11-03T03:00:26Z",
+      "last_success": "2026-11-03T04:02:41Z",
+      "last_attempt": "2026-11-03T04:02:41Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-03T03:00:26Z",
-      "last_attempt": "2026-11-03T03:00:26Z",
+      "last_success": "2026-11-03T04:02:41Z",
+      "last_attempt": "2026-11-03T04:02:41Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -170851,7 +170841,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-03T03:00:26Z",
-  "last_successful_update": "2026-11-03T03:00:26Z",
+  "last_checked_at": "2026-11-03T04:02:41Z",
+  "last_successful_update": "2026-11-03T04:02:41Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
