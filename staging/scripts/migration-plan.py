@@ -1,0 +1,98 @@
+"""Credential-free migration checkpoints. No network or remote SQL execution."""
+import hashlib
+import json
+import sqlite3
+from pathlib import Path
+from schema import ROOT, OUT, prepare
+
+SCHEMA_SQL = "SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE name NOT GLOB 'sqlite_*' AND name <> '_cf_KV' ORDER BY type,name"
+
+def encoded(value):
+    return json.dumps(value, ensure_ascii=False, separators=(',', ':'))
+
+def digest(value):
+    return hashlib.sha256(value.encode()).hexdigest()
+
+def identifier(name):
+    return '"' + name.replace('"', '""') + '"'
+
+def statements(sql):
+    # SQLite, rather than splitting on ';', recognizes trigger bodies and quoted literals.
+    pending = ''
+    for char in sql:
+        pending += char
+        if char == ';' and sqlite3.complete_statement(pending):
+            yield pending
+            pending = ''
+    if pending.strip() and not all(not line.strip() or line.lstrip().startswith('--') for line in pending.splitlines()):
+        raise ValueError('Unterminated SQL')
+
+def row_sql(name, columns):
+    values = []
+    for col in columns:
+        value = identifier(col)
+        # The only time-dependent built-in seed. Preserve its type/range invariant.
+        if name == 'cvie_maintenance' and col == 'completed_at':
+            value = "CASE WHEN typeof(completed_at)='integer' AND completed_at>0 AND completed_at<=CAST(strftime('%s','now') AS INTEGER)*1000+300000 THEN '<migration-time>' ELSE 'INVALID' END"
+        values.append('quote(' + value + ')')
+    return 'SELECT ' + "||'|'||".join(values) + ' AS value FROM ' + identifier(name) + ' ORDER BY value COLLATE BINARY'
+
+def build():
+    prepare()
+    approval_path = ROOT / 'docs/cvie-evidence/staging-schema-plan-manifest.json'
+    approved_bytes = approval_path.read_bytes()
+    approved = json.loads(approved_bytes)
+    if approved['expected_application_tables'] != 89:
+        raise ValueError('Unreviewed table count')
+    manifest = json.loads((OUT / 'manifest.json').read_text())
+    if manifest != approved['files'] or digest((OUT / 'bootstrap-through-0027.sql').read_text()) != approved['bootstrap_sha256']:
+        raise ValueError('Approved SQL checksum mismatch')
+    db = sqlite3.connect(':memory:')
+    db.execute('PRAGMA foreign_keys=ON')
+    plan = {'format': 1, 'source_commit': approved['source_commit'], 'approved_manifest_sha256': hashlib.sha256(approved_bytes).hexdigest(),
+            'schema_sql': SCHEMA_SQL, 'files': [], 'checkpoints': [], 'schemas': {}}
+    def checkpoint():
+        objects = [list(row) for row in db.execute(SCHEMA_SQL)]
+        sh = digest(encoded(objects))
+        tables = []
+        counts = []
+        data = []
+        for _, name, _, _ in objects:
+            if not any(o[0] == 'table' and o[1] == name for o in objects):
+                continue
+            if any(t['name'] == name for t in tables):
+                continue
+            columns = [r[1] for r in db.execute('PRAGMA table_info(' + identifier(name) + ')')]
+            query = row_sql(name, columns)
+            tables.append({'name': name, 'row_sql': query})
+        tables.sort(key=lambda t: t['name'])
+        for t in tables:
+            rows = [r[0] for r in db.execute(t['row_sql'])]
+            counts.append([t['name'], len(rows)])
+            data.extend([[t['name'], row] for row in rows])
+        plan['schemas'][sh] = {'objects': objects, 'tables': tables}
+        plan['checkpoints'].append({'schema_sha256': sh, 'counts': counts, 'rows_sha256': digest(encoded(data))})
+    checkpoint()
+    for entry in manifest:
+        sql = (ROOT / entry['file']).read_text()
+        if digest(sql) != entry['sha256']:
+            raise ValueError('Input changed')
+        batch = list(statements(sql))
+        start = len(plan['checkpoints']) - 1
+        for statement in batch:
+            db.execute(statement)
+            if db.execute('PRAGMA foreign_key_check').fetchall():
+                raise ValueError('Foreign key violation')
+            checkpoint()
+        plan['files'].append({**entry, 'start': start, 'end': len(plan['checkpoints']) - 1, 'statements': batch})
+    if db.execute('PRAGMA integrity_check').fetchone()[0] != 'ok' or len(plan['checkpoints'][-1]['counts']) != 89:
+        raise ValueError('Invalid final schema')
+    payload = encoded(plan) + '\n'
+    (OUT / 'execution-plan.json').write_text(payload)
+    print('Migration execution plan SHA-256: ' + digest(payload))
+    print('Statements: ' + str(len(plan['checkpoints']) - 1) + '; source files: ' + str(len(plan['files'])))
+    db.close()
+    return plan, digest(payload)
+
+if __name__ == '__main__':
+    build()

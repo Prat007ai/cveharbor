@@ -14,7 +14,7 @@ on:
       provision_action:
         description: 'Explicitly approved staging operation; keep none for preparation/preflight'
         type: choice
-        options: [none, create-database, deploy-workers, deploy-frontend]
+        options: [none, create-database, deploy-workers, deploy-frontend, migrate-schema]
         default: none
 permissions:
   contents: read
@@ -30,8 +30,9 @@ jobs:
         with:
           python-version: '3.12'
       - run: npm install --prefix staging --no-save --no-package-lock esbuild@0.25.12
-      - run: node --test staging/tests/*.test.mjs
-      - run: python staging/scripts/schema.py
+      - run: python staging/scripts/migration-plan.py
+      - name: Validate staging safety and real SQL migration/resume behavior locally
+        run: node --test staging/tests/*.test.mjs
       - run: node staging/scripts/build.mjs
       - run: node staging/scripts/check-build.mjs
       - name: Reproduce and verify Access authentication in local workerd
@@ -45,6 +46,7 @@ jobs:
           path: |
             staging/.build/manifest.json
             staging/.build/schema/manifest.json
+            staging/.build/schema/execution-plan.json
             staging/artifacts/dry-run.json
             staging/artifacts/access-runtime.json
           retention-days: 14
@@ -107,6 +109,8 @@ jobs:
       CF_STAGING_PROVISION_ACTION: ${{ vars.CF_STAGING_PROVISION_ACTION }}
       CF_STAGING_ACCOUNT_ID: ${{ vars.CF_STAGING_ACCOUNT_ID || secrets.CF_STAGING_ACCOUNT_ID }}
       CF_STAGING_D1_DATABASE_ID: ${{ vars.CF_STAGING_D1_DATABASE_ID }}
+      CF_STAGING_SCHEMA_PLAN_SHA256: ${{ vars.CF_STAGING_SCHEMA_PLAN_SHA256 }}
+      CF_STAGING_SCHEMA_RESUME_STEP: ${{ vars.CF_STAGING_SCHEMA_RESUME_STEP }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -118,6 +122,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Prepare the approved schema locally without credentials
+        if: env.CF_STAGING_PROVISION_ACTION == 'migrate-schema'
+        run: python staging/scripts/migration-plan.py
       - name: Require exact reviewed source and explicit operation before cloud credentials
         run: node staging/scripts/provision.mjs --check
       - name: Package only for the separately approved Worker operation
@@ -144,6 +151,7 @@ jobs:
             staging/artifacts/provision.json
             staging/artifacts/access.json
             staging/artifacts/failure.json
+            staging/artifacts/migration*.json
           if-no-files-found: warn
           retention-days: 14
 
