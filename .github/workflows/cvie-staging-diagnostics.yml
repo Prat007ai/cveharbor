@@ -1,0 +1,93 @@
+name: CVIE trusted staging diagnostics (read only)
+
+# main only requests a run. Cloudflare credentials are released solely on the
+# separately protected staging-diagnostics-trusted branch. See the PR setup plan.
+on:
+  workflow_run:
+    workflows: ['CVIE staging preparation (no automatic deployment)']
+    types: [completed]
+    branches: [codex/cvie-core-phase012]
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  request-diagnostics:
+    # No Cloudflare environment, checkout, artifacts, caches or source-run code.
+    if: >-
+      github.repository == 'Prat007ai/cveharbor' &&
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event_name == 'workflow_run' &&
+        github.event.workflow_run.head_repository.full_name == 'Prat007ai/cveharbor' &&
+        github.event.workflow_run.head_branch == 'codex/cvie-core-phase012' &&
+        github.event.workflow_run.path == '.github/workflows/cvie-staging.yml' &&
+        (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      actions: write
+    steps:
+      - name: Request only the fixed trusted read-only workflow
+        env:
+          GH_DISPATCH_TOKEN: ${{ github.token }}
+        run: |
+          node --input-type=module <<'JS'
+          try {
+            const response = await fetch('https://api.github.com/repos/Prat007ai/cveharbor/actions/workflows/cvie-staging-diagnostics.yml/dispatches', {
+              method: 'POST', redirect: 'error', signal: AbortSignal.timeout(30000),
+              headers: { Authorization: 'Bearer ' + process.env.GH_DISPATCH_TOKEN, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json', 'X-GitHub-Api-Version': '2022-11-28' },
+              body: JSON.stringify({ ref: 'staging-diagnostics-trusted' }),
+            });
+            if (response.status !== 204) {
+              console.error('Trusted diagnostic dispatch failed: HTTP ' + response.status + '; check the one-time workflow/branch setup.');
+              process.exitCode = 1;
+            } else console.log('Trusted read-only diagnostic requested; no Cloudflare credentials used by this job.');
+          } catch {
+            console.error('Trusted diagnostic dispatch failed: network category.');
+            process.exitCode = 1;
+          }
+          JS
+
+  inspect-staging:
+    # The environment MUST allow this branch ONLY, with required code review and
+    # no updater/GitHub Actions bypass on that branch. Never allow main here.
+    if: >-
+      github.repository == 'Prat007ai/cveharbor' &&
+      github.event_name == 'workflow_dispatch' &&
+      github.ref == 'refs/heads/staging-diagnostics-trusted'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    concurrency:
+      group: cvie-staging-readonly-243
+      cancel-in-progress: false
+    environment: cloudflare-cvie-staging-readonly
+    steps:
+      - name: Check out reviewed diagnostics, never the triggering source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: Prat007ai/cveharbor
+          ref: d43139fdee1192a655e8103c85c14f1a892b2544
+          persist-credentials: false
+          path: trusted-diagnostics
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Inspect only the dedicated staging account using GET
+        env:
+          CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_READONLY_API_TOKEN }}
+          CF_STAGING_ACCOUNT_ID: '9706b4d98ad72884e67fd1eb875c8a61'
+          CF_STAGING_D1_DATABASE_ID: 'fac61562-fc31-426d-8032-550aba63b7f6'
+          CF_STAGING_ACCESS_ISSUER: 'https://dawn-cloud-afbb.cloudflareaccess.com'
+          CF_STAGING_ACCESS_AUD: '9b75be69e6245df927e614b7490e7315547b21cb00e8cb459157a6ca0d4cdb36'
+        run: node trusted-diagnostics/staging/scripts/diagnose.mjs
+      - name: Retain sanitized inventory even when inspection fails
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cvie-staging-readonly-${{ github.run_id }}-${{ github.run_attempt }}
+          path: trusted-diagnostics/staging/artifacts/diagnostics.json
+          if-no-files-found: warn
+          retention-days: 14
