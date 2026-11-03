@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-03",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 8116,
+  "candidate_records": 8147,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -135430,7 +135430,7 @@
     {
       "id": "CVE-2026-99269",
       "title": "In the Linux kernel, the following vulnerability has been resolved: sched_ext: Wait for...",
-      "severity": "bulletin",
+      "severity": "high",
       "categories": [
         "Linux"
       ],
@@ -135460,10 +135460,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "7.8",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-03T13:17:16Z",
-      "source_updated_at": "2026-11-03T12:31:59Z",
+      "source_updated_at": "2026-11-03T21:33:13Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -135503,7 +135503,7 @@
       "cvss": null,
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-03T13:17:16Z",
-      "source_updated_at": "2026-11-03T12:31:58Z",
+      "source_updated_at": "2026-11-03T21:33:14Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -135590,7 +135590,7 @@
     {
       "id": "CVE-2026-99264",
       "title": "In the Linux kernel, the following vulnerability has been resolved: io_uring/net: don't retry...",
-      "severity": "bulletin",
+      "severity": "high",
       "categories": [
         "Linux",
         "React / Next.js"
@@ -135621,10 +135621,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "7.8",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-03T13:17:16Z",
-      "source_updated_at": "2026-11-03T12:31:52Z",
+      "source_updated_at": "2026-11-03T21:33:10Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -135784,7 +135784,7 @@
       "cvss": null,
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-03T13:17:16Z",
-      "source_updated_at": "2026-11-03T12:31:52Z",
+      "source_updated_at": "2026-11-03T21:33:13Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -136379,14 +136379,14 @@
       "cvss": null,
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-03T13:17:16Z",
-      "source_updated_at": "2026-11-03T12:31:54Z",
+      "source_updated_at": "2026-11-03T21:33:13Z",
       "source_type": "github",
       "known_exploited": false
     },
     {
       "id": "CVE-2026-99246",
       "title": "In the Linux kernel, the following vulnerability has been resolved: tipc: protect node reset...",
-      "severity": "bulletin",
+      "severity": "high",
       "categories": [
         "Linux"
       ],
@@ -136416,10 +136416,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "8.1",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-03T13:17:16Z",
-      "source_updated_at": "2026-11-03T12:31:54Z",
+      "source_updated_at": "2026-11-03T21:33:14Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -138082,7 +138082,7 @@
     {
       "id": "CVE-2026-99270",
       "title": "In the Linux kernel, the following vulnerability has been resolved: tcp: Fix potential UAF in...",
-      "severity": "bulletin",
+      "severity": "high",
       "categories": [
         "Linux"
       ],
@@ -138108,10 +138108,10 @@
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
-      "cvss": null,
+      "cvss": "8.1",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-03T14:27:24Z",
-      "source_updated_at": "2026-11-03T15:32:00Z",
+      "source_updated_at": "2026-11-03T21:33:14Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -141805,8 +141805,8 @@
       "title": "Stanza: RCE via pickle deserialization in the lemmatizer",
       "severity": "high",
       "categories": [
-        "Python / PyPI",
-        "Application dependencies"
+        "Application dependencies",
+        "Python / PyPI"
       ],
       "published": "2026-11-03",
       "updated": "2026-11-03",
@@ -141830,6 +141830,10 @@
         {
           "label": "Additional advisory",
           "url": "https://github.com/stanfordnlp/stanza/commit/b21e1c9b47b4fccff21d3b0a6c0687a19410c2f0"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115878"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
@@ -141846,7 +141850,8 @@
       "title": "The MongoDB Entity Framework Core provider does not neutralize special elements when it places a caller-supplied value into a bulk update that is expressed as a databasea resu",
       "severity": "low",
       "categories": [
-        ".NET / ASP.NET"
+        ".NET / ASP.NET",
+        "NoSQL / MongoDB"
       ],
       "published": "2026-11-03",
       "updated": "2026-11-03",
@@ -141902,7 +141907,10 @@
       "title": "isomorphic-git is a pure JavaScript implementation of Git for Node.js and browsers",
       "severity": "high",
       "categories": [
-        "Node.js / npm"
+        "JavaScript / TypeScript",
+        "Linux",
+        "Node.js / npm",
+        "Windows"
       ],
       "published": "2026-11-03",
       "updated": "2026-11-03",
@@ -142014,6 +142022,7 @@
       "title": "isomorphic-git is a pure JavaScript implementation of Git for Node.js and browsers",
       "severity": "medium",
       "categories": [
+        "JavaScript / TypeScript",
         "Node.js / npm"
       ],
       "published": "2026-11-03",
@@ -142042,6 +142051,7 @@
       "title": "isomorphic-git is a pure JavaScript implementation of Git for Node.js and browsers",
       "severity": "medium",
       "categories": [
+        "JavaScript / TypeScript",
         "Node.js / npm"
       ],
       "published": "2026-11-03",
@@ -142070,6 +142080,7 @@
       "title": "isomorphic-git is a pure JavaScript implementation of Git for Node.js and browsers",
       "severity": "medium",
       "categories": [
+        "JavaScript / TypeScript",
         "Node.js / npm"
       ],
       "published": "2026-11-03",
@@ -143438,6 +143449,732 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-121514",
+      "title": "A weakness has been identified in EasySoft ZenTao PMS up to 22.6. This impacts the function...",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "A weakness has been identified in EasySoft ZenTao PMS up to 22.6. This impacts the function userModel::checkGroupChange of the file module/user/model.php of the component User Module. This manipulation of the argument group causes improper privilege management. Remote exploitation of the attack is possible. The vendor was contacted early about this disclosure but did not respond in any way.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-8xgp-wvrv-hg89"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121514"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://vuldb.com/cve/CVE-2026-121514"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://vuldb.com/submit/1019652"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.3",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:32:38Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121247",
+      "title": "Buffer overflow in Dawn in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote...",
+      "severity": "bulletin",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Buffer overflow in Dawn in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical)",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-wp3p-5vrj-qhr5"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121247"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://issues.chromium.org/issues/569161611"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:32:38Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121509",
+      "title": "A security flaw has been discovered in Headless CMS Plugin up to 2.0.4 on WordPress. This affects...",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "A security flaw has been discovered in Headless CMS Plugin up to 2.0.4 on WordPress. This affects the function get_required_post_data of the file /wp-json/rae/v1/post of the component REST API. The manipulation of the argument post_id/post_slug results in information disclosure. The attack may be launched remotely. The exploit has been released to the public and may be used for attacks. The vendor was contacted early about this disclosure but did not respond in any way.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-qp6v-4jg2-qc2c"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121509"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://app.notion.com/p/Unauthenticated-disclosure-of-draft-private-and-future-post-contentimranhsayed-headless-cms-2-0-4-3f384f1ea6a48057bb67ed0dd89f4157?source=copy_link"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://vuldb.com/cve/CVE-2026-121509"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:32:38Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121502",
+      "title": "A vulnerability was identified in mathurvishal CloudClassroom-PHP-Project. The impacted element...",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "A vulnerability was identified in mathurvishal CloudClassroom-PHP-Project. The impacted element is an unknown function of the file facultydetails.php. The manipulation of the argument deleteid leads to sql injection. The attack may be initiated remotely. The exploit is publicly available and might be used. This product uses a rolling release model to deliver continuous updates. As a result, specific version information for affected or updated releases is not available. The vendor was contacted early about this disclosure but did not respond in any way.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-7mqx-65ph-vh7c"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121502"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/rmsbpro/Advisory/blob/main/deleteid-sqli-family.md"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://vuldb.com/cve/CVE-2026-121502"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.3",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:32:38Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121246",
+      "title": "Use after free in WebGL in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote...",
+      "severity": "bulletin",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Use after free in WebGL in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical)",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-4p6f-hcm2-m5p2"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121246"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://issues.chromium.org/issues/558870371"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:32:38Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121234",
+      "title": "Privilege elevation in Contacts in Google Chrome on on Android prior to 157.0.8103.38 allowed a...",
+      "severity": "bulletin",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Privilege elevation in Contacts in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Medium)",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-v6qr-8f43-6mf4"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121234"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://issues.chromium.org/issues/513767200"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:32:38Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121241",
+      "title": "Use after free in Navigation in Google Chrome on on Android prior to 157.0.8103.38 allowed a...",
+      "severity": "bulletin",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Use after free in Navigation in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High)",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-j58v-6pcx-w9gw"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121241"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://issues.chromium.org/issues/574791491"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:32:37Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121229",
+      "title": "Memory corruption in ANGLE in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote...",
+      "severity": "bulletin",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Memory corruption in ANGLE in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical)",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-rrrq-h6hf-wc6w"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121229"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://issues.chromium.org/issues/562777838"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:32:33Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121196",
+      "title": "Privilege elevation in Mobile in Google Chrome on on iOS prior to 157.0.8103.38 allowed a remote...",
+      "severity": "bulletin",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Privilege elevation in Mobile in Google Chrome on on iOS prior to 157.0.8103.38 allowed a remote attacker to bypass system access restrictions into a privileged page via a crafted HTML page. (Chromium security severity: Medium)",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-8xf8-687h-f4fm"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121196"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://issues.chromium.org/issues/505177525"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:32:32Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121186",
+      "title": "UI misrepresentation in Passwords in Google Chrome on on iOS prior to 157.0.8103.38 allowed a...",
+      "severity": "bulletin",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "UI misrepresentation in Passwords in Google Chrome on on iOS prior to 157.0.8103.38 allowed a remote attacker leveraging social engineering to spoof UI elements via a crafted HTML page. (Chromium security severity: Medium)",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-3wc6-p346-hx5q"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121186"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://issues.chromium.org/issues/568978733"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:32:32Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121177",
+      "title": "UI misrepresentation in PageInfo in Google Chrome on on iOS prior to 157.0.8103.38 allowed a...",
+      "severity": "bulletin",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "UI misrepresentation in PageInfo in Google Chrome on on iOS prior to 157.0.8103.38 allowed a remote attacker to spoof UI elements via a crafted HTML page. (Chromium security severity: Medium)",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-mq6m-h5rv-w3h7"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121177"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://issues.chromium.org/issues/514077956"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:32:31Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121162",
+      "title": "UI misrepresentation in Notifications in Google Chrome on on Windows prior to 157.0.8103.38...",
+      "severity": "bulletin",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "UI misrepresentation in Notifications in Google Chrome on on Windows prior to 157.0.8103.38 allowed a remote attacker leveraging social engineering to spoof UI elements via a crafted HTML page. (Chromium security severity: Low)",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-vx5f-cp58-hj72"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121162"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://issues.chromium.org/issues/563362904"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:32:31Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-h764-w9gv-g9fr",
+      "title": "Malicious code in hijuko-pilara (PyPI)",
+      "severity": "bulletin",
+      "categories": [
+        "Python / PyPI",
+        "Application dependencies"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "## Source: kam193 (3e03de70d14b6b6e3965178f06a73eecdd7197978d8363aaa7c83cf8f3d32696) The package uses fake http-downloaded dependencies to track downloads, and has no other purpose. --- Category: PROBABLY_PENTEST - Packages looking like typical pentest packages, but also anything that looks like testing, exploring pre-prepared kits, research & co, with clearly low-harm possibilities. Campaign: 2026-10-vacsdk Reasons (based on the campaign): - dependency-confusion --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/e7227ec1379819488127917e7f00dd291e6afb57/osv/malicious/pypi/hijuko-pilara/MAL-2026-18581.json))",
+      "affected": "pip: hijuko-pilara (= 1.0.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-h764-w9gv-g9fr"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://bad-packages.kam193.eu/pypi/package/hijuko-pilara"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/e7227ec1379819488127917e7f00dd291e6afb57/osv/malicious/pypi/hijuko-pilara/MAL-2026-18581.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:31:51Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-687f-xhmq-5mwg",
+      "title": "Malicious code in filipt (PyPI)",
+      "severity": "bulletin",
+      "categories": [
+        "Python / PyPI",
+        "Application dependencies"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "## Source: kam193 (c7d24a42d93443e6dd0a5c3899e31e60624c1564a215ad84be99be1e811205ca) The package ships a malicious executable started during the building of a wheel/installation. It has been identified as Overlord RAT. --- Category: MALICIOUS - The campaign has clearly malicious intent, like infostealers. Campaign: 2026-11-filipt Reasons (based on the campaign): - malware - The package overrides the install command in setup.py to execute malicious code during installation. - rat --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/f557f7a566d57ff611f2380d95c852dc37f5855f/osv/malicious/pypi/filipt/MAL-2026-18580.json))",
+      "affected": "pip: filipt (= 0.1.0); pip: filipt (= 0.1.1); pip: filipt (= 0.1.2); pip: filipt (= 0.1.3); pip: filipt (= 0.1.4); pip: filipt (= 0.1.5)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-687f-xhmq-5mwg"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://bad-packages.kam193.eu/pypi/package/filipt"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/f557f7a566d57ff611f2380d95c852dc37f5855f/osv/malicious/pypi/filipt/MAL-2026-18580.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://tria.ge/261103-xxcp9aez3r"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:31:45Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-111751",
+      "title": "Angular is a development platform for building mobile and desktop web applications using TypeScript/JavaScript and other languages",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Angular is a development platform for building mobile and desktop web applications using TypeScript/JavaScript and other languages. From 21.2.0 until 21.2.25 and 22.2.1, RouterLink directives rendered during Node.js server-side rendering retain computed UrlTree instances for the lifetime of each request. When queryParamsHandling is set to merge or preserve, either per link or through defaultQueryParamsHandling, every rendered link can retain a copy of attacker-controlled query parameters in its UrlTree. When upstream proxies or load balancers forward oversized query strings without rejecting them at the edge, multiple affected links and overlapping renders can amplify heap use until the Node.js old-space heap is exhausted and the SSR worker terminates. Numeric query-parameter names increase allocation pressure but are not required, memory is released after rendering completes, and pure client-side SPAs are not affected. This issue is fixed in versions 21.2.25 and 22.2.1.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111751"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:16:57.800",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-111752",
+      "title": "Angular is a development platform for building mobile and desktop web applications using TypeScript/JavaScript and other languages",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Angular is a development platform for building mobile and desktop web applications using TypeScript/JavaScript and other languages. Prior to 20.3.33, 21.2.25, and 22.2.1, @angular/router in Node.js server-side rendering fails to require auxiliary outlet URL segments to match routes configured for their outlet names. Crafted requests containing multiple unconfigured empty-path outlet groups can repeatedly evaluate the route configuration, construct duplicate ActivatedRouteSnapshot trees, execute canMatch guards and resolvers, and copy route parameters and queryParams for each outlet. An unauthenticated remote attacker can exhaust the Node.js heap or CPU and terminate an SSR worker when SSR is enabled, a route level contains an empty-path route or named outlet, upstream infrastructure forwards the request target, and the worker has a constrained heap. The allocation is transient rather than a persistent leak, and client-side SPAs and build-time prerendering are not affected. This issue is fixed in versions 20.3.33, 21.2.25, and 22.2.1.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111752"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:16:57.993",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-111754",
+      "title": "Angular is a development platform for building mobile and desktop web applications using TypeScript/JavaScript and other languages",
+      "severity": "medium",
+      "categories": [
+        "Node.js / npm"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Angular is a development platform for building mobile and desktop web applications using TypeScript/JavaScript and other languages. Prior to 20.3.33, 21.2.25, and 22.2.1, ServerPlatformLocation in Angular server-side rendering checks for protocol-relative URLs before WHATWG URL normalization. A request path containing a popping dot segment followed by multiple slashes can bypass the raw resolveUrl check and normalize to a pathname beginning with two slashes. When Angular SSR detects a mismatch with the router's final location, it can place that pathname in an HTTP Location header, causing a browser to navigate to an attacker-controlled origin. Affected applications use @angular/platform-server and @angular/ssr and either expose compatible parameter or child route shapes or pass user-controlled navigation targets through infrastructure that preserves the relevant dot segments or semicolons. Pure client-side SPAs are not affected. This issue is fixed in versions 20.3.33, 21.2.25, and 22.2.1.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111754"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:16:58.203",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121034",
+      "title": "Use after free in Views in Google Chrome on on Windows prior to 157.0.8103.38 allowed a remote attacker leveraging social engineering to execute arbitrary code outside the san",
+      "severity": "bulletin",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Use after free in Views in Google Chrome on on Windows prior to 157.0.8103.38 allowed a remote attacker leveraging social engineering to execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High)",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121034"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:17:06.693",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121037",
+      "title": "Out of bounds write in ANGLE in Google Chrome on on Windows prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a cr",
+      "severity": "bulletin",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Out of bounds write in ANGLE in Google Chrome on on Windows prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High)",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121037"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:17:07.110",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-95860",
+      "title": "node-opcua is an OPC UA implementation for TypeScript and Node.js",
+      "severity": "critical",
+      "categories": [
+        "Node.js / npm"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "node-opcua is an OPC UA implementation for TypeScript and Node.js. From 2.42.0 until 2.180.0, namespace-level access control configured through setDefaultRolePermissions is not honored by the runtime enforcement path for nodes without explicit per-node RolePermissions. SessionContext.getApplicableRolePermissions reads a missing or null DefaultRolePermissions metadata value instead of the configured namespace field, and the null result is treated permissively. An anonymous network client can consequently write variables with CurrentWrite access or call bound methods when an operator configured a restrictive namespace default and relied on inheritance. Servers with no declared policy, nodes with explicit per-node permissions, and correctly bound programmatic namespace metadata are outside the authorization-bypass case. This issue is fixed in version 2.180.0.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-95860"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:17:46.053",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-103310",
       "title": "The PayHere Payment Gateway WordPress plugin from 2.4.0 through 2.4.5 does not verify the...",
       "severity": "medium",
@@ -143702,7 +144439,7 @@
       "cvss": null,
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-02T17:14:41Z",
-      "source_updated_at": "2026-11-02T18:32:31Z",
+      "source_updated_at": "2026-11-03T21:33:04Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -144091,7 +144828,7 @@
       "cvss": null,
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-02T17:14:41Z",
-      "source_updated_at": "2026-11-02T18:32:31Z",
+      "source_updated_at": "2026-11-03T21:33:04Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -144171,7 +144908,7 @@
       "cvss": null,
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-02T17:14:41Z",
-      "source_updated_at": "2026-11-02T18:32:31Z",
+      "source_updated_at": "2026-11-03T21:33:04Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -144211,7 +144948,7 @@
       "cvss": null,
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-02T17:14:41Z",
-      "source_updated_at": "2026-11-02T18:32:31Z",
+      "source_updated_at": "2026-11-03T21:33:04Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -144251,7 +144988,7 @@
       "cvss": null,
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-02T17:14:41Z",
-      "source_updated_at": "2026-11-02T18:32:31Z",
+      "source_updated_at": "2026-11-03T21:33:04Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -144380,7 +145117,7 @@
       "cvss": "7.8",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-02T17:14:41Z",
-      "source_updated_at": "2026-11-02T18:32:32Z",
+      "source_updated_at": "2026-11-03T21:33:04Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -144421,7 +145158,7 @@
       "cvss": null,
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-02T17:14:41Z",
-      "source_updated_at": "2026-11-02T18:32:36Z",
+      "source_updated_at": "2026-11-03T21:33:04Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -144505,7 +145242,7 @@
       "cvss": "7.8",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-02T17:14:41Z",
-      "source_updated_at": "2026-11-02T18:32:31Z",
+      "source_updated_at": "2026-11-03T21:33:04Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -144549,7 +145286,7 @@
       "cvss": "7.8",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-02T17:14:41Z",
-      "source_updated_at": "2026-11-02T18:32:31Z",
+      "source_updated_at": "2026-11-03T21:33:04Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -144589,7 +145326,7 @@
       "cvss": "7.8",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-02T17:14:41Z",
-      "source_updated_at": "2026-11-02T18:32:32Z",
+      "source_updated_at": "2026-11-03T21:33:04Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -144633,7 +145370,7 @@
       "cvss": "7.8",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-02T17:14:41Z",
-      "source_updated_at": "2026-11-02T18:32:36Z",
+      "source_updated_at": "2026-11-03T21:33:04Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -174998,633 +175735,6 @@
       "epss_as_of": "2026-11-03"
     },
     {
-      "id": "CVE-2026-119123",
-      "title": "ImageMagick: ImageMagick: Denial of Service via stack overflow in TIFF decoder",
-      "severity": "low",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "ImageMagick: ImageMagick: Denial of Service via stack overflow in TIFF decoder",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119123"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-30T13:08:19Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00302,
-      "epss_percentile": 0.22938,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-115642",
-      "title": "keystonemiddleware: keystonemiddleware: application credential access_rules bypass via X-Service-Token header presence check",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "keystonemiddleware: keystonemiddleware: application credential access_rules bypass via X-Service-Token header presence check",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-115642"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-30T13:08:19Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.0051,
-      "epss_percentile": 0.4353,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-103963",
-      "title": "glib-networking: Unbounded TLS 1.3 session ticket queue growth in glib-networking allows remote denial of service",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "glib-networking: Unbounded TLS 1.3 session ticket queue growth in glib-networking allows remote denial of service",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-103963"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-30T13:08:19Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00339,
-      "epss_percentile": 0.27345,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-120194",
-      "title": "json-glib: json-glib: infinite loop in json_path_query() with negative JSONPath slice step",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "json-glib: json-glib: infinite loop in json_path_query() with negative JSONPath slice step",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-120194"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-10-31T12:59:33Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00475,
-      "epss_percentile": 0.41077,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-118761",
-      "title": "github.com/kubeflow/pipelines: Kubeflow Pipelines: Denial of Service via unbounded archive decompression",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "github.com/kubeflow/pipelines: Kubeflow Pipelines: Denial of Service via unbounded archive decompression",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-118761"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-11-02T13:22:57Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00495,
-      "epss_percentile": 0.42478,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-118759",
-      "title": "github.com/kubeflow/pipelines: Kubeflow Pipelines: Information disclosure via unauthorized log retrieval handler",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "github.com/kubeflow/pipelines: Kubeflow Pipelines: Information disclosure via unauthorized log retrieval handler",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-118759"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-11-02T13:22:57Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00336,
-      "epss_percentile": 0.27016,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-118769",
-      "title": "botan: Botan: Integer overflow when reporting block size in FFI can cause memory corruption",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "botan: Botan: Integer overflow when reporting block size in FFI can cause memory corruption",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-118769"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-11-03T01:10:09Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00365,
-      "epss_percentile": 0.30345,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-118757",
-      "title": "PiWeb Disable payment method / Partial payment for WooCommerce before 1.1.10.9 contains a missing authorization vulnerability in the update_fees AJAX handler that allows unaut",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-11-03",
-      "summary": "PiWeb Disable payment method / Partial payment for WooCommerce before 1.1.10.9 contains a missing authorization vulnerability in the update_fees AJAX handler that allows unauthenticated attackers to modify and read other customers' orders. Attackers can reuse a nonce from their own order-pay page and supply sequential order_id values to change payment methods, recalculate fees, and disclose order line items and totals.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118757"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T22:23:28Z",
-      "source_updated_at": "2026-11-03T00:17:18.630",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00231,
-      "epss_percentile": 0.13984,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-61567",
-      "title": "AVideo is a video-sharing Platform",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-11-03",
-      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the live-streaming endpoint `view/videosListToLive.php` accepts an attacker-named streamer in `webSiteRootURL`, calls `Login::run` in `objects/Login.php`, and trusts the returned JSON as session state. An unauthenticated remote attacker who can host an HTTP service reachable by the encoder can self-grant `isLogged` and `canStream` without legitimate credentials. The endpoint requires only nonempty `playlists_id` and `APISecret` values; `APISecret` is forwarded rather than checked against a stored secret. This path never calls `Streamer::isURLAllowed` and therefore works regardless of the operator's streamer allowlist. It fetches a second attacker-controlled video-list response and interpolates `videos[].path` without shell argument escaping into `ffprobe` and `ffmpeg` commands passed to `exec`; `isAudio` calls `isVideo` to reach the `ffprobe` command. Paths containing shell delimiters execute arbitrary operating-system commands as the web-server user. The request filter does not inspect the video-list JSON. This can disclose database and stored streamer credentials, compromise the upstream platform using those credentials, modify files owned by the web-server user, establish pers",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61567"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "10.0",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T22:23:28Z",
-      "source_updated_at": "2026-11-03T01:16:54.897",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00525,
-      "epss_percentile": 0.44518,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-61571",
-      "title": "AVideo is a video-sharing Platform",
-      "severity": "high",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-11-03",
-      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the encoder lacks a global authentication layer and exposes control and status PHP endpoints to anonymous network callers. `view/run.php` has a commented-out guard and invokes `Encoder::run()`. `view/queue.json.php` calls `Encoder::getAll(true)`, reveals streamer URLs through `getSiteURL()`, and triggers processing with `execRun()`. `view/status.php` returns `Access-Control-Allow-Origin` with a wildcard, reads the queue, triggers processing, and exposes host memory statistics through `ServerMonitor::getMemory()` when `serverStatus` is set. `view/listFiles.json.php` checks only `Login::canBulkEncode()`, which admits anonymous callers whenever `disableBulkEncode` is empty, the default. Its `path` parameter is resolved with `realpath()` and listed with `scandir()` without a base-directory restriction. An unauthenticated attacker can drive the privileged queue processor, read queue and streamer-site information, obtain memory statistics and enumerate media file names and paths in any directory readable by the web-server user. Enumeration is limited to configured media extensions and does not itself disclose arbitrary file contents. This issue is fixed in version 8.1.0.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61571"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T22:23:28Z",
-      "source_updated_at": "2026-11-03T01:16:55.240",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0028,
-      "epss_percentile": 0.20489,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-115904",
-      "title": "Topluyo is a social networking platform",
-      "severity": "critical",
-      "categories": [
-        "Linux",
-        "React / Next.js"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-11-03",
-      "summary": "Topluyo is a social networking platform. A vulnerability exists in Topluyo Desktop for Linux prior to version 2026.9.2410 where user-controlled URLs are unsafely processed, leading to OS Command Injection via the `openExternalLinks()` routine in `utils.js`. An attacker who controls a target URL can execute arbitrary operating system commands with the privileges of the user running the application upon opening the link. Version 2026.9.2410 patches the issue.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115904"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.6",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-11-03T14:27:24Z",
-      "source_updated_at": "2026-11-03T13:17:19.633",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-50541",
-      "title": "Xibo is an open source digital signage platform with a web content management system and Windows display player software",
-      "severity": "medium",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-11-03",
-      "summary": "Xibo is an open source digital signage platform with a web content management system and Windows display player software. Prior to 4.4.3, missing access-control checks on `GET /dataset/export/csv/{id}` allow an authenticated user to export data from any dataset, including datasets created by administrators, by iterating over `sequential dataset IDs`. Exploitation requires access to the privilege allowing edits, including deletion, to all created `DataSets` independently of Layouts. This privilege is not granted to non-administrators as standard. This issue is fixed in version 4.4.3.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-50541"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-11-03T14:27:24Z",
-      "source_updated_at": "2026-11-03T13:17:22.170",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-50543",
-      "title": "Xibo is an open source digital signage platform with a web content management system and Windows display player software",
-      "severity": "medium",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-11-03",
-      "summary": "Xibo is an open source digital signage platform with a web content management system and Windows display player software. Prior to 4.4.3, missing authorization on `POST /displaygroup/criteria/{displayGroupId}` allows an authenticated user to send criteria updates to any display via `XMR`. These criteria determine schedule changes and can alter playback, for example by causing content scheduled for rainy weather to play when it is not raining. Exploitation requires `Schedule Criteria` to be in use on the CMS. This issue is fixed in version 4.4.3.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-50543"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-11-03T14:27:24Z",
-      "source_updated_at": "2026-11-03T13:17:22.297",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-67187",
-      "title": "Ninja Forms plugin for WordPress before 3.15.4 contains an incomplete server-side validation vulnerability that allows unauthenticated attackers to submit arbitrary values to ",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-11-03",
-      "summary": "Ninja Forms plugin for WordPress before 3.15.4 contains an incomplete server-side validation vulnerability that allows unauthenticated attackers to submit arbitrary values to Checkbox List, Multi-Select List, Image List, Country, and State fields because NF_Abstracts_List falls through to a validate() method that only checks required-field presence. Attackers can submit crafted formula payloads through the unauthenticated nf_ajax_submit endpoint that bypass CSV escaping applied only to Textbox and Textarea fields, resulting in CSV injection when an administrator downloads and opens the exported submissions file.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-67187"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-11-03T14:27:24Z",
-      "source_updated_at": "2026-11-03T13:17:23.207",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-118258",
-      "title": "i18next-http-backend: i18next-http-backend: Information disclosure via query parameter injection",
-      "severity": "low",
-      "categories": [
-        "Linux",
-        "Node.js / npm",
-        "React / Next.js"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-11-03",
-      "summary": "i18next-http-backend: i18next-http-backend: Information disclosure via query parameter injection",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118258"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-118258"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "3.7",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-11-03T14:27:24Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-118754",
-      "title": "Dolibarr ERP CRM before 24.0.2 contains a missing authorization vulnerability in htdocs/public/recruitment/view.php that allows unauthenticated attackers to view unpublished d",
-      "severity": "medium",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-11-03",
-      "summary": "Dolibarr ERP CRM before 24.0.2 contains a missing authorization vulnerability in htdocs/public/recruitment/view.php that allows unauthenticated attackers to view unpublished draft job positions. Attackers can enumerate sequential provisional references via the ref parameter to read titles, descriptions, salary budgets, and recruiter names and emails.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118754"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-11-03T14:27:24Z",
-      "source_updated_at": "2026-11-03T14:17:33.273",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-61564",
-      "title": "AVideo is a video-sharing Platform",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-11-03",
-      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the unauthenticated installer endpoint `install/checkConfiguration.php` assembles `videos/configuration.php` by interpolating request parameters, including `webSiteRootURL`, into single-quoted PHP string literals without escaping. An attacker can terminate a literal and inject PHP that executes as the web-server user when the generated, directly requestable file is loaded. Exploitation requires `videos/configuration.php` to be absent, as on every fresh deployment or after the file is removed or moved; an existing file blocks this endpoint. The supplied `systemRootPath` must contain index.php and a connection using `databaseHost`, `databaseUser`, and `databasePass` must succeed, but the attacker can point those parameters to their own database server and needs no target credentials. The write location is also derived from `systemRootPath` without a base-directory constraint. This permits arbitrary command execution, reading and overwriting files owned by the web-server user, persistent PHP code, and control over stored database connection settings. The endpoint additionally interpolates request values into streamer and configuration INSERT statements, creating a secondary SQL-inje",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61564"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "10.0",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-11-03T14:27:24Z",
-      "source_updated_at": "2026-11-03T14:17:36.860",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-75520",
-      "title": "domoticz: domoticz: Unauthorized script execution via missing permission checks",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "Windows"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-11-03",
-      "summary": "domoticz: domoticz: Unauthorized script execution via missing permission checks",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-75520"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-75520"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.4",
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-11-03T14:27:24Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-116576",
-      "title": "systeminformation vulnerable to Windows command injection in services() through Unicode quotation marks",
-      "severity": "high",
-      "categories": [
-        "Application dependencies",
-        "Linux",
-        "Node.js / npm",
-        "Windows"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-11-02",
-      "summary": "### Summary On Windows, `systeminformation@5.33.15` builds a PowerShell command using the value passed to `services()`. The default sanitizer removes ASCII quotes but keeps Unicode curly quotes, spaces, and parentheses. A crafted service name can use those characters to break out of the generated filter string and run a PowerShell expression. The expression runs with the permissions of the Node.js process. This report confirms version `5.33.15`. Other package versions have not been checked. ### Details In `lib/processes.js`, `services()` sanitizes the caller's string with `sanitizeShellString()` and later inserts each resulting name into a `Get-CimInstance Win32_Service -Filter` command. The Windows branch passes that command to `util.powerShell()`. The sanitizer in `lib/util.js` removes the ASCII double quote, but it does not remove U+201C or U+201D, the left and right curly double quotation marks. It also permits spaces and parentheses when called in its default, non-strict mode. PowerShell accepts the curly marks as string delimiters, so an input can end the filter string and place a command expression in the generated command. For example, the input below uses curly quotation marks to end the generated filter string and execute `New-Item`. I reproduced this call on Windows ag",
-      "affected": "npm: systeminformation (< 5.33.16)",
-      "remediation": "systeminformation: 5.33.16",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116576"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-116576"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-3f7j-7jwc-fxfj"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/sebhildebrandt/systeminformation/security/advisories/GHSA-3f7j-7jwc-fxfj"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/sebhildebrandt/systeminformation/commit/5014c6d25cfce7363b937977327baa853cdba0bf"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.8",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:56:43Z",
-      "source_updated_at": "2026-10-28T22:42:50Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00145,
-      "epss_percentile": 0.03755,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2014-125138",
-      "title": "C97net qEngine CMS through 6.0.0, Kemana Directory through 1.5.6, and Cart Engine through 3.0.0 contain an unrestricted file upload vulnerability in administrative image field",
-      "severity": "high",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-11-02",
-      "summary": "C97net qEngine CMS through 6.0.0, Kemana Directory through 1.5.6, and Cart Engine through 3.0.0 contain an unrestricted file upload vulnerability in administrative image fields. Editor-role users can upload PHP scripts via the page_image or cat_image parameters to the web-accessible /public/image directory and request them to execute code on the server.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-125138"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-11-02T20:17:21.527",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00423,
-      "epss_percentile": 0.36649,
-      "epss_as_of": "2026-11-03"
-    },
-    {
       "id": "CVE-2026-105477",
       "title": "Managed Veeam Agent for Linux local privilege escalation",
       "severity": "high",
@@ -175822,53 +175932,6 @@
       "epss_as_of": "2026-11-03"
     },
     {
-      "id": "CVE-2026-109618",
-      "title": "RCE via OOM corruption",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-11-02",
-      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "PHP upstream security advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:25Z",
-      "source_type": "php_upstream",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99998,
-      "epss_as_of": "2026-11-03"
-    },
-    {
       "id": "CVE-2026-109619",
       "title": "RCE via stale global state",
       "severity": "critical",
@@ -175913,6 +175976,53 @@
       "known_exploited": true,
       "epss": 0.99999,
       "epss_percentile": 0.99999,
+      "epss_as_of": "2026-11-03"
+    },
+    {
+      "id": "CVE-2026-109618",
+      "title": "RCE via OOM corruption",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-11-02",
+      "summary": "## Summary PHP uses `longjmp()` for out-of-memory (OOM) errors to exit the current context and abort handling of the request. In some contexts, request memory is temporarily reachable before it is fully initialized. If any allocation fails at that point, PHP does not properly account for the early exit and leaves the request memory in an invalid state. The failed allocation does not need to be related to the invalid memory. The request shutdown procedure may then read or branch on it. Multiple OOM strategies can consistently trigger this condition and lead to remote code execution (RCE). ## Vulnerability ### OOM strategies Several multipart parsing problems can let a request reach OOM while remaining within its apparent PHP limits: - A multipart request without a usable declared content length may pass the initial `post_max_size` check and continue supplying decoded body data. - A multipart part can contain an unrestricted number of headers. Representing these headers inside PHP can use substantially more memory than their wire representation, allowing a request within `post_max_size` to exhaust the normal `memory_limit`. - Empty file controls do not count towards `max_file_uploads` but still create the normal file metadata arrays. Nested field names multiply the generated array ",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "PHP upstream security advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-w8hw-w9fx-j79w"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:25Z",
+      "source_type": "php_upstream",
+      "known_exploited": true,
+      "epss": 0.99999,
+      "epss_percentile": 0.99998,
       "epss_as_of": "2026-11-03"
     },
     {
@@ -176509,37 +176619,6 @@
       "epss_as_of": "2026-11-03"
     },
     {
-      "id": "CVE-2025-7624",
-      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
-      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
-      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.10514,
-      "epss_percentile": 0.95766,
-      "epss_as_of": "2026-11-03"
-    },
-    {
       "id": "CVE-2025-6704",
       "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
       "severity": "critical",
@@ -176568,6 +176647,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.11772,
       "epss_percentile": 0.96078,
+      "epss_as_of": "2026-11-03"
+    },
+    {
+      "id": "CVE-2025-7624",
+      "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "SQL injection in the legacy transparent SMTP proxy can lead to remote code execution when a quarantining policy is active and the firewall was upgraded from an older SFOS release.",
+      "affected": "Sophos Firewall 21.5 GA and older under the vendor-stated SMTP proxy and quarantine prerequisites.",
+      "remediation": "Verify the Sophos hotfix has been installed or upgrade to a fixed supported SFOS version. Review the exact appliance configuration and vendor remediation matrix.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.10514,
+      "epss_percentile": 0.95766,
       "epss_as_of": "2026-11-03"
     },
     {
@@ -176615,85 +176725,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-03T20:58:02Z",
-      "last_attempt": "2026-11-03T20:58:02Z",
-      "items_processed": 217,
+      "last_success": "2026-11-03T21:56:58Z",
+      "last_attempt": "2026-11-03T21:56:58Z",
+      "items_processed": 254,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-03T20:58:02Z",
-      "last_attempt": "2026-11-03T20:58:02Z",
+      "last_success": "2026-11-03T21:56:58Z",
+      "last_attempt": "2026-11-03T21:56:58Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-03T20:58:02Z",
-      "last_attempt": "2026-11-03T20:58:02Z",
-      "items_processed": 380,
+      "last_success": "2026-11-03T21:56:58Z",
+      "last_attempt": "2026-11-03T21:56:58Z",
+      "items_processed": 393,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-03T20:58:02Z",
-      "last_attempt": "2026-11-03T20:58:02Z",
+      "last_success": "2026-11-03T21:56:58Z",
+      "last_attempt": "2026-11-03T21:56:58Z",
       "items_processed": 485,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-03T20:58:02Z",
-      "last_attempt": "2026-11-03T20:58:02Z",
+      "last_success": "2026-11-03T21:56:58Z",
+      "last_attempt": "2026-11-03T21:56:58Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-03T20:58:02Z",
-      "last_attempt": "2026-11-03T20:58:02Z",
+      "last_success": "2026-11-03T21:56:58Z",
+      "last_attempt": "2026-11-03T21:56:58Z",
       "items_processed": 15,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-03T20:58:02Z",
-      "last_attempt": "2026-11-03T20:58:02Z",
+      "last_success": "2026-11-03T21:56:58Z",
+      "last_attempt": "2026-11-03T21:56:58Z",
       "items_processed": 11,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-03T20:58:02Z",
-      "last_attempt": "2026-11-03T20:58:02Z",
+      "last_success": "2026-11-03T21:56:58Z",
+      "last_attempt": "2026-11-03T21:56:58Z",
       "items_processed": 47,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-03T20:58:02Z",
-      "last_attempt": "2026-11-03T20:58:02Z",
+      "last_success": "2026-11-03T21:56:58Z",
+      "last_attempt": "2026-11-03T21:56:58Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-03T20:58:02Z",
-      "last_attempt": "2026-11-03T20:58:02Z",
+      "last_success": "2026-11-03T21:56:58Z",
+      "last_attempt": "2026-11-03T21:56:58Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-03T20:58:02Z",
-      "last_attempt": "2026-11-03T20:58:02Z",
+      "last_success": "2026-11-03T21:56:58Z",
+      "last_attempt": "2026-11-03T21:56:58Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-03T20:58:02Z",
-      "last_attempt": "2026-11-03T20:58:02Z",
+      "last_success": "2026-11-03T21:56:58Z",
+      "last_attempt": "2026-11-03T21:56:58Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -176705,7 +176815,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-03T20:58:02Z",
-  "last_successful_update": "2026-11-03T20:58:02Z",
+  "last_checked_at": "2026-11-03T21:56:58Z",
+  "last_successful_update": "2026-11-03T21:56:58Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
