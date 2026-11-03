@@ -2,6 +2,8 @@
 
 **Preparation only. No Cloudflare resources have been created or deployed by this work.** Keep [PR #243](https://github.com/Prat007ai/cveharbor/pull/243) open and unmerged. Resource creation, migration and validation will follow only after the owner confirms credentials and Access are ready.
 
+**Read-only preflight update:** credentials are now configured and remote checks have run. Account and Access policy checks passed; permission metadata and service-token linkage remain unverified. See the [full preflight results and required follow-up](cvie-staging-preflight.md). No resources have been created or deployed.
+
 This supplements the [full Task 2C plan](cvie-staging-plan.md). The account, hostname and names below are approved. Cloudflare Access replaces the earlier proposed Basic Auth gate. Initial source-provider mode is **blocked**, not live or fixture-driven; controlled source fixtures and the remote performance campaign remain subsequent work.
 
 ## Approved targets

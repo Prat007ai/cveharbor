@@ -4,7 +4,7 @@ import { preflight } from '../scripts/preflight.mjs';
 import { TARGET } from '../target.mjs';
 const env = { CF_STAGING_ACCOUNT_ID: TARGET.account, CF_STAGING_API_TOKEN: 'private-management-token', CF_STAGING_ACCESS_ISSUER: 'https://synthetic-stage.cloudflareaccess.com', CF_STAGING_ACCESS_AUD: 'a'.repeat(64), CF_STAGING_ACCESS_CLIENT_ID: 'private-service-client', CF_STAGING_ACCESS_CLIENT_SECRET: 'private-service-secret' };
 const sid = '11111111-2222-4333-8444-555555555555';
-function fixture({ metadataDenied = false, bypass = false } = {}) {
+function fixture({ metadataDenied = false, bypass = false, emptyList = false, missingDetail = false } = {}) {
   return async (url, init) => {
     assert.equal(init.method, 'GET'); assert.equal(init.redirect, 'manual');
     const u = new URL(url); let result;
@@ -27,7 +27,11 @@ function fixture({ metadataDenied = false, bypass = false } = {}) {
       { name: 'CVEHarbor staging reviewers', decision: bypass ? 'bypass' : 'allow', include: [{ email: { email: 'private-reviewer@example.test' } }] },
       { name: 'CVEHarbor staging automated tests', decision: 'non_identity', include: [{ service_token: { token_id: sid } }] },
     ];
-    else if (route === '/access/service_tokens') result = [{ id: sid, name: 'cvie-staging-validation', client_id: env.CF_STAGING_ACCESS_CLIENT_ID, enabled: true }];
+    else if (route === '/access/service_tokens') result = emptyList ? [] : [{ id: sid, name: 'cvie-staging-validation', client_id: env.CF_STAGING_ACCESS_CLIENT_ID, enabled: true }];
+    else if (route === '/access/service_tokens/' + sid) {
+      if (missingDetail) return Response.json({ success: false }, { status: 404 });
+      result = { id: sid, name: 'cvie-staging-validation', client_id: env.CF_STAGING_ACCESS_CLIENT_ID, enabled: true };
+    }
     else assert.fail('Unexpected route');
     return Response.json({ success: true, result });
   };
@@ -50,4 +54,12 @@ test('wrong account, missing secret and Access bypass fail closed', async () => 
   assert.equal((await preflight({ ...env, CF_STAGING_ACCESS_CLIENT_SECRET: '' }, noNetwork)).ready_for_creation, false);
   const result = await preflight(env, fixture({ bypass: true }));
   assert.equal(result.ready_for_creation, false); assert.ok(result.blockers.includes('no_access_bypass_or_additional_allow'));
+});
+test('empty token lists use only bounded policy references and distinguish missing metadata', async () => {
+  const good = await preflight(env, fixture({ emptyList: true }));
+  assert.equal(good.checks.find(c => c.name === 'service_token_matches_policy_and_client').status, 'pass');
+  const missing = await preflight(env, fixture({ emptyList: true, missingDetail: true }));
+  const result = missing.checks.find(c => c.name === 'service_token_matches_policy_and_client');
+  assert.equal(result.status, 'unverified'); assert.deepEqual(result.policy_token_detail_statuses, [404]);
+  assert.equal(missing.ready_for_creation, false);
 });

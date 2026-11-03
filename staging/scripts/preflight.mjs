@@ -113,7 +113,8 @@ export async function preflight(env, transport = fetch) {
   const clientMatches = tokenRows.filter(s => s.client_id === value('CF_STAGING_ACCESS_CLIENT_ID'));
   const selected = named.find(s => s.client_id === value('CF_STAGING_ACCESS_CLIENT_ID'));
   const linked = selected && servicePolicy?.include?.some(s => s.service_token?.token_id === selected.id);
-  add('service_token_matches_policy_and_client', !!linked && selected.enabled !== false && (!selected.expires_at || Date.parse(selected.expires_at) > Date.now()), {
+  const serviceMetadataVerified = !!linked && selected.enabled !== false && (!selected.expires_at || Date.parse(selected.expires_at) > Date.now());
+  add('service_token_matches_policy_and_client', serviceMetadataVerified, {
     http_status: serviceTokens.status, metadata_available: serviceTokens.ok,
     metadata_is_array: Array.isArray(serviceTokens.result), listed_count: listedCount, record_count: tokenRows.length,
     policy_token_detail_statuses: detailStatuses,
@@ -137,7 +138,7 @@ export async function preflight(env, transport = fetch) {
   const verified = jwt && await createAccessVerifier(async () => Response.json(jwks))(jwt, issuer, audience);
   add('service_secret_end_to_end', !!verified, { http_status: response?.status ?? null, reason: verified ? 'Valid Access JWT for configured issuer/AUD' : 'No valid JWT returned; origin may not exist yet. HTTP status alone does not validate credentials.' }, false);
   report.read_only_checks_passed = blockers.length === 0;
-  report.ready_for_creation = blockers.length === 0 && grantsVerified && scopeVerified;
+  report.ready_for_creation = blockers.length === 0 && grantsVerified && scopeVerified && serviceMetadataVerified;
   report.write_permissions_exercised = false;
   return report;
 }
