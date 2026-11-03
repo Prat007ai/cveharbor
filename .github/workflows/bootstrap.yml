@@ -1,4 +1,4 @@
-name: CVEHarbor setup and hourly sync
+name: CVEHarbor reviewed application publication
 
 on:
   push:
@@ -116,12 +116,10 @@ on:
       - scripts/product_monitoring_smoke.mjs
       - inventory.js
       - inventory-matching.js
-  schedule:
-    - cron: '17 * * * *'
   workflow_dispatch:
     inputs:
       deploy:
-        description: 'Publish the hourly advisory site now'
+        description: 'Publish approved application code now'
         required: false
         default: false
         type: boolean
@@ -217,10 +215,10 @@ jobs:
             public
 
   sync:
-    name: Collect public advisories and deploy
+    name: Publish reviewed application code
     outputs:
       retire_pages_origin: ${{ steps.origin.outputs.retire_pages_origin }}
-    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true' && (github.event_name == 'push' || github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true))
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true))
     runs-on: ubuntu-latest
     environment:
       name: cloudflare-site-production
@@ -252,101 +250,6 @@ jobs:
       - name: Exercise site interactions
         if: github.event_name == 'push'
         run: node scripts/browser_smoke.mjs && node scripts/threat_health_smoke.mjs && node scripts/customer_security_smoke.mjs && node scripts/customer_score_smoke.mjs && node scripts/cvie_client_smoke.mjs && node scripts/cvie_polling_smoke.mjs && node scripts/product_monitoring_smoke.mjs
-      - name: Restore public feed checkpoint from protected main
-        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
-        with:
-          key: public-feeds-v1-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: public-feeds-v1-
-          path: |
-            data/advisories.json
-            data/feed-health.json
-            data.js
-            malware-data.js
-            threat-data.js
-            data/threat-ip-history.json
-            data/ip-geolocation-cache.json
-            attack-scanning-current.txt
-            attack-scanning-current.csv
-            attack-scanning-current.json
-            fortigate-threat-ip-objects.txt
-            sophos-threat-ip-api.txt
-            fortigate-suspicious-ip-initial.txt
-            fortigate-suspicious-ip-incremental.txt
-            sophos-suspicious-ip-initial.txt
-            sophos-suspicious-ip-incremental.txt
-      - name: Fetch advisories
-        id: collect
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-          WORDFENCE_API_KEY: ${{ secrets.WORDFENCE_API_KEY }}
-        run: python scripts/update.py
-      - name: Collect recent malware intelligence
-        id: malware_collect
-        continue-on-error: true
-        env:
-          MALWAREBAZAAR_API_KEY: ${{ secrets.MALWAREBAZAAR_API_KEY }}
-        run: python scripts/update_malware.py
-      - name: Collect public threat IP indicators
-        id: threat_collect
-        continue-on-error: true
-        env:
-          # Reuse the existing abuse.ch key unless a dedicated ThreatFox key is set.
-          # Provider authorization is still checked by the ThreatFox response.
-          THREATFOX_AUTH_KEY: ${{ secrets.THREATFOX_AUTH_KEY || secrets.MALWAREBAZAAR_API_KEY }}
-        run: python scripts/update_threats.py
-      - name: Checkpoint generated public feed state without committing to main
-        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
-        with:
-          key: public-feeds-v1-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            data/advisories.json
-            data/feed-health.json
-            data.js
-            malware-data.js
-            threat-data.js
-            data/threat-ip-history.json
-            data/ip-geolocation-cache.json
-            attack-scanning-current.txt
-            attack-scanning-current.csv
-            attack-scanning-current.json
-            fortigate-threat-ip-objects.txt
-            sophos-threat-ip-api.txt
-            fortigate-suspicious-ip-initial.txt
-            fortigate-suspicious-ip-incremental.txt
-            sophos-suspicious-ip-initial.txt
-            sophos-suspicious-ip-incremental.txt
-      - name: Retain diagnostic evidence without repository writes
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: public-feed-checkpoint-${{ github.run_id }}-${{ github.run_attempt }}
-          retention-days: 14
-          if-no-files-found: warn
-          path: |
-            data/advisories.json
-            data/feed-health.json
-            data.js
-            malware-data.js
-            threat-data.js
-            data/threat-ip-history.json
-            data/ip-geolocation-cache.json
-            attack-scanning-current.txt
-            attack-scanning-current.csv
-            attack-scanning-current.json
-            fortigate-threat-ip-objects.txt
-            sophos-threat-ip-api.txt
-            fortigate-suspicious-ip-initial.txt
-            fortigate-suspicious-ip-incremental.txt
-            sophos-suspicious-ip-initial.txt
-            sophos-suspicious-ip-incremental.txt
-      - name: Collect public lifecycle dates
-        continue-on-error: true
-        run: python scripts/update_lifecycle.py
-      - name: Collect publisher release and SQL CU notes
-        continue-on-error: true
-        run: python scripts/update_patch_notes.py
       - name: Build public site files
         run: python scripts/build_site.py && test -f public/disclosure-trend.js
       - name: Validate generated pages before deployment
@@ -354,6 +257,8 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22'
+      - name: Require matching backend and completed Phase 1 schema before code publication
+        run: node scripts/verify_frontend_backend.mjs
       - name: Deploy protected frontend without changing the account API
         id: deployment
         env:
@@ -377,38 +282,6 @@ jobs:
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: retired-pages-origin
-      - name: Flag incomplete source collection
-        if: always() && steps.collect.outcome == 'success'
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          report=json.loads(Path('data/feed-health.json').read_text())
-          if report.get('mode') != 'live':
-              raise SystemExit('One or more vulnerability sources failed: ' + str(report.get('sources')))
-          print('All configured vulnerability feeds responded during this collection.')
-          PY
-      - name: Flag failed source collection
-        if: always() && steps.collect.outcome == 'failure'
-        run: |
-          echo 'Source collection failed; do not assume this dashboard is current.' >&2
-          exit 1
-
-      - name: Flag incomplete threat IP collection
-        if: always() && steps.threat_collect.outcome != 'skipped'
-        env:
-          THREAT_COLLECT_OUTCOME: ${{ steps.threat_collect.outcome }}
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          import os
-          raw=Path('threat-data.js').read_text()
-          report=json.loads(raw.split('=',1)[1].strip().removesuffix(';'))
-          if os.environ.get('THREAT_COLLECT_OUTCOME') != 'success' or report.get('mode') != 'live':
-              raise SystemExit('Threat IP collection degraded: ' + str(report.get('sources')))
-          print('All configured threat feeds fetched successfully; unchanged counts can be legitimate.')
-          PY
 
   retire-origin:
     permissions:

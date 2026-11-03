@@ -1,3 +1,5 @@
+> Feed implementation update: see [intelligence-publication.md](intelligence-publication.md) for the implemented replacement, integration results and required staged cutover. Earlier cache/integration findings below are historical.
+
 # Phase 1 GitHub security configuration and validation handoff
 
 > **Superseded rollout advice:** Read [the continuity and integration checklist](phase1-transition-checklist.md)

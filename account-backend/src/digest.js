@@ -1,3 +1,4 @@
+import { useIntelligenceStore, openIntelligenceSnapshot } from './intelligence-store.js';
 // Personalized CVEHarbor vulnerability digest. No emails or remote calls at import time.
 export const MAX_DIGEST_ITEMS = 30;
 export const LOOKBACK_DAYS = 30;
@@ -152,7 +153,12 @@ export function renderDigest({ items = [], selected = [], cadence = 'daily', dat
   return { subject, html, text: plain.join('\n') };
 }
 
-export async function loadPublicFeed(fetcher = fetch) {
+export async function loadPublicFeed(fetcher = fetch, env = {}) {
+  if (useIntelligenceStore(env)) {
+    const snapshot = await openIntelligenceSnapshot(env);
+    const [parsed, health] = await Promise.all([snapshot.json('data.js'), snapshot.json('data/feed-health.json')]);
+    return validatePublicFeed(parsed, health);
+  }
   const [dataResponse, healthResponse] = await Promise.all([
     fetcher(DATA_URL, { headers: { 'Accept': 'text/javascript' } }),
     fetcher(HEALTH_URL, { headers: { 'Accept': 'application/json' } })
@@ -164,9 +170,13 @@ export async function loadPublicFeed(fetcher = fetch) {
   if (!match) throw Error('Unexpected vulnerability feed format');
   const parsed = JSON.parse(match[1]);
   const health = await healthResponse.json();
+  return validatePublicFeed(parsed, health);
+}
+
+export function validatePublicFeed(parsed, health) {
   if (!Array.isArray(parsed.advisories) || !health.last_successful_update) throw Error('Invalid vulnerability feed');
   const lastOk = Date.parse(health.last_successful_update);
-  if (!Number.isFinite(lastOk) || Date.now() - lastOk > 8 * 3600000) throw Error('Vulnerability feed is stale');
+  if (!Number.isFinite(lastOk) || lastOk > Date.now() + 300000 || Date.now() - lastOk > 8 * 3600000) throw Error('Vulnerability feed is stale');
   if (health.mode === 'degraded') throw Error('All vulnerability feeds are unavailable');
   return { records: parsed.advisories, degraded: health.mode !== 'live', coverageLimited: !!health.coverage_limited, health };
 }

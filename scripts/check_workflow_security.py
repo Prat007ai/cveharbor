@@ -16,8 +16,9 @@ MANUAL = MAIN + " && github.event_name == 'workflow_dispatch'"
 RELEASE = MAIN + " && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true'"
 PHASE1 = 'd791cb8e84f85f980926dd1e1acfd0b369c64b46'
 ENVIRONMENTS = {'cloudflare-worker-production', 'cloudflare-site-production', 'github-pages',
-                'cloudflare-production-audit', 'cloudflare-notifications-production', 'cloudflare-phase1-staging'}
+                'cloudflare-production-audit', 'cloudflare-notifications-production', 'cloudflare-phase1-staging', 'cloudflare-intelligence-data'}
 SECRET_BOUNDARIES = {
+    'cloudflare-intelligence-data': {'FEED_R2_ACCESS_KEY_ID','FEED_R2_SECRET_ACCESS_KEY'},
     'cloudflare-worker-production': {'CVEHARBOR_PROD_WORKER_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID'},
     'cloudflare-site-production': {'CVEHARBOR_PROD_SITE_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID', 'CVEHARBOR_SITE_GATE_PASSWORD'},
     'github-pages': {'CVEHARBOR_SITE_GATE_PASSWORD'},
@@ -25,7 +26,7 @@ SECRET_BOUNDARIES = {
     'cloudflare-notifications-production': {'CVEHARBOR_PROD_SMTP2GO_API_KEY'},
     'cloudflare-phase1-staging': {'CLOUDFLARE_STAGING_API_TOKEN', 'CLOUDFLARE_STAGING_ACCOUNT_ID'},
 }
-SENSITIVE = re.compile(r'secrets\.(?:CLOUDFLARE_\w+|CF_\w+|CVEHARBOR_\w+|SITE_GATE_PASSWORD|(?:ALERT_)?SMTP2GO_API_KEY)')
+SENSITIVE = re.compile(r'secrets\.(?:FEED_R2_\w+|CLOUDFLARE_\w+|CF_\w+|CVEHARBOR_\w+|SITE_GATE_PASSWORD|(?:ALERT_)?SMTP2GO_API_KEY)')
 
 class StrictLoader(yaml.SafeLoader):
     pass
@@ -77,10 +78,14 @@ def validate(doc, filename):
             require(env in ENVIRONMENTS, label + ': unknown or dynamic environment')
             requested = {m.group().split('.', 1)[1] for m in SENSITIVE.finditer(raw)}
             require(requested <= SECRET_BOUNDARIES.get(env, set()), label + ': credential is outside the environment boundary')
-            prefix = MANUAL if env in {'cloudflare-production-audit','cloudflare-notifications-production','cloudflare-phase1-staging'} else RELEASE
+            prefix = MAIN + " && vars.FEED_PUBLICATION_ENABLED == 'true'" if env == 'cloudflare-intelligence-data' else MANUAL if env in {'cloudflare-production-audit','cloudflare-notifications-production','cloudflare-phase1-staging'} else RELEASE
             require(condition == prefix or condition.startswith(prefix + ' && '), label + ': explicit main/event/release guard required')
             # The only extra ORs allowed are bootstrap's grouped event allowlist.
-            require('||' not in condition or filename == 'bootstrap.yml' and name == 'sync' and condition == RELEASE + " && (github.event_name == 'push' || github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true))", label + ': guard may not be bypassed with OR')
+            require('||' not in condition or filename == 'bootstrap.yml' and name == 'sync' and condition == RELEASE + " && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true))", label + ': guard may not be bypassed with OR')
+        if env == 'cloudflare-intelligence-data':
+            require(filename == 'publish-intelligence.yml' and name == 'collect', label + ': data credential caller not allowed')
+            require('PRODUCTION_DEPLOYMENTS_ENABLED' not in condition and 'needs' not in job, label + ': feed cannot depend on application release')
+            require(not re.search(r'wrangler|deploy_site_gate|git push|d1 execute|SMTP2GO', raw), label + ': feed job cannot deploy, mutate D1 or send mail')
         if env == 'cloudflare-phase1-staging':
             require(not re.search(r'secrets\.(?:CLOUDFLARE_(?!STAGING_)|CVEHARBOR_)', raw), label + ': staging may only request distinct staging credentials')
         if env == 'cloudflare-production-audit':

@@ -37,15 +37,19 @@ class WorkflowSecurityTests(unittest.TestCase):
         d=policy.load_workflow((ROOT/'.github/workflows/security-phase1-staging.yml').read_text())
         d['jobs']['staging']['steps'][-1]['env']['CLOUDFLARE_API_TOKEN']='${{ secrets.CLOUDFLARE_API_TOKEN }}'
         self.assertTrue(policy.validate(d,'security-phase1-staging.yml'))
-    def test_hourly_feed_state_never_caches_source_or_private_data(self):
-        d=policy.load_workflow((ROOT/'.github/workflows/bootstrap.yml').read_text())
-        steps=d['jobs']['sync']['steps']; caches=[s for s in steps if s.get('uses','').startswith('actions/cache/')]
-        self.assertEqual(len(caches),2)
-        paths=caches[0]['with']['path'].splitlines();self.assertEqual(caches[0]['with']['path'],caches[1]['with']['path'])
-        self.assertEqual(len(paths),16)
-        for p in paths:self.assertNotIn('*',p);self.assertFalse(p.startswith(('.github','account-backend','scripts')))
+    def test_hourly_feed_is_independent_and_data_only(self):
+        d=policy.load_workflow((ROOT/'.github/workflows/publish-intelligence.yml').read_text())
+        job=d['jobs']['collect']
+        self.assertNotIn('PRODUCTION_DEPLOYMENTS_ENABLED',job['if']);self.assertNotIn('needs',job)
+        self.assertEqual(job['environment'],'cloudflare-intelligence-data')
         self.assertEqual(d['permissions'],{'contents':'read'})
-        self.assertIn("vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true'",d['jobs']['sync']['if'])
+        app=policy.load_workflow((ROOT/'.github/workflows/bootstrap.yml').read_text())
+        self.assertNotIn('schedule',app['on'])
+        self.assertFalse(any('update.py' in x.get('run','') for x in app['jobs']['sync']['steps']))
+    def test_data_job_rejects_deployment_credentials(self):
+        d=policy.load_workflow((ROOT/'.github/workflows/publish-intelligence.yml').read_text())
+        d['jobs']['collect']['steps'][-1]['env']['CLOUDFLARE_API_TOKEN']='${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}'
+        self.assertTrue(policy.validate(d,'publish-intelligence.yml'))
     def test_restoration_only_prepares_reviewable_artifact(self):
         d=policy.load_workflow((ROOT/'.github/workflows/bootstrap.yml').read_text())
         job=d['jobs']['restore'];self.assertNotIn('environment',job)

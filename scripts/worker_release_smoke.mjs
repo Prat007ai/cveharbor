@@ -1,3 +1,4 @@
+import {remediationIntegrityRelease} from './worker_release_mode.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
@@ -108,3 +109,8 @@ const repairFiles=['account-backend/src/finding-assignment-links.js','account-ba
 assert.equal(statusMailRepair(repairFiles),true);
 for(const f of ['account-backend/wrangler.toml','account-backend/src/cvie.js','scripts/bootstrap_cvie_shared.mjs','account-backend/migrations/0030_status_update_notifications.sql'])assert.equal(statusMailRepair([...repairFiles,f]),false);
 console.log('PASS: status linking repair is code-only with no migrations or unrelated maintenance');
+
+const phase1Files=['account-backend/src/remediation-integrity.js','account-backend/migrations/0031_remediation_integrity.sql','account-backend/src/finding-remediation.js'];
+assert.equal(remediationIntegrityRelease(phase1Files),true);
+assert.equal(remediationIntegrityRelease([...phase1Files,'account-backend/migrations/0032_unrelated.sql']),false);
+assert.equal(remediationIntegrityRelease([...phase1Files,'account-backend/src/assignment-progress.js']),false);

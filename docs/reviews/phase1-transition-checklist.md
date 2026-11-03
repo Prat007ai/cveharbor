@@ -1,3 +1,5 @@
+> Feed implementation update: see [intelligence-publication.md](intelligence-publication.md) for the implemented replacement, integration results and required staged cutover. Earlier cache/integration findings below are historical.
+
 # Phase 1 security transition: continuity, administrator checklist and PR integration
 
 Reviewed 2026-11-03. This document supersedes the rollout sequence in the earlier
