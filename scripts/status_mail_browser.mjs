@@ -46,8 +46,16 @@ try{
  await row.screenshot({path:directory+'/finding-acknowledged.png'});
  // Keep resolved rows visible while changing status directly in the finding table.
  await page.getByRole('button',{name:/^All \(\d+\)$/}).click();
- page.on('dialog',d=>d.accept('Patch installed and validated for this customer asset.'));
- await row.getByRole('combobox').selectOption('Fixed/Patched');await row.getByRole('button',{name:'Save status',exact:true}).click();await page.waitForFunction(()=>document.querySelector('.customer-finding-status-select')?.disabled===false);
+ page.on('dialog',d=>{errors.push('Unexpected browser popup: '+d.message());void d.dismiss();});
+ await row.getByRole('combobox').selectOption('Fixed/Patched');await row.getByRole('button',{name:'Save status',exact:true}).click();
+ const statusDialog=page.getByRole('dialog',{name:'Update vulnerability status'});await statusDialog.waitFor();assert.match(await statusDialog.innerText(),/CVEHarbor/);assert.equal(await statusDialog.getByLabel('Reason for this change').evaluate(n=>n===document.activeElement),true);
+ await statusDialog.getByRole('button',{name:'Cancel',exact:true}).click();await statusDialog.waitFor({state:'detached'});await page.waitForFunction(()=>document.querySelector('.customer-finding-status-select')?.value==='Fix in Progress');assert.equal(statusMails().length,3);assert.equal(await row.getByRole('combobox').inputValue(),'Fix in Progress');
+ await row.getByRole('combobox').selectOption('Fixed/Patched');await row.getByRole('button',{name:'Save status',exact:true}).click();await statusDialog.waitFor();
+ await statusDialog.getByLabel('Reason for this change').fill('   ');await statusDialog.getByRole('button',{name:'Save status',exact:true}).click();await statusDialog.getByRole('alert').filter({hasText:'Enter a reason'}).waitFor();assert.equal(statusMails().length,3);
+ await statusDialog.getByLabel('Reason for this change').fill('Patch installed and validated for this customer asset.');
+ for(const width of [390,1600]){await page.setViewportSize({width,height:1100});assert.ok(await statusDialog.evaluate(n=>n.scrollWidth<=n.clientWidth+1));await statusDialog.screenshot({path:directory+'/status-dialog-'+width+'.png'});}
+ await statusDialog.getByRole('button',{name:'Save status',exact:true}).click();await statusDialog.waitFor({state:'detached'});
+
  await page.getByRole('button',{name:/^All \(\d+\)$/}).click();await page.waitForFunction(()=>[...document.querySelectorAll('.customer-finding-status-select')].some(n=>n.value==='Fixed/Patched'));
  assert.equal(statusMails().length,6);assert.deepEqual(statusMails().slice(3).map(x=>x.to[0]).sort(),['alex@example.net','manager@example.net','sender@example.test']);
  assert.match(statusMails().at(-1).text_body,/Patch installed and validated/);
