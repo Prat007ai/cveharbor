@@ -1,3 +1,5 @@
+> **HISTORICAL REVIEW — NOT AN EXECUTION RUNBOOK.** Findings, workflow names, credentials, test counts and procedures below describe earlier revisions. Do not execute their rollout/rollback commands. Use [the consolidated administrator checklist](phase1-administrator-checklist.md), [current release/recovery procedure](remediation-phase1-release.md) and [R2 architecture](intelligence-publication.md).
+
 # CVEHarbor remediation improvement plan: review and Phase 1 results
 
 Review date: 2026-11-03. Source baseline: `1cc762663b1fd176041f37b5512f8e802403b880` on `main`.

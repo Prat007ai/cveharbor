@@ -1,3 +1,5 @@
+> **Phase 1 deployment notice:** Use [the consolidated administrator checklist](reviews/phase1-administrator-checklist.md) for current release, credential, staging and recovery steps. Deployment/migration/rollback recipes below are feature-history references, not instructions to execute during Phase 1. Feature behavior descriptions remain applicable unless superseded by the current implementation.
+
 # Optional FYI recipients for vulnerability assignments
 
 The Assign by email dialog accepts up to five optional FYI addresses (comma, semicolon or newline separated). Server validation normalizes and deduplicates addresses, excludes the assignee, and rejects the entire request if any address is invalid or setup is unavailable. The pre-send confirmation lists the assignee and all FYI recipients. Existing external-recipient behavior is preserved; no domain restriction has been added.

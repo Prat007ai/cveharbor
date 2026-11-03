@@ -1,3 +1,5 @@
+> **HISTORICAL REVIEW — NOT AN EXECUTION RUNBOOK.** Findings, workflow names, credentials, test counts and procedures below describe earlier revisions. Do not execute their rollout/rollback commands. Use [the consolidated administrator checklist](phase1-administrator-checklist.md), [current release/recovery procedure](remediation-phase1-release.md) and [R2 architecture](intelligence-publication.md).
+
 # Phase 1 release hardening — implementation results
 
 November 3, 2026. Scope: draft PR #251, Phase 1 only. No merge, production deployment, production migration, production-record mutation, or Phase 2 work was performed.

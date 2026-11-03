@@ -1,51 +1,51 @@
-# Phase 1 D1 staging and secure configuration
+# Phase 1 staging and secure validation
 
-## What is prepared
+Use [the consolidated administrator checklist](phase1-administrator-checklist.md)
+for the current environment matrix, Cloudflare setup, exact commands and approvals.
+This page replaces the earlier workflow-name/credential instructions.
 
-Workflow: `.github/workflows/validate-phase1-d1-staging.yml`.
-Harness: `scripts/phase1_staging.mjs`.
+## Current entrypoints
 
-The harness uses a separate Cloudflare D1 database and synthetic fixture data. It invokes the real Worker handlers against D1 through the tested REST batch adapter; all advisory and mail calls are intercepted. It does not deploy a Worker, create customer records in production, copy production data, or send real email. Wrangler packaging is tested separately. A hosted Cloudflare Worker traffic/latency rehearsal remains a distinct operational check if needed; do not describe this harness as a deployed staging Worker.
+- **D1:** `.github/workflows/security-phase1-staging.yml`, display name
+  **Phase 1 readiness - isolated synthetic D1 rehearsal**; environment
+  `cloudflare-phase1-staging`; operations `bootstrap` and `validate`.
+- **R2:** `scripts/rehearse_intelligence_r2.py` in an approved secure runner.
+  There is no R2 staging Actions workflow/environment dependency in this release.
+  Never put staging keys in the production `cloudflare-intelligence-data` environment.
+- **Production preflight:** `.github/workflows/security-phase1-audit.yml`, environment
+  `cloudflare-production-audit`, separate `CLOUDFLARE_AUDIT_*` secrets; SELECT only.
+  That workflow has no installed-mode input. Installed checks use the reviewed
+  secure-runner command after an approved deployment.
 
-## Configure without sharing secrets in chat
+`validate-phase1-d1-staging.yml` and `audit-remediation-integrity.yml` were retired
+in the integrated branch. Do not dispatch an old revision or recreate them.
 
-An authorized administrator must create an empty disposable D1 database named `cveharbor-phase1-staging` or `cveharbor-phase1-staging-<suffix>`. Prefer a separate staging Cloudflare account. Scope its credential to staging resources as narrowly as Cloudflare supports; do not use a production token as a fallback.
+## Isolation and results
 
-Create/protect GitHub environment `cloudflare-phase1-staging` with:
+D1 **requires** a separate Cloudflare account, exact empty disposable database
+name/UUID, a staging-only D1 Edit token, and `PRODUCTION_ACCOUNT_ID` for the
+inequality check. The prior wording "prefer a separate account" is superseded.
+The workflow first runs `check_phase1_staging_boundary.mjs`; run that same check
+before any CLI bootstrap. Bootstrap once, then validate twice. All mail/advisory
+calls are intercepted; no deployed Worker is created by this harness.
 
-| Type | Name | Value/source |
-| --- | --- | --- |
-| Secret | `CLOUDFLARE_STAGING_API_TOKEN` | Staging-only D1 credential entered through the secure GitHub environment UI/API. |
-| Secret | `CLOUDFLARE_STAGING_ACCOUNT_ID` | Account containing only the intended staging resource, or the explicitly approved staging account scope. |
-| Variable | `STAGING_DATABASE_ID` | UUID of that separate database. Must differ from the production UUID in Wrangler. |
-| Variable | `STAGING_DATABASE_NAME` | Exact approved staging name above. |
-| Variable | `STAGING_DISPOSABLE` | `true`. |
+R2 requires a fresh empty `cveharbor-intelligence-staging-<suffix>` bucket in a
+separate account, Standard/private storage, a bucket-only S3 credential pair,
+`FEED_STAGING_DISPOSABLE=true` and the verified production account ID. It tests
+synthetic upload/readback, rejected stale conditional writes, history retention,
+pointer recovery and exact restore. It does not create/delete resources or send
+mail. Use a new approved empty bucket for a repeat rehearsal.
 
-Distinct staging secret names prevent accidental inheritance of generic repository-level production secrets. No SMTP2GO credential is needed. No production Worker or DNS permissions are needed. The harness verifies the remote database's returned UUID and name before any write; it also rejects the production UUID before making an API request.
+Before either PR is merged, run from the reviewed **integrated #251 checkout** in
+an authorized runner. The standalone #253 readiness workflows retain an older
+pinned harness; they are not the final integrated validation target. After both
+approved merges, #251's workflow checks out the run SHA. Do not merge just to make
+a draft workflow dispatchable, or weaken environment branch restrictions.
 
-In the current development environment no secrets, runtime identity, or staging resources are configured. Remote Cloudflare API access is not available through its current destination policy. No remote database was created or tested. In a managed environment, configure the staging credential binding and authorized Cloudflare API destination through the supported secure configuration interface. GitHub-hosted execution uses the protected environment above.
+Hosted Worker R2 bindings/authentication/performance remain a separate staging
+check with synthetic data and disabled/mocked email. Never use production DNS,
+real recipients, customer clones or existing staging databases for that check.
 
-## Execution
-
-Use the reviewed source revision in an authorized runner. Do not merge just to make a new draft workflow dispatchable.
-
-1. Run local tests and packaging first.
-2. Select `bootstrap` in **Phase 1 isolated D1 staging rehearsal**. It requires an empty database. It installs the checked-in baseline schemas through 0030 and synthetic identities/inventory. It refuses to reseed or wipe an existing database. Interrupted bootstrap requires investigation or a fresh disposable database, never an automatic reset.
-3. Select `validate`. It requires the staging marker and only the known synthetic account identities. It snapshots existing table content, applies 0031/0032 and recovery guards twice, and checks data equality. It exercises assignment creation, hold/drain/freeze/resume, a retained acknowledgement URL, record linking, status synchronization, intercepted participant notifications, and read-only integrity/foreign-key checks.
-4. Retain the aggregate result and exact source revision. Require `passed=true`, all audit counts zero, zero foreign-key violations and zero real emails. Run `validate` again to verify repeatability; only synthetic session expiry is refreshed for repeated API tests.
-5. If validation leaves a hold active, inspect the disposable database. Do not use a production recovery command against an assumed staging target: the production control CLI is deliberately pinned to production config. Use the isolated staging harness or a separately reviewed staging-only repair.
-
-Equivalent staging commands, with configuration already injected securely:
-
-```sh
-node scripts/phase1_staging.mjs bootstrap
-node scripts/phase1_staging.mjs validate
-```
-
-The CLI uses `CLOUDFLARE_ACCOUNT_ID` / `CLOUDFLARE_API_TOKEN` internally; the staging workflow maps the two distinct staging secrets into those process variables only. Never print them or pass token values in command arguments.
-
-## Production audit preparation
-
-Use `.github/workflows/audit-remediation-integrity.yml` with the existing `cloudflare-worker-production` environment. The `preflight` mode requires no new production schema and executes SELECT-only checks. The `installed` mode also verifies Phase 1 guards and operational state. Both include foreign-key consistency and report aggregate counts, never customer information.
-
-Before production approval, retain a successful live preflight, verify production environment/branch protection, and retain successful isolated D1 validation. These remote results are still outstanding; successful local simulation is not a substitute.
+Remote R2/D1 results and live SELECT-only production counts remain pending until
+resources and secure credentials are configured. Local simulation is not proof
+of Cloudflare permissions, deployment configuration or production integrity.

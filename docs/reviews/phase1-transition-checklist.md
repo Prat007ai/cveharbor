@@ -1,3 +1,5 @@
+> **HISTORICAL REVIEW — NOT AN EXECUTION RUNBOOK.** Findings, workflow names, credentials, test counts and procedures below describe earlier revisions. Do not execute their rollout/rollback commands. Use [the consolidated administrator checklist](phase1-administrator-checklist.md), [current release/recovery procedure](remediation-phase1-release.md) and [R2 architecture](intelligence-publication.md).
+
 > Feed implementation update: see [intelligence-publication.md](intelligence-publication.md) for the implemented replacement, integration results and required staged cutover. Earlier cache/integration findings below are historical.
 
 # Phase 1 security transition: continuity, administrator checklist and PR integration

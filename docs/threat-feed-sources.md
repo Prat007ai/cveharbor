@@ -1,3 +1,5 @@
+> **Phase 1 deployment notice:** Use [the consolidated administrator checklist](reviews/phase1-administrator-checklist.md) for current release, credential, staging and recovery steps. Deployment/migration/rollback recipes below are feature-history references, not instructions to execute during Phase 1. Feature behavior descriptions remain applicable unless superseded by the current implementation.
+
 # Threat feed integrations
 
 Implemented on `fix/threat-feed-health` and released through the production
