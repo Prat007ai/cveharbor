@@ -1,6 +1,6 @@
-# CVEHarbor Threat IP Intelligence | 2026-11-03T02:27:03.195452+00:00
+# CVEHarbor Threat IP Intelligence | 2026-11-03T03:02:32.578119+00:00
 # Permanent logical group: Suspicious IP Block
-# Cumulative indexed IPs: 3318
+# Cumulative indexed IPs: 3323
 # New since prior published snapshot: 5
 # REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 # Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
@@ -14,29 +14,29 @@
 # If an address object name already exists with a different subnet, STOP.
 # Applying group membership can affect an existing deny policy immediately.
 config firewall address
-    edit "CVEH_8_160_189_25"
-        set subnet 8.160.189.25 255.255.255.255
+    edit "CVEH_102_64_36_159"
+        set subnet 102.64.36.159 255.255.255.255
     next
-    edit "CVEH_103_209_132_251"
-        set subnet 103.209.132.251 255.255.255.255
+    edit "CVEH_102_129_51_185"
+        set subnet 102.129.51.185 255.255.255.255
     next
-    edit "CVEH_103_209_178_136"
-        set subnet 103.209.178.136 255.255.255.255
+    edit "CVEH_102_129_63_17"
+        set subnet 102.129.63.17 255.255.255.255
     next
-    edit "CVEH_124_221_123_110"
-        set subnet 124.221.123.110 255.255.255.255
+    edit "CVEH_102_129_63_45"
+        set subnet 102.129.63.45 255.255.255.255
     next
-    edit "CVEH_154_37_219_102"
-        set subnet 154.37.219.102 255.255.255.255
+    edit "CVEH_103_207_4_60"
+        set subnet 103.207.4.60 255.255.255.255
     next
 end
 config firewall addrgrp
     edit "Suspicious IP Block"
-        append member "CVEH_8_160_189_25"
-        append member "CVEH_103_209_132_251"
-        append member "CVEH_103_209_178_136"
-        append member "CVEH_124_221_123_110"
-        append member "CVEH_154_37_219_102"
+        append member "CVEH_102_64_36_159"
+        append member "CVEH_102_129_51_185"
+        append member "CVEH_102_129_63_17"
+        append member "CVEH_102_129_63_45"
+        append member "CVEH_103_207_4_60"
     next
 end
 # No firewall policy has been created. Review existing policy use.
