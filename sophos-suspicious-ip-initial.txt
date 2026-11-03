@@ -1,7 +1,7 @@
-CVEHarbor Threat IP Intelligence | 2026-11-03T01:20:34.542696+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-03T01:43:16.833442+00:00
 Permanent logical group: Suspicious IP Block
-Cumulative indexed IPs: 3309
-New since prior published snapshot: 1
+Cumulative indexed IPs: 3311
+New since prior published snapshot: 2
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 No rules or policies are created or enabled. No old IPs are removed.
@@ -3108,6 +3108,12 @@ No firewall rule is created or activated.
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
       <IPAddress>62.60.134.212</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_62_60_226_30</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>62.60.226.30</IPAddress>
     </IPHost>
     <IPHost>
       <Name>CVEH_62_84_96_229</Name>
@@ -11406,6 +11412,12 @@ No firewall rule is created or activated.
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
       <IPAddress>103.207.4.214</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_103_207_7_106</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>103.207.7.106</IPAddress>
     </IPHost>
     <IPHost>
       <Name>CVEH_103_210_236_62</Name>
@@ -20398,6 +20410,7 @@ No firewall rule is created or activated.
         <Host>CVEH_62_60_130_91</Host>
         <Host>CVEH_62_60_130_210</Host>
         <Host>CVEH_62_60_134_212</Host>
+        <Host>CVEH_62_60_226_30</Host>
         <Host>CVEH_62_84_96_229</Host>
         <Host>CVEH_62_84_190_38</Host>
         <Host>CVEH_62_113_112_66</Host>
@@ -21781,6 +21794,7 @@ No firewall rule is created or activated.
         <Host>CVEH_103_207_4_69</Host>
         <Host>CVEH_103_207_4_190</Host>
         <Host>CVEH_103_207_4_214</Host>
+        <Host>CVEH_103_207_7_106</Host>
         <Host>CVEH_103_210_236_62</Host>
         <Host>CVEH_103_211_217_182</Host>
         <Host>CVEH_103_231_14_152</Host>
