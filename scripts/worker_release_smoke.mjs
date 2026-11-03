@@ -102,3 +102,9 @@ assert.equal(statusMailRelease(statusMailFiles),true);
 for(const f of ['account-backend/wrangler.toml','account-backend/src/cvie.js','scripts/bootstrap_cvie_shared.mjs','account-backend/migrations/0029_finding_assignment_links.sql'])assert.equal(statusMailRelease([...statusMailFiles,f]),false);
 assert.equal(statusMailRelease(statusMailFiles.filter(f=>!f.endsWith('.sql'))),false);
 console.log('PASS: status notification release applies only migration 0030 and skips unrelated maintenance');
+
+const {statusMailRepair}=await import('./worker_release_mode.mjs');
+const repairFiles=['account-backend/src/finding-assignment-links.js','account-backend/src/status-update-mail.js','account-backend/tests/status-mail-repair.test.mjs'];
+assert.equal(statusMailRepair(repairFiles),true);
+for(const f of ['account-backend/wrangler.toml','account-backend/src/cvie.js','scripts/bootstrap_cvie_shared.mjs','account-backend/migrations/0030_status_update_notifications.sql'])assert.equal(statusMailRepair([...repairFiles,f]),false);
+console.log('PASS: status linking repair is code-only with no migrations or unrelated maintenance');

@@ -3,7 +3,7 @@ on:
   push:
     branches: [feat/assignment-acknowledgement, feat/assignment-fyi, feat/remediation-workflow-polish, feat/assignment-progress-reminders, feat/manager-inactivity-notices]
   pull_request:
-    paths: ['account-backend/src/status-update-mail.js', 'account-backend/tests/status-update-mail.test.mjs', 'account-backend/migrations/0030_status_update_notifications.sql', 'scripts/status_mail_browser.mjs', 'scripts/verify_status_mail_d1.mjs', 'account-backend/src/finding-assignment-links.js', 'account-backend/tests/finding-assignment-links.test.mjs', 'account-backend/migrations/0029_finding_assignment_links.sql', 'scripts/finding_links_browser.mjs', 'scripts/verify_finding_links_d1.mjs', 'account-backend/src/finding-remediation.js', 'account-backend/src/remediation-identity.js', 'account-backend/migrations/0028_unified_findings.sql', 'shared-remediation.js', 'scripts/unified_findings_browser.mjs', 'account-backend/migrations/0027_assignment_progress.sql', 'scripts/assignment_progress_browser.mjs', 'scripts/verify_assignment_progress_d1.mjs', 'account-backend/src/remediation-workflow.js', 'account-backend/src/confirmation-host.js', 'account-backend/migrations/0026_remediation_workflow.sql', 'account-backend/tests/remediation-workflow.test.mjs', 'scripts/remediation_workflow_browser.mjs', 'scripts/verify_remediation_workflow_d1.mjs', 'account-backend/src/assignment-*.js', 'account-backend/src/remediation.js', 'account-backend/migrations/0024_assignment_acknowledgements.sql', 'account-backend/migrations/0025_assignment_fyi.sql', 'scripts/assignment_fyi_browser.mjs', 'scripts/verify_assignment_fyi_d1.mjs', 'account-backend/tests/assignment-*.mjs', 'account-backend/tests/helpers/assignment-db.mjs', 'scripts/assignment_ack_browser.mjs', 'scripts/verify_assignment_ack_d1.mjs', '.github/workflows/verify-assignment-acknowledgement.yml']
+    paths: ['account-backend/tests/status-mail-repair.test.mjs', 'scripts/status_mail_repair_browser.mjs', 'account-backend/src/status-update-mail.js', 'account-backend/tests/status-update-mail.test.mjs', 'account-backend/migrations/0030_status_update_notifications.sql', 'scripts/status_mail_browser.mjs', 'scripts/verify_status_mail_d1.mjs', 'account-backend/src/finding-assignment-links.js', 'account-backend/tests/finding-assignment-links.test.mjs', 'account-backend/migrations/0029_finding_assignment_links.sql', 'scripts/finding_links_browser.mjs', 'scripts/verify_finding_links_d1.mjs', 'account-backend/src/finding-remediation.js', 'account-backend/src/remediation-identity.js', 'account-backend/migrations/0028_unified_findings.sql', 'shared-remediation.js', 'scripts/unified_findings_browser.mjs', 'account-backend/migrations/0027_assignment_progress.sql', 'scripts/assignment_progress_browser.mjs', 'scripts/verify_assignment_progress_d1.mjs', 'account-backend/src/remediation-workflow.js', 'account-backend/src/confirmation-host.js', 'account-backend/migrations/0026_remediation_workflow.sql', 'account-backend/tests/remediation-workflow.test.mjs', 'scripts/remediation_workflow_browser.mjs', 'scripts/verify_remediation_workflow_d1.mjs', 'account-backend/src/assignment-*.js', 'account-backend/src/remediation.js', 'account-backend/migrations/0024_assignment_acknowledgements.sql', 'account-backend/migrations/0025_assignment_fyi.sql', 'scripts/assignment_fyi_browser.mjs', 'scripts/verify_assignment_fyi_d1.mjs', 'account-backend/tests/assignment-*.mjs', 'account-backend/tests/helpers/assignment-db.mjs', 'scripts/assignment_ack_browser.mjs', 'scripts/verify_assignment_ack_d1.mjs', '.github/workflows/verify-assignment-acknowledgement.yml']
 permissions:
   contents: read
 jobs:
@@ -39,6 +39,8 @@ jobs:
         run: node scripts/finding_links_browser.mjs
       - name: Exercise status emails to every participant and render templates
         run: node scripts/status_mail_browser.mjs
+      - name: Reproduce status updates before linking and preserve their history
+        run: node scripts/status_mail_repair_browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -51,3 +53,4 @@ jobs:
             work/unified-review/
             work/finding-link-review/
             work/status-mail-review/
+            work/mail-repair-review/

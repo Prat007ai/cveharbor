@@ -24,10 +24,10 @@ try{
  assert.equal((await req('/finding-remediations/'+assetOther+'/'+fixtureCve+'/link-existing','POST',data(p))).status,404);
  assert.equal((await req(endpoint+'/link-existing','POST',{...data(p),confirm:false})).status,400);
  assert.equal((await req(endpoint+'/link-existing','POST',{...data(p),expected_source:'stale'})).status,409);
- // A target with comments/history cannot be discarded.
+ // A separately owned target cannot be combined. Comments are retained when an otherwise unassigned target is linked.
  f.DB.sql.prepare('INSERT INTO remediation_owner_comments(user_id,record_id,author_email,comment,created_at) VALUES(?,?,?,?,?)').run('a',key,'sender@example.test','Retain this existing work history.',time);
- assert.equal((await ok(endpoint)).can_link,false);assert.equal((await req(endpoint+'/link-existing','POST',data(p))).status,409);
- f.DB.sql.prepare('DELETE FROM remediation_owner_comments WHERE record_id=?').run(key);
+ f.DB.sql.prepare("UPDATE remediations SET owner='Different owner' WHERE cve_id=?").run(key);assert.equal((await ok(endpoint)).can_link,false);assert.equal((await req(endpoint+'/link-existing','POST',data(p))).status,409);
+ f.DB.sql.prepare("UPDATE remediations SET owner='Unassigned' WHERE cve_id=?").run(key);
  // Check optimistic guards inside the atomic batch, after the preview was loaded.
  const originalBatch=f.DB.batch.bind(f.DB);
  for(const edit of [()=>f.DB.sql.prepare('UPDATE remediations SET updated_at=? WHERE cve_id=?').run('concurrent-source',fixtureCve),()=>f.DB.sql.prepare('UPDATE customer_finding_statuses SET updated_at=? WHERE asset_id=?').run('concurrent-finding',assetOne),()=>f.DB.sql.prepare('UPDATE remediations SET updated_at=? WHERE cve_id=?').run('concurrent-target',key)]){
@@ -44,7 +44,7 @@ try{
  assert.equal(f.DB.sql.prepare('SELECT assigned_severity FROM remediation_record_metadata WHERE cve_id=?').get(fixtureCve).assigned_severity,'critical');
  assert.equal(f.DB.sql.prepare('SELECT cve_id FROM remediations WHERE cve_id=?').get(key),undefined);
  assert.equal((await recordScope(f.env,'a',fixtureCve)).asset_id,assetOne);
- let row=await ok('/remediation-records/'+fixtureCve);assert.equal(row.due,'2026-11-20');assert.equal(row.link_history.length,1);assert.match(row.link_history[0].snapshot_json,/Existing finding notes/);assert.equal(row.tickets[0].ticket_number,'SEC-248');
+ let row=await ok('/remediation-records/'+fixtureCve);assert.equal(row.due,'2026-11-20');assert.equal(row.link_history.length,1);assert.equal(row.comments.length,1);assert.equal(row.comments[0].comment,'Retain this existing work history.');assert.match(row.link_history[0].snapshot_json,/Existing finding notes/);assert.equal(row.tickets[0].ticket_number,'SEC-248');
  summary=await ok('/finding-assignments');assert.equal(summary.standalone.length,0);assert.equal(summary.findings.find(x=>x.asset_id===assetOne).assignments[0].email,'alex@example.net');assert.equal(summary.findings.find(x=>x.asset_id===assetOne).assignments[0].status,'Acknowledged');
  assert.equal((await ok(endpoint,'POST',{})).id,fixtureCve);assert.equal((await ok(endpoint+'/link-existing','POST',data(p))).duplicate,true);
  assert.equal((await req('/remediations/'+fixtureCve,'DELETE')).status,409);assert.equal((await req('/remediations/'+fixtureCve,'PUT',{status:'Investigating',owner:'Alex'})).status,409);
