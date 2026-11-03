@@ -1,0 +1,63 @@
+name: CVIE trusted staging diagnostics (read only)
+
+# Install ONLY this reviewed workflow on the protected default branch to activate.
+# workflow_run reads this default-branch workflow, never the triggering branch's YAML.
+on:
+  workflow_run:
+    workflows: ['CVIE staging preparation (no automatic deployment)']
+    types: [completed]
+    branches: [codex/cvie-core-phase012]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cvie-staging-readonly-243
+  cancel-in-progress: false
+
+jobs:
+  inspect-staging:
+    # Environment deployment-branch policy MUST also allow main ONLY. This if is
+    # defense in depth, not a substitute for that server-enforced restriction.
+    if: >-
+      github.repository == 'Prat007ai/cveharbor' &&
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event_name == 'workflow_run' &&
+        github.event.workflow_run.head_repository.full_name == 'Prat007ai/cveharbor' &&
+        github.event.workflow_run.head_branch == 'codex/cvie-core-phase012' &&
+        github.event.workflow_run.path == '.github/workflows/cvie-staging.yml' &&
+        (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: cloudflare-cvie-staging-readonly
+    steps:
+      - name: Check out reviewed diagnostics, never the triggering source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: Prat007ai/cveharbor
+          ref: d43139fdee1192a655e8103c85c14f1a892b2544
+          persist-credentials: false
+          path: trusted-diagnostics
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Inspect only the dedicated staging account using GET
+        # Step-scoped secret; no package installs, build, SQL, Wrangler, caches,
+        # downloaded artifacts or development-branch scripts execute in this job.
+        env:
+          CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_READONLY_API_TOKEN }}
+          CF_STAGING_ACCOUNT_ID: '9706b4d98ad72884e67fd1eb875c8a61'
+          CF_STAGING_D1_DATABASE_ID: 'fac61562-fc31-426d-8032-550aba63b7f6'
+          CF_STAGING_ACCESS_ISSUER: 'https://dawn-cloud-afbb.cloudflareaccess.com'
+          CF_STAGING_ACCESS_AUD: '9b75be69e6245df927e614b7490e7315547b21cb00e8cb459157a6ca0d4cdb36'
+        run: node trusted-diagnostics/staging/scripts/diagnose.mjs
+      - name: Retain sanitized inventory even when inspection fails
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cvie-staging-readonly-${{ github.run_id }}-${{ github.run_attempt }}
+          path: trusted-diagnostics/staging/artifacts/diagnostics.json
+          if-no-files-found: warn
+          retention-days: 14
