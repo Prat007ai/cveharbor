@@ -1,7 +1,7 @@
-CVEHarbor Threat IP Intelligence | 2026-11-03T01:11:56.396814+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-03T01:20:34.542696+00:00
 Permanent logical group: Suspicious IP Block
-Cumulative indexed IPs: 3308
-New since prior published snapshot: 13
+Cumulative indexed IPs: 3309
+New since prior published snapshot: 1
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
 No rules or policies are created or enabled. No old IPs are removed.
@@ -17786,6 +17786,12 @@ No firewall rule is created or activated.
       <IPAddress>195.178.191.5</IPAddress>
     </IPHost>
     <IPHost>
+      <Name>CVEH_195_206_234_176</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>195.206.234.176</IPAddress>
+    </IPHost>
+    <IPHost>
       <Name>CVEH_195_206_234_249</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
@@ -22838,6 +22844,7 @@ No firewall rule is created or activated.
         <Host>CVEH_195_154_134_17</Host>
         <Host>CVEH_195_177_94_182</Host>
         <Host>CVEH_195_178_191_5</Host>
+        <Host>CVEH_195_206_234_176</Host>
         <Host>CVEH_195_206_234_249</Host>
         <Host>CVEH_195_239_97_254</Host>
         <Host>CVEH_196_75_10_10</Host>
