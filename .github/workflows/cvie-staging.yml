@@ -65,12 +65,14 @@ jobs:
           CF_STAGING_ACCESS_AUD: ${{ vars.CF_STAGING_ACCESS_AUD || secrets.CF_STAGING_ACCESS_AUD }}
           CF_STAGING_ACCESS_CLIENT_ID: ${{ secrets.CF_STAGING_ACCESS_CLIENT_ID }}
           CF_STAGING_ACCESS_CLIENT_SECRET: ${{ secrets.CF_STAGING_ACCESS_CLIENT_SECRET }}
-        run: node staging/scripts/preflight.mjs
+        run: |
+          if [ -n "$CF_STAGING_D1_DATABASE_ID" ]; then node staging/scripts/diagnose.mjs; fi
+          node staging/scripts/preflight.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cvie-staging-preflight-${{ github.sha }}
-          path: staging/artifacts/preflight.json
+          path: staging/artifacts/*.json
           if-no-files-found: warn
           retention-days: 14
 
@@ -130,3 +132,4 @@ jobs:
             staging/artifacts/failure.json
           if-no-files-found: warn
           retention-days: 14
+

@@ -8,6 +8,7 @@ import { root } from './configure.mjs';
 import { preflight } from './preflight.mjs';
 import { runCloud } from './cloud.mjs';
 import { probeAccess } from './probe-access.mjs';
+import { failure, safeFailure } from './errors.mjs';
 
 export function authorize(env, event, checkout) {
   if (env.GITHUB_REPOSITORY !== 'Prat007ai/cveharbor' || env.GITHUB_REF !== 'refs/heads/codex/cvie-core-phase012') throw Error('Repository/branch not approved');
@@ -36,18 +37,29 @@ export function acceptPreflight(report, attestation) {
 }
 
 export async function provision(env, event, checkout, { check = preflight, cloud = runCloud, probe = probeAccess, record = () => {} } = {}) {
+  let operation = 'authorization';
+  try {
   const approved = authorize(env, event, checkout);
+  operation = 'preflight';
   const report = await check(env, undefined, { existingDatabase: approved.action === 'deploy-workers' });
   record('preflight', report);
+  operation = 'preflight.accept';
   const attestation = JSON.parse(fs.readFileSync(path.resolve(root, '../docs/cvie-evidence/staging-owner-attestation.json'), 'utf8'));
   acceptPreflight(report, attestation);
+  operation = 'cloud';
   const result = await cloud(approved.action === 'deploy-workers' ? 'deploy' : 'create-database', { ...env, STAGING_CHANGE_APPROVED: 'PR243-STAGING-ONLY' }, undefined, () => {});
   record('provision', { ...approved, ...result, completed_at: new Date().toISOString() });
   if (approved.action === 'deploy-workers') {
+    operation = 'access.probe';
     const access = await probe(env); record('access', access);
     if (!access.passed) throw Error('Post-deployment Access check failed; preserve fail-closed settings');
   }
   return result;
+  } catch (error) {
+    const wrapped = failure(operation, 'validation', {}, error);
+    record('failure', { status: 'stopped', ...safeFailure(wrapped), resources_may_exist: true, next: 'Inspect staging inventory; no automatic retry or deletion.' });
+    throw wrapped;
+  }
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -58,9 +70,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const checkout = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).stdout.trim();
     if (process.argv[2] === '--check') { authorize(process.env, event, checkout); console.log('Exact source and operation gates passed; no cloud requests.'); }
     else { await provision(process.env, event, checkout, { record }); console.log('Approved staging operation completed; see sanitized artifact.'); }
-  } catch {
+  } catch (error) {
     // Third-party errors can contain request data; never serialize them.
-    record('failure', { status: 'stopped', stage: 'provisioning', resources_may_exist: true, next: 'Inspect sanitized evidence and staging inventory before retrying; no automatic retry or deletion.' });
-    console.error('Staging provisioning stopped. Review gate variables and sanitized evidence; no automatic recovery attempted.'); process.exitCode = 1;
+    record('failure', { status: 'stopped', stage: 'provisioning', ...safeFailure(error), resources_may_exist: true, next: 'Inspect sanitized evidence and staging inventory before retrying; no automatic retry or deletion.' });
+    console.error('Staging provisioning stopped: ' + JSON.stringify(safeFailure(error)) + '; no automatic recovery attempted.'); process.exitCode = 1;
   }
 }
+

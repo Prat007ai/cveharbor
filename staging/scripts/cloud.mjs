@@ -6,22 +6,29 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { TARGET, accessSettings, databaseId } from '../target.mjs';
 import { root, writeConfigs } from './configure.mjs';
+import { failure, wranglerCategory } from './errors.mjs';
 
 export async function runCloud(action = 'check', env = process.env, fetcher = fetch, log = console.log, runner = spawnSync) {
   if (!['check', 'create-database', 'deploy'].includes(action)) throw Error('Use check, create-database or deploy. No SQL execution is exposed.');
   if (env.CF_STAGING_ACCOUNT_ID !== TARGET.account || !env.CF_STAGING_API_TOKEN) throw Error('Dedicated staging account/token required');
   accessSettings(env.CF_STAGING_ACCESS_ISSUER, env.CF_STAGING_ACCESS_AUD);
   if (action !== 'check' && env.STAGING_CHANGE_APPROVED !== 'PR243-STAGING-ONLY') throw Error('Resource changes are gated until credentials and execution are approved.');
+  let operation = 'management.account';
+  try {
   const apiBase = `https://api.cloudflare.com/client/v4/accounts/${TARGET.account}`;
   async function cf(route, method = 'GET', body) {
     // Only fixed account-relative paths constructed below are accepted.
     if ((route !== '' && !route.startsWith('/')) || route.includes('..') || route.includes('://')) throw Error('Invalid staging management path');
-    const response = await fetcher(apiBase + route, { method, redirect: 'error', signal: AbortSignal.timeout(30000),
+    operation = `management.${method}.${route.split('?')[0] || '/account'}`;
+    let response;
+    try { response = await fetcher(apiBase + route, { method, redirect: 'error', signal: AbortSignal.timeout(30000),
       headers: { Authorization: 'Bearer ' + env.CF_STAGING_API_TOKEN, 'Content-Type': 'application/json' },
       ...(body ? { body: JSON.stringify(body) } : {}) });
-    const result = await response.json();
+    } catch { throw failure(operation, 'network'); }
+    let result;
+    try { result = await response.json(); } catch { throw failure(operation, 'invalid_json', { http_status: response.status }); }
     // Never print API response bodies, tokens, policy members or provider errors.
-    if (!response.ok || result.success !== true) throw Error(`Staging management ${method} failed (${response.status}); inspect permissions securely.`);
+    if (!response.ok || result?.success !== true) throw failure(operation, response.status === 401 || response.status === 403 ? 'authorization' : response.status === 429 ? 'rate_limit' : 'cloudflare_api', { http_status: response.status, api_codes: Array.isArray(result?.errors) ? result.errors.map(e => e?.code).filter(Number.isInteger).slice(0, 8) : [] });
     return result.result;
   }
   const identity = await cf('');
@@ -60,9 +67,11 @@ export async function runCloud(action = 'check', env = process.env, fetcher = fe
     } else if (action === 'deploy') throw Error('Staging D1 UUID is required for deployment');
     if (action === 'deploy') {
       if (!env.CF_STAGING_D1_DATABASE_ID) throw Error('D1 UUID required');
+      operation = 'bundle.verify';
       const manifest = JSON.parse(fs.readFileSync(path.join(root, '.build/manifest.json'), 'utf8'));
       const hash = createHash('sha256').update(fs.readFileSync(path.join(root, '.build/api.mjs'))).digest('hex');
       if (manifest.account !== TARGET.account || manifest.api_sha256 !== hash || manifest.providers !== 'blocked' || manifest.commit !== env.GITHUB_SHA) throw Error('Rebuild the reviewed staging bundle');
+      operation = 'configuration.validate';
       const configs = writeConfigs(env);
       // Do not inherit generic Cloudflare credentials, shell profiles or local Wrangler env files.
       const childEnv = { PATH: env.PATH, XDG_CONFIG_HOME: path.join(root, '.build/runner-config'), CI: 'true',
@@ -72,9 +81,10 @@ export async function runCloud(action = 'check', env = process.env, fetcher = fe
         ...(env.NODE_EXTRA_CA_CERTS ? { NODE_EXTRA_CA_CERTS: env.NODE_EXTRA_CA_CERTS } : {}) };
       fs.mkdirSync(childEnv.XDG_CONFIG_HOME, { recursive: true });
       function wrangler(name, dryRun) {
+        operation = `wrangler.${name}.${dryRun ? 'dry_run' : 'deploy'}`;
         const result = runner('npx', ['--yes', 'wrangler@4.156.0', 'deploy', '--config', path.join(root, '.build', name + '.json'), ...(dryRun ? ['--dry-run'] : [])], { cwd: path.join(root, '.build'), env: childEnv, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024, timeout: 180000 });
         // Wrangler output can contain provider details. Do not export raw subprocess output.
-        if (result.error || result.status !== 0) throw Error(`Staging ${name} ${dryRun ? 'dry-run' : 'deployment'} failed; stop before proceeding`);
+        if (result.error || result.status !== 0) throw failure(operation, wranglerCategory(result), { exit_code: Number.isInteger(result.status) ? result.status : null });
       }
       async function exposure(name, publicExpected) {
         const actual = await cf(`/workers/scripts/${name}/subdomain`);
@@ -119,5 +129,7 @@ export async function runCloud(action = 'check', env = process.env, fetcher = fe
       return { account: TARGET.account, database_id: env.CF_STAGING_D1_DATABASE_ID, workers: deployed, api_sha256: hash, source_sha: manifest.commit, bindings_verified: true, migrations_executed: false, schedules_enabled: false, email_enabled: false };
     } else log('Staging-only credential, subdomain and Access checks passed; no resources changed.');
   }
+  } catch (error) { throw failure(operation, 'validation', {}, error); }
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) await runCloud(process.argv[2] || 'check');
+

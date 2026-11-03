@@ -19,7 +19,7 @@ test('cloud preflight is staging-only and read-only; bypass policy fails closed'
   const logs = [];
   await runCloud('check', fixtureEnv, mock(), text => logs.push(text));
   assert.match(logs.join(''), /no resources changed/);
-  await assert.rejects(runCloud('check', fixtureEnv, mock(true)), /no bypass/);
+  await assert.rejects(runCloud('check', fixtureEnv, mock(true)), /Staging operation stopped/);
   assert.doesNotMatch(logs.join(''), /synthetic-not-a-credential|synthetic@example/);
 });
 test('cloud create/deploy refuse before explicit approval or with another account', async () => {
@@ -77,8 +77,8 @@ test('database creation has exactly one fixed-account POST and returns only sani
   assert.equal(result.database_id, uuid);
   assert.deepEqual(calls.filter(x => !x.startsWith('GET')), ['POST /d1/database']);
   assert.doesNotMatch(JSON.stringify(result), /synthetic-not-a-credential|synthetic@example/);
-  await assert.rejects(runCloud('create-database', { ...fixtureEnv, STAGING_CHANGE_APPROVED: 'PR243-STAGING-ONLY' }, management({ deploy: true }).transport), /already exists/);
-  await assert.rejects(runCloud('create-database', { ...fixtureEnv, STAGING_CHANGE_APPROVED: 'PR243-STAGING-ONLY' }, management({ unexpectedWorker: true }).transport), /empty Worker inventory/);
+  await assert.rejects(runCloud('create-database', { ...fixtureEnv, STAGING_CHANGE_APPROVED: 'PR243-STAGING-ONLY' }, management({ deploy: true }).transport), /Staging operation stopped/);
+  await assert.rejects(runCloud('create-database', { ...fixtureEnv, STAGING_CHANGE_APPROVED: 'PR243-STAGING-ONLY' }, management({ unexpectedWorker: true }).transport), /Staging operation stopped/);
 });
 test('both dry runs precede upload, API verification gates frontend, and child credentials are isolated', async () => {
   await withBundle(async () => {
@@ -99,3 +99,4 @@ test('both dry runs precede upload, API verification gates frontend, and child c
     }
   });
 });
+

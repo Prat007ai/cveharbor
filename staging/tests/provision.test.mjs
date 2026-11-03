@@ -57,8 +57,8 @@ test('deploy mode verifies existing DB preflight and records failing Access befo
   await assert.rejects(provision({ ...env, CF_STAGING_PROVISION_ACTION: 'deploy-workers', CF_STAGING_D1_DATABASE_ID: uuid }, event, sha, {
     check: async (_e, _f, options) => { assert.equal(options.existingDatabase, true); return report(); },
     cloud: async action => { assert.equal(action, 'deploy'); return {}; }, probe: async () => ({ passed: false }), record: name => artifacts.push(name),
-  }), /Access check failed/);
-  assert.deepEqual(artifacts, ['preflight', 'provision', 'access']);
+  }), /Staging operation stopped/);
+  assert.deepEqual(artifacts, ['preflight', 'provision', 'access', 'failure']);
 });
 test('Access probe uses four fixed-host GETs, no redirects/sessions, and keeps secrets out of evidence', async () => {
   const authEnv = { CF_STAGING_ACCESS_ISSUER: 'https://synthetic-stage.cloudflareaccess.com', CF_STAGING_ACCESS_AUD: 'a'.repeat(64), CF_STAGING_ACCESS_CLIENT_ID: 'secret-client', CF_STAGING_ACCESS_CLIENT_SECRET: 'secret-value' };
@@ -74,3 +74,4 @@ test('Access probe uses four fixed-host GETs, no redirects/sessions, and keeps s
   assert.equal((await probeAccess(authEnv, async () => new Response('public', { status: 200 }))).passed, false);
   assert.equal((await probeAccess(authEnv, async () => Response.redirect('https://attacker.test', 302))).passed, false);
 });
+

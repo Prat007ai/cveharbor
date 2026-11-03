@@ -148,10 +148,11 @@ export async function preflight(env, transport = fetch, { existingDatabase = fal
   return report;
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const result = await preflight(process.env);
+  const result = await preflight(process.env, undefined, { existingDatabase: !!process.env.CF_STAGING_D1_DATABASE_ID });
   const destination = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../artifacts');
   fs.mkdirSync(destination, { recursive: true });
   fs.writeFileSync(path.join(destination, 'preflight.json'), JSON.stringify(result, null, 2) + '\n');
   console.log('CVIE_STAGING_PREFLIGHT ' + JSON.stringify(result));
   if (result.blockers.length) process.exitCode = 1;
 }
+
