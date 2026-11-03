@@ -64,3 +64,29 @@ class PermanentStagingSecurityTests(unittest.TestCase):
   for mutate in [lambda j:j.update({'if':'true'}),lambda j:j.update({'if':policy.STAGING_RELEASE+' || true'}),lambda j:j.pop('needs'),lambda j:j['steps'].append({'run':'echo forbidden','env':{'TOKEN':'${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}'}})]:
    doc=policy.load_workflow(source.read_text());mutate(doc['jobs']['release']);self.assertTrue(policy.validate(doc,'cvie-staging.yml'))
   doc=policy.load_workflow(source.read_text());self.assertTrue(policy.validate(doc,'another-staging.yml'))
+
+class ProductionProbeIsolationTests(unittest.TestCase):
+    def confirmation(self):
+        return policy.load_workflow((ROOT/'.github/workflows/activate-confirmation-domain.yml').read_text())
+    def probe(self, doc):
+        return next(s for s in doc['jobs']['validate']['steps'] if s.get('run') == 'node scripts/verify_confirmation_domain.mjs')
+    def test_pr_keeps_local_tests_but_excludes_live_probe(self):
+        doc = self.confirmation()
+        self.assertIn('pull_request', doc['on'])
+        self.assertEqual(self.probe(doc)['if'], policy.MAIN + " && github.event_name == 'push'")
+        local = next(s for s in doc['jobs']['validate']['steps'] if s.get('run') == 'node --test scripts/verify_confirmation_domain.test.mjs')
+        self.assertNotIn('if', local)
+        self.assertEqual(policy.validate(doc, 'activate-confirmation-domain.yml'), [])
+    def test_removed_or_weakened_probe_guard_fails_policy(self):
+        for guard in [None, 'true', "github.base_ref == 'main'", "github.event_name == 'pull_request'", policy.MAIN + " && github.event_name == 'push' || true"]:
+            doc = self.confirmation(); probe = self.probe(doc)
+            if guard is None: probe.pop('if')
+            else: probe['if'] = guard
+            self.assertTrue(any('live production confirmation probes' in e for e in policy.validate(doc, 'activate-confirmation-domain.yml')))
+    def test_rule_applies_to_other_pr_workflows_and_runtime_mode(self):
+        doc = self.confirmation(); probe = self.probe(doc); probe.pop('if'); probe['run'] += ' --runtime'
+        self.assertTrue(any('live production confirmation probes' in e for e in policy.validate(doc, 'another-pr-workflow.yml')))
+    def test_existing_production_activation_remains_protected(self):
+        job = self.confirmation()['jobs']['activate']
+        self.assertEqual(job['environment'], 'cloudflare-worker-production')
+        self.assertTrue(job['if'].startswith(policy.RELEASE + ' && '))

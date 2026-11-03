@@ -23,6 +23,8 @@ jobs:
       - run: node --test scripts/verify_confirmation_domain.test.mjs
       - run: npm test --prefix account-backend
       - name: Verify attached production hostname without changing configuration
+        # PRs run local tests only, including when this workflow is in the PR diff.
+        if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: node scripts/verify_confirmation_domain.mjs
   activate:
     if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'

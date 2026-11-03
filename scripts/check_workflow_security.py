@@ -100,6 +100,13 @@ def validate(doc, filename):
         if env == 'cloudflare-notifications-production':
             require("vars.PRODUCTION_EMAIL_TESTS_ENABLED == 'true'" in condition, label + ': real mail requires explicit opt-in')
         for step in job.get('steps', []):
+            # Credential-free probes can still access production. A PR event must
+            # never execute the live confirmation-host checker; its .test.mjs
+            # counterpart uses fixtures and remains allowed.
+            if 'pull_request' in events and re.search(r'\bscripts/verify_confirmation_domain\.mjs(?:\s|$)', step.get('run', '')):
+                main_job = (condition == MAIN or condition.startswith(MAIN + ' && ')) and '||' not in condition
+                main_step = step.get('if') == MAIN + " && github.event_name == 'push'"
+                require(main_job or main_step, label + ': live production confirmation probes must be excluded from PRs')
             use = step.get('uses', '')
             require(bool(use) != ('run' in step), label + ': each step must have exactly one of uses or run')
             if 'run' in step:
