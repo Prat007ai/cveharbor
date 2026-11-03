@@ -46,7 +46,7 @@ export async function preflight(env, transport = fetch) {
     { http_status: identity.status, name_matches_owner_label: identity.result?.name === 'CVEHarbor Staging' });
   let verification = await cf('/tokens/verify', 'account_token_active'), accountOwned = verification.ok;
   if (!verification.ok) verification = await cf('/user/tokens/verify', 'user_token_active', true);
-  add('token_active', verification.ok && verification.result?.status === 'active', { http_status: verification.status, kind: accountOwned ? 'account' : 'user_or_unknown' });
+  add('token_active', verification.ok && verification.result?.status === 'active', { http_status: verification.status, verification_endpoint: accountOwned ? 'account' : 'user' });
   let grantsVerified = false, scopeVerified = false;
   if (verification.ok && /^[a-f0-9]{32}$/i.test(verification.result?.id || '')) {
     let detail = await cf(accountOwned ? `/tokens/${verification.result.id}` : `/user/tokens/${verification.result.id}`, 'token_permission_metadata', !accountOwned);
@@ -67,7 +67,7 @@ export async function preflight(env, transport = fetch) {
       const resources = Object.keys(p.resources || {});
       return resources.length === 1 && resources[0] === `com.cloudflare.api.account.${TARGET.account}`;
     });
-    add('token_permission_grants', grantsVerified, { http_status: detail.status, required_grants: required, metadata_available: detail.ok }, false);
+    add('token_permission_grants', grantsVerified, { http_status: detail.status, required_grants: detail.ok ? required : Object.fromEntries(Object.keys(required).map(k => [k, null])), metadata_available: detail.ok }, false);
     add('token_staging_only_scope', scopeVerified, { metadata_available: detail.ok, production_access_probe_performed: false }, false);
   } else {
     add('token_permission_grants', false, { reason: 'Token metadata unavailable; no write probe performed' }, false);
@@ -99,14 +99,24 @@ export async function preflight(env, transport = fetch) {
     add('no_access_bypass_or_additional_allow', policies.length === 2 && policies.every(p => p === human || p === servicePolicy) && !policies.some(p => p.decision === 'bypass' || (p.include || []).some(s => Object.hasOwn(s, 'everyone'))), { policy_count: policies.length });
   }
   const serviceTokens = await cf('/access/service_tokens?per_page=100', 'service_token_metadata');
-  const tokenRows = serviceTokens.ok && Array.isArray(serviceTokens.result) ? serviceTokens.result : [];
+  const tokenRows = serviceTokens.ok && Array.isArray(serviceTokens.result) ? [...serviceTokens.result] : [];
+  const listedCount = tokenRows.length;
+  const policyTokenIds = [...new Set((servicePolicy?.include || []).map(s => s.service_token?.token_id).filter(id => /^[a-f0-9-]{36}$/i.test(id || '')))];
+  const detailStatuses = [];
+  if (policyTokenIds.length <= 5) for (const id of policyTokenIds) {
+    if (tokenRows.some(t => t.id === id)) continue;
+    const detail = await cf(`/access/service_tokens/${id}`, 'policy_service_token_detail');
+    detailStatuses.push(detail.status);
+    if (detail.ok && detail.result?.id === id) tokenRows.push(detail.result);
+  }
   const named = tokenRows.filter(s => s.name === 'cvie-staging-validation');
   const clientMatches = tokenRows.filter(s => s.client_id === value('CF_STAGING_ACCESS_CLIENT_ID'));
   const selected = named.find(s => s.client_id === value('CF_STAGING_ACCESS_CLIENT_ID'));
   const linked = selected && servicePolicy?.include?.some(s => s.service_token?.token_id === selected.id);
   add('service_token_matches_policy_and_client', !!linked && selected.enabled !== false && (!selected.expires_at || Date.parse(selected.expires_at) > Date.now()), {
     http_status: serviceTokens.status, metadata_available: serviceTokens.ok,
-    metadata_is_array: Array.isArray(serviceTokens.result), record_count: tokenRows.length,
+    metadata_is_array: Array.isArray(serviceTokens.result), listed_count: listedCount, record_count: tokenRows.length,
+    policy_token_detail_statuses: detailStatuses,
     name_match_count: named.length, client_match_count: clientMatches.length,
     named_record_has_client_id: named.some(s => typeof s.client_id === 'string' && s.client_id.length > 0),
     named_record_policy_linked: named.some(s => servicePolicy?.include?.some(rule => rule.service_token?.token_id === s.id)),
