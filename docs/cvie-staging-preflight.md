@@ -79,3 +79,7 @@ The workflow is green because diagnostics executed successfully and the account/
 The [final resource creation plan](cvie-staging-resource-creation-plan.md) specifies an empty D1 database first, private API deployment and verification second, then the protected frontend and read-only checks. It lists the exact bindings, protected GitHub variables and required execution-workflow preparation. Migrations, fixtures and performance validation are outside that next approval scope.
 
 **Execution remains pending the user's approval of that plan.** This documentation update made no Cloudflare requests, configuration changes, migrations or deployments. PR #243 remains open and unmerged; production is unchanged.
+
+## Protected workflow preparation update
+
+The owner has approved the creation plan and confirmed required reviewer `Prat007ai`, disabled administrator bypass and the exact branch restriction in the GitHub environment. These protections are recorded as owner-confirmed. The [protected workflow implementation](cvie-staging-provisioning.md) is prepared and locally validated. **Actual execution still requires separate approval of the final implementation SHA and operation.** No fresh Cloudflare check or mutation was performed during this preparation; remote evidence above remains historical.

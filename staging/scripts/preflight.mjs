@@ -2,10 +2,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { TARGET, accessSettings } from '../target.mjs';
+import { TARGET, accessSettings, databaseId } from '../target.mjs';
 import { createAccessVerifier } from '../access.mjs';
 
-export async function preflight(env, transport = fetch) {
+export async function preflight(env, transport = fetch, { existingDatabase = false } = {}) {
   const checks = [], requests = [], blockers = [], limitations = [];
   const report = { account: TARGET.account, origin: TARGET.origin, checked_at: new Date().toISOString(),
     operation: 'read-only staging preflight', checks, requests, blockers, limitations,
@@ -18,6 +18,10 @@ export async function preflight(env, transport = fetch) {
   const account = value('CF_STAGING_ACCOUNT_ID'), token = value('CF_STAGING_API_TOKEN');
   const issuer = value('CF_STAGING_ACCESS_ISSUER'), audience = value('CF_STAGING_ACCESS_AUD');
   add('configured_account', account === TARGET.account, { expected: TARGET.account });
+  if (existingDatabase) {
+    try { databaseId(value('CF_STAGING_D1_DATABASE_ID')); add('configured_database', true, {}); }
+    catch { add('configured_database', false, {}); }
+  }
   add('management_token_present', !!token, {});
   try { accessSettings(issuer, audience); add('access_settings_format', true, {}); }
   catch { add('access_settings_format', false, {}); }
@@ -82,7 +86,8 @@ export async function preflight(env, transport = fetch) {
   const databases = await cf('/d1/database?per_page=100', 'd1_inventory');
   const dbRows = databases.ok && Array.isArray(databases.result) && databases.result.length < 100 ? databases.result : null;
   add('d1_read_permission', !!dbRows, { http_status: databases.status, database_count: dbRows?.length ?? null });
-  add('approved_database_name_available', !!dbRows && !dbRows.some(d => d.name === TARGET.database), {});
+  if (existingDatabase) add('approved_database_identity', !!dbRows && dbRows.length === 1 && dbRows[0].name === TARGET.database && dbRows[0].uuid === value('CF_STAGING_D1_DATABASE_ID'), {});
+  else add('approved_database_name_available', !!dbRows && !dbRows.some(d => d.name === TARGET.database), {});
   add('production_resources_absent', !!dbRows && !!workerRows && !dbRows.some(d => d.uuid === TARGET.productionDatabase || d.name === 'cveharbor-accounts') && !workerRows.some(w => ['cveharbor-accounts', 'cveharbor-site'].includes(w.id)), {});
   const apps = await cf('/access/apps?per_page=100', 'access_applications');
   const app = apps.ok && Array.isArray(apps.result) && apps.result.length < 100 && apps.result.find(a => a.domain === new URL(TARGET.origin).hostname && a.aud === audience && a.type === 'self_hosted');

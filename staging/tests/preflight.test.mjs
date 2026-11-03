@@ -4,7 +4,7 @@ import { preflight } from '../scripts/preflight.mjs';
 import { TARGET } from '../target.mjs';
 const env = { CF_STAGING_ACCOUNT_ID: TARGET.account, CF_STAGING_API_TOKEN: 'private-management-token', CF_STAGING_ACCESS_ISSUER: 'https://synthetic-stage.cloudflareaccess.com', CF_STAGING_ACCESS_AUD: 'a'.repeat(64), CF_STAGING_ACCESS_CLIENT_ID: 'private-service-client', CF_STAGING_ACCESS_CLIENT_SECRET: 'private-service-secret' };
 const sid = '11111111-2222-4333-8444-555555555555';
-function fixture({ metadataDenied = false, bypass = false, emptyList = false, missingDetail = false } = {}) {
+function fixture({ metadataDenied = false, bypass = false, emptyList = false, missingDetail = false, database = null } = {}) {
   return async (url, init) => {
     assert.equal(init.method, 'GET'); assert.equal(init.redirect, 'manual');
     const u = new URL(url); let result;
@@ -21,7 +21,8 @@ function fixture({ metadataDenied = false, bypass = false, emptyList = false, mi
       if (metadataDenied) return Response.json({ success: false }, { status: 403 });
       result = { policies: [{ effect: 'allow', resources: { ['com.cloudflare.api.account.' + TARGET.account]: '*' }, permission_groups: ['Workers Scripts Write','D1 Write','Account Settings Read','Access: Apps and Policies Read'].map(name => ({ name })) }] };
     } else if (route === '/workers/subdomain') result = { subdomain: 'cveharbor-staging' };
-    else if (route === '/workers/scripts' || route === '/d1/database') result = [];
+    else if (route === '/workers/scripts') result = [];
+    else if (route === '/d1/database') result = database ? [database] : [];
     else if (route === '/access/apps') result = [{ id: sid, domain: new URL(TARGET.origin).hostname, aud: env.CF_STAGING_ACCESS_AUD, type: 'self_hosted', name: 'CVEHarbor Staging' }];
     else if (route.endsWith('/policies')) result = [
       { name: 'CVEHarbor staging reviewers', decision: bypass ? 'bypass' : 'allow', include: [{ email: { email: 'private-reviewer@example.test' } }] },
@@ -62,4 +63,13 @@ test('empty token lists use only bounded policy references and distinguish missi
   const result = missing.checks.find(c => c.name === 'service_token_matches_policy_and_client');
   assert.equal(result.status, 'unverified'); assert.deepEqual(result.policy_token_detail_statuses, [404]);
   assert.equal(missing.ready_for_creation, false);
+});
+
+test('deployment preflight accepts only the recorded staging DB and keeps diagnostics GET-only', async () => {
+  const settings = { ...env, CF_STAGING_D1_DATABASE_ID: sid };
+  const result = await preflight(settings, fixture({ database: { name: TARGET.database, uuid: sid } }), { existingDatabase: true });
+  assert.equal(result.read_only_checks_passed, true);
+  assert.equal(result.checks.find(c => c.name === 'approved_database_identity').status, 'pass');
+  const wrong = await preflight(settings, fixture({ database: { name: TARGET.database, uuid: TARGET.productionDatabase } }), { existingDatabase: true });
+  assert.equal(wrong.read_only_checks_passed, false);
 });

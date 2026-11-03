@@ -11,6 +11,11 @@ on:
         description: 'Run staging-only read-only credential and Access checks (no creation or deployment)'
         type: boolean
         default: false
+      provision_action:
+        description: 'Explicitly approved staging operation; keep none for preparation/preflight'
+        type: choice
+        options: [none, create-database, deploy-workers]
+        default: none
 permissions:
   contents: read
 concurrency:
@@ -66,5 +71,62 @@ jobs:
         with:
           name: cvie-staging-preflight-${{ github.sha }}
           path: staging/artifacts/preflight.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  provision-staging:
+    # The initial push ALWAYS skips this job, even if old operation variables remain.
+    # A manual rerun preserves github.sha and requires a fresh environment review.
+    if: >-
+      github.repository == 'Prat007ai/cveharbor' &&
+      github.ref == 'refs/heads/codex/cvie-core-phase012' &&
+      ((github.event_name == 'workflow_dispatch' && inputs.provision_action != 'none' && inputs.check_credentials == false) ||
+       (github.event_name == 'push' && github.run_attempt > 1 && contains(github.event.head_commit.message, '[staging-provision]')))
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: cloudflare-cvie-staging
+    env:
+      CF_STAGING_APPROVED_COMMIT: ${{ vars.CF_STAGING_APPROVED_COMMIT }}
+      CF_STAGING_PROVISION_ACTION: ${{ vars.CF_STAGING_PROVISION_ACTION }}
+      CF_STAGING_ACCOUNT_ID: ${{ vars.CF_STAGING_ACCOUNT_ID || secrets.CF_STAGING_ACCOUNT_ID }}
+      CF_STAGING_D1_DATABASE_ID: ${{ vars.CF_STAGING_D1_DATABASE_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Require exact reviewed source and explicit operation before cloud credentials
+        run: node staging/scripts/provision.mjs --check
+      - name: Package only for the separately approved Worker operation
+        if: env.CF_STAGING_PROVISION_ACTION == 'deploy-workers'
+        run: |
+          npm install --prefix staging --no-save --no-package-lock esbuild@0.25.12
+          node --test staging/tests/*.test.mjs
+          node staging/scripts/build.mjs
+          node staging/scripts/check-build.mjs
+      - name: Execute only the approved staging operation
+        env:
+          CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
+          CF_STAGING_ACCESS_ISSUER: ${{ vars.CF_STAGING_ACCESS_ISSUER || secrets.CF_STAGING_ACCESS_ISSUER }}
+          CF_STAGING_ACCESS_AUD: ${{ vars.CF_STAGING_ACCESS_AUD || secrets.CF_STAGING_ACCESS_AUD }}
+          CF_STAGING_ACCESS_CLIENT_ID: ${{ secrets.CF_STAGING_ACCESS_CLIENT_ID }}
+          CF_STAGING_ACCESS_CLIENT_SECRET: ${{ secrets.CF_STAGING_ACCESS_CLIENT_SECRET }}
+        run: node staging/scripts/provision.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cvie-staging-provision-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            staging/artifacts/preflight.json
+            staging/artifacts/provision.json
+            staging/artifacts/access.json
+            staging/artifacts/failure.json
           if-no-files-found: warn
           retention-days: 14

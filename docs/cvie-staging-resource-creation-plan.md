@@ -1,6 +1,6 @@
 # Task 2C: Final staging resource creation plan for approval
 
-**Readiness: ready for approval of the bounded creation/deployment steps below. Execution is not yet authorized.**
+**Update: the owner approved this plan and protected workflow preparation, while reserving separate approval of actual execution. The workflow is now prepared; see the [implementation and first-execution instructions](cvie-staging-provisioning.md). No resources have been created.**
 
 The account owner has personally verified all five token permissions and its exclusive staging-account scope in Cloudflare. That resolves the remaining pre-creation evidence gap. This is recorded as [manual owner verification](cvie-evidence/staging-owner-attestation.json), separately from the [automated preflight](cvie-staging-preflight.md). The historical HTTP 403 permission-metadata results and `ready_for_creation: false` in the raw automated output remain unchanged; they describe what the API could verify without the later owner attestation.
 
@@ -45,16 +45,16 @@ The management token is exposed only to the provisioning runner. It is never ins
 
 ## 3. Execution workflow to prepare after approval
 
-The existing `.github/workflows/cvie-staging.yml` has **no creation/deployment job**. The existing `staging/scripts/cloud.mjs` contains gated creation/deployment helpers, but currently deploys both Workers before verifying their bindings. Before any remote write, prepare and locally test these limited changes on the same PR:
+At plan approval, `.github/workflows/cvie-staging.yml` had **no creation/deployment job**. The protected implementation is now described in the linked execution instructions; the numbered list below records the approved preparation design. The existing `staging/scripts/cloud.mjs` contains gated creation/deployment helpers, which at plan approval deployed both Workers before verifying their bindings. The preparation now implements the following changes on the same PR, with API verification before frontend upload:
 
 1. Add a protected provisioning job using `cloudflare-cvie-staging`, with `contents: read` and concurrency group `cvie-staging-243`, `cancel-in-progress: false`.
 2. Require the approved repository, exact branch, explicit operation request and equality between the run commit SHA and `CF_STAGING_APPROVED_COMMIT`. Fail before any cloud write if a variable is missing/mismatched or the operation is not one of the two allowed values.
 3. Retain default preparation/read-only behavior. Ordinary pushes, PR events, schedules and the existing `[staging-preflight]` marker must never create resources.
-4. Where `workflow_dispatch` is available for the branch workflow, use it. If GitHub still requires the file on main, do not merge to unlock it. Instead, use an explicitly requested `[staging-provision]` branch run to queue the protected job, gated by the exact approved SHA, operation variable and a fresh environment review. The subsequent `deploy-workers` execution can rerun that same reviewed job after the owner sets the new UUID/action. This is a proposed, explicitly gated execution path—not an automatic deployment-on-push fallback. If reviewer protection cannot be configured, stop rather than enabling an unattended workaround.
+4. Where `workflow_dispatch` is available for the branch workflow, use it. If GitHub still requires the file on main, do not merge to unlock it. Instead, manually rerun the preparation-only push run for the reviewed `[staging-provision]` commit to queue the protected job, gated by the exact approved SHA, operation variable and a fresh environment review. The initial push always skips provisioning. The subsequent `deploy-workers` execution can rerun that same reviewed job after the owner sets the new UUID/action. This is a proposed, explicitly gated execution path—not an automatic deployment-on-push fallback. If reviewer protection cannot be configured, stop rather than enabling an unattended workaround.
 5. Separate API deployment and its post-deployment checks from frontend deployment: a failed API verification must prevent the frontend upload. Keep explicit generated staging config paths and pinned Wrangler `4.156.0`.
 6. Add a read-only post-deployment Access probe with sanitized output and no account/fixture mutation. Failures cannot trigger policy weakening, new privileges, migrations or automatic resource deletion.
 
-The run creates no environment secrets or variables itself. Capture the approved source SHA and build hashes in the deployment report. Local tests cover missing/mismatched SHA, wrong operation/account, missing D1 UUID, production bindings, failed API verification preventing frontend deployment, and exclusion of credentials from artifacts. No creation workflow is enabled by this documentation update.
+The run creates no environment secrets or variables itself. Capture the approved source SHA and build hashes in the deployment report. Local tests cover missing/mismatched SHA, wrong operation/account, missing D1 UUID, production bindings, failed API verification preventing frontend deployment, and exclusion of credentials from artifacts. The subsequent preparation adds the protected workflow, with the initial push unconditionally skipping provisioning; only a separately requested dispatch or rerun can queue execution.
 
 ## 4. Exact creation and deployment sequence
 
