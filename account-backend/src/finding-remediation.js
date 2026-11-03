@@ -1,3 +1,4 @@
+import {statusMailHistory} from './status-update-mail.js';
 import {findingAssignments,findingLinkPreview,attachExisting,attachmentReady} from './finding-assignment-links.js';
 import {WorkflowError,requireWorkflow,workflowWriteStatements,runWorkflowWrite} from './remediation-workflow.js';
 import {linkedReady,recordKey,publicCve,recordScope,workStatus,findingStatus} from './remediation-identity.js';
@@ -31,7 +32,7 @@ export async function sharedRecord(env,user,id){
  const tickets=scope?await env.DB.prepare('SELECT ticket_number,created_at FROM customer_finding_ticket_history WHERE user_id=? AND asset_id=? AND cve_id=? ORDER BY created_at').bind(user.id,scope.asset_id,scope.cve_id).all():{results:[]};
  const comments=await env.DB.prepare('SELECT id,author_email,comment,created_at FROM remediation_owner_comments WHERE user_id=? AND record_id=? ORDER BY id DESC LIMIT 100').bind(user.id,id).all();
  const links=await attachmentReady(env)?await env.DB.prepare('SELECT linked_by,linked_at,snapshot_json FROM remediation_link_audit WHERE user_id=? AND record_id=? ORDER BY id DESC LIMIT 50').bind(user.id,id).all():{results:[]};
- return {...row,link_history:links.results,cve_id:publicCve(id),fix_status:findingStatus(row.status),scope,tickets:tickets.results||[],comments:comments.results||[]};
+ return {...row,status_mail:await statusMailHistory(env,user,id),link_history:links.results,cve_id:publicCve(id),fix_status:findingStatus(row.status),scope,tickets:tickets.results||[],comments:comments.results||[]};
 }
 export async function sharedRoute(req,env,user,path,data={}){
  if(path==='/v1/finding-assignments'&&req.method==='GET')return json(await findingAssignments(env,user));

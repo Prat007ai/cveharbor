@@ -30,6 +30,8 @@ on:
       - 'scripts/verify_unified_findings_d1.mjs'
       - 'account-backend/migrations/0029_finding_assignment_links.sql'
       - 'scripts/verify_finding_links_d1.mjs'
+      - 'account-backend/migrations/0030_status_update_notifications.sql'
+      - 'scripts/verify_status_mail_d1.mjs'
       - 'scripts/verify_assignment_progress_d1.mjs'
       - 'scripts/verify_assignment_fyi_d1.mjs'
       - '.github/workflows/deploy-worker-code.yml'
@@ -197,6 +199,16 @@ jobs:
           npx --yes wrangler@4.156.0 d1 time-travel info cveharbor-accounts --json
           npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0029_finding_assignment_links.sql
           node ../scripts/verify_finding_links_d1.mjs
+      - name: Record recovery point and apply status notification migration
+        if: steps.mode.outputs.status_mail == 'true'
+        working-directory: account-backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx --yes wrangler@4.156.0 d1 time-travel info cveharbor-accounts --json
+          npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0030_status_update_notifications.sql
+          node ../scripts/verify_status_mail_d1.mjs
       - name: Deploy Worker source
         working-directory: account-backend
         env:
@@ -326,3 +338,10 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: node scripts/verify_finding_links_d1.mjs --after
+
+      - name: Verify status notification schema and protected production routes
+        if: steps.mode.outputs.status_mail == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify_status_mail_d1.mjs --after

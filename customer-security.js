@@ -173,9 +173,9 @@ function renderFindingAssignment(cell,i){
  if(!assignmentInfoReady){box.append(text('small','Assignment information unavailable'));return;}
  const linked=findingAssignments.get(statusKey(i)),manual=standaloneAssignments.get(i.id);
  const describe=(container,items)=>{for(const a of items){const entry=text('p','');entry.append(text('strong',a.status+' · '+a.email));if(a.acknowledged_at)entry.append(text('small','Receipt acknowledged '+new Date(a.acknowledged_at*1000).toLocaleString()));container.append(entry);}};
- if(linked?.assignments.length){box.append(text('small','Assigned reviewer(s)'));describe(box,linked.assignments);}
+ if(linked?.assignments.length){box.append(text('small','Assigned reviewer(s)'));describe(box,linked.assignments);box.append(text('small','Status changes email the reviewers, requester and FYI recipients.'));}
  else {if(linked?.owner&&linked.owner!=='Unassigned')box.append(text('strong','Owner: '+linked.owner));box.append(text('small',linked?'No acknowledgement request sent for this asset.':'No assignment linked to this asset.'));}
- if(manual){const candidate=text('div','','finding-manual-assignment');candidate.append(text('strong','Existing standalone record — not linked to this asset'));describe(candidate,manual.assignments);if(!manual.assignments.length)candidate.append(text('small','Owner: '+manual.owner));if(linkExistingReady){const link=text('button','Link existing assignment','shared-work-action');link.type='button';link.addEventListener('click',()=>window.CVEHARBOR_SHARED?.finding(i.asset_id,i.id,link));candidate.append(link);}box.append(candidate);}
+ if(manual){const candidate=text('div','','finding-manual-assignment');candidate.append(text('strong','Existing record — connect it to this customer asset'));describe(candidate,manual.assignments);if(!manual.assignments.length)candidate.append(text('small','Owner: '+manual.owner));if(linkExistingReady){const link=text('button','Link existing assignment','shared-work-action');link.type='button';link.addEventListener('click',()=>window.CVEHARBOR_SHARED?.finding(i.asset_id,i.id,link));candidate.append(link);candidate.append(text('small','Link this assignment to send status-update emails for this asset.'));}box.append(candidate);}
 }
 function renderFindings(root,issues,readOnly){
  root.append(findingStatusControls(issues));

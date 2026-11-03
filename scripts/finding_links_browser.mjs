@@ -32,7 +32,7 @@ try{
  const table=page.locator('.customer-vulnerability-table');await table.locator('tbody tr').first().waitFor({state:'attached'});await table.evaluate(n=>{let p=n.parentElement;while(p){if(p.tagName==='DETAILS')p.open=true;p=p.parentElement;}});
  assert.deepEqual(await table.locator('thead th').allTextContents(),['CVE','Published ⇅','Severity ⇅','Software / Asset ⇅','Vulnerability summary','Vulnerability Fix Status ⇅','DevOps Ticket #']);
  assert.equal(seen.some(x=>/^\/v1\/(?:finding|remediation)/.test(x.path)&&x.method!=='GET'),false,'Viewing customer findings performs no writes');
- const row=table.locator('tbody tr').first();assert.match(await row.innerText(),/Existing standalone record — not linked to this asset/);assert.match(await row.innerText(),/Acknowledged · alex@example.net/);
+ const row=table.locator('tbody tr').first();assert.match(await row.innerText(),/Existing record — connect it to this customer asset/);assert.match(await row.innerText(),/Acknowledged · alex@example.net/);
  await row.getByRole('button',{name:'Link existing assignment',exact:true}).click();const dialog=page.locator('.shared-record');await dialog.getByRole('heading',{name:'Link existing assignment'}).waitFor();
  assert.match(await dialog.innerText(),/Customer North.*Production.*Web Server 01/);assert.match(await dialog.innerText(),/alex@example.net · Acknowledged/);
  assert.equal(await dialog.getByLabel('Status after linking').inputValue(),'Investigating');
@@ -40,7 +40,7 @@ try{
  await dialog.getByLabel('I confirm this existing assignment belongs').check();await dialog.getByRole('button',{name:'Link existing assignment',exact:true}).click();await dialog.getByRole('heading',{name:fixtureCve,exact:true}).waitFor();
  assert.match(await dialog.innerText(),/alex@example.net · Acknowledged/);assert.match(await dialog.innerText(),/Linked the existing assignment/);assert.equal(f.emails.length,mailCount);
  await dialog.getByRole('button',{name:'Close',exact:true}).click();await page.waitForFunction(()=>document.querySelector('.finding-assignment-summary')?.textContent.includes('Assigned reviewer(s)'));
- assert.doesNotMatch(await row.innerText(),/Existing standalone record/);assert.match(await row.innerText(),/Acknowledged · alex@example.net/);assert.match(await row.innerText(),/Receipt acknowledged/);
+ assert.doesNotMatch(await row.innerText(),/Existing record — connect/);assert.match(await row.innerText(),/Acknowledged · alex@example.net/);assert.match(await row.innerText(),/Receipt acknowledged/);
  await row.screenshot({path:directory+'/finding-acknowledged.png'});
  await row.getByRole('button',{name:'Assign / View remediation'}).click();await dialog.getByRole('heading',{name:fixtureCve,exact:true}).waitFor();
  await dialog.getByLabel('Vulnerability Fix Status').selectOption('Remediated');await dialog.getByLabel('Reason for status change').fill('Patch installed and validated for this customer asset.');await dialog.getByRole('button',{name:'Save status and details'}).click();await page.waitForFunction(()=>document.querySelector('.shared-record select')?.value==='Remediated');
