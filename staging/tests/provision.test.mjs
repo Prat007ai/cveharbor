@@ -86,3 +86,17 @@ test('live boundary probe covers static classes, API session boundary and Worker
   const denied = await probeAccess(authEnv, async () => new Response('Cloudflare Access authentication required', { status: 403 }));
   assert.equal(denied.passed, false); // universal denial is fail-closed, not readiness
 });
+
+test('frontend-only operation requires exact approval and deployed inventory, then probes without migrating', async () => {
+  const settings = { ...env, CF_STAGING_PROVISION_ACTION: 'deploy-frontend', CF_STAGING_D1_DATABASE_ID: uuid };
+  const calls = [];
+  const result = await provision(settings, event, sha, {
+    check: async (_env, _transport, options) => { assert.deepEqual(options, { existingDatabase: true, workerState: 'deployed' }); return report(); },
+    cloud: async action => { calls.push(action); return { updated_workers: [TARGET.site] }; },
+    probe: async () => { calls.push('probe'); return { passed: true }; },
+  });
+  assert.deepEqual(calls, ['deploy-frontend', 'probe']); assert.deepEqual(result.updated_workers, [TARGET.site]);
+  for (const patch of [{ CF_STAGING_D1_DATABASE_ID: TARGET.productionDatabase }, { GITHUB_RUN_ATTEMPT: '1' }, { CF_STAGING_APPROVED_COMMIT: 'd'.repeat(40) }]) {
+    assert.throws(() => authorize({ ...settings, ...patch }, event, sha));
+  }
+});

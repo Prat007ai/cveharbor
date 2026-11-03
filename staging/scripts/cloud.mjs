@@ -8,9 +8,10 @@ import { TARGET, accessSettings, databaseId } from '../target.mjs';
 import { root, writeConfigs } from './configure.mjs';
 import { failure, wranglerCategory } from './errors.mjs';
 import { readAssetGate } from './asset-gate.mjs';
+import { diagnose } from './diagnose.mjs';
 
 export async function runCloud(action = 'check', env = process.env, fetcher = fetch, log = console.log, runner = spawnSync) {
-  if (!['check', 'create-database', 'deploy'].includes(action)) throw Error('Use check, create-database or deploy. No SQL execution is exposed.');
+  if (!['check', 'create-database', 'deploy', 'deploy-frontend'].includes(action)) throw Error('Use check, create-database, deploy or deploy-frontend. No SQL execution is exposed.');
   if (env.CF_STAGING_ACCOUNT_ID !== TARGET.account || !env.CF_STAGING_API_TOKEN) throw Error('Dedicated staging account/token required');
   accessSettings(env.CF_STAGING_ACCESS_ISSUER, env.CF_STAGING_ACCESS_AUD);
   if (action !== 'check' && env.STAGING_CHANGE_APPROVED !== 'PR243-STAGING-ONLY') throw Error('Resource changes are gated until credentials and execution are approved.');
@@ -49,7 +50,11 @@ export async function runCloud(action = 'check', env = process.env, fetcher = fe
   const existing = databases.find(d => d.name === TARGET.database);
   if (action !== 'check') {
     const workers = await cf('/workers/scripts');
-    if (!Array.isArray(workers) || workers.length) throw Error('Initial provisioning requires an empty Worker inventory; inspect partial deployments before retrying');
+    if (action === 'deploy-frontend') {
+      if (!Array.isArray(workers) || workers.length !== 2 || ![TARGET.api, TARGET.site].every(name => workers.filter(w => w.id === name).length === 1)) throw failure('verification.inventory', 'validation');
+      const current = await diagnose(env, fetcher);
+      if (!current.verified) throw failure('verification.existing_staging_state', 'validation');
+    } else if (!Array.isArray(workers) || workers.length) throw Error('Initial provisioning requires an empty Worker inventory; inspect partial deployments before retrying');
     if (databases.some(d => d.name !== TARGET.database || d.uuid === TARGET.productionDatabase)) throw Error('Unexpected staging database inventory');
   }
   if (action === 'create-database') {
@@ -65,8 +70,8 @@ export async function runCloud(action = 'check', env = process.env, fetcher = fe
     if (env.CF_STAGING_D1_DATABASE_ID) {
       databaseId(env.CF_STAGING_D1_DATABASE_ID);
       if (!existing || existing.uuid !== env.CF_STAGING_D1_DATABASE_ID) throw Error('Staging database name/UUID ownership mismatch');
-    } else if (action === 'deploy') throw Error('Staging D1 UUID is required for deployment');
-    if (action === 'deploy') {
+    } else if (['deploy', 'deploy-frontend'].includes(action)) throw Error('Staging D1 UUID is required for deployment');
+    if (['deploy', 'deploy-frontend'].includes(action)) {
       if (!env.CF_STAGING_D1_DATABASE_ID) throw Error('D1 UUID required');
       operation = 'bundle.verify';
       const manifest = JSON.parse(fs.readFileSync(path.join(root, '.build/manifest.json'), 'utf8'));
@@ -99,7 +104,9 @@ export async function runCloud(action = 'check', env = process.env, fetcher = fe
       }
       // Both packages must dry-run before the first upload.
       wrangler('api', true); wrangler('site', true);
-      wrangler('api', false);
+      const apiBefore = action === 'deploy-frontend' ? (await cf(`/workers/scripts/${TARGET.api}/deployments`))?.deployments?.[0] : null;
+      if (action === 'deploy-frontend' && (!apiBefore?.id || apiBefore.versions?.length !== 1 || apiBefore.versions[0].percentage !== 100)) throw failure('verification.existing_api_deployment', 'validation');
+      if (action === 'deploy') wrangler('api', false);
       const settings = await cf(`/workers/scripts/${TARGET.api}/settings`);
       const bindings = settings.bindings || [];
       const d1 = bindings.filter(b => b.type === 'd1');
@@ -125,10 +132,11 @@ export async function runCloud(action = 'check', env = process.env, fetcher = fe
       for (const name of [TARGET.api, TARGET.site]) {
         const latest = (await cf(`/workers/scripts/${name}/deployments`))?.deployments?.[0];
         if (!/^[a-f0-9-]{36}$/i.test(latest?.id || '') || !Array.isArray(latest.versions) || latest.versions.length !== 1 || !/^[a-f0-9-]{36}$/i.test(latest.versions[0].version_id || '') || latest.versions[0].percentage !== 100) throw Error('Unexpected initial Worker deployment metadata');
+        if (apiBefore && name === TARGET.api && (apiBefore.id !== latest.id || JSON.stringify(apiBefore.versions) !== JSON.stringify(latest.versions))) throw failure('verification.api_changed_during_frontend_update', 'validation');
         deployed.push({ worker: name, deployment_id: latest.id, version_id: latest.versions[0].version_id });
       }
       log('Staging deployment checked. No migrations, fixtures, cron or email delivery were enabled.');
-      return { account: TARGET.account, database_id: env.CF_STAGING_D1_DATABASE_ID, workers: deployed, api_sha256: hash, source_sha: manifest.commit, bindings_verified: true, migrations_executed: false, schedules_enabled: false, email_enabled: false };
+      return { account: TARGET.account, database_id: env.CF_STAGING_D1_DATABASE_ID, workers: deployed, updated_workers: action === 'deploy-frontend' ? [TARGET.site] : [TARGET.api, TARGET.site], ...(action === 'deploy' ? { api_sha256: hash } : {}), source_sha: manifest.commit, bindings_verified: true, migrations_executed: false, schedules_enabled: false, email_enabled: false };
     } else log('Staging-only credential, subdomain and Access checks passed; no resources changed.');
   }
   } catch (error) { throw failure(operation, 'validation', {}, error); }

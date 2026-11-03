@@ -1,5 +1,5 @@
 import { TARGET } from './target.mjs';
-import { createAccessVerifier } from './access.mjs';
+import { createAccessVerifier, ACCESS_FAILURE_CATEGORIES } from './access.mjs';
 const verify = createAccessVerifier();
 const securityHeaders = {
   'Cache-Control': 'private, no-store',
@@ -13,8 +13,12 @@ export function createFrontend(check = verify) {
   return { async fetch(request, env) {
     const url = new URL(request.url);
     if (url.origin !== TARGET.origin) return deny('Unknown staging host', 403);
-    if (!await check(request.headers.get('Cf-Access-Jwt-Assertion'), env.ACCESS_ISSUER, env.ACCESS_AUD))
-      return deny('Cloudflare Access authentication required', 403);
+    let rejection = 'unknown';
+    if (!await check(request.headers.get('Cf-Access-Jwt-Assertion'), env.ACCESS_ISSUER, env.ACCESS_AUD, category => { if (ACCESS_FAILURE_CATEGORIES.includes(category)) rejection = category; })) {
+      const response = deny('Cloudflare Access authentication required', 403);
+      response.headers.set('X-Staging-Access-Error', rejection);
+      return response;
+    }
     const origin = request.headers.get('Origin');
     if (origin && origin !== TARGET.origin) return deny('Forbidden origin', 403);
     const headers = new Headers(request.headers);
@@ -43,3 +47,4 @@ export function createFrontend(check = verify) {
   } };
 }
 export default createFrontend();
+

@@ -14,7 +14,7 @@ on:
       provision_action:
         description: 'Explicitly approved staging operation; keep none for preparation/preflight'
         type: choice
-        options: [none, create-database, deploy-workers]
+        options: [none, create-database, deploy-workers, deploy-frontend]
         default: none
 permissions:
   contents: read
@@ -118,7 +118,7 @@ jobs:
       - name: Require exact reviewed source and explicit operation before cloud credentials
         run: node staging/scripts/provision.mjs --check
       - name: Package only for the separately approved Worker operation
-        if: env.CF_STAGING_PROVISION_ACTION == 'deploy-workers'
+        if: env.CF_STAGING_PROVISION_ACTION == 'deploy-workers' || env.CF_STAGING_PROVISION_ACTION == 'deploy-frontend'
         run: |
           npm install --prefix staging --no-save --no-package-lock esbuild@0.25.12
           node --test staging/tests/*.test.mjs

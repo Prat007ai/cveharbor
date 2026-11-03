@@ -33,7 +33,7 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { root } from '../scripts/configure.mjs';
 const uuid = '11111111-2222-4333-8444-555555555555', sha = 'c'.repeat(40);
-function management({ deploy = false, badDB = false, unexpectedWorker = false, failure = '', calls = [] } = {}) {
+function management({ deploy = false, badDB = false, unexpectedWorker = false, failure = '', calls = [], existingWorkers = false } = {}) {
   let uploads = 0;
   const apiVars = JSON.parse(fs.readFileSync(path.join(root, 'wrangler.api.json'))).vars;
   const plain = vars => Object.entries(vars).map(([name, text]) => ({ type: 'plain_text', name, text }));
@@ -46,7 +46,8 @@ function management({ deploy = false, badDB = false, unexpectedWorker = false, f
     else if (route === '/access/apps?per_page=100') result = [{ id: 'aabbcc', domain: new URL(TARGET.origin).hostname, aud: 'a'.repeat(64), type: 'self_hosted' }];
     else if (route.endsWith('/policies')) result = [{ decision: 'allow', include: [{ email: { email: 'synthetic@example.test' } }] }];
     else if (route === '/d1/database?per_page=100') result = deploy ? [{ name: TARGET.database, uuid }] : [];
-    else if (route === '/workers/scripts') result = unexpectedWorker ? [{ id: 'unexpected' }] : uploads === 2 ? [{ id: TARGET.api }, { id: TARGET.site }] : [];
+    else if (route === '/workers/scripts') result = unexpectedWorker ? [{ id: 'unexpected' }] : existingWorkers || uploads === 2 ? [{ id: TARGET.api }, { id: TARGET.site }] : [];
+    else if (route === `/d1/database/${uuid}`) result = { name: TARGET.database, uuid, num_tables: 0, file_size: 12288 };
     else if (route === '/d1/database') { assert.equal(init.method, 'POST'); assert.deepEqual(JSON.parse(init.body), { name: TARGET.database }); result = { name: TARGET.database, uuid }; }
     else if (route === `/workers/scripts/${TARGET.api}/settings`) result = { bindings: [
       { type: 'd1', name: 'DB', id: badDB ? TARGET.productionDatabase : uuid },
@@ -101,3 +102,26 @@ test('both dry runs precede upload, API verification gates frontend, and child c
   });
 });
 
+
+test('approved frontend update preserves existing API/database and executes exactly one site upload', async () => {
+  await withBundle(async () => {
+    for (const failure of ['', 'public-api']) {
+      const calls = [], commands = [], fixture = management({ deploy: true, existingWorkers: true, failure, calls });
+      const runner = (_command, args) => {
+        const name = path.basename(args[4], '.json'), dry = args.includes('--dry-run');
+        commands.push(name + (dry ? '-dry' : '-upload'));
+        if (!dry) { assert.equal(name, 'site'); fixture.uploaded(); }
+        return { status: 0 };
+      };
+      const promise = runCloud('deploy-frontend', { ...fixtureEnv, STAGING_CHANGE_APPROVED: 'PR243-STAGING-ONLY', CF_STAGING_D1_DATABASE_ID: uuid, GITHUB_SHA: sha }, fixture.transport, () => {}, runner);
+      if (failure) { await assert.rejects(promise); assert.deepEqual(commands, []); }
+      else {
+        const result = await promise;
+        assert.deepEqual(commands, ['api-dry', 'site-dry', 'site-upload']);
+        assert.deepEqual(result.updated_workers, [TARGET.site]); assert.equal(result.api_sha256, undefined);
+        assert.ok(calls.every(c => c.startsWith('GET ')));
+      }
+    }
+  });
+  await assert.rejects(runCloud('deploy-frontend', fixtureEnv, async () => assert.fail('No network before approval')), /Resource changes are gated/);
+});

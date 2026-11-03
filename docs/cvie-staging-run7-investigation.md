@@ -4,6 +4,35 @@ Run: https://github.com/Prat007ai/cveharbor/actions/runs/41567480016/attempts/3
 
 Reviewed source: `ec9a5fa3a1f2c72dc0f0c23e041a5412f6506c5e`.
 
+## Confirmed result from approved run #11
+
+Run: https://github.com/Prat007ai/cveharbor/actions/runs/41659896789
+
+- **Asset validator defect confirmed.** The live `/settings` response has no `assets.config`. The exact version serving 100% of frontend traffic (`de17e0be-c74d-4519-b789-76fd7a7d1363`, deployment `6ec2b0ae-af64-42ca-944b-3ec1f18f9eae`) reports boolean `run_worker_first: true`, with no exclusions. The ASSETS binding matches. No asset-routing configuration change is indicated.
+- **Existing resources verified.** Both Workers' configuration, bindings, exposure and schedules pass. The D1 database remains the approved UUID, empty (zero tables), 12,288 bytes. There are no unexpected resources. Deployed-mode preflight now passes with zero blockers. Token-permission metadata remains the previously documented 403 limitation covered separately by owner attestation.
+- **Access fails closed but positive authentication is broken.** All sampled anonymous/forged-JWT HTML, CSS, JS, synthetic-data, SVG, nested-page and API requests redirected to the expected Access login. The direct private API hostname returned 404. Valid service credentials reached the frontend, which returned its own `Cloudflare Access authentication required` 403 on every static class. The no-session API check also returned 403 before reaching the application's expected 401. There is no evidence of asset bypass, but Task 2C readiness must not be claimed.
+- **Remaining cause is not distinguishable from existing responses.** The current verifier intentionally collapses missing assertions, claim rejection, signing-key lookup/import and signature failure into the same denial. It emits no rejection logs. No specific JWT/edge configuration fault is claimed without observing which check fails. The earlier deployment's asset readback failure is separate from this remaining authentication blocker.
+
+## Prepared frontend-only diagnostic deployment — NOT executed
+
+PR #243 adds a fixed, credential-free rejection category to the existing 403 response (`X-Staging-Access-Error`). Categories distinguish missing/malformed token, issuer/audience/time/algorithm rejection, signing-key fetch/HTTP/parse/shape/match/import failures and invalid signature. All signature, issuer, audience, time, host/origin and fail-closed controls remain enforced. No JWT, decoded claim, email, key ID, credential, raw exception or provider response is emitted. Unknown categories are discarded. Read-only probes retain only allowlisted category values.
+
+This is **diagnostic instrumentation**, not a claim that the unknown authentication fault is corrected. An approved deployment may still end with a failed Access probe; its sanitized category will allow the next correction to be precise. There is no automatic retry, rollback, policy relaxation or deletion.
+
+A new explicitly gated `deploy-frontend` operation in the **existing** protected workflow:
+
+1. Requires the exact approved repository/branch/run/checkout SHA, operation, dedicated staging account and existing D1 UUID, plus the unchanged GitHub environment review.
+2. Requires exactly the existing two Workers and the approved database; reruns read-only inventory/configuration/asset checks before any upload. Unexpected resources or unsafe settings stop the operation.
+3. Dry-runs both packages, verifies existing API bindings/flags/exposure/schedules and records its active deployment.
+4. Uploads **only `cveharbor-site-staging`**, with its unchanged reviewed bindings/variables/asset protection and the diagnostic header change. No API upload occurs.
+5. Verifies the frontend active asset routing/configuration and asserts the API deployment/version is unchanged; runs the GET-only Access probes and records their result even if authentication still fails.
+
+It does not create/delete/recreate resources, write to D1, migrate, import, change Access policies/tokens, install secrets, enable scans/schedules/mail or access production. No new workflow, environment or infrastructure is introduced. Initial push always skips provisioning.
+
+**Next approval:** one frontend-only diagnostic deployment at the exact final PR #243 commit, operation `deploy-frontend`. The owner must set the existing protected environment's `CF_STAGING_APPROVED_COMMIT` to that full SHA and `CF_STAGING_PROVISION_ACTION=deploy-frontend`, retaining all account/D1/Access values. After separate approval, Codex can request the marked run's rerun and the owner can release the protected provisioning job. Do not use `deploy-workers`, which is reserved for an initially empty Worker inventory. Do not rerun old failed deployment attempts. Clear the armed operation afterward.
+
+After positive Access/static/session-boundary verification succeeds, prepare the separate staging migration and synthetic CVIE test approval. No migration or data load is part of this deployment approval.
+
 ## Current findings after run #8
 
 Run #8's approved GET-only artifact confirms both Workers exist, the API D1/rate-limit/flag/exposure/schedule checks pass, the frontend service binding/flags/exposure/schedules pass, and the one D1 database has zero tables (12,288 bytes). No unexpected Workers or databases were reported. Preserve all three resources.

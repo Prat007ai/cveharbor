@@ -15,14 +15,14 @@ export function authorize(env, event, checkout) {
   const sha = env.CF_STAGING_APPROVED_COMMIT;
   if (!/^[a-f0-9]{40}$/.test(sha || '') || env.GITHUB_SHA !== sha || checkout !== sha) throw Error('Reviewed commit must match run and checkout exactly');
   const action = env.CF_STAGING_PROVISION_ACTION;
-  if (!['create-database', 'deploy-workers'].includes(action)) throw Error('Explicit staging operation required');
+  if (!['create-database', 'deploy-workers', 'deploy-frontend'].includes(action)) throw Error('Explicit staging operation required');
   const requested = env.GITHUB_EVENT_NAME === 'workflow_dispatch'
     ? event.inputs?.provision_action === action && ![true, 'true'].includes(event.inputs?.check_credentials)
     : env.GITHUB_EVENT_NAME === 'push' && Number(env.GITHUB_RUN_ATTEMPT) > 1 && event.head_commit?.id === sha && event.head_commit?.message?.includes('[staging-provision]');
   if (!requested) throw Error('Explicit dispatch or manually rerun marked preparation run required; initial pushes cannot provision');
   if (env.CF_STAGING_ACCOUNT_ID !== TARGET.account) throw Error('Dedicated staging account required');
   if (action === 'create-database' && env.CF_STAGING_D1_DATABASE_ID) throw Error('Creation requires an unset staging D1 UUID');
-  if (action === 'deploy-workers') databaseId(env.CF_STAGING_D1_DATABASE_ID);
+  if (action !== 'create-database') databaseId(env.CF_STAGING_D1_DATABASE_ID);
   return { action, source_sha: sha, account: TARGET.account };
 }
 
@@ -41,15 +41,15 @@ export async function provision(env, event, checkout, { check = preflight, cloud
   try {
   const approved = authorize(env, event, checkout);
   operation = 'preflight';
-  const report = await check(env, undefined, { existingDatabase: approved.action === 'deploy-workers' });
+  const report = await check(env, undefined, { existingDatabase: approved.action !== 'create-database', workerState: approved.action === 'deploy-frontend' ? 'deployed' : 'empty' });
   record('preflight', report);
   operation = 'preflight.accept';
   const attestation = JSON.parse(fs.readFileSync(path.resolve(root, '../docs/cvie-evidence/staging-owner-attestation.json'), 'utf8'));
   acceptPreflight(report, attestation);
   operation = 'cloud';
-  const result = await cloud(approved.action === 'deploy-workers' ? 'deploy' : 'create-database', { ...env, STAGING_CHANGE_APPROVED: 'PR243-STAGING-ONLY' }, undefined, () => {});
+  const result = await cloud(approved.action === 'deploy-workers' ? 'deploy' : approved.action, { ...env, STAGING_CHANGE_APPROVED: 'PR243-STAGING-ONLY' }, undefined, () => {});
   record('provision', { ...approved, ...result, completed_at: new Date().toISOString() });
-  if (approved.action === 'deploy-workers') {
+  if (approved.action !== 'create-database') {
     operation = 'access.probe';
     const access = await probe(env); record('access', access);
     if (!access.passed) throw Error('Post-deployment Access check failed; preserve fail-closed settings');

@@ -1,3 +1,4 @@
+import { ACCESS_FAILURE_CATEGORIES } from '../access.mjs';
 import { TARGET, accessSettings } from '../target.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -29,6 +30,7 @@ export async function probeAccess(env, transport = fetch) {
     const page = await get(route, auth);
     const text = await page.text();
     checks.push({ name: 'service_static_asset', route, passed: page.status === 200 && type.test(page.headers.get('Content-Type') || '') && guarded(page) && (route !== '/' || text.includes('CVEHarbor')), status: page.status,
+      access_rejection: ACCESS_FAILURE_CATEGORIES.includes(page.headers.get('X-Staging-Access-Error')) ? page.headers.get('X-Staging-Access-Error') : 'unavailable',
       response_category: page.status === 599 ? 'network' : text === 'Cloudflare Access authentication required' ? 'worker_access_jwt_missing_or_invalid' : page.status === 403 ? 'access_denied' : 'other' });
     // Positive service auth plus a forbidden Origin must reach our Worker before
     // every sampled asset. A denial by Access alone is not accepted as proof.
