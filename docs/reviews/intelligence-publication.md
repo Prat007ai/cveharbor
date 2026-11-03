@@ -204,9 +204,10 @@ use GitHub's UI conflict resolution to choose entire old workflow files.
 
 ### Isolated staging
 
-1. Confirm a Cloudflare account separate from production. Existing CVIE staging
-   account may be reused only after ownership/access isolation checks; do not reuse
-   its existing D1 database, Workers or buckets for this rehearsal.
+1. Reuse the existing staging account described in [the permanent staging architecture](permanent-staging-architecture.md).
+   Keep its permanent D1/Workers for full application integration. The following
+   empty-bucket CLI test uses a disposable bucket in that same account, never the
+   permanent bucket; inspect inventory and obtain approval before creation.
 2. With approval, create an empty private R2 Standard bucket named
    `cveharbor-intelligence-staging-<unique-suffix>`. Disable public `r2.dev` and public
    custom domains. No production data, emails, routes or D1 binding are required.
@@ -226,7 +227,9 @@ use GitHub's UI conflict resolution to choose entire old workflow files.
    Expected: synthetic publish/readback, rejected stale conditional write (HTTP412),
    preserved prior snapshot, conditional pointer recovery, exact historical restore.
    Repeat only in a **new empty** bucket; no cleanup is performed automatically.
-5. Validate the site/account Worker bindings in isolated staging with
+5. After the documented staging wrapper/config/frontend integration is reviewed and
+   approved, validate the existing permanent site/account Workers against the
+   permanent staging R2 bucket with
    `INTELLIGENCE_SOURCE=r2`; use only synthetic snapshots and mocked/disabled mail.
    Test gate/authentication, pinned HTML URLs, large-object memory/CPU, feed headers,
    cold starts, failures and notification matching. Feed outages keep account/remediation HTML available; affected data routes fail visibly. Do not activate runtime delivery.
