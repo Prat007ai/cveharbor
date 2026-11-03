@@ -53,6 +53,8 @@ async function refreshPluginFindings(draw=true,allowFallback=!reporting){
 }
 
 let findingStatusReady=false,findingStatuses=new Map(),findingNotes=new Map(),findingStatusFilter='Unresolved';
+let assignmentInfoReady=false,linkExistingReady=false,findingAssignments=new Map(),standaloneAssignments=new Map();
+function setAssignmentInfo(data){assignmentInfoReady=!!data.ready;linkExistingReady=!!data.linking_available;findingAssignments=new Map((data.findings||[]).map(x=>[x.asset_id+'|'+x.cve_id,x]));standaloneAssignments=new Map((data.standalone||[]).map(x=>[x.cve_id,x]));}
 let findingSort={key:'',direction:'asc'};
 const reportSectionStates=new Map();
 let printSectionStates=null;
@@ -166,6 +168,15 @@ function findingDetailButton(i){
  });
  return button;
 }
+function renderFindingAssignment(cell,i){
+ const box=text('div','','finding-assignment-summary');cell.append(box);
+ if(!assignmentInfoReady){box.append(text('small','Assignment information unavailable'));return;}
+ const linked=findingAssignments.get(statusKey(i)),manual=standaloneAssignments.get(i.id);
+ const describe=(container,items)=>{for(const a of items){const entry=text('p','');entry.append(text('strong',a.status+' · '+a.email));if(a.acknowledged_at)entry.append(text('small','Receipt acknowledged '+new Date(a.acknowledged_at*1000).toLocaleString()));container.append(entry);}};
+ if(linked?.assignments.length){box.append(text('small','Assigned reviewer(s)'));describe(box,linked.assignments);}
+ else {if(linked?.owner&&linked.owner!=='Unassigned')box.append(text('strong','Owner: '+linked.owner));box.append(text('small',linked?'No acknowledgement request sent for this asset.':'No assignment linked to this asset.'));}
+ if(manual){const candidate=text('div','','finding-manual-assignment');candidate.append(text('strong','Existing standalone record — not linked to this asset'));describe(candidate,manual.assignments);if(!manual.assignments.length)candidate.append(text('small','Owner: '+manual.owner));if(linkExistingReady){const link=text('button','Link existing assignment','shared-work-action');link.type='button';link.addEventListener('click',()=>window.CVEHARBOR_SHARED?.finding(i.asset_id,i.id,link));candidate.append(link);}box.append(candidate);}
+}
 function renderFindings(root,issues,readOnly){
  root.append(findingStatusControls(issues));
  const filtered=filteredFindings(issues),compact=filtered.slice(0,250);
@@ -197,6 +208,7 @@ function renderFindings(root,issues,readOnly){
   const saveStatus=text('button','Save status','customer-status-save');saveStatus.type='button';saveStatus.disabled=!findingStatusReady;
   saveStatus.addEventListener('click',async()=>{saveStatus.disabled=true;await saveFindingStatus(i,select.value,select);saveStatus.disabled=!findingStatusReady});
   cell.append(select,saveStatus);
+  renderFindingAssignment(cell,i);
   const shared=text('button','Assign / View remediation','shared-work-action');shared.type='button';shared.addEventListener('click',()=>window.CVEHARBOR_SHARED?.finding(i.asset_id,i.id,shared));cell.append(shared);
   const input=document.createElement('input');input.type='text';input.maxLength=64;input.placeholder='Ticket number';input.className='customer-ticket-input';
   input.setAttribute('aria-label','DevOps ticket number for '+i.id+' on '+(i.asset?.name||'asset'));input.disabled=!ticketAppendReady;
@@ -212,6 +224,7 @@ function renderFindings(root,issues,readOnly){
 }
 let savedFindingsRequest=null;
 function invalidateSession(){
+ setAssignmentInfo({ready:false});
  closeFindingDetail();
  customerDataEpoch++;upgradeHistory.clear();inventoryRefresh=null;
  customerReady=false;inventory={customers:[],environments:[],assets:[]};findingStatuses.clear();findingNotes.clear();findingTickets.clear();scoreSeries.clear();
@@ -230,14 +243,14 @@ async function refreshSavedFindings(){
  savedFindingsRequest=(async()=>{
   const session=await api('me');
   if(!session.authenticated||session.email!==accountEmail){invalidateSession();throw Error('Your session changed. Reload before generating a report.')}
-  const [saved,tickets]=await Promise.all([api('finding-statuses'),api('finding-tickets')]);
+  const [saved,tickets,assignmentInfo]=await Promise.all([api('finding-statuses'),api('finding-tickets'),api('finding-assignments').catch(()=>({ready:false}))]);
   if(saved.authenticated===false||tickets.authenticated===false){
    invalidateSession();
    throw Error('Sign in again before generating a report.');
   }
   if(!saved.ready||!tickets.ready)throw Error('Saved remediation records are unavailable. Try again before exporting.');
   if(epoch!==customerDataEpoch)throw Error('Session changed; reload the page.');
-  findingStatusReady=true;ticketReady=true;ticketAppendReady=!!tickets.append_ready;
+  setAssignmentInfo(assignmentInfo);findingStatusReady=true;ticketReady=true;ticketAppendReady=!!tickets.append_ready;
   findingStatuses=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.status]));
   findingNotes=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.notes||'']));
   findingTickets=new Map();for(const t of tickets.tickets||[]){const k=t.asset_id+'|'+t.cve_id;findingTickets.set(k,[...(findingTickets.get(k)||[]),t.ticket_number])}
@@ -1153,6 +1166,7 @@ async function init(){
    const sources=await api('plugin-sources').catch(()=>({ready:false,sources:[]}));
    pluginSourceReady=!!sources.ready;
    pluginSources=new Map((sources.sources||[]).map(s=>[s.asset_id,s]));
+   setAssignmentInfo(await api('finding-assignments').catch(()=>({ready:false})));
    const saved=await api('finding-statuses').catch(()=>({ready:false,statuses:[]}));
    findingStatusReady=!!saved.ready;
    findingStatuses=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.status]));

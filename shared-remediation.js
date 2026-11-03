@@ -28,11 +28,34 @@ function draw(row,history,progress,assignments){dialog.replaceChildren(button('C
  dialog.append(el('h3','DevOps Ticket #'));dialog.append(el('p',row.tickets.map(t=>t.ticket_number).join(' · ')||'No tickets recorded.'));
  if(scope){const tickets=el('form');const input=field(tickets,'Add ticket reference',el('input'));input.maxLength=64;input.required=true;const add=el('button','Add ticket');tickets.append(add);tickets.addEventListener('submit',async e=>{e.preventDefault();await mutate(add,message,()=>api('/finding-tickets/'+scope.asset_id+'/'+row.cve_id,'POST',{ticket_number:input.value}),row.id);});dialog.append(tickets);}
  dialog.append(el('h3','Activity and comments'));const activity=[...(history.changes||[]).map(x=>({date:x.changed_at,author:x.changed_by,text:(labels[x.previous_status]||x.previous_status)+' → '+(labels[x.new_status]||x.new_status)+': '+x.reason})),...(progress.activity||[]).filter(x=>x.comment).map(x=>({date:x.created_at*1000,author:x.author_email,text:x.comment})),...row.comments.map(x=>({date:x.created_at*1000,author:x.author_email,text:x.comment}))].sort((a,b)=>new Date(b.date)-new Date(a.date));
+ for(const link of row.link_history||[]){let snapshot={};try{snapshot=JSON.parse(link.snapshot_json);}catch{}activity.push({date:link.linked_at,author:link.linked_by,text:'Linked the existing assignment to this customer asset.'+(snapshot.retired?.notes?' Retained finding notes: '+snapshot.retired.notes:'')});}
+ activity.sort((a,b)=>new Date(b.date)-new Date(a.date));
  for(const a of activity){const article=el('article');article.append(el('strong',a.author),el('small',new Date(a.date).toLocaleString()),el('p',a.text));dialog.append(article);}if(!activity.length)dialog.append(el('p','No updates recorded yet.'));
  const commentForm=el('form');const comment=field(commentForm,'Progress update or comment',el('textarea'));comment.minLength=10;comment.maxLength=2000;comment.required=true;comment.rows=3;const post=el('button','Post update');commentForm.append(post);commentForm.addEventListener('submit',async e=>{e.preventDefault();await mutate(post,message,()=>api('/remediation-records/'+row.id+'/comments','POST',{comment:comment.value,expected_updated:row.updated}),row.id);});dialog.append(commentForm);
 }
 async function mutate(button,message,fn,id){const token=epoch;button.disabled=true;try{await fn();if(token!==epoch)return;changed();await open(id);}catch(e){if(token===epoch)message.textContent=e.message;}finally{button.disabled=false;}}
-async function finding(asset,cve,button){if(button)button.disabled=true;const token=epoch;try{const r=await api('/finding-remediations/'+asset+'/'+cve,'POST',{});if(token!==epoch)return;changed();await open(r.id);}catch(e){if(token===epoch)window.alert(e.message);}finally{if(button)button.disabled=false;}}
-window.CVEHARBOR_SHARED={open,finding,async statusContext(asset,cve){try{return await api('/remediation-records/'+cve+'~'+asset.toUpperCase());}catch(e){if(e.status===404||e.status===503)return null;throw e;}},changed};
+async function finding(asset,cve,trigger){if(trigger)trigger.disabled=true;const token=epoch;try{
+ const preview=await api('/finding-remediations/'+asset+'/'+cve);
+ if(token!==epoch)return;
+ if(preview.manual){await offerLink(asset,cve,preview);return;}
+ if(preview.record){await open(preview.record.id);return;}
+ const r=await api('/finding-remediations/'+asset+'/'+cve,'POST',{});if(token!==epoch)return;changed();await open(r.id);
+}catch(e){if(token===epoch)window.alert(e.message);}finally{if(trigger)trigger.disabled=false;}}
+async function offerLink(asset,cve,p){
+ if(!dialog){dialog=el('dialog',undefined,'shared-record');dialog.setAttribute('aria-label','Shared remediation record');document.body.append(dialog);dialog.addEventListener('close',()=>{epoch++;current=null;dialog.replaceChildren();});}
+ const token=++epoch;current=null;dialog.replaceChildren(button('Close',()=>dialog.close(),'shared-close'),el('h2','Link existing assignment'),el('p',cve+' already has a standalone remediation record. Choose whether it belongs to this asset.'));
+ dialog.append(el('p',[p.asset.customer_name,p.asset.environment_name,p.asset.asset_name,p.asset.technology,p.asset.version].filter(Boolean).join(' · '),'shared-context'),el('p','Existing owner: '+p.manual.owner+' · Target date: '+(p.manual.due||'Not set')+' · Status: '+p.manual.fix_status));
+ const summary=el('div');dialog.append(summary);if(!dialog.open)dialog.showModal();
+ const response=await api('/remediations/'+p.manual.id+'/assignments');if(token!==epoch)return;
+ for(const a of response.assignments||[])summary.append(el('p',a.recipient_email+' · '+a.status+(a.acknowledged_at?' · '+stamp(a.acknowledged_at):'')));
+ const message=el('p',p.blocked_reason||'The existing acknowledgement, recipients, due date, severity, history and email links will be retained. Linking does not resend the assignment email.',p.blocked_reason?'shared-message':'shared-link-note');message.setAttribute('role','status');dialog.append(message);
+ if(p.can_link){
+ const form=el('form');const status=field(form,'Status after linking',el('select'));for(const [value,label] of Object.entries(labels)){const option=el('option',label);option.value=value;status.append(option);}status.value=p.record?.status||Object.keys(labels).find(k=>labels[k]===p.finding?.status)||p.manual.status;
+ const confirm=field(form,'I confirm this existing assignment belongs to the customer and asset shown above.',el('input'));confirm.type='checkbox';confirm.required=true;
+ const submit=el('button','Link existing assignment');form.append(submit);form.addEventListener('submit',async e=>{e.preventDefault();submit.disabled=true;try{const r=await api('/finding-remediations/'+asset+'/'+cve+'/link-existing','POST',{confirm:confirm.checked,status:status.value,expected_source:p.manual.updated,expected_target:p.record?.updated||'',expected_finding:JSON.stringify(p.finding)});if(token!==epoch)return;changed();await open(r.id);}catch(error){if(token===epoch){message.className='shared-message';message.textContent=error.message;}}finally{submit.disabled=false;}});dialog.append(form);
+ }
+ dialog.append(button(p.record?'Keep separate — view asset record':'Keep separate — create asset record',async()=>{try{const r=p.record||await api('/finding-remediations/'+asset+'/'+cve,'POST',{});if(token!==epoch)return;changed();await open(r.id);}catch(e){if(token===epoch)message.textContent=e.message;}}));
+}
+window.CVEHARBOR_SHARED={open,finding,async statusContext(asset,cve){try{return (await api('/finding-remediations/'+asset+'/'+cve)).record;}catch(e){if(e.status===404||e.status===503)return null;throw e;}},changed};
 window.addEventListener('cveharbor:account-state',()=>{epoch++;current=null;if(dialog){if(dialog.open)dialog.close();dialog.replaceChildren();}});
 })();

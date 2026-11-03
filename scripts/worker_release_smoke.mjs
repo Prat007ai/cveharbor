@@ -88,3 +88,10 @@ const unifiedFiles=['account-backend/src/finding-remediation.js','account-backen
 assert.equal(unifiedFindingsRelease(unifiedFiles),true);
 for(const f of ['account-backend/wrangler.toml','account-backend/src/cvie.js','scripts/bootstrap_cvie_shared.mjs'])assert.equal(unifiedFindingsRelease([...unifiedFiles,f]),false);
 assert.equal(unifiedFindingsRelease(unifiedFiles.filter(f=>!f.endsWith('.sql'))),false);
+
+const {findingLinksRelease}=await import('./worker_release_mode.mjs');
+const linksFiles=['account-backend/src/finding-assignment-links.js','account-backend/src/remediation.js','account-backend/migrations/0029_finding_assignment_links.sql','account-backend/tests/finding-assignment-links.test.mjs'];
+assert.equal(findingLinksRelease(linksFiles),true);
+for(const f of ['account-backend/wrangler.toml','account-backend/src/cvie.js','scripts/bootstrap_cvie_shared.mjs','account-backend/migrations/0028_unified_findings.sql'])assert.equal(findingLinksRelease([...linksFiles,f]),false);
+assert.equal(findingLinksRelease(linksFiles.filter(f=>!f.endsWith('.sql'))),false);
+console.log('PASS: assignment link release applies only migration 0029 and does not run unrelated maintenance');
