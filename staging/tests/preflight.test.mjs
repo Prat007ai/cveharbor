@@ -41,7 +41,7 @@ test('preflight is GET-only, reports safe evidence, and does not infer a valid s
   const result = await preflight(env, fixture());
   assert.equal(result.read_only_checks_passed, true); assert.equal(result.ready_for_creation, true);
   assert.equal(result.mutation_requests, 0); assert.equal(result.production_requests, 0);
-  assert.equal(result.checks.find(c => c.name === 'service_secret_end_to_end').status, 'unverified');
+  assert.equal(result.checks.find(c => c.name === 'access_cookie_jwt_observed').status, 'unverified');
   assert.doesNotMatch(JSON.stringify(result), /private-management-token|private-service-client|private-service-secret|private-reviewer/);
 });
 test('unreadable token metadata is not called a confirmed write grant or isolation proof', async () => {

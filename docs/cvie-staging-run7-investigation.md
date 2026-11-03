@@ -4,6 +4,18 @@ Run: https://github.com/Prat007ai/cveharbor/actions/runs/41567480016/attempts/3
 
 Reviewed source: `ec9a5fa3a1f2c72dc0f0c23e041a5412f6506c5e`.
 
+## Service Auth and Static Assets contract review
+
+Cloudflare's [strict Service Auth behavior](https://developers.cloudflare.com/cloudflare-one/access-controls/service-credentials/service-tokens/) intentionally issues no response `CF_Authorization` cookie, requires service headers on subsequent requests, ignores Allow policies/cookies for requests presenting service headers, and returns 401/403 for failed service authentication rather than redirecting. New organizations created on/after 2026-10-05 cannot disable strict mode. **No proposal to disable it is made.** The preflight now describes cookie observation accurately instead of labeling absent cookies as unverified service-secret authentication. Positive origin boundary probes remain required.
+
+The frontend already verifies `Cf-Access-Jwt-Assertion`, not the cookie. Therefore strict cookie suppression alone does **not** explain its current 403 and is not claimed as the origin failure's cause. Per [Cloudflare's assertion-validation contract](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/authorization-cookie/validating-json/), the origin must verify the signed assertion against its issuer keys and application audience. The current verifier checks signature/algorithm, issuer, audience, expiry, issued-at and not-before claims. It intentionally does not require a human email or nonempty subject: a Service Auth application token legitimately has an empty subject and a service `common_name` instead.
+
+Per [Workers Access limitations](https://developers.cloudflare.com/workers/configuration/cloudflare-access/#ctxaccess-limitations), Static Assets execute behind an internal router that does not propagate `ctx.access` to the user Worker. Do not switch to that context as an authentication fallback, trust raw service/identity headers, accept a cookie merely because it exists, or bypass cryptographic verification. No such fallback is implemented.
+
+New regression tests sign real synthetic RSA assertions for both human and service identities, exercise protected static/API paths with no response-cookie dependency, and reject absent/forged assertions, service headers alone, cookies alone, wrong account/issuer, wrong audience, expired/future assertions, forged signatures and forbidden origins. They also prove Access credentials are stripped before assets or API bindings and that an Access identity is not an application session. These are local tests, not a claim that live origin authentication is fixed.
+
+**Exact live rejection is still unobserved:** run #11's old frontend returns the same 403 for missing assertion and every verifier rejection, with no reason header. Its evidence cannot establish header presence or identify issuer/audience/signature/expiry/key-fetch failure. The already prepared frontend-only diagnostic update below is required to make that distinction without exposing credentials. It has not been deployed. Further authentication behavior changes would be speculative until its fixed rejection category is observed.
+
 ## Confirmed result from approved run #11
 
 Run: https://github.com/Prat007ai/cveharbor/actions/runs/41659896789

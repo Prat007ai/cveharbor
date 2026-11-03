@@ -143,7 +143,7 @@ export async function preflight(env, transport = fetch, { existingDatabase = fal
   });
   const jwt = response?.headers.get('set-cookie')?.match(/(?:^|[,;]\s*)CF_Authorization=([^;]+)/)?.[1];
   const verified = jwt && await createAccessVerifier(async () => Response.json(jwks))(jwt, issuer, audience);
-  add('service_secret_end_to_end', !!verified, { http_status: response?.status ?? null, reason: verified ? 'Valid Access JWT for configured issuer/AUD' : workerState === 'deployed' ? 'No verified Access cookie JWT; use the live Worker boundary probes. HTTP status alone is inconclusive.' : 'No valid JWT returned; origin may not exist yet. HTTP status alone does not validate credentials.' }, false);
+  add('access_cookie_jwt_observed', !!verified, { http_status: response?.status ?? null, reason: verified ? 'Valid Access JWT for configured issuer/AUD' : 'No verified response cookie. Strict Service Auth intentionally returns no CF_Authorization cookie; only live origin boundary probes can establish end-to-end readiness.' }, false);
   report.read_only_checks_passed = blockers.length === 0;
   report.ready_for_creation = workerState === 'empty' && !existingDatabase && blockers.length === 0 && grantsVerified && scopeVerified && serviceMetadataVerified;
   report.write_permissions_exercised = false;
