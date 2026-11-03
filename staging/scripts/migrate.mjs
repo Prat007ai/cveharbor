@@ -7,7 +7,7 @@ import { root } from './configure.mjs';
 import { diagnose } from './diagnose.mjs';
 import { probeAccess } from './probe-access.mjs';
 import { failure, safeFailure } from './errors.mjs';
-import { inspectSchemaState } from './schema-state.mjs';
+import { inspectSchemaState, countSQL } from './schema-state.mjs';
 
 export const STAGING_DATABASE_ID = 'fac61562-fc31-426d-8032-550aba63b7f6';
 export const hash = value => createHash('sha256').update(value).digest('hex');
@@ -54,13 +54,13 @@ export function guardSQL(plan, step, observedRows) {
   return guards;
 }
 
-export async function migrate(env, { plan, transport = fetch, inventory = diagnose, probe = probeAccess, record = () => {} } = {}) {
-  const report = { status: 'stopped', action: 'migrate', account: TARGET.account, database_id: STAGING_DATABASE_ID,
+export async function migrate(env, { plan, transport = fetch, inventory = diagnose, probe = probeAccess, record = () => {}, requestIntervalMs = 350, beforeWrite = () => {} } = {}) {
+  const report = { status: 'stopped', action: env.CF_STAGING_PROVISION_ACTION, account: TARGET.account, database_id: STAGING_DATABASE_ID,
     source_sha: env.GITHUB_SHA, plan_sha256: env.CF_STAGING_SCHEMA_PLAN_SHA256, started_at: new Date().toISOString(),
     requests: [], batches: [], storage: [], usage: { migration: { rows_read: 0, rows_written: 0 }, verification: { rows_read: 0, rows_written: 0 }, complete: true },
-    limits: LIMITS, automatic_retries: 0, production_requests: 0, worker_or_access_mutations: 0 };
+    limits: LIMITS, request_interval_ms: requestIntervalMs, automatic_retries: 0, production_requests: 0, worker_or_access_mutations: 0 };
   const persist = () => record('migration', report);
-  let identified = false, before;
+  let identified = false, before, lastRequestAt = 0;
   const base = `https://api.cloudflare.com/client/v4/accounts/${TARGET.account}`;
   const dbRoute = `/d1/database/${STAGING_DATABASE_ID}`;
   function budget() {
@@ -71,6 +71,9 @@ export async function migrate(env, { plan, transport = fetch, inventory = diagno
   async function request(route, operation, body, group = 'verification') {
     // The only permitted POST is the exact staging D1 query endpoint. No SDK retry.
     if ((!route.startsWith('/') && route !== '') || route.includes('..') || route.includes('://') || body && route !== dbRoute + '/query') throw failure(operation, 'route');
+    const gap = lastRequestAt + requestIntervalMs - Date.now();
+    if (gap > 0) await new Promise(resolve => setTimeout(resolve, gap));
+    lastRequestAt = Date.now();
     const receipt = { operation, method: body ? 'POST' : 'GET', started_at: new Date().toISOString() };
     report.requests.push(receipt); persist();
     let response, payload;
@@ -139,10 +142,15 @@ export async function migrate(env, { plan, transport = fetch, inventory = diagno
       report.historical_verified_step = report.last_verified_step;
     report.last_verified_step = null;
     return inspectSchemaState(plan, (sql, suffix) => query(sql, 'migration.state.' + label + '.' + suffix),
-      state => { report.actual_state = state; persist(); }, label);
+      state => { report.actual_state = state; persist(); }, label, { countBatch: async (names, suffix) => {
+        if (!names.length || names.length > 5) throw failure('migration.counts', 'inspection_limit');
+        const results = await request(dbRoute + '/query', 'migration.state.' + label + '.' + suffix, { batch: names.map(name => ({ sql: countSQL(name) })) });
+        return results.map(r => r.results?.length === 1 ? r.results[0]?.n : null);
+      } });
   }
 
   try {
+    if (!validNumber(requestIntervalMs)) throw failure('migration.pacing', 'configuration');
     if (env.STAGING_CHANGE_APPROVED !== 'PR243-STAGING-ONLY' || env.CF_STAGING_PROVISION_ACTION !== 'migrate' ||
         env.CF_STAGING_ACCOUNT_ID !== TARGET.account || env.CF_STAGING_D1_DATABASE_ID !== STAGING_DATABASE_ID || !env.CF_STAGING_API_TOKEN ||
         !/^(0|[1-9]\d*)$/.test(env.CF_STAGING_SCHEMA_RESUME_STEP || '')) throw failure('migration.authorize', 'configuration');
@@ -170,6 +178,7 @@ export async function migrate(env, { plan, transport = fetch, inventory = diagno
       const batch = { file: file.file, phase: file.phase, sql_sha256: file.sha256, from_step: from, to_step: file.end, guard_count: guards.length, outcome: 'pending' };
       report.batches.push(batch); persist();
       budget();
+      beforeWrite();
       report.actual_state = { status: 'invalidated_by_write', complete: false, matching_steps: [], counts: [], rows_verified: false };
       report.historical_verified_step = report.last_verified_step ?? null; report.last_verified_step = null; persist();
       await request(dbRoute + '/query', 'migration.apply.' + file.phase + '.' + file.start, { batch: [...guards, ...sql] }, 'migration');

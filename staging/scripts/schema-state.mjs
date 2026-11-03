@@ -7,7 +7,7 @@ export const countSQL = name => 'SELECT count(*) AS n FROM ' + quoteIdentifier(n
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 export const STATE_LIMITS = Object.freeze({ objects: 2000, tables: 150, seed_rows: 1000 });
 
-export async function inspectSchemaState(plan, query, record = () => {}, label = 'diagnostic') {
+export async function inspectSchemaState(plan, query, record = () => {}, label = 'diagnostic', { countBatch } = {}) {
   // Publish a NEW incomplete observation before the first request. Never reuse a
   // previous checkpoint when a schema/count/seed request fails halfway through.
   const actual = { inspection: label, observed_at: new Date().toISOString(), status: 'in_progress', complete: false,
@@ -25,13 +25,20 @@ export async function inspectSchemaState(plan, query, record = () => {}, label =
     publish();
     const tables = objects.filter(o => o[0] === 'table').map(o => o[1]).sort();
     if (tables.length > STATE_LIMITS.tables || new Set(tables).size !== tables.length) throw failure('schema.state.tables', 'inspection_limit');
-    // One SELECT per table. No compound SELECT, independent of schema size.
-    for (let i = 0; i < tables.length; i++) {
-      const result = await query(countSQL(tables[i]), 'counts.' + i);
-      if (!Array.isArray(result) || result.length !== 1 || !Number.isSafeInteger(result[0]?.n) || result[0].n < 0)
-        throw failure('schema.state.counts.' + i, 'result_shape');
-      actual.counts.push([tables[i], result[0].n]); publish();
+    // Each SQL remains a one-table SELECT. The migration runner may transport
+    // at most five independent reads in one D1 batch; diagnostics keep singles.
+    async function counts(prefix, visit) {
+      const width = countBatch ? 5 : 1;
+      for (let i = 0; i < tables.length; i += width) {
+        const names = tables.slice(i, i + width);
+        const values = countBatch ? await countBatch(names, prefix + i) :
+          (await query(countSQL(names[0]), prefix + i)).map(r => r?.n);
+        if (!Array.isArray(values) || values.length !== names.length || values.some(n => !Number.isSafeInteger(n) || n < 0))
+          throw failure('schema.state.' + prefix + i, 'result_shape');
+        names.forEach((name, offset) => visit(name, values[offset], i + offset));
+      }
     }
+    await counts('counts.', (name, value) => { actual.counts.push([name, value]); publish(); });
     actual.counts_complete = true; publish();
     const candidates = plan.checkpoints.map((c, step) => ({ c, step })).filter(({ c }) =>
       c.schema_sha256 === actual.schema_sha256 && same(c.counts, actual.counts));
@@ -53,10 +60,9 @@ export async function inspectSchemaState(plan, query, record = () => {}, label =
     const after = await query(plan.schema_sql, 'schema_after');
     if (!Array.isArray(after) || hashState(after.map(r => [r.type, r.name, r.tbl_name, r.sql])) !== actual.schema_sha256)
       throw failure('schema.state.consistency', 'state_changed');
-    for (let i = 0; i < tables.length; i++) {
-      const result = await query(countSQL(tables[i]), 'counts_after.' + i);
-      if (result.length !== 1 || result[0]?.n !== actual.counts[i][1]) throw failure('schema.state.consistency', 'state_changed');
-    }
+    await counts('counts_after.', (_name, value, i) => {
+      if (value !== actual.counts[i][1]) throw failure('schema.state.consistency', 'state_changed');
+    });
     actual.matching_steps = candidates.filter(({ c }) => c.rows_sha256 === actual.rows_sha256).map(({ step }) => step);
     actual.status = 'complete'; actual.complete = true; actual.completed_at = new Date().toISOString(); publish();
     return { actual, rows };

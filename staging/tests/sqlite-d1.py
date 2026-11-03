@@ -5,7 +5,8 @@ import sys
 
 db = sqlite3.connect(':memory:', isolation_level=None)
 db.row_factory = sqlite3.Row
-db.setlimit(sqlite3.SQLITE_LIMIT_COMPOUND_SELECT, 5)
+for name, value in [('LENGTH',2000000),('SQL_LENGTH',100000),('COLUMN',100),('EXPR_DEPTH',100),('COMPOUND_SELECT',5),('VDBE_OP',250000),('FUNCTION_ARG',32),('ATTACHED',0),('LIKE_PATTERN_LENGTH',50),('VARIABLE_NUMBER',100),('TRIGGER_DEPTH',10)]:
+    db.setlimit(getattr(sqlite3,'SQLITE_LIMIT_'+name),value)
 db.execute('PRAGMA foreign_keys=ON')
 def split_sql(sql):
     pending = ''

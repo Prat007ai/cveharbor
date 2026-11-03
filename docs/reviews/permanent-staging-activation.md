@@ -1,4 +1,6 @@
 > **Original checkpoint 29 verified; adoption awaits approval.** Run 41707547474,
+
+> Current coordinated plan: [Task 2C two-phase continuation](../cvie-staging-continuation-plan.md). Original checkpoint 29 is verified. Adoption 29→37 and remaining migration 37→740 remain separate approvals, both requiring fresh private recovery evidence; nothing has executed beyond original 29.
 > artifact 13275811878 verifies 18 empty tables and ten explicit indexes. Do not
 > execute the step-0 bootstrap below or set a cursor. Follow the
 > [guarded adoption and recovery procedure](permanent-staging-adoption.md).

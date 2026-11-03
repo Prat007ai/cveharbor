@@ -76,7 +76,7 @@ test('eight-statement adoption preserves original objects and stops at current c
   const after = await originalObjects(h);
   assert.deepEqual(after.filter(o => before.some(x => x.name === o.name)), before);
   assert.doesNotMatch(JSON.stringify(h.reports), /synthetic-private-token|synthetic-private-bookmark|synthetic-private-storage/);
-  const result = await migrate({ ...e, CF_STAGING_PROVISION_ACTION: 'migrate', CF_STAGING_SCHEMA_RESUME_STEP: '37' }, {
+  const result = await migrate({ ...e, CF_STAGING_PROVISION_ACTION: 'migrate', CF_STAGING_SCHEMA_RESUME_STEP: '37' }, { requestIntervalMs: 0,
     plan, transport: h.deps.transport, inventory: async () => ({ verified: true }), probe: async () => ({ passed: true }) });
   assert.equal(result.status, 'complete'); assert.equal(result.last_verified_step, 740);
   assert.equal(result.batches[0].file, 'account-backend/totp-schema.sql');

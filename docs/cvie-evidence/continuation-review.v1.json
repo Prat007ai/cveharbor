@@ -1,0 +1,380 @@
+{
+  "phase_b_sql_sha256": "7a7f0b3d291b2f13bcf8b8ce414de44c2c66989c08caaa58f76b767000139189",
+  "profile": "original29-reconciliation-review-v1",
+  "account": "9706b4d98ad72884e67fd1eb875c8a61",
+  "database_id": "fac61562-fc31-426d-8032-550aba63b7f6",
+  "initial_original_step": 29,
+  "final_step": 740,
+  "execution_plan_sha256": "a4ad0b27ff77266706693bf34f0880088b0bfe12139a583cca518975981a0fc3",
+  "reconciliation_sha256": "c157adf51593498081310e477be1390cd62ee03a1f2a183c511d9de718560b33",
+  "adoption_spec_sha256": "7ed30868dae48623caaccd9f1bead405333785b7b8c888f0308fb0b11ffe3eea",
+  "phase_b_start": 37,
+  "phase_b_statements": 703,
+  "phase_b_batches": 34,
+  "manifest_sha256": "36fe2c4db8a85158d5db4d0f0dd6f7f618e489995373cf4402d75f5940bfb79b",
+  "reference_sha256": "d2a9af7136414eabe7dc5c74814addbdbb113e43d7edc0c85d8fbaadc1e9248e",
+  "adoptions": [
+    {
+      "file": "account-backend/schema.sql",
+      "sha256": "b89e3589c3df611f2e9cb1c6f6bc6e49fa928329deb2ba3a2c6c9fae675f0e07",
+      "verified_original_step": 29,
+      "evidence_run": 41707547474,
+      "evidence_attempt": 2
+    }
+  ],
+  "files": [
+    {
+      "file": "staging/schema.sql",
+      "source_sha256": "0857a7a6c9ae93f92d2e2f25e21848644cd9bd24b591c04b1f2e5171cdfb7ebd",
+      "phase": "adopt-original29",
+      "from_step": 29,
+      "to_step": 37,
+      "statements": 8,
+      "execution_sql": "continuation-00.sql",
+      "execution_sha256": "e0e1688936703b027a39b58e924ac05313b55a552436f4950dc60954fd7ae7b8"
+    },
+    {
+      "file": "account-backend/totp-schema.sql",
+      "source_sha256": "6fba840946258875cf4de95768540efd9df26e9b2bc76a94aa31077e7f337fcf",
+      "phase": "manifest",
+      "from_step": 37,
+      "to_step": 42,
+      "statements": 5,
+      "execution_sql": "continuation-01.sql",
+      "execution_sha256": "3a489ad7e3de040ba7cdb708ab75e3a9b76b2f5ad8f61b01148907838e7e8d09"
+    },
+    {
+      "file": "account-backend/alert-schema.sql",
+      "source_sha256": "bf541a4e0f99bbd8e2122c1a5ed602d855dd9854ee15013d6fcf42f41f3670c0",
+      "phase": "manifest",
+      "from_step": 42,
+      "to_step": 48,
+      "statements": 6,
+      "execution_sql": "continuation-02.sql",
+      "execution_sha256": "3b920a96727604eddbcf5767c3a2b44ce8e88fc6238477269f11ef7c2a68d901"
+    },
+    {
+      "file": "account-backend/inventory-schema.sql",
+      "source_sha256": "074a5b34f5ea7edecf116bec940a0080cd49ed37cba81e465fff373abd9430c8",
+      "phase": "manifest",
+      "from_step": 48,
+      "to_step": 55,
+      "statements": 7,
+      "execution_sql": "continuation-03.sql",
+      "execution_sha256": "01d70828f3f0e26b6aabacf19c58a985d3f0b1e473484d8fcfc2f7da16e91514"
+    },
+    {
+      "file": "account-backend/remediation-schema.sql",
+      "source_sha256": "fb529eb8fd69d4c2249fbbda28f04067680cebd329f96cb9a97291bd2ac1ffc4",
+      "phase": "manifest",
+      "from_step": 55,
+      "to_step": 59,
+      "statements": 4,
+      "execution_sql": "continuation-04.sql",
+      "execution_sha256": "0d763b2f94064b1ad2072fda866d319efef4dbfbcdf21751f05ff0132f11b7ee"
+    },
+    {
+      "file": "account-backend/lifecycle-schema.sql",
+      "source_sha256": "9e2d4bd7e6e78f0b4cc1a074ec321814d571f27d594e8c715e5dbdb7b9adb92f",
+      "phase": "manifest",
+      "from_step": 59,
+      "to_step": 65,
+      "statements": 6,
+      "execution_sql": "continuation-05.sql",
+      "execution_sha256": "159dc3f9a24770eecad32a1a176e92700691f9a03babcfb1c6b96cfd87c4f2f0"
+    },
+    {
+      "file": "account-backend/finding-status-schema.sql",
+      "source_sha256": "ea031537bee4af1fb2223412c3c038487feefdcd7aab16df5404ed5d90b46535",
+      "phase": "manifest",
+      "from_step": 65,
+      "to_step": 68,
+      "statements": 3,
+      "execution_sql": "continuation-06.sql",
+      "execution_sha256": "4863ab85a35ba10b333c794317731a55348e36d371322f9fa6f02029b4efcb1a"
+    },
+    {
+      "file": "account-backend/finding-ticket-schema.sql",
+      "source_sha256": "300aa4ea766b654096713ab274091cf7993fa2159ae6cf4ed3a16a198005b229",
+      "phase": "manifest",
+      "from_step": 68,
+      "to_step": 71,
+      "statements": 3,
+      "execution_sql": "continuation-07.sql",
+      "execution_sha256": "e21c1ac2e7568cf03ec8bd2254b159d128eeabd6dbb8d2b76126001c3db47867"
+    },
+    {
+      "file": "account-backend/finding-ticket-history-schema.sql",
+      "source_sha256": "02418a2ad67a19d9febf72a4bfbe893f35a3ccc8bbc6b108edace730f5ce8f24",
+      "phase": "manifest",
+      "from_step": 71,
+      "to_step": 75,
+      "statements": 4,
+      "execution_sql": "continuation-08.sql",
+      "execution_sha256": "59d56536b95f1f06a304f62dd1e5728071eea729cc14f03f686beb1237637c48"
+    },
+    {
+      "file": "account-backend/customer-score-schema.sql",
+      "source_sha256": "668ba20857612e8473b627bd8193767ba62b4177f474a6fabf86f65c5ae90be0",
+      "phase": "manifest",
+      "from_step": 75,
+      "to_step": 78,
+      "statements": 3,
+      "execution_sql": "continuation-09.sql",
+      "execution_sha256": "32a21068d4dcba39c900ed02accf3674527e9e825b2c66eb4618cbc7021e38ac"
+    },
+    {
+      "file": "account-backend/package-inventory-schema.sql",
+      "source_sha256": "1c4adcad66bb4ca29261c3c871ebfbaa47a00a72061533f81ee23555be110b7c",
+      "phase": "manifest",
+      "from_step": 78,
+      "to_step": 81,
+      "statements": 3,
+      "execution_sql": "continuation-10.sql",
+      "execution_sha256": "26e6439d790b3a9f8f41a6168891bd00077f6e4cbd4b08e3772e89df93b76b37"
+    },
+    {
+      "file": "account-backend/software-upgrade-history-schema.sql",
+      "source_sha256": "a116f0134034f4f2708eac5fa68efda3d7663aaa7dfb2459b7f47c38ed3c1f15",
+      "phase": "manifest",
+      "from_step": 81,
+      "to_step": 85,
+      "statements": 4,
+      "execution_sql": "continuation-11.sql",
+      "execution_sha256": "ea374313ddaa936536c45cf8144ee59cd0deae5a5215152a3035387b27c25fb1"
+    },
+    {
+      "file": "account-backend/plugin-monitor-schema.sql",
+      "source_sha256": "7ae3144c33fb3c20cd2569007a5f048661cced413be6cd4c50844e63723ee72e",
+      "phase": "manifest",
+      "from_step": 85,
+      "to_step": 90,
+      "statements": 5,
+      "execution_sql": "continuation-12.sql",
+      "execution_sha256": "81f4d5c2d035fb6ab01563a2103721bc12aa6e28f8fbf34dde8d6a8e7a13bef0"
+    },
+    {
+      "file": "account-backend/plugin-release-schema.sql",
+      "source_sha256": "11c18e7e69a6626e14d7ca6cbdbccfec5d37bfa0e7d74ed860d1eb095f05c4a1",
+      "phase": "manifest",
+      "from_step": 90,
+      "to_step": 93,
+      "statements": 3,
+      "execution_sql": "continuation-13.sql",
+      "execution_sha256": "ba1f25fdd4b0dd72f5601264f0471fb75f3e33943a8dc664c98c6a4b67462d3f"
+    },
+    {
+      "file": "account-backend/plugin-source-schema.sql",
+      "source_sha256": "2761783300ea01d064c57bd6bb0a0ef0ce474fbd58b685cda6d35727d72bbae3",
+      "phase": "manifest",
+      "from_step": 93,
+      "to_step": 97,
+      "statements": 4,
+      "execution_sql": "continuation-14.sql",
+      "execution_sha256": "8b9664f48af0cebc7a0c80ae5737faf56930771b26f005e1aa69f62a4f582a0a"
+    },
+    {
+      "file": "account-backend/migrations/0016_website_monitor.sql",
+      "source_sha256": "cbe8f5802f393357af4954502b4d33f494d37c687666eadc783deb299da9a0c2",
+      "phase": "manifest",
+      "from_step": 97,
+      "to_step": 103,
+      "statements": 6,
+      "execution_sql": "continuation-15.sql",
+      "execution_sha256": "f40218ac4be37cba1b110cb1cbdc5c0203fb21d33d0dd1a3f6651603cab5ae1e"
+    },
+    {
+      "file": "account-backend/migrations/0017_web_risk_quota.sql",
+      "source_sha256": "8181159af943ac82a30bce24593e78c8335b315c4c90bc9ec4fa3bb0fdd29d9e",
+      "phase": "manifest",
+      "from_step": 103,
+      "to_step": 107,
+      "statements": 4,
+      "execution_sql": "continuation-16.sql",
+      "execution_sha256": "34f43e897a41951b430fd53073c01b4a4c7dae2af62bc22b0b95ef3b66433bea"
+    },
+    {
+      "file": "account-backend/migrations/0018_technology_catalogue.sql",
+      "source_sha256": "22b6e5c8cf090f2f4911331b1a6fc9bb4fa2351bac000a82e0700fbdc2ecaaae",
+      "phase": "manifest",
+      "from_step": 107,
+      "to_step": 109,
+      "statements": 2,
+      "execution_sql": "continuation-17.sql",
+      "execution_sha256": "3d0244baea2424eb573b4f4c8902e29fd9dd3092907ad55514d61b51dfeee886"
+    },
+    {
+      "file": "account-backend/migrations/0019_cvie.sql",
+      "source_sha256": "628f04d2fd77f476e6015fc1ebb0e7154ca86b7f1f2710fb0336a16e10bef6f0",
+      "phase": "manifest",
+      "from_step": 109,
+      "to_step": 117,
+      "statements": 8,
+      "execution_sql": "continuation-18.sql",
+      "execution_sha256": "45283036f15a78ae870afae04364142d284b69ca82eab6c290559164cb2d4114"
+    },
+    {
+      "file": "account-backend/migrations/0020_cvie_evidence.sql",
+      "source_sha256": "25593f521858cd4f8578cb63aa51d10fb0e819133a419f66c7a3a359c886c2d8",
+      "phase": "manifest",
+      "from_step": 117,
+      "to_step": 127,
+      "statements": 10,
+      "execution_sql": "continuation-19.sql",
+      "execution_sha256": "17d5244fc9a74e927079eb634f1ec17df22222e80397e2351527fb8f7db82eca"
+    },
+    {
+      "file": "account-backend/migrations/0021_cvie_audit_refresh.sql",
+      "source_sha256": "7190f9715a136933d1d903b425d14fa73159ced8c8201b92f9c56249f38a0088",
+      "phase": "manifest",
+      "from_step": 127,
+      "to_step": 134,
+      "statements": 7,
+      "execution_sql": "continuation-20.sql",
+      "execution_sha256": "e138d26bcddcc592c65fcccc8190cd12e177d8fcc987a9b167aa55adb4e21c28"
+    },
+    {
+      "file": "account-backend/migrations/0022_cvie_shared_scans.sql",
+      "source_sha256": "a655d4c0f8d83a84a8252c6f3c1d700efa52cc986b1a030fe8c87fa22dc89292",
+      "phase": "manifest",
+      "from_step": 134,
+      "to_step": 143,
+      "statements": 9,
+      "execution_sql": "continuation-21.sql",
+      "execution_sha256": "95d2c132da3b981d76b8484893c4950f3d89cebf6378daa08270bcfc52acd300"
+    },
+    {
+      "file": "account-backend/migrations/0023_lifecycle_monitoring.sql",
+      "source_sha256": "b57fb55692d6c75592639ca19d43d470a7e2fe5480f74c21194b3cbea454af31",
+      "phase": "manifest",
+      "from_step": 143,
+      "to_step": 166,
+      "statements": 23,
+      "execution_sql": "continuation-22.sql",
+      "execution_sha256": "0ccc0ebc94f70868d533beae531e89e6da7f691831414d3771b7c718ee076b85"
+    },
+    {
+      "file": "account-backend/migrations/0024_assignment_acknowledgements.sql",
+      "source_sha256": "3bc409ea7b0ea4053d636ecf62f1485172438c55eba4cb5b4453dab9581e820b",
+      "phase": "manifest",
+      "from_step": 166,
+      "to_step": 177,
+      "statements": 11,
+      "execution_sql": "continuation-23.sql",
+      "execution_sha256": "d4ecf9548e90db906a8f92589f0b8112eb29fb7a57d1438033c6c032f9de73b3"
+    },
+    {
+      "file": "account-backend/migrations/0025_assignment_fyi.sql",
+      "source_sha256": "585bb54b434f5c45a1de18ba42f162a77ba42246972ebe62cbdf886eba82a70a",
+      "phase": "manifest",
+      "from_step": 177,
+      "to_step": 184,
+      "statements": 7,
+      "execution_sql": "continuation-24.sql",
+      "execution_sha256": "7fd0a5eb3f1fa9bab6489ff78f2aae3da2dc6ef4d22e429ec79def71492c79c4"
+    },
+    {
+      "file": "account-backend/migrations/0026_remediation_workflow.sql",
+      "source_sha256": "64bfd6ab1a5e57ae89007eeb122714af17b77071c74f6554604c8553ae0db6e8",
+      "phase": "manifest",
+      "from_step": 184,
+      "to_step": 194,
+      "statements": 10,
+      "execution_sql": "continuation-25.sql",
+      "execution_sha256": "d0330ded2e9c11994e5bf68c2d5bc715b27b961b4b540252622ce4938a061c1f"
+    },
+    {
+      "file": "account-backend/migrations/0027_assignment_progress.sql",
+      "source_sha256": "cd35e1265abb1bb1585cb656ea2ae473ee5d83d29e6d1c3ec0fa8da6f5d6f902",
+      "phase": "manifest",
+      "from_step": 194,
+      "to_step": 212,
+      "statements": 18,
+      "execution_sql": "continuation-26.sql",
+      "execution_sha256": "d20fd416ebde894179aed5fc2306e2c694957726828044e29fe96cbb04447e1e"
+    },
+    {
+      "file": "account-backend/migrations/0028_unified_findings.sql",
+      "source_sha256": "3059a57cd3a4c2ecfae04af0bf4ec908ff2c6be06cb11c603bedc80391a8f9ed",
+      "phase": "manifest",
+      "from_step": 212,
+      "to_step": 220,
+      "statements": 8,
+      "execution_sql": "continuation-27.sql",
+      "execution_sha256": "7bac69a6f3dc97253e45b453f13e0e34b37acd36ac5dc4634f7e1b50f473839d"
+    },
+    {
+      "file": "account-backend/migrations/0029_finding_assignment_links.sql",
+      "source_sha256": "f416db8e1eafb71f0d986203fc68a6ca12764ee57a73e47cb698368ff6387004",
+      "phase": "manifest",
+      "from_step": 220,
+      "to_step": 226,
+      "statements": 6,
+      "execution_sql": "continuation-28.sql",
+      "execution_sha256": "1d9cd55502608c130b958d529f8f217293f0997ada1a7444f9058dff53a99bd3"
+    },
+    {
+      "file": "account-backend/migrations/0030_status_update_notifications.sql",
+      "source_sha256": "20eef5d962b9aee92c0f4a634bc49750087f1d151ed4c41d4db18d1c56f8fa4e",
+      "phase": "manifest",
+      "from_step": 226,
+      "to_step": 232,
+      "statements": 6,
+      "execution_sql": "continuation-29.sql",
+      "execution_sha256": "7ac8264b99649a4e249f81e9310acb3aebc590056371722e89225397e6f46471"
+    },
+    {
+      "file": "account-backend/migrations/0031_remediation_integrity.sql",
+      "source_sha256": "816eb1e6deb528340af37284c72fe2d3585d7c1aec883ca6a1788c8b868eea46",
+      "phase": "manifest",
+      "from_step": 232,
+      "to_step": 242,
+      "statements": 10,
+      "execution_sql": "continuation-30.sql",
+      "execution_sha256": "41b7f9cce44e7ec0797ad7443671d21ace1564eeceab9f8c97bc4884998cd13a"
+    },
+    {
+      "file": "account-backend/migrations/0032_recovery_control.sql",
+      "source_sha256": "77e56e139153505ec2433c9c2dec5ea1f84d0142ffcee2db7dac53434420a4fd",
+      "phase": "manifest",
+      "from_step": 242,
+      "to_step": 249,
+      "statements": 7,
+      "execution_sql": "continuation-31.sql",
+      "execution_sha256": "2a72428376f01abec0c5d8eaacc14957a93f187c51550e5701fd1573340b83c5"
+    },
+    {
+      "file": "account-backend/migrations/0028_cvie_source_efficiency.sql",
+      "source_sha256": "a713d16f9621a724f0df2b8506f7267e216cc45bc6539ba5415c86e5c754551a",
+      "phase": "manifest",
+      "from_step": 249,
+      "to_step": 255,
+      "statements": 6,
+      "execution_sql": "continuation-32.sql",
+      "execution_sha256": "26b04408825a84a4d2a0439782d5ee7353056d0a30917d6108083be4408171f7"
+    },
+    {
+      "file": "account-backend/migrations/0029_cvie_identity_registry.sql",
+      "source_sha256": "315b31b8d66ff745aa2478594cd0ef787d8ec0b8c2c3f3ad163bc94f52f1bef3",
+      "phase": "manifest",
+      "from_step": 255,
+      "to_step": 443,
+      "statements": 188,
+      "execution_sql": "continuation-33.sql",
+      "execution_sha256": "0b78eafd80cfbc9f39f7afafb7d9a5852d18072322715a5b7dedc69245537807"
+    },
+    {
+      "file": "staging/.build/schema/recovery-guards.sql",
+      "source_sha256": "99556c755e10ff770e09818f9a43213cc1f4b8183596d9c0f1074006ba756d87",
+      "phase": "recovery-guards",
+      "from_step": 443,
+      "to_step": 740,
+      "statements": 297,
+      "execution_sql": "continuation-34.sql",
+      "execution_sha256": "bb57640c035218f08ab80eaa65fd3d73d3254af26590fb02a756bc657301b3d1"
+    }
+  ],
+  "application_tables": 102,
+  "receipt_rows": 35,
+  "remote_executed": false
+}

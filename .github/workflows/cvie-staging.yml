@@ -26,7 +26,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: npm install --prefix staging --ignore-scripts --no-package-lock
-      - run: python staging/scripts/migration-plan.py
+      - run: python staging/scripts/continuation-review.py
       - run: node staging/scripts/prepare-adoption.mjs
       - run: node staging/scripts/build.mjs
       - run: node --test staging/tests/*.test.mjs
@@ -43,6 +43,8 @@ jobs:
             staging/.build/schema/execution-plan.json
             staging/.build/schema/adoption-batch.sql
             staging/.build/schema/adoption-review.json
+            staging/.build/schema/continuation-summary.json
+            staging/.build/schema/continuation-*.sql
             staging/artifacts/*.json
           retention-days: 14
   release:
@@ -87,7 +89,7 @@ jobs:
       - name: Validate exact reviewed source and operation before management credentials
         run: node staging/scripts/release.mjs --check
       - name: Rebuild reviewed packages without credentials
-        if: env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema' && env.CF_STAGING_PROVISION_ACTION != 'adopt-schema'
+        if: env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema' && env.CF_STAGING_PROVISION_ACTION != 'adopt-schema' && env.CF_STAGING_PROVISION_ACTION != 'migrate'
         run: |
           npm install --prefix staging --ignore-scripts --no-package-lock
           python staging/scripts/migration-plan.py
@@ -101,8 +103,18 @@ jobs:
         env:
           CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
         run: node staging/scripts/release.mjs
+      - name: Execute only the approved schema migration phase
+        if: env.CF_STAGING_PROVISION_ACTION == 'migrate'
+        env:
+          CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
+          CF_STAGING_RECOVERY_EVIDENCE: ${{ secrets.CF_STAGING_RECOVERY_EVIDENCE }}
+          CF_STAGING_ACCESS_ISSUER: ${{ vars.CF_STAGING_ACCESS_ISSUER || secrets.CF_STAGING_ACCESS_ISSUER }}
+          CF_STAGING_ACCESS_AUD: ${{ vars.CF_STAGING_ACCESS_AUD || secrets.CF_STAGING_ACCESS_AUD }}
+          CF_STAGING_ACCESS_CLIENT_ID: ${{ secrets.CF_STAGING_ACCESS_CLIENT_ID }}
+          CF_STAGING_ACCESS_CLIENT_SECRET: ${{ secrets.CF_STAGING_ACCESS_CLIENT_SECRET }}
+        run: node staging/scripts/release.mjs
       - name: Execute only the approved existing-resource operation
-        if: env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema' && env.CF_STAGING_PROVISION_ACTION != 'adopt-schema'
+        if: env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema' && env.CF_STAGING_PROVISION_ACTION != 'adopt-schema' && env.CF_STAGING_PROVISION_ACTION != 'migrate'
         env:
           CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
           CF_STAGING_R2_ACCESS_KEY_ID: ${{ secrets.CF_STAGING_R2_ACCESS_KEY_ID }}

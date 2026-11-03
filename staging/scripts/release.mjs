@@ -15,6 +15,8 @@ import {hash} from './schema.mjs';
 import {d1Client} from '../../scripts/cloudflare_d1.mjs';
 import {diagnoseSchema,loadDiagnosticReference} from './schema-diagnostic.mjs';
 import {adoptSchema,loadAdoption} from './adopt-schema.mjs';
+import {failure,safeFailure} from './errors.mjs';
+import {migrationRecoveryEvidence} from './migration-recovery.mjs';
 import {holdStatus,setHold,freezeHold} from '../../scripts/recovery_control.mjs';
 export const OPERATIONS=Object.freeze(['diagnose-schema','adopt-schema','publish-synthetic','verify','migrate','update','recover-code','hold','freeze','resume']);
 export function authorize(env,event,checkout){
@@ -46,16 +48,19 @@ export async function executeRelease(env,event,checkout,deps={}){
  const action=authorize(env,event,checkout); // Before creating clients or touching credentials/network.
  if(action==='diagnose-schema')return (deps.schemaDiagnostic||diagnoseSchema)(env,{transport:deps.transport||fetch,record:(_name,value)=>(deps.record||(()=>{}))(value)});
  if(action==='adopt-schema')return (deps.adoptSchema||adoptSchema)({...env,STAGING_CHANGE_APPROVED:'PR243-STAGING-ONLY'},{transport:deps.transport||fetch,record:(name,value)=>{if(deps.record)deps.record(value);else{fs.mkdirSync(path.join(root,'artifacts'),{recursive:true});fs.writeFileSync(path.join(root,'artifacts',name+'.json'),JSON.stringify(value,null,2)+'\n');}}});
+ const migrationPlan=action==='migrate'?loadMigrationPlan(env):null;
+ const recovery=action==='migrate'?migrationRecoveryEvidence(env,migrationPlan):null;
  const transport=deps.transport||fetch,get=deps.get||management(env,transport),record=deps.record||(()=>{});
  const DB=deps.DB||d1Client({database:resourceManifest().permanent_database.uuid,readOnly:action==='verify',fetcher:transport,env:{CLOUDFLARE_ACCOUNT_ID:TARGET.account,CLOUDFLARE_API_TOKEN:env.CF_STAGING_API_TOKEN}});
  const report={action,source_sha:checkout,account:TARGET.account,database_id:resourceManifest().permanent_database.uuid,completed:false,steps:[]};
  const step=(name,evidence)=>{report.steps.push({name,...evidence});record(report);};
  try{
+  if(recovery)step('migration_recovery',recovery);
   const p=await (deps.preflight||preflight)(env,transport,{existingDatabase:true,workerState:'deployed'});acceptPreflight(p);step('access_and_inventory',{passed:true});
   const initial=await (deps.diagnose||diagnose)(env,transport,()=>{},{allowLegacy:true});assert.ok(initial.verified);step('existing_workers',{workers:initial.workers.map(w=>({name:w.name,version_id:w.version_id,deployment_id:w.deployment_id,profile:w.profile}))});
   if(action!=='verify'){
    const bookmark=await get(`/d1/database/${resourceManifest().permanent_database.uuid}/time_travel/bookmark`);
-   assert.ok(typeof bookmark?.bookmark==='string'&&bookmark.bookmark.length>5);step('recovery_bookmark',{bookmark:bookmark.bookmark});
+   assert.ok(typeof bookmark?.bookmark==='string'&&bookmark.bookmark.length>5);step('recovery_bookmark',{bookmark_sha256:hash(bookmark.bookmark)});
   }
   if(action==='publish-synthetic'){
    const bucket=resourceManifest().intelligence_bucket;
@@ -67,7 +72,7 @@ export async function executeRelease(env,event,checkout,deps={}){
    const result=(deps.runner||spawnSync)('python',[path.join(root,'scripts/publish-synthetic.py')],{cwd:path.dirname(root),env:childEnv,encoding:'utf8',timeout:180000});
    assert.ok(!result.error&&result.status===0,'Synthetic staging publication failed');step('synthetic_publication',{passed:true});
   }
-  else if(action==='migrate')step('migration',await (deps.migrate||migrate)({...env,STAGING_CHANGE_APPROVED:'PR243-STAGING-ONLY'},{plan:loadMigrationPlan(env),transport,record:(name,value)=>{fs.mkdirSync(path.join(root,'artifacts'),{recursive:true});fs.writeFileSync(path.join(root,'artifacts',name+'.json'),JSON.stringify(value,null,2)+'\n');}}));
+  else if(action==='migrate')step('migration',await (deps.migrate||migrate)({...env,STAGING_CHANGE_APPROVED:'PR243-STAGING-ONLY'},{plan:migrationPlan,transport,beforeWrite:()=>migrationRecoveryEvidence(env,migrationPlan),record:(name,value)=>{fs.mkdirSync(path.join(root,'artifacts'),{recursive:true});fs.writeFileSync(path.join(root,'artifacts',name+'.json'),JSON.stringify(value,null,2)+'\n');}}));
   else if(['hold','freeze','resume'].includes(action)){
    const options={revision:Number(env.CF_STAGING_EXPECTED_HOLD_REVISION),reason:env.CF_STAGING_RECOVERY_REASON,hold:action==='hold'};
    const result=action==='freeze'?await freezeHold(DB,options):await setHold(DB,options);step(action,result);
@@ -103,7 +108,7 @@ export async function executeRelease(env,event,checkout,deps={}){
    }
   }
   report.completed=true;record(report);return report;
- }catch{report.failure='Stopped without automatic rollback, resource replacement or hold release';record(report);throw Error(report.failure);}
+ }catch(error){report.failure='Stopped without automatic rollback, resource replacement or hold release';const stopped=failure('release.'+action,'validation',{},error);report.error=safeFailure(stopped);record(report);throw stopped;}
 }
 if(process.argv[1]===fileURLToPath(import.meta.url)){
  const record=r=>{fs.mkdirSync(path.join(root,'artifacts'),{recursive:true});fs.writeFileSync(path.join(root,'artifacts',r.action==='diagnose-schema'?'schema-diagnostic.json':r.action==='adopt-schema'?'adoption.json':'release.json'),JSON.stringify(r,null,2)+'\n');};
@@ -114,5 +119,5 @@ if(process.argv[1]===fileURLToPath(import.meta.url)){
   assert.equal(spawnSync('git',['diff','--exit-code','HEAD','--'],{cwd:root,encoding:'utf8'}).status,0,'Tracked source changed after review');
   if(process.argv[2]==='--check')console.log('Exact source, action and staging target validated locally.');
   else {await executeRelease(process.env,event,sha,{record});console.log('Approved permanent staging operation completed.');}
- }catch{console.error('Permanent staging operation stopped. Review sanitized release evidence; no automatic recovery attempted.');process.exitCode=1;}
+ }catch(error){const evidence=safeFailure(error);fs.mkdirSync(path.join(root,'artifacts'),{recursive:true});fs.writeFileSync(path.join(root,'artifacts/failure.json'),JSON.stringify({status:'stopped',...evidence,automatic_retries:0},null,2)+'\n');console.error('Permanent staging operation stopped: '+JSON.stringify(evidence)+'; no automatic recovery attempted.');process.exitCode=1;}
 }

@@ -10,7 +10,6 @@ ROOT=Path(__file__).resolve().parents[2]
 OUT=ROOT/'staging/.build/schema'
 
 def write_atomic(destination, text):
-    # Parallel local preparation must never expose an empty/partial plan.
     name = None
     try:
         with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=destination.parent, delete=False) as temporary:
@@ -22,6 +21,14 @@ def write_atomic(destination, text):
             os.unlink(name)
 
 SCHEMA_SQL = "SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE name NOT GLOB 'sqlite_*' AND name NOT GLOB '_cf_*' AND name NOT GLOB 'd1_*' ORDER BY type,name"
+
+def d1_limits(db):
+    # Conservative published D1 limits, plus workerd's five-term compound cap.
+    for name, value in [('LENGTH', 2000000), ('SQL_LENGTH', 100000), ('COLUMN', 100),
+                        ('EXPR_DEPTH', 100), ('COMPOUND_SELECT', 5), ('VDBE_OP', 250000),
+                        ('FUNCTION_ARG', 32), ('ATTACHED', 0), ('LIKE_PATTERN_LENGTH', 50),
+                        ('VARIABLE_NUMBER', 100), ('TRIGGER_DEPTH', 10)]:
+        db.setlimit(getattr(sqlite3, 'SQLITE_LIMIT_' + name), value)
 
 def encoded(value):
     return json.dumps(value, ensure_ascii=False, separators=(',', ':'))
@@ -65,6 +72,7 @@ def build():
     manifest.append({'file':'staging/.build/schema/recovery-guards.sql','sha256':digest(guards),'phase':'recovery-guards'})
     write_atomic(OUT/'recovery-guards.sql', guards)
     db = sqlite3.connect(':memory:')
+    d1_limits(db)
     db.execute('PRAGMA foreign_keys=ON')
     plan = {'format': 1, 'manifest_version': approved['version'], 'approved_manifest_sha256': hashlib.sha256(approved_bytes).hexdigest(),
             'schema_sql': SCHEMA_SQL, 'files': [], 'checkpoints': [], 'schemas': {}}

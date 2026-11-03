@@ -26,6 +26,9 @@ test('migration approval never falls through into publication or Worker deployme
  const approval=JSON.parse((await import('node:fs')).readFileSync(new URL('../bootstrap-approval.v1.json',import.meta.url),'utf8'));
  const calls=[],db=new FullDB();try{
   const e={...env,CF_STAGING_PROVISION_ACTION:'migrate',CF_STAGING_SCHEMA_PLAN_SHA256:approval.execution_plan_sha256,CF_STAGING_SCHEMA_RESUME_STEP:'0'};
+  e.CF_STAGING_RECOVERY_EVIDENCE=JSON.stringify({operation:'migrate',account:TARGET.account,database_id:e.CF_STAGING_D1_DATABASE_ID,source_sha:sha,
+   execution_plan_sha256:approval.execution_plan_sha256,start_step:0,start_schema_sha256:'4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945',
+   captured_at:new Date().toISOString(),writers_quiesced:true,export_validated:true,restore_available:true,export_sha256:'f'.repeat(64),bookmark:'synthetic-bookmark',private_export_reference:'private-fixture'});
   const d=deps(db,calls);d.migrate=async()=>{calls.push('migrate');return {status:'complete'};};
   d.verifySchema=async()=>assert.fail('Migration must not enter the deployment path');
   d.runner=()=>assert.fail('Migration must not launch any publisher or Wrangler');

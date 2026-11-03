@@ -1,5 +1,7 @@
 # Permanent staging: partial schema assessment
 
+> Current coordinated plan: [Task 2C two-phase continuation](../cvie-staging-continuation-plan.md). Original checkpoint 29 is verified. Adoption 29→37 and remaining migration 37→740 remain separate approvals, both requiring fresh private recovery evidence; nothing has executed beyond original 29.
+
 > **Historical assessment superseded by verified evidence.** Run 41707547474,
 > artifact 13275811878 subsequently confirmed the exact original checkpoint 29.
 > Use the [adoption review package](permanent-staging-adoption.md) for current

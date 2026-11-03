@@ -89,11 +89,19 @@ def validate(doc, filename):
             require(job.get('needs') == 'prepare', label + ': credential-free preparation required first')
             require('scripts/provision.mjs' not in raw and 'create-database' not in raw, label + ': initial provisioning is retired')
             runners = [s for s in job.get('steps', []) if s.get('run') == 'node staging/scripts/release.mjs']
-            expected_guards = {"env.CF_STAGING_PROVISION_ACTION == 'diagnose-schema'", "env.CF_STAGING_PROVISION_ACTION == 'adopt-schema'", "env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema' && env.CF_STAGING_PROVISION_ACTION != 'adopt-schema'"}
-            require(len(runners) == 3 and {s.get('if') for s in runners} == expected_guards, label + ': diagnostic/adoption/general dispatch must be exclusive')
+            expected_guards = {"env.CF_STAGING_PROVISION_ACTION == 'diagnose-schema'", "env.CF_STAGING_PROVISION_ACTION == 'adopt-schema'", "env.CF_STAGING_PROVISION_ACTION == 'migrate'", "env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema' && env.CF_STAGING_PROVISION_ACTION != 'adopt-schema' && env.CF_STAGING_PROVISION_ACTION != 'migrate'"}
+            require(len(runners) == 4 and {s.get('if') for s in runners} == expected_guards, label + ': diagnostic/adoption/migration/general dispatch must be exclusive')
             for step in runners:
                 if step.get('if') == "env.CF_STAGING_PROVISION_ACTION == 'adopt-schema'":
                     require(step.get('env') == {'CF_STAGING_API_TOKEN': '${{ secrets.CF_STAGING_API_TOKEN }}', 'CF_STAGING_RECOVERY_EVIDENCE': '${{ secrets.CF_STAGING_RECOVERY_EVIDENCE }}'}, label + ': adoption receives only staging D1 credential and private recovery evidence')
+                if step.get('if') == "env.CF_STAGING_PROVISION_ACTION == 'migrate'":
+                    expected = {'CF_STAGING_API_TOKEN': '${{ secrets.CF_STAGING_API_TOKEN }}',
+                                'CF_STAGING_RECOVERY_EVIDENCE': '${{ secrets.CF_STAGING_RECOVERY_EVIDENCE }}',
+                                'CF_STAGING_ACCESS_ISSUER': '${{ vars.CF_STAGING_ACCESS_ISSUER || secrets.CF_STAGING_ACCESS_ISSUER }}',
+                                'CF_STAGING_ACCESS_AUD': '${{ vars.CF_STAGING_ACCESS_AUD || secrets.CF_STAGING_ACCESS_AUD }}',
+                                'CF_STAGING_ACCESS_CLIENT_ID': '${{ secrets.CF_STAGING_ACCESS_CLIENT_ID }}',
+                                'CF_STAGING_ACCESS_CLIENT_SECRET': '${{ secrets.CF_STAGING_ACCESS_CLIENT_SECRET }}'}
+                    require(step.get('env') == expected, label + ': migration receives only staging D1/Access credentials and private recovery evidence')
         if env == 'cloudflare-intelligence-data':
             require(filename == 'publish-intelligence.yml' and name == 'collect', label + ': data credential caller not allowed')
             require('PRODUCTION_DEPLOYMENTS_ENABLED' not in condition and 'needs' not in job, label + ': feed cannot depend on application release')

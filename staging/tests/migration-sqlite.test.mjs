@@ -10,8 +10,12 @@ import {authorize} from '../scripts/release.mjs';
 import { TARGET } from '../target.mjs';
 import { root } from '../scripts/configure.mjs';
 
-const build = spawnSync('python', ['staging/scripts/migration-plan.py'], { cwd: path.resolve(root, '..'), encoding: 'utf8' });
-assert.equal(build.status, 0, build.stderr);
+const cachedPlan = path.join(root, '.build/schema/execution-plan.json');
+const approvedPlan = JSON.parse(fs.readFileSync(path.join(root, 'bootstrap-approval.v1.json'))).execution_plan_sha256;
+if (!fs.existsSync(cachedPlan) || hash(fs.readFileSync(cachedPlan)) !== approvedPlan) {
+  const build = spawnSync('python', ['staging/scripts/migration-plan.py'], { cwd: path.resolve(root, '..'), encoding: 'utf8' });
+  assert.equal(build.status, 0, build.stderr);
+}
 const planBytes = fs.readFileSync(path.join(root, '.build/schema/execution-plan.json'));
 const plan = JSON.parse(planBytes);
 const sha = 'a'.repeat(40);
@@ -57,7 +61,7 @@ function harness(t, hook = async () => undefined) {
     assert.match(route, /^\/workers\/scripts\/cveharbor-(accounts|site)-staging\/(settings|deployments|subdomain|schedules)$/);
     return Response.json({ success: true, result: { unchanged: true } });
   };
-  const deps = { plan, transport, inventory: async () => ({ verified: true }), probe: async () => ({ passed: true }),
+  const deps = { plan, transport, requestIntervalMs: 0, inventory: async () => ({ verified: true }), probe: async () => ({ passed: true }),
     record: (name, data) => { if (name === 'migration') latest = data; } };
   return { deps, calls, execute, final: () => latest };
 }
@@ -92,7 +96,7 @@ test('a partial migration stops, reports actual prefix and resumes only at a sep
   let failed = false, writeBatches = 0;
   const target = plan.files.find(f=>f.file.endsWith('0029_cvie_identity_registry.sql')); const batchCount=plan.files.indexOf(target)+1;
   const h = harness(t, async ({ body, execute }) => {
-    if (!body.batch) return;
+    if (!body.batch || body.batch.every(q => q.sql.trimStart().startsWith('SELECT'))) return;
     writeBatches++;
     if (!failed && body.batch.some(q => q.sql.includes('CREATE TABLE cvie_identities'))) {
       failed = true;
@@ -121,7 +125,7 @@ test('a lost success response stops without retry and reports the committed chec
   let lost = false, batches = 0;
   const first = plan.files[0];
   const h = harness(t, async ({ body, execute }) => {
-    if (!body.batch) return;
+    if (!body.batch || body.batch.every(q => q.sql.trimStart().startsWith('SELECT'))) return;
     batches++;
     if (!lost) { lost = true; await execute(body); throw Error('synthetic-secret'); }
   });
@@ -136,7 +140,7 @@ test('a lost success response stops without retry and reports the committed chec
 test('in-batch guard blocks a concurrent customer row and reports the unexpected state without reading its contents', async t => {
   let injected = false, batches = 0;
   const h = harness(t, async ({ body, execute }) => {
-    if (!body.batch) return;
+    if (!body.batch || body.batch.every(q => q.sql.trimStart().startsWith('SELECT'))) return;
     batches++;
     if (batches === 3 && !injected) {
       injected = true;
@@ -155,7 +159,7 @@ test('missing metrics and explicit statement errors stop before the next migrati
   for (const mode of ['metrics', 'statement', 'http', 'budget']) {
     let batches = 0;
     const h = harness(t, async ({ body, execute }) => {
-      if (!body.batch) return;
+      if (!body.batch || body.batch.every(q => q.sql.trimStart().startsWith('SELECT'))) return;
       batches++;
       const result = await execute(body);
       if (mode === 'metrics') delete result.result[0].meta.rows_read;
@@ -173,7 +177,7 @@ test('missing metrics and explicit statement errors stop before the next migrati
 test('missing/changed database identity, failed Access checks and unexpected inventory prevent every migration write', async t => {
   for (const mode of ['identity', 'access', 'inventory']) {
     let batches = 0;
-    const h = harness(t, async ({ body }) => { if (body.batch) batches++; });
+    const h = harness(t, async ({ body }) => { if (body.batch && body.batch.some(q => !q.sql.trimStart().startsWith('SELECT'))) batches++; });
     if (mode === 'access') h.deps.probe = async () => ({ passed: false });
     if (mode === 'inventory') h.deps.inventory = async () => ({ verified: false });
     if (mode === 'identity') {
@@ -219,8 +223,8 @@ test('SQL input changes are rejected even when the generated plan is unchanged',
 test('failed post-write count verification and failed reconciliation retain fresh schema but no stale checkpoint', async t => {
   let written = false;
   const h = harness(t, async ({ body }) => {
-    if (body.batch) written = true;
-    if (written && body.sql?.startsWith('SELECT count(*) AS n FROM'))
+    if (body.batch && body.batch.some(q => !q.sql.trimStart().startsWith('SELECT'))) written = true;
+    if (written && body.batch?.every(q => q.sql.startsWith('SELECT count(*) AS n FROM')))
       return Response.json({ success: false, errors: [{ code: 7500, message: 'synthetic-secret' }] }, { status: 400 });
   });
   await assert.rejects(migrate(env, h.deps));

@@ -1,4 +1,4 @@
-"""Restore a checkpoint-29 D1 export LOCALLY only; never contact Cloudflare.
+"""Restore an original-29 or adopted-37 D1 export LOCALLY only; never contact Cloudflare.
 
 Reports contain fingerprints/counts, not exported rows, SQL or private paths.
 The export cannot prove its source account or Time Travel recoverability.
@@ -36,7 +36,9 @@ def ddl_tokens(sql):
 def digest(data):
     return hashlib.sha256(data).hexdigest()
 
-def validate_export(source):
+def validate_export(source, checkpoint=29):
+    if checkpoint not in (29,37):
+        raise ValueError('unsupported_checkpoint')
     reference_bytes = (ROOT / 'staging/schema-diagnostic.v1.json').read_bytes()
     if digest(reference_bytes) != REFERENCE_SHA256:
         raise ValueError('reference_checksum')
@@ -46,15 +48,26 @@ def validate_export(source):
         raise ValueError('original_source_checksum')
     if source.stat().st_size > 100000000:
         raise ValueError('export_size_limit')
+    adoption = None
+    if checkpoint == 37:
+        adoption_bytes = (ROOT/'staging/adoption.v1.json').read_bytes()
+        if digest(adoption_bytes) != '7ed30868dae48623caaccd9f1bead405333785b7b8c888f0308fb0b11ffe3eea':
+            raise ValueError('adoption_spec_checksum')
+        adoption = json.loads(adoption_bytes)
+        adoption_sql = (ROOT/adoption['sql_path']).read_bytes()
+        if digest(adoption_sql) != adoption['sql_sha256']:
+            raise ValueError('adoption_sql_checksum')
     payload = source.read_bytes()
     report = {'local_only': True, 'status': 'failed', 'export_sha256': digest(payload),
-              'export_bytes': len(payload), 'expected_original_checkpoint': 29,
-              'expected_schema_sha256': reference['checkpoints'][29]['schema_sha256'],
+              'export_bytes': len(payload), 'expected_original_checkpoint': 29, 'expected_checkpoint': checkpoint,
+              'expected_schema_sha256': reference['checkpoints'][29]['schema_sha256'] if checkpoint==29 else 'fb8f3f8dedc0c70181cfa6c7ca3b1a20813424ddbf3dec62446c5f9c334b36e2',
               'source_identity_requires_admin_verification': True,
               'time_travel_not_tested': True}
     with tempfile.TemporaryDirectory(prefix='cveharbor-local-export-') as temp:
         expected = sqlite3.connect(':memory:')
         expected.executescript(original.decode('utf-8'))
+        if checkpoint==37:
+            expected.executescript(adoption_sql.decode('utf-8'))
         restored = sqlite3.connect(str(Path(temp) / 'restored.sqlite'))
         restored.enable_load_extension(False)
         def authorize(action, one, two, database, _trigger):
@@ -101,15 +114,22 @@ def validate_export(source):
                     query = 'PRAGMA index_xinfo(' + ident + ')'
                     if list(restored.execute(query)) != list(expected.execute(query)):
                         raise ValueError('index_metadata_mismatch')
-            if counts != reference['checkpoints'][29]['counts']:
+            expected_counts=[[r[1],expected.execute('SELECT count(*) FROM \"'+r[1].replace('\"','\"\"')+'\"').fetchone()[0]] for r in wanted if r[0]=='table']
+            if counts != expected_counts:
                 raise ValueError('unexpected_application_rows')
+            if checkpoint==37:
+                columns='path,sha256,manifest_version'
+                if list(restored.execute('SELECT '+columns+' FROM staging_schema_history ORDER BY rowid')) != list(expected.execute('SELECT '+columns+' FROM staging_schema_history ORDER BY rowid')):
+                    raise ValueError('adoption_receipts_mismatch')
+                if restored.execute("SELECT count(*) FROM staging_schema_history WHERE typeof(applied_at)<>'text' OR datetime(applied_at) IS NULL OR datetime(applied_at)>datetime('now','+5 minutes')").fetchone()[0]:
+                    raise ValueError('adoption_receipt_time')
             if list(restored.execute('PRAGMA foreign_key_check')):
                 raise ValueError('foreign_key_violation')
             if list(restored.execute('PRAGMA integrity_check')) != [('ok',)]:
                 raise ValueError('integrity_failure')
             if digest(source.read_bytes()) != report['export_sha256']:
                 raise ValueError('export_changed_during_validation')
-            report.update(status='passed', tables=18, explicit_indexes=10, application_rows=0,
+            report.update(status='passed', tables=18 if checkpoint==29 else 22, explicit_indexes=10 if checkpoint==29 else 12, application_rows=0, receipt_rows=0 if checkpoint==29 else 2,
                           local_restore_passed=True, foreign_keys_passed=True, integrity_check='ok',
                           definitions_and_constraints_match=True)
         finally:
@@ -120,19 +140,20 @@ def validate_export(source):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--export', dest='source', type=Path, required=True)
+    parser.add_argument('--checkpoint', type=int, choices=[29,37], default=29)
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
     if args.report.resolve().is_relative_to(ROOT) or args.report.exists():
         raise SystemExit('Use a new private report path outside the repository.')
     try:
-        report = validate_export(args.source)
+        report = validate_export(args.source, args.checkpoint)
     except Exception:
         raise SystemExit('Local export validation failed. Keep adoption blocked; inspect privately. No export contents were logged.')
     with args.report.open('x') as target:
         args.report.chmod(0o600)
         json.dump(report, target, indent=2)
         target.write('\n')
-    print('PASS: local checkpoint-29 restore, definitions, counts, foreign keys and integrity. Live identity and recovery retention still require administrator verification.')
+    print(f'PASS: local checkpoint-{args.checkpoint} restore, definitions, counts, foreign keys and integrity. Live identity and recovery retention still require administrator verification.')
 
 if __name__ == '__main__':
     main()

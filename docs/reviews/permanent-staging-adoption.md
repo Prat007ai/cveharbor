@@ -1,5 +1,7 @@
 # Original-schema adoption: review package, not execution approval
 
+> Coordinated continuation: [Task 2C two-phase plan](../cvie-staging-continuation-plan.md). Original 29 is verified; adoption 29→37 and migration 37→740 remain separate approvals with fresh private recovery evidence. No further remote writes have run.
+
 For the investigated browser CI race, practical maintenance isolation, bookmark/
 export commands and the local restore validator, use the
 [administrator checklist](staging-adoption-operator-checklist.md).
