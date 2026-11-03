@@ -7,7 +7,8 @@ and UI redesign remain on hold. No such actions were performed in this review.
 
 Use this checklist for configuration/order, [the release procedure](remediation-phase1-release.md)
 for database recovery details, and [the R2 implementation report](intelligence-publication.md)
-for architecture and source coverage. Earlier review reports are historical evidence,
+for architecture and source coverage. Use [the permanent staging architecture](permanent-staging-architecture.md)
+for verified existing resources, reuse decisions and refresh requirements. Earlier review reports are historical evidence,
 not alternative release instructions.
 
 ## 1. Establish the configuration worksheet
@@ -21,9 +22,12 @@ file, PRs, chat, screenshots or artifacts. Use your password manager/secure runn
 | Integrated executable source | Reviewed PR #251 commit containing #253; initial code validation anchor `5a3a53a9a7c26fcdc59b7ee588df6597cd557a8a` | Local tests and GitHub CI passed at that code revision; recheck latest heads |
 | Production Cloudflare account ID | Actual 32-character account ID from the dashboard | Administrator must confirm |
 | Production D1 | `cveharbor-accounts`, UUID `46710e51-7ca4-4571-b89c-921b9969de0b` | Confirm against dashboard and Wrangler; never use for staging |
-| Staging Cloudflare account ID | Different 32-character account ID | Administrator must confirm separation and token policy |
-| Staging D1 | Fresh empty `cveharbor-phase1-staging-<suffix>`; UUID | Not provisioned/validated by this session |
-| Staging R2 | Fresh empty `cveharbor-intelligence-staging-<suffix>` | Not provisioned/validated by this session |
+| Existing staging account | `9706b4d98ad72884e67fd1eb875c8a61` | Existing run verified identity; saved token scope remains owner-attested; reuse this account |
+| Permanent staging D1 | `cveharbor-accounts-staging`, UUID `fac61562-fc31-426d-8032-550aba63b7f6` | Existing resource/binding verified; full schema and application data tests pending |
+| Permanent staging Workers | `cveharbor-accounts-staging`, `cveharbor-site-staging` | Existing run verified bindings and 28 Access checks; reuse both |
+| Permanent staging R2 | Proposed `cveharbor-intelligence-staging`; inspect existing buckets first | Live R2 inventory unavailable; integration not configured in reviewed staging source |
+| Disposable D1 | Fresh empty `cveharbor-phase1-staging-<suffix>` in the same staging account | Pending approval and inventory-guard integration; never use permanent D1 |
+| Disposable R2 | Fresh empty `cveharbor-intelligence-staging-<suffix>` in the same staging account | Pending inventory/approval; required only for empty-bucket synthetic rehearsal |
 | Production R2, later | Private `cveharbor-intelligence`, accessible in existing Workers' account | Requires separate resource/cost approval |
 | Independent reviewer | Eligible collaborator other than PR author/deployment initiator | Administrator must confirm |
 | Shadow publisher | Approved runner, reviewed SHA, operator, cadence, start/stop record | Must exist before retiring the old publisher |
@@ -31,54 +35,74 @@ file, PRs, chat, screenshots or artifacts. Use your password manager/secure runn
 
 The current managed development environment has no configured credentials/identities.
 GitHub administrative secret/environment metadata is not exposed by the connected
-GitHub tool. These are **unknown settings**, not evidence that secrets/resources do
-not exist. A previous staging project is not proof of an empty, isolated resource.
+GitHub tool. Existing resources are verified from the completed staging run and its
+inspected artifacts, not inferred from source names. See the architecture document
+for exact evidence/time and limits. No new Cloudflare request or staging mutation
+was made in this review.
 
-## 2. Cloudflare: create isolated staging resources (administrator, after approval)
+## 2. Cloudflare: reuse permanent staging; isolate disposable tests
 
-### Account and D1
+### Permanent application environment — preserve existing resources
 
-- [ ] Sign in to Cloudflare, select/create the approved **separate staging account**.
-  Verify its ID differs from production. Inspect existing CVIE staging resources
-  read-only if considering reuse; reuse the account only after verifying access,
-  billing and isolation. Do not modify/reseed an existing staging database.
-- [ ] **Storage & databases → D1 SQL database → Create database** (UI names may vary).
-  Create `cveharbor-phase1-staging-<lowercase-suffix>`. Choose the approved region.
-  Record its exact name and UUID. Leave it empty: no production import, restore,
-  customer records, Worker binding or custom domain. The harness creates synthetic
-  fixtures itself. An interrupted/nonempty bootstrap requires investigation or a
-  newly approved empty target, not a reset command.
-- [ ] **My Profile → API Tokens → Create Token → Custom token**: Account / D1 / Edit
-  (API permission label `D1 Write`), resources **Include → this staging account only**.
-  No production account, Workers Scripts, DNS, Routes or SMTP permissions. Use a
-  distinct staging identity. Where per-database scoping is unavailable, the separate
-  account is the boundary; do not describe an account-scoped key as database-scoped.
-- [ ] Store the token securely and populate the D1 GitHub environment in section 3.
+- [ ] Select the existing staging account above, separately from production. Inspect
+  its D1, two Workers, Access application and R2 inventory read-only. Do not create
+  a second account or replace the permanent database. The existing staging project
+  uses GitHub environment **`cloudflare-cvie-staging`** and `CF_STAGING_*` credentials.
+- [ ] Verify the permanent D1 UUID/schema and active Worker bindings. The last
+  reported schema was empty; the latest frontend operation did not migrate it.
+  Do not treat successful Access probes as complete application readiness.
+- [ ] Follow [the integration gaps and configuration steps](permanent-staging-architecture.md).
+  Before adding another D1, correct the existing one-database inventory guard through
+  review. Before combining source, correct the staging schema builder's handling of
+  0030–0032. Never reset the permanent database to satisfy a synthetic harness.
+- [ ] Reuse an appropriate private R2 bucket if present; otherwise seek approval for
+  permanent `cveharbor-intelligence-staging` in the same staging account. Standard
+  storage, public access disabled, no production domain. The current staging wrapper,
+  config validator and frontend require reviewed R2 integration before bindings work.
+- [ ] Keep real mail/provider egress and crons disabled. Prepare captured-email,
+  provider-fixture and scheduler tests before enabling full synthetic feature testing.
+  Sanitized production refresh needs a separate reviewed sanitizer/import plan and
+  approval; it is not required to start Phase 1 validation.
 
-### R2
+### Disposable D1 — only for the Phase 1 regression harness
 
-- [ ] In that staging account, **Storage & databases → R2 Object Storage → Create bucket**.
-  Create `cveharbor-intelligence-staging-<lowercase-suffix>` in **Standard** storage.
-  Approve any billing enrollment/cost first. Keep public `r2.dev` access disabled;
-  add no public custom domain or CORS rule. Leave it empty. Do not add automatic
-  object expiry: immutable objects can be shared by later manifests.
-- [ ] **R2 → Manage R2 API Tokens → Create API token**: choose **Object Read & Write**,
-  select **only this staging bucket**. Do not choose Admin Read & Write or all buckets.
-  Record the account ID and bucket name; store the returned **Access Key ID** and
-  **Secret Access Key** in the secure runner/password manager. They are an S3 pair,
-  not the D1 bearer token. Endpoint is `https://<staging-account-id>.r2.cloudflarestorage.com`;
-  SDK region is `auto`.
-- [ ] This token needs list/get/put for the rehearsal, and must have no production
-  bucket/account access. Object Read & Write may include deletion capability; the
-  harness never deletes. Inspect token scope rather than testing writes to production.
+- [ ] After inventory-guard integration and explicit resource approval, use **Storage
+  & databases → D1 SQL database → Create database** in the **same existing staging
+  account**. Create `cveharbor-phase1-staging-<lowercase-suffix>`; record exact UUID.
+  Leave it empty, with no customer import or permanent Worker binding. An existing
+  candidate may be reused only after identity and empty-state verification and
+  approval; do not clear a used database automatically.
+- [ ] Use a distinct token: Account / D1 / Edit (API label `D1 Write`), resources
+  **Include → this staging account only**. No Workers Scripts, DNS, SMTP or production
+  permission. Account-level D1 permission can reach permanent staging too; the
+  explicit name/UUID/synthetic-data guards remain essential. Do not reuse the more
+  capable permanent staging management token merely for convenience.
+- [ ] Store the approved token in `cloudflare-phase1-staging` as section 3 specifies.
+  It is a job/credential boundary in the same Cloudflare account, not another stack.
 
-**No new hosted Worker is required for either data rehearsal.** D1 invokes real
-handlers through its REST adapter with mail intercepted; R2 uses the S3 API. Hosted
-Worker bindings/authentication/performance are a separate remaining staging check.
-The R2 rehearsal currently has **no GitHub Actions workflow**. Do not put staging R2
-keys in `cloudflare-intelligence-data`, which is the future production publisher.
-Run the existing CLI in an approved secure runner; no unused R2 GitHub environment
-is needed. GitHub environment secrets cannot be read back into a local runner.
+### Disposable R2 — only for the empty-bucket publication rehearsal
+
+- [ ] Inspect existing staging buckets first. After approval, create a fresh empty
+  `cveharbor-intelligence-staging-<lowercase-suffix>` in **Standard** storage within
+  that same account. Approve any billing enrollment first. Disable public `r2.dev`,
+  custom domains and CORS; do not add automatic expiry to referenced objects.
+  Do not point the permanent Workers/publisher at this bucket.
+- [ ] **R2 → Manage R2 API Tokens → Create API token**: **Object Read & Write**, only
+  this disposable bucket, never all buckets or Admin Read & Write. Store its S3
+  Access Key ID/Secret Access Key securely. Endpoint:
+  `https://<staging-account-id>.r2.cloudflarestorage.com`; SDK region `auto`.
+  List/get/put are needed; the harness never deletes, even if the token permits it.
+- [ ] The R2 harness requires an empty bucket and fixed root keys. A populated
+  permanent bucket or a prefix within it is not a supported substitute. Retain
+  evidence and request cleanup approval after the test; do not keep creating
+  untracked test resources.
+
+**No additional hosted Worker is required for either disposable rehearsal.** D1
+invokes real handlers through its REST adapter with mail intercepted; R2 uses S3.
+Full application checks use the existing permanent Workers after approved integration.
+The R2 rehearsal has **no GitHub Actions workflow**. Use the CLI in an approved secure
+runner; do not put staging keys in production `cloudflare-intelligence-data`.
+GitHub environment secrets cannot be read back into a local runner.
 
 ## 3. GitHub: exact environment and credential configuration
 
@@ -88,7 +112,8 @@ The table describes intended locations; it does not assert they already exist.
 
 | Environment | Secrets | Variables | Protection / purpose |
 |---|---|---|---|
-| `cloudflare-phase1-staging` | `CLOUDFLARE_STAGING_API_TOKEN`, `CLOUDFLARE_STAGING_ACCOUNT_ID` | `STAGING_DATABASE_ID`, `STAGING_DATABASE_NAME`, `STAGING_DISPOSABLE=true`, `PRODUCTION_ACCOUNT_ID` | Main-only, independent approval; synthetic D1 bootstrap/validation |
+| `cloudflare-cvie-staging` | Existing `CF_STAGING_API_TOKEN`, `CF_STAGING_ACCESS_CLIENT_ID`, `CF_STAGING_ACCESS_CLIENT_SECRET`; retain existing supported secret storage for account/Access IDs | `CF_STAGING_ACCOUNT_ID`, `CF_STAGING_D1_DATABASE_ID`, `CF_STAGING_ACCESS_ISSUER`, `CF_STAGING_ACCESS_AUD`, `CF_STAGING_APPROVED_COMMIT`, `CF_STAGING_PROVISION_ACTION` | Existing permanent staging; preserve reviewed `codex/cvie-core-phase012` restriction and current approval arrangement; details in architecture document |
+| `cloudflare-phase1-staging` | `CLOUDFLARE_STAGING_API_TOKEN`, `CLOUDFLARE_STAGING_ACCOUNT_ID` | `STAGING_DATABASE_ID`, `STAGING_DATABASE_NAME`, `STAGING_DISPOSABLE=true`, `PRODUCTION_ACCOUNT_ID` | Main-only, independent approval; disposable synthetic D1 in the existing staging account |
 | `cloudflare-production-audit` | `CLOUDFLARE_AUDIT_API_TOKEN`, `CLOUDFLARE_AUDIT_ACCOUNT_ID` | None for preflight | Main-only, independent approval; SELECT-only production audit |
 | `cloudflare-worker-production` | `CVEHARBOR_PROD_WORKER_TOKEN`, `CVEHARBOR_PROD_ACCOUNT_ID` | None newly required for Phase 1 | Main-only, independent approval; backend migrations/deployment and recovery |
 | `cloudflare-site-production` | `CVEHARBOR_PROD_SITE_TOKEN`, `CVEHARBOR_PROD_ACCOUNT_ID`, `CVEHARBOR_SITE_GATE_PASSWORD` | Existing site configuration only | Main-only, independent approval; application frontend deployment |
@@ -194,10 +219,11 @@ Protecting main before replacing that writer would break its updates.
   contents/packages; turn off Actions creating/approving PRs. Review allowed
   actions; all used external Actions are pinned `actions/*` commits. Keep fork PR
   write-token/secret access disabled. Do not turn off Actions entirely.
-- [ ] For **every environment in section 3**, choose **Deployment branches and tags
+- [ ] For **every environment in section 3 except existing `cloudflare-cvie-staging`**, choose **Deployment branches and tags
   → Selected branches and tags → branch `main` only**. No tag/wildcard/PR-ref rule.
   “Protected branches only” is not equivalent while no branch is protected.
-- [ ] For all listed environments **except `cloudflare-intelligence-data`**, require
+- [ ] For all listed environments **except `cloudflare-intelligence-data` and existing
+  `cloudflare-cvie-staging`**, require
   an independent reviewer, enable Prevent self-review, and disallow administrator
   bypass where supported. A reviewer list requires one listed approval, not all of
   them. Verify the saved controls, reject stale/old-SHA reruns, and review operation
@@ -207,7 +233,9 @@ Protecting main before replacing that writer would break its updates.
   bucket-scoped credentials; reviewed main code supplies the security boundary.
   Its hourly schedule is `17 * * * *` UTC. It has no dependency on application
   release approval, production deployment flags, D1 readiness or recovery holds.
-- [ ] Do not apply blanket changes to unrelated existing CVIE staging environments.
+- [ ] Preserve the existing permanent `cloudflare-cvie-staging` branch/review arrangement.
+  Any future move to main needs coordinated review; do not apply blanket production
+  rules to that branch-specific staging workflow.
   Verify the resulting settings by metadata/UI after saving; source YAML is not
   proof that repository/environment protections are enforced.
 
@@ -227,7 +255,7 @@ GitHub/package registries for dependencies; `api.cloudflare.com` for D1; the exa
 staging account's R2 S3 endpoint for R2. Configure access through the supported
 secure environment interface, without bypassing its network policy.
 
-### A. R2 — writes synthetic objects only to the new empty staging bucket
+### A. R2 — writes synthetic objects only to an approved disposable bucket
 
 Secure runner inputs (not production GitHub publisher secrets):
 
@@ -251,7 +279,7 @@ approved empty bucket; this harness refuses a nonempty one. Retain exact SHA,
 bucket/account IDs, time and aggregate PASS output. Do not seed production with
 these synthetic objects.
 
-### B. D1 — bootstrap once, validate twice
+### B. D1 — disposable database only: bootstrap once, validate twice
 
 In the secure staging session, inject `CLOUDFLARE_ACCOUNT_ID` and
 `STAGING_ACCOUNT_ID` from the **staging** account identifier,
@@ -266,6 +294,8 @@ node scripts/phase1_staging.mjs validate
 node scripts/phase1_staging.mjs validate
 ```
 
+Never set the target to permanent `cveharbor-accounts-staging`. Resolve the existing
+staging inventory guard before provisioning a disposable database in its account.
 Run each only after the preceding command succeeds. The boundary check must precede
 any remote call. Pass: distinct accounts/UUID, exact remote database name, empty-only
 bootstrap, synthetic identities, preserved rows/receipt links/history, repeatable
@@ -305,9 +335,10 @@ for additional guard/hold checks. Do not run installed mode before installation.
 | Check | Result required | Status now |
 |---|---|---|
 | Local application/security/recovery tests | Passing on reviewed code | Prior code revision passed; documentation checks repeated in this review |
-| Remote R2 synthetic rehearsal | PASS including conditional-write rejection/recovery | Pending resources/secure credentials |
-| Remote D1 rehearsal | Bootstrap + two passing validations | Pending resources/secure credentials |
-| Hosted Worker R2 integration | Auth, bindings, large data CPU/memory, cold-start/failure behavior; mail disabled/mocked | Pending isolated staging configuration/approval |
+| Remote R2 synthetic rehearsal | PASS including conditional-write rejection/recovery | Pending approved disposable target/runner; existing permanent staging is reused separately |
+| Remote D1 rehearsal | Bootstrap + two passing validations | Pending inventory-guard integration and approved disposable target/runner |
+| Permanent staging foundation | Existing resources, Access/ASSETS gate, private API/session boundary | Completed run 41691571014 passed 28 GET checks; not an authenticated application test |
+| Hosted Worker R2/full application integration | Complete schema/candidate code, R2 readers, captured notifications, scheduler and recovery tests | Pending integration/approval in existing permanent staging |
 | Production preflight | All aggregate integrity counts zero, no writes | Pending approved read-only credentials/access |
 | GitHub settings | Verified active rules, reviewers, main-only envs, scoped secret locations | Administrator verification pending |
 | Shadow publication | At least two current cycles, parity checks and simulated failure recovery | Production shadow resources/runner approval pending |
