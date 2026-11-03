@@ -5,14 +5,23 @@ on:
     paths: ['account-backend/**', 'cvie.js', 'app.js', 'scripts/cvie_client_smoke.mjs', 'scripts/cvie_polling_smoke.mjs', 'scripts/probe_cvie_shared.mjs', 'scripts/bootstrap_cvie_shared.mjs', 'scripts/cvie_rest_batch.mjs', 'scripts/cvie_rest_batch.test.mjs', 'scripts/verify_cvie_d1.mjs', '.github/workflows/verify-cvie-d1.yml']
 permissions:
   contents: write
+concurrency:
+  group: cveharbor-production-release
+  cancel-in-progress: false
 jobs:
   verify:
+    environment: cloudflare-worker-production
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Respect recovery hold before production changes
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify_release_hold.mjs
       - name: Verify scan continuity, subscription changes and private account isolation
         run: npm test --prefix account-backend
       - name: Verify status refresh and account-change behavior in the browser client
@@ -65,3 +74,9 @@ jobs:
           VERIFY_SHARED: ${{ github.ref_name == 'feat/cvie-shared-product-scans' }}
         run: node -e "if(process.env.QUERY_OUTCOME!=='success'||!require('./data/cvie-d1-check.json').ok||process.env.VERIFY_SHARED==='true'&&(process.env.PROVIDER_OUTCOME!=='success'||!require('./data/cvie-shared-check.json').ok))process.exit(1)"
 
+
+      - name: Cover any newly introduced tables with recovery guards
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/refresh_recovery_guards.mjs

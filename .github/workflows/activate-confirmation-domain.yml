@@ -8,7 +8,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: cveharbor-worker-production
+  group: cveharbor-production-release
   cancel-in-progress: false
 jobs:
   validate:
@@ -34,6 +34,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Respect recovery hold before production changes
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify_release_hold.mjs
       - name: Require the approved compatible Worker release
         run: git merge-base --is-ancestor 4004859b66a37942fa606b7d8fbaeddd4c674c8f HEAD
       - name: Verify new hostname HTTPS and guest-only routes before changing email links

@@ -206,6 +206,9 @@ jobs:
           fi
 
   sync:
+    concurrency:
+      group: cveharbor-production-release
+      cancel-in-progress: false
     name: Collect public advisories and deploy
     outputs:
       retire_pages_origin: ${{ steps.origin.outputs.retire_pages_origin }}
@@ -327,6 +330,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Require matching deployed backend and completed Phase 1 schema
+        run: node scripts/verify_frontend_backend.mjs
       - name: Deploy protected frontend without changing the account API
         id: deployment
         env:

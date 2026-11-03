@@ -108,7 +108,13 @@ def probe(url,gated,username,password):
     if status!=200:raise RuntimeError("Authenticated frontend request failed: HTTP "+str(status))
 
 
+def verify_backend():
+    subprocess.run(["node", str(ROOT/"scripts/verify_frontend_backend.mjs")], cwd=ROOT, check=True)
+
+
 def main():
+    # Fail closed before secrets, DNS, or frontend changes, including scheduled publication.
+    verify_backend()
     config,gated,password=checked_configuration()
     # All credential and routing checks happen before any DNS or Worker changes.
     zone_id,records=routing_plan(config)

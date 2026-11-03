@@ -1,3 +1,5 @@
+import {recoveryProtected} from './recovery-control.js';
+import {releaseReadiness} from './release-readiness.js';
 import {canonicalRecord,integrityError} from './remediation-integrity.js';
 import {scheduleStatusMail} from './status-update-mail.js';
 import {sharedRoute} from './finding-remediation.js';
@@ -51,7 +53,7 @@ function retryResponse(seconds,kind='limit'){
  return response({error:kind==='resend'?'Please wait before requesting another verification code.':'Too many verification requests. Please try again when the limit resets.',retry_after:delay},429,{'Retry-After':String(delay)});
 }
 async function emailCode(env,address,code){const response=await fetch('https://api.smtp2go.com/v3/email/send',{method:'POST',headers:{'Content-Type':'application/json','X-Smtp2go-Api-Key':env.SMTP2GO_API_KEY},body:JSON.stringify({sender:env.EMAIL_FROM,to:[address],subject:'CVEHarbor sign in code',text_body:'Your CVEHarbor code: '+code+'\n\nExpires in 10 minutes. If you did not request this, ignore this email.'})});if(!response.ok)throw Error('Email delivery unavailable');const payload=await response.json();if(!payload.data||payload.data.failed>0||payload.data.succeeded<1)throw Error('Email delivery unsuccessful')}
-export default {async fetch(req,env,ctx){
+const application = {async fetch(req,env,ctx){
  const url=new URL(req.url),origin=req.headers.get('origin');
  // The confirmation hostname exposes only the guest confirmation page, never account APIs.
  if(url.hostname==='confirm.cveharbor.com'){
@@ -391,3 +393,9 @@ export default {async fetch(req,env,ctx){
  }
 };
 
+
+const protectedApplication=recoveryProtected(application);
+export default {
+ fetch(req,env,ctx){if(req.method==='GET'&&new URL(req.url).hostname!=='confirm.cveharbor.com'&&new URL(req.url).pathname==='/v1/release-readiness')return releaseReadiness(env);return protectedApplication.fetch(req,env,ctx);},
+ scheduled:protectedApplication.scheduled
+};
