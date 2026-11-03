@@ -1,3 +1,4 @@
+import {scheduleStatusMail} from './status-update-mail.js';
 import {recordScope,scopeLabel} from './remediation-identity.js';
 import {sendEmail} from './delivery.js';
 import {reviewPage} from './assignment-progress-page.js';
@@ -24,7 +25,7 @@ export async function saveReviewerProgress(env,row,session,data){
  const result=await env.DB.batch(batch);if(result[2].meta?.changes!==1)throw new ReviewError('This record or invitation has changed. Reload before saving.',409);
  return {saved:true};
 }
-export async function reviewerRoute(req,env){
+export async function reviewerRoute(req,env,ctx){
  const url=new URL(req.url),match=/^\/assignment\/([a-f0-9-]{36})$/.exec(url.pathname);
  if(url.origin!==REVIEW_ORIGIN||!match)return reviewPage({unavailable:true},404);
  if(!['GET','HEAD','POST'].includes(req.method))return reviewPage({unavailable:true},405,{Allow:'GET, HEAD, POST'});
@@ -56,7 +57,7 @@ export async function reviewerRoute(req,env){
    if(!session||form.get('proof')!==session.proof)throw new ReviewError('Your session could not be verified. Reload and verify your email again.',403);
    if(action==='logout'){await env.DB.prepare('DELETE FROM remediation_review_sessions WHERE token_hash=?').bind(session.tokenHash).run();return reviewPage({},303,{'Location':url.pathname,'Set-Cookie':cookie('',0)});}
    if(action!=='update')throw new ReviewError('Invalid action.');
-   await saveReviewerProgress(env,row,session,Object.fromEntries(form));return reviewPage({},303,{'Location':url.pathname+'?saved=1'});
+   await saveReviewerProgress(env,row,session,Object.fromEntries(form));scheduleStatusMail(env,ctx);return reviewPage({},303,{'Location':url.pathname+'?saved=1'});
   }
   if(req.method==='HEAD'){const page=reviewPage();return new Response(null,{status:200,headers:page.headers});}
   if(!session)return reviewPage();

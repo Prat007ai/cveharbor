@@ -95,3 +95,10 @@ assert.equal(findingLinksRelease(linksFiles),true);
 for(const f of ['account-backend/wrangler.toml','account-backend/src/cvie.js','scripts/bootstrap_cvie_shared.mjs','account-backend/migrations/0028_unified_findings.sql'])assert.equal(findingLinksRelease([...linksFiles,f]),false);
 assert.equal(findingLinksRelease(linksFiles.filter(f=>!f.endsWith('.sql'))),false);
 console.log('PASS: assignment link release applies only migration 0029 and does not run unrelated maintenance');
+
+const {statusMailRelease}=await import('./worker_release_mode.mjs');
+const statusMailFiles=['account-backend/src/status-update-mail.js','account-backend/src/assignment-progress.js','account-backend/migrations/0030_status_update_notifications.sql','account-backend/tests/status-update-mail.test.mjs'];
+assert.equal(statusMailRelease(statusMailFiles),true);
+for(const f of ['account-backend/wrangler.toml','account-backend/src/cvie.js','scripts/bootstrap_cvie_shared.mjs','account-backend/migrations/0029_finding_assignment_links.sql'])assert.equal(statusMailRelease([...statusMailFiles,f]),false);
+assert.equal(statusMailRelease(statusMailFiles.filter(f=>!f.endsWith('.sql'))),false);
+console.log('PASS: status notification release applies only migration 0030 and skips unrelated maintenance');

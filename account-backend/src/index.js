@@ -1,3 +1,4 @@
+import {scheduleStatusMail} from './status-update-mail.js';
 import {sharedRoute} from './finding-remediation.js';
 import {reviewerRoute,reviewActivity} from './assignment-progress.js';
 import {ReviewError} from './assignment-progress-common.js';
@@ -53,7 +54,7 @@ export default {async fetch(req,env,ctx){
  const url=new URL(req.url),origin=req.headers.get('origin');
  // The confirmation hostname exposes only the guest confirmation page, never account APIs.
  if(url.hostname==='confirm.cveharbor.com'){
-  if(url.pathname.startsWith('/assignment/'))return reviewerRoute(req,env);
+  if(url.pathname.startsWith('/assignment/'))return reviewerRoute(req,env,ctx);
   if(url.pathname.startsWith(CONFIRM_PREFIX))return acknowledgementRoute(req,env,ctx);
   return new Response('Open the confirmation link in your assignment email.',{status:404,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'}});
  }
@@ -272,8 +273,8 @@ export default {async fetch(req,env,ctx){
   if(path.startsWith('/v1/monitoring'))return await monitoringHandler(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/lifecycle'))return await lifecycleHandler(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/finding-tickets'))return await findingTicketRoute(req,env,user,path,req.method==='POST'?await body(req):{});
-  if(path==='/v1/finding-assignments'||path.startsWith('/v1/finding-remediations/')||path.startsWith('/v1/remediation-records/'))return await sharedRoute(req,env,user,path,req.method==='POST'?await body(req):{});
-  if(path.startsWith('/v1/finding-statuses'))return await findingStatusRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
+  if(path==='/v1/finding-assignments'||path.startsWith('/v1/finding-remediations/')||path.startsWith('/v1/remediation-records/')){const result=await sharedRoute(req,env,user,path,req.method==='POST'?await body(req):{});if(result.ok&&req.method==='POST')scheduleStatusMail(env,ctx);return result;}
+  if(path.startsWith('/v1/finding-statuses')){const result=await findingStatusRoute(req,env,user,path,req.method==='PUT'?await body(req):{});if(result.ok&&req.method==='PUT')scheduleStatusMail(env,ctx);return result;}
   if(path.startsWith('/v1/plugin-installation-status'))return await sourceRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/plugin-sources'))return await sourceRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
   if(path==='/v1/customer-score-history')return await customerScoreRoute(req,env,user,path,req.method==='POST'?await body(req):{});
@@ -344,7 +345,7 @@ export default {async fetch(req,env,ctx){
   if(remediationRoute){
    const id=remediationRoute[1];
    if(remediationRoute[2]&&req.method==='POST'){const result=await assignRemediation(env,user,id,await body(req));if(result.ok)scheduleFyi(env,ctx);return result;}
-   if(!remediationRoute[2]&&req.method==='PUT')return await upsertRemediation(env,user,id,await body(req));
+   if(!remediationRoute[2]&&req.method==='PUT'){const result=await upsertRemediation(env,user,id,await body(req));if(result.ok)scheduleStatusMail(env,ctx);return result;}
    if(!remediationRoute[2]&&req.method==='DELETE')return await removeRemediation(env,user,id);
   }
   if(path==='/v1/alerts'&&req.method==='GET'){
@@ -377,7 +378,7 @@ export default {async fetch(req,env,ctx){
  }catch(error){if(error instanceof ReviewError||error instanceof WorkflowError||error instanceof FyiError||error instanceof AssignmentError||error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
-  if(_event.cron==='* * * * *'){scheduleProgress(env,ctx);scheduleFyi(env,ctx);ctx.waitUntil(approvedTest(env));ctx.waitUntil(dispatchEvidence(env));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}
+  if(_event.cron==='* * * * *'){scheduleStatusMail(env,ctx);scheduleProgress(env,ctx);scheduleFyi(env,ctx);ctx.waitUntil(approvedTest(env));ctx.waitUntil(dispatchEvidence(env));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}
   if(_event.cron==='*/5 * * * *'){ctx.waitUntil(dispatchCvie(env));return;}
   if(env.ALERT_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchDueDigests(env));
   if(env.LIFECYCLE_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchLifecycle(env));
