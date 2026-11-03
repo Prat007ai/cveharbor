@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-03",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 8022,
+  "candidate_records": 7965,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -137357,7 +137357,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: io_uring/net: don't retry...",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-11-03",
       "updated": "2026-11-03",
@@ -137677,7 +137678,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: io_uring/cancel: rearm local...",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-11-03",
       "updated": "2026-11-03",
@@ -137870,7 +137872,8 @@
       "title": "In the Linux kernel, the following vulnerability has been resolved: io_uring/io-wq: don't hide a...",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "React / Next.js"
       ],
       "published": "2026-11-03",
       "updated": "2026-11-03",
@@ -138270,8 +138273,8 @@
       "title": "Malware in nulio-connector",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-11-03",
       "updated": "2026-11-03",
@@ -138779,7 +138782,8 @@
       "title": "USN-8963-1: Linux kernel (NVIDIA Tegra) vulnerabilities",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "iOS / Android"
       ],
       "published": "2026-11-03",
       "updated": "2026-11-03",
@@ -139207,7 +139211,8 @@
       "title": "USN-8963-1: Linux kernel (NVIDIA Tegra) vulnerabilities",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "iOS / Android"
       ],
       "published": "2026-11-03",
       "updated": "2026-11-03",
@@ -139235,7 +139240,8 @@
       "title": "USN-8963-1: Linux kernel (NVIDIA Tegra) vulnerabilities",
       "severity": "bulletin",
       "categories": [
-        "Linux"
+        "Linux",
+        "iOS / Android"
       ],
       "published": "2026-11-03",
       "updated": "2026-11-03",
@@ -139799,6 +139805,118 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-76124",
+      "title": "The BuddyBoss App plugin for WordPress is vulnerable to Arbitrary File Upload in all versions up to, and including, 3.2.1 via the send_feedback function",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "The BuddyBoss App plugin for WordPress is vulnerable to Arbitrary File Upload in all versions up to, and including, 3.2.1 via the send_feedback function. This is due to insufficient file type validation that relies solely on the client-supplied Content-Type header without server-side content inspection or extension validation. This makes it possible for authenticated attackers, with subscriber-level access and above, to upload files that may be executable, which makes remote code execution possible. While uploaded files are deleted after email transmission, a race condition exists during SMTP execution that allows access to the file, and files persist indefinitely when wp_mail() fails.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-76124"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T14:27:24Z",
+      "source_updated_at": "2026-11-03T13:17:23.547",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-99270",
+      "title": "In the Linux kernel, the following vulnerability has been resolved: tcp: Fix potential UAF in reqsk_timer_handler(). When TCP socket migration fails at inet_ehash_insert() in ",
+      "severity": "bulletin",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "In the Linux kernel, the following vulnerability has been resolved: tcp: Fix potential UAF in reqsk_timer_handler(). When TCP socket migration fails at inet_ehash_insert() in reqsk_timer_handler(), we jump to the no_ownership: label and free the new reqsk immediately with __reqsk_free(). Thus, we must stop the new reqsk's timer before jumping to the label, but the timer might be missed since the cited commit, resulting in UAF. As we are in the original reqsk's timer context, we can safely call timer_delete_sync() for the new reqsk. Let's pass false to __inet_csk_reqsk_queue_drop() to stop the new reqsk's timer.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-99270"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T14:27:24Z",
+      "source_updated_at": "2026-11-03T13:17:24.097",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119179",
+      "title": "A flaw in the connection management layer of the MongoDB Node.js driver can leave a pooled network connection in the pool for reuse while data from an earlier operation is sti",
+      "severity": "high",
+      "categories": [
+        "Node.js / npm"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "A flaw in the connection management layer of the MongoDB Node.js driver can leave a pooled network connection in the pool for reuse while data from an earlier operation is still outstanding on it. In applications that enable an optional client-side operation timeout, an unauthenticated party that can send ordinary requests to the application may cause database replies to be paired with the wrong requests. This may result in unintended disclosure of other users' records, incorrect operation results being returned, and failures of legitimate requests.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119179"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T14:27:24Z",
+      "source_updated_at": "2026-11-03T14:17:33.617",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119742",
+      "title": "Nagios XI before 2026R2 contains an OS command injection vulnerability in the MIB upload feature where the install_mib() function in mibs.php sanitizes uploaded filenames with",
+      "severity": "high",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Nagios XI before 2026R2 contains an OS command injection vulnerability in the MIB upload feature where the install_mib() function in mibs.php sanitizes uploaded filenames with an incomplete character deny-list that omits semicolons and pipes before passing them to a grep command executed via exec(). An authenticated administrator can upload a MIB file with a crafted filename using tab characters to bypass the deny-list and pipe to sh via a multipart POST request to mibs.php, resulting in arbitrary OS command execution as the web server user.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119742"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.6",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T14:27:24Z",
+      "source_updated_at": "2026-11-03T14:17:34.843",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-103310",
       "title": "The PayHere Payment Gateway WordPress plugin from 2.4.0 through 2.4.5 does not verify the...",
       "severity": "medium",
@@ -139831,6 +139949,126 @@
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-02T08:30:42Z",
       "source_updated_at": "2026-11-03T00:31:24Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-73695",
+      "title": "Control Web Panel (CWP) before webpanel_version 1.16 contains a path traversal vulnerability in...",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-03",
+      "summary": "Control Web Panel (CWP) before webpanel_version 1.16 contains a path traversal vulnerability in services/users/index.php, where an attacker-supplied module name is concatenated directly into an include path with no allowlist, basename(), or traversal sanitization. An attacker can supply directory traversal sequences in the module name to include arbitrary local .php files, resulting in local PHP file inclusion.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-m2m4-55x5-x967"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-73695"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://control-webpanel.com/changelog"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.vulncheck.com/advisories/control-web-panel-cwp-path-traversal-lfi-via-module-parameter"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.8",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-02T16:12:41Z",
+      "source_updated_at": "2026-11-02T18:33:28Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-77879",
+      "title": "Control Web Panel (CWP) before webpanel_version 1.16 contains a SQL injection vulnerability in...",
+      "severity": "high",
+      "categories": [
+        "MySQL / MariaDB"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-03",
+      "summary": "Control Web Panel (CWP) before webpanel_version 1.16 contains a SQL injection vulnerability in the loopback API authentication gate access_token(), which connects to MySQL as root and interpolates attacker-controlled values directly into its query. Attackers can inject SQL through the authorization_code and client_id parameters to read arbitrary database contents and forge the authentication result, bypassing the API's authentication check.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-77879"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-hcj5-rpjg-pm72"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://control-webpanel.com/changelog"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.vulncheck.com/advisories/control-web-panel-cwp-sql-injection-via-access-token-api"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.7",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-02T17:14:41Z",
+      "source_updated_at": "2026-11-02T18:32:30Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-77881",
+      "title": "Control Web Panel (CWP) before webpanel_version 1.30 contains a blind SQL injection vulnerability...",
+      "severity": "medium",
+      "categories": [
+        "MySQL / MariaDB"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-03",
+      "summary": "Control Web Panel (CWP) before webpanel_version 1.30 contains a blind SQL injection vulnerability in an unauthenticated loopback API route that connects to MySQL as root, where the 'user' parameter is interpolated directly into a query against the oauth_clients table. Attackers can send crafted requests to the unauthenticated route (originally /user_panel_dashboard/, later /valid_token/) to perform time-based blind SQL injection and extract arbitrary database contents.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-77881"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-8pqv-6v86-4wxr"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://control-webpanel.com/changelog"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.vulncheck.com/advisories/control-web-panel-cwp-blind-sql-injection-via-user-parameter"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.2",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-02T17:14:41Z",
+      "source_updated_at": "2026-11-02T18:32:30Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -141356,46 +141594,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-73695",
-      "title": "Control Web Panel (CWP) before webpanel_version 1.16 contains a path traversal vulnerability in...",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-11-02",
-      "updated": "2026-11-02",
-      "summary": "Control Web Panel (CWP) before webpanel_version 1.16 contains a path traversal vulnerability in services/users/index.php, where an attacker-supplied module name is concatenated directly into an include path with no allowlist, basename(), or traversal sanitization. An attacker can supply directory traversal sequences in the module name to include arbitrary local .php files, resulting in local PHP file inclusion.",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-m2m4-55x5-x967"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-73695"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://control-webpanel.com/changelog"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.vulncheck.com/advisories/control-web-panel-cwp-path-traversal-lfi-via-module-parameter"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-11-02T16:12:41Z",
-      "source_updated_at": "2026-11-02T18:33:28Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-120460",
       "title": "Jpom through 2.11.12 contains a cross-workspace authorization bypass vulnerability that allows...",
       "severity": "high",
@@ -142295,86 +142493,6 @@
       "status": "GitHub malware advisory",
       "first_seen_at": "2026-11-02T17:14:41Z",
       "source_updated_at": "2026-11-02T16:14:49Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-77879",
-      "title": "Control Web Panel (CWP) before webpanel_version 1.16 contains a SQL injection vulnerability in...",
-      "severity": "high",
-      "categories": [
-        "MySQL / MariaDB"
-      ],
-      "published": "2026-11-02",
-      "updated": "2026-11-02",
-      "summary": "Control Web Panel (CWP) before webpanel_version 1.16 contains a SQL injection vulnerability in the loopback API authentication gate access_token(), which connects to MySQL as root and interpolates attacker-controlled values directly into its query. Attackers can inject SQL through the authorization_code and client_id parameters to read arbitrary database contents and forge the authentication result, bypassing the API's authentication check.",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-77879"
-        },
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-hcj5-rpjg-pm72"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://control-webpanel.com/changelog"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.vulncheck.com/advisories/control-web-panel-cwp-sql-injection-via-access-token-api"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.7",
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-11-02T17:14:41Z",
-      "source_updated_at": "2026-11-02T18:32:30Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-77881",
-      "title": "Control Web Panel (CWP) before webpanel_version 1.30 contains a blind SQL injection vulnerability...",
-      "severity": "medium",
-      "categories": [
-        "MySQL / MariaDB"
-      ],
-      "published": "2026-11-02",
-      "updated": "2026-11-02",
-      "summary": "Control Web Panel (CWP) before webpanel_version 1.30 contains a blind SQL injection vulnerability in an unauthenticated loopback API route that connects to MySQL as root, where the 'user' parameter is interpolated directly into a query against the oauth_clients table. Attackers can send crafted requests to the unauthenticated route (originally /user_panel_dashboard/, later /valid_token/) to perform time-based blind SQL injection and extract arbitrary database contents.",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-77881"
-        },
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-8pqv-6v86-4wxr"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://control-webpanel.com/changelog"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.vulncheck.com/advisories/control-web-panel-cwp-blind-sql-injection-via-user-parameter"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.2",
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-11-02T17:14:41Z",
-      "source_updated_at": "2026-11-02T18:32:30Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -150654,6 +150772,98 @@
       "epss_as_of": "2026-11-03"
     },
     {
+      "id": "CVE-2026-119573",
+      "title": "Traefik 3.7.11 before 3.7.15 contains an authorization bypass in the Kubernetes Ingress NGINX...",
+      "severity": "low",
+      "categories": [
+        "Docker / Kubernetes"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-11-03",
+      "summary": "Traefik 3.7.11 before 3.7.15 contains an authorization bypass in the Kubernetes Ingress NGINX provider that skips the cross-namespace check on the auth-tls-secret annotation when a cached client authentication TLS option is reused. Users who can create Ingresses can reference another namespace's CA secret already used by another Ingress, enforcing it on their own routes and learning whether it exists, without disclosure of its contents.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119573"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-mvh9-fv5r-qhpj"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://github.com/traefik/traefik/security/advisories/GHSA-28hp-c82p-8vqj"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.vulncheck.com/advisories/traefik-3.7.11-before-3.7.15-cross-namespace-authorization-bypass-via-auth-tls-secret"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.4",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-30T14:25:53Z",
+      "source_updated_at": "2026-10-30T15:34:37Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00273,
+      "epss_percentile": 0.19712,
+      "epss_as_of": "2026-11-03"
+    },
+    {
+      "id": "CVE-2026-118669",
+      "title": "OAuthLib: Token grants can use attacker-supplied client_id for authorization after authenticating a different client",
+      "severity": "high",
+      "categories": [
+        "Application dependencies",
+        "Linux",
+        "Python / PyPI"
+      ],
+      "published": "2026-10-30",
+      "updated": "2026-11-03",
+      "summary": "## Summary OAuthlib's token grant handlers can authenticate one client while authorizing the grant type and requested scopes using a different, attacker-supplied `client_id` from the request body. In affected token grant flows, `authenticate_client(request)` sets `request.client` to the authenticated client object, but OAuthlib does not require `request.client_id` to match `request.client.client_id`. If the request body already contains `client_id=...`, OAuthlib keeps that value and passes it to `validate_grant_type()` and `validate_scopes()`. As a result, an authenticated low-privilege confidential client can authenticate as itself, submit another client's `client_id` in the token request body, and cause grant and scope validation to run under that other client identity. ## Affected Surface The affected public surface is the OAuth2 token endpoint handling for: - `client_credentials` - `password` / Resource Owner Password Credentials The issue is relevant to OAuthlib provider deployments where: - the attacker has credentials for one valid lower-privilege confidential client; - another client has broader grants or scopes; - the application validator uses the `client_id` argument passed by OAuthlib in `validate_grant_type()` or `validate_scopes()`, as the `RequestValidator` API is ",
+      "affected": "pip: oauthlib (< 4.0.0)",
+      "remediation": "oauthlib: 4.0.0",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118669"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-118669"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-7984-qgvg-3j9c"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/oauthlib/oauthlib/security/advisories/GHSA-7984-qgvg-3j9c"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/oauthlib/oauthlib/pull/920"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.4",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T22:23:28Z",
+      "source_updated_at": "2026-10-30T22:58:18Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00312,
+      "epss_percentile": 0.24142,
+      "epss_as_of": "2026-11-03"
+    },
+    {
       "id": "CVE-2026-119209",
       "title": "pypdf has possible large memory usage when parsing cross-reference streams",
       "severity": "high",
@@ -157228,49 +157438,6 @@
       "epss_as_of": "2026-11-03"
     },
     {
-      "id": "CVE-2026-119573",
-      "title": "Traefik 3.7.11 before 3.7.15 contains an authorization bypass in the Kubernetes Ingress NGINX...",
-      "severity": "low",
-      "categories": [
-        "Docker / Kubernetes"
-      ],
-      "published": "2026-10-30",
-      "updated": "2026-10-30",
-      "summary": "Traefik 3.7.11 before 3.7.15 contains an authorization bypass in the Kubernetes Ingress NGINX provider that skips the cross-namespace check on the auth-tls-secret annotation when a cached client authentication TLS option is reused. Users who can create Ingresses can reference another namespace's CA secret already used by another Ingress, enforcing it on their own routes and learning whether it exists, without disclosure of its contents.",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119573"
-        },
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-mvh9-fv5r-qhpj"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/traefik/traefik/security/advisories/GHSA-28hp-c82p-8vqj"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.vulncheck.com/advisories/traefik-3.7.11-before-3.7.15-cross-namespace-authorization-bypass-via-auth-tls-secret"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.4",
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-10-30T14:25:53Z",
-      "source_updated_at": "2026-10-30T15:34:37Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00273,
-      "epss_percentile": 0.19712,
-      "epss_as_of": "2026-11-03"
-    },
-    {
       "id": "CVE-2026-119578",
       "title": "MONAI from 1.6.0 before 1.6.1 contains a remote code execution vulnerability in Auto3DSeg...",
       "severity": "high",
@@ -161604,55 +161771,6 @@
       "known_exploited": false,
       "epss": 0.00291,
       "epss_percentile": 0.21738,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-118669",
-      "title": "OAuthLib: Token grants can use attacker-supplied client_id for authorization after authenticating a different client",
-      "severity": "high",
-      "categories": [
-        "Application dependencies",
-        "Linux",
-        "Python / PyPI"
-      ],
-      "published": "2026-10-30",
-      "updated": "2026-10-30",
-      "summary": "## Summary OAuthlib's token grant handlers can authenticate one client while authorizing the grant type and requested scopes using a different, attacker-supplied `client_id` from the request body. In affected token grant flows, `authenticate_client(request)` sets `request.client` to the authenticated client object, but OAuthlib does not require `request.client_id` to match `request.client.client_id`. If the request body already contains `client_id=...`, OAuthlib keeps that value and passes it to `validate_grant_type()` and `validate_scopes()`. As a result, an authenticated low-privilege confidential client can authenticate as itself, submit another client's `client_id` in the token request body, and cause grant and scope validation to run under that other client identity. ## Affected Surface The affected public surface is the OAuth2 token endpoint handling for: - `client_credentials` - `password` / Resource Owner Password Credentials The issue is relevant to OAuthlib provider deployments where: - the attacker has credentials for one valid lower-privilege confidential client; - another client has broader grants or scopes; - the application validator uses the `client_id` argument passed by OAuthlib in `validate_grant_type()` or `validate_scopes()`, as the `RequestValidator` API is ",
-      "affected": "pip: oauthlib (< 4.0.0)",
-      "remediation": "oauthlib: 4.0.0",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118669"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-118669"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-7984-qgvg-3j9c"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/oauthlib/oauthlib/security/advisories/GHSA-7984-qgvg-3j9c"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/oauthlib/oauthlib/pull/920"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.4",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T22:23:28Z",
-      "source_updated_at": "2026-10-30T22:58:18Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00312,
-      "epss_percentile": 0.24142,
       "epss_as_of": "2026-11-03"
     },
     {
@@ -171666,6 +171784,240 @@
       "epss_as_of": "2026-11-03"
     },
     {
+      "id": "CVE-2026-115904",
+      "title": "Topluyo is a social networking platform",
+      "severity": "critical",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-11-03",
+      "summary": "Topluyo is a social networking platform. A vulnerability exists in Topluyo Desktop for Linux prior to version 2026.9.2410 where user-controlled URLs are unsafely processed, leading to OS Command Injection via the `openExternalLinks()` routine in `utils.js`. An attacker who controls a target URL can execute arbitrary operating system commands with the privileges of the user running the application upon opening the link. Version 2026.9.2410 patches the issue.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115904"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.6",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T14:27:24Z",
+      "source_updated_at": "2026-11-03T13:17:19.633",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-50541",
+      "title": "Xibo is an open source digital signage platform with a web content management system and Windows display player software",
+      "severity": "medium",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-11-03",
+      "summary": "Xibo is an open source digital signage platform with a web content management system and Windows display player software. Prior to 4.4.3, missing access-control checks on `GET /dataset/export/csv/{id}` allow an authenticated user to export data from any dataset, including datasets created by administrators, by iterating over `sequential dataset IDs`. Exploitation requires access to the privilege allowing edits, including deletion, to all created `DataSets` independently of Layouts. This privilege is not granted to non-administrators as standard. This issue is fixed in version 4.4.3.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-50541"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.5",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T14:27:24Z",
+      "source_updated_at": "2026-11-03T13:17:22.170",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-50543",
+      "title": "Xibo is an open source digital signage platform with a web content management system and Windows display player software",
+      "severity": "medium",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-11-03",
+      "summary": "Xibo is an open source digital signage platform with a web content management system and Windows display player software. Prior to 4.4.3, missing authorization on `POST /displaygroup/criteria/{displayGroupId}` allows an authenticated user to send criteria updates to any display via `XMR`. These criteria determine schedule changes and can alter playback, for example by causing content scheduled for rainy weather to play when it is not raining. Exploitation requires `Schedule Criteria` to be in use on the CMS. This issue is fixed in version 4.4.3.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-50543"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T14:27:24Z",
+      "source_updated_at": "2026-11-03T13:17:22.297",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-67187",
+      "title": "Ninja Forms plugin for WordPress before 3.15.4 contains an incomplete server-side validation vulnerability that allows unauthenticated attackers to submit arbitrary values to ",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-11-03",
+      "summary": "Ninja Forms plugin for WordPress before 3.15.4 contains an incomplete server-side validation vulnerability that allows unauthenticated attackers to submit arbitrary values to Checkbox List, Multi-Select List, Image List, Country, and State fields because NF_Abstracts_List falls through to a validate() method that only checks required-field presence. Attackers can submit crafted formula payloads through the unauthenticated nf_ajax_submit endpoint that bypass CSV escaping applied only to Textbox and Textarea fields, resulting in CSV injection when an administrator downloads and opens the exported submissions file.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-67187"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T14:27:24Z",
+      "source_updated_at": "2026-11-03T13:17:23.207",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118258",
+      "title": "i18next-http-backend: i18next-http-backend: Information disclosure via query parameter injection",
+      "severity": "low",
+      "categories": [
+        "Linux",
+        "Node.js / npm"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-11-03",
+      "summary": "i18next-http-backend: i18next-http-backend: Information disclosure via query parameter injection",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118258"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-118258"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "3.7",
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-11-03T14:27:24Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118754",
+      "title": "Dolibarr ERP CRM before 24.0.2 contains a missing authorization vulnerability in htdocs/public/recruitment/view.php that allows unauthenticated attackers to view unpublished d",
+      "severity": "medium",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-11-03",
+      "summary": "Dolibarr ERP CRM before 24.0.2 contains a missing authorization vulnerability in htdocs/public/recruitment/view.php that allows unauthenticated attackers to view unpublished draft job positions. Attackers can enumerate sequential provisional references via the ref parameter to read titles, descriptions, salary budgets, and recruiter names and emails.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118754"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T14:27:24Z",
+      "source_updated_at": "2026-11-03T14:17:33.273",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-61564",
+      "title": "AVideo is a video-sharing Platform",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-11-03",
+      "summary": "AVideo is a video-sharing Platform. Prior to 8.1.0, the unauthenticated installer endpoint `install/checkConfiguration.php` assembles `videos/configuration.php` by interpolating request parameters, including `webSiteRootURL`, into single-quoted PHP string literals without escaping. An attacker can terminate a literal and inject PHP that executes as the web-server user when the generated, directly requestable file is loaded. Exploitation requires `videos/configuration.php` to be absent, as on every fresh deployment or after the file is removed or moved; an existing file blocks this endpoint. The supplied `systemRootPath` must contain index.php and a connection using `databaseHost`, `databaseUser`, and `databasePass` must succeed, but the attacker can point those parameters to their own database server and needs no target credentials. The write location is also derived from `systemRootPath` without a base-directory constraint. This permits arbitrary command execution, reading and overwriting files owned by the web-server user, persistent PHP code, and control over stored database connection settings. The endpoint additionally interpolates request values into streamer and configuration INSERT statements, creating a secondary SQL-inje",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61564"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "10.0",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T14:27:24Z",
+      "source_updated_at": "2026-11-03T14:17:36.860",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-75520",
+      "title": "domoticz: domoticz: Unauthorized script execution via missing permission checks",
+      "severity": "medium",
+      "categories": [
+        "Linux",
+        "Windows"
+      ],
+      "published": "2026-10-28",
+      "updated": "2026-11-03",
+      "summary": "domoticz: domoticz: Unauthorized script execution via missing permission checks",
+      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
+      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
+      "action": "Check installed Red Hat products and package versions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-75520"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-75520"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.4",
+      "status": "Red Hat CVE catalog",
+      "first_seen_at": "2026-11-03T14:27:24Z",
+      "source_updated_at": "",
+      "source_type": "redhat",
+      "known_exploited": false
+    },
+    {
       "id": "CVE-2026-116576",
       "title": "systeminformation vulnerable to Windows command injection in services() through Unicode quotation marks",
       "severity": "high",
@@ -176397,382 +176749,6 @@
       "epss_as_of": "2026-11-03"
     },
     {
-      "id": "CVE-2026-109979",
-      "title": "The Related Posts for WordPress plugin for WordPress is vulnerable to Sensitive Information Exposure in versions up to, and including, 3.0.0 via the 'rp4wp_create_link' parame",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-29",
-      "summary": "The Related Posts for WordPress plugin for WordPress is vulnerable to Sensitive Information Exposure in versions up to, and including, 3.0.0 via the 'rp4wp_create_link' parameter of the hidden 'rp4wp_link_related' admin page. The handle_create_link() handler verifies the nonce and that the current user can edit the parent post, but never checks that the attacker-supplied child post ID is one the user is allowed to read; LinkRepository::insert() stores the arbitrary child ID without validation, and ManageLinks::render() later calls LinkRepository::get_children() in its no-extra-args fast path, which falls through to array_map('get_post', $child_ids) — bypassing read_private_posts/read_post capability checks — and then echoes esc_html($child->post_title) in the parent's editor meta box. This makes it possible for authenticated attackers, with Contributor-level access and above, to read the titles of arbitrary non-public posts (drafts, pending, private, future, trashed) authored by higher-privileged users by linking those post IDs to a draft they own and then reading the resulting meta box.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109979"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T08:09:31Z",
-      "source_updated_at": "2026-10-29T02:16:47.690",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00298,
-      "epss_percentile": 0.22469,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-109988",
-      "title": "The Product Addons for Woocommerce – Product Options with Custom Fields plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'fields[section][fields][row]",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-29",
-      "summary": "The Product Addons for Woocommerce – Product Options with Custom Fields plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'fields[section][fields][row][col][type]' parameter in all versions up to, and including, 3.1.8 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with shop manager-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109988"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T08:09:31Z",
-      "source_updated_at": "2026-10-29T02:16:47.803",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00208,
-      "epss_percentile": 0.10884,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-110020",
-      "title": "The Rich Showcase for Google Reviews plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 7.1.6 This is due to the plugin not prope",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-29",
-      "summary": "The Rich Showcase for Google Reviews plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 7.1.6 This is due to the plugin not properly verifying that a user is authorized to perform an action. This makes it possible for authenticated attackers, with contributor-level access and above, to retrieve the plugin's 127-character site-wide grw_auth_code authentication secret and use it to impersonate the WordPress site to the RichPlugins backend service at app.richplugins.com.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110020"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T08:09:31Z",
-      "source_updated_at": "2026-10-29T02:16:48.757",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00382,
-      "epss_percentile": 0.32248,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-110071",
-      "title": "The Mang Board plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'align' parameter in all versions up to, and including, 2.4.5 due to insufficient inpu",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-29",
-      "summary": "The Mang Board plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'align' parameter in all versions up to, and including, 2.4.5 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Because the payload contains no angle brackets, wp_kses_post leaves the shortcode intact on save, allowing the malicious attribute value to survive post submission and fire in any viewer's browser — including an administrator previewing a pending post.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110071"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T08:09:31Z",
-      "source_updated_at": "2026-10-29T02:16:48.877",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00201,
-      "epss_percentile": 0.09989,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-110662",
-      "title": "The MxChat – AI Chatbot & Content Generation for WordPress plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'feedback' parameter in all vers",
-      "severity": "high",
-      "categories": [
-        "PHP",
-        "React / Next.js",
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-29",
-      "summary": "The MxChat – AI Chatbot & Content Generation for WordPress plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'feedback' parameter in all versions up to, and including, 3.2.25 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. The stored payload is written by any unauthenticated visitor via a single POST to admin-ajax.php and detonates automatically when any administrator next loads the Transcripts page.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110662"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.2",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T08:09:31Z",
-      "source_updated_at": "2026-10-29T02:16:48.997",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00307,
-      "epss_percentile": 0.2349,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-111068",
-      "title": "The DesignSetGo plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'tagName' parameter in all versions up to, and including, 2.11.0 due to insufficient ",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-29",
-      "summary": "The DesignSetGo plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'tagName' parameter in all versions up to, and including, 2.11.0 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Successful exploitation requires an administrator to run the plugin's block-conversion migration (\"Scan & Convert Blocks\" during deactivation), which triggers the vulnerable build_group_block() function and promotes the dormant payload from a block delimiter comment into live post_content HTML. Successful exploitation additionally requires an action by an administrator — the attacker cannot trigger the vulnerability on their own.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111068"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T08:09:31Z",
-      "source_updated_at": "2026-10-29T02:16:49.117",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00213,
-      "epss_percentile": 0.11643,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-111111",
-      "title": "The Prime Slider – Hero Slider, Carousel, WooCommerce & Post Slider Elementor Addons plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'comment' parame",
-      "severity": "high",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-29",
-      "summary": "The Prime Slider – Hero Slider, Carousel, WooCommerce & Post Slider Elementor Addons plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'comment' parameter in all versions up to, and including, 4.7.2 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. This is possible because core wp_filter_kses leaves the submitted markup inert, but the plugin's subsequent regex fallback consumes closing quotes of allowed attribute values containing 'bdt-', promoting previously inert bytes — such as event handlers like onfocus — into real HTML attributes that are then written to the database and rendered without further sanitization.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111111"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.2",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T08:09:31Z",
-      "source_updated_at": "2026-10-29T02:16:49.230",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00241,
-      "epss_percentile": 0.15265,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-111213",
-      "title": "The Travelly – Tour & Travel Booking Manager for WooCommerce plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 2.3.6 This is due",
-      "severity": "medium",
-      "categories": [
-        "PHP",
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-29",
-      "summary": "The Travelly – Tour & Travel Booking Manager for WooCommerce plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 2.3.6 This is due to the plugin not properly verifying that a user is authorized to perform an action. This makes it possible for authenticated attackers, with contributor-level access and above, to duplicate arbitrary posts — including private, draft, and pending posts authored by Administrators and Editors — into drafts they own, thereby exposing the original post's content, excerpt, title, taxonomies, and metadata. A Contributor can harvest a valid nonce from the Duplicate row-action on their own posts list and reuse it against any victim post ID, since the nonce action is the static string 'TTBM_Admin.php' and is not bound to any specific post.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111213"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T08:09:31Z",
-      "source_updated_at": "2026-10-29T02:16:49.350",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00222,
-      "epss_percentile": 0.12774,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-111372",
-      "title": "The AI ChatBot for WooCommerce – WoowBot plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 5.0.0",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-29",
-      "summary": "The AI ChatBot for WooCommerce – WoowBot plugin for WordPress is vulnerable to authorization bypass in all versions up to, and including, 5.0.0. This is due to the plugin not properly verifying that a user is authorized to perform an action. This makes it possible for authenticated attackers, with subscriber-level access and above, to repeatedly trigger RAG document sync operations that issue paid embedding API calls to OpenAI, Gemini, OpenRouter, or xAI charged to the site administrator's stored API key, draining their AI API credits and causing financial loss. The wp_chatbot nonce required to reach this endpoint is emitted to every authenticated frontend visitor via wp_localize_script, making it trivially obtainable by any subscriber-level account.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111372"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T08:09:31Z",
-      "source_updated_at": "2026-10-29T02:16:49.593",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00268,
-      "epss_percentile": 0.18952,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-116609",
-      "title": "The WP Visitor Statistics (Real Time Traffic) plugin for WordPress is vulnerable to SQL Injection via the 'from' (and sibling 'to'/'first'/'second') shortcode attribute of the",
-      "severity": "medium",
-      "categories": [
-        "PHP",
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-29",
-      "summary": "The WP Visitor Statistics (Real Time Traffic) plugin for WordPress is vulnerable to SQL Injection via the 'from' (and sibling 'to'/'first'/'second') shortcode attribute of the [wsm_showTrafficStatsList] shortcode in versions up to, and including, 8.8 This is due to insufficient escaping on the user-supplied attribute and lack of sufficient preparation on the existing SQL query: `shortcode_atts()` returns attacker-supplied shortcode attributes verbatim (WP core performs no sanitization), only `$atts['id']` is re-sanitized afterward, and the raw value is then concatenated into a double-quoted SQL string literal inside `fnGetHourlyReportByDateNameTimeZone()` (`includes/wsm_db.php:1449`) and executed via `$wpdb->get_results()`. This makes it possible for authenticated attackers, with Contributor-level access and above, to append additional SQL queries into already existing queries that can be used to extract sensitive information from the database.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116609"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T08:09:31Z",
-      "source_updated_at": "2026-10-29T02:16:50.870",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00336,
-      "epss_percentile": 0.26981,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-116749",
-      "title": "The VikRentCar Car Rental Management System plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'className' parameter in all versions up to, and includin",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-29",
-      "summary": "The VikRentCar Car Rental Management System plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'className' parameter in all versions up to, and including, 1.4.10 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. wp_kses_post() applied at save time does not neutralize the payload because the injection lands in an HTML-attribute context where only a raw double-quote is needed to break out, and block-comment JSON encoding of that quote is decoded back to a literal character by do_blocks() at render time.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116749"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T08:09:31Z",
-      "source_updated_at": "2026-10-29T02:16:51.117",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00193,
-      "epss_percentile": 0.09023,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2026-116750",
-      "title": "The VikRentCar Car Rental Management System plugin for WordPress is vulnerable to blind SQL Injection via the 'catid' parameter in all versions up to, and including, 1.4.10 du",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-28",
-      "updated": "2026-10-29",
-      "summary": "The VikRentCar Car Rental Management System plugin for WordPress is vulnerable to blind SQL Injection via the 'catid' parameter in all versions up to, and including, 1.4.10 due to insufficient escaping on the user supplied parameter and lack of sufficient preparation on the existing SQL query. This makes it possible for authenticated attackers, with contributor-level access and above, to append additional SQL queries into already existing queries that can be used to extract sensitive information from the database. A Contributor-level user can store a malicious block via the REST API in a pending post and trigger server-side rendering by previewing that post, bypassing wp_magic_quotes since the attribute is sourced from post_content via parse_blocks rather than a superglobal.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116750"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-28T08:09:31Z",
-      "source_updated_at": "2026-10-29T02:16:51.230",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00261,
-      "epss_percentile": 0.17903,
-      "epss_as_of": "2026-11-03"
-    },
-    {
       "id": "CVE-2026-105477",
       "title": "Managed Veeam Agent for Linux local privilege escalation",
       "severity": "high",
@@ -176970,53 +176946,6 @@
       "epss_as_of": "2026-11-03"
     },
     {
-      "id": "CVE-2026-109619",
-      "title": "RCE via stale global state",
-      "severity": "critical",
-      "categories": [
-        "PHP"
-      ],
-      "published": "2026-10-21",
-      "updated": "2026-11-02",
-      "summary": "## Summary PHP contains various global state, such as error, session, object and extension state that is retained by a worker but points to memory owned by one request. That state must be reset before the request memory is released. Some input, configuration, session and error handling operations run before normal initialization of the next request. They inadvertently access stale state not reset by the previous request before initialization has a chance to replace it, causing a use after free. A strategically crafted heap layout can produce full remote code execution (RCE). State can survive for more than one reason. A fatal error, including one caused by memory exhaustion, can abandon an operation before it performs its matching reset. A warning or other nonfatal diagnostic can also repopulate error state after that state was already cleared during shutdown. The request heap is then freed while the worker global field still refers to it. A later operation that runs before normal request initialization can consume the stale value. Successful exploitation of this vulnerability requires both a producer and a consumer. The producer is a PHP operation that stores state owned by one request in a location PHP can access later in a subsequent request. The consumer is a subsequent PHP o",
-      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "PHP project security release",
-          "url": "https://www.php.net/archive/2026.php"
-        },
-        {
-          "label": "PHP upstream security advisory",
-          "url": "https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp"
-        },
-        {
-          "label": "Canadian Cyber Centre updated alert",
-          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-6wmf-4rv5-p3rp"
-        },
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "Published security advisory from PHP upstream",
-      "first_seen_at": "2026-10-28T03:56:02Z",
-      "source_updated_at": "2026-10-21T13:34:13Z",
-      "source_type": "php_upstream",
-      "known_exploited": true,
-      "epss": 0.99999,
-      "epss_percentile": 0.99999,
-      "epss_as_of": "2026-11-03"
-    },
-    {
       "id": "CVE-2026-109618",
       "title": "RCE via OOM corruption",
       "severity": "critical",
@@ -177061,6 +176990,53 @@
       "known_exploited": true,
       "epss": 0.99999,
       "epss_percentile": 0.99998,
+      "epss_as_of": "2026-11-03"
+    },
+    {
+      "id": "CVE-2026-109619",
+      "title": "RCE via stale global state",
+      "severity": "critical",
+      "categories": [
+        "PHP"
+      ],
+      "published": "2026-10-21",
+      "updated": "2026-11-02",
+      "summary": "## Summary PHP contains various global state, such as error, session, object and extension state that is retained by a worker but points to memory owned by one request. That state must be reset before the request memory is released. Some input, configuration, session and error handling operations run before normal initialization of the next request. They inadvertently access stale state not reset by the previous request before initialization has a chance to replace it, causing a use after free. A strategically crafted heap layout can produce full remote code execution (RCE). State can survive for more than one reason. A fatal error, including one caused by memory exhaustion, can abandon an operation before it performs its matching reset. A warning or other nonfatal diagnostic can also repopulate error state after that state was already cleared during shutdown. The request heap is then freed while the worker global field still refers to it. A later operation that runs before normal request initialization can consume the stale value. Successful exploitation of this vulnerability requires both a producer and a consumer. The producer is a PHP operation that stores state owned by one request in a location PHP can access later in a subsequent request. The consumer is a subsequent PHP o",
+      "affected": "php: php-src (< 8.2.35); php: php-src (< 8.3.36); php: php-src (< 8.4.27); php: php-src (< 8.5.12)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "PHP project security release",
+          "url": "https://www.php.net/archive/2026.php"
+        },
+        {
+          "label": "PHP upstream security advisory",
+          "url": "https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp"
+        },
+        {
+          "label": "Canadian Cyber Centre updated alert",
+          "url": "https://www.cyber.gc.ca/en/alerts-advisories/al26-026-critical-vulnerabilities-impacting-php-cve-2026-109618-cve-2026-109619"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-6wmf-4rv5-p3rp"
+        },
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "Published security advisory from PHP upstream",
+      "first_seen_at": "2026-10-28T03:56:02Z",
+      "source_updated_at": "2026-10-21T13:34:13Z",
+      "source_type": "php_upstream",
+      "known_exploited": true,
+      "epss": 0.99999,
+      "epss_percentile": 0.99999,
       "epss_as_of": "2026-11-03"
     },
     {
@@ -177129,51 +177105,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
-      "id": "CVE-2026-102870",
-      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core",
-        "Linux"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
-      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
-      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
-      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft corrected Blazor debugger security advisory",
-          "url": "https://github.com/dotnet/announcements/issues/492"
-        },
-        {
-          "label": "ASP.NET Core GHSA vendor record",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
-        },
-        {
-          "label": "Ubuntu Security Notice",
-          "url": "https://ubuntu.com/security/notices/USN-8958-1"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-25",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00906,
-      "epss_percentile": 0.59854,
-      "epss_as_of": "2026-11-03"
-    },
-    {
       "id": "CVE-2026-96951",
       "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
       "severity": "high",
@@ -177216,6 +177147,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.09813,
       "epss_percentile": 0.95551,
+      "epss_as_of": "2026-11-03"
+    },
+    {
+      "id": "CVE-2026-102870",
+      "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core",
+        "Linux"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "The Blazor WebAssembly debug proxy may compile attacker-influenced debugger expressions into C# without sufficient escaping, enabling code execution on a developer workstation when a developer evaluates affected data. Microsoft corrected an incomplete October 13 package fix on October 25.",
+      "affected": "Microsoft.AspNetCore.Components.WebAssembly.Server and Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.x before 10.0.14 and affected .NET 11 prereleases before 11.0.0 RC3. This requires vulnerable debugging activity and is not a general production request endpoint issue.",
+      "remediation": "Update both affected Blazor WebAssembly Server and DevServer NuGet packages to 10.0.14 or 11.0.0 RC3 as applicable, and update the development SDK. A shared runtime update alone does not fix independently referenced packages.",
+      "exploitation": "No confirmed active exploitation stated in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "ASP.NET Core GHSA vendor record",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
+        },
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8958-1"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-25",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00906,
+      "epss_percentile": 0.59854,
       "epss_as_of": "2026-11-03"
     },
     {
@@ -177369,42 +177345,6 @@
       "epss_as_of": "2026-11-03"
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60766,
-      "epss_as_of": "2026-11-03"
-    },
-    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -177443,6 +177383,42 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55895,
+      "epss_as_of": "2026-11-03"
+    },
+    {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60766,
       "epss_as_of": "2026-11-03"
     },
     {
@@ -177748,85 +177724,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-03T13:17:16Z",
-      "last_attempt": "2026-11-03T13:17:16Z",
+      "last_success": "2026-11-03T14:27:24Z",
+      "last_attempt": "2026-11-03T14:27:24Z",
       "items_processed": 257,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-03T13:17:16Z",
-      "last_attempt": "2026-11-03T13:17:16Z",
+      "last_success": "2026-11-03T14:27:24Z",
+      "last_attempt": "2026-11-03T14:27:24Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-03T13:17:16Z",
-      "last_attempt": "2026-11-03T13:17:16Z",
-      "items_processed": 128,
+      "last_success": "2026-11-03T14:27:24Z",
+      "last_attempt": "2026-11-03T14:27:24Z",
+      "items_processed": 143,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-03T13:17:16Z",
-      "last_attempt": "2026-11-03T13:17:16Z",
+      "last_success": "2026-11-03T14:27:24Z",
+      "last_attempt": "2026-11-03T14:27:24Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-03T13:17:16Z",
-      "last_attempt": "2026-11-03T13:17:16Z",
+      "last_success": "2026-11-03T14:27:24Z",
+      "last_attempt": "2026-11-03T14:27:24Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-03T13:17:16Z",
-      "last_attempt": "2026-11-03T13:17:16Z",
+      "last_success": "2026-11-03T14:27:24Z",
+      "last_attempt": "2026-11-03T14:27:24Z",
       "items_processed": 15,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-03T13:17:16Z",
-      "last_attempt": "2026-11-03T13:17:16Z",
+      "last_success": "2026-11-03T14:27:24Z",
+      "last_attempt": "2026-11-03T14:27:24Z",
       "items_processed": 9640,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-03T13:17:16Z",
-      "last_attempt": "2026-11-03T13:17:16Z",
+      "last_success": "2026-11-03T14:27:24Z",
+      "last_attempt": "2026-11-03T14:27:24Z",
       "items_processed": 47,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-03T13:17:16Z",
-      "last_attempt": "2026-11-03T13:17:16Z",
+      "last_success": "2026-11-03T14:27:24Z",
+      "last_attempt": "2026-11-03T14:27:24Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-03T13:17:16Z",
-      "last_attempt": "2026-11-03T13:17:16Z",
+      "last_success": "2026-11-03T14:27:24Z",
+      "last_attempt": "2026-11-03T14:27:24Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-03T13:17:16Z",
-      "last_attempt": "2026-11-03T13:17:16Z",
+      "last_success": "2026-11-03T14:27:24Z",
+      "last_attempt": "2026-11-03T14:27:24Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-03T13:17:16Z",
-      "last_attempt": "2026-11-03T13:17:16Z",
+      "last_success": "2026-11-03T14:27:24Z",
+      "last_attempt": "2026-11-03T14:27:24Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -177838,7 +177814,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-03T13:17:16Z",
-  "last_successful_update": "2026-11-03T13:17:16Z",
+  "last_checked_at": "2026-11-03T14:27:24Z",
+  "last_successful_update": "2026-11-03T14:27:24Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
