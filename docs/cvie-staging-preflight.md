@@ -1,6 +1,6 @@
 # Task 2C: Read-only staging preflight results
 
-**Outcome: rerun completed; Access service-token linkage is now verified. Resource-creation readiness remains conditional on confirming the management token's write grants and staging-only scope. No Cloudflare resources were created or deployed.**
+**Outcome: ready to request resource-creation approval. Automated account/Access checks passed, and the account owner has now manually verified all five token permissions and staging-only scope. No Cloudflare resources were created or deployed.**
 
 Latest remote check: **2 November 2026, 9:04:07 p.m. America/Toronto** (3 November 2026, 02:04:07 UTC). Reran the existing protected GitHub environment job in `cloudflare-cvie-staging`, attempt 2, using the unchanged stored token value after the owner added Access: Service Tokens Read. Diagnostic source commit: `0a67b71cd71c616a9881a2df7d72c46f2853fa27`.
 
@@ -27,15 +27,24 @@ Latest remote check: **2 November 2026, 9:04:07 p.m. America/Toronto** (3 Novemb
 
 No existing Worker bindings could be checked remotely because no Workers exist yet. Worker configuration, email/schedule guards, production-ID rejection and same-origin routing were verified locally, including the existing staging tests. These are preparation safeguards, not claims about a deployed environment.
 
-## Remaining verification gaps
+## Owner verification and deferred checks
 
-### 1. Management-token write grants and exact resource scope
+### Resolved by owner attestation: management-token grants and account scope
 
 Both account-token and user-token detail endpoints returned **HTTP 403**. The token is active and can read the selected staging account, Workers/D1 inventories and Access policies. That does **not** prove Workers Scripts Edit or D1 Edit, or reveal the complete resource-scope policy.
 
 This is a metadata visibility gap, not evidence that the deployment permissions are missing. No create/update request was used as a permission probe, and no production-access probe was performed. The account verification endpoint alone is also not treated as independent proof of the token's ownership type.
 
-**Owner action:** review the token in Cloudflare and confirm that Workers Scripts Edit/Write and D1 Edit/Write are granted, with account resources restricted exclusively to `9706b4d98ad72884e67fd1eb875c8a61`. Retain Account Settings Read and Access Apps and Policies Read. A confirmation or redacted permission/scope description is sufficient; do not share the token. Broad user-level token-administration permissions are not necessary simply to finish this review. Such a manual confirmation would be identified as owner-attested evidence, not an API measurement.
+**Owner confirmation received:** the account owner personally reviewed the dashboard and confirmed:
+
+- Workers Scripts Write.
+- D1 Write.
+- Account Settings Read.
+- Access Apps and Policies Read.
+- Access Service Tokens Read.
+- Account resources restricted exclusively to CVEHarbor Staging, ID `9706b4d98ad72884e67fd1eb875c8a61`.
+
+This resolves the pre-creation grant/scope evidence gap by **manual account-owner verification**, not API measurement. See the [separate attestation record](cvie-evidence/staging-owner-attestation.json). No broader token-administration access, token replacement or production probe is required. Actual write capability will only be exercised during an approved staging operation; a permission error then must stop that stage.
 
 ### Resolved: Access service-token metadata/linkage
 
@@ -47,7 +56,7 @@ The earlier empty listing/direct-lookup 403 was a visibility limitation. The rer
 
 The initial setup guide did not require Service Tokens Read. The owner has now supplied that read permission; no Access edit permission is requested.
 
-### 3. End-to-end Access authentication is deferred
+### Deferred: end-to-end Access authentication
 
 The authenticated GET to the approved staging URL returned **404**, without a verifiable Access JWT. With zero Workers deployed, this cannot validate or invalidate the service secret. Actual Access challenges, valid service-token access and denial of unauthorized requests must be tested after the first separately authorized Worker deployment. This deferred test is not, by itself, a reason to rotate credentials or change policies.
 
@@ -61,10 +70,12 @@ The authenticated GET to the approved staging URL returned **404**, without a ve
 - The existing production read-only baseline job remains excluded for PR #243. Production deployment jobs remain excluded from branch/PR execution. PR #243 remains draft and unmerged.
 - A marked branch commit triggers the requested protected check because the new workflow is not merged into main for manual dispatch. It does not bypass GitHub environment protections. Ordinary unmarked pushes run preparation only, with no staging credential check.
 
-The workflow is green because diagnostics executed successfully and the account/application checks passed. **That green result is not a resource-creation signoff:** the latest JSON still records `ready_for_creation: false` because management-token permission/scope metadata remains unreadable. The service-token linkage limitation has been removed.
+The workflow is green because diagnostics executed successfully and the account/application checks passed. The raw automated JSON still records `ready_for_creation: false` because permission/scope metadata was unreadable. **That historical evidence is intentionally unchanged.** The combined readiness assessment now includes the later owner attestation; it does not misrepresent the 403 as an API success.
 
 ## Readiness decision
 
-The account, names, subdomain, Access policies and service-token linkage are ready. Full creation readiness remains **pending only management-token grant/scope confirmation**: Workers Scripts Edit/Write and D1 Edit/Write, with resources restricted to the staging account. The existing read permissions are proven by successful API calls, but successful reads cannot establish write permission. Owner confirmation from the token settings can resolve this without adding broad token-administration access. End-to-end Access authentication remains a post-deployment gate because no origin exists yet.
+**Ready for approval of bounded resource creation and initial deployment.** Account identity, names, subdomain, Access policies and service-token linkage are verified remotely; the five management-token grants and exclusive staging-account scope are verified manually by the owner. End-to-end Access authentication and deployed bindings remain post-deployment gates because no origin exists yet.
 
-No resources will be created on the basis of this report. Record the remaining grant/scope confirmation and obtain the user's separate next-step authorization before any creation, migration or deployment instruction is executed.
+The [final resource creation plan](cvie-staging-resource-creation-plan.md) specifies an empty D1 database first, private API deployment and verification second, then the protected frontend and read-only checks. It lists the exact bindings, protected GitHub variables and required execution-workflow preparation. Migrations, fixtures and performance validation are outside that next approval scope.
+
+**Execution remains pending the user's approval of that plan.** This documentation update made no Cloudflare requests, configuration changes, migrations or deployments. PR #243 remains open and unmerged; production is unchanged.

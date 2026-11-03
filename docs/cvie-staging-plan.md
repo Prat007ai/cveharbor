@@ -210,10 +210,10 @@ Total: approximately **5–9 engineering days**, excluding account setup, owner 
 
 ### Current release blockers
 
-1. Secure credential/Access setup and owner confirmation that staging execution can begin.
-2. Protected CI environment and network access. Account ID/subdomain and Workers Paid plan are now supplied; no token has been supplied to execution.
+1. Approval of the [final resource creation plan](cvie-staging-resource-creation-plan.md). Credential/Access setup and remote metadata checks are complete; the owner has manually confirmed the five management-token permissions and exclusive staging scope.
+2. Prepare the protected provisioning job and approval/SHA gates described in that plan. The existing protected environment has successfully run read-only checks; no creation/deployment job is enabled yet.
 3. Remote bootstrap/fixture preparation and validation. Staging routing, email/schedule guards and local schema/build checks are prepared; full authenticated performance fixtures remain subsequent work.
 4. Successful remote migration, browser latency, D1 density, tenant/parity and rollback results.
 5. Separate production review and approval after the staging report. No merge or production rollout follows automatically from passing staging.
 
-**Current outcome:** staging configuration and local safety/build helpers are prepared; see the credential guide for exact current files and setup steps. Remote validation has not run and no Cloudflare resources have been created or deployed. The original implementation/validation sequence above remains the scope for subsequent work, with Access and the approved account replacing earlier placeholders.
+**Current outcome:** ready to request bounded resource-creation approval, combining remote preflight results with manual owner verification. See the [updated readiness assessment](cvie-staging-preflight.md) and final creation plan. Staging configuration and local safety/build helpers are prepared. Remote application/performance validation has not run and no Cloudflare resources have been created or deployed. The original implementation/validation sequence above remains the scope for subsequent work, with Access and the approved account replacing earlier placeholders.

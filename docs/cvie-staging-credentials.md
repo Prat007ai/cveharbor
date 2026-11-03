@@ -1,8 +1,8 @@
 # Task 2C: Staging preparation and secure credential setup
 
-**Preparation only. No Cloudflare resources have been created or deployed by this work.** Keep [PR #243](https://github.com/Prat007ai/cveharbor/pull/243) open and unmerged. Resource creation, migration and validation will follow only after the owner confirms credentials and Access are ready.
+**Preparation only. No Cloudflare resources have been created or deployed by this work.** Keep [PR #243](https://github.com/Prat007ai/cveharbor/pull/243) open and unmerged. Credentials and Access are ready; execution remains subject to approval of the bounded [resource creation plan](cvie-staging-resource-creation-plan.md). Migrations and validation follow separately.
 
-**Read-only preflight update:** credentials are configured and remote checks have run. The rerun after adding Access: Service Tokens Read verifies account identity, both Access policies and service-token linkage. Management-token write-grant/scope metadata still returns 403 and requires owner confirmation. See the [updated preflight results](cvie-staging-preflight.md). No resources have been created or deployed.
+**Read-only preflight update:** credentials are configured and remote checks have run. The rerun after adding Access: Service Tokens Read verifies account identity, both Access policies and service-token linkage. Management-token write-grant/scope metadata returned 403; the owner has now personally confirmed all five permissions and exclusive staging-account scope. This is recorded separately as manual verification, resolving the pre-creation evidence gap. See the [updated preflight results](cvie-staging-preflight.md). No resources have been created or deployed.
 
 This supplements the [full Task 2C plan](cvie-staging-plan.md). The account, hostname and names below are approved. Cloudflare Access replaces the earlier proposed Basic Auth gate. Initial source-provider mode is **blocked**, not live or fixture-driven; controlled source fixtures and the remote performance campaign remain subsequent work.
 
@@ -35,6 +35,7 @@ Perform these steps yourself while the Cloudflare dashboard is switched to **CVE
    | **D1: Edit** | Create the staging database and later apply approved staging schema/fixtures |
    | **Account Settings: Read** | Account/subdomain discovery used by deployment tooling |
    | **Access: Apps and Policies: Read** | Verify the exact staging Access app and policies before any mutation |
+   | **Access: Service Tokens: Read** | Verify the existing automation token and its policy linkage |
 
    Optional later: **Workers Tail: Read** for runtime diagnostics and **Account Analytics: Read** for aggregate usage. They are not required for the initial local build. No Access Edit, DNS Edit, Workers Routes, KV, R2, production account or account-administrator permissions are needed by the deployment token.
 
@@ -130,6 +131,8 @@ These do not need a Cloudflare token. Generated files stay in ignored `staging/.
 
 ## 6. Sequence after credentials are ready — not executed now
 
+The [final resource creation plan](cvie-staging-resource-creation-plan.md) supersedes this outline for the next approval step. It separates empty database creation and Worker deployment from later migrations/fixtures, and requires API verification before frontend deployment. The protected execution job is proposed, not yet implemented.
+
 1. Run `node staging/scripts/cloud.mjs check` using only the protected staging variables/token. It reads the staging Workers subdomain, Access app/policies and staging database inventory. It makes no writes and never queries production. Confirm the Access issuer/team separately and test actual challenge/denial after deployment.
 2. When execution is authorized, run `STAGING_CHANGE_APPROVED=PR243-STAGING-ONLY node staging/scripts/cloud.mjs create-database`. It creates only the approved staging D1 name and prints its non-secret UUID. It refuses to replace an existing database. Set `CF_STAGING_D1_DATABASE_ID` to that returned value.
 3. Complete local regression/config packaging checks, then run `node staging/scripts/configure.mjs`. This writes resolved `.build/api.json` and `.build/site.json`. No resource is changed.
@@ -138,7 +141,7 @@ These do not need a Cloudflare token. Generated files stay in ignored `staging/.
 6. Apply the locally generated full bootstrap through 0027, then separately apply the checked-in 0028 and 0029 with checksum/ledger checks and staging-only target validation. This preparation emits SQL/manifests only; the remote migration/fixture runner will be finalized with the actual D1 UUID and a read-only inspection of the newly created empty database. Do not run bare `wrangler d1 migrations apply` against the repository's default config: that omits auxiliary bootstrap schemas and selects production.
 7. Seed synthetic accounts/data, install only the independent staging MFA key if needed, and begin the approved validation matrix. Controlled source fixture adapters, authenticated browser timing, D1 density measurements and rollback evidence remain to be implemented/run in that phase. Do not treat this configuration preparation as a completed Task 2C performance validation.
 
-The current workflow is new on a non-main branch. GitHub may not expose `workflow_dispatch` until the workflow exists on the default branch. **Do not merge PR #243 to unlock it.** Preparation checks run on branch/PR events without credentials. If manual dispatch is unavailable, the same read-only check can run on a separately approved staging runner with secrets supplied securely. Do not enable an automatic provisioning-on-push workaround. Managed local execution would additionally need network access to `api.cloudflare.com`, the exact staging website and its actual Access team domain; no production or SMTP domains are required.
+The current workflow is new on a non-main branch. GitHub may not expose `workflow_dispatch` until the workflow exists on the default branch. **Do not merge PR #243 to unlock it.** Preparation checks run on branch/PR events without credentials. If manual dispatch is unavailable, the same read-only check can run on a separately approved staging runner with secrets supplied securely. Do not enable an automatic provisioning-on-push workaround. The final plan separately proposes an explicit operation/SHA gate and required environment review for a requested branch provisioning run; that path requires owner approval and has not been enabled. Managed local execution would additionally need network access to `api.cloudflare.com`, the exact staging website and its actual Access team domain; no production or SMTP domains are required.
 
 ## 7. Validation and remaining limits
 
@@ -146,7 +149,7 @@ Local preparation checks cover signed/forged/expired/wrong-audience Access JWTs,
 
 Measured local preparation results: **8 staging test groups passed; 361 backend tests across 35 files passed; 122 Python tests passed.** The generated staging API smoke checks passed, and the full schema validated locally with **90 tables**. Both Worker configurations passed **Wrangler 4.156.0 `deploy --dry-run`**, using an explicitly synthetic database UUID and Access settings, without a deployment token. API package size was 618.85 KiB uncompressed / 153.26 KiB gzip; frontend Worker package was 6.04 KiB / 2.40 KiB gzip, with 75 static asset files. These are packaging measurements, not remote execution or performance results. See [machine-readable preparation evidence](cvie-evidence/staging-preparation.json).
 
-Remote D1 compatibility, actual Access policies/service tokens, new database identity, Workers runtime packaging/deployment, browser timing, migration performance, real storage/rows metrics and rollback remain **not validated remotely**. No cloud token has been inspected or used. No Worker, D1 database, Access policy, GitHub environment secret or production setting has been created/modified by this preparation.
+Account/Access/service-token metadata has now been checked remotely using protected GitHub credentials, and management-token permissions/scope have been manually verified by the owner. Remote D1 compatibility, new database identity, deployed Workers/Access authentication, browser timing, migration performance, real storage/rows metrics and rollback remain **not validated remotely**. No Worker, D1 database, Access policy, GitHub environment secret or production setting has been created/modified by this preparation.
 
 Production deployment workflows remain unchanged. The existing PR-only production diagnostic is explicitly disabled for #243, so preparation cannot silently read production using the old CI secret references. Existing Task 2B production baseline artifacts remain historical evidence only.
 
