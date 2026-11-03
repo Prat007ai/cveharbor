@@ -1,5 +1,9 @@
 # Original-schema adoption: review package, not execution approval
 
+For the investigated browser CI race, practical maintenance isolation, bookmark/
+export commands and the local restore validator, use the
+[administrator checklist](staging-adoption-operator-checklist.md).
+
 Prepared November 3, 2026. PRs #243, #251 and #253 remain draft. No remote SQL,
 resume setting, resource creation, credential change or deployment is authorized
 by this document. Adoption and continuation are separate approvals.
@@ -156,7 +160,8 @@ publish exports in GitHub artifacts: this repository is public.
    sha256sum "$STAGING_RECOVERY_DIR/before-adoption.sql" > "$STAGING_RECOVERY_DIR/before-adoption.sha256"
    ```
 
-5. Restore the export into an isolated LOCAL SQLite file, without any Cloudflare
+5. Run `python staging/scripts/verify-recovery-export.py --export <private-export.sql> --report <new-private-report.json>`.
+   This restores the export into an isolated LOCAL SQLite file, without any Cloudflare
    connection. Inspect its full schema/constraints/indexes, all 18 counts, foreign
    keys and `PRAGMA integrity_check` against the frozen reference. Preserve known
    Cloudflare metadata separately; do not silently ignore unexpected application

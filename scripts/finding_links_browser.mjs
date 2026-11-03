@@ -10,6 +10,11 @@ await request(endpoint,'POST',{});
 await request('/remediations/'+fixtureCve+'/assign','POST',{email:'alex@example.net',assigned_severity:'critical',fyi_recipients:['manager@example.net']});
 f.DB.sql.prepare('UPDATE remediation_assignment_requests SET acknowledged_at=? WHERE cve_id=?').run(Math.floor(Date.now()/1000),fixtureCve);
 const mailCount=f.emails.length;
+// Hold the real handler response to exercise the loading boundary deterministically.
+// The dialog heading is rendered before this request finishes.
+let pauseAssignments=false,releaseAssignments,observeAssignments;
+const assignmentResponseGate=new Promise(resolve=>{releaseAssignments=resolve;});
+const assignmentResponseObserved=new Promise(resolve=>{observeAssignments=resolve;});
 f.DB.sql.exec("UPDATE inventory_assets SET technology='PHP',version='8.4.1' WHERE user_id='a'");
 customer.inventory.customers=f.DB.sql.prepare("SELECT * FROM inventory_customers WHERE user_id='a'").all();customer.inventory.environments=f.DB.sql.prepare("SELECT * FROM inventory_environments WHERE user_id='a'").all();customer.inventory.assets=f.DB.sql.prepare("SELECT * FROM inventory_assets WHERE user_id='a'").all();customer.advisories.splice(1);customer.advisories[0].id=fixtureCve;
 const browser=await chromium.launch({headless:true,executablePath:process.env.CVEHARBOR_CHROMIUM_PATH||'/usr/bin/google-chrome',args:['--no-sandbox']});
@@ -20,7 +25,11 @@ try{
    const headers={'Access-Control-Allow-Origin':'https://cveharbor.com','Access-Control-Allow-Credentials':'true','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST,PUT,DELETE,OPTIONS'};
    if(req.method()==='OPTIONS')return route.fulfill({status:204,headers});seen.push({path:url.pathname,method:req.method()});
    if(/^\/v1\/(?:remediation|finding)/.test(url.pathname)){
-    const r=await worker.fetch(f.request(url.pathname.slice(3)+url.search,req.method(),req.postData()?JSON.parse(req.postData()):undefined),f.env,{waitUntil:()=>{}});return route.fulfill({status:r.status,body:await r.text(),headers});
+    const r=await worker.fetch(f.request(url.pathname.slice(3)+url.search,req.method(),req.postData()?JSON.parse(req.postData()):undefined),f.env,{waitUntil:()=>{}}),body=await r.text();
+    if(pauseAssignments&&req.method()==='GET'&&url.pathname==='/v1/remediations/'+fixtureCve+'/assignments'){
+     pauseAssignments=false;observeAssignments({status:r.status,body:JSON.parse(body)});await assignmentResponseGate;
+    }
+    return route.fulfill({status:r.status,body,headers});
    }
    const result=await customer.request(req.url(),{method:req.method(),body:req.postData()}),body=await result.json();return route.fulfill({status:result.status,body:JSON.stringify(body),headers});
   }
@@ -33,7 +42,14 @@ try{
  assert.deepEqual(await table.locator('thead th').allTextContents(),['CVE','Published ⇅','Severity ⇅','Software / Asset ⇅','Vulnerability summary','Vulnerability Fix Status ⇅','DevOps Ticket #']);
  assert.equal(seen.some(x=>/^\/v1\/(?:finding|remediation)/.test(x.path)&&x.method!=='GET'),false,'Viewing customer findings performs no writes');
  const row=table.locator('tbody tr').first();assert.match(await row.innerText(),/Existing record — connect it to this customer asset/);assert.match(await row.innerText(),/Acknowledged · alex@example.net/);
- await row.getByRole('button',{name:'Link existing assignment',exact:true}).click();const dialog=page.locator('.shared-record');await dialog.getByRole('heading',{name:'Link existing assignment'}).waitFor();
+ pauseAssignments=true;await row.getByRole('button',{name:'Link existing assignment',exact:true}).click();const dialog=page.locator('.shared-record');await dialog.getByRole('heading',{name:'Link existing assignment'}).waitFor();
+ let responseTimeout;const captured=await Promise.race([assignmentResponseObserved,new Promise((_,reject)=>{responseTimeout=setTimeout(()=>reject(Error('Assignments response was not observed')),10000);})]).finally(()=>clearTimeout(responseTimeout));
+ assert.equal(captured.status,200);assert.ok(captured.body.assignments.some(a=>a.recipient_email==='alex@example.net'&&a.status==='Acknowledged'),'Real API response retains Alex acknowledgement');
+ assert.doesNotMatch(await dialog.innerText(),/alex@example.net · Acknowledged/,'Heading alone is not assignment readiness');
+ assert.equal(await dialog.getByRole('button',{name:'Link existing assignment',exact:true}).count(),0,'Cannot submit before assignments load');
+ releaseAssignments();
+ // Wait for the form rendered after the assignment summary; retain strict content assertions.
+ await dialog.getByRole('button',{name:'Link existing assignment',exact:true}).waitFor();
  assert.match(await dialog.innerText(),/Customer North.*Production.*Web Server 01/);assert.match(await dialog.innerText(),/alex@example.net · Acknowledged/);
  assert.equal(await dialog.getByLabel('Status after linking').inputValue(),'Investigating');
  await dialog.screenshot({path:directory+'/link-preview.png'});
@@ -51,5 +67,5 @@ try{
  assert.equal(await page.locator('#remediationRows tr').count(),1);assert.match(await page.locator('#remediationRows').innerText(),/Customer North/);assert.match(await page.locator('#remediationRows').innerText(),/Acknowledged/);
  await page.locator('#remediationRows').getByRole('button',{name:'View record',exact:true}).click();await dialog.getByRole('heading',{name:fixtureCve}).waitFor();await page.evaluate(()=>window.dispatchEvent(new CustomEvent('cveharbor:account-state',{detail:{authenticated:false}})));assert.equal(await dialog.evaluate(n=>n.open),false);assert.equal(await dialog.innerText(),'');
  assert.equal(f.DB.sql.prepare('SELECT count(*) n FROM remediation_finding_links WHERE asset_id=?').get(assetTwo).n,0);assert.deepEqual(errors,[]);
- console.log('PASS: unlinked receipt clearly labelled; explicit customer/asset confirmation; same acknowledgement in finding and one canonical queue row; shared status; responsive modal; sign-out clearing.');
-}finally{globalThis.fetch=originalFetch;f.DB.sql.close();await browser.close();}
+ console.log('PASS: controlled delayed real API response proves heading precedes acknowledgement; completed dialog retains Alex receipt; unlinked receipt clearly labelled; explicit customer/asset confirmation; same acknowledgement in finding and one canonical queue row; shared status; responsive modal; sign-out clearing.');
+}finally{releaseAssignments();globalThis.fetch=originalFetch;f.DB.sql.close();await browser.close();}
