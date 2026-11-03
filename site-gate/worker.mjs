@@ -1,3 +1,4 @@
+import { intelligenceResponse, useIntelligenceStore, openIntelligenceSnapshot, pinIntelligenceScripts } from '../account-backend/src/intelligence-store.js';
 const realm='Basic realm="CVEHarbor development", charset="UTF-8"';
 
 function privateHeaders(){
@@ -48,10 +49,34 @@ export default {
         });
       }
     }
+    try {
+      const feed=await intelligenceResponse(request,env);
+      if(feed){
+        if(gated)for(const [name,value] of Object.entries(privateHeaders()))feed.headers.set(name,value);
+        return feed;
+      }
+    } catch { return unavailable(request); }
     if(!env.ASSETS?.fetch)return unavailable(request);
     // Credentials must never be forwarded to an asset origin or embedded in a page.
     const headers=new Headers(request.headers);headers.delete('Authorization');headers.delete('Proxy-Authorization');
-    const response=await env.ASSETS.fetch(new Request(request,{headers}));
+    let response=await env.ASSETS.fetch(new Request(request,{headers}));
+    if(request.method==='GET' && response.ok && (response.headers.get('Content-Type')||'').includes('text/html')){
+      const html=await response.text();
+      const h=new Headers(response.headers);h.delete('Content-Length');
+      let rendered=html;
+      try {
+        if(useIntelligenceStore(env) && /src="\/(data\.js|malware-data\.js|threat-data\.js|lifecycle\.js|patch-notes\.js)/.test(html)){
+          const snapshot=await openIntelligenceSnapshot(env);
+          rendered=pinIntelligenceScripts(html,snapshot.version);
+          h.delete('ETag');h.set('Cache-Control','no-store');
+        }
+      } catch {
+        // A feed outage must not remove account/login/remediation HTML. Data
+        // routes still fail visibly; never silently serve stale embedded assets.
+        h.set('Cache-Control','no-store');
+      }
+      response=new Response(rendered,{status:response.status,headers:h});
+    }
     if(!gated)return response;
     const protectedHeaders=new Headers(response.headers);
     for(const [name,value] of Object.entries(privateHeaders()))protectedHeaders.set(name,value);

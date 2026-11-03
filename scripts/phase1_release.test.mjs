@@ -27,7 +27,7 @@ test('workflow publication order and recovery steps are enforced for every site 
  const backend=fs.readFileSync('.github/workflows/deploy-worker-code.yml','utf8'),site=fs.readFileSync('.github/workflows/bootstrap.yml','utf8'),deployer=fs.readFileSync('scripts/deploy_site_gate.py','utf8');
  for(const w of [backend,site])assert.match(w,/group: cveharbor-production-release/);assert.ok(site.indexOf('node scripts/verify_frontend_backend.mjs')<site.indexOf('run: python scripts/deploy_site_gate.py'));const main=deployer.slice(deployer.indexOf('def main():'));assert.ok(main.indexOf('verify_backend()')<main.indexOf('routing_plan(config)'));
  assert.ok(backend.indexOf('--file=migrations/0031')<backend.indexOf('--file=migrations/0032'));assert.ok(backend.indexOf('node ../scripts/recovery_control.mjs install')<backend.indexOf('- name: Deploy Worker source'));assert.match(backend,/RECOVERY_RELEASE: \$\{\{ steps.mode.outputs.recovery_code_only \}\}/);
- const audit=fs.readFileSync('.github/workflows/audit-remediation-integrity.yml','utf8');assert.doesNotMatch(audit,/wrangler|secret put|d1 execute|deploy-worker/);assert.match(audit,/cloudflare-worker-production/);
+ const audit=fs.readFileSync('.github/workflows/security-phase1-audit.yml','utf8');assert.doesNotMatch(audit,/wrangler|secret put|d1 execute|deploy-worker/);assert.match(audit,/cloudflare-production-audit/);
 });
 test('hourly public-feed collection cannot invalidate the backend compatibility identity',()=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'phase1-identity-'));try{
@@ -37,6 +37,6 @@ test('hourly public-feed collection cannot invalidate the backend compatibility 
  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 test('all auxiliary production writers share serialization and check the hold before mutation',()=>{
- const names=fs.readdirSync('.github/workflows').filter(n=>n.startsWith('activate-')||['deploy-account-worker.yml','verify-cvie-d1.yml'].includes(n));
+ const names=fs.readdirSync('.github/workflows').filter(n=>n.startsWith('activate-')||['deploy-account-worker.yml'].includes(n));
  for(const name of names){const text=fs.readFileSync('.github/workflows/'+name,'utf8');assert.match(text,/group: cveharbor-production-release/,name);assert.match(text,/node scripts\/verify_release_hold.mjs/,name);const mutation=text.search(/run: (?:\|\n[^]*?)?npx --yes wrangler/);if(mutation>=0)assert.ok(text.indexOf('node scripts/verify_release_hold.mjs')<mutation,name);}
 });

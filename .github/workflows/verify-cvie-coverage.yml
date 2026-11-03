@@ -4,19 +4,22 @@ on:
     branches: [fix/cvie-product-coverage]
     paths: ['account-backend/**','cvie.js','cvie.css','scripts/*cvie*.mjs','.github/workflows/verify-cvie-coverage.yml']
 permissions:
-  contents: write
+  contents: read
 concurrency:
   group: cvie-shared-coverage-verification
   cancel-in-progress: false
 jobs:
   verify:
+    name: verify-cvie-coverage / verify
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22'
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.12'
       - name: Verify shared matching, private account behavior and coverage regression cases
@@ -41,14 +44,16 @@ jobs:
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: node scripts/probe_cvie_dotnet.mjs
-      - name: Record public provider evidence and catalogue coverage review
-        env:
-          CVIE_CHECK_BRANCH: ${{ github.ref_name }}
-        run: |
-          git config user.name 'cveharbor-updater[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/cvie-coverage-check.json data/cvie-catalogue-coverage.json docs/cvie-catalogue-coverage.md data/cvie-dotnet-check.json
-          git commit -m 'Record shared CVIE provider checks and catalogue coverage review'
-          git push origin "HEAD:$CVIE_CHECK_BRANCH"
       - name: Require successful live-source checks
         run: node -e "for(const file of ['cvie-coverage-check','cvie-dotnet-check'])if(!require('./data/'+file+'.json').ok)process.exit(1)"
+      - name: Retain diagnostic evidence without repository writes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: verify-cvie-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            data/cvie-*-check.json
+            data/cvie-catalogue-coverage.json
+            docs/cvie-catalogue-coverage.md
