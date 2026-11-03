@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-03",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 6777,
+  "candidate_records": 6793,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -2446,6 +2446,577 @@
       "status": "GitHub malware advisory",
       "first_seen_at": "2026-11-03T07:26:32Z",
       "source_updated_at": "2026-11-03T06:27:52Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-91075",
+      "title": "The Eupago Gateway For Woocommerce WordPress plugin from 4.5.0 through 4.7.5 does not verify the...",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "The Eupago Gateway For Woocommerce WordPress plugin from 4.5.0 through 4.7.5 does not verify the authenticity of incoming payment-confirmation webhook requests in some configurations, allowing unauthenticated attackers to forge a payment confirmation and mark a pending order as paid without paying for it.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-g2hh-vxh7-5vwh"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-91075"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/065557b8-a29f-4c59-9289-2343d90447b1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T09:31:54Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121022",
+      "title": "Use of Default Password (CWE-1393) in the web client in AxxonSoft Axxon One before 3.0.0 on...",
+      "severity": "critical",
+      "categories": [
+        "Linux",
+        "Windows"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Use of Default Password (CWE-1393) in the web client in AxxonSoft Axxon One before 3.0.0 on Windows and Linux allows a remote unauthenticated attacker to log in as the built-in administrator with the default credentials on a newly installed system, because the web client did not enforce the mandatory change of the default password on first login.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-c35r-j59w-5p7f"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121022"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.axxonsoft.com/legal/axxonsoft-vulnerability-disclosure-policy/security-advisories#CVE-2026-121022"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.1",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T09:31:53Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118448",
+      "title": "A use of uninitialized memory vulnerability in the pybddisasm Python bindings affects nd_to_text....",
+      "severity": "medium",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "A use of uninitialized memory vulnerability in the pybddisasm Python bindings affects nd_to_text. If the underlying text conversion fails, including failures caused by invalid parameters, the output buffer may remain uninitialized while still being converted into a Python return value. This may disclose residual process memory or cause the Python process to crash. Exploitation requires an application to invoke nd_to_text in a way that causes conversion to fail and to return or otherwise use the resulting output. The pybddisasm package is no longer maintained.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-9w8f-4c2r-vh34"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118448"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://pypi.org/project/pybddisasm"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T09:31:53Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121023",
+      "title": "Insertion of Sensitive Information into Log File (CWE-532) in the ARP Agent component in...",
+      "severity": "medium",
+      "categories": [
+        "Linux",
+        "Windows"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Insertion of Sensitive Information into Log File (CWE-532) in the ARP Agent component in AxxonSoft AxxonNet before 3.25.0 on Windows and Linux allows a local attacker with read access to ARP Agent log files or support packages to obtain the plaintext password of the LDAP directory service account via WARNING-level log entries that contain serialized user synchronization data.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-87vx-w47q-9fj9"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121023"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.axxonsoft.com/legal/axxonsoft-vulnerability-disclosure-policy/security-advisories#CVE-2026-121023"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T09:31:53Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121020",
+      "title": "Exposure of Sensitive Information to an Unauthorized Actor (CWE-200) in the security...",
+      "severity": "medium",
+      "categories": [
+        "Linux",
+        "Windows"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Exposure of Sensitive Information to an Unauthorized Actor (CWE-200) in the security configuration API in AxxonSoft Axxon One before 3.2.0 on Windows and Linux allows a remote authenticated user with limited privileges to enumerate all user accounts and roles configured in the system via the user configuration request, which returned the complete lists of users and roles regardless of the caller's permissions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-j27f-gvg7-cxpv"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121020"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.axxonsoft.com/legal/axxonsoft-vulnerability-disclosure-policy/security-advisories#CVE-2026-121020"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "4.3",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T09:31:53Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118446",
+      "title": "A use-after-free vulnerability in the pybddisasm Python bindings affects array-valued members of...",
+      "severity": "medium",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "A use-after-free vulnerability in the pybddisasm Python bindings affects array-valued members of INSTRUX objects, including ND_OPERAND arrays. These arrays are exposed as Python lists whose elements reference memory owned by the parent INSTRUX object. Retaining a list or an element does not keep the parent allocation alive. Accessing an element after the parent INSTRUX object has been freed therefore accesses freed memory. Depending on how the element is used and whether the freed allocation has been reused, this may expose process memory or cause the Python process to crash. Exploitation requires an application to retain and subsequently access an array element after the parent object has been freed. The pybddisasm package is no longer maintained.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-wqpq-pvq4-433g"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118446"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://pypi.org/project/pybddisasm"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T09:31:53Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121024",
+      "title": "Incorrect Authorization (CWE-863) in the Health Monitoring service in AxxonSoft AxxonNet before 3...",
+      "severity": "medium",
+      "categories": [
+        "Linux"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Incorrect Authorization (CWE-863) in the Health Monitoring service in AxxonSoft AxxonNet before 3.28.0 on Linux allows a remote attacker in possession of a shared report token, which is intended for read-only access, to create, modify or delete monitoring alerts via the monitoring API.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-jmww-h2pp-r5r5"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121024"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.axxonsoft.com/legal/axxonsoft-vulnerability-disclosure-policy/security-advisories#CVE-2026-121024"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.4",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T09:31:53Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118447",
+      "title": "A use of uninitialized memory vulnerability in the pybddisasm Python bindings may disclose...",
+      "severity": "medium",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "A use of uninitialized memory vulnerability in the pybddisasm Python bindings may disclose process memory when instruction decoding fails. The nd_decode, nd_decode_ex, nd_decode_ex2, and nd_decode_with_context functions may return an INSTRUX object whose contents have not been initialized after an unsuccessful decoding operation, including failures caused by invalid parameters. Accessing members of the returned object may expose residual process memory. Exploitation requires an application to access and expose the returned object contents after a decoding failure. The pybddisasm package is no longer maintained.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-qm9j-xr9g-5hqr"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118447"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://pypi.org/project/pybddisasm"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T09:31:53Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118445",
+      "title": "A use-after-free vulnerability in the pybddisasm Python bindings affects structure-valued members...",
+      "severity": "medium",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "A use-after-free vulnerability in the pybddisasm Python bindings affects structure-valued members of INSTRUX objects. These members are exposed through Python objects that reference memory owned by the parent INSTRUX object. A retained reference to a member does not keep the parent allocation alive. Accessing the member after the parent INSTRUX object has been freed therefore accesses freed memory. Depending on how the member is used and whether the freed allocation has been reused, this may expose process memory or cause the Python process to crash. Exploitation requires an application to retain and subsequently access a member reference after the parent object has been freed. The pybddisasm package is no longer maintained.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-xm87-hrrj-pq46"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118445"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://pypi.org/project/pybddisasm"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T09:31:53Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121021",
+      "title": "Plaintext Storage of a Password (CWE-256) in the SecurityManager shared configuration in...",
+      "severity": "medium",
+      "categories": [
+        "Linux",
+        "Windows"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Plaintext Storage of a Password (CWE-256) in the SecurityManager shared configuration in AxxonSoft Axxon One before 3.1.0 on Windows and Linux allows a local attacker with read access to the configuration directory or to configuration backups to obtain the password of the LDAP directory service account via the main.conf configuration file.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-73r7-q94j-p98r"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121021"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.axxonsoft.com/legal/axxonsoft-vulnerability-disclosure-policy/security-advisories#CVE-2026-121021"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.5",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T09:31:53Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118444",
+      "title": "Out-of-bounds read vulnerabilities in the pybddisasm Python bindings may disclose adjacent...",
+      "severity": "medium",
+      "categories": [
+        "Python / PyPI"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Out-of-bounds read vulnerabilities in the pybddisasm Python bindings may disclose adjacent process memory during instruction decoding. The nd_decode function may read up to 15 bytes without checking the actual length of the supplied Python buffer. The nd_decode_ex, nd_decode_ex2, and nd_decode_with_context functions pass the caller-supplied buffer size to the decoder without validating it against the actual length of the Python buffer. Data read beyond the buffer may be exposed through nd_get_instrux_bytes, which returns a fixed-length list of 16 bytes. Exploitation requires an application to invoke the affected APIs with a short buffer or an oversized length and to expose the resulting bytes to an attacker. The pybddisasm package is no longer maintained.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-p5f7-36qg-83fr"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118444"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://pypi.org/project/pybddisasm"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T09:31:53Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-103327",
+      "title": "The CryptoCloud WordPress plugin from 3.0.0 through 3.0.1 does not verify the authenticity of the...",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "The CryptoCloud WordPress plugin from 3.0.0 through 3.0.1 does not verify the authenticity of the payment notifications received by its gateway callback, as the integrity check is skipped while the webhook secret is left at its empty default, allowing unauthenticated attackers to mark arbitrary orders as paid or failed without any payment being made.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-xpq3-q6vx-4qg3"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-103327"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/fd5563ed-85c6-4b17-acf6-bdc2cd77dd4b"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T09:31:45Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-120988",
+      "title": "billboard.js before 4.1.3 allows an attacker to execute malicious JavaScript due to improper...",
+      "severity": "bulletin",
+      "categories": [
+        "JavaScript / TypeScript"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "billboard.js before 4.1.3 allows an attacker to execute malicious JavaScript due to improper sanitization of series ids during legend template rendering.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-qwgf-vfr8-c8w3"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/naver/billboard.js/security/advisories/GHSA-g5px-mcqp-3ghp"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120988"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://cve.naver.com/detail/cve-2026-120988.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T09:31:43Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-rgvh-3r77-gg9c",
+      "title": "Malware in dsh-moss-wallpaper",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: dsh-moss-wallpaper (= 3.4.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-rgvh-3r77-gg9c"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T10:01:58Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-qvhq-m873-hq8g",
+      "title": "Malicious code in service-roles-registry (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "## Source: amazon-inspector (4b228283b1cc1ad44b34a38d3ca79fb5b3f14d278ff50447b1b631cfd4fab9e0) service-roles-registry@99.0.2 runs index.js as a preinstall script. On npm install, index.js reads os.hostname(), os.userInfo().user, process.cwd(), and package metadata and POSTs them over HTTPS to the hardcoded endpoint https://eog6t9e6egptozp.m.pipedream.net. The version number (99.0.2) and name shape are consistent with a dependency-confusion lure intended to win resolution against an internal package of the same name. Installation causes host identifiers of the installing machine or build system to be transmitted to a third-party collector with no consent, documentation, or opt-out. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/e42d117776998fa48d6eb4956bfaba9e434b902b/osv/malicious/npm/service-roles-registry/MAL-2026-18519.json))",
+      "affected": "npm: service-roles-registry (= 99.0.2)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-qvhq-m873-hq8g"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/e42d117776998fa48d6eb4956bfaba9e434b902b/osv/malicious/npm/service-roles-registry/MAL-2026-18519.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/service-roles-registry/v/99.0.2"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T09:31:54Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-xfv7-hqg2-67x3",
+      "title": "Malware in vibes-plug",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: vibes-plug (= 4.5.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-xfv7-hqg2-67x3"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T09:21:41Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -86098,7 +86669,7 @@
       "cvss": "9.8",
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-10-30T02:19:09Z",
-      "source_updated_at": "2026-10-31T21:31:40Z",
+      "source_updated_at": "2026-11-03T09:31:41Z",
       "source_type": "github",
       "known_exploited": false,
       "epss": 0.00457,
@@ -88868,51 +89439,6 @@
       "epss_as_of": "2026-11-03"
     },
     {
-      "id": "CVE-2026-96951",
-      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
-      "severity": "high",
-      "cvss": "8.8",
-      "categories": [
-        "Windows",
-        "Windows 11 OS",
-        "Windows Server OS"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-29",
-      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
-      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
-      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "sources": [
-        {
-          "label": "CISA Known Exploited Vulnerabilities",
-          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
-        },
-        {
-          "label": "Microsoft Windows 11 release information",
-          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T01:29:29Z",
-      "known_exploited": true,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.09813,
-      "epss_percentile": 0.95551,
-      "epss_as_of": "2026-11-03"
-    },
-    {
       "id": "CVE-2026-102870",
       "title": "ASP.NET Core Blazor WebAssembly debugger code execution",
       "severity": "high",
@@ -88955,6 +89481,51 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00906,
       "epss_percentile": 0.59854,
+      "epss_as_of": "2026-11-03"
+    },
+    {
+      "id": "CVE-2026-96951",
+      "title": "Microsoft Windows Shell security feature bypass affecting Windows 11",
+      "severity": "high",
+      "cvss": "8.8",
+      "categories": [
+        "Windows",
+        "Windows 11 OS",
+        "Windows Server OS"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-29",
+      "summary": "Windows Shell security feature bypass that has been reported exploited. Windows 11 users should apply the appropriate October 2026 security updates for their specific version.",
+      "affected": "Applicable Windows 11 versions include 23H2, 24H2, 25H2, 26H1 and 26H2 per Microsoft update applicability; determine the required KB/build for each installed version.",
+      "remediation": "Install the applicable October 2026 Windows security cumulative update or newer supported update. Verify Microsoft's Security Update Guide and Windows 11 release-health matrix before deployment.",
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "sources": [
+        {
+          "label": "CISA Known Exploited Vulnerabilities",
+          "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96951"
+        },
+        {
+          "label": "Microsoft Windows 11 release information",
+          "url": "https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-96951"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T01:29:29Z",
+      "known_exploited": true,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.09813,
+      "epss_percentile": 0.95551,
       "epss_as_of": "2026-11-03"
     },
     {
@@ -109410,42 +109981,6 @@
       "epss_as_of": "2026-11-03"
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.60766,
-      "epss_as_of": "2026-11-03"
-    },
-    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -109484,6 +110019,42 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55895,
+      "epss_as_of": "2026-11-03"
+    },
+    {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.60766,
       "epss_as_of": "2026-11-03"
     },
     {
@@ -167602,505 +168173,6 @@
       "epss_as_of": "2026-11-03"
     },
     {
-      "id": "CVE-2024-35945",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: net: phy: phy_device: Prevent nullptr exceptions on ISR If phydev->irq is set unconditionally, check for va",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2024-05-19",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: net: phy: phy_device: Prevent nullptr exceptions on ISR If phydev->irq is set unconditionally, check for valid interrupt handler or fall back to polling mode to prevent nullptr exceptions in interrupt service routine.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-35945"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T13:18:06Z",
-      "source_updated_at": "2026-10-30T13:17:27.390",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00213,
-      "epss_percentile": 0.11621,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2024-35946",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: wifi: rtw89: fix null pointer access when abort scan During cancel scan we might use vif that weren't scann",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2024-05-19",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: wifi: rtw89: fix null pointer access when abort scan During cancel scan we might use vif that weren't scanning. Fix this by using the actual scanning vif.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-35946"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T13:18:06Z",
-      "source_updated_at": "2026-10-30T13:17:27.537",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00213,
-      "epss_percentile": 0.11622,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2024-27408",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: dmaengine: dw-edma: eDMA: Add sync read before starting the DMA transfer in remote setup The Linked list el",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2024-05-17",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: dmaengine: dw-edma: eDMA: Add sync read before starting the DMA transfer in remote setup The Linked list element and pointer are not stored in the same memory as the eDMA controller register. If the doorbell register is toggled before the full write of the linked list a race condition error will occur. In remote setup we can only use a readl to the memory to assure the full write has occurred.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-27408"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T13:18:06Z",
-      "source_updated_at": "2026-10-30T13:17:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00192,
-      "epss_percentile": 0.08901,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2024-35784",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: btrfs: fix deadlock with fiemap and extent locking While working on the patchset to remove extent locking I",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "React / Next.js"
-      ],
-      "published": "2024-05-17",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: btrfs: fix deadlock with fiemap and extent locking While working on the patchset to remove extent locking I got a lockdep splat with fiemap and pagefaulting with my new extent lock replacement lock. This deadlock exists with our normal code, we just don't have lockdep annotations with the extent locking so we've never noticed it. Since we're copying the fiemap extent to user space on every iteration we have the chance of pagefaulting. Because we hold the extent lock for the entire range we could mkwrite into a range in the file that we have mmap'ed. This would deadlock with the following stack trace [<0>] lock_extent+0x28d/0x2f0 [<0>] btrfs_page_mkwrite+0x273/0x8a0 [<0>] do_page_mkwrite+0x50/0xb0 [<0>] do_fault+0xc1/0x7b0 [<0>] __handle_mm_fault+0x2fa/0x460 [<0>] handle_mm_fault+0xa4/0x330 [<0>] do_user_addr_fault+0x1f4/0x800 [<0>] exc_page_fault+0x7c/0x1e0 [<0>] asm_exc_page_fault+0x26/0x30 [<0>] rep_movs_alternative+0x33/0x70 [<0>] _copy_to_user+0x49/0x70 [<0>] fiemap_fill_next_extent+0xc8/0x120 [<0>] emit_fiemap_extent+0x4d/0xa0 [<0>] extent_fiemap+0x7f8/0xad0 [<0>] btrfs_fiemap+0x49/0x80 [<0>] __x64_sys_ioctl+0x3e1/0xb50 [<0>] do_syscall_64+0x94/0x1a0 [<0>] en",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-35784"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T13:18:06Z",
-      "source_updated_at": "2026-10-30T13:17:26.290",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00173,
-      "epss_percentile": 0.06763,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2023-52671",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: drm/amd/display: Fix hang/underflow when transitioning to ODM4:1 [Why] Under some circumstances, disabling ",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2024-05-17",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: drm/amd/display: Fix hang/underflow when transitioning to ODM4:1 [Why] Under some circumstances, disabling an OPTC and attempting to reclaim its OPP(s) for a different OPTC could cause a hang/underflow due to OPPs not being properly disconnected from the disabled OPTC. [How] Ensure that all OPPs are unassigned from an OPTC when it gets disabled.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-52671"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T13:18:06Z",
-      "source_updated_at": "2026-10-30T13:17:16.217",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00222,
-      "epss_percentile": 0.12803,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2024-35799",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: drm/amd/display: Prevent crash when disable stream [Why] Disabling stream encoder invokes a function that n",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2024-05-17",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: drm/amd/display: Prevent crash when disable stream [Why] Disabling stream encoder invokes a function that no longer exists. [How] Check if the function declaration is NULL in disable stream encoder.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-35799"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T13:18:06Z",
-      "source_updated_at": "2026-10-30T13:17:26.470",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00229,
-      "epss_percentile": 0.13697,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2024-26947",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: ARM: 9359/1: flush: check if the folio is reserved for no-mapping addresses Since commit a4d5613c4dc6 (\"arm",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2024-05-01",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: ARM: 9359/1: flush: check if the folio is reserved for no-mapping addresses Since commit a4d5613c4dc6 (\"arm: extend pfn_valid to take into account freed memory map alignment\") changes the semantics of pfn_valid() to check presence of the memory map for a PFN. A valid page for an address which is reserved but not mapped by the kernel[1], the system crashed during some uio test with the following memory layout: node 0: [mem 0x00000000c0a00000-0x00000000cc8fffff] node 0: [mem 0x00000000d0000000-0x00000000da1fffff] the uio layout is：0xc0900000, 0x100000 the crash backtrace like: Unable to handle kernel paging request at virtual address bff00000 [...] CPU: 1 PID: 465 Comm: startapp.bin Tainted: G O 5.10.0 #1 Hardware name: Generic DT based system PC is at b15_flush_kern_dcache_area+0x24/0x3c LR is at __sync_icache_dcache+0x6c/0x98 [...] (b15_flush_kern_dcache_area) from (__sync_icache_dcache+0x6c/0x98) (__sync_icache_dcache) from (set_pte_at+0x28/0x54) (set_pte_at) from (remap_pfn_range+0x1a0/0x274) (remap_pfn_range) from (uio_mmap+0x184/0x1b8 [uio]) (uio_mmap [uio]) from (__mmap_region+0x264/0x5f4) (__mmap_region) from (__do_mmap_mm+0x3ec/0x440) (__do_mmap_mm) from (d",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-26947"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T13:18:06Z",
-      "source_updated_at": "2026-10-30T13:17:23.860",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0023,
-      "epss_percentile": 0.13801,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2024-26948",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: drm/amd/display: Add a dc_state NULL check in dc_state_release [How] Check wheather state is NULL before re",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2024-05-01",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: drm/amd/display: Add a dc_state NULL check in dc_state_release [How] Check wheather state is NULL before releasing it.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-26948"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T13:18:06Z",
-      "source_updated_at": "2026-10-30T13:17:24.043",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00227,
-      "epss_percentile": 0.13444,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2024-26953",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: net: esp: fix bad handling of pages from page_pool When the skb is reorganized during esp_output (!esp->inl",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2024-05-01",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: net: esp: fix bad handling of pages from page_pool When the skb is reorganized during esp_output (!esp->inline), the pages coming from the original skb fragments are supposed to be released back to the system through put_page. But if the skb fragment pages are originating from a page_pool, calling put_page on them will trigger a page_pool leak which will eventually result in a crash. This leak can be easily observed when using CONFIG_DEBUG_VM and doing ipsec + gre (non offloaded) forwarding: BUG: Bad page state in process ksoftirqd/16 pfn:1451b6 page:00000000de2b8d32 refcount:0 mapcount:0 mapping:0000000000000000 index:0x1451b6000 pfn:0x1451b6 flags: 0x200000000000000(node=0|zone=2) page_type: 0xffffffff() raw: 0200000000000000 dead000000000040 ffff88810d23c000 0000000000000000 raw: 00000001451b6000 0000000000000001 00000000ffffffff 0000000000000000 page dumped because: page_pool leak Modules linked in: ip_gre gre mlx5_ib mlx5_core xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink iptable_nat nf_nat xt_addrtype br_netfilter rpcrdma rdma_ucm ib_iser libiscsi scsi_transport_iscsi ib_umad rdma_cm ib_ipoib iw_cm ib_cm ib_uverbs ib_core overlay zram zsmalloc fu",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-26953"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T13:18:06Z",
-      "source_updated_at": "2026-10-30T13:17:24.180",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00662,
-      "epss_percentile": 0.51658,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2024-27005",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: interconnect: Don't access req_list while it's being manipulated The icc_lock mutex was split into separate",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2024-05-01",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: interconnect: Don't access req_list while it's being manipulated The icc_lock mutex was split into separate icc_lock and icc_bw_lock mutexes in [1] to avoid lockdep splats. However, this didn't adequately protect access to icc_node::req_list. The icc_set_bw() function will eventually iterate over req_list while only holding icc_bw_lock, but req_list can be modified while only holding icc_lock. This causes races between icc_set_bw(), of_icc_get(), and icc_put(). Example A: CPU0 CPU1 ---- ---- icc_set_bw(path_a) mutex_lock(&icc_bw_lock); icc_put(path_b) mutex_lock(&icc_lock); aggregate_requests() hlist_for_each_entry(r, ... hlist_del(... <r = invalid pointer> Example B: CPU0 CPU1 ---- ---- icc_set_bw(path_a) mutex_lock(&icc_bw_lock); path_b = of_icc_get() of_icc_get_by_index() mutex_lock(&icc_lock); path_find() path_init() aggregate_requests() hlist_for_each_entry(r, ... hlist_add_head(... <r = invalid pointer> Fix this by ensuring icc_bw_lock is always held before manipulating icc_node::req_list. The additional places icc_bw_lock is held don't perform any memory allocations, so we should still be safe from the original lockdep splats that motivated the separate loc",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-27005"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T13:18:06Z",
-      "source_updated_at": "2026-10-30T13:17:24.390",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00189,
-      "epss_percentile": 0.08541,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2024-27010",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: net/sched: Fix mirred deadlock on device recursion When the mirred action is used on a classful egress qdis",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2024-05-01",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: net/sched: Fix mirred deadlock on device recursion When the mirred action is used on a classful egress qdisc and a packet is mirrored or redirected to self we hit a qdisc lock deadlock. See trace below. [..... other info removed for brevity....] [ 82.890906] [ 82.890906] ============================================ [ 82.890906] WARNING: possible recursive locking detected [ 82.890906] 6.8.0-05205-g77fadd89fe2d-dirty #213 Tainted: G W [ 82.890906] -------------------------------------------- [ 82.890906] ping/418 is trying to acquire lock: [ 82.890906] ffff888006994110 (&sch->q.lock){+.-.}-{3:3}, at: __dev_queue_xmit+0x1778/0x3550 [ 82.890906] [ 82.890906] but task is already holding lock: [ 82.890906] ffff888006994110 (&sch->q.lock){+.-.}-{3:3}, at: __dev_queue_xmit+0x1778/0x3550 [ 82.890906] [ 82.890906] other info that might help us debug this: [ 82.890906] Possible unsafe locking scenario: [ 82.890906] [ 82.890906] CPU0 [ 82.890906] ---- [ 82.890906] lock(&sch->q.lock); [ 82.890906] lock(&sch->q.lock); [ 82.890906] [ 82.890906] *** DEADLOCK *** [ 82.890906] [..... other info removed for brevity....] Example setup (eth0->eth0) to recreate tc qdisc add dev eth0 r",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-27010"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T13:18:06Z",
-      "source_updated_at": "2026-10-30T13:17:24.673",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00176,
-      "epss_percentile": 0.07114,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2024-27011",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: netfilter: nf_tables: fix memleak in map from abort path The delete set command does not rely on the transa",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "React / Next.js"
-      ],
-      "published": "2024-05-01",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: netfilter: nf_tables: fix memleak in map from abort path The delete set command does not rely on the transaction object for element removal, therefore, a combination of delete element + delete set from the abort path could result in restoring twice the refcount of the mapping. Check for inactive element in the next generation for the delete element command in the abort path, skip restoring state if next generation bit has been already cleared. This is similar to the activate logic using the set walk iterator. [ 6170.286929] ------------[ cut here ]------------ [ 6170.286939] WARNING: CPU: 6 PID: 790302 at net/netfilter/nf_tables_api.c:2086 nf_tables_chain_destroy+0x1f7/0x220 [nf_tables] [ 6170.287071] Modules linked in: [...] [ 6170.287633] CPU: 6 PID: 790302 Comm: kworker/6:2 Not tainted 6.9.0-rc3+ #365 [ 6170.287768] RIP: 0010:nf_tables_chain_destroy+0x1f7/0x220 [nf_tables] [ 6170.287886] Code: df 48 8d 7d 58 e8 69 2e 3b df 48 8b 7d 58 e8 80 1b 37 df 48 8d 7d 68 e8 57 2e 3b df 48 8b 7d 68 e8 6e 1b 37 df 48 89 ef eb c4 <0f> 0b 48 83 c4 08 5b 5d 41 5c 41 5d 41 5e 41 5f c3 cc cc cc cc 0f [ 6170.287895] RSP: 0018:ffff888134b8fd08 EFLAGS: 00010202 [ 6170.287904] RAX:",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-27011"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T13:18:06Z",
-      "source_updated_at": "2026-10-30T13:17:24.870",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00232,
-      "epss_percentile": 0.14156,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2024-27022",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: fork: defer linking file vma until vma is fully initialized Thorvald reported a WARNING [1]",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2024-05-01",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: fork: defer linking file vma until vma is fully initialized Thorvald reported a WARNING [1]. And the root cause is below race: CPU 1 CPU 2 fork hugetlbfs_fallocate dup_mmap hugetlbfs_punch_hole i_mmap_lock_write(mapping); vma_interval_tree_insert_after -- Child vma is visible through i_mmap tree. i_mmap_unlock_write(mapping); hugetlb_dup_vma_private -- Clear vma_lock outside i_mmap_rwsem! i_mmap_lock_write(mapping); hugetlb_vmdelete_list vma_interval_tree_foreach hugetlb_vma_trylock_write -- Vma_lock is cleared. tmp->vm_ops->open -- Alloc new vma_lock outside i_mmap_rwsem! hugetlb_vma_unlock_write -- Vma_lock is assigned!!! i_mmap_unlock_write(mapping); hugetlb_dup_vma_private() and hugetlb_vm_op_open() are called outside i_mmap_rwsem lock while vma lock can be used in the same time. Fix this by deferring linking file vma until vma is fully initialized. Those vmas should be initialized first before they can be used.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-27022"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T13:18:06Z",
-      "source_updated_at": "2026-10-30T13:17:25.047",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00273,
-      "epss_percentile": 0.19654,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2023-52653",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: SUNRPC: fix a memleak in gss_import_v2_context The ctx->mech_used.data allocated by kmemdup is not freed in",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2024-05-01",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: SUNRPC: fix a memleak in gss_import_v2_context The ctx->mech_used.data allocated by kmemdup is not freed in neither gss_import_v2_context nor it only caller gss_krb5_import_sec_context, which frees ctx on error. Thus, this patch reform the last call of gss_import_v2_context to the gss_krb5_import_ctx_v2, preventing the memleak while keepping the return formation.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-52653"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T13:18:06Z",
-      "source_updated_at": "2026-10-30T13:17:15.997",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00275,
-      "epss_percentile": 0.19877,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2024-27041",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: drm/amd/display: fix NULL checks for adev->dm.dc in amdgpu_dm_fini() Since 'adev->dm.dc' in amdgpu_dm_fini(",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2024-05-01",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: drm/amd/display: fix NULL checks for adev->dm.dc in amdgpu_dm_fini() Since 'adev->dm.dc' in amdgpu_dm_fini() might turn out to be NULL before the call to dc_enable_dmub_notifications(), check beforehand to ensure there will not be a possible NULL-ptr-deref there. Also, since commit 1e88eb1b2c25 (\"drm/amd/display: Drop CONFIG_DRM_AMD_DC_HDCP\") there are two separate checks for NULL in 'adev->dm.dc' before dc_deinit_callbacks() and dc_dmub_srv_destroy(). Clean up by combining them all under one 'if'. Found by Linux Verification Center (linuxtesting.org) with static analysis tool SVACE.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-27041"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T13:18:06Z",
-      "source_updated_at": "2026-10-30T13:17:25.250",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00272,
-      "epss_percentile": 0.19532,
-      "epss_as_of": "2026-11-03"
-    },
-    {
-      "id": "CVE-2024-27057",
-      "title": "In the Linux kernel, the following vulnerability has been resolved: ASoC: SOF: ipc4-pcm: Workaround for crashed firmware on system suspend When the system is suspended while a",
-      "severity": "medium",
-      "categories": [
-        "Linux",
-        "React / Next.js"
-      ],
-      "published": "2024-05-01",
-      "updated": "2026-10-30",
-      "summary": "In the Linux kernel, the following vulnerability has been resolved: ASoC: SOF: ipc4-pcm: Workaround for crashed firmware on system suspend When the system is suspended while audio is active, the sof_ipc4_pcm_hw_free() is invoked to reset the pipelines since during suspend the DSP is turned off, streams will be re-started after resume. If the firmware crashes during while audio is running (or when we reset the stream before suspend) then the sof_ipc4_set_multi_pipeline_state() will fail with IPC error and the state change is interrupted. This will cause misalignment between the kernel and firmware state on next DSP boot resulting errors returned by firmware for IPC messages, eventually failing the audio resume. On stream close the errors are ignored so the kernel state will be corrected on the next DSP boot, so the second boot after the DSP panic. If sof_ipc4_trigger_pipelines() is called from sof_ipc4_pcm_hw_free() then state parameter is SOF_IPC4_PIPE_RESET and only in this case. Treat a forced pipeline reset similarly to how we treat a pcm_free by ignoring error on state sending to allow the kernel's state to be consistent with the state the firmware will have after the next boot.",
-      "affected": "Products identified in NVD configurations: linux linux_kernel",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-27057"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-30T13:18:06Z",
-      "source_updated_at": "2026-10-30T13:17:25.460",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00222,
-      "epss_percentile": 0.12801,
-      "epss_as_of": "2026-11-03"
-    },
-    {
       "id": "CVE-2023-7008",
       "title": "A vulnerability was found in systemd-resolved",
       "severity": "medium",
@@ -170928,85 +171000,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-03T09:02:29Z",
-      "last_attempt": "2026-11-03T09:02:29Z",
-      "items_processed": 229,
+      "last_success": "2026-11-03T10:04:41Z",
+      "last_attempt": "2026-11-03T10:04:41Z",
+      "items_processed": 241,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-03T09:02:29Z",
-      "last_attempt": "2026-11-03T09:02:29Z",
+      "last_success": "2026-11-03T10:04:41Z",
+      "last_attempt": "2026-11-03T10:04:41Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-03T09:02:29Z",
-      "last_attempt": "2026-11-03T09:02:29Z",
-      "items_processed": 142,
+      "last_success": "2026-11-03T10:04:41Z",
+      "last_attempt": "2026-11-03T10:04:41Z",
+      "items_processed": 144,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-03T09:02:29Z",
-      "last_attempt": "2026-11-03T09:02:29Z",
+      "last_success": "2026-11-03T10:04:41Z",
+      "last_attempt": "2026-11-03T10:04:41Z",
       "items_processed": 484,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-03T09:02:29Z",
-      "last_attempt": "2026-11-03T09:02:29Z",
+      "last_success": "2026-11-03T10:04:41Z",
+      "last_attempt": "2026-11-03T10:04:41Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-03T09:02:29Z",
-      "last_attempt": "2026-11-03T09:02:29Z",
+      "last_success": "2026-11-03T10:04:41Z",
+      "last_attempt": "2026-11-03T10:04:41Z",
       "items_processed": 15,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-03T09:02:29Z",
-      "last_attempt": "2026-11-03T09:02:29Z",
+      "last_success": "2026-11-03T10:04:41Z",
+      "last_attempt": "2026-11-03T10:04:41Z",
       "items_processed": 26,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-03T09:02:29Z",
-      "last_attempt": "2026-11-03T09:02:29Z",
+      "last_success": "2026-11-03T10:04:41Z",
+      "last_attempt": "2026-11-03T10:04:41Z",
       "items_processed": 47,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-03T09:02:29Z",
-      "last_attempt": "2026-11-03T09:02:29Z",
+      "last_success": "2026-11-03T10:04:41Z",
+      "last_attempt": "2026-11-03T10:04:41Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-03T09:02:29Z",
-      "last_attempt": "2026-11-03T09:02:29Z",
+      "last_success": "2026-11-03T10:04:41Z",
+      "last_attempt": "2026-11-03T10:04:41Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-03T09:02:29Z",
-      "last_attempt": "2026-11-03T09:02:29Z",
+      "last_success": "2026-11-03T10:04:41Z",
+      "last_attempt": "2026-11-03T10:04:41Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-03T09:02:29Z",
-      "last_attempt": "2026-11-03T09:02:29Z",
+      "last_success": "2026-11-03T10:04:41Z",
+      "last_attempt": "2026-11-03T10:04:41Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -171018,7 +171090,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-03T09:02:29Z",
-  "last_successful_update": "2026-11-03T09:02:29Z",
+  "last_checked_at": "2026-11-03T10:04:41Z",
+  "last_successful_update": "2026-11-03T10:04:41Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
