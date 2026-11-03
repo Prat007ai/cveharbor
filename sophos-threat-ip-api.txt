@@ -1,6 +1,6 @@
-CVEHarbor Threat IP Intelligence | 2026-11-03T01:43:16.833442+00:00
+CVEHarbor Threat IP Intelligence | 2026-11-03T02:00:42.847655+00:00
 Permanent logical group: Suspicious IP Block
-Cumulative indexed IPs: 3311
+Cumulative indexed IPs: 3313
 New since prior published snapshot: 2
 REVIEW ONLY: reported indicators are NOT approved firewall blocks.
 Do not apply blindly. Check allowlists, cloud/VPN ownership and your logs.
@@ -8600,6 +8600,12 @@ No firewall rule is created or activated.
       <IPAddress>102.129.59.6</IPAddress>
     </IPHost>
     <IPHost>
+      <Name>CVEH_102_129_59_43</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>102.129.59.43</IPAddress>
+    </IPHost>
+    <IPHost>
       <Name>CVEH_102_129_59_150</Name>
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
@@ -11418,6 +11424,12 @@ No firewall rule is created or activated.
       <IPFamily>IPv4</IPFamily>
       <HostType>IP</HostType>
       <IPAddress>103.207.7.106</IPAddress>
+    </IPHost>
+    <IPHost>
+      <Name>CVEH_103_207_9_246</Name>
+      <IPFamily>IPv4</IPFamily>
+      <HostType>IP</HostType>
+      <IPAddress>103.207.9.246</IPAddress>
     </IPHost>
     <IPHost>
       <Name>CVEH_103_210_236_62</Name>
@@ -21325,6 +21337,7 @@ No firewall rule is created or activated.
         <Host>CVEH_102_129_57_232</Host>
         <Host>CVEH_102_129_59_3</Host>
         <Host>CVEH_102_129_59_6</Host>
+        <Host>CVEH_102_129_59_43</Host>
         <Host>CVEH_102_129_59_150</Host>
         <Host>CVEH_102_129_59_155</Host>
         <Host>CVEH_102_129_59_165</Host>
@@ -21795,6 +21808,7 @@ No firewall rule is created or activated.
         <Host>CVEH_103_207_4_190</Host>
         <Host>CVEH_103_207_4_214</Host>
         <Host>CVEH_103_207_7_106</Host>
+        <Host>CVEH_103_207_9_246</Host>
         <Host>CVEH_103_210_236_62</Host>
         <Host>CVEH_103_211_217_182</Host>
         <Host>CVEH_103_231_14_152</Host>
