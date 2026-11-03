@@ -49,7 +49,10 @@ export async function preflight(env, transport = fetch) {
   add('token_active', verification.ok && verification.result?.status === 'active', { http_status: verification.status, kind: accountOwned ? 'account' : 'user_or_unknown' });
   let grantsVerified = false, scopeVerified = false;
   if (verification.ok && /^[a-f0-9]{32}$/i.test(verification.result?.id || '')) {
-    const detail = await cf(accountOwned ? `/tokens/${verification.result.id}` : `/user/tokens/${verification.result.id}`, 'token_permission_metadata', !accountOwned);
+    let detail = await cf(accountOwned ? `/tokens/${verification.result.id}` : `/user/tokens/${verification.result.id}`, 'token_permission_metadata', !accountOwned);
+    // Account verification success alone does not prove token ownership/type. Try
+    // the documented user-token metadata endpoint if account metadata is denied.
+    if (!detail.ok && accountOwned) detail = await cf(`/user/tokens/${verification.result.id}`, 'user_token_permission_metadata', true);
     const policies = detail.ok && Array.isArray(detail.result?.policies) ? detail.result.policies : [];
     const allow = policies.filter(p => p.effect === 'allow');
     const names = allow.flatMap(p => (p.permission_groups || []).map(g => String(g.name || '')));
@@ -96,9 +99,21 @@ export async function preflight(env, transport = fetch) {
     add('no_access_bypass_or_additional_allow', policies.length === 2 && policies.every(p => p === human || p === servicePolicy) && !policies.some(p => p.decision === 'bypass' || (p.include || []).some(s => Object.hasOwn(s, 'everyone'))), { policy_count: policies.length });
   }
   const serviceTokens = await cf('/access/service_tokens?per_page=100', 'service_token_metadata');
-  const selected = serviceTokens.ok && Array.isArray(serviceTokens.result) && serviceTokens.result.find(s => s.name === 'cvie-staging-validation' && s.client_id === value('CF_STAGING_ACCESS_CLIENT_ID'));
+  const tokenRows = serviceTokens.ok && Array.isArray(serviceTokens.result) ? serviceTokens.result : [];
+  const named = tokenRows.filter(s => s.name === 'cvie-staging-validation');
+  const clientMatches = tokenRows.filter(s => s.client_id === value('CF_STAGING_ACCESS_CLIENT_ID'));
+  const selected = named.find(s => s.client_id === value('CF_STAGING_ACCESS_CLIENT_ID'));
   const linked = selected && servicePolicy?.include?.some(s => s.service_token?.token_id === selected.id);
-  add('service_token_matches_policy_and_client', !!linked && selected.enabled !== false && (!selected.expires_at || Date.parse(selected.expires_at) > Date.now()), { http_status: serviceTokens.status, metadata_available: serviceTokens.ok }, false);
+  add('service_token_matches_policy_and_client', !!linked && selected.enabled !== false && (!selected.expires_at || Date.parse(selected.expires_at) > Date.now()), {
+    http_status: serviceTokens.status, metadata_available: serviceTokens.ok,
+    metadata_is_array: Array.isArray(serviceTokens.result), record_count: tokenRows.length,
+    name_match_count: named.length, client_match_count: clientMatches.length,
+    named_record_has_client_id: named.some(s => typeof s.client_id === 'string' && s.client_id.length > 0),
+    named_record_policy_linked: named.some(s => servicePolicy?.include?.some(rule => rule.service_token?.token_id === s.id)),
+    matching_client_policy_linked: clientMatches.some(s => servicePolicy?.include?.some(rule => rule.service_token?.token_id === s.id)),
+    matched_enabled: selected ? selected.enabled !== false : null,
+    matched_unexpired: selected ? !selected.expires_at || Date.parse(selected.expires_at) > Date.now() : null,
+  }, false);
   const keys = await get(issuer + '/cdn-cgi/access/certs', 'access_issuer_keys');
   let jwks;
   try { jwks = keys?.ok ? await keys.json() : null; } catch {}

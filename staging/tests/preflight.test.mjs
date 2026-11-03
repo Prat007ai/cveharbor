@@ -8,6 +8,7 @@ function fixture({ metadataDenied = false, bypass = false } = {}) {
   return async (url, init) => {
     assert.equal(init.method, 'GET'); assert.equal(init.redirect, 'manual');
     const u = new URL(url); let result;
+    if (u.pathname.startsWith('/client/v4/user/tokens/')) return Response.json({ success: false }, { status: 403 });
     if (u.origin === TARGET.origin) { assert.equal(init.headers['CF-Access-Client-Secret'], env.CF_STAGING_ACCESS_CLIENT_SECRET); return new Response('', { status: 404 }); }
     if (u.origin === env.CF_STAGING_ACCESS_ISSUER) { assert.equal(init.headers.Authorization, undefined); return Response.json({ keys: [{ kty: 'RSA', kid: 'fixture' }] }); }
     assert.equal(u.origin, 'https://api.cloudflare.com');
