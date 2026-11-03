@@ -20,11 +20,11 @@ export function recoveryProtected(handler){
   if(!state)return handler[kind](input,env,ctx);
   // Guest receipt/reviewer GETs remain strictly read-only; they cannot send email.
   const url=kind==='fetch'?new URL(input.url):null;
-  const guestRead=url&&['GET','HEAD'].includes(input.method)&&(/^(?:\/v1)?\/acknowledge\/[a-f0-9]{64}$/.test(url.pathname)||url.hostname==='confirm.cveharbor.com'&&url.pathname.startsWith('/assignment/'));
+  const guestRead=url&&['GET','HEAD'].includes(input.method)&&(/^(?:\/v1)?\/acknowledge\//.test(url.pathname)||url.hostname==='confirm.cveharbor.com'&&url.pathname.startsWith('/assignment/'));
   if(guestRead)return handler.fetch(input,env,ctx);
   const lease=crypto.randomUUID();
   try{await env.DB.prepare('INSERT INTO operations_leases(id,kind) VALUES(?,?)').bind(lease,kind).run();}catch{return kind==='fetch'?heldResponse():undefined;}
-  const pending=[];const tracked={waitUntil:p=>{const settled=Promise.resolve(p).then(()=>undefined,()=>undefined);pending.push(settled);}};
+  const pending=[];const tracked={waitUntil:p=>{const settled=Promise.resolve(p).then(()=>undefined,()=>{console.warn('CVEHarbor background task failed; retained delivery state must be checked before retrying.');});pending.push(settled);}};
   const drain=async()=>{while(pending.length)await Promise.all(pending.splice(0));await env.DB.prepare('DELETE FROM operations_leases WHERE id=?').bind(lease).run();};
   try{return await handler[kind](input,env,tracked);}finally{
    // The lease covers ALL background effects, including mail/provider calls.
