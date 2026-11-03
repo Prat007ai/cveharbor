@@ -2,11 +2,16 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {createHash} from 'node:crypto';
+import {createHash,randomUUID} from 'node:crypto';
 import {DatabaseSync} from 'node:sqlite';
 import {recoveryTablesSQL,recoveryGuardSQL,normalizedDDL} from '../../account-backend/src/recovery-schema.js';
 export const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 export const hash = text => createHash('sha256').update(text).digest('hex');
+function writeAtomic(filename, contents){
+ const temporary=filename+'.'+randomUUID()+'.tmp';
+ try{fs.writeFileSync(temporary,contents,{flag:'wx'});fs.renameSync(temporary,filename);}
+ finally{fs.rmSync(temporary,{force:true});}
+}
 export function loadManifest(base=project) {
  const manifest=JSON.parse(fs.readFileSync(path.join(base,'staging/migrations.v1.json'),'utf8'));
  if(manifest.version!==1 || manifest.profile!=='permanent-staging-integrated' || !Array.isArray(manifest.entries))throw Error('Unsupported manifest');
@@ -38,10 +43,10 @@ export function validateSchema(base=project){
 }
 export function prepare(base=project){
  const result=validateSchema(base),out=path.join(base,'staging/.build/schema');fs.mkdirSync(out,{recursive:true});
- fs.writeFileSync(path.join(out,'validated-plan.json'),JSON.stringify({...result,manifest_sha256:hash(JSON.stringify(result.manifest))},null,2)+'\n');
+ writeAtomic(path.join(out,'validated-plan.json'),JSON.stringify({...result,manifest_sha256:hash(JSON.stringify(result.manifest))},null,2)+'\n');
  // Remove the obsolete ambiguous filename, never emit an auto-sorted bootstrap.
  fs.rmSync(path.join(out,'bootstrap-through-0027.sql'),{force:true});
- fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(result.manifest,null,2)+'\n');
+ writeAtomic(path.join(out,'manifest.json'),JSON.stringify(result.manifest,null,2)+'\n');
  console.log(JSON.stringify({local_only:true,tables:result.table_count,entries:result.manifest.entries.length,objects:result.objects.length}));return result;
 }
 if(process.argv[1]===fileURLToPath(import.meta.url))prepare();

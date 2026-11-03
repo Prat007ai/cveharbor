@@ -21,6 +21,13 @@ summary, then retain the original strict assertions. The principal test always
 exercises the delayed-response case and confirms that submitting is impossible
 before assignments load. No sleeps, assertion removal or application changes.
 
+A separate staging-preparation failure in run **41732643831** exposed concurrent
+local plan builders truncating `execution-plan.json` while another test read it.
+The builders now publish JSON and guard SQL through same-directory temporary
+files and atomic replacement. A concurrent-build/read test verifies complete JSON
+and the unchanged approved execution-plan digest. This changes local artifact
+publication only; no database SQL, migration checkpoint or adoption digest changes.
+
 ## Approval boundaries
 
 The adoption remains prepared only. Original checkpoint 29 was verified by run

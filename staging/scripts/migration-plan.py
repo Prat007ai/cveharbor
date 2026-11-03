@@ -4,8 +4,22 @@ import json
 import sqlite3
 from pathlib import Path
 import subprocess
+import os
+import tempfile
 ROOT=Path(__file__).resolve().parents[2]
 OUT=ROOT/'staging/.build/schema'
+
+def write_atomic(destination, text):
+    # Parallel local preparation must never expose an empty/partial plan.
+    name = None
+    try:
+        with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=destination.parent, delete=False) as temporary:
+            name = temporary.name
+            temporary.write(text)
+        os.replace(name, destination)
+    finally:
+        if name and os.path.exists(name):
+            os.unlink(name)
 
 SCHEMA_SQL = "SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE name NOT GLOB 'sqlite_*' AND name NOT GLOB '_cf_*' AND name NOT GLOB 'd1_*' ORDER BY type,name"
 
@@ -49,7 +63,7 @@ def build():
     manifest=[{'file':e['path'],'sha256':e['sha256'],'phase':'manifest'} for e in approved['entries']]
     guards=';\n'.join(validated['guards'])+';\n'
     manifest.append({'file':'staging/.build/schema/recovery-guards.sql','sha256':digest(guards),'phase':'recovery-guards'})
-    (OUT/'recovery-guards.sql').write_text(guards)
+    write_atomic(OUT/'recovery-guards.sql', guards)
     db = sqlite3.connect(':memory:')
     db.execute('PRAGMA foreign_keys=ON')
     plan = {'format': 1, 'manifest_version': approved['version'], 'approved_manifest_sha256': hashlib.sha256(approved_bytes).hexdigest(),
@@ -93,7 +107,7 @@ def build():
     if db.execute('PRAGMA integrity_check').fetchone()[0] != 'ok' or len(plan['checkpoints'][-1]['counts']) != validated['table_count']-1:
         raise ValueError('Invalid final schema')
     payload = encoded(plan) + '\n'
-    (OUT / 'execution-plan.json').write_text(payload)
+    write_atomic(OUT / 'execution-plan.json', payload)
     print('Migration execution plan SHA-256: ' + digest(payload))
     print('Statements: ' + str(len(plan['checkpoints']) - 1) + '; source files: ' + str(len(plan['files'])))
     db.close()
