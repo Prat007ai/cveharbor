@@ -1,3 +1,5 @@
+> **Phase 1 deployment notice:** Use [the consolidated administrator checklist](reviews/phase1-administrator-checklist.md) for current release, credential, staging and recovery steps. Deployment/migration/rollback recipes below are feature-history references, not instructions to execute during Phase 1. Feature behavior descriptions remain applicable unless superseded by the current implementation.
+
 # Customer report layout correction
 
 Starting production commit: `8d11b6f886d12c4d5a632bd5013d225c2e90bb9a`.

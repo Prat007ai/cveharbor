@@ -1,3 +1,5 @@
+> **Operational entrypoint:** [Phase 1 administrator checklist](phase1-administrator-checklist.md) is the current authority for configuration, validation and cutover order. This report explains the implemented architecture and prior test evidence; follow the checklist when operational details differ. No production switch is authorized by either document.
+
 # Phase 1: independent vulnerability intelligence publication
 
 Status: implemented in draft source; local validation passed. **Not approved for production.**

@@ -1,3 +1,5 @@
+> **HISTORICAL REVIEW — NOT AN EXECUTION RUNBOOK.** Findings, workflow names, credentials, test counts and procedures below describe earlier revisions. Do not execute their rollout/rollback commands. Use [the consolidated administrator checklist](phase1-administrator-checklist.md), [current release/recovery procedure](remediation-phase1-release.md) and [R2 architecture](intelligence-publication.md).
+
 # Workflow source inventory — 2026-11-03
 
 Scope: all 263 current branch heads; 146 unique workflow file versions across 38 paths. No branch heads were changed during collection. Main was `147d2671d993e6297205cb5816aca53969cc71b7`. Counts describe the baseline before this security PR.

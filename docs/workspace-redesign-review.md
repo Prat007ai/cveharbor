@@ -1,3 +1,5 @@
+> **Phase 1 deployment notice:** Use [the consolidated administrator checklist](reviews/phase1-administrator-checklist.md) for current release, credential, staging and recovery steps. Deployment/migration/rollback recipes below are feature-history references, not instructions to execute during Phase 1. Feature behavior descriptions remain applicable unless superseded by the current implementation.
+
 # Task 4 implementation review
 
 Baseline: main `6e52d77e7ae634c73f6bb9389111b98d55f3d287`. Isolated branch: `feat/workspace-operational-dashboard`. No production deployment or merge authorized for this task.
