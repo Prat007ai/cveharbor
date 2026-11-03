@@ -1,3 +1,4 @@
+import {canonicalRecord,integrityError} from './remediation-integrity.js';
 import {scheduleStatusMail} from './status-update-mail.js';
 import {sharedRoute} from './finding-remediation.js';
 import {reviewerRoute,reviewActivity} from './assignment-progress.js';
@@ -78,7 +79,7 @@ export default {async fetch(req,env,ctx){
  // Published CVE lookup is public, read-only, and independent of account login or D1.
  if(url.pathname.startsWith('/v1/cve/'))return handlePublicCveLookup(req,ctx);
  if(!env.DB)return response({error:'Account service not configured'},503);
- const path=url.pathname;
+ let path=url.pathname;
  try {
   if(path==='/v1/health'&&req.method==='GET')return response({ready:!!(env.SMTP2GO_API_KEY&&env.EMAIL_FROM),accounts:'configured'});
   if(path==='/v1/auth/request'&&req.method==='POST'){
@@ -190,6 +191,8 @@ export default {async fetch(req,env,ctx){
   const user=await me(req,env);
   if(path==='/v1/me'&&req.method==='GET')return response(user?{authenticated:true,email:user.email}:{authenticated:false},user?200:401);
   if(!user)return response({error:'Sign in required'},401);
+  const recordPath=/^\/v1\/(remediations|remediation-records)\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)(.*)$/.exec(path);
+  if(recordPath){const canonical=await canonicalRecord(env,user.id,recordPath[2]);if(canonical!==recordPath[2]){if(req.method!=='GET')return response({error:'This record was linked to an existing assignment. Open the current shared record before making changes.',canonical_id:canonical},409);path='/v1/'+recordPath[1]+'/'+canonical+recordPath[3];}}
   if(path.startsWith('/v1/workspace/'))return await workspaceRoute(req,env,user);
   if(path==='/v1/auth/totp/status'&&req.method==='GET'){
    const row=env.TOTP_ENCRYPTION_KEY?await env.DB.prepare('SELECT enabled FROM user_totp WHERE user_id=?').bind(user.id).first():null;
@@ -375,7 +378,7 @@ export default {async fetch(req,env,ctx){
    await env.DB.prepare('DELETE FROM users WHERE id=?').bind(user.id).run();return response({deleted:true},200,{'Set-Cookie':setCookie('',0)});
   }
   return response({error:'Not found'},404);
- }catch(error){if(error instanceof ReviewError||error instanceof WorkflowError||error instanceof FyiError||error instanceof AssignmentError||error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
+ }catch(error){error=integrityError(error);if(error instanceof ReviewError||error instanceof WorkflowError||error instanceof FyiError||error instanceof AssignmentError||error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
   if(_event.cron==='* * * * *'){scheduleStatusMail(env,ctx);scheduleProgress(env,ctx);scheduleFyi(env,ctx);ctx.waitUntil(approvedTest(env));ctx.waitUntil(dispatchEvidence(env));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}

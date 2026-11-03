@@ -1,3 +1,4 @@
+import {activeRecords} from './remediation-integrity.js';
 // Read-only workspace projection. Authentication is supplied by index.js.
 // Existing account ownership remains authoritative; no scope IDs come from the caller.
 const json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Access-Control-Allow-Origin':'https://cveharbor.com','Access-Control-Allow-Credentials':'true','Vary':'Origin'}});
@@ -8,9 +9,10 @@ export async function workspaceRoute(req,env,user){
  if(req.method!=='GET')return json({error:'Read only'},405);
  const url=new URL(req.url);
  if(url.pathname==='/v1/workspace/summary'){
+  const active=await activeRecords(env);
   const [inventory,remediation,findings,monitoring,notifications,providerDelivery]=await Promise.all([
    read(env,`SELECT (SELECT COUNT(*) FROM inventory_customers WHERE user_id=?) customers,(SELECT COUNT(*) FROM inventory_environments e JOIN inventory_customers c ON c.id=e.customer_id AND c.user_id=e.user_id WHERE e.user_id=?) environments,(SELECT COUNT(*) FROM inventory_assets a ${ownership} WHERE a.user_id=?) inventory_entries`,[user.id,user.id,user.id]),
-   read(env,`SELECT status,COUNT(*) count,SUM(CASE WHEN status IN ('Open','Investigating') AND due<>'' AND date(due)<date('now') THEN 1 ELSE 0 END) overdue FROM remediations WHERE user_id=? GROUP BY status`,[user.id]),
+   read(env,`SELECT status,COUNT(*) count,SUM(CASE WHEN status IN ('Open','Investigating') AND due<>'' AND date(due)<date('now') THEN 1 ELSE 0 END) overdue FROM remediations WHERE user_id=?${active} GROUP BY status`,[user.id]),
    read(env,`SELECT s.status,COUNT(*) count FROM customer_finding_statuses s JOIN inventory_assets a ON a.id=s.asset_id AND a.user_id=s.user_id ${ownership} WHERE s.user_id=? GROUP BY s.status`,[user.id]),
    read(env,`SELECT COUNT(*) registered,SUM(CASE WHEN enabled=1 THEN 1 ELSE 0 END) enabled,MAX(last_checked_at) last_checked_at,SUM(CASE WHEN enabled=1 AND last_error IS NOT NULL AND last_error<>'' THEN 1 ELSE 0 END) errors,SUM(CASE WHEN enabled=1 AND last_checked_at IS NULL THEN 1 ELSE 0 END) unchecked FROM website_monitors WHERE user_id=?`,[user.id]),
    read(env,`SELECT status,completed_at,item_count FROM alert_digest_runs WHERE user_id=? ORDER BY claimed_at DESC LIMIT 1`,[user.id]),

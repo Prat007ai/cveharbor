@@ -21,7 +21,7 @@ root=Path(__file__).resolve().parents[1]
 base="https://cveharbor.com"
 routes=["/", "/intelligence/", "/vulnerabilities/","/threats/","/account/","/workspace/","/customer-reports/","/customer-dashboard/","/environments/","/website-monitor/","/lifecycle/","/remediation/"]
 required={
- "/remediation/":["remediationFormTitle","remediationOwnerError","remediationToolsTitle","remediationRecordsTitle","remediationOpen","remediationHistoryDialog","Acknowledgement","Owner *","remediation.css?v=status-recipients-1","operations.js?v=status-recipients-1"],
+ "/remediation/":["remediationFormTitle","remediationOwnerError","remediationToolsTitle","remediationRecordsTitle","remediationOpen","remediationHistoryDialog","Acknowledgement","Owner *","remediation.css?v=integrity-phase1-1","operations.js?v=integrity-phase1-1"],
  "/lifecycle/":["lifecycleMonitorTitle","productMonitorActivation","productMonitorHistory","lifecycleProductSearch","lifecycleAddUnlisted","lifecycle-monitor.css?v=product-directory-1","product-monitoring.js?v=product-monitor-2"],
  "/":["homepageFeatures", "marketing-story", "asset-onboarding", "findings-table", "homepage.css?v=brochure-216"],
  "/intelligence/":["overviewTitle", "techBars", "chartInsights", "feedStatus"],

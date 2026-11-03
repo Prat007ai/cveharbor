@@ -1,3 +1,4 @@
+import {integrityReady,activeRecords,findingGuard,clearFindingGuard} from './remediation-integrity.js';
 import {statusRecipients,statusMailReady} from './status-update-mail.js';
 import {WorkflowError,requireWorkflow,workflowWriteStatements,runWorkflowWrite} from './remediation-workflow.js';
 import {recordScope,scopeSQL,linkedReady,workStatus,findingStatus} from './remediation-identity.js';
@@ -7,7 +8,7 @@ const fields='r.cve_id AS id,r.status,r.owner,r.due,r.notes,r.updated_at AS upda
 const emptyGuard=`owner='Unassigned' AND due='' AND NOT EXISTS(SELECT 1 FROM remediation_assignments a WHERE a.user_id=remediations.user_id AND a.cve_id=remediations.cve_id) AND NOT EXISTS(SELECT 1 FROM remediation_assignment_requests a WHERE a.user_id=remediations.user_id AND a.cve_id=remediations.cve_id) AND NOT EXISTS(SELECT 1 FROM remediation_record_metadata a WHERE a.user_id=remediations.user_id AND a.cve_id=remediations.cve_id)`;
 export async function findingAssignments(env,user){
  if(!await linkedReady(env))return {ready:false,findings:[],standalone:[]};
- const records=await env.DB.prepare('SELECT '+fields+' FROM remediations r WHERE r.user_id=?').bind(user.id).all();
+ const records=await env.DB.prepare('SELECT '+fields+' FROM remediations r WHERE r.user_id=?'+await activeRecords(env,'r')).bind(user.id).all();
  const scopes=await env.DB.prepare(scopeSQL).bind(user.id).all(),byRecord=new Map(scopes.results.map(s=>[s.record_id,s]));
  const requests=await env.DB.prepare('SELECT a.cve_id,a.recipient_email,a.acknowledged_at,a.delivery_status,a.revoked_at,a.expires_at,a.sent_at FROM remediation_assignment_requests a WHERE a.user_id=? AND a.seq=(SELECT MAX(b.seq) FROM remediation_assignment_requests b WHERE b.user_id=a.user_id AND b.cve_id=a.cve_id AND b.recipient_email=a.recipient_email)').bind(user.id).all();
  const assignments=new Map();for(const a of requests.results){const items=assignments.get(a.cve_id)||[];items.push({email:a.recipient_email,status:acknowledgementStatus(a),acknowledged_at:a.acknowledged_at,sent_at:a.sent_at});assignments.set(a.cve_id,items);}
@@ -16,13 +17,13 @@ export async function findingAssignments(env,user){
 }
 export async function findingLinkPreview(env,user,assetId,cve){
  if(!await linkedReady(env))throw new WorkflowError('Shared records are unavailable.',503);
- const asset=await env.DB.prepare('SELECT a.name asset_name,a.technology,a.version,e.name environment_name,c.name customer_name FROM inventory_assets a JOIN inventory_environments e ON e.id=a.environment_id AND e.user_id=a.user_id JOIN inventory_customers c ON c.id=e.customer_id AND c.user_id=e.user_id WHERE a.id=? AND a.user_id=?').bind(assetId,user.id).first();if(!asset)throw new WorkflowError('Asset not found in your account.',404);
+ const asset=await env.DB.prepare('SELECT a.name asset_name,a.technology,a.version,a.environment_id,e.customer_id,e.name environment_name,c.name customer_name FROM inventory_assets a JOIN inventory_environments e ON e.id=a.environment_id AND e.user_id=a.user_id JOIN inventory_customers c ON c.id=e.customer_id AND c.user_id=e.user_id WHERE a.id=? AND a.user_id=?').bind(assetId,user.id).first();if(!asset)throw new WorkflowError('Asset not found in your account.',404);
  const link=await env.DB.prepare(scopeSQL+' AND l.asset_id=? AND l.cve_id=?').bind(user.id,assetId,cve).first();
  const record=link?await env.DB.prepare('SELECT '+fields+' FROM remediations r WHERE r.user_id=? AND r.cve_id=?').bind(user.id,link.record_id).first():null;
  const source=await env.DB.prepare('SELECT '+fields+' FROM remediations r WHERE r.user_id=? AND r.cve_id=? AND NOT EXISTS(SELECT 1 FROM remediation_finding_links l WHERE l.user_id=r.user_id AND l.record_id=r.cve_id)').bind(user.id,cve).first();
  const finding=await env.DB.prepare('SELECT status,notes,updated_at FROM customer_finding_statuses WHERE user_id=? AND asset_id=? AND cve_id=?').bind(user.id,assetId,cve).first();
  const empty=record?!!await env.DB.prepare('SELECT cve_id FROM remediations WHERE user_id=? AND cve_id=? AND '+emptyGuard).bind(user.id,record.id).first():true;
- return {mail:record?await statusRecipients(env,user,record.id):{available:await statusMailReady(env),recipients:[]},manual_mail:source?await statusRecipients(env,user,source.id):null,asset,asset_id:assetId,cve_id:cve,record:record?{...record,fix_status:findingStatus(record.status)}:null,manual:source?{...source,fix_status:findingStatus(source.status)}:null,finding,can_link:!!source&&empty&&await attachmentReady(env),blocked_reason:source&&!empty?'This asset record has its own owner, due date, severity or assignment. Review both records before combining them.':''};
+ return {integrity:await integrityReady(env),mail:record?await statusRecipients(env,user,record.id):{available:await statusMailReady(env),recipients:[]},manual_mail:source?await statusRecipients(env,user,source.id):null,asset,asset_id:assetId,cve_id:cve,record:record?{...record,fix_status:findingStatus(record.status)}:null,manual:source?{...source,fix_status:findingStatus(source.status)}:null,finding,can_link:!!source&&empty&&await attachmentReady(env),blocked_reason:source&&!empty?'This asset record has its own owner, due date, severity or assignment. Review both records before combining them.':''};
 }
 export async function attachExisting(env,user,assetId,cve,data){
  await requireWorkflow(env);if(!await attachmentReady(env))throw new WorkflowError('Linking is temporarily unavailable.',503);
@@ -31,12 +32,16 @@ export async function attachExisting(env,user,assetId,cve,data){
  if(p.record?.id===cve)return {id:cve,linked:true,duplicate:true};
  if(!p.manual||!p.can_link)throw new WorkflowError(p.blocked_reason||'The standalone record is no longer available to link. Refresh the finding.',409);
  if(data.expected_source!==p.manual.updated||data.expected_target!==(p.record?.updated||'')||data.expected_finding!==JSON.stringify(p.finding))throw new WorkflowError('These records changed. Refresh and review the link again.',409);
+ if(p.integrity&&data.expected_asset!==JSON.stringify(p.asset))throw new WorkflowError('The customer asset changed. Refresh and review the link again.',409);
  const status=workStatus(data.status);if(!['Open','Investigating','Remediated','Not Applicable','Accepted Risk'].includes(status))throw new WorkflowError('Choose a valid finding status.');
  const suppliedReason=typeof data.status_change_reason==='string'?data.status_change_reason.trim():'';if(suppliedReason.length>700)throw new WorkflowError('The status change reason must be 700 characters or fewer.');
+ const priorFinding=workStatus(p.record?.status||p.finding?.status||p.manual.status);
+ if(p.integrity&&(p.manual.status!==status||priorFinding!==status)&&!suppliedReason)throw new WorkflowError('Explain the status decision before linking these records.');
  const reason=(suppliedReason?suppliedReason+' ':'')+'Linked existing assignment to '+p.asset.customer_name+' / '+p.asset.environment_name+' / '+p.asset.asset_name+'. Selected finding status: '+findingStatus(status)+'.';
  const history=p.record?{status_changes:(await env.DB.prepare('SELECT id FROM remediation_status_changes WHERE user_id=? AND cve_id=?').bind(user.id,p.record.id).all()).results.map(x=>x.id),comments:(await env.DB.prepare('SELECT id FROM remediation_owner_comments WHERE user_id=? AND record_id=?').bind(user.id,p.record.id).all()).results.map(x=>x.id)}:null;
  const item={...p.manual,status},time=new Date().toISOString();const statements=await workflowWriteStatements(env,user,item,{expected_updated:p.manual.updated,status_change_reason:reason.slice(0,1000)},time);
- statements.push(env.DB.prepare('INSERT INTO remediation_link_audit(user_id,record_id,asset_id,cve_id,retired_record_id,previous_status,selected_status,snapshot_json,linked_by,linked_at) VALUES(?,?,?,?,?,?,?,?,?,?)').bind(user.id,cve,assetId,cve,p.record?.id||'',p.manual.status,status,JSON.stringify({retired:p.record,finding:p.finding,asset:p.asset,retained_history:history}),user.email,time));
+ if(p.integrity)statements.unshift(findingGuard(env,user,p));
+ statements.push(env.DB.prepare('INSERT INTO remediation_link_audit(user_id,record_id,asset_id,cve_id,retired_record_id,previous_status,selected_status,snapshot_json,linked_by,linked_at) VALUES(?,?,?,?,?,?,?,?,?,?)').bind(user.id,cve,assetId,cve,p.record?.id||'',p.manual.status,status,JSON.stringify({source:p.manual,retired:p.record,finding:p.finding,asset:p.asset,retained_history:history}),user.email,time));
  // Re-check target emptiness and version inside the same transaction. A failed delete leaves
  // its unique asset link in place, causing the subsequent link insert to roll back everything.
  if(p.record){
@@ -45,14 +50,17 @@ export async function attachExisting(env,user,assetId,cve,data){
   statements.push(env.DB.prepare('UPDATE remediation_status_changes SET cve_id=? WHERE user_id=? AND cve_id=? AND '+guarded).bind(cve,user.id,p.record.id,user.id,p.record.id,p.record.updated));
   statements.push(env.DB.prepare('UPDATE remediation_owner_comments SET record_id=? WHERE user_id=? AND record_id=? AND '+guarded).bind(cve,user.id,p.record.id,user.id,p.record.id,p.record.updated));
   statements.push(env.DB.prepare('INSERT INTO remediation_retired_records(user_id,record_id,canonical_id) SELECT user_id,cve_id,? FROM remediations WHERE user_id=? AND cve_id=? AND updated_at=? AND '+emptyGuard).bind(cve,user.id,p.record.id,p.record.updated));
-  statements.push(env.DB.prepare('DELETE FROM remediations WHERE user_id=? AND cve_id=? AND updated_at=? AND '+emptyGuard).bind(user.id,p.record.id,p.record.updated));
+  if(p.integrity){
+   // Keep the original row unchanged; retire only its active finding relationship.
+   statements.push(env.DB.prepare('DELETE FROM remediation_finding_links WHERE user_id=? AND record_id=? AND EXISTS(SELECT 1 FROM remediation_retired_records t WHERE t.user_id=remediation_finding_links.user_id AND t.record_id=remediation_finding_links.record_id AND t.canonical_id=?)').bind(user.id,p.record.id,cve));
+  }else statements.push(env.DB.prepare('DELETE FROM remediations WHERE user_id=? AND cve_id=? AND updated_at=? AND '+emptyGuard).bind(user.id,p.record.id,p.record.updated));
  }
  statements.push(env.DB.prepare('INSERT INTO remediation_finding_links(user_id,record_id,asset_id,cve_id) VALUES(?,?,?,?)').bind(user.id,cve,assetId,cve));
- const priorFinding=workStatus(p.record?.status||p.finding?.status||p.manual.status);
  if(p.manual.status===status&&priorFinding!==status)statements.push(env.DB.prepare('INSERT INTO remediation_status_changes(user_id,cve_id,previous_status,new_status,reason,changed_by,changed_at) VALUES(?,?,?,?,?,?,?)').bind(user.id,cve,priorFinding,status,reason.slice(0,1000),user.email,time));
  // The projection trigger runs after the new link exists, including unchanged status values.
  statements.push(env.DB.prepare('UPDATE remediations SET status=status WHERE user_id=? AND cve_id=?').bind(user.id,cve));
 
+ if(p.integrity)statements.push(clearFindingGuard(env,user,p));
  try{await runWorkflowWrite(env,statements);}catch(e){if(e instanceof WorkflowError)throw e;throw new WorkflowError('The link could not be saved because the records changed. Refresh and review again.',409);}
  return {id:cve,linked:true,scope:await recordScope(env,user.id,cve)};
 }

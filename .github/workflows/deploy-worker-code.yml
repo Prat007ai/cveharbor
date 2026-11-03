@@ -32,6 +32,8 @@ on:
       - 'scripts/verify_finding_links_d1.mjs'
       - 'account-backend/migrations/0030_status_update_notifications.sql'
       - 'scripts/verify_status_mail_d1.mjs'
+      - 'account-backend/migrations/0031_remediation_integrity.sql'
+      - 'scripts/verify_remediation_integrity_d1.mjs'
       - 'scripts/verify_assignment_progress_d1.mjs'
       - 'scripts/verify_assignment_fyi_d1.mjs'
       - '.github/workflows/deploy-worker-code.yml'
@@ -215,6 +217,17 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: node scripts/verify_finding_links_d1.mjs && node scripts/verify_status_mail_d1.mjs
+      - name: Audit existing remediation relationships and apply Phase 1 guards
+        if: steps.mode.outputs.remediation_integrity == 'true'
+        working-directory: account-backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          node ../scripts/verify_remediation_integrity_d1.mjs --preflight
+          npx --yes wrangler@4.156.0 d1 time-travel info cveharbor-accounts --json
+          npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0031_remediation_integrity.sql
+          node ../scripts/verify_remediation_integrity_d1.mjs
       - name: Deploy Worker source
         working-directory: account-backend
         env:
@@ -358,3 +371,10 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: node scripts/verify_status_mail_d1.mjs --after
+
+      - name: Verify Phase 1 remediation integrity after deployment
+        if: steps.mode.outputs.remediation_integrity == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify_remediation_integrity_d1.mjs

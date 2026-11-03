@@ -303,15 +303,16 @@ async function saveFindingStatus(i,status,select){
   const preview=await window.CVEHARBOR_SHARED?.findingContext?.(i.asset_id,i.id);
   const shared=preview?preview.record:await window.CVEHARBOR_SHARED?.statusContext(i.asset_id,i.id);
   if(epoch!==customerDataEpoch)return;
-  if(preview?.manual_mail?.recipients.length&&!preview.mail?.recipients.length){findingStatusDrafts.delete(statusKey(i));select.value=previous;await window.CVEHARBOR_SHARED.finding(i.asset_id,i.id,null,{status});return;}
+  if(preview?.manual&&(preview.integrity&&!preview.record||preview.manual_mail?.recipients.length&&!preview.mail?.recipients.length)){findingStatusDrafts.delete(statusKey(i));select.value=previous;await window.CVEHARBOR_SHARED.finding(i.asset_id,i.id,null,{status});return;}
   const save=async reason=>{
    if(epoch!==customerDataEpoch)throw Error('Your session changed. Reload and sign in again.');
    const r=await fetch('https://api.cveharbor.com/v1/finding-statuses/'+encodeURIComponent(i.asset_id)+'/'+encodeURIComponent(i.id),{
-    method:'PUT',credentials:'include',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({status,notes:findingNotes.get(statusKey(i))||'',status_change_reason:reason,expected_updated:shared?.updated})});
+    method:'PUT',credentials:'include',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({status,notes:findingNotes.get(statusKey(i))||'',status_change_reason:reason,expected_updated:shared?.updated,expected_finding:JSON.stringify(preview?.finding??null)})});
    if(!r.ok)throw Error((await r.json().catch(()=>({}))).error||'Unable to save status. Please try again.');
    if(epoch!==customerDataEpoch)throw Error('Your session changed. Reload and sign in again.');
   };
-  const saved=shared&&shared.fix_status!==status?await confirmFindingStatus(i,shared.fix_status,status,save,preview?.mail):(await save(''),true);
+  const savedStatus=shared?.fix_status||preview?.finding?.status||'Needs Review';
+  const saved=(shared||preview?.integrity)&&savedStatus!==status?await confirmFindingStatus(i,savedStatus,status,save,preview?.mail):(await save(''),true);
   if(epoch!==customerDataEpoch)return;
   if(!saved){findingStatusDrafts.delete(statusKey(i));select.value=previous;redraw();return;}
   findingStatuses.set(statusKey(i),status);findingStatusDrafts.delete(statusKey(i));window.CVEHARBOR_SHARED?.changed();redraw();

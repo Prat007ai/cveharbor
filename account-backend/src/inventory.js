@@ -1,3 +1,4 @@
+import {integrityError} from './remediation-integrity.js';
 // Private, account-owned customer and environment inventory. All mutations
 // require an authenticated session, and every read is scoped by user ID.
 const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{
@@ -144,7 +145,7 @@ export async function inventoryRoute(req,env,user,path,data={}){
   if(match&&req.method==='DELETE'){
     const table={customers:'inventory_customers',environments:'inventory_environments',assets:'inventory_assets'}[match[1]];
     await owned(env,table,user.id,match[2]);
-    await env.DB.prepare('DELETE FROM '+table+' WHERE id=? AND user_id=?').bind(match[2],user.id).run();
+    try{await env.DB.prepare('DELETE FROM '+table+' WHERE id=? AND user_id=?').bind(match[2],user.id).run();}catch(error){throw integrityError(error);}
     return json({removed:true});
   }
   if(match&&req.method==='PUT'&&match[1]==='customers'){
