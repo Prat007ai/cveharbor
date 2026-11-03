@@ -15,7 +15,7 @@ async function fixture() {
     const input = encode({ alg: 'RS256', kid: jwk.kid, ...header }) + '.' + encode({ ...claims, ...patch });
     return input + '.' + Buffer.from(await crypto.subtle.sign('RSASSA-PKCS1-v1_5', pair.privateKey, new TextEncoder().encode(input))).toString('base64url');
   };
-  const check = createAccessVerifier(async url => { assert.equal(url, issuer + '/cdn-cgi/access/certs'); return Response.json({ keys: [jwk] }); }, () => now);
+  const check = createAccessVerifier(async (url, init) => { assert.equal(init.redirect, 'manual'); assert.equal(url, issuer + '/cdn-cgi/access/certs'); return Response.json({ keys: [jwk] }); }, () => now);
   return { sign, front: createFrontend(check) };
 }
 test('human and Service Auth application assertions both pass cryptographic origin validation without an Access response cookie', async () => {

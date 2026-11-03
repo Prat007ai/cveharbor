@@ -1,4 +1,4 @@
-export const ACCESS_FAILURE_CATEGORIES = Object.freeze(['settings', 'token_missing', 'token_format', 'token_parse', 'algorithm', 'issuer', 'audience', 'time', 'jwks_fetch', 'jwks_http', 'jwks_parse', 'jwks_shape', 'key_not_found', 'key_import', 'signature']);
+export const ACCESS_FAILURE_CATEGORIES = Object.freeze(['settings', 'token_missing', 'token_format', 'token_parse', 'algorithm', 'issuer', 'audience', 'time', 'jwks_fetch', 'jwks_redirect', 'jwks_http', 'jwks_parse', 'jwks_shape', 'key_not_found', 'key_import', 'signature']);
 const keyErrors = new WeakMap();
 function keyError(category) { const error = new Error('Access key operation failed'); keyErrors.set(error, category); return error; }
 // Verify Access at the origin as well as at Cloudflare's edge. Never trust an email header.
@@ -10,7 +10,8 @@ export function createAccessVerifier(fetchKeys = fetch, clock = () => Date.now()
     const now = clock();
     if (cached?.issuer === issuer && cached.until > now) return cached.keys;
     if (!pending) pending = (async () => {
-      const r = await fetchKeys(issuer + '/cdn-cgi/access/certs', { redirect: 'error', signal: AbortSignal.timeout(5000) });
+      const r = await fetchKeys(issuer + '/cdn-cgi/access/certs', { redirect: 'manual', signal: AbortSignal.timeout(5000) });
+      if (r.status >= 300 && r.status < 400) throw keyError('jwks_redirect');
       if (!r.ok) throw keyError('jwks_http');
       const text = await r.text();
       if (text.length > 65536) throw keyError('jwks_shape');

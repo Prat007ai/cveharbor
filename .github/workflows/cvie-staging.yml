@@ -34,6 +34,8 @@ jobs:
       - run: python staging/scripts/schema.py
       - run: node staging/scripts/build.mjs
       - run: node staging/scripts/check-build.mjs
+      - name: Reproduce and verify Access authentication in local workerd
+        run: node staging/scripts/check-access-runtime.mjs
       - name: Validate both Wrangler packages without credentials or uploads
         run: node staging/scripts/dry-run.mjs
       - uses: actions/upload-artifact@v4
@@ -44,6 +46,7 @@ jobs:
             staging/.build/manifest.json
             staging/.build/schema/manifest.json
             staging/artifacts/dry-run.json
+            staging/artifacts/access-runtime.json
           retention-days: 14
   check-staging-credentials:
     # Explicitly requested read-only preflight; a marked branch commit avoids merging
