@@ -1,3 +1,9 @@
+> **Activation paused: existing partial schema reported.** The owner reports 18
+> empty application tables and existing indexes. Do not execute the step-0
+> bootstrap below. Follow the [partial-schema assessment](permanent-staging-partial-schema.md)
+> to collect exact definitions, prepare a tested forward plan and verify recovery
+> evidence before requesting migration approval.
+
 # Permanent CVEHarbor staging: implementation and activation
 
 Updated November 3, 2026. **Prepared code, not activation approval.** PRs #243,

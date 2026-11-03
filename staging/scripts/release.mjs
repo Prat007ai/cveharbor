@@ -65,14 +65,14 @@ export async function executeRelease(env,event,checkout,deps={}){
    assert.ok(!result.error&&result.status===0,'Synthetic staging publication failed');step('synthetic_publication',{passed:true});
   }
   else if(action==='migrate')step('migration',await (deps.migrate||migrate)({...env,STAGING_CHANGE_APPROVED:'PR243-STAGING-ONLY'},{plan:loadMigrationPlan(env),transport,record:(name,value)=>{fs.mkdirSync(path.join(root,'artifacts'),{recursive:true});fs.writeFileSync(path.join(root,'artifacts',name+'.json'),JSON.stringify(value,null,2)+'\n');}}));
-  else if(action==='migrate'){assert.match(env.CF_STAGING_SCHEMA_PLAN_SHA256||'',/^[a-f0-9]{64}$/);assert.match(env.CF_STAGING_SCHEMA_RESUME_STEP||'',/^(0|[1-9]\d*)$/);loadMigrationPlan(env);}
- if(['hold','freeze','resume'].includes(action)){
+  else if(['hold','freeze','resume'].includes(action)){
    const options={revision:Number(env.CF_STAGING_EXPECTED_HOLD_REVISION),reason:env.CF_STAGING_RECOVERY_REASON,hold:action==='hold'};
    const result=action==='freeze'?await freezeHold(DB,options):await setHold(DB,options);step(action,result);
   }else{
    step('schema',await (deps.verifySchema||verifySchema)(DB));
    if(action==='verify'){const status=await holdStatus(DB);step('hold_status',status);const strict=await (deps.diagnose||diagnose)(env,transport,()=>{},{allowLegacy:false,requireKey:true});assert.ok(strict.verified,'Current release configuration mismatch');step('current_release',{verified:true});step('backend_runtime',await (deps.probeBackend||probeBackend)(env,transport));}
    else{
+    assert.ok(['update','recover-code'].includes(action),'Worker deployment requires an explicit update or recover-code approval');
     const state=await holdStatus(DB);
     if(action==='recover-code')assert.ok(state.write_hold===1&&state.database_frozen===1&&state.active_leases===0,'Recovery requires frozen, drained hold');
     else assert.ok(state.write_hold===0&&state.database_frozen===0,'Normal update requires resumed database');

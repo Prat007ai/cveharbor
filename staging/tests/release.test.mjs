@@ -21,3 +21,25 @@ test('runtime gate rejects old release, missing snapshot or wrong hold state',as
  for(const delta of [{release:'old'},{feed_version:null},{mail_capture:false},{held:true}])await assert.rejects(probeBackend(env,async()=>Response.json({...valid,...delta})));
  assert.equal((await probeBackend(env,async()=>Response.json(valid))).release,sha);
 });
+
+test('migration approval never falls through into publication or Worker deployment',async()=>{
+ const approval=JSON.parse((await import('node:fs')).readFileSync(new URL('../bootstrap-approval.v1.json',import.meta.url),'utf8'));
+ const calls=[],db=new FullDB();try{
+  const e={...env,CF_STAGING_PROVISION_ACTION:'migrate',CF_STAGING_SCHEMA_PLAN_SHA256:approval.execution_plan_sha256,CF_STAGING_SCHEMA_RESUME_STEP:'0'};
+  const d=deps(db,calls);d.migrate=async()=>{calls.push('migrate');return {status:'complete'};};
+  d.verifySchema=async()=>assert.fail('Migration must not enter the deployment path');
+  d.runner=()=>assert.fail('Migration must not launch any publisher or Wrangler');
+  const result=await executeRelease(e,{inputs:{operation:'migrate'}},sha,d);
+  assert.equal(result.completed,true);assert.deepEqual(calls,['migrate']);
+ }finally{db.close();}
+});
+test('synthetic publication approval never deploys Workers or executes schema updates',async()=>{
+ const calls=[],db=new FullDB();try{
+  const e={...env,CF_STAGING_PROVISION_ACTION:'publish-synthetic',CF_STAGING_R2_ACCESS_KEY_ID:'synthetic-id',CF_STAGING_R2_SECRET_ACCESS_KEY:'synthetic-secret'};
+  const d=deps(db,calls);d.verifySchema=async()=>assert.fail('Publication must not enter the deployment path');
+  d.migrate=async()=>assert.fail('Publication must not migrate');
+  d.runner=(command,args)=>{assert.equal(command,'python');assert.ok(args[0].endsWith('/publish-synthetic.py'));calls.push('publish');return {status:0};};
+  const result=await executeRelease(e,{inputs:{operation:'publish-synthetic'}},sha,d);
+  assert.equal(result.completed,true);assert.deepEqual(calls,['publish']);
+ }finally{db.close();}
+});
