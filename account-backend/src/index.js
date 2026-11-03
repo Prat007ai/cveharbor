@@ -272,7 +272,7 @@ export default {async fetch(req,env,ctx){
   if(path.startsWith('/v1/monitoring'))return await monitoringHandler(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/lifecycle'))return await lifecycleHandler(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/finding-tickets'))return await findingTicketRoute(req,env,user,path,req.method==='POST'?await body(req):{});
-  if(path.startsWith('/v1/finding-remediations/')||path.startsWith('/v1/remediation-records/'))return await sharedRoute(req,env,user,path,req.method==='POST'?await body(req):{});
+  if(path==='/v1/finding-assignments'||path.startsWith('/v1/finding-remediations/')||path.startsWith('/v1/remediation-records/'))return await sharedRoute(req,env,user,path,req.method==='POST'?await body(req):{});
   if(path.startsWith('/v1/finding-statuses'))return await findingStatusRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/plugin-installation-status'))return await sourceRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/plugin-sources'))return await sourceRoute(req,env,user,path,req.method==='PUT'?await body(req):{});

@@ -82,7 +82,7 @@ export async function assignWithAcknowledgement(env,user,cve,recipient,notes,raw
   // Atomically publish the accepted email and invalidate earlier links for this recipient only.
   const metadataOps=workflow?[
    env.DB.prepare('INSERT INTO remediation_record_metadata(user_id,cve_id,assigned_severity,assessed_by,assessed_at) SELECT ?,?,?,?,? WHERE ?=(SELECT id FROM remediation_assignment_requests WHERE user_id=? AND cve_id=? AND delivery_status=\'sent\' ORDER BY seq DESC LIMIT 1) ON CONFLICT(user_id,cve_id) DO UPDATE SET assigned_severity=excluded.assigned_severity,assessed_by=excluded.assessed_by,assessed_at=excluded.assessed_at').bind(user.id,cve,selectedSeverity,user.email,new Date().toISOString(),id,user.id,cve),
-   env.DB.prepare("UPDATE remediations SET updated_at=?,owner=CASE WHEN cve_id LIKE '%~%' THEN ? ELSE owner END WHERE user_id=? AND cve_id=?").bind(new Date().toISOString(),recipient,user.id,cve)
+   env.DB.prepare('UPDATE remediations SET updated_at=?,owner=? WHERE user_id=? AND cve_id=?').bind(new Date().toISOString(),scope?recipient:(record?.owner||recipient),user.id,cve)
   ]:[];
   await env.DB.batch([
    env.DB.prepare('UPDATE remediation_assignment_requests SET revoked_at=? WHERE user_id=? AND cve_id=? AND recipient_email=? AND seq<(SELECT seq FROM remediation_assignment_requests WHERE id=?) AND revoked_at IS NULL').bind(sent,user.id,cve,recipient,id),

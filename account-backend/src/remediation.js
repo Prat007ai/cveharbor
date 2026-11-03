@@ -74,7 +74,7 @@ async function capacity(env,userId,id){
 export async function upsertRemediation(env,user,id,data){
   const item=normalizeRecord(id,data);
   if(item.id.includes('~')&&!await recordScope(env,user.id,item.id))throw new RemediationError('Asset-linked record not found.',404);
-  if(item.id.includes('~')&&typeof data.expected_updated!=='string')throw new RemediationError('Refresh the shared record before saving.',409);
+  if(await recordScope(env,user.id,item.id)&&typeof data.expected_updated!=='string')throw new RemediationError('Refresh the shared record before saving.',409);
   await capacity(env,user.id,item.id);
   if(env.REMEDIATION_WORKFLOW_ENABLED==='true'){
     await requireWorkflow(env);await runWorkflowWrite(env,await workflowWriteStatements(env,user,item,data,new Date().toISOString()));
@@ -87,7 +87,7 @@ export async function upsertRemediation(env,user,id,data){
   return reply({saved:true,id:item.id,storage:'d1'});
 }
 export async function removeRemediation(env,user,id){
-  if(String(id).includes('~'))throw new RemediationError('Use the finding status to resolve asset-linked work. Its history is retained.',409);
+  if(String(id).includes('~')||await recordScope(env,user.id,id))throw new RemediationError('Use the finding status to resolve asset-linked work. Its history is retained.',409);
   if(!normalizeId(id))throw new RemediationError('Invalid CVE ID');
   await env.DB.prepare('DELETE FROM remediations WHERE user_id=? AND cve_id=?').bind(user.id,id).run();
   return reply({removed:true,id});
@@ -104,6 +104,7 @@ export async function importLegacy(env,user,records){
   const union=new Set([...(existing.results||[]).map(x=>x.cve_id),...items.map(x=>x.id)]);
   if(union.size>250)throw new RemediationError('Import would exceed the 250 record limit',409);
   if(!items.length)return reply({saved:0,storage:'d1'});
+  if(await linkedReady(env)){const linked=await env.DB.prepare('SELECT record_id FROM remediation_finding_links WHERE user_id=?').bind(user.id).all();if((linked.results||[]).some(x=>items.some(i=>i.id===x.record_id)))throw new RemediationError('Imports cannot overwrite asset-linked records. Open the shared record instead.',409);}
   const now=new Date().toISOString();
   if(env.REMEDIATION_WORKFLOW_ENABLED==='true'){
     await requireWorkflow(env);const statements=[];

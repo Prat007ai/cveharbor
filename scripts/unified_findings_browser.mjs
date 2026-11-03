@@ -3,6 +3,7 @@ import fs from 'node:fs';import path from 'node:path';import assert from 'node:a
 import worker from '../account-backend/src/index.js';import {unifiedFixture,assetOne,assetTwo} from '../account-backend/tests/helpers/unified-db.mjs';import {fixtureCve} from '../account-backend/tests/helpers/assignment-db.mjs';import {securityFixture} from './customer_security_fixture.mjs';
 const {chromium}=await import(process.env.CVEHARBOR_PLAYWRIGHT_MODULE||'playwright-core');
 const f=await unifiedFixture(),customer=securityFixture(),originalFetch=globalThis.fetch;globalThis.fetch=f.fetcher;const directory='work/unified-review';fs.mkdirSync(directory,{recursive:true});
+f.DB.sql.prepare('DELETE FROM remediations WHERE user_id=? AND cve_id=?').run('a',fixtureCve);
 f.DB.sql.exec("UPDATE inventory_assets SET technology='PHP',version='8.4.1' WHERE user_id='a'");
 customer.inventory.customers=f.DB.sql.prepare("SELECT * FROM inventory_customers WHERE user_id='a'").all();customer.inventory.environments=f.DB.sql.prepare("SELECT * FROM inventory_environments WHERE user_id='a'").all();customer.inventory.assets=f.DB.sql.prepare("SELECT * FROM inventory_assets WHERE user_id='a'").all();customer.advisories.splice(1);customer.advisories[0].id=fixtureCve;
 const browser=await chromium.launch({headless:true,executablePath:process.env.CVEHARBOR_CHROMIUM_PATH||'/usr/bin/google-chrome',args:['--no-sandbox']});
