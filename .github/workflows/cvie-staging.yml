@@ -2,13 +2,13 @@ name: CVIE staging preparation (no automatic deployment)
 on:
   push:
     branches: [codex/cvie-core-phase012]
-    paths: ['staging/**', '.github/workflows/cvie-staging.yml', '.github/workflows/cvie-staging-diagnostics.yml']
+    paths: ['staging/**', '.github/workflows/cvie-staging.yml']
   pull_request:
-    paths: ['staging/**', '.github/workflows/cvie-staging.yml', '.github/workflows/cvie-staging-diagnostics.yml']
+    paths: ['staging/**', '.github/workflows/cvie-staging.yml']
   workflow_dispatch:
     inputs:
       check_credentials:
-        description: 'Legacy diagnostic-only request: prevents provisioning; trusted diagnostics run separately'
+        description: 'Run staging-only read-only credential and Access checks (no creation or deployment)'
         type: boolean
         default: false
       provision_action:
@@ -34,13 +34,49 @@ jobs:
       - run: python staging/scripts/schema.py
       - run: node staging/scripts/build.mjs
       - run: node staging/scripts/check-build.mjs
+      - name: Validate both Wrangler packages without credentials or uploads
+        run: node staging/scripts/dry-run.mjs
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: cvie-staging-preparation-${{ github.sha }}
           path: |
             staging/.build/manifest.json
             staging/.build/schema/manifest.json
+            staging/artifacts/dry-run.json
           retention-days: 14
+  check-staging-credentials:
+    # Explicitly requested read-only preflight; a marked branch commit avoids merging
+    # this workflow into main just to unlock workflow_dispatch. Environment protections remain.
+    if: ((github.event_name == 'push' && contains(github.event.head_commit.message, '[staging-preflight]')) || (github.event_name == 'workflow_dispatch' && inputs.check_credentials == true)) && github.ref == 'refs/heads/codex/cvie-core-phase012' && github.repository == 'Prat007ai/cveharbor'
+    needs: prepare
+    runs-on: ubuntu-latest
+    environment: cloudflare-cvie-staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate staging credentials and Access without modifying resources
+        env:
+          CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
+          CF_STAGING_ACCOUNT_ID: ${{ vars.CF_STAGING_ACCOUNT_ID || secrets.CF_STAGING_ACCOUNT_ID }}
+          CF_STAGING_D1_DATABASE_ID: ${{ vars.CF_STAGING_D1_DATABASE_ID }}
+          CF_STAGING_ACCESS_ISSUER: ${{ vars.CF_STAGING_ACCESS_ISSUER || secrets.CF_STAGING_ACCESS_ISSUER }}
+          CF_STAGING_ACCESS_AUD: ${{ vars.CF_STAGING_ACCESS_AUD || secrets.CF_STAGING_ACCESS_AUD }}
+          CF_STAGING_ACCESS_CLIENT_ID: ${{ secrets.CF_STAGING_ACCESS_CLIENT_ID }}
+          CF_STAGING_ACCESS_CLIENT_SECRET: ${{ secrets.CF_STAGING_ACCESS_CLIENT_SECRET }}
+        run: |
+          if [ -n "$CF_STAGING_D1_DATABASE_ID" ]; then node staging/scripts/diagnose.mjs; fi
+          node staging/scripts/preflight.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cvie-staging-preflight-${{ github.sha }}
+          path: staging/artifacts/*.json
+          if-no-files-found: warn
+          retention-days: 14
+
   provision-staging:
     concurrency:
       group: cvie-staging-243
