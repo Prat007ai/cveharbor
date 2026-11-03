@@ -1,16 +1,6 @@
 name: Verify live CVEHarbor section pages
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - index.html
-      - page-router.js
-      - styles.css
-      - scripts/build_site.py
-      - workspace/index.html
-      - account/index.html
-      - .github/workflows/verify-multipage.yml
   workflow_dispatch:
 
 permissions:
@@ -18,13 +8,17 @@ permissions:
 
 jobs:
   verify-pages:
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    environment: cloudflare-production-audit
     name: Verify all canonical page URLs and shared modal scripts
     runs-on: ubuntu-latest
     env:
       SITE_GATE_USERNAME: cveharbor
-      SITE_GATE_PASSWORD: ${{ secrets.SITE_GATE_PASSWORD }}
+      SITE_GATE_PASSWORD: ${{ secrets.CVEHARBOR_SITE_GATE_PASSWORD }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
       - name: Check production frontend routes
         run: |
           python - <<'PY'

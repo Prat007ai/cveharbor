@@ -46,14 +46,16 @@ concurrency:
 
 jobs:
   deploy:
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true'
     name: Validate and deploy account Worker
     runs-on: ubuntu-latest
     environment: cloudflare-worker-production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          persist-credentials: false
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22'
       - name: Determine code-only release scope
@@ -64,8 +66,8 @@ jobs:
         run: npm test && node ../scripts/cvie_rest_batch.test.mjs && node --check src/index.js && node --check src/plugin-advisories.js
       - name: Confirm deployment credentials
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: |
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "Cloudflare API token missing"; exit 1; }
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "Cloudflare account ID missing"; exit 1; }
@@ -73,8 +75,8 @@ jobs:
         if: steps.mode.outputs.maintenance != 'false'
         working-directory: account-backend
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: |
           npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0019_cvie.sql
           npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0020_cvie_evidence.sql
@@ -82,15 +84,15 @@ jobs:
       - name: Reuse existing public NVD history without deleting private caches
         if: steps.mode.outputs.maintenance != 'false'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/bootstrap_cvie_shared.mjs
       - name: Configure optional existing NVD key securely
         if: steps.mode.outputs.maintenance != 'false'
         working-directory: account-backend
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
           python3 - <<'PY'
@@ -106,39 +108,39 @@ jobs:
         if: steps.mode.outputs.maintenance != 'false'
         env:
           CVIE_SHARED_SCANS_ENABLED: 'true'
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_cvie_d1.mjs
       - name: Verify installed software history setup without database writes
         if: steps.mode.outputs.inventory_only == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_software_history_d1.mjs
       - name: Verify catalogue scope with read-only D1 queries
         if: steps.mode.outputs.catalogue_only == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_catalogue_scope_d1.mjs
       - name: Guard the monitoring code-only release without schema or activation changes
         if: steps.mode.outputs.monitor_code_only == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_monitoring_inactive.mjs
       - name: Verify workspace queries with SELECT-only production probes
         if: steps.mode.outputs.workspace_only == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_workspace_d1.mjs
       - name: Record D1 recovery point and apply approved acknowledgement migration
         if: steps.mode.outputs.acknowledgement_release == 'true'
         working-directory: account-backend
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: |
           npx --yes wrangler@4.156.0 d1 time-travel info cveharbor-accounts --json
           npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0024_assignment_acknowledgements.sql
@@ -147,8 +149,8 @@ jobs:
         if: steps.mode.outputs.fyi_release == 'true'
         working-directory: account-backend
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: |
           npx --yes wrangler@4.156.0 d1 time-travel info cveharbor-accounts --json
           npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0025_assignment_fyi.sql
@@ -157,8 +159,8 @@ jobs:
         if: steps.mode.outputs.remediation_workflow == 'true'
         working-directory: account-backend
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: |
           npx --yes wrangler@4.156.0 d1 time-travel info cveharbor-accounts --json
           npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0026_remediation_workflow.sql
@@ -167,8 +169,8 @@ jobs:
         if: steps.mode.outputs.assignment_progress == 'true'
         working-directory: account-backend
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: |
           npx --yes wrangler@4.156.0 d1 time-travel info cveharbor-accounts --json
           npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0027_assignment_progress.sql
@@ -176,15 +178,15 @@ jobs:
       - name: Verify existing reviewer schema for notification code-only deployment
         if: steps.mode.outputs.assignment_progress_code_only == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_assignment_progress_d1.mjs
       - name: Record recovery point and apply unified findings migration
         if: steps.mode.outputs.unified_findings == 'true'
         working-directory: account-backend
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: |
           npx --yes wrangler@4.156.0 d1 time-travel info cveharbor-accounts --json
           npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0028_unified_findings.sql
@@ -193,8 +195,8 @@ jobs:
         if: steps.mode.outputs.finding_links == 'true'
         working-directory: account-backend
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: |
           npx --yes wrangler@4.156.0 d1 time-travel info cveharbor-accounts --json
           npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0029_finding_assignment_links.sql
@@ -203,8 +205,8 @@ jobs:
         if: steps.mode.outputs.status_mail == 'true'
         working-directory: account-backend
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: |
           npx --yes wrangler@4.156.0 d1 time-travel info cveharbor-accounts --json
           npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0030_status_update_notifications.sql
@@ -212,47 +214,47 @@ jobs:
       - name: Verify existing link and status notification schemas before repair
         if: steps.mode.outputs.status_mail_repair == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_finding_links_d1.mjs && node scripts/verify_status_mail_d1.mjs
       - name: Deploy Worker source
         working-directory: account-backend
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: npx --yes wrangler@4.156.0 deploy
       - name: Link any legacy products added during the deployment window
         if: steps.mode.outputs.maintenance != 'false'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/bootstrap_cvie_shared.mjs
       - name: Refresh previously cached CVIE evidence once under the corrected Worker
         if: steps.mode.outputs.maintenance != 'false'
         working-directory: account-backend
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0021_cvie_audit_refresh.sql
       - name: Verify production API, CVIE tables and scheduled public-source collection
         if: steps.mode.outputs.maintenance != 'false'
         timeout-minutes: 17
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: python3 scripts/verify_cvie_production.py --wait-for-feeds 900
       - name: Confirm CVIE status and result queries on real production D1
         if: steps.mode.outputs.maintenance != 'false'
         env:
           CVIE_SHARED_SCANS_ENABLED: 'true'
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_cvie_d1.mjs
       - name: Confirm software history schema and unauthenticated API boundary after inventory deployment
         if: steps.mode.outputs.inventory_only == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: |
           node scripts/verify_software_history_d1.mjs
           node --input-type=module -e "const r=await fetch('https://api.cveharbor.com/v1/inventory/software-history?customer_id=00000000-0000-4000-8000-000000000001');if(r.status!==401)throw Error('History endpoint must require authentication');console.log('PASS: unauthenticated history access rejected');"
@@ -261,25 +263,25 @@ jobs:
       - name: Confirm deployed catalogue scope with read-only D1 queries
         if: steps.mode.outputs.catalogue_only == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_catalogue_scope_d1.mjs
 
 
       - name: Verify monitoring release preserved production schema, secrets, flags and schedules
         if: steps.mode.outputs.monitor_code_only == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_monitoring_inactive.mjs --after
 
       - name: Reconcile only the two owner-approved SMTP2GO tests
         if: steps.mode.outputs.monitor_code_only == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: python scripts/report_approved_monitor_tests.py
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always() && steps.mode.outputs.monitor_code_only == 'true'
         with:
           name: approved-worker-monitor-tests
@@ -288,8 +290,8 @@ jobs:
       - name: Confirm workspace API authentication and read-only query compatibility
         if: steps.mode.outputs.workspace_only == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_workspace_d1.mjs --after
 
       - name: Confirm remediation API authentication after code-only deployment
@@ -309,52 +311,52 @@ jobs:
       - name: Verify guest acknowledgement and private assignment boundaries without customer writes
         if: steps.mode.outputs.acknowledgement_release == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_assignment_ack_d1.mjs --after
 
       - name: Verify FYI schema and private notification boundaries without sending mail
         if: steps.mode.outputs.fyi_release == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_assignment_fyi_d1.mjs --after
       - name: Verify remediation workflow schema and authentication boundaries
         if: steps.mode.outputs.remediation_workflow == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_remediation_workflow_d1.mjs --after
       - name: Verify reviewer access and private progress boundaries without sending mail
         if: steps.mode.outputs.assignment_progress == 'true' || steps.mode.outputs.assignment_progress_code_only == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_assignment_progress_d1.mjs --after
       - name: Verify shared remediation production routes
         if: steps.mode.outputs.unified_findings == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_unified_findings_d1.mjs --after
 
       - name: Verify assignment link production routes
         if: steps.mode.outputs.finding_links == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_finding_links_d1.mjs --after
 
       - name: Verify status notification schema and protected production routes
         if: steps.mode.outputs.status_mail == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_status_mail_d1.mjs --after
 
       - name: Verify repaired status notification production routes
         if: steps.mode.outputs.status_mail_repair == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/verify_status_mail_d1.mjs --after
