@@ -92,10 +92,16 @@ def collect(get=gh_get):
     workflow_permissions = one(BASE + '/actions/permissions/workflow')
     actions = one(BASE + '/actions/permissions')
     plan = user.get('plan') or {}
+    # /user describes the caller, which may be a collaborator rather than the owner.
+    owner = repo.get('owner', {})
+    owner_plan = bool(user.get('login') and owner.get('type') == 'User'
+                      and user['login'].lower() == str(owner.get('login', '')).lower())
     return {
         'checked_at':datetime.now(timezone.utc).isoformat(), 'repository':REPO,
         'metadata_only':True, 'production_operations_executed':0,
-        'plan_name':plan.get('name'), 'plan_verified':bool(plan.get('name')),
+        'plan_name':plan.get('name') if owner_plan else None,
+        'plan_verified':bool(owner_plan and plan.get('name')),
+        'plan_identity_matches_owner':owner_plan,
         'visibility':repo.get('visibility'), 'private':repo.get('private'),
         'owner_type':repo.get('owner',{}).get('type'),
         'main_protected':branch.get('protected'),

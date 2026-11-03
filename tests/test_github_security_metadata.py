@@ -10,8 +10,8 @@ audit=importlib.util.module_from_spec(spec);spec.loader.exec_module(audit)
 
 class MetadataAuditTests(unittest.TestCase):
     def fake(self, endpoint):
-        if endpoint=='user':return [{'plan':{'name':'free'},'email':'not-for-report@example.test'}],None
-        if endpoint==audit.BASE:return [{'private':False,'visibility':'public','owner':{'type':'User'}}],None
+        if endpoint=='user':return [{'login':'Prat007ai','plan':{'name':'free'},'email':'not-for-report@example.test'}],None
+        if endpoint==audit.BASE:return [{'private':False,'visibility':'public','owner':{'type':'User','login':'Prat007ai'}}],None
         if endpoint.endswith('/branches/main'):return [{'protected':False}],None
         if endpoint.endswith('/rulesets'):return [[]],None
         if endpoint.endswith('/environments'):return [{'environments':[{'name':'cloudflare-worker-production'}]}],None
@@ -32,6 +32,9 @@ class MetadataAuditTests(unittest.TestCase):
     def test_missing_plan_is_not_assumed_free(self):
         r=audit.collect(lambda p:([{}],None) if p=='user' else self.fake(p))
         self.assertIsNone(r['plan_name']);self.assertFalse(r['plan_verified'])
+    def test_collaborator_plan_is_not_repository_owner_plan(self):
+        r=audit.collect(lambda p:([{'login':'different-admin','plan':{'name':'pro'}}],None) if p=='user' else self.fake(p))
+        self.assertIsNone(r['plan_name']);self.assertFalse(r['plan_verified']);self.assertFalse(r['plan_identity_matches_owner'])
     def test_only_get_and_no_token_argument(self):
         with patch.object(audit.subprocess,'run',return_value=subprocess.CompletedProcess([],0,'[{}]','')) as run:
             audit.gh_get(audit.BASE+'/actions/secrets')
