@@ -5,6 +5,7 @@ import sys
 
 db = sqlite3.connect(':memory:', isolation_level=None)
 db.row_factory = sqlite3.Row
+db.setlimit(sqlite3.SQLITE_LIMIT_COMPOUND_SELECT, 5)
 db.execute('PRAGMA foreign_keys=ON')
 for line in sys.stdin:
     message = json.loads(line)

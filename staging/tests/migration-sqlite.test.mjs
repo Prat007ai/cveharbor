@@ -58,7 +58,7 @@ function harness(t, hook = async () => undefined) {
     return Response.json({ success: true, result: { unchanged: true } });
   };
   const deps = { plan, transport, inventory: async () => ({ verified: true }), probe: async () => ({ passed: true }),
-    record: (name, data) => { if (name === 'migration') latest = structuredClone(data); } };
+    record: (name, data) => { if (name === 'migration') latest = data; } };
   return { deps, calls, execute, final: () => latest };
 }
 
@@ -215,3 +215,19 @@ test('SQL input changes are rejected even when the generated plan is unchanged',
   } finally { fs.rmSync(temporary, { recursive: true, force: true }); }
 });
 
+
+test('failed post-write count verification and failed reconciliation retain fresh schema but no stale checkpoint', async t => {
+  let written = false;
+  const h = harness(t, async ({ body }) => {
+    if (body.batch) written = true;
+    if (written && body.sql?.startsWith('SELECT count(*) AS n FROM'))
+      return Response.json({ success: false, errors: [{ code: 7500, message: 'synthetic-secret' }] }, { status: 400 });
+  });
+  await assert.rejects(migrate(env, h.deps));
+  const report = h.final();
+  assert.equal(report.last_verified_step, null);
+  assert.equal(report.actual_state.status, 'failed'); assert.equal(report.actual_state.complete, false);
+  assert.ok(report.actual_state.objects.length > 0); assert.equal(report.actual_state.counts.length, 0);
+  assert.deepEqual(report.actual_state.matching_steps, []); assert.equal(report.actual_state.rows_verified, false);
+  assert.ok(report.state_inspection_failure); assert.equal(report.automatic_retries, 0);
+});

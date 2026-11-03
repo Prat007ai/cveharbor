@@ -8,7 +8,7 @@ on:
       operation:
         description: Exact separately approved existing-resource operation
         type: choice
-        options: [none, verify, migrate, publish-synthetic, update, recover-code, hold, freeze, resume]
+        options: [none, diagnose-schema, verify, migrate, publish-synthetic, update, recover-code, hold, freeze, resume]
         default: none
 permissions:
   contents: read
@@ -61,6 +61,7 @@ jobs:
       CF_STAGING_D1_DATABASE_ID: ${{ vars.CF_STAGING_D1_DATABASE_ID }}
       CF_STAGING_ADMIN_EMAILS: ${{ vars.CF_STAGING_ADMIN_EMAILS }}
       CF_STAGING_MANUAL_JOBS_ENABLED: ${{ vars.CF_STAGING_MANUAL_JOBS_ENABLED }}
+      CF_STAGING_SCHEMA_DIAGNOSTIC_SHA256: ${{ vars.CF_STAGING_SCHEMA_DIAGNOSTIC_SHA256 }}
       CF_STAGING_SCHEMA_PLAN_SHA256: ${{ vars.CF_STAGING_SCHEMA_PLAN_SHA256 }}
       CF_STAGING_SCHEMA_RESUME_STEP: ${{ vars.CF_STAGING_SCHEMA_RESUME_STEP }}
       CF_STAGING_EXPECTED_HOLD_REVISION: ${{ vars.CF_STAGING_EXPECTED_HOLD_REVISION }}
@@ -77,10 +78,12 @@ jobs:
         with:
           python-version: '3.12'
       - name: Build local manifest checkpoints before authorization
+        if: env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema'
         run: python staging/scripts/migration-plan.py
       - name: Validate exact reviewed source and operation before management credentials
         run: node staging/scripts/release.mjs --check
       - name: Rebuild reviewed packages without credentials
+        if: env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema'
         run: |
           npm install --prefix staging --ignore-scripts --no-package-lock
           python staging/scripts/migration-plan.py
@@ -89,7 +92,13 @@ jobs:
       - name: Install pinned publisher dependency only for approved synthetic publication
         if: env.CF_STAGING_PROVISION_ACTION == 'publish-synthetic'
         run: python -m pip install boto3==1.40.70
+      - name: Execute only the approved read-only schema diagnostic
+        if: env.CF_STAGING_PROVISION_ACTION == 'diagnose-schema'
+        env:
+          CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
+        run: node staging/scripts/release.mjs
       - name: Execute only the approved existing-resource operation
+        if: env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema'
         env:
           CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
           CF_STAGING_R2_ACCESS_KEY_ID: ${{ secrets.CF_STAGING_R2_ACCESS_KEY_ID }}

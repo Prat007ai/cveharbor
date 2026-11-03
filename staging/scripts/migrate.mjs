@@ -7,6 +7,7 @@ import { root } from './configure.mjs';
 import { diagnose } from './diagnose.mjs';
 import { probeAccess } from './probe-access.mjs';
 import { failure, safeFailure } from './errors.mjs';
+import { inspectSchemaState } from './schema-state.mjs';
 
 export const STAGING_DATABASE_ID = 'fac61562-fc31-426d-8032-550aba63b7f6';
 export const hash = value => createHash('sha256').update(value).digest('hex');
@@ -103,7 +104,7 @@ export async function migrate(env, { plan, transport = fetch, inventory = diagno
     if (bad) {
       if (body) report.usage.complete = false;
       const failed = results.findIndex(r => r?.success !== true || r?.error || (Array.isArray(r?.errors) && r.errors.length));
-      throw failure(operation, response.status === 401 || response.status === 403 ? 'authorization' : response.status === 429 ? 'rate_limit' : body ? 'd1_statement_or_batch' : 'cloudflare_api',
+      throw failure(operation, response.status === 401 || response.status === 403 ? 'authorization' : response.status === 429 ? 'rate_limit' : /too many terms in compound select/i.test(JSON.stringify(payload?.errors || [])) ? 'compound_select_limit' : body ? 'd1_statement_or_batch' : 'cloudflare_api',
         { http_status: response.status, ...(failed >= 0 ? { result_index: failed } : {}), api_codes: (Array.isArray(payload?.errors) ? payload.errors : []).map(e => e?.code).filter(Number.isInteger).slice(0, 8) });
     }
     if (body && results.length !== (body.batch?.length || 1)) { report.usage.complete = false; throw failure(operation, 'result_count'); }
@@ -134,25 +135,13 @@ export async function migrate(env, { plan, transport = fetch, inventory = diagno
     return hash(encoded(canonical(state)));
   }
   async function inspect(label) {
-    const objects = (await query(plan.schema_sql, 'migration.state.' + label + '.schema')).map(r => [r.type, r.name, r.tbl_name, r.sql]);
-    const schemaHash = hash(encoded(objects));
-    const tables = objects.filter(o => o[0] === 'table').map(o => o[1]).sort();
-    const counts = tables.length ? (await query(tables.map(name => `SELECT ${literal(name)} AS name,count(*) AS n FROM ${identifier(name)}`).join(' UNION ALL ') + ' ORDER BY name', 'migration.state.' + label + '.counts')).map(r => [r.name, r.n]) : [];
-    const actual = { schema_sha256: schemaHash, counts, matching_steps: [], rows_verified: false };
-    const candidates = plan.checkpoints.map((c, step) => ({ c, step })).filter(({ c }) => c.schema_sha256 === schemaHash && same(c.counts, counts));
-    let rows = [];
-    // Do not fetch row contents from an unexpected database state. Expected states
-    // contain no application/customer/session data, only checked-in catalogue seeds.
-    if (candidates.length) {
-      const nonempty = new Set(counts.filter(([, n]) => n > 0).map(([name]) => name));
-      for (const table of plan.schemas[schemaHash].tables.filter(t => nonempty.has(t.name)))
-        rows.push(...(await query(table.row_sql, 'migration.state.' + label + '.seeds')).map(r => [table.name, r.value]));
-      actual.rows_sha256 = hash(encoded(rows)); actual.rows_verified = true;
-      actual.matching_steps = candidates.filter(({ c }) => c.rows_sha256 === actual.rows_sha256).map(({ step }) => step);
-    }
-    report.actual_state = actual; persist();
-    return { actual, rows };
+    if (report.last_verified_step !== undefined && report.last_verified_step !== null)
+      report.historical_verified_step = report.last_verified_step;
+    report.last_verified_step = null;
+    return inspectSchemaState(plan, (sql, suffix) => query(sql, 'migration.state.' + label + '.' + suffix),
+      state => { report.actual_state = state; persist(); }, label);
   }
+
   try {
     if (env.STAGING_CHANGE_APPROVED !== 'PR243-STAGING-ONLY' || env.CF_STAGING_PROVISION_ACTION !== 'migrate' ||
         env.CF_STAGING_ACCOUNT_ID !== TARGET.account || env.CF_STAGING_D1_DATABASE_ID !== STAGING_DATABASE_ID || !env.CF_STAGING_API_TOKEN ||
@@ -181,6 +170,8 @@ export async function migrate(env, { plan, transport = fetch, inventory = diagno
       const batch = { file: file.file, phase: file.phase, sql_sha256: file.sha256, from_step: from, to_step: file.end, guard_count: guards.length, outcome: 'pending' };
       report.batches.push(batch); persist();
       budget();
+      report.actual_state = { status: 'invalidated_by_write', complete: false, matching_steps: [], counts: [], rows_verified: false };
+      report.historical_verified_step = report.last_verified_step ?? null; report.last_verified_step = null; persist();
       await request(dbRoute + '/query', 'migration.apply.' + file.phase + '.' + file.start, { batch: [...guards, ...sql] }, 'migration');
       batch.outcome = 'response_success'; persist();
       state = await inspect('after-' + file.end);
