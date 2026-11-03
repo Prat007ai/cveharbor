@@ -268,7 +268,7 @@ async function prepareExport(action){
   drawReport();action();
  }catch(error){window.alert('Could not generate report: '+error.message)}finally{exportBusy=false}
 }
-function confirmFindingStatus(i,previous,next,save){
+function confirmFindingStatus(i,previous,next,save,mail){
  return new Promise(resolve=>{
   const dialog=text('dialog','','shared-record cvh-status-dialog');statusChangeDialog=dialog;
   dialog.setAttribute('aria-labelledby','cvhStatusTitle');dialog.setAttribute('aria-describedby','cvhStatusContext');
@@ -277,7 +277,7 @@ function confirmFindingStatus(i,previous,next,save){
   const context=text('p',[i.id,inventory.customers.find(c=>c.id===i.environment?.customer_id)?.name,i.environment?.name,i.asset?.name,i.technology,i.version].filter(Boolean).join(' · '),'shared-context');context.id='cvhStatusContext';
   const transition=text('div','','cvh-status-transition');transition.append(text('span',previous),text('span','→'),text('strong',next));
   const form=text('form','');form.noValidate=true;const label=text('label','Reason for this change');const reason=document.createElement('textarea');reason.rows=4;reason.maxLength=1000;reason.required=true;reason.placeholder='Describe the progress, remediation or decision behind this change.';label.append(reason);
-  const help=text('small','This reason is saved in the history and included in the status email to the assignment’s reviewers, requester and FYI recipients.');
+  const help=text('small',!mail?.available?'Email recipient information is unavailable. This reason will be saved in the history.':mail.recipients.length?'This reason will be saved in the history. Status-update emails will be queued for: '+mail.recipients.join(', '):'No recipients are linked to this record. Saving the status will not send an email. Use Assign / View remediation to add a reviewer.');
   const message=text('p','','shared-message');message.setAttribute('role','alert');
   const actions=text('div','','cvh-status-actions');const cancel=text('button','Cancel','cvh-status-cancel');cancel.type='button';const submit=text('button','Save status');submit.type='submit';actions.append(cancel,submit);form.append(label,help,message,actions);
   dialog.append(brand,title,context,transition,form);document.body.append(dialog);
@@ -300,8 +300,10 @@ async function saveFindingStatus(i,status,select){
  statusChangeBusy=true;select.disabled=true;const epoch=customerDataEpoch,previous=statusFor(i);
  select.parentElement.querySelector('.cvh-status-error')?.remove();
  try{
-  const shared=await window.CVEHARBOR_SHARED?.statusContext(i.asset_id,i.id);
+  const preview=await window.CVEHARBOR_SHARED?.findingContext?.(i.asset_id,i.id);
+  const shared=preview?preview.record:await window.CVEHARBOR_SHARED?.statusContext(i.asset_id,i.id);
   if(epoch!==customerDataEpoch)return;
+  if(preview?.manual_mail?.recipients.length&&!preview.mail?.recipients.length){findingStatusDrafts.delete(statusKey(i));select.value=previous;await window.CVEHARBOR_SHARED.finding(i.asset_id,i.id,null,{status});return;}
   const save=async reason=>{
    if(epoch!==customerDataEpoch)throw Error('Your session changed. Reload and sign in again.');
    const r=await fetch('https://api.cveharbor.com/v1/finding-statuses/'+encodeURIComponent(i.asset_id)+'/'+encodeURIComponent(i.id),{
@@ -309,7 +311,7 @@ async function saveFindingStatus(i,status,select){
    if(!r.ok)throw Error((await r.json().catch(()=>({}))).error||'Unable to save status. Please try again.');
    if(epoch!==customerDataEpoch)throw Error('Your session changed. Reload and sign in again.');
   };
-  const saved=shared&&shared.fix_status!==status?await confirmFindingStatus(i,shared.fix_status,status,save):(await save(''),true);
+  const saved=shared&&shared.fix_status!==status?await confirmFindingStatus(i,shared.fix_status,status,save,preview?.mail):(await save(''),true);
   if(epoch!==customerDataEpoch)return;
   if(!saved){findingStatusDrafts.delete(statusKey(i));select.value=previous;redraw();return;}
   findingStatuses.set(statusKey(i),status);findingStatusDrafts.delete(statusKey(i));window.CVEHARBOR_SHARED?.changed();redraw();

@@ -1,9 +1,10 @@
+import {statusRecipients,statusMailReady} from './status-update-mail.js';
 import {WorkflowError,requireWorkflow,workflowWriteStatements,runWorkflowWrite} from './remediation-workflow.js';
 import {recordScope,scopeSQL,linkedReady,workStatus,findingStatus} from './remediation-identity.js';
 import {acknowledgementStatus} from './assignment-acknowledgement.js';
 export async function attachmentReady(env){try{await env.DB.prepare('SELECT id FROM remediation_link_audit LIMIT 1').first();await env.DB.prepare('SELECT record_id FROM remediation_retired_records LIMIT 1').first();return true;}catch{return false;}}
 const fields='r.cve_id AS id,r.status,r.owner,r.due,r.notes,r.updated_at AS updated';
-const emptyGuard=`owner='Unassigned' AND due='' AND NOT EXISTS(SELECT 1 FROM remediation_assignments a WHERE a.user_id=remediations.user_id AND a.cve_id=remediations.cve_id) AND NOT EXISTS(SELECT 1 FROM remediation_assignment_requests a WHERE a.user_id=remediations.user_id AND a.cve_id=remediations.cve_id) AND NOT EXISTS(SELECT 1 FROM remediation_status_changes a WHERE a.user_id=remediations.user_id AND a.cve_id=remediations.cve_id) AND NOT EXISTS(SELECT 1 FROM remediation_owner_comments a WHERE a.user_id=remediations.user_id AND a.record_id=remediations.cve_id) AND NOT EXISTS(SELECT 1 FROM remediation_record_metadata a WHERE a.user_id=remediations.user_id AND a.cve_id=remediations.cve_id)`;
+const emptyGuard=`owner='Unassigned' AND due='' AND NOT EXISTS(SELECT 1 FROM remediation_assignments a WHERE a.user_id=remediations.user_id AND a.cve_id=remediations.cve_id) AND NOT EXISTS(SELECT 1 FROM remediation_assignment_requests a WHERE a.user_id=remediations.user_id AND a.cve_id=remediations.cve_id) AND NOT EXISTS(SELECT 1 FROM remediation_record_metadata a WHERE a.user_id=remediations.user_id AND a.cve_id=remediations.cve_id)`;
 export async function findingAssignments(env,user){
  if(!await linkedReady(env))return {ready:false,findings:[],standalone:[]};
  const records=await env.DB.prepare('SELECT '+fields+' FROM remediations r WHERE r.user_id=?').bind(user.id).all();
@@ -21,7 +22,7 @@ export async function findingLinkPreview(env,user,assetId,cve){
  const source=await env.DB.prepare('SELECT '+fields+' FROM remediations r WHERE r.user_id=? AND r.cve_id=? AND NOT EXISTS(SELECT 1 FROM remediation_finding_links l WHERE l.user_id=r.user_id AND l.record_id=r.cve_id)').bind(user.id,cve).first();
  const finding=await env.DB.prepare('SELECT status,notes,updated_at FROM customer_finding_statuses WHERE user_id=? AND asset_id=? AND cve_id=?').bind(user.id,assetId,cve).first();
  const empty=record?!!await env.DB.prepare('SELECT cve_id FROM remediations WHERE user_id=? AND cve_id=? AND '+emptyGuard).bind(user.id,record.id).first():true;
- return {asset,asset_id:assetId,cve_id:cve,record:record?{...record,fix_status:findingStatus(record.status)}:null,manual:source?{...source,fix_status:findingStatus(source.status)}:null,finding,can_link:!!source&&empty&&await attachmentReady(env),blocked_reason:source&&!empty?'This asset record already has work or assignment history. It cannot be automatically combined with the standalone record.':''};
+ return {mail:record?await statusRecipients(env,user,record.id):{available:await statusMailReady(env),recipients:[]},manual_mail:source?await statusRecipients(env,user,source.id):null,asset,asset_id:assetId,cve_id:cve,record:record?{...record,fix_status:findingStatus(record.status)}:null,manual:source?{...source,fix_status:findingStatus(source.status)}:null,finding,can_link:!!source&&empty&&await attachmentReady(env),blocked_reason:source&&!empty?'This asset record has its own owner, due date, severity or assignment. Review both records before combining them.':''};
 }
 export async function attachExisting(env,user,assetId,cve,data){
  await requireWorkflow(env);if(!await attachmentReady(env))throw new WorkflowError('Linking is temporarily unavailable.',503);
@@ -31,16 +32,24 @@ export async function attachExisting(env,user,assetId,cve,data){
  if(!p.manual||!p.can_link)throw new WorkflowError(p.blocked_reason||'The standalone record is no longer available to link. Refresh the finding.',409);
  if(data.expected_source!==p.manual.updated||data.expected_target!==(p.record?.updated||'')||data.expected_finding!==JSON.stringify(p.finding))throw new WorkflowError('These records changed. Refresh and review the link again.',409);
  const status=workStatus(data.status);if(!['Open','Investigating','Remediated','Not Applicable','Accepted Risk'].includes(status))throw new WorkflowError('Choose a valid finding status.');
- const reason='Linked existing standalone assignment to '+p.asset.customer_name+' / '+p.asset.environment_name+' / '+p.asset.asset_name+'. Selected finding status: '+findingStatus(status)+'.';
+ const suppliedReason=typeof data.status_change_reason==='string'?data.status_change_reason.trim():'';if(suppliedReason.length>700)throw new WorkflowError('The status change reason must be 700 characters or fewer.');
+ const reason=(suppliedReason?suppliedReason+' ':'')+'Linked existing assignment to '+p.asset.customer_name+' / '+p.asset.environment_name+' / '+p.asset.asset_name+'. Selected finding status: '+findingStatus(status)+'.';
+ const history=p.record?{status_changes:(await env.DB.prepare('SELECT id FROM remediation_status_changes WHERE user_id=? AND cve_id=?').bind(user.id,p.record.id).all()).results.map(x=>x.id),comments:(await env.DB.prepare('SELECT id FROM remediation_owner_comments WHERE user_id=? AND record_id=?').bind(user.id,p.record.id).all()).results.map(x=>x.id)}:null;
  const item={...p.manual,status},time=new Date().toISOString();const statements=await workflowWriteStatements(env,user,item,{expected_updated:p.manual.updated,status_change_reason:reason.slice(0,1000)},time);
- statements.push(env.DB.prepare('INSERT INTO remediation_link_audit(user_id,record_id,asset_id,cve_id,retired_record_id,previous_status,selected_status,snapshot_json,linked_by,linked_at) VALUES(?,?,?,?,?,?,?,?,?,?)').bind(user.id,cve,assetId,cve,p.record?.id||'',p.manual.status,status,JSON.stringify({retired:p.record,finding:p.finding,asset:p.asset}),user.email,time));
+ statements.push(env.DB.prepare('INSERT INTO remediation_link_audit(user_id,record_id,asset_id,cve_id,retired_record_id,previous_status,selected_status,snapshot_json,linked_by,linked_at) VALUES(?,?,?,?,?,?,?,?,?,?)').bind(user.id,cve,assetId,cve,p.record?.id||'',p.manual.status,status,JSON.stringify({retired:p.record,finding:p.finding,asset:p.asset,retained_history:history}),user.email,time));
  // Re-check target emptiness and version inside the same transaction. A failed delete leaves
  // its unique asset link in place, causing the subsequent link insert to roll back everything.
  if(p.record){
+  // Move existing audit rows without reinserting them: IDs, authors and timestamps remain intact and no historical emails are replayed.
+  const guarded='EXISTS(SELECT 1 FROM remediations WHERE user_id=? AND cve_id=? AND updated_at=? AND '+emptyGuard+')';
+  statements.push(env.DB.prepare('UPDATE remediation_status_changes SET cve_id=? WHERE user_id=? AND cve_id=? AND '+guarded).bind(cve,user.id,p.record.id,user.id,p.record.id,p.record.updated));
+  statements.push(env.DB.prepare('UPDATE remediation_owner_comments SET record_id=? WHERE user_id=? AND record_id=? AND '+guarded).bind(cve,user.id,p.record.id,user.id,p.record.id,p.record.updated));
   statements.push(env.DB.prepare('INSERT INTO remediation_retired_records(user_id,record_id,canonical_id) SELECT user_id,cve_id,? FROM remediations WHERE user_id=? AND cve_id=? AND updated_at=? AND '+emptyGuard).bind(cve,user.id,p.record.id,p.record.updated));
   statements.push(env.DB.prepare('DELETE FROM remediations WHERE user_id=? AND cve_id=? AND updated_at=? AND '+emptyGuard).bind(user.id,p.record.id,p.record.updated));
  }
  statements.push(env.DB.prepare('INSERT INTO remediation_finding_links(user_id,record_id,asset_id,cve_id) VALUES(?,?,?,?)').bind(user.id,cve,assetId,cve));
+ const priorFinding=workStatus(p.record?.status||p.finding?.status||p.manual.status);
+ if(p.manual.status===status&&priorFinding!==status)statements.push(env.DB.prepare('INSERT INTO remediation_status_changes(user_id,cve_id,previous_status,new_status,reason,changed_by,changed_at) VALUES(?,?,?,?,?,?,?)').bind(user.id,cve,priorFinding,status,reason.slice(0,1000),user.email,time));
  // The projection trigger runs after the new link exists, including unchanged status values.
  statements.push(env.DB.prepare('UPDATE remediations SET status=status WHERE user_id=? AND cve_id=?').bind(user.id,cve));
 
