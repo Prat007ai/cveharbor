@@ -1,3 +1,5 @@
+> **Historical staging procedure.** The integrated permanent-staging implementation supersedes these commands and schema counts. Use [the permanent staging activation runbook](reviews/permanent-staging-activation.md). Earlier operation names, hashes and approvals do not authorize the new migration or deployment. This document remains as historical evidence.
+
 # Task 2C: Protected provisioning preparation and execution instructions
 
 **Prepared for review; resource execution is not approved yet.** The owner approved workflow preparation and reports that `cloudflare-cvie-staging` requires reviewer `Prat007ai`, disables administrator bypass, and restricts deployments to `codex/cvie-core-phase012`. Those GitHub settings are owner-confirmed, not independently inspected through an administration API. This update does not alter them.
@@ -68,3 +70,4 @@ Local validation for this preparation:
 The final SHA and initial GitHub preparation-run outcome will be supplied after committing/pushing the reviewed implementation. No provisioning rerun or dispatch will be started during preparation. Remote write capability, actual settings response shapes, Access-to-origin authentication and the protected provisioning review/rerun lifecycle remain **not exercised** until approved execution. Unexpected API metadata fails closed and may require a reviewed follow-up; local mocks are not remote validation.
 
 Migrations 0028/0029, fixture imports, onboarding/performance tests, rollback drills, scheduled processing, email delivery and production rollout remain outside this first execution. An empty database and undeployed Workers are the expected state until their separate approved steps succeed.
+

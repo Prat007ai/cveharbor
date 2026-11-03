@@ -21,7 +21,7 @@ root=Path(__file__).resolve().parents[1]
 base="https://cveharbor.com"
 routes=["/", "/intelligence/", "/vulnerabilities/","/threats/","/account/","/workspace/","/customer-reports/","/customer-dashboard/","/environments/","/website-monitor/","/lifecycle/","/remediation/"]
 required={
- "/remediation/":["remediationFormTitle","remediationOwnerError","remediationToolsTitle","remediationRecordsTitle","remediationOpen","remediationHistoryDialog","Acknowledgement","Owner *","remediation.css?v=tracker-fluid-2","operations.js?v=tracker-fluid-2"],
+ "/remediation/":["remediationFormTitle","remediationOwnerError","remediationToolsTitle","remediationRecordsTitle","remediationOpen","remediationHistoryDialog","Acknowledgement","Owner *","remediation.css?v=integrity-phase1-1","operations.js?v=integrity-phase1-1"],
  "/lifecycle/":["lifecycleMonitorTitle","productMonitorActivation","productMonitorHistory","lifecycleProductSearch","lifecycleAddUnlisted","lifecycle-monitor.css?v=product-directory-1","product-monitoring.js?v=product-monitor-2"],
  "/":["homepageFeatures", "marketing-story", "asset-onboarding", "findings-table", "homepage.css?v=brochure-216"],
  "/intelligence/":["overviewTitle", "techBars", "chartInsights", "feedStatus"],
@@ -91,7 +91,7 @@ for attempt in range(6):
             expected=(root / "public" / route.strip("/") / "index.html").read_text(encoding="utf-8")
             for marker in required[route]:
                 if marker not in html: raise RuntimeError(f"{route} missing {marker}")
-            assets=("styles.css","homepage.css","app.js","advisory-details.js","cvie.js","cvie.css","inventory-matching.js","command-center.js","customer-security.js","inventory.js","website-monitor-page.js")
+            assets=("shared-remediation.js","shared-remediation.css","styles.css","homepage.css","app.js","advisory-details.js","cvie.js","cvie.css","inventory-matching.js","command-center.js","customer-security.js","inventory.js","website-monitor-page.js")
             if route=="/lifecycle/":assets+=("lifecycle-products.js","lifecycle-directory-search.js","lifecycle-monitor.js","product-monitoring.js","lifecycle-monitor.css","assets/lifecycle-orbit.svg")
             if route=="/remediation/":assets+=("operations.js","remediation.css")
             if route=="/workspace/":assets+=("workspace-dashboard.js","workspace-dashboard.css")
@@ -106,21 +106,26 @@ for attempt in range(6):
                 local=(root/"public"/asset).read_text(encoding="utf-8")
                 if hashlib.sha256(remote.encode()).digest()!=hashlib.sha256(local.encode()).digest():
                     raise RuntimeError(f"{route} serves outdated {asset} content")
-        for asset in ("assets/workspace-harbor.svg","workspace-intelligence.json"):
+        # Application code remains byte-for-byte verified. Independently published
+        # intelligence is verified at one immutable version, not against checkout data.
+        request=Request(base+"/feed-health.json",headers={"Cache-Control":"no-cache"})
+        with urlopen(request,timeout=30) as response:
+            feed_version=response.headers.get("X-CVEHarbor-Feed-Version")
+        dynamic=("workspace-intelligence.json","threat-data.js",*attack_export_files)
+        if feed_version:
+            if not re.fullmatch(r"[a-f0-9]{64}",feed_version):raise RuntimeError("Invalid feed version")
+            for asset in (*dynamic,"data.js","malware-data.js","lifecycle.js","patch-notes.js","feed-health.json"):
+                request=Request(base+"/"+asset+"?feed_version="+feed_version,headers={"Cache-Control":"no-cache"})
+                with urlopen(request,timeout=30) as response:
+                    if response.status!=200 or response.headers.get("X-CVEHarbor-Feed-Version")!=feed_version:
+                        raise RuntimeError("Inconsistent intelligence snapshot: "+asset)
+                    if not response.read():raise RuntimeError("Empty intelligence response: "+asset)
+            dynamic=()
+        for asset in ("assets/workspace-harbor.svg",*dynamic):
             local=(root/"public"/asset).read_bytes()
             fingerprint=hashlib.sha256(local).hexdigest()
             if hashlib.sha256(fetch_bytes("/"+asset+"?release="+fingerprint[:12])).hexdigest()!=fingerprint:
-                raise RuntimeError("Published workspace asset differs from this deployment: "+asset)
-        local_threats=(root/"public"/"threat-data.js").read_bytes()
-        fingerprint=hashlib.sha256(local_threats).hexdigest()
-        remote_threats=fetch_bytes("/threat-data.js?release="+fingerprint[:12])
-        if hashlib.sha256(remote_threats).hexdigest()!=fingerprint:
-            raise RuntimeError("Published threat indicators differ from this deployment's collected snapshot")
-        for name in attack_export_files:
-            local=(root/"public"/name).read_bytes()
-            fingerprint=hashlib.sha256(local).hexdigest()
-            if hashlib.sha256(fetch_bytes("/"+name+"?release="+fingerprint[:12])).hexdigest()!=fingerprint:
-                raise RuntimeError("Published current attack export differs from this deployment: "+name)
+                raise RuntimeError("Published asset differs from deployment: "+asset)
         for name in ("website-monitor-demo.png", "platform-explorer.png"):
             remote = fetch_bytes("/assets/homepage/" + name)
             local = (root / "assets" / "homepage" / name).read_bytes()

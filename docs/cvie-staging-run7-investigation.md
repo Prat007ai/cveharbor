@@ -1,3 +1,5 @@
+> **Historical staging procedure.** The integrated permanent-staging implementation supersedes these commands and schema counts. Use [the permanent staging activation runbook](reviews/permanent-staging-activation.md). Earlier operation names, hashes and approvals do not authorize the new migration or deployment. This document remains as historical evidence.
+
 # Staging run 7, attempt 3: investigation in progress
 
 Run: https://github.com/Prat007ai/cveharbor/actions/runs/41567480016/attempts/3
@@ -102,3 +104,4 @@ The automatic diagnostic architecture and PR #252 are on hold. Use the existing 
 Credential-free Wrangler dry runs are now part of the existing preparation job. They use synthetic configuration, forward no Cloudflare/application token, always include `--dry-run`, and write only sanitized operation/category results. This exercises actual packaging before any separately approved upload. The local runner has no cached Wrangler/esbuild packages, so real packaging validation is performed by the existing GitHub preparation job; mocked isolation and safety tests run locally.
 
 Root cause and current inventory remain unconfirmed until run #8 completes. Do not retry provisioning, delete/recreate resources, migrate or seed data in the meantime. After both Workers are separately approved, deployed and verified, the next controlled step is a reviewed staging-only migration/synthetic CVIE test plan. No migration or fixture execution is authorized by preparation.
+

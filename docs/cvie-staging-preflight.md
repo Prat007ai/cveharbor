@@ -1,3 +1,5 @@
+> **Historical staging procedure.** The integrated permanent-staging implementation supersedes these commands and schema counts. Use [the permanent staging activation runbook](reviews/permanent-staging-activation.md). Earlier operation names, hashes and approvals do not authorize the new migration or deployment. This document remains as historical evidence.
+
 # Task 2C: Read-only staging preflight results
 
 **Outcome: ready to request resource-creation approval. Automated account/Access checks passed, and the account owner has now manually verified all five token permissions and staging-only scope. No Cloudflare resources were created or deployed.**
@@ -83,3 +85,4 @@ The [final resource creation plan](cvie-staging-resource-creation-plan.md) speci
 ## Protected workflow preparation update
 
 The owner has approved the creation plan and confirmed required reviewer `Prat007ai`, disabled administrator bypass and the exact branch restriction in the GitHub environment. These protections are recorded as owner-confirmed. The [protected workflow implementation](cvie-staging-provisioning.md) is prepared and locally validated. **Actual execution still requires separate approval of the final implementation SHA and operation.** No fresh Cloudflare check or mutation was performed during this preparation; remote evidence above remains historical.
+

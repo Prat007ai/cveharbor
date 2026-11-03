@@ -51,7 +51,7 @@ def build():
                 text = re.sub(r'https://(?:api\.|confirm\.|www\.)?cveharbor\.com', ORIGIN, text)
                 if target.suffix == '.html':
                     text = text.replace('<head>', '<head><meta name="robots" content="noindex,nofollow">', 1)
-                    text = re.sub(r'(<body\b[^>]*>)', r'\1<div role="status" style="padding:8px;background:#573b00;color:white">CVEHarbor STAGING — synthetic data; email and scheduled processing disabled</div>', text, count=1)
+                    text = re.sub(r'(<body\b[^>]*>)', r'\1<div role="status" style="padding:8px;background:#573b00;color:white">CVEHarbor STAGING — synthetic data; captured email only; native schedules disabled</div>', text, count=1)
                 target.write_text(text)
         if OUT.exists():
             shutil.rmtree(OUT)
@@ -64,3 +64,4 @@ def build():
 
 if __name__ == '__main__':
     build()
+

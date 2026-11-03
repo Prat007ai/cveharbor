@@ -1,14 +1,6 @@
 name: Verify live CVEHarbor disclosure trend
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - index.html
-      - disclosure-trend.js
-      - styles.css
-      - scripts/build_site.py
-      - .github/workflows/verify-disclosure-trend.yml
   workflow_dispatch:
 
 permissions:
@@ -16,13 +8,17 @@ permissions:
 
 jobs:
   live-disclosure-trend:
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    environment: cloudflare-production-audit
     name: Verify published chart and real advisory feed
     runs-on: ubuntu-latest
     env:
       SITE_GATE_USERNAME: cveharbor
-      SITE_GATE_PASSWORD: ${{ secrets.SITE_GATE_PASSWORD }}
+      SITE_GATE_PASSWORD: ${{ secrets.CVEHARBOR_SITE_GATE_PASSWORD }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
       - name: Wait for frontend and check live disclosure data
         run: |
           python - <<'PY'

@@ -1,3 +1,5 @@
+> **Historical staging procedure.** The integrated permanent-staging implementation supersedes these commands and schema counts. Use [the permanent staging activation runbook](reviews/permanent-staging-activation.md). Earlier operation names, hashes and approvals do not authorize the new migration or deployment. This document remains as historical evidence.
+
 # Task 2C staging migration executor: execution approval record
 
 Implementation is prepared in PR #243. **Remote execution is not approved and has not been initiated.** Use the final implementation commit returned with this update; approving the earlier frontend deployment does not approve SQL. PR #243 stays draft and unmerged; PR #252 remains on hold.
@@ -64,3 +66,4 @@ Reuse existing account/Access values and secrets. Codex initiates only the appro
 Schema acceptance comes first. Separately review deterministic synthetic fixtures, proper application sessions/MFA, tenant isolation, product onboarding, immediate CVE retrieval, positive/negative version matching and measured D1 reads/writes/storage/latency under the bounded smoke plan. No authentication bypass, unbounded discovery or fixture import is added here.
 
 **Feature-enabled validation is required**, not optional: after baseline smoke, prepare an exact staging-only API configuration/deployment approval for `CVIE_REGISTRY_ENABLED=true` and `CVIE_FAST_EVIDENCE_ENABLED=true`, retaining all delivery/provider/schedule guards. Review any additional prerequisites, then run the same synthetic cases with the flags enabled and compare correctness and D1 cost/latency to baseline. A flag-disabled smoke does not complete validation of the new CVIE serving path. Feature activation, fixture writes and the later larger performance matrix are excluded from this migration operation.
+

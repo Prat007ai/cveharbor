@@ -8,6 +8,7 @@ const cve='CVE-2026-12345';
 class DB {
  constructor(ready=true,owned=true){this.ready=ready;this.owned=owned;this.items=new Map()}
  prepare(sql){
+  if(sql.includes('remediation_finding_write_context'))throw Error('integrity migration not applied to this legacy fixture');
   if(/LIMIT 1$/.test(sql)&&!this.ready)return {first:async()=>{throw Error('no table')}};
   if(/LIMIT 1$/.test(sql))return {first:async()=>null};
   const db=this;

@@ -1,3 +1,5 @@
+> **Phase 1 deployment notice:** Use [the consolidated administrator checklist](reviews/phase1-administrator-checklist.md) for current release, credential, staging and recovery steps. Deployment/migration/rollback recipes below are feature-history references, not instructions to execute during Phase 1. Feature behavior descriptions remain applicable unless superseded by the current implementation.
+
 # Task 3: product monitoring implementation and approval boundaries
 
 Status: development implementation; runtime activation, proposed schema, provider configuration and customer delivery are not approved. The user's final instruction authorizes design/code publication, superseding the earlier code-deployment restriction. It does not authorize applying this migration, provisioning resources, replacing secrets, changing DNS/provider configuration or enabling customer campaigns. Two test recipients were explicitly approved: prat.mahen@gmail.com and PMahendran@whitecapcanada.com. Never paste credentials into chat.

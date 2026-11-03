@@ -20,23 +20,17 @@ const validNumber = n => Number.isSafeInteger(n) && n >= 0;
 export const LIMITS = Object.freeze({ rows_read: 1000000, rows_written: 100000, storage_bytes: 100000000 });
 
 export function loadMigrationPlan(env, repository = path.resolve(root, '..')) {
-  const evidence = path.join(repository, 'docs/cvie-evidence');
-  const approvedBytes = fs.readFileSync(path.join(evidence, 'staging-schema-plan-manifest.json'));
-  const approved = JSON.parse(approvedBytes);
-  const expected = JSON.parse(fs.readFileSync(path.join(evidence, 'staging-schema-executor-approval.json')));
-  const payload = fs.readFileSync(path.join(repository, 'staging/.build/schema/execution-plan.json'));
-  const plan = JSON.parse(payload);
-  if (hash(payload) !== expected.execution_plan_sha256 || env.CF_STAGING_SCHEMA_PLAN_SHA256 !== expected.execution_plan_sha256 ||
-      plan.format !== 1 || plan.approved_manifest_sha256 !== hash(approvedBytes) || plan.files.length !== approved.files.length ||
-      expected.database_id !== STAGING_DATABASE_ID || expected.account !== TARGET.account) throw failure('migration.plan', 'checksum');
-  for (let i = 0; i < approved.files.length; i++) {
-    const entry = approved.files[i], file = plan.files[i];
-    if (!/^account-backend\/(?:[a-z0-9-]+\.sql|migrations\/\d{4}_[a-z0-9_]+\.sql)$/.test(entry.file) ||
-        file.file !== entry.file || file.sha256 !== entry.sha256 || hash(fs.readFileSync(path.join(repository, entry.file))) !== entry.sha256)
-      throw failure('migration.sql', 'checksum', { file_index: i });
+  const manifestBytes=fs.readFileSync(path.join(repository,'staging/migrations.v1.json'));
+  const approved=JSON.parse(manifestBytes);
+  const expected=JSON.parse(fs.readFileSync(path.join(repository,'staging/bootstrap-approval.v1.json')));
+  const payload=fs.readFileSync(path.join(repository,'staging/.build/schema/execution-plan.json'));
+  const plan=JSON.parse(payload);
+  if(hash(payload)!==expected.execution_plan_sha256||env.CF_STAGING_SCHEMA_PLAN_SHA256!==expected.execution_plan_sha256||plan.format!==1||plan.approved_manifest_sha256!==hash(manifestBytes)||plan.files.length!==approved.entries.length+1||expected.database_id!==STAGING_DATABASE_ID||expected.account!==TARGET.account)throw failure('migration.plan','checksum');
+  for(let i=0;i<approved.entries.length;i++){
+    const e=approved.entries[i],f=plan.files[i];
+    if(f.file!==e.path||f.sha256!==e.sha256||hash(fs.readFileSync(path.join(repository,e.path)))!==e.sha256)throw failure('migration.sql','checksum',{file_index:i});
   }
-  if (hash(fs.readFileSync(path.join(repository, 'staging/.build/schema/bootstrap-through-0027.sql'))) !== approved.bootstrap_sha256)
-    throw failure('migration.bootstrap', 'checksum');
+  const guard=plan.files.at(-1);if(guard.file!=='staging/.build/schema/recovery-guards.sql'||guard.sha256!==hash(fs.readFileSync(path.join(repository,guard.file))))throw failure('migration.guards','checksum');
   return plan;
 }
 
@@ -60,7 +54,7 @@ export function guardSQL(plan, step, observedRows) {
 }
 
 export async function migrate(env, { plan, transport = fetch, inventory = diagnose, probe = probeAccess, record = () => {} } = {}) {
-  const report = { status: 'stopped', action: 'migrate-schema', account: TARGET.account, database_id: STAGING_DATABASE_ID,
+  const report = { status: 'stopped', action: 'migrate', account: TARGET.account, database_id: STAGING_DATABASE_ID,
     source_sha: env.GITHUB_SHA, plan_sha256: env.CF_STAGING_SCHEMA_PLAN_SHA256, started_at: new Date().toISOString(),
     requests: [], batches: [], storage: [], usage: { migration: { rows_read: 0, rows_written: 0 }, verification: { rows_read: 0, rows_written: 0 }, complete: true },
     limits: LIMITS, automatic_retries: 0, production_requests: 0, worker_or_access_mutations: 0 };
@@ -160,7 +154,7 @@ export async function migrate(env, { plan, transport = fetch, inventory = diagno
     return { actual, rows };
   }
   try {
-    if (env.STAGING_CHANGE_APPROVED !== 'PR243-STAGING-ONLY' || env.CF_STAGING_PROVISION_ACTION !== 'migrate-schema' ||
+    if (env.STAGING_CHANGE_APPROVED !== 'PR243-STAGING-ONLY' || env.CF_STAGING_PROVISION_ACTION !== 'migrate' ||
         env.CF_STAGING_ACCOUNT_ID !== TARGET.account || env.CF_STAGING_D1_DATABASE_ID !== STAGING_DATABASE_ID || !env.CF_STAGING_API_TOKEN ||
         !/^(0|[1-9]\d*)$/.test(env.CF_STAGING_SCHEMA_RESUME_STEP || '')) throw failure('migration.authorize', 'configuration');
     plan ??= loadMigrationPlan(env);
@@ -227,3 +221,6 @@ export async function migrate(env, { plan, transport = fetch, inventory = diagno
   }
   return report;
 }
+
+
+export {migrationState,verifySchema,applyManifest} from './manifest-state.mjs';

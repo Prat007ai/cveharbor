@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readAssetGate, routingEvidence } from '../scripts/asset-gate.mjs';
 import { TARGET } from '../target.mjs';
-const id = '11111111-2222-4333-8444-555555555555';
+const id = 'fac61562-fc31-426d-8032-550aba63b7f6';
 const settings = { bindings: [{ type: 'assets', name: 'ASSETS' }] }; // real /settings contract has no assets.config
 const get = (value, patch = {}) => async route => {
   if (route === `/workers/scripts/${TARGET.site}/deployments`) return { deployments: [{ id, versions: [{ version_id: id, percentage: 100 }] }] };
@@ -34,3 +34,4 @@ test('only an identified single 100% serving version is accepted; provider error
   const error = await readAssetGate(settings, async () => { throw Error('secret-token raw provider body'); });
   assert.equal(error.assets_gate_status, 'unverified'); assert.doesNotMatch(JSON.stringify(error), /secret-token|provider body/);
 });
+

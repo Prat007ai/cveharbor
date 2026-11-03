@@ -6,7 +6,7 @@ import { createAccessVerifier } from '../access.mjs';
 import { createFrontend } from '../frontend.mjs';
 import { createStagingAPI } from '../api-wrapper.mjs';
 import { fetch as blockedFetch } from '../blocked-fetch.mjs';
-const env = { CF_STAGING_ACCOUNT_ID: TARGET.account, CF_STAGING_D1_DATABASE_ID: '11111111-2222-4333-8444-555555555555', CF_STAGING_ACCESS_ISSUER: 'https://synthetic-staging.cloudflareaccess.com', CF_STAGING_ACCESS_AUD: 'a'.repeat(64) };
+const env = { CF_STAGING_ACCOUNT_ID: TARGET.account, CF_STAGING_D1_DATABASE_ID: 'fac61562-fc31-426d-8032-550aba63b7f6', CF_STAGING_ACCESS_ISSUER: 'https://synthetic-staging.cloudflareaccess.com', CF_STAGING_ACCESS_AUD: 'a'.repeat(64) };
 
 test('configuration requires the approved account, a new D1 UUID and Access values', () => {
   configs(env);
@@ -86,3 +86,4 @@ test('API wrapper removes credentials, forces all deliveries off and never execu
   assert.equal((await wrapped.fetch(new Request('https://api.cveharbor.com/v1/health'), { STAGING_MODE: 'true' }, {})).status, 403);
   await assert.rejects(blockedFetch('https://api.smtp2go.com/v3/email/send'), /disabled/);
 });
+

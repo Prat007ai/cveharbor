@@ -3,9 +3,11 @@ import hashlib
 import json
 import sqlite3
 from pathlib import Path
-from schema import ROOT, OUT, prepare
+import subprocess
+ROOT=Path(__file__).resolve().parents[2]
+OUT=ROOT/'staging/.build/schema'
 
-SCHEMA_SQL = "SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE name NOT GLOB 'sqlite_*' AND name <> '_cf_KV' ORDER BY type,name"
+SCHEMA_SQL = "SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE name NOT GLOB 'sqlite_*' AND name NOT GLOB '_cf_*' AND name NOT GLOB 'd1_*' ORDER BY type,name"
 
 def encoded(value):
     return json.dumps(value, ensure_ascii=False, separators=(',', ':'))
@@ -34,22 +36,23 @@ def row_sql(name, columns):
         # The only time-dependent built-in seed. Preserve its type/range invariant.
         if name == 'cvie_maintenance' and col == 'completed_at':
             value = "CASE WHEN typeof(completed_at)='integer' AND completed_at>0 AND completed_at<=CAST(strftime('%s','now') AS INTEGER)*1000+300000 THEN '<migration-time>' ELSE 'INVALID' END"
+        if (name == 'staging_schema_history' and col == 'applied_at') or (name == 'operations_control' and col == 'changed_at'):
+            value = "CASE WHEN typeof(" + identifier(col) + ")='text' AND datetime(" + identifier(col) + ") IS NOT NULL AND datetime(" + identifier(col) + ")<=datetime('now','+5 minutes') THEN '<migration-time>' ELSE 'INVALID' END"
         values.append('quote(' + value + ')')
     return 'SELECT ' + "||'|'||".join(values) + ' AS value FROM ' + identifier(name) + ' ORDER BY value COLLATE BINARY'
 
 def build():
-    prepare()
-    approval_path = ROOT / 'docs/cvie-evidence/staging-schema-plan-manifest.json'
-    approved_bytes = approval_path.read_bytes()
-    approved = json.loads(approved_bytes)
-    if approved['expected_application_tables'] != 89:
-        raise ValueError('Unreviewed table count')
-    manifest = json.loads((OUT / 'manifest.json').read_text())
-    if manifest != approved['files'] or digest((OUT / 'bootstrap-through-0027.sql').read_text()) != approved['bootstrap_sha256']:
-        raise ValueError('Approved SQL checksum mismatch')
+    subprocess.run(['node','staging/scripts/schema.mjs'],cwd=ROOT,check=True,capture_output=True)
+    approved_bytes=(ROOT/'staging/migrations.v1.json').read_bytes()
+    approved=json.loads(approved_bytes)
+    validated=json.loads((OUT/'validated-plan.json').read_text())
+    manifest=[{'file':e['path'],'sha256':e['sha256'],'phase':'manifest'} for e in approved['entries']]
+    guards=';\n'.join(validated['guards'])+';\n'
+    manifest.append({'file':'staging/.build/schema/recovery-guards.sql','sha256':digest(guards),'phase':'recovery-guards'})
+    (OUT/'recovery-guards.sql').write_text(guards)
     db = sqlite3.connect(':memory:')
     db.execute('PRAGMA foreign_keys=ON')
-    plan = {'format': 1, 'source_commit': approved['source_commit'], 'approved_manifest_sha256': hashlib.sha256(approved_bytes).hexdigest(),
+    plan = {'format': 1, 'manifest_version': approved['version'], 'approved_manifest_sha256': hashlib.sha256(approved_bytes).hexdigest(),
             'schema_sql': SCHEMA_SQL, 'files': [], 'checkpoints': [], 'schemas': {}}
     def checkpoint():
         objects = [list(row) for row in db.execute(SCHEMA_SQL)]
@@ -78,6 +81,8 @@ def build():
         if digest(sql) != entry['sha256']:
             raise ValueError('Input changed')
         batch = list(statements(sql))
+        if entry['phase']=='manifest':
+            batch.append("INSERT INTO staging_schema_history(path,sha256,manifest_version) VALUES('"+entry['file']+"','"+entry['sha256']+"',1);")
         start = len(plan['checkpoints']) - 1
         for statement in batch:
             db.execute(statement)
@@ -85,7 +90,7 @@ def build():
                 raise ValueError('Foreign key violation')
             checkpoint()
         plan['files'].append({**entry, 'start': start, 'end': len(plan['checkpoints']) - 1, 'statements': batch})
-    if db.execute('PRAGMA integrity_check').fetchone()[0] != 'ok' or len(plan['checkpoints'][-1]['counts']) != 89:
+    if db.execute('PRAGMA integrity_check').fetchone()[0] != 'ok' or len(plan['checkpoints'][-1]['counts']) != validated['table_count']-1:
         raise ValueError('Invalid final schema')
     payload = encoded(plan) + '\n'
     (OUT / 'execution-plan.json').write_text(payload)
@@ -96,3 +101,4 @@ def build():
 
 if __name__ == '__main__':
     build()
+

@@ -1,0 +1,143 @@
+{
+  "review_status": "historical_pre_integration_findings_not_current_release_validation",
+  "superseded_by": "phase1-administrator-checklist.md",
+  "original_evidence": {
+    "reviewed_at": "2026-11-03",
+    "phase1_head": "d791cb8e84f85f980926dd1e1acfd0b369c64b46",
+    "security_head": "7dd0e8a8633674065bd0a607240b04e66872090e",
+    "common_ancestor": "1cc762663b1fd176041f37b5512f8e802403b880",
+    "method": "git merge-file -p on local copies using the verified common-ancestor source; strict YAML and security-policy validation of nonconflicting results. No remote merge/rebase or production operation.",
+    "overlapping_files": 12,
+    "text_conflicting_files": 2,
+    "additional_phase1_operational_workflows": 3,
+    "results": [
+      {
+        "path": ".github/workflows/activate-confirmation-domain.yml",
+        "exit": 0,
+        "conflict_hunks": 0,
+        "policy": [
+          "activate-confirmation-domain.yml/activate: credential is outside the environment boundary"
+        ]
+      },
+      {
+        "path": ".github/workflows/activate-customer-score.yml",
+        "exit": 0,
+        "conflict_hunks": 0,
+        "policy": [
+          "activate-customer-score.yml/migrate: credential is outside the environment boundary"
+        ]
+      },
+      {
+        "path": ".github/workflows/activate-finding-tickets.yml",
+        "exit": 0,
+        "conflict_hunks": 0,
+        "policy": [
+          "activate-finding-tickets.yml/migrate: credential is outside the environment boundary"
+        ]
+      },
+      {
+        "path": ".github/workflows/activate-immutable-tickets.yml",
+        "exit": 0,
+        "conflict_hunks": 0,
+        "policy": [
+          "activate-immutable-tickets.yml/migrate: credential is outside the environment boundary"
+        ]
+      },
+      {
+        "path": ".github/workflows/activate-plugin-installation-status.yml",
+        "exit": 0,
+        "conflict_hunks": 0,
+        "policy": [
+          "activate-plugin-installation-status.yml/migrate: credential is outside the environment boundary"
+        ]
+      },
+      {
+        "path": ".github/workflows/activate-plugin-monitor.yml",
+        "exit": 0,
+        "conflict_hunks": 0,
+        "policy": [
+          "activate-plugin-monitor.yml/migrate: credential is outside the environment boundary"
+        ]
+      },
+      {
+        "path": ".github/workflows/activate-plugin-sources.yml",
+        "exit": 0,
+        "conflict_hunks": 0,
+        "policy": [
+          "activate-plugin-sources.yml/migrate: credential is outside the environment boundary"
+        ]
+      },
+      {
+        "path": ".github/workflows/bootstrap.yml",
+        "exit": 0,
+        "conflict_hunks": 0,
+        "policy": []
+      },
+      {
+        "path": ".github/workflows/deploy-account-worker.yml",
+        "exit": 0,
+        "conflict_hunks": 0,
+        "policy": [
+          "deploy-account-worker.yml/deploy: credential is outside the environment boundary"
+        ]
+      },
+      {
+        "path": ".github/workflows/deploy-worker-code.yml",
+        "exit": 0,
+        "conflict_hunks": 0,
+        "policy": [
+          "ValueError: duplicate YAML key: if"
+        ]
+      },
+      {
+        "path": ".github/workflows/verify-assignment-acknowledgement.yml",
+        "exit": 1,
+        "conflict_hunks": 1,
+        "policy": [
+          "unresolved textual conflict"
+        ]
+      },
+      {
+        "path": ".github/workflows/verify-cvie-d1.yml",
+        "exit": 2,
+        "conflict_hunks": 2,
+        "policy": [
+          "unresolved textual conflict"
+        ]
+      },
+      {
+        "path": ".github/workflows/audit-remediation-integrity.yml",
+        "new_in_251": true,
+        "policy": [
+          "audit-remediation-integrity.yml/audit: credential is outside the environment boundary",
+          "audit-remediation-integrity.yml/audit: explicit main/event/release guard required",
+          "audit-remediation-integrity.yml/audit: action must be pinned to a reviewed commit",
+          "audit-remediation-integrity.yml/audit: checkout must not persist token",
+          "audit-remediation-integrity.yml/audit: action must be pinned to a reviewed commit"
+        ]
+      },
+      {
+        "path": ".github/workflows/recovery-write-hold.yml",
+        "new_in_251": true,
+        "policy": [
+          "recovery-write-hold.yml/control: credential is outside the environment boundary",
+          "recovery-write-hold.yml/control: explicit main/event/release guard required",
+          "recovery-write-hold.yml/control: action must be pinned to a reviewed commit",
+          "recovery-write-hold.yml/control: checkout must not persist token",
+          "recovery-write-hold.yml/control: action must be pinned to a reviewed commit"
+        ]
+      },
+      {
+        "path": ".github/workflows/validate-phase1-d1-staging.yml",
+        "new_in_251": true,
+        "policy": [
+          "validate-phase1-d1-staging.yml/staging: explicit main/event/release guard required",
+          "validate-phase1-d1-staging.yml/staging: action must be pinned to a reviewed commit",
+          "validate-phase1-d1-staging.yml/staging: checkout must not persist token",
+          "validate-phase1-d1-staging.yml/staging: action must be pinned to a reviewed commit"
+        ]
+      }
+    ],
+    "limitation": "This is a failed compatibility rehearsal and a resolution checklist, not an integrated release candidate. Both original draft revisions remain intact."
+  }
+}

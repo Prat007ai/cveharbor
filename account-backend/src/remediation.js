@@ -1,3 +1,5 @@
+import {activeRecords,integrityError} from './remediation-integrity.js';
+import {recordKey,publicCve,recordScope,linkedReady,scopeSQL} from './remediation-identity.js';
 import {progressReady} from './assignment-progress-common.js';
 import {workflowReady,requireWorkflow,workflowWriteStatements,runWorkflowWrite,recordMetadata} from './remediation-workflow.js';
 import {normalizeFyi,fyiReady} from './assignment-fyi.js';
@@ -29,10 +31,10 @@ export function normalizeRecord(id,record){
   const owner=String(data.owner||'').trim().slice(0,100);
   const due=String(data.due||'').trim();
   const notes=String(data.notes||'').trim().slice(0,1200);
-  if(!normalizeId(id)||!states.has(status)||due&&!/^\d{4}-\d{2}-\d{2}$/.test(due))
+  if(!recordKey(id)||!states.has(status)||due&&!/^\d{4}-\d{2}-\d{2}$/.test(due))
     throw new RemediationError('Invalid remediation record');
   if(typeof data.owner!=='string'||!owner)throw new RemediationError('Please select an owner.');
-  return {id:normalizeId(id),status,owner,due,notes};
+  return {id:recordKey(id),status,owner,due,notes};
 }
 export async function isMigrated(env){
   try{
@@ -45,31 +47,36 @@ export function assignmentReady(env){
     !!(env.ASSIGNMENT_SMTP2GO_API_KEY||env.SMTP2GO_API_KEY);
 }
 export async function capabilities(env){
-  return reply({storage:'d1',version:2,assignments_available:await isMigrated(env),
+  return reply({storage:'d1',version:2,shared_records_available:await linkedReady(env),assignments_available:await isMigrated(env),
     assignment_email_enabled:assignmentReady(env),reviewer_updates_available:await progressReady(env),workflow_available:await workflowReady(env),fyi_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await fyiReady(env),acknowledgements_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await acknowledgementReady(env)});
 }
 export async function listRemediations(env,user){
   const migrated=await isMigrated(env);
+  const active=await activeRecords(env,'r'),plainActive=await activeRecords(env);
   const sql=migrated
-    ? 'SELECT r.cve_id AS id,r.status,r.owner,r.due,r.notes,r.updated_at AS updated,a.assignee_email AS assigned_to,a.state AS assignment_status,a.last_sent_at AS notified_at FROM remediations r LEFT JOIN remediation_assignments a ON r.user_id=a.user_id AND r.cve_id=a.cve_id WHERE r.user_id=? ORDER BY r.updated_at DESC LIMIT 250'
-    : 'SELECT cve_id AS id,status,owner,due,notes,updated_at AS updated FROM remediations WHERE user_id=? ORDER BY updated_at DESC LIMIT 250';
+    ? 'SELECT r.cve_id AS id,r.status,r.owner,r.due,r.notes,r.updated_at AS updated,a.assignee_email AS assigned_to,a.state AS assignment_status,a.last_sent_at AS notified_at FROM remediations r LEFT JOIN remediation_assignments a ON r.user_id=a.user_id AND r.cve_id=a.cve_id WHERE r.user_id=?'+active+' ORDER BY r.updated_at DESC LIMIT 250'
+    : 'SELECT cve_id AS id,status,owner,due,notes,updated_at AS updated FROM remediations WHERE user_id=?'+plainActive+' ORDER BY updated_at DESC LIMIT 250';
   const rows=await env.DB.prepare(sql).bind(user.id).all();
   let acknowledgements=new Map(),acknowledgementsAvailable=false;
   if(env.ASSIGNMENT_ACK_ENABLED==='true'){try{acknowledgements=await assignmentSummary(env,user);acknowledgementsAvailable=true;}catch{}}
   let details={metadata:new Map(),changes:new Map()},workflowAvailable=await workflowReady(env);
   if(workflowAvailable)details=await recordMetadata(env,user);
   const reviewAvailable=await progressReady(env),reviewCounts=reviewAvailable?await env.DB.prepare('SELECT cve_id,COUNT(*) AS total,MAX(created_at) AS latest FROM remediation_review_activity WHERE user_id=? GROUP BY cve_id').bind(user.id).all():{results:[]};
+  const scopes=await linkedReady(env)?await env.DB.prepare(scopeSQL).bind(user.id).all():{results:[]};
+  const scopeMap=new Map(scopes.results.map(x=>[x.record_id,x]));
   const reviewProgress=new Map((reviewCounts.results||[]).map(r=>[r.cve_id,{total:r.total,latest:r.latest}]));
-  return reply({workflow_available:workflowAvailable,remediations:(rows.results||[]).map(row=>({...row,review_progress:reviewProgress.get(row.id)||null,...(details.metadata.get(row.id)||{}),latest_status_change:details.changes.get(row.id)||null,acknowledgements:acknowledgements.get(row.id)||null})),assignments_available:migrated,acknowledgements_available:acknowledgementsAvailable});
+  return reply({workflow_available:workflowAvailable,remediations:(rows.results||[]).map(row=>({...row,cve_id:publicCve(row.id),scope:scopeMap.get(row.id)||null,review_progress:reviewProgress.get(row.id)||null,...(details.metadata.get(row.id)||{}),latest_status_change:details.changes.get(row.id)||null,acknowledgements:acknowledgements.get(row.id)||null})),assignments_available:migrated,acknowledgements_available:acknowledgementsAvailable});
 }
 async function capacity(env,userId,id){
   const existing=await env.DB.prepare('SELECT cve_id FROM remediations WHERE user_id=? AND cve_id=?').bind(userId,id).first();
   if(existing)return;
-  const count=await env.DB.prepare('SELECT COUNT(*) AS total FROM remediations WHERE user_id=?').bind(userId).first();
+  const count=await env.DB.prepare('SELECT COUNT(*) AS total FROM remediations WHERE user_id=?'+await activeRecords(env)).bind(userId).first();
   if(Number(count?.total||0)>=250)throw new RemediationError('The account has reached its 250 remediation record limit',409);
 }
 export async function upsertRemediation(env,user,id,data){
   const item=normalizeRecord(id,data);
+  if(item.id.includes('~')&&!await recordScope(env,user.id,item.id))throw new RemediationError('Asset-linked record not found.',404);
+  if(await recordScope(env,user.id,item.id)&&typeof data.expected_updated!=='string')throw new RemediationError('Refresh the shared record before saving.',409);
   await capacity(env,user.id,item.id);
   if(env.REMEDIATION_WORKFLOW_ENABLED==='true'){
     await requireWorkflow(env);await runWorkflowWrite(env,await workflowWriteStatements(env,user,item,data,new Date().toISOString()));
@@ -82,21 +89,24 @@ export async function upsertRemediation(env,user,id,data){
   return reply({saved:true,id:item.id,storage:'d1'});
 }
 export async function removeRemediation(env,user,id){
+  if(String(id).includes('~')||await recordScope(env,user.id,id))throw new RemediationError('Use the finding status to resolve asset-linked work. Its history is retained.',409);
   if(!normalizeId(id))throw new RemediationError('Invalid CVE ID');
-  await env.DB.prepare('DELETE FROM remediations WHERE user_id=? AND cve_id=?').bind(user.id,id).run();
+  try{await env.DB.prepare('DELETE FROM remediations WHERE user_id=? AND cve_id=?').bind(user.id,id).run();}catch(error){throw integrityError(error);}
   return reply({removed:true,id});
 }
 // Previous browser-to-cloud import must never delete other D1 records or
 // accidentally erase assignment audit rows.
 export async function importLegacy(env,user,records){
   if(!Array.isArray(records)||records.length>250)throw new RemediationError('Invalid import');
+  if(records.some(row=>!normalizeId(row?.id)))throw new RemediationError('Imports support standalone CVE records only.');
   const items=records.map(row=>normalizeRecord(row?.id,row));
   if(new Set(items.map(item=>item.id)).size!==items.length)
     throw new RemediationError('Duplicate CVE identifiers in import');
-  const existing=await env.DB.prepare('SELECT cve_id FROM remediations WHERE user_id=?').bind(user.id).all();
+  const existing=await env.DB.prepare('SELECT cve_id FROM remediations WHERE user_id=?'+await activeRecords(env)).bind(user.id).all();
   const union=new Set([...(existing.results||[]).map(x=>x.cve_id),...items.map(x=>x.id)]);
   if(union.size>250)throw new RemediationError('Import would exceed the 250 record limit',409);
   if(!items.length)return reply({saved:0,storage:'d1'});
+  if(await linkedReady(env)){const linked=await env.DB.prepare('SELECT record_id FROM remediation_finding_links WHERE user_id=?').bind(user.id).all();if((linked.results||[]).some(x=>items.some(i=>i.id===x.record_id)))throw new RemediationError('Imports cannot overwrite asset-linked records. Open the shared record instead.',409);}
   const now=new Date().toISOString();
   if(env.REMEDIATION_WORKFLOW_ENABLED==='true'){
     await requireWorkflow(env);const statements=[];
@@ -190,7 +200,9 @@ async function quota(env,key,seconds,max){
   return result.meta?.changes===1;
 }
 export async function assignRemediation(env,user,id,raw){
-  const cve=normalizeId(id);
+  const cve=recordKey(id);
+  if(cve?.includes('~')&&!await recordScope(env,user.id,cve))throw new RemediationError('Asset-linked record not found.',404);
+  if(cve?.includes('~')&&env.ASSIGNMENT_ACK_ENABLED!=='true')throw new RemediationError('Shared assignments are temporarily unavailable.',503);
   const recipient=String(raw?.email||'').trim().toLowerCase();
   const reviewerNotes=String(raw?.reviewer_notes||'').trim();
   if(reviewerNotes.length>1000)throw new RemediationError('Reviewer notes must be 1000 characters or fewer');

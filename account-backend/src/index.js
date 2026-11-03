@@ -1,3 +1,8 @@
+import {recoveryProtected} from './recovery-control.js';
+import {releaseReadiness} from './release-readiness.js';
+import {canonicalRecord,integrityError} from './remediation-integrity.js';
+import {scheduleStatusMail} from './status-update-mail.js';
+import {sharedRoute} from './finding-remediation.js';
 import {observeCvie} from './cvie-metrics.js';
 import {reviewerRoute,reviewActivity} from './assignment-progress.js';
 import {ReviewError} from './assignment-progress-common.js';
@@ -49,11 +54,11 @@ function retryResponse(seconds,kind='limit'){
  return response({error:kind==='resend'?'Please wait before requesting another verification code.':'Too many verification requests. Please try again when the limit resets.',retry_after:delay},429,{'Retry-After':String(delay)});
 }
 async function emailCode(env,address,code){const response=await fetch('https://api.smtp2go.com/v3/email/send',{method:'POST',headers:{'Content-Type':'application/json','X-Smtp2go-Api-Key':env.SMTP2GO_API_KEY},body:JSON.stringify({sender:env.EMAIL_FROM,to:[address],subject:'CVEHarbor sign in code',text_body:'Your CVEHarbor code: '+code+'\n\nExpires in 10 minutes. If you did not request this, ignore this email.'})});if(!response.ok)throw Error('Email delivery unavailable');const payload=await response.json();if(!payload.data||payload.data.failed>0||payload.data.succeeded<1)throw Error('Email delivery unsuccessful')}
-export default {async fetch(req,env,ctx){
+const application = {async fetch(req,env,ctx){
  const url=new URL(req.url),origin=req.headers.get('origin');
  // The confirmation hostname exposes only the guest confirmation page, never account APIs.
  if(url.hostname==='confirm.cveharbor.com'){
-  if(url.pathname.startsWith('/assignment/'))return reviewerRoute(req,env);
+  if(url.pathname.startsWith('/assignment/'))return reviewerRoute(req,env,ctx);
   if(url.pathname.startsWith(CONFIRM_PREFIX))return acknowledgementRoute(req,env,ctx);
   return new Response('Open the confirmation link in your assignment email.',{status:404,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'}});
  }
@@ -77,7 +82,7 @@ export default {async fetch(req,env,ctx){
  // Published CVE lookup is public, read-only, and independent of account login or D1.
  if(url.pathname.startsWith('/v1/cve/'))return handlePublicCveLookup(req,ctx);
  if(!env.DB)return response({error:'Account service not configured'},503);
- const path=url.pathname;
+ let path=url.pathname;
  try {
   if(path==='/v1/health'&&req.method==='GET')return response({ready:!!(env.SMTP2GO_API_KEY&&env.EMAIL_FROM),accounts:'configured'});
   if(path==='/v1/auth/request'&&req.method==='POST'){
@@ -189,6 +194,8 @@ export default {async fetch(req,env,ctx){
   const user=await me(req,env);
   if(path==='/v1/me'&&req.method==='GET')return response(user?{authenticated:true,email:user.email}:{authenticated:false},user?200:401);
   if(!user)return response({error:'Sign in required'},401);
+  const recordPath=/^\/v1\/(remediations|remediation-records)\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)(.*)$/.exec(path);
+  if(recordPath){const canonical=await canonicalRecord(env,user.id,recordPath[2]);if(canonical!==recordPath[2]){if(req.method!=='GET')return response({error:'This record was linked to an existing assignment. Open the current shared record before making changes.',canonical_id:canonical},409);path='/v1/'+recordPath[1]+'/'+canonical+recordPath[3];}}
   if(path.startsWith('/v1/workspace/'))return await workspaceRoute(req,env,user);
   if(path==='/v1/auth/totp/status'&&req.method==='GET'){
    const row=env.TOTP_ENCRYPTION_KEY?await env.DB.prepare('SELECT enabled FROM user_totp WHERE user_id=?').bind(user.id).first():null;
@@ -272,7 +279,8 @@ export default {async fetch(req,env,ctx){
   if(path.startsWith('/v1/monitoring'))return await monitoringHandler(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/lifecycle'))return await lifecycleHandler(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/finding-tickets'))return await findingTicketRoute(req,env,user,path,req.method==='POST'?await body(req):{});
-  if(path.startsWith('/v1/finding-statuses'))return await findingStatusRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
+  if(path==='/v1/finding-assignments'||path.startsWith('/v1/finding-remediations/')||path.startsWith('/v1/remediation-records/')){const result=await sharedRoute(req,env,user,path,req.method==='POST'?await body(req):{});if(result.ok&&req.method==='POST')scheduleStatusMail(env,ctx);return result;}
+  if(path.startsWith('/v1/finding-statuses')){const result=await findingStatusRoute(req,env,user,path,req.method==='PUT'?await body(req):{});if(result.ok&&req.method==='PUT')scheduleStatusMail(env,ctx);return result;}
   if(path.startsWith('/v1/plugin-installation-status'))return await sourceRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/plugin-sources'))return await sourceRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
   if(path==='/v1/customer-score-history')return await customerScoreRoute(req,env,user,path,req.method==='POST'?await body(req):{});
@@ -332,25 +340,25 @@ export default {async fetch(req,env,ctx){
    const data=await body(req);
    return await importLegacy(env,user,data.remediations);
   }
-  const progressRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})\/review-activity$/.exec(path);
+  const progressRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)\/review-activity$/.exec(path);
   if(progressRoute&&req.method==='GET')return response(await reviewActivity(env,user,progressRoute[1],url));
-  const progressRetry=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})\/review-notifications\/(\d{1,16})\/retry$/.exec(path);
+  const progressRetry=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)\/review-notifications\/(\d{1,16})\/retry$/.exec(path);
   if(progressRetry&&req.method==='POST'){const result=await retryProgress(env,user,progressRetry[1],Number(progressRetry[2]));scheduleProgress(env,ctx);return response(result);}
-  const statusRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})\/status-history$/.exec(path);
+  const statusRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)\/status-history$/.exec(path);
   if(statusRoute&&req.method==='GET')return response(await statusHistory(env,user,statusRoute[1],url));
-  const fyiRetry=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})\/assignments\/([a-f0-9-]{36})\/fyi\/retry$/.exec(path);
+  const fyiRetry=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)\/assignments\/([a-f0-9-]{36})\/fyi\/retry$/.exec(path);
   if(fyiRetry&&req.method==='POST'){const result=await retryFyi(env,user,fyiRetry[1],fyiRetry[2]);scheduleFyi(env,ctx);return response(result);}
-  const assignmentRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})\/assignments(?:\/([a-f0-9-]{36})\/revoke)?$/.exec(path);
+  const assignmentRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)\/assignments(?:\/([a-f0-9-]{36})\/revoke)?$/.exec(path);
   if(assignmentRoute){
    if(!assignmentRoute[2]&&req.method==='GET')return await assignmentHistory(env,user,assignmentRoute[1],url);
    if(assignmentRoute[2]&&req.method==='POST')return await revokeAssignment(env,user,assignmentRoute[1],assignmentRoute[2]);
    return response({error:'Method not allowed'},405);
   }
-  const remediationRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,})(\/assign)?$/.exec(path);
+  const remediationRoute=/^\/v1\/remediations\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)(\/assign)?$/.exec(path);
   if(remediationRoute){
    const id=remediationRoute[1];
    if(remediationRoute[2]&&req.method==='POST'){const result=await assignRemediation(env,user,id,await body(req));if(result.ok)scheduleFyi(env,ctx);return result;}
-   if(!remediationRoute[2]&&req.method==='PUT')return await upsertRemediation(env,user,id,await body(req));
+   if(!remediationRoute[2]&&req.method==='PUT'){const result=await upsertRemediation(env,user,id,await body(req));if(result.ok)scheduleStatusMail(env,ctx);return result;}
    if(!remediationRoute[2]&&req.method==='DELETE')return await removeRemediation(env,user,id);
   }
   if(path==='/v1/alerts'&&req.method==='GET'){
@@ -380,10 +388,10 @@ export default {async fetch(req,env,ctx){
    await env.DB.prepare('DELETE FROM users WHERE id=?').bind(user.id).run();return response({deleted:true},200,{'Set-Cookie':setCookie('',0)});
   }
   return response({error:'Not found'},404);
- }catch(error){if(error instanceof ReviewError||error instanceof WorkflowError||error instanceof FyiError||error instanceof AssignmentError||error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
+ }catch(error){error=integrityError(error);if(error instanceof ReviewError||error instanceof WorkflowError||error instanceof FyiError||error instanceof AssignmentError||error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
-  if(_event.cron==='* * * * *'){scheduleProgress(env,ctx);scheduleFyi(env,ctx);ctx.waitUntil(approvedTest(env));ctx.waitUntil(observeCvie(env,'disclosure_dispatch',dispatchEvidence));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}
+  if(_event.cron==='* * * * *'){scheduleStatusMail(env,ctx);scheduleProgress(env,ctx);scheduleFyi(env,ctx);ctx.waitUntil(approvedTest(env));ctx.waitUntil(observeCvie(env,'disclosure_dispatch',dispatchEvidence));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}
   if(_event.cron==='*/5 * * * *'){ctx.waitUntil(observeCvie(env,'nvd_dispatch',dispatchCvie));return;}
   if(env.ALERT_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchDueDigests(env));
   if(env.LIFECYCLE_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchLifecycle(env));
@@ -393,3 +401,9 @@ export default {async fetch(req,env,ctx){
  }
 };
 
+
+const protectedApplication=recoveryProtected(application);
+export default {
+ fetch(req,env,ctx){if(req.method==='GET'&&new URL(req.url).hostname!=='confirm.cveharbor.com'&&new URL(req.url).pathname==='/v1/release-readiness')return releaseReadiness(env);return protectedApplication.fetch(req,env,ctx);},
+ scheduled:protectedApplication.scheduled
+};

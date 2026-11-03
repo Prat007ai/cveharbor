@@ -1,3 +1,5 @@
+> **Historical staging procedure.** The integrated permanent-staging implementation supersedes these commands and schema counts. Use [the permanent staging activation runbook](reviews/permanent-staging-activation.md). Earlier operation names, hashes and approvals do not authorize the new migration or deployment. This document remains as historical evidence.
+
 # Task 2C: Staging preparation and secure credential setup
 
 **Current workflow instructions:** see [protected provisioning and first database creation](cvie-staging-provisioning.md). The execution job is now prepared; the initial push skips it and actual execution awaits separate approval. The setup/sequence below retains the earlier preparation context.
@@ -156,3 +158,4 @@ Account/Access/service-token metadata has now been checked remotely using protec
 Production deployment workflows remain unchanged. The existing PR-only production diagnostic is explicitly disabled for #243, so preparation cannot silently read production using the old CI secret references. Existing Task 2B production baseline artifacts remain historical evidence only.
 
 Refer to the full Task 2C plan for the 1/10/50-customer, ≤1,000-read evidence-page, <2-second browser and D1 density acceptance targets. Staging approval does not authorize merging or deploying production.
+

@@ -27,8 +27,18 @@ fs.writeFileSync(path.join(output, 'legacy.mjs'), source.replace("redirect: 'man
 const entry = `
 import { createAccessVerifier } from ${JSON.stringify(path.join(root, 'access.mjs'))};
 import { createAccessVerifier as legacy } from './legacy.mjs';
+import {withStagingTransport,fetch as fixtureFetch} from ${JSON.stringify(path.join(root, 'transport.mjs'))};
 export default { async fetch() {
   const result = {};
+  const captured=[];
+  const db={prepare(sql){return {bind(...params){return {sql,params};}};},async batch(rows){captured.push(...rows);return [];}};
+  await withStagingTransport({STAGING_MODE:'true',STAGING_EMAIL_CAPTURE_ENABLED:'true',DB:db},async()=>{
+    await fixtureFetch('https://api.smtp2go.com/v3/email/send',{method:'POST',headers:{'X-Smtp2go-Api-Key':'staging-capture-only'},body:JSON.stringify({to:['test@example.invalid'],subject:'Native staging capture',text_body:'Synthetic only'})});
+    result.syntheticProvider=(await fixtureFetch('https://raw.githubusercontent.com/dotnet/core/main/release-notes/releases-index.json',{redirect:'error'})).status;
+  });
+  result.captured=captured.length;
+  try{await fixtureFetch('https://example.org/');result.outsideContextDenied=false;}catch{result.outsideContextDenied=true;}
+
   const check = async (factory, assertion, issuer) => {
     const categories = [];
     const valid = await factory()(assertion, issuer, ${JSON.stringify(audience)}, category => categories.push(category));
@@ -44,7 +54,7 @@ export default { async fetch() {
   return Response.json(result);
 } };`;
 fs.writeFileSync(path.join(output, 'entry.mjs'), entry);
-await build({ entryPoints: [path.join(output, 'entry.mjs')], outfile: path.join(output, 'worker.mjs'), bundle: true, format: 'esm', platform: 'browser' });
+await build({ entryPoints: [path.join(output, 'entry.mjs')], outfile: path.join(output, 'worker.mjs'), bundle: true, format: 'esm', platform: 'browser',external:['node:async_hooks'] });
 fs.writeFileSync(path.join(output, 'jwks.mjs'), `let requests = [];
 export default { async fetch(request) {
   const url = new URL(request.url);
@@ -57,7 +67,7 @@ export default { async fetch(request) {
 fs.writeFileSync(path.join(output, 'config.capnp'), `using Workerd = import "/workerd/workerd.capnp";
 const config :Workerd.Config = (
   services = [
-    (name = "main", worker = (compatibilityDate = "2026-10-23", modules = [(name = "worker.mjs", esModule = embed "worker.mjs")], globalOutbound = "jwks")),
+    (name = "main", worker = (compatibilityDate = "2026-10-23", compatibilityFlags = ["nodejs_compat"], modules = [(name = "worker.mjs", esModule = embed "worker.mjs")], globalOutbound = "jwks")),
     (name = "jwks", worker = (compatibilityDate = "2026-10-23", modules = [(name = "jwks.mjs", esModule = embed "jwks.mjs")], globalOutbound = "jwks"))
   ],
   sockets = [(name = "local", address = "127.0.0.1:18743", http = (), service = "main")]
@@ -79,6 +89,7 @@ try {
   }
   assert.ok(response, 'Local workerd startup timed out');
   const result = await response.json();
+  assert.equal(result.captured,1);assert.equal(result.syntheticProvider,200);assert.equal(result.outsideContextDenied,true);
   assert.equal(result.legacyRequestRejected, true);
   assert.deepEqual(result.legacy, { valid: false, categories: ['jwks_fetch'] });
   assert.deepEqual(result.human, { valid: true, categories: [] });
@@ -87,6 +98,7 @@ try {
   assert.equal(result.outbound.length, 3);
   assert.ok(result.outbound.every(r => r.path === '/cdn-cgi/access/certs' && [new URL(issuer).hostname, new URL(redirectIssuer).hostname].includes(r.host)));
   fs.mkdirSync(path.join(root, 'artifacts'), { recursive: true });
-  fs.writeFileSync(path.join(root, 'artifacts/access-runtime.json'), JSON.stringify({ local_only: true, external_network_services: 0, legacy_reproduced: true, human_jwt_verified: true, service_jwt_verified: true, redirects_rejected: true }, null, 2) + '\n');
+  fs.writeFileSync(path.join(root, 'artifacts/access-runtime.json'), JSON.stringify({ local_only: true, transport_async_context_verified:true, email_capture_verified:true, external_network_services: 0, legacy_reproduced: true, human_jwt_verified: true, service_jwt_verified: true, redirects_rejected: true }, null, 2) + '\n');
   console.log('Local workerd reproduced legacy redirect error; fixed human/service JWTs verify; redirects fail closed. No external network service configured.');
 } finally { try { process.kill(-child.pid, 'SIGTERM'); } catch { child.kill('SIGTERM'); } }
+

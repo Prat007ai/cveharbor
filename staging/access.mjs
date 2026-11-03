@@ -23,7 +23,7 @@ export function createAccessVerifier(fetchKeys = fetch, clock = () => Date.now()
     })().finally(() => { pending = null; });
     return pending;
   }
-  return async (token, issuer, audience, onReject = () => {}) => {
+  return async (token, issuer, audience, onReject = () => {}, onIdentity = () => {}) => {
     let stage = 'token_parse';
     const reject = category => { try { onReject(category); } catch {} return false; };
     try {
@@ -47,8 +47,11 @@ export function createAccessVerifier(fetchKeys = fetch, clock = () => Date.now()
       const key = await crypto.subtle.importKey('jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
       stage = 'signature';
       const valid = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, decode(parts[2]), new TextEncoder().encode(parts[0] + '.' + parts[1]));
-      return valid || reject('signature');
+      if(!valid)return reject('signature');
+      onIdentity({email:typeof claims.email==='string'?claims.email:null});
+      return true;
     } catch (error) { return reject(keyErrors.get(error) || stage); }
   };
 }
+
 

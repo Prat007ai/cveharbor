@@ -1,3 +1,5 @@
+> **Phase 1 deployment notice:** Use [the consolidated administrator checklist](docs/reviews/phase1-administrator-checklist.md) for current release, credential, staging and recovery steps. Deployment/migration/rollback recipes below are feature-history references, not instructions to execute during Phase 1. Feature behavior descriptions remain applicable unless superseded by the current implementation.
+
 # CVEHarbor.com — hourly vulnerability intelligence website
 
 CVEHarbor is a public vulnerability **advisory index** with 38 technology groups, including thirteen categories identified in public Whitecap service and careers materials. It is entirely separate from Whitecap's Gmail automations and does not read those emails or any Whitecap infrastructure.

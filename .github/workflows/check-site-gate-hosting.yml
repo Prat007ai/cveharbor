@@ -1,28 +1,23 @@
 name: Check temporary site gate hosting
 on:
-  push:
-    branches: [feat/temporary-site-gate]
-    paths:
-      - .github/workflows/check-site-gate-hosting.yml
-      - scripts/check_site_gate_hosting.py
-      - site-gate/**
-      - scripts/deploy_site_gate.py
-      - scripts/disable_public_pages_origin.py
-      - scripts/site_gate_client.py
-      - tests/test_site_gate_deployment.py
+  workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 jobs:
   check:
+    name: check-site-gate-hosting / check
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    environment: cloudflare-production-audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: ${{ github.ref_name }}
-      - uses: actions/setup-python@v5
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.12'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22'
       - name: Test the site gate and existing application
@@ -33,19 +28,17 @@ jobs:
         run: python scripts/build_site.py && python scripts/verify_production.py --preflight && npx --yes wrangler@4.156.0 deploy --config site-gate/wrangler.json --dry-run
       - name: Read domain and hosting configuration
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_SITE_API_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          SITE_GATE_PASSWORD: ${{ secrets.SITE_GATE_PASSWORD }}
-          SITE_GATE_TOKEN_SOURCE: ${{ secrets.CLOUDFLARE_SITE_API_TOKEN != '' && 'dedicated_frontend' || 'existing_deployment' }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_AUDIT_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_AUDIT_ACCOUNT_ID }}
+          SITE_GATE_PASSWORD: ${{ secrets.CVEHARBOR_SITE_GATE_PASSWORD }}
+          SITE_GATE_TOKEN_SOURCE: ${{ 'protected_audit' }}
         run: python scripts/check_site_gate_hosting.py
-      - name: Save non-secret diagnostic evidence on this development branch
-        env:
-          DIAGNOSTIC_BRANCH: ${{ github.ref_name }}
-        run: |
-          set -euo pipefail
-          git config user.name 'cveharbor-updater[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/site-gate-hosting.json
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'Record read-only site gate hosting diagnostics'
-          git push origin HEAD:"$DIAGNOSTIC_BRANCH"
+      - name: Retain diagnostic evidence without repository writes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: site-gate-hosting-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            data/site-gate-hosting.json

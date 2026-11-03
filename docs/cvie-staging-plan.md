@@ -1,3 +1,5 @@
+> **Historical staging procedure.** The integrated permanent-staging implementation supersedes these commands and schema counts. Use [the permanent staging activation runbook](reviews/permanent-staging-activation.md). Earlier operation names, hashes and approvals do not authorize the new migration or deployment. This document remains as historical evidence.
+
 # Task 2C: CVIE Cloudflare Staging Environment and Validation Plan
 
 **Status: resource names/account and repository preparation approved; configuration/scripts prepared on PR #243. Cloudflare resource creation, migrations and deployments remain paused pending secure credential setup.**
@@ -217,3 +219,4 @@ Total: approximately **5–9 engineering days**, excluding account setup, owner 
 5. Separate production review and approval after the staging report. No merge or production rollout follows automatically from passing staging.
 
 **Current outcome:** ready to request bounded resource-creation approval, combining remote preflight results with manual owner verification. See the [updated readiness assessment](cvie-staging-preflight.md) and final creation plan. Staging configuration and local safety/build helpers are prepared. Remote application/performance validation has not run and no Cloudflare resources have been created or deployed. The original implementation/validation sequence above remains the scope for subsequent work, with Access and the approved account replacing earlier placeholders.
+

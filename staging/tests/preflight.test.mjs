@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { preflight } from '../scripts/preflight.mjs';
 import { TARGET } from '../target.mjs';
 const env = { CF_STAGING_ACCOUNT_ID: TARGET.account, CF_STAGING_API_TOKEN: 'private-management-token', CF_STAGING_ACCESS_ISSUER: 'https://synthetic-stage.cloudflareaccess.com', CF_STAGING_ACCESS_AUD: 'a'.repeat(64), CF_STAGING_ACCESS_CLIENT_ID: 'private-service-client', CF_STAGING_ACCESS_CLIENT_SECRET: 'private-service-secret' };
-const sid = '11111111-2222-4333-8444-555555555555';
+const sid = 'fac61562-fc31-426d-8032-550aba63b7f6';
 function fixture({ metadataDenied = false, bypass = false, emptyList = false, missingDetail = false, database = null, workers = [] } = {}) {
   return async (url, init) => {
     assert.equal(init.method, 'GET'); assert.equal(init.redirect, 'manual');
@@ -91,3 +91,4 @@ test('deployed diagnostic accepts only both expected Workers without weakening i
   const initial = await preflight(settings, fixture({ database, workers }), { existingDatabase: true });
   assert.ok(initial.blockers.includes('approved_worker_names_available'));
 });
+

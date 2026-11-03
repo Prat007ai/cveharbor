@@ -1,3 +1,5 @@
+> **Historical staging procedure.** The integrated permanent-staging implementation supersedes these commands and schema counts. Use [the permanent staging activation runbook](reviews/permanent-staging-activation.md). Earlier operation names, hashes and approvals do not authorize the new migration or deployment. This document remains as historical evidence.
+
 # Task 2C: Final staging resource creation plan for approval
 
 **Update: the owner approved this plan and protected workflow preparation, while reserving separate approval of actual execution. The workflow is now prepared; see the [implementation and first-execution instructions](cvie-staging-provisioning.md). No resources have been created.**
@@ -124,3 +126,4 @@ After this bounded step, the staging resources and Access routing can be assesse
 ## Approval requested
 
 Approve the limited provisioning-workflow preparation, creation of the single empty staging D1 database, API-first then frontend deployment, and read-only post-creation checks above, in account `9706b4d98ad72884e67fd1eb875c8a61` only. The owner supplies the returned UUID/operation settings in the existing GitHub environment and completes its protection reviews. No production changes or merge of PR #243 are included.
+

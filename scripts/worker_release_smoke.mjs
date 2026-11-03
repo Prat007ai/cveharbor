@@ -1,3 +1,4 @@
+import {remediationIntegrityRelease} from './worker_release_mode.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
@@ -82,3 +83,34 @@ const managerFiles=['account-backend/src/assignment-progress-mail.js','account-b
 assert.equal(assignmentProgressCodeOnly(managerFiles),true);
 for(const file of ['account-backend/migrations/0027_assignment_progress.sql','account-backend/wrangler.toml','account-backend/src/index.js','scripts/bootstrap_cvie_shared.mjs'])assert.equal(assignmentProgressCodeOnly([...managerFiles,file]),false);
 console.log('PASS: manager reminder release deploys notification code without migrations or unrelated maintenance');
+
+const {unifiedFindingsRelease}=await import('./worker_release_mode.mjs');
+const unifiedFiles=['account-backend/src/finding-remediation.js','account-backend/src/remediation-identity.js','account-backend/migrations/0028_unified_findings.sql','account-backend/tests/unified-findings.test.mjs'];
+assert.equal(unifiedFindingsRelease(unifiedFiles),true);
+for(const f of ['account-backend/wrangler.toml','account-backend/src/cvie.js','scripts/bootstrap_cvie_shared.mjs'])assert.equal(unifiedFindingsRelease([...unifiedFiles,f]),false);
+assert.equal(unifiedFindingsRelease(unifiedFiles.filter(f=>!f.endsWith('.sql'))),false);
+
+const {findingLinksRelease}=await import('./worker_release_mode.mjs');
+const linksFiles=['account-backend/src/finding-assignment-links.js','account-backend/src/remediation.js','account-backend/migrations/0029_finding_assignment_links.sql','account-backend/tests/finding-assignment-links.test.mjs'];
+assert.equal(findingLinksRelease(linksFiles),true);
+for(const f of ['account-backend/wrangler.toml','account-backend/src/cvie.js','scripts/bootstrap_cvie_shared.mjs','account-backend/migrations/0028_unified_findings.sql'])assert.equal(findingLinksRelease([...linksFiles,f]),false);
+assert.equal(findingLinksRelease(linksFiles.filter(f=>!f.endsWith('.sql'))),false);
+console.log('PASS: assignment link release applies only migration 0029 and does not run unrelated maintenance');
+
+const {statusMailRelease}=await import('./worker_release_mode.mjs');
+const statusMailFiles=['account-backend/src/status-update-mail.js','account-backend/src/assignment-progress.js','account-backend/migrations/0030_status_update_notifications.sql','account-backend/tests/status-update-mail.test.mjs'];
+assert.equal(statusMailRelease(statusMailFiles),true);
+for(const f of ['account-backend/wrangler.toml','account-backend/src/cvie.js','scripts/bootstrap_cvie_shared.mjs','account-backend/migrations/0029_finding_assignment_links.sql'])assert.equal(statusMailRelease([...statusMailFiles,f]),false);
+assert.equal(statusMailRelease(statusMailFiles.filter(f=>!f.endsWith('.sql'))),false);
+console.log('PASS: status notification release applies only migration 0030 and skips unrelated maintenance');
+
+const {statusMailRepair}=await import('./worker_release_mode.mjs');
+const repairFiles=['account-backend/src/finding-assignment-links.js','account-backend/src/status-update-mail.js','account-backend/tests/status-mail-repair.test.mjs'];
+assert.equal(statusMailRepair(repairFiles),true);
+for(const f of ['account-backend/wrangler.toml','account-backend/src/cvie.js','scripts/bootstrap_cvie_shared.mjs','account-backend/migrations/0030_status_update_notifications.sql'])assert.equal(statusMailRepair([...repairFiles,f]),false);
+console.log('PASS: status linking repair is code-only with no migrations or unrelated maintenance');
+
+const phase1Files=['account-backend/src/remediation-integrity.js','account-backend/migrations/0031_remediation_integrity.sql','account-backend/src/finding-remediation.js'];
+assert.equal(remediationIntegrityRelease(phase1Files),true);
+assert.equal(remediationIntegrityRelease([...phase1Files,'account-backend/migrations/0032_unrelated.sql']),false);
+assert.equal(remediationIntegrityRelease([...phase1Files,'account-backend/src/assignment-progress.js']),false);

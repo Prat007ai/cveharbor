@@ -53,6 +53,8 @@ async function refreshPluginFindings(draw=true,allowFallback=!reporting){
 }
 
 let findingStatusReady=false,findingStatuses=new Map(),findingNotes=new Map(),findingStatusFilter='Unresolved';
+let assignmentInfoReady=false,linkExistingReady=false,findingAssignments=new Map(),standaloneAssignments=new Map();
+function setAssignmentInfo(data){assignmentInfoReady=!!data.ready;linkExistingReady=!!data.linking_available;findingAssignments=new Map((data.findings||[]).map(x=>[x.asset_id+'|'+x.cve_id,x]));standaloneAssignments=new Map((data.standalone||[]).map(x=>[x.cve_id,x]));}
 let findingSort={key:'',direction:'asc'};
 const reportSectionStates=new Map();
 let printSectionStates=null;
@@ -166,6 +168,15 @@ function findingDetailButton(i){
  });
  return button;
 }
+function renderFindingAssignment(cell,i){
+ const box=text('div','','finding-assignment-summary');cell.append(box);
+ if(!assignmentInfoReady){box.append(text('small','Assignment information unavailable'));return;}
+ const linked=findingAssignments.get(statusKey(i)),manual=standaloneAssignments.get(i.id);
+ const describe=(container,items)=>{for(const a of items){const entry=text('p','');entry.append(text('strong',a.status+' · '+a.email));if(a.acknowledged_at)entry.append(text('small','Receipt acknowledged '+new Date(a.acknowledged_at*1000).toLocaleString()));container.append(entry);}};
+ if(linked?.assignments.length){box.append(text('small','Assigned reviewer(s)'));describe(box,linked.assignments);box.append(text('small','Status changes email the reviewers, requester and FYI recipients.'));}
+ else {if(linked?.owner&&linked.owner!=='Unassigned')box.append(text('strong','Owner: '+linked.owner));box.append(text('small',linked?'No acknowledgement request sent for this asset.':'No assignment linked to this asset.'));}
+ if(manual){const candidate=text('div','','finding-manual-assignment');candidate.append(text('strong','Existing record — connect it to this customer asset'));describe(candidate,manual.assignments);if(!manual.assignments.length)candidate.append(text('small','Owner: '+manual.owner));if(linkExistingReady){const link=text('button','Link existing assignment','shared-work-action');link.type='button';link.addEventListener('click',()=>window.CVEHARBOR_SHARED?.finding(i.asset_id,i.id,link));candidate.append(link);candidate.append(text('small','Link this assignment to send status-update emails for this asset.'));}box.append(candidate);}
+}
 function renderFindings(root,issues,readOnly){
  root.append(findingStatusControls(issues));
  const filtered=filteredFindings(issues),compact=filtered.slice(0,250);
@@ -197,6 +208,8 @@ function renderFindings(root,issues,readOnly){
   const saveStatus=text('button','Save status','customer-status-save');saveStatus.type='button';saveStatus.disabled=!findingStatusReady;
   saveStatus.addEventListener('click',async()=>{saveStatus.disabled=true;await saveFindingStatus(i,select.value,select);saveStatus.disabled=!findingStatusReady});
   cell.append(select,saveStatus);
+  renderFindingAssignment(cell,i);
+  const shared=text('button','Assign / View remediation','shared-work-action');shared.type='button';shared.addEventListener('click',()=>window.CVEHARBOR_SHARED?.finding(i.asset_id,i.id,shared));cell.append(shared);
   const input=document.createElement('input');input.type='text';input.maxLength=64;input.placeholder='Ticket number';input.className='customer-ticket-input';
   input.setAttribute('aria-label','DevOps ticket number for '+i.id+' on '+(i.asset?.name||'asset'));input.disabled=!ticketAppendReady;
   input.value=findingTicketDrafts.get(statusKey(i))||'';
@@ -209,8 +222,10 @@ function renderFindings(root,issues,readOnly){
  if(filtered.length>250)root.append(text('p','Showing 250 of '+filtered.length+' filtered findings. Narrow the environment, or export all filtered findings as CSV.','ops-note'));
  if(!findingStatusReady||!ticketReady)root.append(text('p','Saved remediation information is unavailable. Status and ticket coverage may be incomplete.','ops-note'));
 }
-let savedFindingsRequest=null;
+let savedFindingsRequest=null,statusChangeDialog=null,statusChangeBusy=false;
 function invalidateSession(){
+ if(statusChangeDialog?.open)statusChangeDialog.close();
+ setAssignmentInfo({ready:false});
  closeFindingDetail();
  customerDataEpoch++;upgradeHistory.clear();inventoryRefresh=null;
  customerReady=false;inventory={customers:[],environments:[],assets:[]};findingStatuses.clear();findingNotes.clear();findingTickets.clear();scoreSeries.clear();
@@ -229,14 +244,14 @@ async function refreshSavedFindings(){
  savedFindingsRequest=(async()=>{
   const session=await api('me');
   if(!session.authenticated||session.email!==accountEmail){invalidateSession();throw Error('Your session changed. Reload before generating a report.')}
-  const [saved,tickets]=await Promise.all([api('finding-statuses'),api('finding-tickets')]);
+  const [saved,tickets,assignmentInfo]=await Promise.all([api('finding-statuses'),api('finding-tickets'),api('finding-assignments').catch(()=>({ready:false}))]);
   if(saved.authenticated===false||tickets.authenticated===false){
    invalidateSession();
    throw Error('Sign in again before generating a report.');
   }
   if(!saved.ready||!tickets.ready)throw Error('Saved remediation records are unavailable. Try again before exporting.');
   if(epoch!==customerDataEpoch)throw Error('Session changed; reload the page.');
-  findingStatusReady=true;ticketReady=true;ticketAppendReady=!!tickets.append_ready;
+  setAssignmentInfo(assignmentInfo);findingStatusReady=true;ticketReady=true;ticketAppendReady=!!tickets.append_ready;
   findingStatuses=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.status]));
   findingNotes=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.notes||'']));
   findingTickets=new Map();for(const t of tickets.tickets||[]){const k=t.asset_id+'|'+t.cve_id;findingTickets.set(k,[...(findingTickets.get(k)||[]),t.ticket_number])}
@@ -253,17 +268,56 @@ async function prepareExport(action){
   drawReport();action();
  }catch(error){window.alert('Could not generate report: '+error.message)}finally{exportBusy=false}
 }
+function confirmFindingStatus(i,previous,next,save,mail){
+ return new Promise(resolve=>{
+  const dialog=text('dialog','','shared-record cvh-status-dialog');statusChangeDialog=dialog;
+  dialog.setAttribute('aria-labelledby','cvhStatusTitle');dialog.setAttribute('aria-describedby','cvhStatusContext');
+  const brand=text('div','','cvh-status-brand');brand.append(text('strong','CVEHarbor'),text('span','VULNERABILITY INTELLIGENCE'));
+  const title=text('h2','Update vulnerability status');title.id='cvhStatusTitle';
+  const context=text('p',[i.id,inventory.customers.find(c=>c.id===i.environment?.customer_id)?.name,i.environment?.name,i.asset?.name,i.technology,i.version].filter(Boolean).join(' · '),'shared-context');context.id='cvhStatusContext';
+  const transition=text('div','','cvh-status-transition');transition.append(text('span',previous),text('span','→'),text('strong',next));
+  const form=text('form','');form.noValidate=true;const label=text('label','Reason for this change');const reason=document.createElement('textarea');reason.rows=4;reason.maxLength=1000;reason.required=true;reason.placeholder='Describe the progress, remediation or decision behind this change.';label.append(reason);
+  const help=text('small',!mail?.available?'Email recipient information is unavailable. This reason will be saved in the history.':mail.recipients.length?'This reason will be saved in the history. Status-update emails will be queued for: '+mail.recipients.join(', '):'No recipients are linked to this record. Saving the status will not send an email. Use Assign / View remediation to add a reviewer.');
+  const message=text('p','','shared-message');message.setAttribute('role','alert');
+  const actions=text('div','','cvh-status-actions');const cancel=text('button','Cancel','cvh-status-cancel');cancel.type='button';const submit=text('button','Save status');submit.type='submit';actions.append(cancel,submit);form.append(label,help,message,actions);
+  dialog.append(brand,title,context,transition,form);document.body.append(dialog);
+  let saving=false,saved=false;
+  cancel.addEventListener('click',()=>dialog.close());reason.addEventListener('input',()=>{message.textContent='';});
+  dialog.addEventListener('cancel',event=>{if(saving)event.preventDefault();});
+  dialog.addEventListener('close',()=>{if(statusChangeDialog===dialog)statusChangeDialog=null;dialog.replaceChildren();dialog.remove();resolve(saved);},{once:true});
+  form.addEventListener('submit',async event=>{
+   event.preventDefault();if(saving)return;if(!reason.value.trim()){message.textContent='Enter a reason for this status change.';reason.focus();return;}
+   saving=true;cancel.disabled=true;submit.disabled=true;reason.disabled=true;submit.textContent='Saving…';message.textContent='';
+   try{await save(reason.value.trim());saved=true;if(dialog.open)dialog.close();}
+   catch(error){if(dialog.open){message.textContent=error.message;reason.disabled=false;reason.focus();}}
+   finally{saving=false;cancel.disabled=false;submit.disabled=false;reason.disabled=false;submit.textContent='Save status';}
+  });
+  dialog.showModal();reason.focus();
+ });
+}
 async function saveFindingStatus(i,status,select){
- if(reporting||!findingStatusReady)return;
- select.disabled=true;
+ if(reporting||!findingStatusReady||statusChangeBusy)return;
+ statusChangeBusy=true;select.disabled=true;const epoch=customerDataEpoch,previous=statusFor(i);
+ select.parentElement.querySelector('.cvh-status-error')?.remove();
  try{
-  const r=await fetch('https://api.cveharbor.com/v1/finding-statuses/'+encodeURIComponent(i.asset_id)+'/'+encodeURIComponent(i.id),{
-   method:'PUT',credentials:'include',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({status,notes:findingNotes.get(statusKey(i))||''})});
-  if(!r.ok)throw Error((await r.json().catch(()=>({}))).error||'Unable to save status');
-  findingStatuses.set(statusKey(i),status);
-  findingStatusDrafts.delete(statusKey(i));
-  redraw();
- }catch(error){select.value=statusFor(i);window.alert('Could not save vulnerability status: '+error.message)}finally{select.disabled=false}
+  const preview=await window.CVEHARBOR_SHARED?.findingContext?.(i.asset_id,i.id);
+  const shared=preview?preview.record:await window.CVEHARBOR_SHARED?.statusContext(i.asset_id,i.id);
+  if(epoch!==customerDataEpoch)return;
+  if(preview?.manual&&(preview.integrity&&!preview.record||preview.manual_mail?.recipients.length&&!preview.mail?.recipients.length)){findingStatusDrafts.delete(statusKey(i));select.value=previous;await window.CVEHARBOR_SHARED.finding(i.asset_id,i.id,null,{status});return;}
+  const save=async reason=>{
+   if(epoch!==customerDataEpoch)throw Error('Your session changed. Reload and sign in again.');
+   const r=await fetch('https://api.cveharbor.com/v1/finding-statuses/'+encodeURIComponent(i.asset_id)+'/'+encodeURIComponent(i.id),{
+    method:'PUT',credentials:'include',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({status,notes:findingNotes.get(statusKey(i))||'',status_change_reason:reason,expected_updated:shared?.updated,expected_finding:JSON.stringify(preview?.finding??null)})});
+   if(!r.ok)throw Error((await r.json().catch(()=>({}))).error||'Unable to save status. Please try again.');
+   if(epoch!==customerDataEpoch)throw Error('Your session changed. Reload and sign in again.');
+  };
+  const savedStatus=shared?.fix_status||preview?.finding?.status||'Needs Review';
+  const saved=(shared||preview?.integrity)&&savedStatus!==status?await confirmFindingStatus(i,savedStatus,status,save,preview?.mail):(await save(''),true);
+  if(epoch!==customerDataEpoch)return;
+  if(!saved){findingStatusDrafts.delete(statusKey(i));select.value=previous;redraw();return;}
+  findingStatuses.set(statusKey(i),status);findingStatusDrafts.delete(statusKey(i));window.CVEHARBOR_SHARED?.changed();redraw();
+ }catch(error){if(epoch===customerDataEpoch){select.value=previous;const message=text('small',error.message,'cvh-status-error');message.setAttribute('role','alert');select.parentElement.append(message);}}
+ finally{select.disabled=false;statusChangeBusy=false;if(epoch===customerDataEpoch){if(select.isConnected)select.focus({preventScroll:true});else $('customerDashFilter')?.focus({preventScroll:true});}}
 }
 
 const text=(tag,value,cls)=>{const el=document.createElement(tag);el.textContent=String(value??'');if(cls)el.className=cls;return el};
@@ -1152,6 +1206,7 @@ async function init(){
    const sources=await api('plugin-sources').catch(()=>({ready:false,sources:[]}));
    pluginSourceReady=!!sources.ready;
    pluginSources=new Map((sources.sources||[]).map(s=>[s.asset_id,s]));
+   setAssignmentInfo(await api('finding-assignments').catch(()=>({ready:false})));
    const saved=await api('finding-statuses').catch(()=>({ready:false,statuses:[]}));
    findingStatusReady=!!saved.ready;
    findingStatuses=new Map((saved.statuses||[]).map(s=>[s.asset_id+'|'+s.cve_id,s.status]));
@@ -1258,5 +1313,7 @@ for(const eventName of ['cveharbor:account-state','cveharbor-auth-change'])windo
  if(customerReady&&(!event.detail?.authenticated||event.detail?.email&&event.detail.email!==accountEmail))invalidateSession();
 });
 window.addEventListener('cvie:updated',event=>{if(event.detail?.recordsChanged)records=advisories();if(reportPrinting){reportRedrawPending=true;return}for(const note of document.querySelectorAll('.cvie-report-source-note'))note.textContent=intelligenceSourceSummary();if(event.detail?.recordsChanged&&customerReady)redraw();});
+window.addEventListener('cveharbor:remediation-changed',()=>{if(customerReady)void refreshSavedFindings().then(redraw).catch(()=>{});});
+if(typeof BroadcastChannel==='function'){const channel=new BroadcastChannel('cveharbor-remediation-changed');channel.onmessage=()=>{if(customerReady)void refreshSavedFindings().then(redraw).catch(()=>{});};}
 void init();
 })();

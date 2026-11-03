@@ -1,0 +1,40 @@
+import assert from 'node:assert/strict';import fs from 'node:fs';
+import worker from '../src/index.js';import {unifiedFixture,assetOne,assetTwo,assetOther} from './helpers/unified-db.mjs';import {fixtureCve} from './helpers/assignment-db.mjs';
+import {verifyUnifiedSchema} from '../../scripts/verify_unified_findings_d1.mjs';
+import {saveReviewerProgress} from '../src/assignment-progress.js';import {activeReviewSQL,reviewHash} from '../src/assignment-progress-common.js';import {enqueueReminders} from '../src/assignment-progress-mail.js';
+const f=await unifiedFixture(),old=globalThis.fetch;globalThis.fetch=f.fetcher;
+const request=async(path,method='GET',data,account='a')=>worker.fetch(f.request(path,method,data,account),f.env,{waitUntil:()=>{}});
+const ok=async(path,method='GET',data,account='a')=>{const r=await request(path,method,data,account),body=await r.json();assert.equal(r.status,200,JSON.stringify(body));return body;};
+try{
+ assert.equal((await verifyUnifiedSchema(f.DB)).ok,true);
+ const key=(await ok('/finding-remediations/'+assetOne+'/'+fixtureCve,'POST',{})).id;
+ const second=(await ok('/finding-remediations/'+assetTwo+'/'+fixtureCve,'POST',{})).id;assert.notEqual(key,second);
+ assert.equal((await ok('/finding-remediations/'+assetOne+'/'+fixtureCve,'POST',{})).id,key);
+ assert.equal((await request('/finding-remediations/'+assetOther+'/'+fixtureCve,'POST',{})).status,404);
+ assert.equal((await request('/remediation-records/'+key,'GET',undefined,'b')).status,404);
+ assert.equal((await request('/remediation-records/'+key,'GET',undefined,null)).status,401);
+ let row=await ok('/remediation-records/'+key);assert.equal(row.fix_status,'Fix in Progress');assert.equal(row.scope.customer_name,'Customer North');assert.equal(row.tickets[0].ticket_number,'SEC-248');assert.equal(row.notes,'Existing finding notes');
+ const update={status:'Remediated',owner:'Alex',due:'2026-11-05',notes:row.notes,status_change_reason:'Patch verified on this production server.',expected_updated:row.updated};
+ await ok('/remediations/'+key,'PUT',update);
+ let statuses=await ok('/finding-statuses');assert.equal(statuses.statuses.find(x=>x.asset_id===assetOne).status,'Fixed/Patched');assert.equal((await ok('/remediation-records/'+second)).status,'Open');assert.equal(f.DB.sql.prepare('SELECT status FROM remediations WHERE user_id=? AND cve_id=?').get('a',fixtureCve).status,'Investigating');
+ assert.equal((await request('/remediations/'+key,'PUT',update)).status,409);
+ row=await ok('/remediation-records/'+key);await ok('/finding-statuses/'+assetOne+'/'+fixtureCve,'PUT',{status:'Fix in Progress',notes:'',status_change_reason:'Additional validation is required.',expected_updated:row.updated});assert.equal((await ok('/remediation-records/'+key)).status,'Investigating');
+ assert.equal((await request('/remediations/'+key,'DELETE')).status,409);
+ assert.equal((await request('/remediations','PUT',{remediations:[{id:key,status:'Open',owner:'x'}]})).status,400);
+ const forged=fixtureCve+'~'+assetOther.toUpperCase();assert.equal((await request('/remediations/'+forged,'PUT',{status:'Open',owner:'x'})).status,404);
+ await ok('/remediations/'+key+'/assign','POST',{email:'reviewer@example.net',assigned_severity:'critical',fyi_recipients:['manager@example.net']});
+ assert.match(f.emails[0].text_body,/Customer North/);assert.doesNotMatch(f.emails[0].text_body,/~11111111/);assert.doesNotMatch(f.emails[0].text_body,/Customer South|Private Asset/);
+ const a=f.DB.sql.prepare('SELECT id FROM remediation_assignment_requests WHERE cve_id=?').get(key),now=Math.floor(Date.now()/1000),hash=await reviewHash('c'.repeat(64));f.DB.sql.prepare('INSERT INTO remediation_review_sessions VALUES(?,?,?,?)').run(hash,a.id,now,now+1000);
+ let active=await f.DB.prepare(activeReviewSQL).bind(a.id,now).first();await saveReviewerProgress(f.env,active,{tokenHash:hash},{status:'Remediated',reason:'Applied patch and tested the affected asset.',comment:'Validation completed successfully.',expected_updated:active.updated_at});
+ statuses=await ok('/finding-statuses');assert.equal(statuses.statuses.find(x=>x.asset_id===assetOne).status,'Fixed/Patched');assert.equal((await ok('/remediation-records/'+second)).status,'Open');
+ row=await ok('/remediation-records/'+key);await ok('/remediations/'+key,'PUT',{...update,status:'Investigating',expected_updated:row.updated,status_change_reason:'Follow-up verification pending.'});
+ f.DB.sql.prepare('UPDATE remediation_review_access SET last_progress_at=? WHERE assignment_id=?').run(now-90000,a.id);
+ await enqueueReminders(f.env);assert.equal(f.DB.sql.prepare("SELECT count(*) n FROM remediation_review_notifications WHERE kind='reminder' AND state='queued'").get().n,2);
+ row=await ok('/remediation-records/'+key);await ok('/remediation-records/'+key+'/comments','POST',{comment:'Deployment validation is underway.',expected_updated:row.updated});assert.equal(f.DB.sql.prepare("SELECT count(*) n FROM remediation_review_notifications WHERE kind='reminder' AND state='queued'").get().n,0);
+ assert.equal((await request('/remediation-records/'+key+'/comments','POST',{comment:'This is a stale comment submission.',expected_updated:row.updated})).status,409);
+ assert.equal((await ok('/remediation-records/'+key)).comments.length,1);
+ // Idempotent migration, no history loss.
+ f.DB.sql.exec(fs.readFileSync(new URL('../migrations/0028_unified_findings.sql',import.meta.url),'utf8'));assert.equal((await ok('/remediation-records/'+key)).comments.length,1);
+ f.DB.sql.prepare('DELETE FROM inventory_assets WHERE id=?').run(assetOne);assert.equal((await request('/remediation-records/'+key)).status,404);assert.equal(f.DB.sql.prepare('SELECT id FROM remediation_assignment_requests WHERE id=?').get(a.id),undefined);assert.equal((await ok('/remediation-records/'+second)).status,'Open');
+ console.log('PASS: asset/customer/account isolation; bidirectional status; tickets/history; stale writes; reviewer updates; reminder reset; idempotent migration; scoped deletion.');
+}finally{globalThis.fetch=old;f.DB.sql.close();}

@@ -8,7 +8,9 @@
   "preview_urls": false,
   "keep_vars": false,
   "routes": [],
-  "triggers": { "crons": [] },
+  "triggers": {
+    "crons": []
+  },
   "assets": {
     "directory": ".build/public",
     "binding": "ASSETS",
@@ -16,9 +18,23 @@
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page"
   },
-  "services": [{ "binding": "STAGING_API", "service": "cveharbor-accounts-staging" }],
+  "services": [
+    {
+      "binding": "STAGING_API",
+      "service": "cveharbor-accounts-staging"
+    }
+  ],
   "vars": {
     "ACCESS_ISSUER": "REQUIRES_STAGING_ACCESS_TEAM_ISSUER",
-    "ACCESS_AUD": "REQUIRES_STAGING_ACCESS_APPLICATION_AUD"
-  }
+    "ACCESS_AUD": "REQUIRES_STAGING_ACCESS_APPLICATION_AUD",
+    "STAGING_ADMIN_EMAILS": "",
+    "INTELLIGENCE_SOURCE": "r2",
+    "STAGING_RELEASE": "REQUIRES_REVIEWED_COMMIT"
+  },
+  "r2_buckets": [
+    {
+      "binding": "INTELLIGENCE_BUCKET",
+      "bucket_name": "cveharbor-intelligence-staging"
+    }
+  ]
 }

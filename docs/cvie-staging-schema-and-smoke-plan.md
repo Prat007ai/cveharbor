@@ -1,3 +1,5 @@
+> **Historical staging procedure.** The integrated permanent-staging implementation supersedes these commands and schema counts. Use [the permanent staging activation runbook](reviews/permanent-staging-activation.md). Earlier operation names, hashes and approvals do not authorize the new migration or deployment. This document remains as historical evidence.
+
 # Task 2C: staging schema and synthetic validation execution plan
 
 Status: prepared for owner review; **no remote migration or fixture load authorized or executed**. This is the current next-phase plan, superseding the initial empty-infrastructure assumptions in older staging preparation documents. PR #243 remains draft and unmerged. PR #252 remains on hold.
@@ -58,3 +60,4 @@ Capture sanitized request outcomes, expected-vs-actual fixture counts, tenant is
 The owner approved this plan. Codex has prepared and locally validated the narrowly scoped executor in PR #243 using the existing workflow; see the executor approval record above. The next execution request must name its final commit and **schema-only staging migration** operation and include exact SQL digests and stop conditions. Fixture writes, API configuration/deployment changes and larger CVIE testing need their own explicit scope approval. Until then, do not dispatch or rerun a write job, alter the protected approved-operation variables, or execute SQL remotely.
 
 Feature-enabled CVIE testing is a required later controlled phase: baseline smoke is followed by separately approved staging API flag activation and the same correctness/efficiency cases with registry and fast evidence enabled. No flag change is included in schema execution.
+

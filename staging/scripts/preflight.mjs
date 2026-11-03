@@ -1,3 +1,4 @@
+import {checkDatabases} from './inventory.mjs';
 // Task 2C diagnostics only. Every remote request is GET; no deployment/migration imports.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -88,7 +89,7 @@ export async function preflight(env, transport = fetch, { existingDatabase = fal
   const databases = await cf('/d1/database?per_page=100', 'd1_inventory');
   const dbRows = databases.ok && Array.isArray(databases.result) && databases.result.length < 100 ? databases.result : null;
   add('d1_read_permission', !!dbRows, { http_status: databases.status, database_count: dbRows?.length ?? null });
-  if (existingDatabase) add('approved_database_identity', !!dbRows && dbRows.length === 1 && dbRows[0].name === TARGET.database && dbRows[0].uuid === value('CF_STAGING_D1_DATABASE_ID'), {});
+  if (existingDatabase) { let valid=false; try { valid=checkDatabases(dbRows,{permanentId:value('CF_STAGING_D1_DATABASE_ID')}); } catch {} add('approved_database_identity',valid,{}); }
   else add('approved_database_name_available', !!dbRows && !dbRows.some(d => d.name === TARGET.database), {});
   add('production_resources_absent', !!dbRows && !!workerRows && !dbRows.some(d => d.uuid === TARGET.productionDatabase || d.name === 'cveharbor-accounts') && !workerRows.some(w => ['cveharbor-accounts', 'cveharbor-site'].includes(w.id)), {});
   const apps = await cf('/access/apps?per_page=100', 'access_applications');
@@ -157,4 +158,5 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   console.log('CVIE_STAGING_PREFLIGHT ' + JSON.stringify(result));
   if (result.blockers.length) process.exitCode = 1;
 }
+
 

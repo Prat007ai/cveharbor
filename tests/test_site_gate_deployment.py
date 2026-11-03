@@ -16,6 +16,17 @@ PASSWORD='fixture-only-strong-password'
 
 
 class SiteGateDeploymentTests(unittest.TestCase):
+    def setUp(self):
+        gate=patch.object(mod,'verify_backend')
+        self.backend_gate=gate.start()
+        self.addCleanup(gate.stop)
+
+    def test_missing_backend_or_schema_blocks_before_any_provider_changes(self):
+        self.backend_gate.side_effect=RuntimeError('Backend is not ready')
+        with patch.object(mod,'cloudflare') as api,patch.object(mod,'wrangler') as cli:
+            with self.assertRaisesRegex(RuntimeError,'Backend is not ready'):mod.main()
+            api.assert_not_called();cli.assert_not_called()
+
     def test_missing_or_weak_password_blocks_before_any_cloudflare_changes(self):
         for value in ('','short','fixture-password\nwith-newline'):
             with patch.dict(os.environ,{'SITE_GATE_PASSWORD':value,'CLOUDFLARE_ACCOUNT_ID':'fixture-account'}),patch.object(mod,'cloudflare') as api,patch.object(mod,'wrangler') as cli:

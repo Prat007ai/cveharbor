@@ -1,21 +1,22 @@
 name: Inspect CVIE production source health without changing data
 on:
   workflow_dispatch:
-  push:
-    branches: [main, fix/cvie-background-status]
-    paths: ['.github/workflows/check-cvie-runtime.yml']
 permissions:
   contents: read
 jobs:
   inspect:
+    name: check-cvie-runtime / inspect
     runs-on: ubuntu-latest
-    environment: cloudflare-worker-production
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    environment: cloudflare-production-audit
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
       - name: Read only public source health and record counts
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_AUDIT_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_AUDIT_ACCOUNT_ID }}
         run: |
           python3 - <<'PY'
           import json, os, sys

@@ -3,6 +3,7 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import { pathToFileURL } from 'node:url';
 import { root } from './configure.mjs';
+import {FullDB} from '../tests/helpers/full-db.mjs';
 import { TARGET } from '../target.mjs';
 const nativeFetch = globalThis.fetch;
 let outbound = 0, scheduledWrites = 0;
@@ -20,8 +21,10 @@ try {
   assert.equal(outbound, 0);
   const invalid = await api.fetch(new Request('https://api.cveharbor.com/v1/health'), env, {});
   assert.equal(invalid.status, 403);
-  const unauthorized = await api.fetch(new Request(TARGET.origin + '/v1/me'), env, {});
-  assert.equal(unauthorized.status, 401);
+  const full=new FullDB();try{
+   const unauthorized = await api.fetch(new Request(TARGET.origin + '/v1/me'), {...env,DB:full}, {});
+   assert.equal(unauthorized.status, 401);
+  }finally{full.close();}
 } finally { globalThis.fetch = nativeFetch; }
 const files = fs.readdirSync(path.join(root, '.build/public'), { recursive: true }).filter(n => /\.(?:js|json|html)$/.test(n));
 for (const name of files) {
@@ -29,3 +32,4 @@ for (const name of files) {
   assert.doesNotMatch(text, /https:\/\/(?:api\.|confirm\.|www\.)?cveharbor\.com/, name);
 }
 console.log('Built Worker: no outbound calls, mail unavailable, scheduled work disabled, account authentication retained. Synthetic frontend has no production origins.');
+
