@@ -1,6 +1,6 @@
 # Original-schema adoption: review package, not execution approval
 
-> Recovery execution now uses the existing protected GitHub job: [private recovery procedure](staging-private-recovery.md). It supersedes the administrator-machine Cloudflare export commands below. The offline key-holder device receives no Cloudflare credentials.
+> Current adoption uses the original administrator-machine bookmark/export/local-restore procedure and `CF_STAGING_RECOVERY_EVIDENCE`, pinned to approved commit `545a7b46bdcb77b99f2bc35bd1bb938e7add93a7`. The [R2 recovery mechanism](staging-private-recovery.md) is optional future work requiring separate review; it does not supersede this procedure or invalidate an otherwise current, validated backup. Do not run `recovery-*` operations for this adoption.
 
 > Coordinated continuation: [Task 2C two-phase plan](../cvie-staging-continuation-plan.md). Original 29 is verified; adoption 29→37 and migration 37→740 remain separate approvals with fresh private recovery evidence. No further remote writes have run.
 
@@ -11,6 +11,69 @@ export commands and the local restore validator, use the
 Prepared November 3, 2026. PRs #243, #251 and #253 remain draft. No remote SQL,
 resume setting, resource creation, credential change or deployment is authorized
 by this document. Adoption and continuation are separate approvals.
+
+## Coordinated execution of the approved historical commit
+
+The owner has approved only original checkpoint 29 → integrated checkpoint 37 at
+`545a7b46bdcb77b99f2bc35bd1bb938e7add93a7`. Later documentation commits and the
+current PR head do not change that approval. One operator/session coordinates the
+protected environment settings and the single adoption attempt; other sessions
+must not rerun staging workflows or change those settings during the operation.
+
+Use the existing **push** run [41733850483](https://github.com/Prat007ai/cveharbor/actions/runs/41733850483),
+created for this exact SHA on `codex/cvie-core-phase012`. Its initial preparation
+passed and release was skipped. After fresh recovery evidence and continued
+maintenance are confirmed, use **Re-run all jobs** on this run, with debug logging
+disabled. The equivalent administrator CLI command is:
+
+```sh
+gh run rerun 41733850483 --repo Prat007ai/cveharbor
+```
+
+This is an execution command, not a read-only check. Do not run it during
+documentation preparation. Do not select a newer run, a pull-request run, or
+**Run workflow** against the moving branch head. GitHub reruns retain the original
+event SHA/ref; this workflow explicitly checks out `github.sha`. The rerun
+increases `github.run_attempt` above one, satisfying the original marked-push
+gate. The dispatcher additionally requires checkout SHA = `GITHUB_SHA` =
+`CF_STAGING_APPROVED_COMMIT` and the original event commit ID.
+
+In the existing protected `cloudflare-cvie-staging` environment, retain the
+existing staging-only API secret and configured protection rules. The execution
+configuration must be:
+
+| Variable | Exact value |
+| --- | --- |
+| `CF_STAGING_APPROVED_COMMIT` | `545a7b46bdcb77b99f2bc35bd1bb938e7add93a7` |
+| `CF_STAGING_PROVISION_ACTION` | `adopt-schema` |
+| `CF_STAGING_ACCOUNT_ID` | `9706b4d98ad72884e67fd1eb875c8a61` |
+| `CF_STAGING_D1_DATABASE_ID` | `fac61562-fc31-426d-8032-550aba63b7f6` |
+| `CF_STAGING_ADOPTION_SHA256` | `7ed30868dae48623caaccd9f1bead405333785b7b8c888f0308fb0b11ffe3eea` |
+| `CF_STAGING_SCHEMA_PLAN_SHA256` | `a4ad0b27ff77266706693bf34f0880088b0bfe12139a583cca518975981a0fc3` |
+| `CF_STAGING_SCHEMA_RESUME_STEP` | Unset or empty |
+
+Use the original recovery JSON below as the environment secret
+`CF_STAGING_RECOVERY_EVIDENCE`, with `source_sha` fixed to the same approved
+SHA. The actual capture time must remain within 60 minutes at the write, including
+time spent in preparation or waiting for environment approval. If expired,
+capture a new bookmark and complete export through the original private procedure,
+rerun the local validator, and replace the timestamp/bookmark/hash/path with those
+actual new values. Never relabel an old package as fresh.
+
+The owner reports the existing Access application has no associated policies,
+sessions were revoked, and access remains restricted. Preserve that maintenance
+state; do not restore Allow/Service Auth or install a Block policy merely to fit
+the optional R2 recovery workflow. Policy absence alone is not automated proof of
+writer isolation: retain the existing denial/drain evidence and administrator
+attestation. The original adoption rechecks schema/rows and recovery freshness;
+it does not query Access or stop administrator writers.
+
+After the rerun, review only the `adopt-schema` result: checkpoint 37, 22 tables,
+12 explicit indexes, two receipts, original objects preserved, foreign-key and
+quick-integrity checks passed. Stop there. A failure or ambiguous response
+requires read-only reconciliation before any retry; never click rerun again
+blindly. No Access restoration, checkpoint-740 continuation, Worker deployment,
+R2 recovery operation, merge or production action is part of this approval.
 
 ## Verified starting evidence
 
@@ -211,11 +274,9 @@ publish exports in GitHub artifacts: this repository is public.
    These booleans are administrator attestations, not automatic proof of export
    contents or retention. The executor validates scope/freshness/digests, requires
    the attestation and rechecks live schema. It logs only evidence hashes, not the
-   raw bookmark, private location or credential. Environment review remains
-   mandatory. Do not rerun an older marked commit: approval must target the exact
-   adoption implementation SHA. The current preparation commit deliberately does
-   not activate a release. A reviewed dispatch/marked implementation commit can be
-   prepared only after execution approval, without merging to main.
+   raw bookmark, private location or credential. Existing environment protections remain in force. Use only the approved
+   historical push run and fixed SHA described above. Do not create another marked
+   execution commit or run the newer PR head.
 
 Before the later continuation, confirm writers are still quiescent and both the
 original recovery package and a fresh checkpoint-37 recovery package are valid.

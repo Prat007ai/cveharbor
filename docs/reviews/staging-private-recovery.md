@@ -1,4 +1,23 @@
-# Protected staging recovery: implementation and approval boundaries
+# Optional R2 staging recovery: separate future review
+
+> Not part of the approved checkpoint 29 → 37 adoption. Retain the original
+> private administrator-machine bookmark/export/local-restore procedure and
+> `CF_STAGING_RECOVERY_EVIDENCE` at approved commit
+> `545a7b46bdcb77b99f2bc35bd1bb938e7add93a7`; see the
+> [coordinated execution procedure](permanent-staging-adoption.md#coordinated-execution-of-the-approved-historical-commit).
+> The instructions below describe an optional future mechanism, not prerequisites
+> for the current adoption. Do not run these operations or configure new resources
+> to complete the current adoption.
+
+The current maintenance state is incompatible with this mechanism's starting
+assumptions: `recovery-snapshot` requires two associated policies (Allow and
+Service Auth), while `recovery-capture`/`recovery-verify` require one explicit
+Block/Everyone policy. The owner reports zero associated policies. Do not change
+Access to satisfy these checks. Supporting an already-established maintenance
+window requires separate code review and tests; any snapshot of that state must
+not be mislabeled as the original pre-maintenance configuration. The existing
+code remains unchanged. Its signed receipt does not automatically populate
+the adoption recovery-evidence secret.
 
 Prepared only. PR #243 stays draft/unmerged. Use the existing `cvie-staging.yml`
 and `cloudflare-cvie-staging` environment; no credentials enter Codex. No new

@@ -1,6 +1,6 @@
 # Staging adoption: CI finding and administrator recovery checklist
 
-> Recovery execution now uses the existing protected GitHub job: [private recovery procedure](staging-private-recovery.md). It supersedes the administrator-machine Cloudflare export commands below. The offline key-holder device receives no Cloudflare credentials.
+> Current adoption uses the original administrator-machine bookmark/export/local-restore procedure and `CF_STAGING_RECOVERY_EVIDENCE`, pinned to approved commit `545a7b46bdcb77b99f2bc35bd1bb938e7add93a7`. The [R2 recovery mechanism](staging-private-recovery.md) is optional future work requiring separate review; it does not supersede this procedure or invalidate an otherwise current, validated backup. Do not run `recovery-*` operations for this adoption.
 
 ## Browser failure investigated
 
@@ -41,7 +41,16 @@ cursor, run migration commands, deploy Workers or merge the draft PRs.
 The steps below are the next administrator operations to approve. No Access,
 Worker, credential or database settings were changed while preparing them.
 
-## 1. Establish and verify a staging maintenance window
+## 1. Preserve the established staging maintenance window
+
+For this adoption the owner has already restricted Access by detaching all policy
+associations and revoking sessions, and has completed the private backup/local
+restore. Preserve this state. The initial-window instructions below are reference
+only, not a request to recreate maintenance, add policies or repeat completed
+checks. Use the [fixed-SHA execution method](permanent-staging-adoption.md#coordinated-execution-of-the-approved-historical-commit).
+Refresh recovery capture only when its 60-minute evidence window has expired.
+
+### Reference: establishing a new maintenance window
 
 Target account: `9706b4d98ad72884e67fd1eb875c8a61`.
 Target D1: **cveharbor-accounts-staging**, UUID

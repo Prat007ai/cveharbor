@@ -16,6 +16,13 @@ The integrated manifest includes staging bookkeeping, the original account schem
 
 ### Phase A — `adopt-schema`: original 29 → integrated 37, then STOP
 
+Current execution is pinned to approved commit
+`545a7b46bdcb77b99f2bc35bd1bb938e7add93a7` using the
+[historical push-run rerun procedure](reviews/permanent-staging-adoption.md#coordinated-execution-of-the-approved-historical-commit).
+The original private export/local-restore recovery contract remains authoritative.
+The newer R2 recovery mechanism is optional separate work, not an adoption prerequisite.
+Do not restore Access policies or execute Phase B as part of Phase A.
+
 Use the existing separately guarded adoption operation and its [review record](reviews/permanent-staging-adoption.md). It requires:
 
 - Exact approved commit, account/UUID, original reference and adoption SQL/specification hashes.
@@ -68,7 +75,7 @@ Local validation passed **85 staging test groups across 20 test files** and **26
 
 The existing adoption recovery gate is retained. Phase B now enforces equivalent evidence **before network access** and revalidates its freshness before every write batch. It binds the private export digest, recoverable bookmark, writer quiescence, exact source commit, integrated plan digest, start checkpoint and schema fingerprint. A missing, stale, cross-account, different-plan or different-state package stops execution. Only evidence/bookmark hashes are logged; private locations and raw bookmarks are not published. Administrator attestations are explicitly not claims that the executor independently downloaded or restore-tested a private export.
 
-Codex will handle technical capture/validation through an approved secure execution path; owner involvement is limited to export-window/private-destination authorization and account actions that the connector cannot perform. No owner console SQL troubleshooting is required. The private recovery export/availability prerequisites remain outstanding; preparing this plan does not waive them. Export may temporarily affect D1 availability, so its window also needs approval. No restore/reset/import is pre-authorized.
+For the current Phase-A adoption, use the owner's completed private administrator-machine export/local-restore procedure, refreshing it only when required by the 60-minute gate. Do not substitute the optional R2 recovery workflow or reopen Access for a snapshot. Phase B retains its separate recovery package and approval requirements. A capture or local validation reported by the owner is administrator evidence, not a claim that this implementation accessed the private files. Export may temporarily affect staging D1 availability. No restore/reset/import is pre-authorized.
 
 Phase A limits remain 100,000 observed reads, 100 writes, 100,000,000 storage bytes. Phase B limits remain **1,000,000 reads, 100,000 writes, 100,000,000 storage bytes**. Record D1 `rows_read`, `rows_written`, duration and size for every returned result, separating migration/guard costs from verification, and initial/final/peak storage/delta. Missing or failed-response counters make totals incomplete/lower bounds, never zero estimates. Local harness counters are synthetic, not predictions of Cloudflare billing. The existing job timeout remains 30 minutes.
 
@@ -78,10 +85,10 @@ Any failure, ambiguity, missing metrics, state change, expired evidence or limit
 
 ## Approval settings (do not configure or run yet)
 
-**First approval scope:** `adopt-schema` at the final implementation commit, with the existing staging account/UUID, valid private recovery package, and:
+**Approved Phase-A scope:** `adopt-schema` at `545a7b46bdcb77b99f2bc35bd1bb938e7add93a7`, with the existing staging account/UUID, valid private recovery package, and:
 
 ```text
-CF_STAGING_APPROVED_COMMIT=<full reviewed implementation commit>
+CF_STAGING_APPROVED_COMMIT=545a7b46bdcb77b99f2bc35bd1bb938e7add93a7
 CF_STAGING_PROVISION_ACTION=adopt-schema
 CF_STAGING_ADOPTION_SHA256=7ed30868dae48623caaccd9f1bead405333785b7b8c888f0308fb0b11ffe3eea
 CF_STAGING_SCHEMA_PLAN_SHA256=a4ad0b27ff77266706693bf34f0880088b0bfe12139a583cca518975981a0fc3
