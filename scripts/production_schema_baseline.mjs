@@ -5,24 +5,31 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {DatabaseSync} from 'node:sqlite';
 import {fileURLToPath} from 'node:url';
-import {forwardMigrations} from './release_migrations.mjs';
+import {canonicalDDL} from './sql_schema_tokens.mjs';
 import {backendIdentity} from './build_release_identity.mjs';
-import {normalizedDDL,recoveryTablesSQL,recoveryGuardSQL} from '../account-backend/src/recovery-schema.js';
+
 export const PRODUCTION_DB='46710e51-7ca4-4571-b89c-921b9969de0b';
 export const STAGING_ACCOUNT='9706b4d98ad72884e67fd1eb875c8a61';
 export const schemaSQL="SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE sql IS NOT NULL AND name NOT LIKE 'sqlite_%' AND name NOT GLOB '_cf_*' AND name NOT GLOB 'd1_*' ORDER BY type,name";
 export const digest=x=>createHash('sha256').update(typeof x==='string'?x:JSON.stringify(x)).digest('hex');
-export const canonical=rows=>rows.map(r=>({type:r.type,name:r.name,tbl_name:r.tbl_name,sql:normalizedDDL(r.sql)})).sort((a,b)=>(a.type+'\0'+a.name).localeCompare(b.type+'\0'+b.name));
+export const canonical=rows=>rows.map(r=>({type:r.type,name:r.name,tbl_name:r.tbl_name,sql:canonicalDDL(r.sql)})).sort((a,b)=>(a.type+'\0'+a.name).localeCompare(b.type+'\0'+b.name));
+export function objectCounts(objects){return {tables:objects.filter(o=>o.type==='table').length,explicit_indexes:objects.filter(o=>o.type==='index').length,triggers:objects.filter(o=>o.type==='trigger').length,views:objects.filter(o=>o.type==='view').length};}
 export function expectedBaseline(sourceRoot, manifestRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..')){
  const manifest=JSON.parse(fs.readFileSync(path.join(manifestRoot,'staging/migrations.v1.json')));
- const files=manifest.entries.filter(e=>e.path.startsWith('account-backend/')&&fs.existsSync(path.join(sourceRoot,e.path)));
+ const profile=JSON.parse(fs.readFileSync(path.join(manifestRoot,'release/baseline.json')));
+ assert.equal(profile.version,2);assert.equal(profile.schema_comparison,'sqlite-tokens-v1');
+ const files=profile.application_schema_files;
+ assert.ok(files.length>0);let position=-1;
+ for(const f of files){const i=manifest.entries.findIndex(e=>e.path===f.path&&e.sha256===f.sha256);assert.ok(i>position,'Unknown or reordered production schema file');position=i;}
+ assert.equal(new Set(files.map(f=>f.path)).size,files.length);
+ assert.equal(backendIdentity(sourceRoot),profile.backend.identity,'Source must match the verified deployed backend');
  const db=new DatabaseSync(':memory:');
  try{
   for(const e of files){const sql=fs.readFileSync(path.join(sourceRoot,e.path),'utf8');assert.equal(digest(sql),e.sha256,'Production source differs from the reviewed historical manifest');db.exec(sql);}
-  if(fs.existsSync(path.join(sourceRoot,'release/migrations')))for(const f of forwardMigrations(sourceRoot))db.exec(f.sql);
-  if(files.some(e=>e.path.endsWith('0032_recovery_control.sql')))for(const {name} of db.prepare(recoveryTablesSQL).all())for(const op of ['insert','update','delete'])db.exec(recoveryGuardSQL(name,op));
   const objects=canonical(db.prepare(schemaSQL).all());
-  return {backend_identity:backendIdentity(sourceRoot),schema_sha256:digest(objects),objects,application_schema_files:files.map(e=>({path:e.path,sha256:e.sha256}))};
+  assert.deepEqual(objectCounts(objects),profile.object_counts,'Unexpected production object counts');
+  assert.equal(digest(objects),profile.schema_sha256,'Reviewed production schema changed');
+  return {backend_identity:profile.backend.identity,schema_sha256:digest(objects),objects,application_schema_files:files,profile};
  }finally{db.close();}
 }
 // Only fixed operation labels/categories and numeric HTTP/provider codes may be logged.
@@ -47,6 +54,14 @@ async function workerContent(response){
  }else script=new TextDecoder().decode(raw);
  return {script,etag:response.headers.get('etag')};
 }
+// Read only boolean feature flags from the already fetched active version metadata.
+// Never copy arbitrary bindings, secret values, email addresses or account data.
+export function runtimeFlags(version){
+ const allowed=['RECOVERY_CONTROL_REQUIRED','CVIE_SHARED_SCANS_ENABLED','CVIE_REGISTRY_ENABLED','CVIE_FAST_EVIDENCE_ENABLED','PRODUCT_MONITOR_CHECKS_ENABLED','PRODUCT_MONITOR_DELIVERY_ENABLED','WEBSITE_MONITOR_ENABLED','WEBSITE_MONITOR_MANUAL_ENABLED','PLUGIN_MONITOR_ENABLED','ALERT_DELIVERY_ENABLED','LIFECYCLE_DELIVERY_ENABLED','ASSIGNMENT_EMAIL_ENABLED','ASSIGNMENT_ACK_ENABLED','ASSIGNMENT_FYI_ENABLED','ASSIGNMENT_PROGRESS_ENABLED','REMEDIATION_WORKFLOW_ENABLED'];
+ const bindings=version?.resources?.bindings;if(!Array.isArray(bindings))return {available:false,values:{}};
+ const values={};for(const name of allowed){const b=bindings.filter(b=>b.name===name);if(b.length===0)values[name]=null;else if(b.length===1&&b[0].type==='plain_text'&&['true','false'].includes(b[0].text))values[name]=b[0].text;else values[name]='unverified';}
+ return {available:true,values};
+}
 function strongETag(value){
  assert.ok(typeof value==='string'&&value.trim()&&!value.trim().startsWith('W/'),'Strong content ETag required');
  const tag=value.trim().replace(/^"(.*)"$/,'$1');assert.ok(tag.length>0);return tag;
@@ -64,7 +79,8 @@ export async function auditBaseline(env,expected,{transport=fetch,progress=()=>{
  const account=env.CLOUDFLARE_AUDIT_ACCOUNT_ID,token=env.CLOUDFLARE_AUDIT_API_TOKEN;
  progress('configuration.account_id');assert.match(account||'',/^[a-f0-9]{32}$/);assert.notEqual(account,STAGING_ACCOUNT);
  progress('configuration.api_token');assert.ok(token,'Audit credentials unavailable');
- progress('configuration.source_sha');assert.match(env.BASELINE_SOURCE_SHA||'',/^[a-f0-9]{40}$/);
+ const sourceSha=env.BASELINE_SOURCE_SHA||expected.profile?.backend.source_sha;
+ progress('configuration.source_sha');assert.match(sourceSha||'',/^[a-f0-9]{40}$/);if(expected.profile)assert.equal(sourceSha,expected.profile.backend.source_sha);
  const base=`https://api.cloudflare.com/client/v4/accounts/${account}`;
  async function request(operation,route,{sql,content=false}={}){
   progress(operation);
@@ -108,12 +124,18 @@ export async function auditBaseline(env,expected,{transport=fetch,progress=()=>{
  const after=await get('backend.deployment_recheck','/workers/scripts/cveharbor-accounts/deployments');
  const current=after?.deployments?.[0];
  const stable=current?.id===active.id&&current?.versions?.length===1&&current.versions[0].version_id===versionId&&current.versions[0].percentage===100;
- const releaseMatch=stable&&identity===expected.backend_identity;
+ let frontendStable=true;
+ if(expected.profile){const afterFrontend=await get('frontend.deployment_recheck','/workers/scripts/cveharbor-site/deployments');frontendStable=JSON.stringify(afterFrontend?.deployments?.[0])===JSON.stringify(frontendActive);}
+ const backendMatch=stable&&identity===expected.backend_identity&&(!expected.profile||versionId===expected.profile.backend.version_id);
+ const frontendMatch=frontendStable&&(!expected.profile||frontendActive.versions[0].version_id===expected.profile.frontend.version_id);
+ const releaseMatch=backendMatch&&frontendMatch;
  progress('baseline.compare');
  const names=new Map(expected.objects.map(o=>[o.type+':'+o.name,o]));
  const differences=actual.filter(o=>JSON.stringify(o)!==JSON.stringify(names.get(o.type+':'+o.name))).map(o=>({type:o.type,name:o.name}));
  const missing=expected.objects.filter(o=>!actual.some(a=>a.type===o.type&&a.name===o.name)).map(o=>({type:o.type,name:o.name}));
- return {version:1,status:schemaMatch&&releaseMatch?'verified':'blocked',source_sha:env.BASELINE_SOURCE_SHA,
+ return {...(expected.profile||{}),version:expected.profile?2:1,status:schemaMatch&&releaseMatch?'verified':'blocked',source_sha:sourceSha,
+  backend_verified:backendMatch,frontend_verified:frontendMatch,frontend_stable:frontendStable,runtime_flags:runtimeFlags(version),
+  ...(expected.profile?{backend:{...expected.profile.backend,version_id:versionId,identity},frontend:{...expected.profile.frontend,version_id:frontendActive.versions[0].version_id},object_counts:objectCounts(actual),verification_method:'live-read-only-audit'}:{}),
   production_database_id:PRODUCTION_DB,frontend_deployment_id:frontendActive.id,frontend_version_id:frontendActive.versions[0].version_id,worker_deployment_id:active.id,worker_version_id:active.versions[0].version_id,
   backend_identity:expected.backend_identity,deployed_backend_identity:identity,version_evidence:'deployed-script-releaseIdentity',deployment_stable:stable,
   deployed_release_verified:releaseMatch,schema_verified:schemaMatch,schema_sha256:digest(actual),

@@ -41,7 +41,7 @@ test('production baseline uses only schema SELECT and Worker metadata/content, n
  const expected={objects,schema_sha256:digest(objects),backend_identity:identity,application_schema_files:[{path:'fixture',sha256:identity}]};
  const calls=[],auditEnv={CLOUDFLARE_AUDIT_ACCOUNT_ID:'e'.repeat(32),CLOUDFLARE_AUDIT_API_TOKEN:'secret-fixture',BASELINE_SOURCE_SHA:sha};
  const transport=async(url,init)=>{calls.push({url:String(url),method:init.method});assert.equal(init.redirect,'error');assert.ok(String(url).startsWith('https://api.cloudflare.com/client/v4/accounts/'+'e'.repeat(32)));
- if(init.method==='POST'){assert.ok(String(url).endsWith('/'+PRODUCTION_DB+'/query'));assert.deepEqual(JSON.parse(init.body),{sql:schemaSQL});return Response.json({success:true,result:[{success:true,results:objects,meta:{rows_written:0}}]});}
+ if(init.method==='POST'){assert.ok(String(url).endsWith('/'+PRODUCTION_DB+'/query'));assert.deepEqual(JSON.parse(init.body),{sql:schemaSQL});return Response.json({success:true,result:[{success:true,results:[{type:'table',name:'users',tbl_name:'users',sql:'CREATE TABLE users(id TEXT)'}],meta:{rows_written:0}}]});}
  assert.equal(init.method,'GET');if(String(url).endsWith('/content/v2'))return new Response('var releaseIdentity="'+identity+'";',{headers:{ETag:'"deployed-content"'}});
  if(String(url).endsWith('/versions/version'))return Response.json({success:true,result:{id:'version',resources:{script:{etag:'deployed-content'}}}});
  return Response.json({success:true,result:String(url).endsWith('/deployments')?{deployments:[{id:'deployment',versions:[{version_id:'version',percentage:100}]}]}:{uuid:PRODUCTION_DB,name:'cveharbor-accounts'}});};

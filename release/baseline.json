@@ -1,9 +1,161 @@
 {
-  "version": 1,
-  "status": "awaiting-read-only-production-audit",
+  "version": 2,
+  "profile": "production-2026-11-04",
+  "status": "verified",
+  "verification_method": "read-only-audit-41900058502-and-local-schema-reconstruction",
+  "evidence_run": 41900058502,
+  "evidence_captured_at": "2026-11-04T19:46:06.746Z",
   "production_database_id": "46710e51-7ca4-4571-b89c-921b9969de0b",
-  "source_sha": null,
-  "backend_identity": null,
-  "schema_sha256": null,
-  "application_schema_files": []
+  "source_sha": "6e05106ce7d5f4c8741261775f2e4e69c6eea719",
+  "backend": {
+    "source_sha": "6e05106ce7d5f4c8741261775f2e4e69c6eea719",
+    "version_id": "aa8ce0f2-73d3-4714-b4c1-583d1f7283e1",
+    "deployment_id": "46019ca2-ff00-4c90-a652-130d44c36ae6",
+    "identity": "845dddb703e404b25763c17ea586aa11b88e316413b1cb22bb9562e949cd7a8c",
+    "source_evidence": "releaseIdentity-and-identical-account-backend-git-tree"
+  },
+  "frontend": {
+    "source_sha": "019efc6ca029f4113ce71c6ebfad3680fa66ba68",
+    "version_id": "e22850fa-851d-453f-8336-5e78d96babdd",
+    "deployment_id": "ec3d1d8c-dae1-4745-b866-ce0eed620db6",
+    "publication_run": 41882606976,
+    "public_feed_commit": "87c65bd39339bbbde23ffcecd77d85a9623a20ec"
+  },
+  "backend_identity": "845dddb703e404b25763c17ea586aa11b88e316413b1cb22bb9562e949cd7a8c",
+  "schema_verified": true,
+  "deployed_release_verified": true,
+  "customer_records_read": false,
+  "rows_written": 0,
+  "evidence_schema_sha256": "68a63465f2904ebe07cbbfe24b0a6952d45913e749bbdd8b1ec77d812cdbb90b",
+  "object_counts": {
+    "tables": 70,
+    "explicit_indexes": 48,
+    "triggers": 24,
+    "views": 1
+  },
+  "application_schema_files": [
+    {
+      "path": "account-backend/schema.sql",
+      "sha256": "b89e3589c3df611f2e9cb1c6f6bc6e49fa928329deb2ba3a2c6c9fae675f0e07"
+    },
+    {
+      "path": "account-backend/totp-schema.sql",
+      "sha256": "6fba840946258875cf4de95768540efd9df26e9b2bc76a94aa31077e7f337fcf"
+    },
+    {
+      "path": "account-backend/alert-schema.sql",
+      "sha256": "bf541a4e0f99bbd8e2122c1a5ed602d855dd9854ee15013d6fcf42f41f3670c0"
+    },
+    {
+      "path": "account-backend/inventory-schema.sql",
+      "sha256": "074a5b34f5ea7edecf116bec940a0080cd49ed37cba81e465fff373abd9430c8"
+    },
+    {
+      "path": "account-backend/remediation-schema.sql",
+      "sha256": "fb529eb8fd69d4c2249fbbda28f04067680cebd329f96cb9a97291bd2ac1ffc4"
+    },
+    {
+      "path": "account-backend/lifecycle-schema.sql",
+      "sha256": "9e2d4bd7e6e78f0b4cc1a074ec321814d571f27d594e8c715e5dbdb7b9adb92f"
+    },
+    {
+      "path": "account-backend/finding-status-schema.sql",
+      "sha256": "ea031537bee4af1fb2223412c3c038487feefdcd7aab16df5404ed5d90b46535"
+    },
+    {
+      "path": "account-backend/finding-ticket-schema.sql",
+      "sha256": "300aa4ea766b654096713ab274091cf7993fa2159ae6cf4ed3a16a198005b229"
+    },
+    {
+      "path": "account-backend/finding-ticket-history-schema.sql",
+      "sha256": "02418a2ad67a19d9febf72a4bfbe893f35a3ccc8bbc6b108edace730f5ce8f24"
+    },
+    {
+      "path": "account-backend/customer-score-schema.sql",
+      "sha256": "668ba20857612e8473b627bd8193767ba62b4177f474a6fabf86f65c5ae90be0"
+    },
+    {
+      "path": "account-backend/package-inventory-schema.sql",
+      "sha256": "1c4adcad66bb4ca29261c3c871ebfbaa47a00a72061533f81ee23555be110b7c"
+    },
+    {
+      "path": "account-backend/software-upgrade-history-schema.sql",
+      "sha256": "a116f0134034f4f2708eac5fa68efda3d7663aaa7dfb2459b7f47c38ed3c1f15"
+    },
+    {
+      "path": "account-backend/plugin-monitor-schema.sql",
+      "sha256": "7ae3144c33fb3c20cd2569007a5f048661cced413be6cd4c50844e63723ee72e"
+    },
+    {
+      "path": "account-backend/plugin-release-schema.sql",
+      "sha256": "11c18e7e69a6626e14d7ca6cbdbccfec5d37bfa0e7d74ed860d1eb095f05c4a1"
+    },
+    {
+      "path": "account-backend/plugin-source-schema.sql",
+      "sha256": "2761783300ea01d064c57bd6bb0a0ef0ce474fbd58b685cda6d35727d72bbae3"
+    },
+    {
+      "path": "account-backend/migrations/0016_website_monitor.sql",
+      "sha256": "cbe8f5802f393357af4954502b4d33f494d37c687666eadc783deb299da9a0c2"
+    },
+    {
+      "path": "account-backend/migrations/0017_web_risk_quota.sql",
+      "sha256": "8181159af943ac82a30bce24593e78c8335b315c4c90bc9ec4fa3bb0fdd29d9e"
+    },
+    {
+      "path": "account-backend/migrations/0018_technology_catalogue.sql",
+      "sha256": "22b6e5c8cf090f2f4911331b1a6fc9bb4fa2351bac000a82e0700fbdc2ecaaae"
+    },
+    {
+      "path": "account-backend/migrations/0019_cvie.sql",
+      "sha256": "628f04d2fd77f476e6015fc1ebb0e7154ca86b7f1f2710fb0336a16e10bef6f0"
+    },
+    {
+      "path": "account-backend/migrations/0020_cvie_evidence.sql",
+      "sha256": "25593f521858cd4f8578cb63aa51d10fb0e819133a419f66c7a3a359c886c2d8"
+    },
+    {
+      "path": "account-backend/migrations/0021_cvie_audit_refresh.sql",
+      "sha256": "7190f9715a136933d1d903b425d14fa73159ced8c8201b92f9c56249f38a0088"
+    },
+    {
+      "path": "account-backend/migrations/0022_cvie_shared_scans.sql",
+      "sha256": "a655d4c0f8d83a84a8252c6f3c1d700efa52cc986b1a030fe8c87fa22dc89292"
+    },
+    {
+      "path": "account-backend/migrations/0024_assignment_acknowledgements.sql",
+      "sha256": "3bc409ea7b0ea4053d636ecf62f1485172438c55eba4cb5b4453dab9581e820b"
+    },
+    {
+      "path": "account-backend/migrations/0025_assignment_fyi.sql",
+      "sha256": "585bb54b434f5c45a1de18ba42f162a77ba42246972ebe62cbdf886eba82a70a"
+    },
+    {
+      "path": "account-backend/migrations/0026_remediation_workflow.sql",
+      "sha256": "64bfd6ab1a5e57ae89007eeb122714af17b77071c74f6554604c8553ae0db6e8"
+    },
+    {
+      "path": "account-backend/migrations/0027_assignment_progress.sql",
+      "sha256": "cd35e1265abb1bb1585cb656ea2ae473ee5d83d29e6d1c3ec0fa8da6f5d6f902"
+    },
+    {
+      "path": "account-backend/migrations/0028_unified_findings.sql",
+      "sha256": "3059a57cd3a4c2ecfae04af0bf4ec908ff2c6be06cb11c603bedc80391a8f9ed"
+    },
+    {
+      "path": "account-backend/migrations/0029_finding_assignment_links.sql",
+      "sha256": "f416db8e1eafb71f0d986203fc68a6ca12764ee57a73e47cb698368ff6387004"
+    },
+    {
+      "path": "account-backend/migrations/0030_status_update_notifications.sql",
+      "sha256": "20eef5d962b9aee92c0f4a634bc49750087f1d151ed4c41d4db18d1c56f8fa4e"
+    }
+  ],
+  "excluded_migrations": [
+    "0023_lifecycle_monitoring.sql",
+    "0031_remediation_integrity.sql",
+    "0032_recovery_control.sql"
+  ],
+  "schema_comparison": "sqlite-tokens-v1",
+  "schema_sha256": "327bab011a4ffe3654aab618f859a8cdaef14aa7d4bbd03c0db96d4f7b0a225d"
 }

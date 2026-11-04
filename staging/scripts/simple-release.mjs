@@ -1,10 +1,11 @@
 // Enabled only after the one-time baseline review and administrator activation.
 import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';import {spawnSync} from 'node:child_process';import {fileURLToPath} from 'node:url';
 import {TARGET} from '../target.mjs';import {root} from './configure.mjs';import {management} from './diagnose.mjs';
-import {loadMigrationPlan,migrate} from './migrate.mjs';import {migrationState,verifySchema} from './manifest-state.mjs';
+import {migrate} from './migrate.mjs';import {migrationState,verifySchema} from './manifest-state.mjs';
 import {executeRelease} from './release.mjs';import {holdStatus,setHold,installGuards} from '../../scripts/recovery_control.mjs';
 import {d1Client} from '../../scripts/cloudflare_d1.mjs';import {forwardMigrations,migrationConfig} from '../../scripts/release_migrations.mjs';
 import {backendIdentity} from '../../scripts/build_release_identity.mjs';
+import {productionBaselinePlan,verifyProductionBaseline} from './production-baseline.mjs';
 export function simpleAuthorization(env,baseline){
  assert.equal(env.GITHUB_REPOSITORY,'Prat007ai/cveharbor');assert.equal(env.GITHUB_REF,'refs/heads/main');
  assert.ok(['push','workflow_dispatch'].includes(env.GITHUB_EVENT_NAME));assert.equal(env.SIMPLE_STAGING_ENABLED,'true');
@@ -26,6 +27,7 @@ export async function simpleRelease(env,{baseline=JSON.parse(fs.readFileSync(pat
  const bookmark=await get('/d1/database/'+env.CF_STAGING_D1_DATABASE_ID+'/time_travel/bookmark');assert.ok(bookmark?.bookmark,'D1 Time Travel unavailable');
  report.recovery_timestamp=clock(); // Raw bookmark stays in memory, never public artifacts.
  if(operation==='resume'){
+  assert.notEqual(baseline.version,2,'Production baseline has no 0032 write hold; use existing Access maintenance');
   assert.match(env.CF_STAGING_EXPECTED_HOLD_REVISION||'',/^\d+$/);
   await verifySchema(DB);
   assert.equal((await verifyNativeHistory(DB,forwardMigrations(path.resolve(root,'..')))).length,0,'Pending or unverified native migrations block resume');
@@ -33,19 +35,16 @@ export async function simpleRelease(env,{baseline=JSON.parse(fs.readFileSync(pat
   report.status='resumed';report.workers_deployed=false;return report;
  }
  if(operation==='initialize'){
-  const state=await migrationState(DB),plan=loadMigrationPlan({...derived,CF_STAGING_SCHEMA_PLAN_SHA256:JSON.parse(fs.readFileSync(path.join(root,'bootstrap-approval.v1.json'))).execution_plan_sha256});
-  assert.equal(state.rows.length,2,'Only verified adopted checkpoint 37 may initialize');
-  const productionFiles=baseline.application_schema_files;
-  for(let i=0;i<productionFiles.length;i++){const e=plan.files[i+1];assert.equal(e.file,productionFiles[i].path);assert.equal(e.sha256,productionFiles[i].sha256);}
-  const baselineEnd=plan.files[productionFiles.length].end;
-  const init=initialize||migrate;
-  const baseEnv={...derived,STAGING_CHANGE_APPROVED:'PR243-STAGING-ONLY',CF_STAGING_PROVISION_ACTION:'migrate',CF_STAGING_SCHEMA_PLAN_SHA256:JSON.parse(fs.readFileSync(path.join(root,'bootstrap-approval.v1.json'))).execution_plan_sha256,CF_STAGING_SCHEMA_RESUME_STEP:'37'};
-  // Two locally reviewed phases, one approved operation. Exact prefix/data guards remain.
-  assert.ok(baselineEnd>=37&&baselineEnd<=plan.checkpoints.length-1,'Baseline must be a reviewed forward prefix');
-  if(baselineEnd>37)report.baseline=await init(baseEnv,{plan,endStep:baselineEnd});
-  if(baselineEnd<plan.checkpoints.length-1)report.candidate=await init({...baseEnv,CF_STAGING_SCHEMA_RESUME_STEP:String(baselineEnd)},{plan});
+  const state=await migrationState(DB);assert.equal(state.rows.length,2,'Only verified adopted checkpoint 37 may initialize');
+  const {plan,sha256,endStep}=productionBaselinePlan(baseline);
+  const baseEnv={...derived,STAGING_CHANGE_APPROVED:'PR243-STAGING-ONLY',CF_STAGING_PROVISION_ACTION:'migrate',CF_STAGING_SCHEMA_PLAN_SHA256:sha256,CF_STAGING_SCHEMA_RESUME_STEP:'37'};
+  report.baseline=await (initialize||migrate)(baseEnv,{plan,endStep});
+  assert.equal(report.baseline.status,'complete');assert.equal(report.baseline.last_verified_step,endStep);
+  report.schema=await verifyProductionBaseline(DB,baseline);
+  report.production_baseline_end_step=endStep;report.continued_to_candidate=false;
   report.status='schema_initialized';report.access_restored=false;report.workers_deployed=false;return report;
  }
+ assert.notEqual(baseline.version,2,'Production schema initialized; Worker activation requires reviewed pinned sources and live runtime flags. Candidate migrations and deployments are blocked.');
  const state=await migrationState(DB);assert.equal(state.pending.length,0,'Run the separately approved one-time initialization first');
  const migrations=forwardMigrations(path.resolve(root,'..'));
  // Verify applied native history and checksums before trusting or extending it.

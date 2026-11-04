@@ -25,7 +25,7 @@ function harness(fault=()=>null){
   }else{assert.equal(init.method,'GET');assert.equal(init.body,undefined);}
   const i=calls.push({url:String(url),method:init.method})-1;
   const failure=fault(i);if(failure)return failure;
-  if(init.method==='POST')return Response.json({success:true,result:[{success:true,results:objects,meta:{rows_written:0}}]});
+  if(init.method==='POST')return Response.json({success:true,result:[{success:true,results:[{type:'table',name:'fixture',tbl_name:'fixture',sql:'CREATE TABLE fixture(id TEXT)'}],meta:{rows_written:0}}]});
   if(String(url).endsWith('/content/v2'))return new Response('var releaseIdentity="'+identity+'";',{headers:{'Content-Type':'application/javascript','ETag':'"deployed-content"'}});
   if(String(url).endsWith('/versions/version'))return Response.json({success:true,result:{id:'version',resources:{script:{etag:'deployed-content'}}}});
   return Response.json({success:true,result:String(url).endsWith('/deployments')?deployment:{uuid:PRODUCTION_DB,name:'cveharbor-accounts'}});
@@ -65,7 +65,7 @@ test('invalid account configuration is not printed or sent remotely',async()=>{
 });
 test('target mismatch and nonzero write metadata still block the audit',async()=>{
  for(const mode of ['target','writes']){
-  const h=harness(i=>mode==='target'&&i===0?Response.json({success:true,result:{uuid:sensitive,name:sensitive}}):mode==='writes'&&i===3?Response.json({success:true,result:[{success:true,results:objects,meta:{rows_written:1}}]}):null);
+  const h=harness(i=>mode==='target'&&i===0?Response.json({success:true,result:{uuid:sensitive,name:sensitive}}):mode==='writes'&&i===3?Response.json({success:true,result:[{success:true,results:[{type:'table',name:'fixture',tbl_name:'fixture',sql:'CREATE TABLE fixture(id TEXT)'}],meta:{rows_written:1}}]}):null);
   const r=await runBaselineAudit(env,h.options);assert.equal(r.status,'failed');assert.equal(r.error.operation,mode==='target'?'d1.metadata':'d1.schema_no_writes');assert.equal(r.error.category,'validation_failed');safe(r);
  }
 });
@@ -144,4 +144,12 @@ test('deployment or traffic changes during content retrieval cannot verify the r
   const h=harness(i=>i===6?Response.json({success:true,result:{deployments:[current]}}):null);const r=await runBaselineAudit(env,h.options);
   assert.equal(r.status,'blocked');assert.equal(r.deployment_stable,false);assert.equal(r.deployed_release_verified,false);safe(r);
  }
+});
+
+test('active version flags expose only allowlisted boolean configuration, never binding secrets',async()=>{
+ const {runtimeFlags}=await import('../../scripts/production_schema_baseline.mjs');
+ const r=runtimeFlags({resources:{bindings:[{name:'RECOVERY_CONTROL_REQUIRED',type:'plain_text',text:'false'},{name:'CVIE_REGISTRY_ENABLED',type:'secret_text',text:sensitive},{name:'SMTP2GO_API_KEY',type:'secret_text',text:sensitive},{name:'EMAIL_FROM',type:'plain_text',text:sensitive}]}});
+ assert.equal(r.available,true);assert.equal(r.values.RECOVERY_CONTROL_REQUIRED,'false');assert.equal(r.values.CVIE_REGISTRY_ENABLED,'unverified');assert.equal(r.values.CVIE_FAST_EVIDENCE_ENABLED,null);
+ assert.doesNotMatch(JSON.stringify(r),new RegExp(sensitive+'|SMTP2GO|EMAIL_FROM'));
+ assert.deepEqual(runtimeFlags({}),{available:false,values:{}});
 });
