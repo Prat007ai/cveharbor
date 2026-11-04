@@ -1,5 +1,7 @@
 # Staging adoption: CI finding and administrator recovery checklist
 
+> Recovery execution now uses the existing protected GitHub job: [private recovery procedure](staging-private-recovery.md). It supersedes the administrator-machine Cloudflare export commands below. The offline key-holder device receives no Cloudflare credentials.
+
 ## Browser failure investigated
 
 Run **41730562442**, job **126246452191**, failed at

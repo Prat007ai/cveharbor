@@ -16,10 +16,12 @@ MANUAL = MAIN + " && github.event_name == 'workflow_dispatch'"
 RELEASE = MAIN + " && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true'"
 PHASE1 = 'd791cb8e84f85f980926dd1e1acfd0b369c64b46'
 STAGING_RELEASE = "github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/codex/cvie-core-phase012' && ((github.event_name == 'workflow_dispatch' && inputs.operation != 'none') || (github.event_name == 'push' && github.run_attempt > 1 && contains(github.event.head_commit.message, '[staging-release]')))"
+STAGING_RECOVERY = STAGING_RELEASE + " && startsWith(vars.CF_STAGING_PROVISION_ACTION, 'recovery-')"
+STAGING_NORMAL = STAGING_RELEASE + " && !startsWith(vars.CF_STAGING_PROVISION_ACTION, 'recovery-')"
 ENVIRONMENTS = {'cloudflare-cvie-staging','cloudflare-worker-production', 'cloudflare-site-production', 'github-pages',
                 'cloudflare-production-audit', 'cloudflare-notifications-production', 'cloudflare-phase1-staging', 'cloudflare-intelligence-data'}
 SECRET_BOUNDARIES = {
-    'cloudflare-cvie-staging': {'CF_STAGING_RECOVERY_EVIDENCE','CF_STAGING_R2_ACCESS_KEY_ID','CF_STAGING_R2_SECRET_ACCESS_KEY','CF_STAGING_API_TOKEN','CF_STAGING_ACCOUNT_ID','CF_STAGING_ACCESS_ISSUER','CF_STAGING_ACCESS_AUD','CF_STAGING_ACCESS_CLIENT_ID','CF_STAGING_ACCESS_CLIENT_SECRET'},
+    'cloudflare-cvie-staging': {'CF_STAGING_RECOVERY_R2_ACCESS_KEY_ID','CF_STAGING_RECOVERY_R2_SECRET_ACCESS_KEY','CF_STAGING_RECOVERY_ISOLATION','CF_STAGING_RECOVERY_RESTORE_RECEIPT','CF_STAGING_RECOVERY_RESTORE_SIGNATURE','CF_STAGING_RECOVERY_EVIDENCE','CF_STAGING_R2_ACCESS_KEY_ID','CF_STAGING_R2_SECRET_ACCESS_KEY','CF_STAGING_API_TOKEN','CF_STAGING_ACCOUNT_ID','CF_STAGING_ACCESS_ISSUER','CF_STAGING_ACCESS_AUD','CF_STAGING_ACCESS_CLIENT_ID','CF_STAGING_ACCESS_CLIENT_SECRET'},
     'cloudflare-intelligence-data': {'FEED_R2_ACCESS_KEY_ID','FEED_R2_SECRET_ACCESS_KEY'},
     'cloudflare-worker-production': {'CVEHARBOR_PROD_WORKER_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID'},
     'cloudflare-site-production': {'CVEHARBOR_PROD_SITE_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID', 'CVEHARBOR_SITE_GATE_PASSWORD'},
@@ -80,28 +82,58 @@ def validate(doc, filename):
             require(env in ENVIRONMENTS, label + ': unknown or dynamic environment')
             requested = {m.group().split('.', 1)[1] for m in SENSITIVE.finditer(raw)}
             require(requested <= SECRET_BOUNDARIES.get(env, set()), label + ': credential is outside the environment boundary')
-            prefix = STAGING_RELEASE if env == 'cloudflare-cvie-staging' else MANUAL if filename == 'recovery-write-hold.yml' and name == 'control' else MAIN + " && vars.FEED_PUBLICATION_ENABLED == 'true'" if env == 'cloudflare-intelligence-data' else MANUAL if env in {'cloudflare-production-audit','cloudflare-notifications-production','cloudflare-phase1-staging'} else RELEASE
+            prefix = (STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) if env == 'cloudflare-cvie-staging' else MANUAL if filename == 'recovery-write-hold.yml' and name == 'control' else MAIN + " && vars.FEED_PUBLICATION_ENABLED == 'true'" if env == 'cloudflare-intelligence-data' else MANUAL if env in {'cloudflare-production-audit','cloudflare-notifications-production','cloudflare-phase1-staging'} else RELEASE
             require(condition == prefix or condition.startswith(prefix + ' && '), label + ': explicit main/event/release guard required')
             # The only extra ORs allowed are bootstrap's grouped event allowlist.
-            require('||' not in condition or env == 'cloudflare-cvie-staging' and filename == 'cvie-staging.yml' and name == 'release' and condition == STAGING_RELEASE or filename == 'bootstrap.yml' and name == 'sync' and condition == RELEASE + " && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true))", label + ': guard may not be bypassed with OR')
+            require('||' not in condition or env == 'cloudflare-cvie-staging' and filename == 'cvie-staging.yml' and name in {'release','recovery'} and condition == (STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) or filename == 'bootstrap.yml' and name == 'sync' and condition == RELEASE + " && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true))", label + ': guard may not be bypassed with OR')
         if env == 'cloudflare-cvie-staging':
-            require(filename == 'cvie-staging.yml' and name == 'release' and condition == STAGING_RELEASE, label + ': only reviewed staging release caller is permitted')
+            require(filename == 'cvie-staging.yml' and name in {'release','recovery'} and condition == (STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL), label + ': only reviewed staging release caller is permitted')
             require(job.get('needs') == 'prepare', label + ': credential-free preparation required first')
             require('scripts/provision.mjs' not in raw and 'create-database' not in raw, label + ': initial provisioning is retired')
-            runners = [s for s in job.get('steps', []) if s.get('run') == 'node staging/scripts/release.mjs']
-            expected_guards = {"env.CF_STAGING_PROVISION_ACTION == 'diagnose-schema'", "env.CF_STAGING_PROVISION_ACTION == 'adopt-schema'", "env.CF_STAGING_PROVISION_ACTION == 'migrate'", "env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema' && env.CF_STAGING_PROVISION_ACTION != 'adopt-schema' && env.CF_STAGING_PROVISION_ACTION != 'migrate'"}
-            require(len(runners) == 4 and {s.get('if') for s in runners} == expected_guards, label + ': diagnostic/adoption/migration/general dispatch must be exclusive')
-            for step in runners:
-                if step.get('if') == "env.CF_STAGING_PROVISION_ACTION == 'adopt-schema'":
-                    require(step.get('env') == {'CF_STAGING_API_TOKEN': '${{ secrets.CF_STAGING_API_TOKEN }}', 'CF_STAGING_RECOVERY_EVIDENCE': '${{ secrets.CF_STAGING_RECOVERY_EVIDENCE }}'}, label + ': adoption receives only staging D1 credential and private recovery evidence')
-                if step.get('if') == "env.CF_STAGING_PROVISION_ACTION == 'migrate'":
-                    expected = {'CF_STAGING_API_TOKEN': '${{ secrets.CF_STAGING_API_TOKEN }}',
-                                'CF_STAGING_RECOVERY_EVIDENCE': '${{ secrets.CF_STAGING_RECOVERY_EVIDENCE }}',
-                                'CF_STAGING_ACCESS_ISSUER': '${{ vars.CF_STAGING_ACCESS_ISSUER || secrets.CF_STAGING_ACCESS_ISSUER }}',
-                                'CF_STAGING_ACCESS_AUD': '${{ vars.CF_STAGING_ACCESS_AUD || secrets.CF_STAGING_ACCESS_AUD }}',
-                                'CF_STAGING_ACCESS_CLIENT_ID': '${{ secrets.CF_STAGING_ACCESS_CLIENT_ID }}',
-                                'CF_STAGING_ACCESS_CLIENT_SECRET': '${{ secrets.CF_STAGING_ACCESS_CLIENT_SECRET }}'}
-                    require(step.get('env') == expected, label + ': migration receives only staging D1/Access credentials and private recovery evidence')
+            if name == 'release':
+                require(not requested.intersection({'CF_STAGING_RECOVERY_R2_ACCESS_KEY_ID','CF_STAGING_RECOVERY_R2_SECRET_ACCESS_KEY','CF_STAGING_RECOVERY_ISOLATION','CF_STAGING_RECOVERY_RESTORE_RECEIPT','CF_STAGING_RECOVERY_RESTORE_SIGNATURE'}), label + ': recovery-only credentials cannot enter the release job')
+                runners = [s for s in job.get('steps', []) if s.get('run') == 'node staging/scripts/release.mjs']
+                expected_guards = {"env.CF_STAGING_PROVISION_ACTION == 'diagnose-schema'", "env.CF_STAGING_PROVISION_ACTION == 'adopt-schema'", "env.CF_STAGING_PROVISION_ACTION == 'migrate'", "env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema' && env.CF_STAGING_PROVISION_ACTION != 'adopt-schema' && env.CF_STAGING_PROVISION_ACTION != 'migrate'"}
+                require(len(runners) == 4 and {s.get('if') for s in runners} == expected_guards, label + ': diagnostic/adoption/migration/general dispatch must be exclusive')
+                for step in runners:
+                    if step.get('if') == "env.CF_STAGING_PROVISION_ACTION == 'adopt-schema'":
+                        require(step.get('env') == {'CF_STAGING_API_TOKEN': '${{ secrets.CF_STAGING_API_TOKEN }}', 'CF_STAGING_RECOVERY_EVIDENCE': '${{ secrets.CF_STAGING_RECOVERY_EVIDENCE }}'}, label + ': adoption receives only staging D1 credential and private recovery evidence')
+                    if step.get('if') == "env.CF_STAGING_PROVISION_ACTION == 'migrate'":
+                        expected = {'CF_STAGING_API_TOKEN': '${{ secrets.CF_STAGING_API_TOKEN }}',
+                                    'CF_STAGING_RECOVERY_EVIDENCE': '${{ secrets.CF_STAGING_RECOVERY_EVIDENCE }}',
+                                    'CF_STAGING_ACCESS_ISSUER': '${{ vars.CF_STAGING_ACCESS_ISSUER || secrets.CF_STAGING_ACCESS_ISSUER }}',
+                                    'CF_STAGING_ACCESS_AUD': '${{ vars.CF_STAGING_ACCESS_AUD || secrets.CF_STAGING_ACCESS_AUD }}',
+                                    'CF_STAGING_ACCESS_CLIENT_ID': '${{ secrets.CF_STAGING_ACCESS_CLIENT_ID }}',
+                                    'CF_STAGING_ACCESS_CLIENT_SECRET': '${{ secrets.CF_STAGING_ACCESS_CLIENT_SECRET }}'}
+                        require(step.get('env') == expected, label + ': migration receives only staging D1/Access credentials and private recovery evidence')
+            if name == 'recovery':
+                require(job.get('concurrency') == {'group':'cveharbor-permanent-staging','cancel-in-progress':False}, label + ': recovery must serialize with staging mutations')
+                require(job.get('timeout-minutes') == 30, label + ': bounded recovery window required')
+                require(not re.search(r'upload-artifact|actions/cache|release\.mjs|wrangler|migrat|deploy|publish-synthetic', raw, re.I), label + ': recovery cannot upload artifacts/cache or enter release paths')
+                allowed = {'CF_STAGING_ACCOUNT_ID','CF_STAGING_API_TOKEN','CF_STAGING_RECOVERY_R2_ACCESS_KEY_ID','CF_STAGING_RECOVERY_R2_SECRET_ACCESS_KEY','CF_STAGING_RECOVERY_ISOLATION','CF_STAGING_RECOVERY_RESTORE_RECEIPT','CF_STAGING_RECOVERY_RESTORE_SIGNATURE','CF_STAGING_ACCESS_CLIENT_ID','CF_STAGING_ACCESS_CLIENT_SECRET'}
+                require(requested <= allowed, label + ': recovery cannot use publisher/deployment credentials')
+                inventory = [s for s in job.get('steps',[]) if s.get('name') == 'Inspect staging recovery inventory only']
+                require(len(inventory)==1 and inventory[0].get('if')=="env.CF_STAGING_PROVISION_ACTION == 'recovery-inventory'" and inventory[0].get('env')=={'CF_STAGING_API_TOKEN':'${{ secrets.CF_STAGING_API_TOKEN }}'} and inventory[0].get('run')=='node staging/recovery/recovery.mjs', label + ': inventory credential/dispatch boundary')
+                require(any(s.get('run')=='node staging/recovery/recovery.mjs --check' and not s.get('env') for s in job.get('steps',[])), label + ': recovery requires credential-free source authorization')
+                require(any('sudo swapoff -a' in s.get('run','') and not s.get('env') for s in job.get('steps',[])), label + ': recovery plaintext must not be swapped')
+                runners = [s for s in job.get('steps',[]) if s.get('run')=='node staging/recovery/recovery.mjs']
+                private_guard = "env.CF_STAGING_PROVISION_ACTION == 'recovery-snapshot' || env.CF_STAGING_PROVISION_ACTION == 'recovery-capture' || env.CF_STAGING_PROVISION_ACTION == 'recovery-verify'"
+                require(len(runners)==2 and {s.get('if') for s in runners}=={"env.CF_STAGING_PROVISION_ACTION == 'recovery-inventory'",private_guard}, label + ': exclusive recovery operation dispatch required')
+                expected_private = {'CF_STAGING_API_TOKEN':'${{ secrets.CF_STAGING_API_TOKEN }}',
+                    'CF_STAGING_RECOVERY_R2_ACCESS_KEY_ID':'${{ secrets.CF_STAGING_RECOVERY_R2_ACCESS_KEY_ID }}',
+                    'CF_STAGING_RECOVERY_R2_SECRET_ACCESS_KEY':'${{ secrets.CF_STAGING_RECOVERY_R2_SECRET_ACCESS_KEY }}',
+                    'CF_STAGING_RECOVERY_CERT_PEM':'${{ vars.CF_STAGING_RECOVERY_CERT_PEM }}',
+                    'CF_STAGING_RECOVERY_ISOLATION':'${{ secrets.CF_STAGING_RECOVERY_ISOLATION }}',
+                    'CF_STAGING_RECOVERY_RESTORE_RECEIPT':'${{ secrets.CF_STAGING_RECOVERY_RESTORE_RECEIPT }}',
+                    'CF_STAGING_RECOVERY_RESTORE_SIGNATURE':'${{ secrets.CF_STAGING_RECOVERY_RESTORE_SIGNATURE }}',
+                    'CF_STAGING_ACCESS_CLIENT_ID':'${{ secrets.CF_STAGING_ACCESS_CLIENT_ID }}',
+                    'CF_STAGING_ACCESS_CLIENT_SECRET':'${{ secrets.CF_STAGING_ACCESS_CLIENT_SECRET }}'}
+                for step in job.get('steps',[]):
+                    if step.get('if')==private_guard:
+                        require(step.get('env')==expected_private and step.get('run')=='node staging/recovery/recovery.mjs', label + ': private recovery credential boundary')
+                    elif step.get('name')!='Inspect staging recovery inventory only':
+                        require(not SENSITIVE.search(json.dumps(step)), label + ': credential-free setup/cleanup required')
+
         if env == 'cloudflare-intelligence-data':
             require(filename == 'publish-intelligence.yml' and name == 'collect', label + ': data credential caller not allowed')
             require('PRODUCTION_DEPLOYMENTS_ENABLED' not in condition and 'needs' not in job, label + ': feed cannot depend on application release')

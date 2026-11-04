@@ -110,3 +110,39 @@ class ProductionProbeIsolationTests(unittest.TestCase):
         job = self.confirmation()['jobs']['activate']
         self.assertEqual(job['environment'], 'cloudflare-worker-production')
         self.assertTrue(job['if'].startswith(policy.RELEASE + ' && '))
+
+class RecoveryIsolationTests(unittest.TestCase):
+ def workflow(self):return policy.load_workflow((ROOT/'.github/workflows/cvie-staging.yml').read_text())
+ def test_recovery_is_same_environment_but_separate_serialized_job(self):
+  doc=self.workflow();job=doc['jobs']['recovery']
+  self.assertEqual(job['environment'],'cloudflare-cvie-staging')
+  self.assertEqual(job['if'],policy.STAGING_RECOVERY)
+  self.assertEqual(doc['jobs']['release']['if'],policy.STAGING_NORMAL)
+  self.assertEqual(job['concurrency'],doc['jobs']['release']['concurrency'])
+  self.assertEqual(policy.validate(doc,'cvie-staging.yml'),[])
+ def test_recovery_rejects_artifacts_caches_release_and_publisher_credentials(self):
+  for addition in [
+   {'uses':'actions/upload-artifact@'+'a'*40},
+   {'uses':'actions/cache@'+'a'*40},
+   {'run':'node staging/scripts/release.mjs'},
+   {'run':'echo forbidden','env':{'TOKEN':'${{ secrets.CF_STAGING_R2_SECRET_ACCESS_KEY }}'}},
+   {'run':'echo forbidden','env':{'KEY':'${{ secrets.CF_STAGING_RECOVERY_PRIVATE_KEY }}'}}]:
+   doc=self.workflow();doc['jobs']['recovery']['steps'].append(addition)
+   self.assertTrue(policy.validate(doc,'cvie-staging.yml'))
+ def test_recovery_rejects_lost_guard_missing_preparation_or_extended_window(self):
+  for change in [{'if':policy.STAGING_RELEASE},{'needs':[]},{'timeout-minutes':60},{'concurrency':{'group':'different'}}]:
+   doc=self.workflow();doc['jobs']['recovery'].update(change);self.assertTrue(policy.validate(doc,'cvie-staging.yml'))
+ def test_inventory_cannot_receive_recovery_keys_or_run_capture_unconditionally(self):
+  for change in ['keys','guard','swap','receipt']:
+   doc=self.workflow();steps=doc['jobs']['recovery']['steps']
+   if change=='swap':steps[:]=[s for s in steps if 'swapoff' not in s.get('run','')]
+   elif change=='receipt':next(s for s in steps if s.get('name')=='Execute approved private recovery operation')['env'].pop('CF_STAGING_RECOVERY_RESTORE_SIGNATURE')
+   else:
+    step=next(s for s in steps if s.get('name')=='Inspect staging recovery inventory only')
+    if change=='keys':step['env']['KEY']='${{ secrets.CF_STAGING_RECOVERY_R2_SECRET_ACCESS_KEY }}'
+    else:step['if']='true'
+   self.assertTrue(policy.validate(doc,'cvie-staging.yml'))
+
+ def test_release_cannot_receive_recovery_storage_credentials(self):
+  doc=self.workflow();doc['jobs']['release']['steps'].append({'run':'echo forbidden','env':{'KEY':'${{ secrets.CF_STAGING_RECOVERY_R2_SECRET_ACCESS_KEY }}'}})
+  self.assertTrue(policy.validate(doc,'cvie-staging.yml'))

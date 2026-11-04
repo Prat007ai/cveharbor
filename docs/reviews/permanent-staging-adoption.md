@@ -1,5 +1,7 @@
 # Original-schema adoption: review package, not execution approval
 
+> Recovery execution now uses the existing protected GitHub job: [private recovery procedure](staging-private-recovery.md). It supersedes the administrator-machine Cloudflare export commands below. The offline key-holder device receives no Cloudflare credentials.
+
 > Coordinated continuation: [Task 2C two-phase plan](../cvie-staging-continuation-plan.md). Original 29 is verified; adoption 29→37 and migration 37→740 remain separate approvals with fresh private recovery evidence. No further remote writes have run.
 
 For the investigated browser CI race, practical maintenance isolation, bookmark/
