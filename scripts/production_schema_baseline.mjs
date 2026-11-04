@@ -62,6 +62,15 @@ export function runtimeFlags(version){
  const values={};for(const name of allowed){const b=bindings.filter(b=>b.name===name);if(b.length===0)values[name]=null;else if(b.length===1&&b[0].type==='plain_text'&&['true','false'].includes(b[0].text))values[name]=b[0].text;else values[name]='unverified';}
  return {available:true,values};
 }
+// Metadata verification does not certify application health. In particular, do
+// not hide required recovery tables missing from an otherwise matching baseline.
+export function runtimeCompatibility(flags,objects){
+ if(flags.available&&flags.values.RECOVERY_CONTROL_REQUIRED==='true'){
+  const missing=['operations_control','operations_leases','operations_events'].filter(name=>!objects.some(o=>o.type==='table'&&o.name===name));
+  if(missing.length)return {status:'incompatible',reason:'required_recovery_schema_missing',missing_tables:missing};
+ }
+ return {status:'not_fully_assessed',reason:'metadata_audit_only'};
+}
 function strongETag(value){
  assert.ok(typeof value==='string'&&value.trim()&&!value.trim().startsWith('W/'),'Strong content ETag required');
  const tag=value.trim().replace(/^"(.*)"$/,'$1');assert.ok(tag.length>0);return tag;
@@ -129,13 +138,15 @@ export async function auditBaseline(env,expected,{transport=fetch,progress=()=>{
  const backendMatch=stable&&identity===expected.backend_identity&&(!expected.profile||versionId===expected.profile.backend.version_id);
  const frontendMatch=frontendStable&&(!expected.profile||frontendActive.versions[0].version_id===expected.profile.frontend.version_id);
  const releaseMatch=backendMatch&&frontendMatch;
+ const flags=runtimeFlags(version),compatibility=runtimeCompatibility(flags,actual);
  progress('baseline.compare');
  const names=new Map(expected.objects.map(o=>[o.type+':'+o.name,o]));
  const differences=actual.filter(o=>JSON.stringify(o)!==JSON.stringify(names.get(o.type+':'+o.name))).map(o=>({type:o.type,name:o.name}));
  const missing=expected.objects.filter(o=>!actual.some(a=>a.type===o.type&&a.name===o.name)).map(o=>({type:o.type,name:o.name}));
  return {...(expected.profile||{}),version:expected.profile?2:1,status:schemaMatch&&releaseMatch?'verified':'blocked',source_sha:sourceSha,
-  backend_verified:backendMatch,frontend_verified:frontendMatch,frontend_stable:frontendStable,runtime_flags:runtimeFlags(version),
-  ...(expected.profile?{backend:{...expected.profile.backend,version_id:versionId,identity},frontend:{...expected.profile.frontend,version_id:frontendActive.versions[0].version_id},object_counts:objectCounts(actual),verification_method:'live-read-only-audit'}:{}),
+  backend_verified:backendMatch,frontend_verified:frontendMatch,frontend_stable:frontendStable,runtime_flags:flags,runtime_compatibility:compatibility,application_ready:compatibility.status==='incompatible'?false:null,
+  ...(/^\d+$/.test(env.GITHUB_RUN_ID||'')?{audit_run_id:Number(env.GITHUB_RUN_ID)}:{}),
+  ...(expected.profile?{backend:{...expected.profile.backend,version_id:versionId,deployment_id:active.id,identity},frontend:{...expected.profile.frontend,version_id:frontendActive.versions[0].version_id,deployment_id:frontendActive.id},object_counts:objectCounts(actual),verification_method:'live-read-only-audit'}:{}),
   production_database_id:PRODUCTION_DB,frontend_deployment_id:frontendActive.id,frontend_version_id:frontendActive.versions[0].version_id,worker_deployment_id:active.id,worker_version_id:active.versions[0].version_id,
   backend_identity:expected.backend_identity,deployed_backend_identity:identity,version_evidence:'deployed-script-releaseIdentity',deployment_stable:stable,
   deployed_release_verified:releaseMatch,schema_verified:schemaMatch,schema_sha256:digest(actual),
@@ -164,6 +175,6 @@ export async function runBaselineAudit(env,{transport=fetch,build=expectedBaseli
 if(process.argv[1]===fileURLToPath(import.meta.url)){
  const result=await runBaselineAudit(process.env);
  console.log(JSON.stringify({status:result.status,schema_verified:result.schema_verified,deployed_release_verified:result.deployed_release_verified,
-  rows_written:result.rows_written,customer_records_read:result.customer_records_read,...(result.error?{error:result.error}:{}),...(result.audit_error?{audit_error:result.audit_error}:{})}));
+  rows_written:result.rows_written,customer_records_read:result.customer_records_read,...(result.runtime_compatibility?{runtime_compatibility:result.runtime_compatibility,application_ready:result.application_ready}:{}),...(result.error?{error:result.error}:{}),...(result.audit_error?{audit_error:result.audit_error}:{})}));
  if(result.status!=='verified')process.exitCode=1;
 }
