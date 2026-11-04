@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-04",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 7990,
+  "candidate_records": 7935,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -461,11 +461,11 @@
           "url": "https://github.com/advisories/GHSA-33qj-632f-3294"
         },
         {
-          "label": "Additional advisory",
+          "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120931"
         },
         {
-          "label": "Additional advisory",
+          "label": "Vendor advisory",
           "url": "https://chromereleases.googleblog.com/2026/10/stable-channel-update-for-desktop_02018666648.html"
         },
         {
@@ -2271,7 +2271,7 @@
       "cvss": null,
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-11-04T07:30:00Z",
-      "source_updated_at": "2026-11-04T06:17:03.070",
+      "source_updated_at": "2026-11-04T14:11:57.473",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -3251,6 +3251,7 @@
       "title": "The Mobile builder plugin for WordPress is vulnerable to Privilege Escalation in all versions up...",
       "severity": "high",
       "categories": [
+        "PHP",
         "WordPress / Plugins"
       ],
       "published": "2026-11-04",
@@ -3367,8 +3368,8 @@
       "title": "Malware in screenshot-desktop",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-11-04",
       "updated": "2026-11-04",
@@ -3504,6 +3505,62 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-119745",
+      "title": "MultiVendorX plugin for WordPress before 5.0.21 contains a missing authorization vulnerability that allows any authenticated user, including Subscribers, to access a sensitive",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "MultiVendorX plugin for WordPress before 5.0.21 contains a missing authorization vulnerability that allows any authenticated user, including Subscribers, to access a sensitive diagnostic dump by requesting the admin_post_sender_debug_download action handled by downloadDebugFile() without any capability, nonce, or referer check. Attackers can exploit this flaw via wp-admin/admin-post.php?action=sender_debug_download to retrieve WordPress, PHP, WooCommerce, and server version details, the full active plugin inventory, active theme information, and plugin settings including the connected Sender account resource key and account metadata.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119745"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-04T15:02:09Z",
+      "source_updated_at": "2026-11-04T14:17:31.920",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121993",
+      "title": "wePOS (Point Of Sale for WooCommerce) before 2.0.3 contains a missing authorization vulnerability in the wepos/v1/payment/process REST route that allows authenticated vendor-l",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "wePOS (Point Of Sale for WooCommerce) before 2.0.3 contains a missing authorization vulnerability in the wepos/v1/payment/process REST route that allows authenticated vendor-level users to mark arbitrary orders as paid and completed by supplying another order's ID. Attackers with only the publish_shop_orders capability (such as Dokan vendor staff) can invoke the payment processing endpoint with an order ID they do not own to trigger the order completion lifecycle, including stock reduction and granting of paid-order access, without making any real payment.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121993"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-04T15:02:09Z",
+      "source_updated_at": "2026-11-04T14:17:39.050",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "GHSA-v25g-rj4q-4q96",
       "title": "Malware in nulio-connector",
       "severity": "bulletin",
@@ -3551,15 +3608,15 @@
           "url": "https://github.com/advisories/GHSA-v6qr-8f43-6mf4"
         },
         {
-          "label": "Additional advisory",
+          "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121234"
         },
         {
-          "label": "Additional advisory",
+          "label": "Vendor advisory",
           "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
         },
         {
-          "label": "Additional advisory",
+          "label": "Vendor advisory",
           "url": "https://issues.chromium.org/issues/513767200"
         }
       ],
@@ -3639,7 +3696,7 @@
       "cvss": "9.2",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-11-03T20:02:03Z",
-      "source_updated_at": "2026-11-04T05:18:29.063",
+      "source_updated_at": "2026-11-04T14:17:27.450",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -3667,7 +3724,7 @@
       "cvss": "9.6",
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-11-03T21:56:58Z",
-      "source_updated_at": "2026-11-04T05:18:30.940",
+      "source_updated_at": "2026-11-04T14:17:32.260",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -3710,6 +3767,244 @@
       "status": "GitHub malware advisory",
       "first_seen_at": "2026-11-03T10:04:41Z",
       "source_updated_at": "2026-11-04T06:32:52Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-91075",
+      "title": "The Eupago Gateway For Woocommerce WordPress plugin from 4.5.0 through 4.7.5 does not verify the...",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-04",
+      "summary": "The Eupago Gateway For Woocommerce WordPress plugin from 4.5.0 through 4.7.5 does not verify the authenticity of incoming payment-confirmation webhook requests in some configurations, allowing unauthenticated attackers to forge a payment confirmation and mark a pending order as paid without paying for it.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-g2hh-vxh7-5vwh"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-91075"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/065557b8-a29f-4c59-9289-2343d90447b1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T09:31:54Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00114,
+      "epss_percentile": 0.01506,
+      "epss_as_of": "2026-11-04"
+    },
+    {
+      "id": "CVE-2026-103327",
+      "title": "The CryptoCloud WordPress plugin from 3.0.0 through 3.0.1 does not verify the authenticity of the...",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-04",
+      "summary": "The CryptoCloud WordPress plugin from 3.0.0 through 3.0.1 does not verify the authenticity of the payment notifications received by its gateway callback, as the integrity check is skipped while the webhook secret is left at its empty default, allowing unauthenticated attackers to mark arbitrary orders as paid or failed without any payment being made.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-xpq3-q6vx-4qg3"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-103327"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/fd5563ed-85c6-4b17-acf6-bdc2cd77dd4b"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "5.3",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-03T09:31:45Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00114,
+      "epss_percentile": 0.01507,
+      "epss_as_of": "2026-11-04"
+    },
+    {
+      "id": "CVE-2026-121247",
+      "title": "Buffer overflow in Dawn in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote...",
+      "severity": "bulletin",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-04",
+      "summary": "Buffer overflow in Dawn in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical)",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-wp3p-5vrj-qhr5"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121247"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://issues.chromium.org/issues/569161611"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:32:38Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121246",
+      "title": "Use after free in WebGL in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote...",
+      "severity": "bulletin",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-04",
+      "summary": "Use after free in WebGL in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical)",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-4p6f-hcm2-m5p2"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121246"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://issues.chromium.org/issues/558870371"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:32:38Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121241",
+      "title": "Use after free in Navigation in Google Chrome on on Android prior to 157.0.8103.38 allowed a...",
+      "severity": "bulletin",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-04",
+      "summary": "Use after free in Navigation in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High)",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-j58v-6pcx-w9gw"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121241"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://issues.chromium.org/issues/574791491"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:32:37Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121229",
+      "title": "Memory corruption in ANGLE in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote...",
+      "severity": "bulletin",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-04",
+      "summary": "Memory corruption in ANGLE in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical)",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-rrrq-h6hf-wc6w"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121229"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://issues.chromium.org/issues/562777838"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-03T21:32:33Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -6047,45 +6342,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-91075",
-      "title": "The Eupago Gateway For Woocommerce WordPress plugin from 4.5.0 through 4.7.5 does not verify the...",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-11-03",
-      "updated": "2026-11-03",
-      "summary": "The Eupago Gateway For Woocommerce WordPress plugin from 4.5.0 through 4.7.5 does not verify the authenticity of incoming payment-confirmation webhook requests in some configurations, allowing unauthenticated attackers to forge a payment confirmation and mark a pending order as paid without paying for it.",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-g2hh-vxh7-5vwh"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-91075"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://wpscan.com/vulnerability/065557b8-a29f-4c59-9289-2343d90447b1"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.3",
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-11-03T10:04:41Z",
-      "source_updated_at": "2026-11-03T09:31:54Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00114,
-      "epss_percentile": 0.01506,
-      "epss_as_of": "2026-11-04"
-    },
-    {
       "id": "CVE-2026-121022",
       "title": "Use of Default Password (CWE-1393) in the web client in AxxonSoft Axxon One before 3.0.0 on...",
       "severity": "critical",
@@ -6477,45 +6733,6 @@
       "known_exploited": false,
       "epss": 0.00105,
       "epss_percentile": 0.01039,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-103327",
-      "title": "The CryptoCloud WordPress plugin from 3.0.0 through 3.0.1 does not verify the authenticity of the...",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-11-03",
-      "updated": "2026-11-03",
-      "summary": "The CryptoCloud WordPress plugin from 3.0.0 through 3.0.1 does not verify the authenticity of the payment notifications received by its gateway callback, as the integrity check is skipped while the webhook secret is left at its empty default, allowing unauthenticated attackers to mark arbitrary orders as paid or failed without any payment being made.",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-xpq3-q6vx-4qg3"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-103327"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://wpscan.com/vulnerability/fd5563ed-85c6-4b17-acf6-bdc2cd77dd4b"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.3",
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-11-03T10:04:41Z",
-      "source_updated_at": "2026-11-03T09:31:45Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00114,
-      "epss_percentile": 0.01507,
       "epss_as_of": "2026-11-04"
     },
     {
@@ -157138,46 +157355,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-121247",
-      "title": "Buffer overflow in Dawn in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote...",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "2026-11-03",
-      "updated": "2026-11-03",
-      "summary": "Buffer overflow in Dawn in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical)",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-wp3p-5vrj-qhr5"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121247"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://issues.chromium.org/issues/569161611"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-11-03T21:56:58Z",
-      "source_updated_at": "2026-11-03T21:32:38Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-121509",
       "title": "A security flaw has been discovered in Headless CMS Plugin up to 2.0.4 on WordPress. This affects...",
       "severity": "medium",
@@ -157254,126 +157431,6 @@
       "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-03T21:56:58Z",
       "source_updated_at": "2026-11-03T21:32:38Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-121246",
-      "title": "Use after free in WebGL in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote...",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "2026-11-03",
-      "updated": "2026-11-03",
-      "summary": "Use after free in WebGL in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical)",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-4p6f-hcm2-m5p2"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121246"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://issues.chromium.org/issues/558870371"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-11-03T21:56:58Z",
-      "source_updated_at": "2026-11-03T21:32:38Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-121241",
-      "title": "Use after free in Navigation in Google Chrome on on Android prior to 157.0.8103.38 allowed a...",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "2026-11-03",
-      "updated": "2026-11-03",
-      "summary": "Use after free in Navigation in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High)",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-j58v-6pcx-w9gw"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121241"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://issues.chromium.org/issues/574791491"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-11-03T21:56:58Z",
-      "source_updated_at": "2026-11-03T21:32:37Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-121229",
-      "title": "Memory corruption in ANGLE in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote...",
-      "severity": "bulletin",
-      "categories": [
-        "iOS / Android"
-      ],
-      "published": "2026-11-03",
-      "updated": "2026-11-03",
-      "summary": "Memory corruption in ANGLE in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: Critical)",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-rrrq-h6hf-wc6w"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121229"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://issues.chromium.org/issues/562777838"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-11-03T21:56:58Z",
-      "source_updated_at": "2026-11-03T21:32:33Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -159824,6 +159881,7 @@
       "title": "github.com/docker/buildx: Docker Buildx: Authorization bypass via rawjson progress flag",
       "severity": "high",
       "categories": [
+        "Docker / Kubernetes",
         "Linux"
       ],
       "published": "2026-11-03",
@@ -171620,7 +171678,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119208"
         },
         {
@@ -171632,7 +171690,7 @@
           "url": "https://github.com/advisories/GHSA-62m5-6wh8-28x7"
         },
         {
-          "label": "Vendor advisory",
+          "label": "Additional advisory",
           "url": "https://github.com/py-pdf/pypdf/security/advisories/GHSA-62m5-6wh8-28x7"
         },
         {
@@ -171669,7 +171727,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119204"
         },
         {
@@ -171681,7 +171739,7 @@
           "url": "https://github.com/advisories/GHSA-cggf-277g-3q54"
         },
         {
-          "label": "Vendor advisory",
+          "label": "Additional advisory",
           "url": "https://github.com/py-pdf/pypdf/security/advisories/GHSA-cggf-277g-3q54"
         },
         {
@@ -171718,7 +171776,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119196"
         },
         {
@@ -171766,7 +171824,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119200"
         },
         {
@@ -171810,7 +171868,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119281"
         },
         {
@@ -185829,78 +185887,6 @@
       "epss_as_of": "2026-11-04"
     },
     {
-      "id": "CVE-2026-51831",
-      "title": "An issue in IDrive IDrive Backup for Windows Version 7.0.1.1 and below affected, remediated in...",
-      "severity": "bulletin",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-11-02",
-      "summary": "An issue in IDrive IDrive Backup for Windows Version 7.0.1.1 and below affected, remediated in Version 7.0.1.2 allows a local attacker to execute arbitrary code via the id_service.exe component",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-51831"
-        },
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-26x2-2m4r-23cm"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://frsecure.com/blog/idrive-vulnerabilities-cve-2026-51831-and-cve-2026-51832"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.idrive.com/release-info#win"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-10-29T20:55:56Z",
-      "source_updated_at": "2026-10-29T21:31:36Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00133,
-      "epss_percentile": 0.02857,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "GHSA-8hr2-m7vq-fhpg",
-      "title": "Malware in dsh-volcengine-provider",
-      "severity": "bulletin",
-      "categories": [
-        "Application dependencies",
-        "Node.js / npm"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-31",
-      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
-      "affected": "npm: dsh-volcengine-provider (= 0.2.8); npm: dsh-volcengine-provider (= 0.2.5); npm: dsh-volcengine-provider (= 0.2.3)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub malware advisory",
-          "url": "https://github.com/advisories/GHSA-8hr2-m7vq-fhpg"
-        }
-      ],
-      "exploitation": "Malicious software distribution advisory; investigate exposure",
-      "kind": "advisory",
-      "cvss": null,
-      "status": "GitHub malware advisory",
-      "first_seen_at": "2026-10-29T10:01:28Z",
-      "source_updated_at": "2026-10-31T11:52:15Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-105477",
       "title": "Managed Veeam Agent for Linux local privilege escalation",
       "severity": "high",
@@ -186257,57 +186243,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
-      "id": "CVE-2026-102870",
-      "title": "Microsoft Security Advisory CVE-2026-102870 - ASP.NET Core Remote Code Execution Vulnerability",
-      "severity": "high",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core",
-        "Application dependencies",
-        "Linux",
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-11-03",
-      "summary": "## Executive summary Microsoft is releasing this security advisory to provide information about a vulnerability in the Blazor WebAssembly debugger included in `Microsoft.AspNetCore.Components.WebAssembly.Server`. This advisory also provides guidance on what developers can do to update their applications to remove this vulnerability. The Blazor WebAssembly debug proxy evaluates debugger expressions by generating and compiling C# source. Certain values originating in the application being debugged, including `ToString()` results, descriptions, and class names, are embedded in that generated source without consistent escaping. An attacker-controlled value can escape the generated string literal and execute code on a developer's machine when the developer evaluates an expression during debugging. ## Announcement Announcement for this issue can be found at https://github.com/dotnet/announcements/issues/445 ## CVSS Details - **Version:** 3.1 - **Severity:** High - **Score:** 8.8 - **Vector:** `CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H` - **Weakness:** CWE-94 (Improper Control of Generation of Code ('Code Injection')) ## Affected Platforms - **Platforms:** Windows, Linux, macOS - **Architectures:** All ## <a name=\"affected-packages\"></a>Affected Packages The vulnerability affects Mic",
-      "affected": "nuget: Microsoft.AspNetCore.Components.WebAssembly.Server (>= 10.0.0, <= 10.0.13); nuget: Microsoft.AspNetCore.Components.WebAssembly.Server (>= 11.0.0-preview.1, < 11.0.0-rc.3.26522.148)",
-      "remediation": "Microsoft.AspNetCore.Components.WebAssembly.Server: 10.0.14; Microsoft.AspNetCore.Components.WebAssembly.Server: 11.0.0-rc.3.26522.148",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "Microsoft corrected Blazor debugger security advisory",
-          "url": "https://github.com/dotnet/announcements/issues/492"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
-        },
-        {
-          "label": "Ubuntu Security Notice",
-          "url": "https://ubuntu.com/security/notices/USN-8958-1"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-g27p-qf6j-c96c"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.8",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "source_updated_at": "2026-11-03T17:07:38Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00906,
-      "epss_percentile": 0.59898,
-      "epss_as_of": "2026-11-04"
-    },
-    {
       "id": "CVE-2026-70197",
       "title": "Microsoft Security Advisory CVE-2026-70197 - .NET and Visual Studio Remote Code Execution Vulnerability",
       "severity": "high",
@@ -186356,6 +186291,57 @@
       "known_exploited": false,
       "epss": 0.00788,
       "epss_percentile": 0.56255,
+      "epss_as_of": "2026-11-04"
+    },
+    {
+      "id": "CVE-2026-102870",
+      "title": "Microsoft Security Advisory CVE-2026-102870 - ASP.NET Core Remote Code Execution Vulnerability",
+      "severity": "high",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core",
+        "Application dependencies",
+        "Linux",
+        "Windows"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-11-03",
+      "summary": "## Executive summary Microsoft is releasing this security advisory to provide information about a vulnerability in the Blazor WebAssembly debugger included in `Microsoft.AspNetCore.Components.WebAssembly.Server`. This advisory also provides guidance on what developers can do to update their applications to remove this vulnerability. The Blazor WebAssembly debug proxy evaluates debugger expressions by generating and compiling C# source. Certain values originating in the application being debugged, including `ToString()` results, descriptions, and class names, are embedded in that generated source without consistent escaping. An attacker-controlled value can escape the generated string literal and execute code on a developer's machine when the developer evaluates an expression during debugging. ## Announcement Announcement for this issue can be found at https://github.com/dotnet/announcements/issues/445 ## CVSS Details - **Version:** 3.1 - **Severity:** High - **Score:** 8.8 - **Vector:** `CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H` - **Weakness:** CWE-94 (Improper Control of Generation of Code ('Code Injection')) ## Affected Platforms - **Platforms:** Windows, Linux, macOS - **Architectures:** All ## <a name=\"affected-packages\"></a>Affected Packages The vulnerability affects Mic",
+      "affected": "nuget: Microsoft.AspNetCore.Components.WebAssembly.Server (>= 10.0.0, <= 10.0.13); nuget: Microsoft.AspNetCore.Components.WebAssembly.Server (>= 11.0.0-preview.1, < 11.0.0-rc.3.26522.148)",
+      "remediation": "Microsoft.AspNetCore.Components.WebAssembly.Server: 10.0.14; Microsoft.AspNetCore.Components.WebAssembly.Server: 11.0.0-rc.3.26522.148",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
+        },
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8958-1"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-g27p-qf6j-c96c"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "source_updated_at": "2026-11-03T17:07:38Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00906,
+      "epss_percentile": 0.59898,
       "epss_as_of": "2026-11-04"
     },
     {
@@ -186512,42 +186498,6 @@
       "epss_as_of": "2026-11-04"
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.6081,
-      "epss_as_of": "2026-11-04"
-    },
-    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -186586,6 +186536,42 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55938,
+      "epss_as_of": "2026-11-04"
+    },
+    {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.6081,
       "epss_as_of": "2026-11-04"
     },
     {
@@ -186785,37 +186771,6 @@
       "epss_as_of": "2026-11-04"
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.11772,
-      "epss_percentile": 0.96083,
-      "epss_as_of": "2026-11-04"
-    },
-    {
       "id": "CVE-2025-7624",
       "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
@@ -186844,6 +186799,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.10514,
       "epss_percentile": 0.95771,
+      "epss_as_of": "2026-11-04"
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.11772,
+      "epss_percentile": 0.96083,
       "epss_as_of": "2026-11-04"
     },
     {
@@ -186891,85 +186877,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-04T13:19:41Z",
-      "last_attempt": "2026-11-04T13:19:41Z",
+      "last_success": "2026-11-04T15:02:09Z",
+      "last_attempt": "2026-11-04T15:02:09Z",
       "items_processed": 270,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-04T13:19:41Z",
-      "last_attempt": "2026-11-04T13:19:41Z",
+      "last_success": "2026-11-04T15:02:09Z",
+      "last_attempt": "2026-11-04T15:02:09Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-04T13:19:41Z",
-      "last_attempt": "2026-11-04T13:19:41Z",
-      "items_processed": 268,
+      "last_success": "2026-11-04T15:02:09Z",
+      "last_attempt": "2026-11-04T15:02:09Z",
+      "items_processed": 265,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-04T13:19:41Z",
-      "last_attempt": "2026-11-04T13:19:41Z",
+      "last_success": "2026-11-04T15:02:09Z",
+      "last_attempt": "2026-11-04T15:02:09Z",
       "items_processed": 485,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-04T13:19:41Z",
-      "last_attempt": "2026-11-04T13:19:41Z",
+      "last_success": "2026-11-04T15:02:09Z",
+      "last_attempt": "2026-11-04T15:02:09Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-04T13:19:41Z",
-      "last_attempt": "2026-11-04T13:19:41Z",
+      "last_success": "2026-11-04T15:02:09Z",
+      "last_attempt": "2026-11-04T15:02:09Z",
       "items_processed": 15,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-04T13:19:41Z",
-      "last_attempt": "2026-11-04T13:19:41Z",
+      "last_success": "2026-11-04T15:02:09Z",
+      "last_attempt": "2026-11-04T15:02:09Z",
       "items_processed": 11,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-04T13:19:41Z",
-      "last_attempt": "2026-11-04T13:19:41Z",
+      "last_success": "2026-11-04T15:02:09Z",
+      "last_attempt": "2026-11-04T15:02:09Z",
       "items_processed": 47,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-04T13:19:41Z",
-      "last_attempt": "2026-11-04T13:19:41Z",
+      "last_success": "2026-11-04T15:02:09Z",
+      "last_attempt": "2026-11-04T15:02:09Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-04T13:19:41Z",
-      "last_attempt": "2026-11-04T13:19:41Z",
+      "last_success": "2026-11-04T15:02:09Z",
+      "last_attempt": "2026-11-04T15:02:09Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-04T13:19:41Z",
-      "last_attempt": "2026-11-04T13:19:41Z",
+      "last_success": "2026-11-04T15:02:09Z",
+      "last_attempt": "2026-11-04T15:02:09Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-04T13:19:41Z",
-      "last_attempt": "2026-11-04T13:19:41Z",
+      "last_success": "2026-11-04T15:02:09Z",
+      "last_attempt": "2026-11-04T15:02:09Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -186981,7 +186967,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-04T13:19:41Z",
-  "last_successful_update": "2026-11-04T13:19:41Z",
+  "last_checked_at": "2026-11-04T15:02:09Z",
+  "last_successful_update": "2026-11-04T15:02:09Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
