@@ -1,6 +1,6 @@
 import {intelligenceResponse,openIntelligenceSnapshot,pinIntelligenceScripts,useIntelligenceStore} from '../account-backend/src/intelligence-store.js';
 import {ADMIN_HTML} from './admin-page.mjs';
-import { TARGET } from './target.mjs';
+import { TARGET, LEGACY_ORIGIN } from './target.mjs';
 import { createAccessVerifier, ACCESS_FAILURE_CATEGORIES } from './access.mjs';
 const verify = createAccessVerifier();
 const securityHeaders = {
@@ -14,7 +14,7 @@ const deny = (text, status) => new Response(text, { status, headers: securityHea
 export function createFrontend(check = verify) {
   return { async fetch(request, env) {
     const url = new URL(request.url);
-    if (url.origin !== TARGET.origin) return deny('Unknown staging host', 403);
+    if (url.origin !== TARGET.origin && !(url.origin === LEGACY_ORIGIN && url.pathname === '/v1/staging-readiness' && request.method === 'GET')) return deny('Unknown staging host', 403);
     let rejection = 'unknown', identity=null;
     if (!await check(request.headers.get('Cf-Access-Jwt-Assertion'), env.ACCESS_ISSUER, env.ACCESS_AUD, category => { if (ACCESS_FAILURE_CATEGORIES.includes(category)) rejection = category; }, verified => {identity=verified;})) {
       const response = deny('Cloudflare Access authentication required', 403);

@@ -5,13 +5,14 @@ import { pathToFileURL } from 'node:url';
 import { root } from './configure.mjs';
 import {FullDB} from '../tests/helpers/full-db.mjs';
 import { TARGET } from '../target.mjs';
+const production=JSON.parse(fs.readFileSync(path.join(root,'.build/manifest.json'))).application_profile==='production-baseline';
 const nativeFetch = globalThis.fetch;
 let outbound = 0, scheduledWrites = 0;
 globalThis.fetch = async () => { outbound++; throw Error('Unexpected network request'); };
 try {
   const { default: api } = await import(pathToFileURL(path.join(root, '.build/api.mjs')));
   const db = { prepare() { scheduledWrites++; throw Error('No query expected'); } };
-  const env = { STAGING_MODE: 'true', DB: db, SMTP2GO_API_KEY: 'must-not-be-used', EMAIL_FROM: 'fixture@example.test', ALERT_DELIVERY_ENABLED: 'true' };
+  const env = { ...(production?{STAGING_APPLICATION_PROFILE:'production-baseline'}:{}), STAGING_MODE: 'true', DB: db, SMTP2GO_API_KEY: 'must-not-be-used', EMAIL_FROM: 'fixture@example.test', ALERT_DELIVERY_ENABLED: 'true' };
   await api.scheduled({ cron: '* * * * *' }, env, { waitUntil() { assert.fail('Scheduled work queued'); } });
   assert.equal(scheduledWrites, 0);
   const login = await api.fetch(new Request(TARGET.origin + '/v1/auth/request', { method: 'POST', headers: { Origin: TARGET.origin, 'Content-Type': 'application/json' }, body: '{"email":"fixture@example.test"}' }), env, {});
@@ -21,7 +22,7 @@ try {
   assert.equal(outbound, 0);
   const invalid = await api.fetch(new Request('https://api.cveharbor.com/v1/health'), env, {});
   assert.equal(invalid.status, 403);
-  const full=new FullDB();try{
+  const full=new FullDB({empty:production});if(production){full.sql.exec(fs.readFileSync(path.join(root,'schema.sql'),'utf8'));for(const f of JSON.parse(fs.readFileSync(path.join(root,'../release/baseline.json'))).application_schema_files)full.sql.exec(fs.readFileSync(path.join(root,'..',f.path),'utf8'));}try{
    const unauthorized = await api.fetch(new Request(TARGET.origin + '/v1/me'), {...env,DB:full}, {});
    assert.equal(unauthorized.status, 401);
   }finally{full.close();}

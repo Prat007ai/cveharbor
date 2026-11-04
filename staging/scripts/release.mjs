@@ -4,9 +4,11 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {TARGET} from '../target.mjs';
+import {TARGET,LEGACY_ORIGIN} from '../target.mjs';
 import {root,writeConfigs,configs} from './configure.mjs';
 import {resourceManifest} from './inventory.mjs';
+import {backendIdentity} from '../../scripts/build_release_identity.mjs';
+import {verifyProductionBaseline} from './production-baseline.mjs';
 import {preflight} from './preflight.mjs';
 import {diagnose,inspectWorker,management} from './diagnose.mjs';
 import {probeAccess} from './probe-access.mjs';
@@ -21,7 +23,7 @@ import {holdStatus,setHold,freezeHold} from '../../scripts/recovery_control.mjs'
 export const OPERATIONS=Object.freeze(['diagnose-schema','adopt-schema','publish-synthetic','verify','migrate','update','recover-code','hold','freeze','resume']);
 export function authorize(env,event,checkout){
  assert.equal(env.GITHUB_REPOSITORY,'Prat007ai/cveharbor');
- const automatic=env.SIMPLE_STAGING_ENABLED==='true'&&env.GITHUB_REF==='refs/heads/main'&&env.CF_STAGING_PROVISION_ACTION==='update'&&['push','workflow_dispatch'].includes(env.GITHUB_EVENT_NAME);
+ const automatic=env.SIMPLE_STAGING_ENABLED==='true'&&env.GITHUB_REF==='refs/heads/main'&&(env.CF_STAGING_PROVISION_ACTION==='update'||env.CF_STAGING_PROVISION_ACTION==='publish-synthetic'&&env.GITHUB_EVENT_NAME==='workflow_dispatch')&&['push','workflow_dispatch'].includes(env.GITHUB_EVENT_NAME);
  if(!automatic)assert.equal(env.GITHUB_REF,'refs/heads/codex/cvie-core-phase012');
  assert.match(env.CF_STAGING_APPROVED_COMMIT||'',/^[a-f0-9]{40}$/);assert.equal(env.GITHUB_SHA,env.CF_STAGING_APPROVED_COMMIT);assert.equal(checkout,env.GITHUB_SHA);
  const action=env.CF_STAGING_PROVISION_ACTION;assert.ok(OPERATIONS.includes(action));
@@ -42,8 +44,8 @@ export function acceptPreflight(report,{maintenance=false}={}){
  const a=JSON.parse(fs.readFileSync(path.join(root,'../docs/cvie-evidence/staging-owner-attestation.json'),'utf8'));
  assert.ok(a.evidence_type==='manual_account_owner_verification'&&a.account_id===TARGET.account&&a.scope_confirmed==='Restricted exclusively to the CVEHarbor Staging account'&&grants?.metadata_available===false&&grants.http_status===403&&scope?.metadata_available===false,'Token scope must be verified; conflicting scope is never accepted');
 }
-export async function probeBackend(env,transport=fetch,{held=false}={}){
- const response=await transport(TARGET.origin+'/v1/staging-readiness',{method:'GET',redirect:'manual',signal:AbortSignal.timeout(30000),headers:{'CF-Access-Client-Id':env.CF_STAGING_ACCESS_CLIENT_ID,'CF-Access-Client-Secret':env.CF_STAGING_ACCESS_CLIENT_SECRET}});
+export async function probeBackend(env,transport=fetch,{held=false,bootstrap=false}={}){
+ const response=await transport((bootstrap?LEGACY_ORIGIN:TARGET.origin)+'/v1/staging-readiness',{method:'GET',redirect:'manual',signal:AbortSignal.timeout(30000),headers:{'CF-Access-Client-Id':env.CF_STAGING_ACCESS_CLIENT_ID,'CF-Access-Client-Secret':env.CF_STAGING_ACCESS_CLIENT_SECRET}});
  const result=await response.json();assert.ok(response.status===200&&result.ready&&result.schema_ready&&result.feed_version&&result.mail_capture&&result.native_schedules===false&&result.held===held&&result.release===env.CF_STAGING_APPROVED_COMMIT,'Backend runtime is not ready for the reviewed release');
  return {release:result.release,feed_version:result.feed_version,held:result.held};
 }
@@ -51,17 +53,20 @@ export async function executeRelease(env,event,checkout,deps={}){
  const action=authorize(env,event,checkout); // Before creating clients or touching credentials/network.
  if(action==='diagnose-schema')return (deps.schemaDiagnostic||diagnoseSchema)(env,{transport:deps.transport||fetch,record:(_name,value)=>(deps.record||(()=>{}))(value)});
  if(action==='adopt-schema')return (deps.adoptSchema||adoptSchema)({...env,STAGING_CHANGE_APPROVED:'PR243-STAGING-ONLY'},{transport:deps.transport||fetch,record:(name,value)=>{if(deps.record)deps.record(value);else{fs.mkdirSync(path.join(root,'artifacts'),{recursive:true});fs.writeFileSync(path.join(root,'artifacts',name+'.json'),JSON.stringify(value,null,2)+'\n');}}});
+ const production=env.CF_STAGING_APPLICATION_PROFILE==='production-baseline';
+ const baseline=JSON.parse(fs.readFileSync(path.join(root,'../release/baseline.json')));
+ if(production)assert.ok(['update','verify','publish-synthetic'].includes(action),'Production baseline operation cannot mutate schema or use absent recovery tables');
  const migrationPlan=action==='migrate'?loadMigrationPlan(env):null;
  const recovery=action==='migrate'?migrationRecoveryEvidence(env,migrationPlan):null;
  const transport=deps.transport||fetch,get=deps.get||management(env,transport),record=deps.record||(()=>{});
- const DB=deps.DB||d1Client({database:resourceManifest().permanent_database.uuid,readOnly:action==='verify',fetcher:transport,env:{CLOUDFLARE_ACCOUNT_ID:TARGET.account,CLOUDFLARE_API_TOKEN:env.CF_STAGING_API_TOKEN}});
+ const DB=deps.DB||d1Client({database:resourceManifest().permanent_database.uuid,readOnly:production||action==='verify',fetcher:transport,env:{CLOUDFLARE_ACCOUNT_ID:TARGET.account,CLOUDFLARE_API_TOKEN:env.CF_STAGING_API_TOKEN}});
  const report={action,source_sha:checkout,account:TARGET.account,database_id:resourceManifest().permanent_database.uuid,completed:false,steps:[]};
  const step=(name,evidence)=>{report.steps.push({name,...evidence});record(report);};
  try{
   if(recovery)step('migration_recovery',recovery);
   const p=await (deps.preflight||preflight)(env,transport,{existingDatabase:true,workerState:'deployed',maintenance:action==='migrate'});acceptPreflight(p,{maintenance:action==='migrate'});step('access_and_inventory',{passed:true});
   const initial=await (deps.diagnose||diagnose)(env,transport,()=>{},{allowLegacy:true});assert.ok(initial.verified);step('existing_workers',{workers:initial.workers.map(w=>({name:w.name,version_id:w.version_id,deployment_id:w.deployment_id,profile:w.profile}))});
-  if(action!=='verify'){
+  if(action!=='verify'&&!production){
    const bookmark=await get(`/d1/database/${resourceManifest().permanent_database.uuid}/time_travel/bookmark`);
    assert.ok(typeof bookmark?.bookmark==='string'&&bookmark.bookmark.length>5);step('recovery_bookmark',{bookmark_sha256:hash(bookmark.bookmark)});
   }
@@ -80,19 +85,21 @@ export async function executeRelease(env,event,checkout,deps={}){
    const options={revision:Number(env.CF_STAGING_EXPECTED_HOLD_REVISION),reason:env.CF_STAGING_RECOVERY_REASON,hold:action==='hold'};
    const result=action==='freeze'?await freezeHold(DB,options):await setHold(DB,options);step(action,result);
   }else{
-   step('schema',await (deps.verifySchema||verifySchema)(DB));
-   if(action==='verify'){const status=await holdStatus(DB);step('hold_status',status);const strict=await (deps.diagnose||diagnose)(env,transport,()=>{},{allowLegacy:false,requireKey:true});assert.ok(strict.verified,'Current release configuration mismatch');step('current_release',{verified:true});step('backend_runtime',await (deps.probeBackend||probeBackend)(env,transport));}
+   step('schema',await (deps.verifySchema||(production?(db=>verifyProductionBaseline(db,baseline)):verifySchema))(DB));
+   if(action==='verify'){if(!production){const status=await holdStatus(DB);step('hold_status',status);}const strict=await (deps.diagnose||diagnose)(env,transport,()=>{},{allowLegacy:false,requireKey:true});assert.ok(strict.verified,'Current release configuration mismatch');step('current_release',{verified:true});step('backend_runtime',await (deps.probeBackend||probeBackend)(env,transport));}
    else{
     assert.ok(['update','recover-code'].includes(action),'Worker deployment requires an explicit update or recover-code approval');
-    const state=await holdStatus(DB);
+    const state=production?null:await holdStatus(DB);
     if(action==='recover-code')assert.ok(state.write_hold===1&&state.database_frozen===1&&state.active_leases===0,'Recovery requires frozen, drained hold');
-    else assert.ok(state.write_hold===0&&state.database_frozen===0,'Normal update requires resumed database');
+    else if(!production)assert.ok(state.write_hold===0&&state.database_frozen===0,'Normal update requires resumed database');
+    if(production){const domains=await get('/workers/domains');assert.ok(Array.isArray(domains)&&domains.some(d=>d.hostname===new URL(TARGET.origin).hostname&&d.service===TARGET.site),'Approved staging custom domain must already belong to the existing frontend');}
     const cfg=writeConfigs(env);assert.ok(cfg.api.vars.STAGING_ADMIN_EMAILS,'Configure staging administrators before deployment');
     const bucket=resourceManifest().intelligence_bucket;
     assert.equal((await get('/r2/buckets/'+bucket))?.name,bucket);
     assert.equal((await get('/r2/buckets/'+bucket+'/domains/managed'))?.enabled,false);
     const custom=await get('/r2/buckets/'+bucket+'/domains/custom');assert.ok(Array.isArray(custom.domains)&&custom.domains.length===0,'Private staging bucket required');
     const manifest=deps.bundle||JSON.parse(fs.readFileSync(path.join(root,'.build/manifest.json'),'utf8'));
+    if(production){const mode=JSON.parse(fs.readFileSync(path.join(root,'application-release.json'))).source_mode;assert.ok(['production-baseline','reviewed-main'].includes(mode));assert.equal(manifest.source_mode,mode);assert.equal(manifest.application_profile,'production-baseline');assert.equal(manifest.backend_source_sha,mode==='production-baseline'?baseline.backend.source_sha:checkout);assert.equal(manifest.frontend_source_sha,mode==='production-baseline'?baseline.frontend.source_sha:checkout);assert.equal(manifest.backend_identity,mode==='production-baseline'?baseline.backend.identity:backendIdentity());assert.equal(manifest.schema_sha256,baseline.schema_sha256);}
     assert.equal(manifest.commit,checkout);assert.equal(manifest.account,TARGET.account);assert.equal(manifest.providers,'synthetic-only');
     if(!deps.bundle)assert.equal(manifest.api_sha256,hash(fs.readFileSync(path.join(root,'.build/api.mjs'))));
     const runner=deps.runner||spawnSync;
@@ -101,10 +108,11 @@ export async function executeRelease(env,event,checkout,deps={}){
     function deploy(name,dry){const r=runner('npx',['--yes','wrangler@4.156.0','deploy','--config',path.join(root,'.build',name+'.json'),...(dry?['--dry-run']:[])],{cwd:path.join(root,'.build'),env:childEnv,encoding:'utf8',maxBuffer:4*1024*1024,timeout:180000});assert.ok(!r.error&&r.status===0,'Staging package/upload failed; inspect approved runner');step(name+(dry?'_dry_run':'_upload'),{passed:true});}
     deploy('api',true);deploy('site',true);deploy('api',false);
     const api=await (deps.inspectWorker||inspectWorker)(TARGET.api,cfg.api,get,{requireKey:true});assert.ok(api.verified);step('backend_verified',{version_id:api.version_id});
-    step('backend_runtime',await (deps.probeBackend||probeBackend)(env,transport,{held:action==='recover-code'}));
+    step('backend_runtime',await (deps.probeBackend||probeBackend)(env,transport,{held:action==='recover-code',bootstrap:production}));
     // No frontend upload before schema, bindings and actual backend runtime verification.
     deploy('site',false);const site=await (deps.inspectWorker||inspectWorker)(TARGET.site,cfg.site,get);assert.ok(site.verified);step('frontend_verified',{version_id:site.version_id});
-    const after=await holdStatus(DB);assert.equal(after.revision,state.revision);assert.equal(after.write_hold,state.write_hold);assert.equal(after.database_frozen,state.database_frozen);
+    if(production){await (deps.verifySchema||(db=>verifyProductionBaseline(db,baseline)))(DB);step('custom_domain_runtime',await (deps.probeBackend||probeBackend)(env,transport));}
+    else{const after=await holdStatus(DB);assert.equal(after.revision,state.revision);assert.equal(after.write_hold,state.write_hold);assert.equal(after.database_frozen,state.database_frozen);}
    }
    if(action!=='recover-code'){
     const access=await (deps.probeAccess||probeAccess)(env,transport);assert.ok(access.passed,'Access/application boundary verification failed');step('access_probes',{passed:true,checks:access.checks.length});

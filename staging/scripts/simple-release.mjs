@@ -24,10 +24,10 @@ export async function simpleRelease(env,{baseline=JSON.parse(fs.readFileSync(pat
  const at=async(operation,fn)=>{stage=operation;report.current_operation=operation;persist();return await fn();};
  try{
  simpleAuthorization(env,baseline);
- const operation=env.SIMPLE_STAGING_OPERATION||'release';assert.ok(['release','initialize','resume','diagnose'].includes(operation));
+ const operation=env.SIMPLE_STAGING_OPERATION||'release';assert.ok(['release','initialize','resume','diagnose','publish-synthetic'].includes(operation));
  if(operation!=='release')assert.equal(env.GITHUB_EVENT_NAME,'workflow_dispatch','Initialization/recovery needs one explicit approval');
  const derived={...env,CF_STAGING_APPROVED_COMMIT:env.GITHUB_SHA};
- get??=management(derived);DB??=d1Client({database:env.CF_STAGING_D1_DATABASE_ID,readOnly:false,fetcher:(...args)=>diagnosticTransport(stage)(...args),env:{CLOUDFLARE_ACCOUNT_ID:TARGET.account,CLOUDFLARE_API_TOKEN:env.CF_STAGING_API_TOKEN}});
+ get??=management(derived);DB??=d1Client({database:env.CF_STAGING_D1_DATABASE_ID,readOnly:baseline.version===2&&['release','publish-synthetic'].includes(operation),fetcher:(...args)=>diagnosticTransport(stage)(...args),env:{CLOUDFLARE_ACCOUNT_ID:TARGET.account,CLOUDFLARE_API_TOKEN:env.CF_STAGING_API_TOKEN}});
  Object.assign(report,{version:1,status:'stopped',source_sha:env.GITHUB_SHA,operation,account:TARGET.account,database_id:env.CF_STAGING_D1_DATABASE_ID,started_at:clock(),baseline_source_sha:baseline.source_sha,production_mutations:0});
  const capture=(name,value)=>{if(name==='migration')report.baseline=structuredClone(value);else if(name==='migration-inventory')report.inventory=structuredClone(value);else if(name.startsWith('migration-access-'))report.access_check=structuredClone(value);persist();};
  if(operation==='diagnose'){
@@ -35,6 +35,13 @@ export async function simpleRelease(env,{baseline=JSON.parse(fs.readFileSync(pat
   report.baseline=await at('release.read_only_diagnostic',()=>migrate({...derived,STAGING_CHANGE_APPROVED:'PR243-STAGING-ONLY',CF_STAGING_PROVISION_ACTION:'migrate',CF_STAGING_SCHEMA_PLAN_SHA256:sha256,CF_STAGING_SCHEMA_RESUME_STEP:'37'},{plan,endStep,readOnly:true,record:capture}));
   await at('release.recovery_bookmark',async()=>{const bookmark=await get('/d1/database/'+env.CF_STAGING_D1_DATABASE_ID+'/time_travel/bookmark');assert.ok(bookmark?.bookmark,'D1 Time Travel unavailable');});
   report.status='diagnosed';report.workers_deployed=false;report.access_restored=false;return report;
+ }
+ if(baseline.version===2&&['release','publish-synthetic'].includes(operation)){
+  assert.equal(env.STAGING_APPLICATION_ENABLED,'true','Application activation requires the one-time administrator approval');
+  const action=operation==='publish-synthetic'?'publish-synthetic':'update';
+  await at('release.production_schema',()=>verifyProductionBaseline(DB,baseline));
+  report.deployment=await at('release.production_application',()=>(deploy||executeRelease)({...derived,CF_STAGING_APPLICATION_PROFILE:'production-baseline',CF_STAGING_PROVISION_ACTION:action},{inputs:{operation:action}},env.GITHUB_SHA,{record:r=>{report.deployment=r;persist();}}));
+  report.status=operation==='release'?'passed':'published';report.backend_identity=JSON.parse(fs.readFileSync(path.join(root,'application-release.json'))).source_mode==='production-baseline'?baseline.backend.identity:backendIdentity();report.application_profile='production-baseline';report.baseline_backend_source=baseline.backend.source_sha;report.baseline_frontend_source=baseline.frontend.source_sha;report.database_mutations=0;return report;
  }
  // Recoverable Time Travel availability, not a secret containing a hand-edited deadline.
  await at('release.recovery_bookmark',async()=>{const bookmark=await get('/d1/database/'+env.CF_STAGING_D1_DATABASE_ID+'/time_travel/bookmark');assert.ok(bookmark?.bookmark,'D1 Time Travel unavailable');});

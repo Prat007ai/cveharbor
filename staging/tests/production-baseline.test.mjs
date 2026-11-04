@@ -54,7 +54,7 @@ test('audit verifies both pinned versions, allows formatting and remains SELECT-
 test('production profile cannot fall through into an integrated candidate migration or Worker deployment',async()=>{
  const DB=installed(endStep);
  const env={GITHUB_REPOSITORY:'Prat007ai/cveharbor',GITHUB_REF:'refs/heads/main',GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_SHA:'a'.repeat(40),SIMPLE_STAGING_ENABLED:'true',SIMPLE_STAGING_OPERATION:'release',CF_STAGING_ACCOUNT_ID:TARGET.account,CF_STAGING_D1_DATABASE_ID:'fac61562-fc31-426d-8032-550aba63b7f6'};
- try{await assert.rejects(simpleRelease(env,{baseline,DB,get:async()=>({bookmark:'private'}),initialize:()=>assert.fail('No migration'),runner:()=>assert.fail('No native migration'),deploy:()=>assert.fail('No Worker activation')}),/Worker activation requires/);
+ try{await assert.rejects(simpleRelease(env,{baseline,DB,get:async()=>({bookmark:'private'}),initialize:()=>assert.fail('No migration'),runner:()=>assert.fail('No native migration'),deploy:()=>assert.fail('No Worker activation')}),/one-time administrator approval/);
  await assert.rejects(simpleRelease({...env,SIMPLE_STAGING_OPERATION:'resume'},{baseline,DB,get:async()=>({bookmark:'private'})}));
  }finally{DB.close();}
 });

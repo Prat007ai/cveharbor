@@ -1,3 +1,5 @@
+> **Current application activation:** [cveharborstage.com activation](permanent-staging-activation.md). Run 41923381309 completed production baseline step 209. Do not repeat initialization. The historical preparation notes below describe how that baseline was established; their Worker activation block is superseded by the reviewed staging-only compatibility profile.
+
 # Production-equivalent permanent staging
 
 Status: correction prepared for review; no remote migration or deployment performed.

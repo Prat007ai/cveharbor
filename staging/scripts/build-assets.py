@@ -1,6 +1,7 @@
 """Build only local synthetic assets in an isolated temporary tree. No feed fetches."""
 from pathlib import Path
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -8,19 +9,22 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'staging/.build/public'
-ORIGIN = 'https://cveharbor-site-staging.cveharbor-staging.workers.dev'
+SOURCE=Path(os.environ.get('STAGING_ASSET_SOURCE',ROOT)).resolve()
+ORIGIN=os.environ.get('STAGING_ASSET_ORIGIN','https://cveharborstage.com')
+assert ORIGIN=='https://cveharborstage.com'
+assert SOURCE in [ROOT, ROOT/'release/.build/production-frontend']
 
 def build():
     with tempfile.TemporaryDirectory(prefix='cvie-staging-assets-') as directory:
         tree = Path(directory)
-        tracked = subprocess.check_output(['git', 'ls-files', '-z'], cwd=ROOT).decode().split('\0')
+        tracked = (subprocess.check_output(['git', 'ls-files', '-z'], cwd=ROOT).decode().split('\0') if SOURCE==ROOT else [str(p.relative_to(SOURCE)) for p in SOURCE.rglob('*') if p.is_file()])
         generated = {'data.js', 'malware-data.js', 'threat-data.js', 'lifecycle.js', 'patch-notes.js'}
         for name in tracked:
             if not name or name.startswith(('data/', 'public/', 'staging/', '.github/', 'account-backend/', 'docs/')) or name in generated:
                 continue
             if name.startswith(('attack-scanning-', 'fortigate-', 'sophos-')):
                 continue
-            source = ROOT / name
+            source = SOURCE / name
             if source.is_file():
                 target = tree / name
                 target.parent.mkdir(parents=True, exist_ok=True)
@@ -28,9 +32,9 @@ def build():
         data = tree / 'data'
         data.mkdir()
         # These are checked-in static taxonomy/identity definitions, not collected intelligence.
-        taxonomy = json.loads((ROOT / 'data/demo-advisories.json').read_text())
+        taxonomy = json.loads((SOURCE / 'data/demo-advisories.json').read_text())
         (data / 'demo-advisories.json').write_text(json.dumps(taxonomy))
-        shutil.copy2(ROOT / 'data/lifecycle-products.json', data / 'lifecycle-products.json')
+        shutil.copy2(SOURCE / 'data/lifecycle-products.json', data / 'lifecycle-products.json')
         snapshot = {'siteName': 'CVEHarbor STAGING', 'snapshotDate': '2026-11-02', 'mode': 'synthetic_staging',
                     'coverage_limited': True, 'candidate_records': 0, 'categories': taxonomy['categories'], 'advisories': [], 'sources': {}}
         (data / 'advisories.json').write_text(json.dumps(snapshot))

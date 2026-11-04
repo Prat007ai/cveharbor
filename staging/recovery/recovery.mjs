@@ -4,13 +4,14 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {TARGET} from '../target.mjs';
+import {TARGET,LEGACY_ORIGIN} from '../target.mjs';
 import {diagnoseSchema,DIAGNOSTIC_DATABASE_ID,REFERENCE_SHA256} from '../scripts/schema-diagnostic.mjs';
 import {hash,requireThat,certificate,encrypt,verifyReceipt} from './crypto.mjs';
 import {recoveryStore,boundedBytes} from './store.mjs';
 export const OPERATIONS=['recovery-inventory','recovery-snapshot','recovery-capture','recovery-verify'];
 const ROOT=fileURLToPath(new URL('../../',import.meta.url)),BASE='https://api.cloudflare.com/client/v4/accounts/'+TARGET.account;
-const DB='/d1/database/'+DIAGNOSTIC_DATABASE_ID,HOST=new URL(TARGET.origin).hostname;
+// Historical checkpoint-29 recovery is not repurposed for the custom-domain application.
+const DB='/d1/database/'+DIAGNOSTIC_DATABASE_ID,HOST=new URL(LEGACY_ORIGIN).hostname;
 const privateEnv=dir=>({PATH:process.env.PATH,HOME:dir,TMPDIR:dir,SQLITE_TMPDIR:dir,PYTHONDONTWRITEBYTECODE:'1'});
 export function authorize(env,event,checkout){
  const op=env.CF_STAGING_PROVISION_ACTION;
@@ -82,7 +83,7 @@ export async function execute(env,{transport=fetch,temp=secureTemp,clock=Date.no
   requireThat(p.decision==='block'&&JSON.stringify(p.include)==='[{"everyone":{}}]'&&!(p.exclude?.length)&&!(p.require?.length),'maintenance_not_block_all');
   for(const headers of [{},{'CF-Access-Client-Id':env.CF_STAGING_ACCESS_CLIENT_ID,'CF-Access-Client-Secret':env.CF_STAGING_ACCESS_CLIENT_SECRET}]){
    requireThat(Object.keys(headers).length===0||Object.values(headers).every(x=>typeof x==='string'&&x),'service_probe_credentials');
-   const r=await transport(TARGET.origin+'/',{method:'GET',headers,redirect:'manual',signal:AbortSignal.timeout(30000)});requireThat(r.status===403,'maintenance_probe_failed');await r.body?.cancel();
+   const r=await transport(LEGACY_ORIGIN+'/',{method:'GET',headers,redirect:'manual',signal:AbortSignal.timeout(30000)});requireThat(r.status===403,'maintenance_probe_failed');await r.body?.cancel();
   }
   return {proof,state,current};
  }

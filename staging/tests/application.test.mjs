@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import test from 'node:test';import assert from 'node:assert/strict';
 import application from '../.build/api.mjs';
 import {FullDB,bucketFixture} from './helpers/full-db.mjs';
@@ -5,7 +6,11 @@ import {TARGET} from '../target.mjs';
 import {totp} from '../../account-backend/src/totp.js';
 import {unifiedFixture,assetOne} from '../../account-backend/tests/helpers/unified-db.mjs';
 import {fixtureCve} from '../../account-backend/tests/helpers/assignment-db.mjs';
-const envFor=async DB=>({DB,STAGING_MODE:'true',STAGING_EMAIL_CAPTURE_ENABLED:'true',STAGING_TOTP_ENCRYPTION_KEY:'synthetic-staging-key-not-used-in-production',STAGING_MONITOR_WEBHOOK_TOKEN:'synthetic-webhook-only',STAGING_ADMIN_EMAILS:'admin@example.invalid',STAGING_MANUAL_JOBS_ENABLED:'true',INTELLIGENCE_BUCKET:await bucketFixture(),ASSIGNMENT_ACK_RATE_LIMITER:{limit:async()=>({success:true})}});
+const production=JSON.parse(fs.readFileSync(new URL('../.build/manifest.json',import.meta.url))).application_profile==='production-baseline';
+class ApplicationDB extends FullDB{
+ constructor(){super({empty:production});if(production){this.sql.exec(fs.readFileSync(new URL('../schema.sql',import.meta.url),'utf8'));for(const f of JSON.parse(fs.readFileSync(new URL('../../release/baseline.json',import.meta.url))).application_schema_files)this.sql.exec(fs.readFileSync(new URL('../../'+f.path,import.meta.url),'utf8'));}}
+}
+const envFor=async DB=>({DB,...(production?{STAGING_APPLICATION_PROFILE:'production-baseline'}:{}),STAGING_MODE:'true',STAGING_EMAIL_CAPTURE_ENABLED:'true',STAGING_TOTP_ENCRYPTION_KEY:'synthetic-staging-key-not-used-in-production',STAGING_MONITOR_WEBHOOK_TOKEN:'synthetic-webhook-only',STAGING_ADMIN_EMAILS:'admin@example.invalid',STAGING_MANUAL_JOBS_ENABLED:'true',INTELLIGENCE_BUCKET:await bucketFixture(),ASSIGNMENT_ACK_RATE_LIMITER:{limit:async()=>({success:true})}});
 async function call(env,path,method='GET',data,cookie='',headers={}){
  const pending=[],req=new Request(TARGET.origin+path,{method,headers:{Origin:TARGET.origin,...(cookie?{Cookie:cookie}:{}),...(data?{'Content-Type':'application/json'}:{}),...headers},...(data?{body:typeof data==='string'?data:JSON.stringify(data)}:{})});
  const response=await application.fetch(req,env,{waitUntil:p=>pending.push(p)});while(pending.length)await Promise.all(pending.splice(0));return response;
@@ -13,7 +18,7 @@ async function call(env,path,method='GET',data,cookie='',headers={}){
 const captured=DB=>DB.sql.prepare('SELECT payload_json FROM staging_mail ORDER BY rowid').all().map(r=>JSON.parse(r.payload_json));
 async function seed(db){const f=await unifiedFixture();try{for(const table of ['users','user_totp','sessions','remediations','inventory_customers','inventory_environments','inventory_assets','customer_finding_statuses','customer_finding_ticket_history'])for(const row of f.DB.sql.prepare('SELECT * FROM '+table).all()){const cols=Object.keys(row);db.sql.prepare('INSERT INTO '+table+'('+cols.join(',')+') VALUES('+cols.map(()=>'?').join(',')+')').run(...Object.values(row));}}finally{f.DB.sql.close();}}
 test('built application registration, captured OTP, MFA, session and OTP replay controls',async()=>{
- const DB=new FullDB(),env=await envFor(DB),native=globalThis.fetch;let calls=0;globalThis.fetch=async()=>{calls++;throw Error('Network forbidden');};
+ const DB=new ApplicationDB(),env=await envFor(DB),native=globalThis.fetch;let calls=0;globalThis.fetch=async()=>{calls++;throw Error('Network forbidden');};
  try{
   const r=await call(env,'/v1/auth/request','POST',{email:'new-user@example.invalid'});assert.equal(r.status,200);const challenge=await r.json(),mail=captured(DB)[0];assert.match(mail.subject,/sign in code/);const code=mail.text_body.match(/code: (\d{6})/)[1];
   const verified=await call(env,'/v1/auth/verify','POST',{...challenge,code});assert.equal(verified.status,200);const mfa=await verified.json();assert.equal(mfa.mfa_enrollment_required,true);
@@ -25,7 +30,7 @@ test('built application registration, captured OTP, MFA, session and OTP replay 
  }finally{globalThis.fetch=native;DB.close();}
 });
 test('built full-schema assignment, receipt, asset linking, status mail, tickets and tenant isolation',async()=>{
- const DB=new FullDB(),env=await envFor(DB);await seed(DB);const cookie='cvh_session='+'a'.repeat(64),other='cvh_session='+'b'.repeat(64);
+ const DB=new ApplicationDB(),env=await envFor(DB);await seed(DB);const cookie='cvh_session='+'a'.repeat(64),other='cvh_session='+'b'.repeat(64);
  const ok=async(path,method='GET',data,c=cookie)=>{const r=await call(env,'/v1'+path,method,data,c);const body=await r.json();assert.equal(r.status,200,JSON.stringify(body));return body;};
  try{
   await ok('/remediations/'+fixtureCve+'/assign','POST',{email:'reviewer@example.invalid',assigned_severity:'high',fyi_recipients:['manager@example.invalid']});
@@ -65,19 +70,19 @@ test('built full-schema assignment, receipt, asset linking, status mail, tickets
  }finally{DB.close();}
 });
 test('manual scheduler authorization, idempotency, native cron disable and recovery hold',async()=>{
- const DB=new FullDB(),env=await envFor(DB),data={id:crypto.randomUUID(),job:'remediation',scenario:'synthetic'},admin={'X-CVEHarbor-Staging-Admin':'admin@example.invalid'};
+ const DB=new ApplicationDB(),env=await envFor(DB),data={id:crypto.randomUUID(),job:'remediation',scenario:'synthetic'},admin={'X-CVEHarbor-Staging-Admin':'admin@example.invalid'};
  try{
   await application.scheduled({cron:'* * * * *'},env,{waitUntil(){assert.fail('Native schedule ran');}});
   assert.equal((await call(env,'/__staging/jobs','POST',data)).status,403);
   assert.equal((await call({...env,STAGING_MANUAL_JOBS_ENABLED:'false'},'/__staging/jobs','POST',data,'',admin)).status,409);
   const first=await call(env,'/__staging/jobs','POST',data,'',admin);assert.equal(first.status,200,await first.clone().text());
   const repeat=await call(env,'/__staging/jobs','POST',data,'',admin);assert.equal((await repeat.json()).replayed,true);assert.equal(DB.sql.prepare('SELECT COUNT(*) n FROM staging_job_runs').get().n,1);
-  DB.sql.exec('UPDATE operations_control SET write_hold=1');assert.equal((await call(env,'/__staging/jobs','POST',{...data,id:crypto.randomUUID()},'',admin)).status,409);
+  DB.sql.exec(production?'CREATE TABLE unreviewed_schema(id TEXT)':'UPDATE operations_control SET write_hold=1');assert.equal((await call(env,'/__staging/jobs','POST',{...data,id:crypto.randomUUID()},'',admin)).status,409);
  }finally{DB.close();}
 });
 
 test('built application report, vulnerability digest, lifecycle, website and product monitoring use captured mail and synthetic providers',async()=>{
- const DB=new FullDB(),env=await envFor(DB);await seed(DB);const cookie='cvh_session='+'a'.repeat(64),admin={'X-CVEHarbor-Staging-Admin':'admin@example.invalid'};
+ const DB=new ApplicationDB(),env=await envFor(DB);await seed(DB);const cookie='cvh_session='+'a'.repeat(64),admin={'X-CVEHarbor-Staging-Admin':'admin@example.invalid'};
  const ok=async(path,method='GET',data)=>{const r=await call(env,'/v1'+path,method,data,cookie),body=await r.json();assert.ok(r.status>=200&&r.status<300,JSON.stringify(body));return body;};
  try{
   const customer=crypto.randomUUID();DB.sql.prepare('INSERT INTO inventory_customers(id,user_id,name) VALUES(?,?,?)').run(customer,'a','Synthetic customer');
@@ -92,11 +97,12 @@ test('built application report, vulnerability digest, lifecycle, website and pro
   const site=await ok('/website-monitor','POST',{url:'https://synthetic-monitor.example.org/',authorized:true,label:'Synthetic only'});
   await ok('/website-monitor/'+site.id+'/check','POST',{});
   assert.equal(DB.sql.prepare('SELECT http_status FROM website_monitor_checks').get().http_status,200);
-  await ok('/monitoring/watches','POST',{product:'.NET',slug:'dotnet',cycle:'8.0',installed_version:'8.0.9',alert_types:['security','maintenance']});
-  await ok('/monitoring/preferences','PUT',{email_enabled:true,lead_days:90});
+  if(production){const inactive=await call(env,'/v1/monitoring/watches','POST',{product:'.NET',slug:'dotnet',cycle:'8.0',installed_version:'8.0.9',alert_types:['security','maintenance']},cookie);assert.equal(inactive.status,503);assert.match((await inactive.json()).error,/Monitoring Not Yet Active/);}
+  else{await ok('/monitoring/watches','POST',{product:'.NET',slug:'dotnet',cycle:'8.0',installed_version:'8.0.9',alert_types:['security','maintenance']});
+  await ok('/monitoring/preferences','PUT',{email_enabled:true,lead_days:90});}
   const result=await call(env,'/__staging/jobs','POST',{id:crypto.randomUUID(),job:'hourly',scenario:'synthetic'},'',admin);
   assert.equal(result.status,200,await result.clone().text());assert.ok(captured(DB).some(m=>/Support|Lifecycle/i.test(m.subject)));
-  assert.ok(DB.sql.prepare('SELECT COUNT(*) n FROM lifecycle_monitor_events').get().n>0);
+  if(!production)assert.ok(DB.sql.prepare('SELECT COUNT(*) n FROM lifecycle_monitor_events').get().n>0);
   const before=DB.sql.prepare('SELECT COUNT(*) n FROM lifecycle_delivery').get().n;
   await call(env,'/__staging/jobs','POST',{id:crypto.randomUUID(),job:'hourly',scenario:'synthetic'},'',admin);
   assert.equal(DB.sql.prepare('SELECT COUNT(*) n FROM lifecycle_delivery').get().n,before,'No duplicate lifecycle notices');

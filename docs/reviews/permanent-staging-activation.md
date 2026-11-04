@@ -1,303 +1,181 @@
-> Routine staging releases are superseded by [Simplified staging releases](simplified-staging-release.md) once reviewed and activated. This document remains applicable to historical/exception operations and unchanged production safeguards. Do not run the queued legacy continuation concurrently with simplified initialization.
+# Activate the production replica at cveharborstage.com
 
-> **Original checkpoint 29 verified; adoption awaits approval.** Run 41707547474,
+Updated 2026-11-04. **Prepared code; no live configuration or deployment approval.**
+This replaces the obsolete checkpoint-29/37/740 application activation instructions.
+Do not rerun initialization: run **41923381309** verified the existing database at
+production baseline **209**, including all **143 production schema objects**.
+The installed staging support tables and receipts remain intact.
 
-> Current coordinated plan: [Task 2C two-phase continuation](../cvie-staging-continuation-plan.md). Original checkpoint 29 is verified. Adoption 29→37 and remaining migration 37→740 remain separate approvals, both requiring fresh private recovery evidence; nothing has executed beyond original 29.
-> artifact 13275811878 verifies 18 empty tables and ten explicit indexes. Do not
-> execute the step-0 bootstrap below or set a cursor. Follow the
-> [guarded adoption and recovery procedure](permanent-staging-adoption.md).
-> Current-manifest checkpoint 37 is not installed yet.
+## What is established and what still needs verification
 
-# Permanent CVEHarbor staging: implementation and activation
+| Item | Evidence / action |
+|---|---|
+| Staging account | `9706b4d98ad72884e67fd1eb875c8a61`; unchanged |
+| D1 | `cveharbor-accounts-staging`, `fac61562-fc31-426d-8032-550aba63b7f6`; initialized, do not recreate |
+| Workers | Existing `cveharbor-accounts-staging` and `cveharbor-site-staging`; initialization artifact verified both initial profiles, no deployment |
+| Production backend | Source `6e05106ce7d5f4c8741261775f2e4e69c6eea719`; version `89380b13-b600-4fef-82f4-69b8cc2f2c17` |
+| Production frontend | Source `019efc6ca029f4113ce71c6ebfad3680fa66ba68`; version `e22850fa-851d-453f-8336-5e78d96babdd` |
+| Domain ownership, zone and TLS | **Unverified**. No staging Cloudflare administrative credentials are available in the development session; the public RDAP lookup also could not be retrieved. Do not assume registration or DNS exists. |
+| Private R2 bucket and secrets | Expected name `cveharbor-intelligence-staging`; existence/privacy and worker keys are verified by the approved release, not assumed from a manifest |
+| Access | Maintenance restrictions were established previously. Restoring allow policies or adding hostnames requires explicit administrator approval. |
 
-Updated November 3, 2026. **Prepared code, not activation approval.** PRs #243,
-#251 and #253 remain draft. No resources, credentials, security settings, remote
-schema, production data or deployed Workers were changed by this implementation.
-Phase 2 remains on hold.
+The production baseline file remains historical evidence of production, including
+`RECOVERY_CONTROL_REQUIRED=true` with no 0032 tables. Only the staging wrapper sets
+that flag to `false`, using the released backend's existing compatibility path.
+Staging readiness checks the full audited schema and foreign keys, not nonexistent
+0031/0032 guards. No application migrations are introduced.
 
-## Candidate and compatibility
+The production schema excludes 0023. Its product/lifecycle monitoring API returns
+“Monitoring Not Yet Active”; the replica preserves this observed behavior. Existing
+lifecycle preferences, digest functionality and other released features remain.
+This is a production limitation, not a reason to install an unreleased migration.
+The live production flag inconsistency remains unchanged and requires separate review.
 
-The integrated application candidate belongs in **PR #243** on
-`codex/cvie-core-phase012`. It includes the existing CVIE work from #243, the
-Phase 1 integrity/recovery work from #251 and the security/R2 architecture already
-integrated from #253. It does not promote CVIE features into the production-scoped
-#251/#253 branches. Those drafts link to this staging implementation and retain
-their production deployment boundaries. No additional PR is required.
+## Administrator configuration (once, after approval)
 
-The later #243 migration executor at `515e224c093a9102e5075d6daefae2d39c32e2ce`
-was incorporated during development. Its transactional checkpoints, explicit
-resume, response reconciliation, usage limits and Worker/Access invariants remain.
-Its old 29-file/370-statement plan and `migrate-schema` approval are superseded.
-Use this runbook and the new manifest, not historical staging provisioning docs.
+1. **Domain registration and DNS.** Check ownership of `cveharborstage.com` at your
+   registrar. If unregistered, approve and register it first. In the existing
+   **CVEHarbor Staging** Cloudflare account, use **Websites → Add a domain** and
+   add this zone. Update the registrar to the exact Cloudflare nameservers shown
+   for this staging zone; wait for **Active**. Do not add it to the production
+   account or change any production zone. Registration may have a recurring fee;
+   no purchase or paid resource has been authorized by this PR.
 
-Production release integration remains #253 → #251, after separate approval and
-feed-transition gates. The integrated #243 staging candidate must not be merged
-or promoted wholesale as a substitute for reviewing those production releases.
-The pre-existing CVIE functionality in #243 has its own release scope.
+2. **Protect both hostnames before connecting the custom domain.** In the staging
+   account's **Zero Trust → Access → Applications**, edit the existing
+   **CVEHarbor Staging** self-hosted application. Make `cveharborstage.com` its
+   primary public hostname and retain
+   `cveharbor-site-staging.cveharbor-staging.workers.dev` as an additional public
+   hostname. Cover all paths; do not use a path-only restriction. Retain the same
+   issuer/AUD if supported by the existing application. Configure exactly the
+   existing named policies:
+   - **CVEHarbor staging reviewers**: Allow, explicitly listed administrator/tester
+     email addresses. No Everyone, domain-wide allow, Bypass or additional allow.
+   - **CVEHarbor staging automated tests**: Service Auth, only the existing
+     `cvie-staging-validation` service token.
+   This restores access only after your separate approval. Application login and
+   MFA are still required after Access; a service token grants no customer session.
 
-## Fixed resource boundaries
+3. **Connect the existing frontend only after Access is protected.** In
+   **Workers & Pages → cveharbor-site-staging → Settings → Domains & Routes → Add
+   Custom Domain**, enter `cveharborstage.com`. Cloudflare creates the required DNS
+   record and certificate; do not manually point an arbitrary CNAME at workers.dev.
+   Wait for domain/certificate activation. The old frontend denies the unfamiliar
+   hostname until the approved update; this is expected. Do not add a custom domain
+   to the backend. Keep backend workers.dev and previews disabled and frontend
+   previews disabled. No `www` alias is configured in this release.
 
-| Resource | Required value / current evidence |
-| --- | --- |
-| Account | Existing `9706b4d98ad72884e67fd1eb875c8a61`; isolated from production |
-| Permanent D1 | Existing `cveharbor-accounts-staging`, `fac61562-fc31-426d-8032-550aba63b7f6` |
-| API Worker | Existing `cveharbor-accounts-staging`; private service binding only |
-| Frontend Worker | Existing `cveharbor-site-staging`; existing workers.dev hostname, Access gate before every asset |
-| Origin | `https://cveharbor-site-staging.cveharbor-staging.workers.dev` |
-| Intelligence | `cveharbor-intelligence-staging`, private R2; existence/configuration still needs live verification |
-| Disposable D1 | None approved in `staging/resources.v1.json`; add exact name AND UUID only after resource review |
+4. **Staging-only resources and secrets.** Reuse the existing private
+   `cveharbor-intelligence-staging` R2 bucket if present; otherwise request approval
+   before creating this one required bucket. Disable both its r2.dev public URL
+   and custom public domains. In the existing backend Worker's **Settings →
+   Variables and Secrets**, securely configure separate random secrets named
+   `STAGING_TOTP_ENCRYPTION_KEY` and `STAGING_MONITOR_WEBHOOK_TOKEN` if missing.
+   Generate/store them through your approved secret manager; never paste values
+   into chat, commit them, or copy production values. Do not rotate an existing
+   TOTP key after test accounts have enrolled without a deliberate recovery plan.
+   Do not install SMTP2GO, production API or production notification secrets.
 
-Prior live evidence established both Workers, the D1 binding and 28 Access probes.
-The last observed D1 was empty. **That is historical evidence, not a new live
-inventory check.** The release workflow rechecks identity, inventory, deployed
-metadata and Access before changes. An unknown resource or configuration stops it.
-No create/delete/reset endpoint is present in the release process.
+5. **GitHub → Settings → Environments → cloudflare-cvie-staging.** Retain:
 
-Permanent staging is for persistent synthetic accounts and application regression.
-Disposable tests use separately approved resources in the same staging account,
-never the permanent D1. The Phase 1 disposable D1 and empty-bucket R2 harnesses
-remain separate: their bootstrap/reset assumptions are unsuitable for a populated
-permanent environment. Do not create a second staging account.
+   | Kind | Names / expected values |
+   |---|---|
+   | Variables | `CF_STAGING_ACCOUNT_ID` and `CF_STAGING_D1_DATABASE_ID` as above |
+   | Variables | `CF_STAGING_ACCESS_ISSUER` = existing `https://<team>.cloudflareaccess.com`; `CF_STAGING_ACCESS_AUD` = existing application AUD |
+   | Variable | `CF_STAGING_ADMIN_EMAILS` = comma-separated explicit administrators allowed to inspect captured mail and run synthetic jobs; a subset of Access-approved users |
+   | Secrets | `CF_STAGING_API_TOKEN`, `CF_STAGING_ACCESS_CLIENT_ID`, `CF_STAGING_ACCESS_CLIENT_SECRET` (existing staging-only credentials) |
+   | Secrets | `CF_STAGING_R2_ACCESS_KEY_ID`, `CF_STAGING_R2_SECRET_ACCESS_KEY`, restricted to Object Read & Write on the private staging intelligence bucket only |
+   | Activation flags | Keep `SIMPLE_STAGING_ENABLED=true`. Leave new `STAGING_APPLICATION_ENABLED` unset/false until the application deployment is explicitly approved. |
+   | Controlled jobs | `CF_STAGING_MANUAL_JOBS_ENABLED=false` initially; set true only after approving captured-email/synthetic scheduler tests. Native Worker schedules remain disabled regardless. |
 
-## Schema and migration safety
+   The existing management token needs staging-account Worker deployment, account
+   metadata, Access read, D1 read and private R2 metadata access. It must have no
+   production account scope. If Worker custom-domain publishing needs zone route
+   permissions, authorize only the `cveharborstage.com` zone; do not broaden the
+   token automatically. Check token metadata using the existing preflight.
 
-`staging/migrations.v1.json` is the ordered, versioned, SHA-256 validated manifest.
-It checks the complete SQL inventory; unknown, omitted, reordered or modified
-inputs fail local preparation. Full filenames identify migrations, because #243
-and #251 each have distinct 0028 and 0029 files. The manifest retains both sets.
+   Restrict the environment to protected `main`. Require reviewed PRs and successful
+   **CI / application regression**, **Security / workflow policy** and staging
+   **prepare** checks before merging; block direct/force pushes. The current read-only GitHub metadata reports `main` as **unprotected**;
+   these protections must be configured before automatic staging is enabled. Verify
+   your GitHub plan enforces them. Production environments retain their
+   approval requirements. Staging can omit repeated environment-reviewer approvals
+   once you explicitly authorize automatic staging releases; changing this setting
+   itself requires your approval. No settings were changed by this PR.
 
-The existing production schema files are applied intact. Phase 1's 0030 notification
-outbox, 0031 link/status/history protections and 0032 recovery controls are ordered
-explicitly. CVIE's registry/index migrations follow their prerequisites. Four
-staging-only tables store schema receipts, captured mail, attachment chunks and
-manual job runs. No production table is rebuilt by bespoke staging feature code.
+## Approved activation sequence
 
-The local plan has **35 source inputs plus one generated guard batch, 740
-statements, 102 application/staging tables (103 including sqlite_sequence)**.
-The committed `staging/bootstrap-approval.v1.json` pins the complete plan digest:
+Use the existing **Permanent staging preparation and approved updates** workflow.
+Do not run legacy migration, adoption, recovery-capture or checkpoint-740 actions.
 
-`a4ad0b27ff77266706693bf34f0880088b0bfe12139a583cca518975981a0fc3`
+1. Review the draft and passing CI. Approve/complete the one-time domain, Access,
+   bucket, secret and environment configuration above. Keep all test data synthetic.
+2. After deployment authorization, set `STAGING_APPLICATION_ENABLED=true` once.
+   On `main`, dispatch `simple_operation=publish-synthetic`, legacy `operation=none`.
+   This uses the existing versioned R2 publisher, preserves synthetic history and
+   does not deploy Workers or write D1 records.
+3. Dispatch `simple_operation=release`, legacy `operation=none`. The existing job
+   validates the exact production schema/receipts, Access policies, current Worker
+   identities, private bucket and already-connected custom domain. It builds the
+   pinned sources, dry-runs both packages, updates the **existing backend**, checks
+   its bindings/version and actual readiness through the old authenticated frontend,
+   and only then publishes the frontend. It rechecks custom-domain readiness, schema
+   and Access boundaries. A failed backend check stops frontend publication.
+4. Sign in at **https://cveharborstage.com/workspace/** with a synthetic test email.
+   An allowlisted administrator can read the captured OTP at **/__staging/**; enroll
+   a new authenticator seed and save the *staging* recovery codes. No real email is
+   sent. Session and reviewer cookies remain Secure/HttpOnly and host-only.
+5. Complete the remote acceptance checklist below. This cannot be claimed complete
+   from local tests or schema initialization alone.
 
-`python staging/scripts/migration-plan.py` regenerates checkpoints using real
-SQLite, validates foreign keys after every statement, and checks final integrity.
-Receipts retain full path, checksum, manifest version and applied time. SQLite
-and Cloudflare internal history is excluded from fingerprints and never removed.
+The authenticated `/v1/staging-readiness` exception is the only route retained on
+the old frontend origin after deployment. All other workers.dev application paths
+return 403 even with a valid Access token. The exception still requires a valid
+Access JWT. The private backend has no public workers.dev endpoint. Every custom
+host route runs the Access-verifying Worker before assets/API forwarding.
 
-Remote `migrate` is an **empty-schema bootstrap or exact checkpoint resume**. It
-rejects unrecognized/populated schemas and never adopts them automatically. Each
-file batch starts with schema/count/seed assertions inside the write transaction.
-It records D1 metrics and checks storage, foreign keys, Worker metadata and Access.
-Limits are 1,000,000 rows read, 100,000 written and 100,000,000 storage bytes;
-these are stop thresholds, not billing quotas. Missing counters also stop writes.
-A lost response triggers one read-only reconciliation, not an automatic retry.
+## Acceptance and recovery
 
-Future migrations on a populated permanent database need a reviewed forward plan
-with a drained write hold and preservation tests. The current bootstrap cannot be
-reused as an unrestricted migration runner. Local manifest-state tests demonstrate
-idempotent receipt handling and preservation; they do not authorize remote upgrades.
+Local tests exercise actual released handlers against the production-only schema:
+OTP registration, mandatory TOTP, replay protection and sessions; customer isolation;
+inventory/workspace; assignment email, acknowledgement, reviewer verification and
+progress; linked findings/status notifications; ticket/history preservation;
+report attachments/exports; digest and existing lifecycle capture; synthetic provider
+responses; controlled reminder idempotency; denied public/provider access. A real
+Chromium test additionally signs in through the pinned UI and visits workspace,
+account, inventory, customer security, remediation, reports and captured mail.
 
-## Application isolation and intelligence
+After deployment, repeat these with two distinct synthetic customers/users. Verify
+invalid/missing Access JWTs and unauthorized testers cannot obtain HTML, JavaScript,
+feeds, APIs, reviewer pages or mail. Test MFA login/logout/recovery, assignment →
+acknowledgement → reviewer progress → finding status/history, cross-customer denial,
+CSV/PDF/report email, and captured reminder/digest jobs with authorized admin access.
+Confirm frontend/backend feed versions agree and public bucket access is disabled.
+Production credentials or real customer data must never be imported.
 
-Both Workers bind the same private `INTELLIGENCE_BUCKET`. They use the #253
-content-addressed snapshot reader; frontend scripts pin a manifest version, old
-versions remain readable, and a corrupt/missing feed returns an explicit error.
-The publisher uploads immutable objects/manifests, reads them back, then conditionally
-promotes `current.json`. Failed promotion retains the last known good pointer.
-Historical threat/cache data is retained across synthetic republication.
+R2 uses synthetic timestamps and the existing eight-hour digest freshness guard.
+Do not extend/disable it. Refresh synthetic data with the existing `publish-synthetic`
+operation when needed before testing notifications; no recovery-secret updates are
+needed. Native scheduled jobs do not run automatically in staging.
 
-The staging publisher accepts only generated synthetic data. It invokes the same
-publication protocol as production, without executing live collectors. Production
-hourly feeds and their credentials are unchanged. The existing eight-hour digest
-freshness check and lifecycle freshness checks remain active. Staging native crons
-are empty and the staging scheduled entrypoint remains a no-op.
+A code-only failure does not require a D1 restore. Keep Access private and retain
+artifacts/previous Worker version IDs. If the backend fails verification, leave the
+frontend unchanged. If an uploaded version needs rollback, separately approve
+rollback of the existing Worker to its previously recorded compatible version or
+review a forward fix; do not delete resources or run schema initialization. Current
+activation never writes application schema/data. The optional historical private
+R2 recovery mechanism is not used by this release and is not adapted to this domain.
+Destructive/schema-changing work continues to require its own reviewed safeguards.
 
-The bundled backend replaces every network fetch with a context-bound fixture
-transport. It has no native network fallback. Recognized intelligence providers
-return synthetic responses; unknown destinations and provider writes fail closed.
-The fixture monitor host is `synthetic-monitor.example.org`; its DNS/HTTP/WebRisk
-responses are intercepted, with no real request to that domain. Existing hostname,
-SSRF, rate, session, MFA and tenant checks remain in application code.
+## Routine development after acceptance
 
-## Captured mail and controlled jobs
-
-All existing SMTP2GO paths retain their templates and notification state machines.
-Only the sentinel capture key enters application code. Production provider keys
-are neither forwarded nor stored. Registration/login, reviewer verification,
-assignment/acknowledgement, status mail, reminders/FYI, digests, lifecycle notices,
-monitor notifications and report attachments use the same capture transport.
-Provider acceptance is simulated; real delivery/webhook behavior requires separate
-synthetic webhook testing, never actual customer email.
-
-Authorized administrators inspect `/__staging/`. Access JWT signature, issuer,
-audience and expiry are checked first, then its signed human email must match the
-explicit administrator allowlist. A service token or forged identity header cannot
-open the inbox. The private API is accessible only through its service binding.
-The inbox displays captured HTML as text, avoiding execution of email content.
-Attachments are stored in bounded chunks. Captures contain sensitive test codes
-and links: retain Access restrictions and use synthetic accounts only. Automatic
-mail cleanup is not enabled; retention/deletion requires a reviewed policy.
-
-Reviewer emails point to the same staging origin. The frontend forwards both the
-account session and reviewer session cookies while stripping Access credentials.
-The same accountless email verification and acknowledgement proofs remain required.
-
-Manual testing is disabled by default. After approval, deploy the reviewed variable
-`CF_STAGING_MANUAL_JOBS_ENABLED=true`; native crons still remain disabled. A signed
-allowlisted administrator can POST same-origin JSON to `/__staging/jobs`:
-
-```json
-{"id":"<new UUID>","job":"hourly","scenario":"synthetic"}
-```
-
-Jobs: `remediation` (status/progress/FYI/disclosure/monitor mail), `cvie` (NVD queue),
-`hourly` (digests/lifecycle/product/plugin/website checks). Scenarios: `synthetic`,
-`provider-failure`, `mail-failure`. Duplicate run IDs do not rerun a job; one active
-run is allowed across all jobs. Recovery holds reject new runs. Inspect run state,
-application delivery records and captured mail together: dispatch completion alone
-does not prove every application-level notification was eligible or delivered.
-A crashed running job requires investigation; no automatic lock/lease expiry exists.
-
-## Administrator configuration — approval required before changing it
-
-Reuse **GitHub Settings → Environments → cloudflare-cvie-staging**. Verify that
-required reviewers and deployment branch restrictions are enforceable under the
-current repository plan; configuration text alone is not enforcement. Permit only
-the reviewed `codex/cvie-core-phase012` branch for this draft validation. No PR-triggered
-credential access, repository-level staging secrets or production credentials.
-Use a protected, explicitly approved execution process if environment reviews are
-unavailable; do not enable remote operations assuming protection exists.
-
-| Environment variable | Value |
-| --- | --- |
-| `CF_STAGING_ACCOUNT_ID` | fixed account above |
-| `CF_STAGING_D1_DATABASE_ID` | fixed permanent UUID above |
-| `CF_STAGING_ACCESS_ISSUER`, `CF_STAGING_ACCESS_AUD` | reuse verified existing Access issuer/audience |
-| `CF_STAGING_ADMIN_EMAILS` | comma-separated approved human administrator emails; maximum 10 |
-| `CF_STAGING_MANUAL_JOBS_ENABLED` | `false` initially |
-| `CF_STAGING_APPROVED_COMMIT` | exact reviewed full candidate SHA, matching run and checkout |
-| `CF_STAGING_PROVISION_ACTION` | one reviewed operation: `migrate`, `publish-synthetic`, `update`, `verify`, `hold`, `freeze`, `recover-code`, `resume` |
-| `CF_STAGING_SCHEMA_PLAN_SHA256` | digest above, only after inspecting regenerated plan |
-| `CF_STAGING_SCHEMA_RESUME_STEP` | `0` for empty bootstrap; another cursor only after explicit reconciliation review |
-| `CF_STAGING_EXPECTED_HOLD_REVISION` | freshly inspected revision for hold/freeze/resume |
-| `CF_STAGING_RECOVERY_REASON` | specific 10–500 character reason for recovery operations |
-
-Environment secrets, never values in chat or repository:
-
-- Existing `CF_STAGING_API_TOKEN`: staging-account-only management token. Required
-  capabilities: account metadata/read, Workers Scripts Edit (existing names),
-  Workers asset upload support, D1 Edit (permanent staging), R2 metadata read,
-  Access applications/policies and service-token metadata read. No production
-  account access. Cloudflare cannot constrain all account permissions to individual
-  Worker names; the executor adds exact resource checks. Do not widen an existing
-  token silently. Prior owner-attested scope is retained only for the known 403
-  introspection case; conflicting metadata always fails.
-- Existing `CF_STAGING_ACCESS_CLIENT_ID` and `CF_STAGING_ACCESS_CLIENT_SECRET`:
-  existing Access service-auth policy used only for boundary/readiness probes.
-- `CF_STAGING_R2_ACCESS_KEY_ID` and `CF_STAGING_R2_SECRET_ACCESS_KEY`: R2 S3 Object
-  Read & Write restricted to the single permanent staging bucket. No production
-  buckets/account, D1 or Worker deployment permissions. Used only by the approved
-  synthetic publisher subprocess. R2 metadata uses the management token separately.
-
-Cloudflare administrator actions, separately approved:
-
-1. Select the existing staging account, inspect R2 inventory first and reuse the
-   exact private bucket if suitable. If missing, request approval to create
-   `cveharbor-intelligence-staging`. Keep r2.dev/public URL off, no custom domains,
-   no public CORS or automatic object expiry. Do not enable paid resources silently.
-2. Verify the existing D1 UUID and both Worker names. Do not delete/recreate them.
-   Preserve Access application/policies/service token and existing hostname.
-3. Install **staging-only** Worker secrets `STAGING_TOTP_ENCRYPTION_KEY` and
-   `STAGING_MONITOR_WEBHOOK_TOKEN` securely on the existing private API Worker.
-   Never copy production keys. Preserve the staging TOTP key across updates or
-   existing staging users cannot decrypt their MFA configuration.
-4. Configure environment metadata and bucket-scoped publisher credentials as above.
-   Do not install SMTP2GO, live provider or production secrets on staging Workers.
-
-## Exact activation sequence
-
-Each remote operation needs explicit owner approval, the protected environment
-review, matching source SHA and the selected operation. A workflow dispatch input
-must match `CF_STAGING_PROVISION_ACTION`. While the workflow is absent from main,
-a separately approved `[staging-release]` commit plus **manual rerun** can expose
-the job; its initial push always skips it. This implementation commit does not
-carry that marker and no remote run was initiated. Never merge merely to dispatch.
-
-1. Review candidate diff, local results and regenerated migration plan. Complete
-   the resource/permission checks above; separately approve any missing configuration.
-2. Approve `migrate`, digest and step 0. The job rechecks inventory/Access, captures
-   a D1 recovery bookmark and existing Worker versions, then executes only the
-   guarded bootstrap. Review final checkpoint, counts, metrics and unchanged Access.
-   If the D1 is no longer empty, stop: do not reset it or reuse an old cursor.
-3. Approve `publish-synthetic`. The job checks the private bucket and publishes only
-   generated fixtures using immutable objects, readback and conditional promotion.
-   Review the manifest and history metadata. No application deployment occurs.
-4. Approve `update`. It requires the full exact schema, no write hold, safe resource
-   bindings and both dry runs. It updates the **existing backend first**, verifies
-   active metadata and `/v1/staging-readiness` through the existing Access frontend,
-   then updates the existing frontend. No frontend upload occurs if those gates fail.
-   It verifies frontend Worker-first routing, Access boundaries and unchanged hold state.
-5. Approve `verify` for a fresh read-only inventory/schema/Access check. Test human
-   SSO, account registration/MFA through capture, customer inventory/findings,
-   record linking/duplicate prevention/status history, assignment/receipt/reviewer
-   links, tickets, reports and shared feed versions through the real staging site.
-6. Only after reviewing the full configuration, approve manual-job enablement via
-   another `update`. Use synthetic accounts and controlled scenarios. Verify
-   reminder/digest idempotency, failures, freshness and recovery. Keep native crons off.
-7. Run the approved disposable D1/R2 rehearsals and separate SELECT-only production
-   audit to complete #251/#253 production readiness. Permanent staging tests do not
-   replace those provider-specific failure tests or establish production integrity.
-
-## Recovery and future updates
-
-Capture artifacts even on failure. Never rerun a failed migration at cursor 0 or
-blindly revert to the original schema-incomplete Worker. Review the reported actual
-checkpoint/usage, approve an exact resume or a forward repair. There is no automatic
-restore, resource recreation, deletion or SQL replay.
-
-For an installed application: approve `hold` with current revision, wait for zero
-active leases, inspect application/notification state, then approve `freeze` with
-the new revision. The guards cover inventory, remediations, assignments, receipts,
-review sessions, outboxes/history and staging captures/jobs. Do not expire leases
-just to make recovery proceed. Capture the D1 bookmark and immutable R2 pointer.
-
-`recover-code` requires frozen, drained state, the exact installed schema and a
-reviewed compatible package. It updates backend then frontend with runtime gates
-while preserving the hold. It cannot roll back schema or replay notification state.
-After verifying integrity, foreign keys, records/history, Access and delivery queues,
-separately approve `resume` with the current revision. The resume checks reject
-integrity failures and release the freeze/hold together. Rerun `verify` and inspect
-captured notifications before allowing further tests.
-
-A D1 Time Travel restore or R2 pointer rollback requires separate approval and a
-review of writes since the bookmark. Do not delete outboxes, acknowledgements,
-reviewer links or notification idempotency records to make tests pass. Production
-credentials/data are never inputs to this recovery process.
-
-Sanitized production refresh is deliberately **not implemented or authorized** in
-this change. A later plan must remove sessions, MFA material, tokens, emails,
-customer identifiers and pending notification/scan work before import into a held,
-isolated database. It must preserve relationships and verify fixture-only egress.
-
-## Validation and remaining gates
-
-[Recorded local results](../cvie-evidence/permanent-staging-local-validation.json):
-15 staging test files, 42 backend test files, 7 release/site-gate test files and
-169 Python test cases passed. The migration executor contributes 9 failure/resume
-cases. CVIE onboarding, customer security/software upgrade and product-monitoring
-UI smoke suites passed.
-
-Local validation uses real SQLite schema/SQL, the bundled application, synthetic
-provider responses and captured email. It covers authentication/MFA/replay, tenant
-isolation, assignment acknowledgement and reviewer progress, link/status/history
-and ticket preservation, overdue manager/reviewer reminders without repeats,
-report attachment capture, vulnerability digests, lifecycle notices, product and
-website monitoring, full manifest/checkpoints, release failure ordering, R2 failure
-and history behavior, and Access signature/admin authorization. Native local workerd
-also verifies Access JWTs and the capture transport's asynchronous context; both
-credential-free Wrangler packages pass.
-
-Remote D1 transaction/metric behavior, R2 conditional writes, deployed service
-binding/readiness ordering, live human Access SSO, full staging browser acceptance,
-and the production read-only integrity audit remain approval/configuration gates.
-Synthetic provider fixtures cannot prove live vendor API availability or actual
-mail delivery. None of those pending checks is reported as passed.
+`staging/application-release.json` initially selects `production-baseline` so the
+first activation reproduces the verified production release, not the newer candidate.
+After acceptance, make one reviewed change to `source_mode: reviewed-main`. The
+same build, safety wrappers, schema checks, CI and deployment job then use the exact
+reviewed main commit for both application sources. Each subsequent reviewed merge
+stages code automatically with no per-release variables, backup evidence or recovery
+secrets. Schema drift is blocked; schema-changing features require a reviewed schema
+profile/migration rather than silently continuing to 740. Production promotion
+still requires its protected approval and matching staging identity evidence; an
+initial pinned-baseline receipt cannot certify unrelated newer production code.

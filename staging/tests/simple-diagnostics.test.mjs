@@ -52,7 +52,7 @@ test('CLI writes failure artifact even when authorization fails, without seriali
  assert.equal(r.status,1);const text=fs.readFileSync(file,'utf8');assert.equal(JSON.parse(text).failure.operation,'release.authorization');assert.doesNotMatch(text+r.stderr,/private-token-canary/);
 });
 test('existing workflow exposes diagnose and always uploads diagnostic evidence',()=>{
- const yaml=fs.readFileSync('.github/workflows/cvie-staging.yml','utf8');assert.match(yaml,/options: \[release, initialize, resume, diagnose\]/);assert.match(yaml,/if: \$\{\{ always\(\) \}\}\s+with:\s+name: staging-tested-/);
+ const yaml=fs.readFileSync('.github/workflows/cvie-staging.yml','utf8');assert.match(yaml,/options: \[release, initialize, resume, diagnose, publish-synthetic\]/);assert.match(yaml,/if: \$\{\{ always\(\) \}\}\s+with:\s+name: staging-tested-/);
 });
 
 test('D1 diagnostics suppress secret-bearing provider text while identifying invalid query shape',async()=>{

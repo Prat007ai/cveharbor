@@ -1,6 +1,6 @@
 import {TARGET} from './target.mjs';
 import {SCENARIOS,withStagingTransport} from './transport.mjs';
-import {releaseReadiness} from '../account-backend/src/release-readiness.js';
+import {stagingReadiness} from './production-runtime.mjs';
 import {openIntelligenceSnapshot} from '../account-backend/src/intelligence-store.js';
 const reply=(body,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'}});
 export const JOBS=Object.freeze({remediation:'* * * * *',cvie:'*/5 * * * *',hourly:'5 * * * *'});
@@ -9,7 +9,7 @@ export async function adminRoute(req,env,application,safe){
  if(!actor||!String(env.STAGING_ADMIN_EMAILS||'').split(',').map(s=>s.trim().toLowerCase()).includes(actor.toLowerCase()))return reply({error:'Staging administrator required'},403);
  if(req.method!=='GET'&&(req.method!=='POST'||req.headers.get('Origin')!==TARGET.origin||req.headers.get('Content-Type')!=='application/json'))return reply({error:'Invalid administration request'},403);
  if(url.pathname==='/__staging/status'&&req.method==='GET'){
-  const schema=await releaseReadiness(safe);let version=null;try{version=(await openIntelligenceSnapshot(safe)).version;}catch{}
+  const schema=await stagingReadiness(safe);let version=null;try{version=(await openIntelligenceSnapshot(safe)).version;}catch{}
   return reply({schema:await schema.json(),feed_version:version,release:env.STAGING_RELEASE||'unbuilt',mail_capture:env.STAGING_EMAIL_CAPTURE_ENABLED==='true',scheduled_jobs_enabled:false});
  }
  if(url.pathname==='/__staging/mail'&&req.method==='GET')return reply({messages:(await env.DB.prepare('SELECT id,created_at,subject,recipients_json,scenario FROM staging_mail ORDER BY created_at DESC,id LIMIT 100').all()).results});
@@ -27,8 +27,8 @@ export async function adminRoute(req,env,application,safe){
   const raw=await req.text();if(raw.length>2048)return reply({error:'Request too large'},413);
   let data;try{data=JSON.parse(raw);}catch{return reply({error:'Invalid JSON'},400);}
   if(!Object.hasOwn(JOBS,data.job)||!SCENARIOS.includes(data.scenario)||!/^[a-f0-9-]{36}$/.test(data.id||'')||Object.keys(data).some(k=>!['id','job','scenario'].includes(k)))return reply({error:'Choose a reviewed job, scenario and unique run ID'},400);
-  const hold=await env.DB.prepare('SELECT write_hold,database_frozen FROM operations_control WHERE id=1').first();
-  if(!hold||hold.write_hold||hold.database_frozen)return reply({error:'Application writes are held'},409);
+  const held=safe.STAGING_APPLICATION_PROFILE==='production-baseline'?!(await (await stagingReadiness(safe)).json()).schema_ready:await env.DB.prepare('SELECT write_hold,database_frozen FROM operations_control WHERE id=1').first().then(h=>!h||h.write_hold||h.database_frozen);
+  if(held)return reply({error:'Application writes are held'},409);
   const prior=await env.DB.prepare('SELECT job,scenario,state FROM staging_job_runs WHERE id=?').bind(data.id).first();
   if(prior)return reply({replayed:true,...prior},prior.job===data.job&&prior.scenario===data.scenario?200:409);
   try{await env.DB.prepare("INSERT INTO staging_job_runs(id,job,scenario,actor,started_at,state) VALUES(?,?,?,?,?,'running')").bind(data.id,data.job,data.scenario,actor,Date.now()).run();}catch{return reply({error:'Another job is running or writes are held'},409);}

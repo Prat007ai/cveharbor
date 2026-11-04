@@ -8,7 +8,7 @@ on:
       simple_operation:
         description: Simplified staging operation after activation
         type: choice
-        options: [release, initialize, resume, diagnose]
+        options: [release, initialize, resume, diagnose, publish-synthetic]
         default: release
       hold_revision:
         description: Expected hold revision (recovery resume only)
@@ -32,6 +32,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '24'
@@ -46,6 +47,14 @@ jobs:
       - run: node staging/scripts/check-build.mjs
       - run: node staging/scripts/check-access-runtime.mjs
       - run: node staging/scripts/dry-run.mjs
+      - name: Build and test the pinned production replica without credentials
+        run: |
+          python scripts/checkout_baseline_source.py
+          STAGING_BUILD_PROFILE=production-baseline node staging/scripts/build.mjs
+          node --test staging/tests/application.test.mjs staging/tests/production-activation.test.mjs
+          node staging/scripts/production-browser.mjs
+          node staging/scripts/check-build.mjs
+          node staging/scripts/dry-run.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -231,6 +240,7 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '24'
@@ -242,10 +252,17 @@ jobs:
           npm install --prefix staging --ignore-scripts --no-package-lock
           python staging/scripts/migration-plan.py
           node scripts/build_release_identity.mjs
-          node staging/scripts/build.mjs
+          python scripts/checkout_baseline_source.py
+          STAGING_BUILD_PROFILE=production-baseline node staging/scripts/build.mjs
           node staging/scripts/check-build.mjs
+      - name: Install pinned publisher dependency for approved synthetic publication
+        if: github.event_name == 'workflow_dispatch' && inputs.simple_operation == 'publish-synthetic'
+        run: python -m pip install boto3==1.40.70
       - name: Initialize once or release automatically to existing staging resources
         env:
+          STAGING_APPLICATION_ENABLED: ${{ vars.STAGING_APPLICATION_ENABLED }}
+          CF_STAGING_R2_ACCESS_KEY_ID: ${{ secrets.CF_STAGING_R2_ACCESS_KEY_ID }}
+          CF_STAGING_R2_SECRET_ACCESS_KEY: ${{ secrets.CF_STAGING_R2_SECRET_ACCESS_KEY }}
           SIMPLE_STAGING_ENABLED: ${{ vars.SIMPLE_STAGING_ENABLED }}
           SIMPLE_STAGING_OPERATION: ${{ inputs.simple_operation || 'release' }}
           CF_STAGING_EXPECTED_HOLD_REVISION: ${{ inputs.hold_revision }}
@@ -258,7 +275,7 @@ jobs:
           CF_STAGING_ACCESS_CLIENT_ID: ${{ secrets.CF_STAGING_ACCESS_CLIENT_ID }}
           CF_STAGING_ACCESS_CLIENT_SECRET: ${{ secrets.CF_STAGING_ACCESS_CLIENT_SECRET }}
           CF_STAGING_ADMIN_EMAILS: ${{ vars.CF_STAGING_ADMIN_EMAILS }}
-          CF_STAGING_MANUAL_JOBS_ENABLED: 'false'
+          CF_STAGING_MANUAL_JOBS_ENABLED: ${{ vars.CF_STAGING_MANUAL_JOBS_ENABLED || 'false' }}
         run: node staging/scripts/simple-release.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: ${{ always() }}
