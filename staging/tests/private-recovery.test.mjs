@@ -61,7 +61,7 @@ test('exact source/action/account approval, public certificate and management/ob
  const env={...base,CF_STAGING_PROVISION_ACTION:'recovery-inventory'},event={head_commit:{id:sha,message:'review [staging-release]'}};assert.equal(authorize(env,event,sha),'recovery-inventory');
  for(const patch of [{GITHUB_RUN_ATTEMPT:'1'},{CF_STAGING_D1_DATABASE_ID:'46710e51-7ca4-4571-b89c-921b9969de0b'},{CF_STAGING_APPROVED_COMMIT:'b'.repeat(40)},{CF_STAGING_PROVISION_ACTION:'migrate'}])assert.throws(()=>authorize({...env,...patch},event,sha));
  assert.throws(()=>secureTemp(Number.MAX_SAFE_INTEGER));
- assert.throws(()=>certificate(pem,'0'.repeat(64)));assert.ok(certificate(pem,fingerprint));
+ assert.throws(()=>certificate(pem,'0'.repeat(64)));assert.ok(certificate(pem,fingerprint));assert.throws(()=>certificate(pem+fs.readFileSync(fixture+'/key.pem','utf8'),fingerprint));
  for(const route of ['/d1/database/production','/workers/scripts/foo','/access/apps/'+app+'/revoke_tokens','/r2/buckets/foo/delete'])assert.equal(managementRoute(route),false);
  assert.throws(()=>recoveryStore({...base,CF_STAGING_RECOVERY_BUCKET:'cveharbor-intelligence-staging'}));
 });

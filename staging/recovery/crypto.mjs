@@ -5,6 +5,7 @@ import {spawnSync} from 'node:child_process';
 export const hash=x=>createHash('sha256').update(x).digest('hex');
 export function requireThat(ok,category){if(!ok)throw Error(category);}
 export function certificate(pem,fingerprint,now=Date.now()){
+ requireThat(typeof pem==='string'&&!pem.includes('PRIVATE KEY')&&/^\s*-----BEGIN CERTIFICATE-----[A-Za-z0-9+/=\s]+-----END CERTIFICATE-----\s*$/.test(pem),'public_certificate_only');
  const cert=new X509Certificate(pem),key=cert.publicKey;
  requireThat(cert.fingerprint256.replaceAll(':','').toLowerCase()===fingerprint,'recipient_fingerprint');
  requireThat(key.asymmetricKeyType==='rsa'&&key.asymmetricKeyDetails.modulusLength>=3072,'recipient_strength');
