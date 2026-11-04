@@ -52,6 +52,29 @@ export async function probeAccess(env, transport = fetch) {
   // Return failure evidence; caller records it before failing the job.
   return report;
 }
+// Migration maintenance checks require denial, never a successful application login.
+// Normal deployment probes above retain their positive authentication requirements.
+export async function probeMaintenanceAccess(env, transport = fetch) {
+  if (env.CF_STAGING_PROVISION_ACTION !== 'migrate' || !env.CF_STAGING_ACCESS_CLIENT_ID || !env.CF_STAGING_ACCESS_CLIENT_SECRET)
+    throw Error('Migration maintenance service credentials required');
+  const auth = { 'CF-Access-Client-Id': env.CF_STAGING_ACCESS_CLIENT_ID, 'CF-Access-Client-Secret': env.CF_STAGING_ACCESS_CLIENT_SECRET };
+  const checks = [];
+  async function check(url, name, headers, expected) {
+    let status = 599;
+    try {
+      const response = await transport(url, { method: 'GET', headers, redirect: 'manual', signal: AbortSignal.timeout(20000) });
+      status = response.status;
+      await response.body?.cancel();
+    } catch {}
+    checks.push({ name, status, passed: status === expected });
+  }
+  for (const route of ['/', '/styles.css', '/app.js', '/data.js', '/assets/workspace-harbor.svg', '/workspace/', '/v1/me']) {
+    for (const [name, headers] of [['anonymous', {}], ['service_token', auth], ['forged_jwt', { 'Cf-Access-Jwt-Assertion': 'invalid.signature.token' }]])
+      await check(TARGET.origin + route, name + ':' + route, headers, 403);
+  }
+  await check('https://cveharbor-accounts-staging.cveharbor-staging.workers.dev/v1/me', 'private_backend', {}, 404);
+  return { access_mode: 'maintenance', passed: checks.every(c => c.passed), checks, requests: checks.length, method: 'GET', application_sessions_used: false };
+}
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   let report;
   try { report = await probeAccess(process.env); if (!report.passed) process.exitCode = 1; }

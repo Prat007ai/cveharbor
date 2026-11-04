@@ -6,11 +6,12 @@ import { fileURLToPath } from 'node:url';
 import { TARGET, accessSettings, databaseId } from '../target.mjs';
 import { createAccessVerifier } from '../access.mjs';
 
-export async function preflight(env, transport = fetch, { existingDatabase = false, workerState = 'empty' } = {}) {
+export async function preflight(env, transport = fetch, { existingDatabase = false, workerState = 'empty', maintenance = false } = {}) {
   if (!['empty', 'deployed'].includes(workerState) || workerState === 'deployed' && !existingDatabase) throw Error('Explicit inventory state and existing database required');
+  if (maintenance && (env.CF_STAGING_PROVISION_ACTION !== 'migrate' || !existingDatabase || workerState !== 'deployed')) throw Error('Maintenance preflight is migration-only');
   const checks = [], requests = [], blockers = [], limitations = [];
   const report = { account: TARGET.account, origin: TARGET.origin, checked_at: new Date().toISOString(),
-    operation: 'read-only staging preflight', inventory_mode: workerState, checks, requests, blockers, limitations,
+    operation: 'read-only staging preflight', access_mode: maintenance ? 'maintenance' : 'normal', inventory_mode: workerState, checks, requests, blockers, limitations,
     mutation_requests: 0, production_requests: 0, ready_for_creation: false };
   const add = (name, passed, detail, required = true) => {
     checks.push({ name, status: passed ? 'pass' : required ? 'fail' : 'unverified', ...detail });
@@ -95,17 +96,24 @@ export async function preflight(env, transport = fetch, { existingDatabase = fal
   const apps = await cf('/access/apps?per_page=100', 'access_applications');
   const app = apps.ok && Array.isArray(apps.result) && apps.result.length < 100 && apps.result.find(a => a.domain === new URL(TARGET.origin).hostname && a.aud === audience && a.type === 'self_hosted');
   add('exact_access_application', !!app, { http_status: apps.status, name_matches_owner_label: app?.name === 'CVEHarbor Staging' });
+  if (maintenance) add('single_maintenance_application', !!app && apps.result.length === 1, {});
   let servicePolicy;
   if (app && /^[a-f0-9-]+$/i.test(app.id)) {
     const policyResult = await cf(`/access/apps/${app.id}/policies`, 'access_policies');
     const policies = policyResult.ok && Array.isArray(policyResult.result) ? policyResult.result : [];
+    if (maintenance) {
+      add('maintenance_associations_absent', policyResult.ok && Array.isArray(policyResult.result) && policies.length === 0, { policy_count: policies.length });
+    } else {
     const human = policies.find(p => p.name === 'CVEHarbor staging reviewers' && p.decision === 'allow');
     servicePolicy = policies.find(p => p.name === 'CVEHarbor staging automated tests' && p.decision === 'non_identity');
     const narrow = selectors => Array.isArray(selectors) && selectors.length > 0 && selectors.every(s => Object.keys(s).length === 1 && typeof s.email?.email === 'string' && s.email.email.includes('@'));
     add('reviewer_email_allow_policy', !!human && narrow(human.include), { email_rule_count: human?.include?.length ?? 0 });
     add('service_auth_policy', !!servicePolicy && Array.isArray(servicePolicy.include) && servicePolicy.include.length > 0 && servicePolicy.include.every(s => Object.keys(s).length === 1 && /^[a-f0-9-]{36}$/i.test(s.service_token?.token_id || '')), {});
     add('no_access_bypass_or_additional_allow', policies.length === 2 && policies.every(p => p === human || p === servicePolicy) && !policies.some(p => p.decision === 'bypass' || (p.include || []).some(s => Object.hasOwn(s, 'everyone'))), { policy_count: policies.length });
+    }
   }
+  let serviceMetadataVerified = false;
+  if (!maintenance) {
   const serviceTokens = await cf('/access/service_tokens?per_page=100', 'service_token_metadata');
   const tokenRows = serviceTokens.ok && Array.isArray(serviceTokens.result) ? [...serviceTokens.result] : [];
   const listedCount = tokenRows.length;
@@ -121,7 +129,7 @@ export async function preflight(env, transport = fetch, { existingDatabase = fal
   const clientMatches = tokenRows.filter(s => s.client_id === value('CF_STAGING_ACCESS_CLIENT_ID'));
   const selected = named.find(s => s.client_id === value('CF_STAGING_ACCESS_CLIENT_ID'));
   const linked = selected && servicePolicy?.include?.some(s => s.service_token?.token_id === selected.id);
-  const serviceMetadataVerified = !!linked && selected.enabled !== false && (!selected.expires_at || Date.parse(selected.expires_at) > Date.now());
+  serviceMetadataVerified = !!linked && selected.enabled !== false && (!selected.expires_at || Date.parse(selected.expires_at) > Date.now());
   add('service_token_matches_policy_and_client', serviceMetadataVerified, {
     http_status: serviceTokens.status, metadata_available: serviceTokens.ok,
     metadata_is_array: Array.isArray(serviceTokens.result), listed_count: listedCount, record_count: tokenRows.length,
@@ -145,6 +153,7 @@ export async function preflight(env, transport = fetch, { existingDatabase = fal
   const jwt = response?.headers.get('set-cookie')?.match(/(?:^|[,;]\s*)CF_Authorization=([^;]+)/)?.[1];
   const verified = jwt && await createAccessVerifier(async () => Response.json(jwks))(jwt, issuer, audience);
   add('access_cookie_jwt_observed', !!verified, { http_status: response?.status ?? null, reason: verified ? 'Valid Access JWT for configured issuer/AUD' : 'No verified response cookie. Strict Service Auth intentionally returns no CF_Authorization cookie; only live origin boundary probes can establish end-to-end readiness.' }, false);
+  }
   report.read_only_checks_passed = blockers.length === 0;
   report.ready_for_creation = workerState === 'empty' && !existingDatabase && blockers.length === 0 && grantsVerified && scopeVerified && serviceMetadataVerified;
   report.write_permissions_exercised = false;

@@ -1,5 +1,7 @@
 # Staging adoption: CI finding and administrator recovery checklist
 
+> Adoption is complete: run 41733850483 attempt 2 verified checkpoint 37. The adoption instructions below are historical; do not rerun adoption. Use the [checkpoint-37 continuation procedure](staging-checkpoint37-continuation.md) for the separately approved next phase.
+
 > Current adoption uses the original administrator-machine bookmark/export/local-restore procedure and `CF_STAGING_RECOVERY_EVIDENCE`, pinned to approved commit `545a7b46bdcb77b99f2bc35bd1bb938e7add93a7`. The [R2 recovery mechanism](staging-private-recovery.md) is optional future work requiring separate review; it does not supersede this procedure or invalidate an otherwise current, validated backup. Do not run `recovery-*` operations for this adoption.
 
 ## Browser failure investigated

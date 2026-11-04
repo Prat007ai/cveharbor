@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { preflight } from '../scripts/preflight.mjs';
+import { probeMaintenanceAccess } from '../scripts/probe-access.mjs';
 import { TARGET } from '../target.mjs';
 const env = { CF_STAGING_ACCOUNT_ID: TARGET.account, CF_STAGING_API_TOKEN: 'private-management-token', CF_STAGING_ACCESS_ISSUER: 'https://synthetic-stage.cloudflareaccess.com', CF_STAGING_ACCESS_AUD: 'a'.repeat(64), CF_STAGING_ACCESS_CLIENT_ID: 'private-service-client', CF_STAGING_ACCESS_CLIENT_SECRET: 'private-service-secret' };
 const sid = 'fac61562-fc31-426d-8032-550aba63b7f6';
@@ -92,3 +93,35 @@ test('deployed diagnostic accepts only both expected Workers without weakening i
   assert.ok(initial.blockers.includes('approved_worker_names_available'));
 });
 
+
+test('migration maintenance accepts a known zero-policy app; denied metadata is not an empty-policy proof', async () => {
+  const settings = { ...env, CF_STAGING_D1_DATABASE_ID: sid, CF_STAGING_PROVISION_ACTION: 'migrate' };
+  const options = { existingDatabase: true, workerState: 'deployed', maintenance: true };
+  const original = fixture({ database: { name: TARGET.database, uuid: sid }, workers: [{ id: TARGET.api }, { id: TARGET.site }] });
+  for (const mode of ['blocked','allow','metadata_denied','other_app']) {
+    const transport = async (url, init) => {
+      if (String(url).endsWith('/policies')) return Response.json(mode === 'metadata_denied' ? {success:false} : {success:true,result:mode==='allow'?[{decision:'allow'}]:[]}, {status:mode==='metadata_denied'?403:200});
+      if (mode==='other_app' && String(url).includes('/access/apps?')) return Response.json({success:true,result:[{id:sid,domain:new URL(TARGET.origin).hostname,aud:env.CF_STAGING_ACCESS_AUD,type:'self_hosted'}, {id:'unexpected',domain:'other.invalid'}]});
+      return original(url, init);
+    };
+    assert.equal((await preflight(settings, transport, options)).read_only_checks_passed, mode==='blocked');
+    if(mode==='blocked') assert.equal((await preflight(settings, transport, {...options,maintenance:false})).read_only_checks_passed,false);
+  }
+  await assert.rejects(preflight({...settings,CF_STAGING_PROVISION_ACTION:'update'}, original, options));
+});
+test('maintenance probes require denial for anonymous, forged and service requests and keep backend private', async () => {
+  const settings={...env,CF_STAGING_PROVISION_ACTION:'migrate'};
+  for(const mode of ['blocked','service_open','api_open','login_redirect','network']) {
+    const calls=[];
+    const result=await probeMaintenanceAccess(settings,async(url,init)=>{
+      calls.push(String(url));assert.equal(init.method,'GET');assert.equal(init.redirect,'manual');
+      if(mode==='network')throw Error('fixture');
+      if(String(url).includes('accounts-staging'))return new Response('',{status:mode==='api_open'?200:404});
+      if(mode==='login_redirect')return new Response('',{status:302,headers:{Location:env.CF_STAGING_ACCESS_ISSUER+'/cdn-cgi/access/login'}});
+      return new Response('',{status:mode==='service_open'&&init.headers['CF-Access-Client-Id']?200:403});
+    });
+    assert.equal(result.passed,mode==='blocked');assert.equal(calls.length,22);
+    assert.doesNotMatch(JSON.stringify(result),/private-service/);
+  }
+  await assert.rejects(probeMaintenanceAccess({...settings,CF_STAGING_PROVISION_ACTION:'update'}));
+});

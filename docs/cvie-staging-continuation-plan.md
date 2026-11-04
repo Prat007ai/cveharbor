@@ -1,6 +1,8 @@
 # Task 2C controlled schema continuation — preparation only
 
-**No remote adoption, continuation, export, restore or deployment has been executed.** PR #243 remains draft and unmerged. This package starts from the independently verified ORIGINAL checkpoint 29 and reconciles it with the current integrated manifest using **two separately approved phases**. It preserves the stricter adoption/recovery gate added by the intervening review; there is no combined action that bypasses it.
+> Phase A is complete: run 41733850483 attempt 2 verified checkpoint 37. See the [current checkpoint-37 recovery and continuation procedure](reviews/staging-checkpoint37-continuation.md). Phase B remains unexecuted and requires separate approval. Statements below describing adoption as pending are historical preparation context.
+
+**Adoption has completed; no Phase-B continuation, restore or Worker deployment is claimed by this preparation.** PR #243 remains draft and unmerged. This package starts from the independently verified ORIGINAL checkpoint 29 and reconciles it with the current integrated manifest using **two separately approved phases**. It preserves the stricter adoption/recovery gate added by the intervening review; there is no combined action that bypasses it.
 
 ## Starting evidence and production isolation
 
@@ -32,7 +34,7 @@ Use the existing separately guarded adoption operation and its [review record](r
 
 Exact SQL: [adopt-original-checkpoint29.sql](../staging/sql/adopt-original-checkpoint29.sql). The action verifies integrated checkpoint **37** and returns; it cannot migrate further, publish data or deploy a Worker. Expected state: 22 application tables, 12 explicit indexes, two accurate ledger rows, no application triggers/views and unchanged original objects. Expected schema fingerprint: `fb8f3f8dedc0c70181cfa6c7ca3b1a20813424ddbf3dec62446c5f9c334b36e2`.
 
-Do not set a resume cursor for adoption. A failed/lost response triggers read-only reconciliation, never a repeated write. Checkpoint 37 is a proposed result, **not currently installed**.
+Do not set a resume cursor for adoption. A failed/lost response triggers read-only reconciliation, never a repeated write. Checkpoint 37 is now verified by the successful adoption artifact.
 
 ### Phase B — `migrate`: verified integrated 37 → 740, then STOP
 

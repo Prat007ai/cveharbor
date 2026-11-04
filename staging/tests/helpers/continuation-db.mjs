@@ -36,8 +36,8 @@ export function harness(t, plan, env, hook = async () => undefined) {
       size = stats.result[0].meta.size_after;
       return Response.json({ success: true, result: { uuid: STAGING_DATABASE_ID, name: TARGET.database, file_size: size } });
     }
-    if (route.startsWith('/access/apps/')) return Response.json({ success: true, result: [{ id: 'policy', decision: 'allow' }] });
-    if (route.startsWith('/access/apps')) return Response.json({ success: true, result: [{ id: 'abc-def', domain: new URL(TARGET.origin).hostname, aud: env.CF_STAGING_ACCESS_AUD }] });
+    if (route.startsWith('/access/apps/')) return Response.json({ success: true, result: [] });
+    if (route.startsWith('/access/apps')) return Response.json({ success: true, result: [{ id: 'abc-def', type: 'self_hosted', domain: new URL(TARGET.origin).hostname, aud: env.CF_STAGING_ACCESS_AUD }] });
     assert.match(route, /^\/workers\/scripts\/cveharbor-(accounts|site)-staging\/(settings|deployments|subdomain|schedules)$/);
     return Response.json({ success: true, result: { unchanged: true } });
   };

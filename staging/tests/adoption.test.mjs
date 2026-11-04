@@ -54,8 +54,8 @@ async function harness(t, hook = async () => undefined) {
       const r = await execute({ sql: 'PRAGMA page_count' });
       return Response.json({ success: true, result: { uuid: STAGING_DATABASE_ID, name: TARGET.database, file_size: r.result[0].meta.size_after } });
     }
-    if (route.startsWith('/access/apps/')) return Response.json({ success: true, result: [{ id: 'policy', decision: 'allow' }] });
-    if (route.startsWith('/access/apps')) return Response.json({ success: true, result: [{ id: 'abc-def', domain: new URL(TARGET.origin).hostname, aud: 'b'.repeat(64) }] });
+    if (route.startsWith('/access/apps/')) return Response.json({ success: true, result: [] });
+    if (route.startsWith('/access/apps')) return Response.json({ success: true, result: [{ id: 'abc-def', type: 'self_hosted', domain: new URL(TARGET.origin).hostname, aud: 'b'.repeat(64) }] });
     assert.match(route, /^\/workers\/scripts\/cveharbor-(accounts|site)-staging\/(settings|deployments|subdomain|schedules)$/);
     return Response.json({ success: true, result: { unchanged: true } });
   };

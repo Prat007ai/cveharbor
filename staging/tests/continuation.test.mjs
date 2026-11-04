@@ -26,8 +26,8 @@ function proof(overrides={}){return {operation:'migrate',account:TARGET.account,
  execution_plan_sha256:planSha,start_step:37,start_schema_sha256:plan.checkpoints[37].schema_sha256,captured_at:new Date().toISOString(),
  writers_quiesced:true,export_validated:true,restore_available:true,export_sha256:'f'.repeat(64),bookmark:'private-test-bookmark',private_export_reference:'private-test-export',...overrides};}
 const approved=(overrides={})=>({...env,CF_STAGING_RECOVERY_EVIDENCE:JSON.stringify(proof(overrides))});
-const preflight=()=>({account:TARGET.account,blockers:[],read_only_checks_passed:true,checks:[
- {name:'service_token_matches_policy_and_client',status:'pass'}, {name:'token_permission_grants',status:'unverified',metadata_available:false,http_status:403},
+const preflight=()=>({access_mode:'maintenance',account:TARGET.account,blockers:[],read_only_checks_passed:true,checks:[
+ {name:'maintenance_associations_absent',status:'pass'}, {name:'single_maintenance_application',status:'pass'}, {name:'token_permission_grants',status:'unverified',metadata_available:false,http_status:403},
  {name:'token_staging_only_scope',status:'unverified',metadata_available:false}]});
 
 test('review reconciles original 29 -> adopted 37 -> complete 740 without replay or filename sorting',()=>{
@@ -88,4 +88,16 @@ test('release requires recovery evidence before network and schema-only migratio
  await assert.rejects(executeRelease(env,event,sha,{transport:()=>assert.fail('No network without recovery')}));
  await executeRelease(approved(),event,sha,deps);assert.equal(migration,true);
  assert.doesNotMatch(JSON.stringify(records),/private-test|current-private-bookmark/);
+});
+
+test('maintenance policies must remain detached before the first and every subsequent write batch', async t=>{
+ for(const changeAfterFirst of [false,true]) {
+  let writes=0;
+  const h=harness(t,plan,env,async({body})=>{if(body.batch?.some(q=>!q.sql.trimStart().startsWith('SELECT')))writes++;});await initial(h);
+  const original=h.deps.transport;
+  h.deps.transport=async(url,init)=>String(url).endsWith('/policies')&&(!changeAfterFirst||writes>0)
+   ?Response.json({success:true,result:[{decision:'allow'}]}):original(url,init);
+  await assert.rejects(migrate(env,h.deps));assert.equal(writes,changeAfterFirst?1:0);
+  assert.equal(h.final().worker_or_access_mutations,0);
+ }
 });

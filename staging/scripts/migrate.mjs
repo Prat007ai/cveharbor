@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { TARGET } from '../target.mjs';
 import { root } from './configure.mjs';
 import { diagnose } from './diagnose.mjs';
-import { probeAccess } from './probe-access.mjs';
+import { probeMaintenanceAccess } from './probe-access.mjs';
 import { failure, safeFailure } from './errors.mjs';
 import { inspectSchemaState, countSQL } from './schema-state.mjs';
 
@@ -54,7 +54,7 @@ export function guardSQL(plan, step, observedRows) {
   return guards;
 }
 
-export async function migrate(env, { plan, transport = fetch, inventory = diagnose, probe = probeAccess, record = () => {}, requestIntervalMs = 350, beforeWrite = () => {} } = {}) {
+export async function migrate(env, { plan, transport = fetch, inventory = diagnose, probe = probeMaintenanceAccess, record = () => {}, requestIntervalMs = 350, beforeWrite = () => {} } = {}) {
   const report = { status: 'stopped', action: env.CF_STAGING_PROVISION_ACTION, account: TARGET.account, database_id: STAGING_DATABASE_ID,
     source_sha: env.GITHUB_SHA, plan_sha256: env.CF_STAGING_SCHEMA_PLAN_SHA256, started_at: new Date().toISOString(),
     requests: [], batches: [], storage: [], usage: { migration: { rows_read: 0, rows_written: 0 }, verification: { rows_read: 0, rows_written: 0 }, complete: true },
@@ -132,9 +132,10 @@ export async function migrate(env, { plan, transport = fetch, inventory = diagno
     const apps = await request('/access/apps?per_page=100', 'migration.invariants.access');
     if (!Array.isArray(apps) || apps.length >= 100) throw failure('migration.invariants.access', 'validation');
     const matches = apps.filter(a => a.domain === new URL(TARGET.origin).hostname && a.aud === env.CF_STAGING_ACCESS_AUD);
-    if (matches.length !== 1 || !/^[a-f0-9-]+$/i.test(matches[0].id)) throw failure('migration.invariants.access', 'validation');
+    if (apps.length !== 1 || matches.length !== 1 || matches[0].type !== 'self_hosted' || !/^[a-f0-9-]+$/i.test(matches[0].id)) throw failure('migration.invariants.access', 'validation');
     state.access = matches[0];
     state.policies = await request(`/access/apps/${matches[0].id}/policies`, 'migration.invariants.policies');
+    if (!Array.isArray(state.policies) || state.policies.length !== 0) throw failure('migration.maintenance', 'policy_changed');
     return hash(encoded(canonical(state)));
   }
   async function inspect(label) {
@@ -178,6 +179,7 @@ export async function migrate(env, { plan, transport = fetch, inventory = diagno
       const batch = { file: file.file, phase: file.phase, sql_sha256: file.sha256, from_step: from, to_step: file.end, guard_count: guards.length, outcome: 'pending' };
       report.batches.push(batch); persist();
       budget();
+      if (await immutableState() !== before) throw failure('migration.invariants', 'changed_before_batch');
       beforeWrite();
       report.actual_state = { status: 'invalidated_by_write', complete: false, matching_steps: [], counts: [], rows_verified: false };
       report.historical_verified_step = report.last_verified_step ?? null; report.last_verified_step = null; persist();

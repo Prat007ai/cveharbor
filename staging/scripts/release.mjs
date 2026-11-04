@@ -31,9 +31,10 @@ export function authorize(env,event,checkout){
  if(['hold','freeze','resume'].includes(action)){assert.match(env.CF_STAGING_EXPECTED_HOLD_REVISION||'',/^\d+$/);assert.ok((env.CF_STAGING_RECOVERY_REASON||'').length>=10&&(env.CF_STAGING_RECOVERY_REASON||'').length<=500);}
  return action;
 }
-export function acceptPreflight(report){
+export function acceptPreflight(report,{maintenance=false}={}){
  assert.equal(report.account,TARGET.account);assert.equal(report.read_only_checks_passed,true);assert.equal(report.blockers.length,0);
- assert.equal(report.checks.find(c=>c.name==='service_token_matches_policy_and_client')?.status,'pass');
+ if(maintenance){assert.equal(report.access_mode,'maintenance');assert.equal(report.checks.find(c=>c.name==='maintenance_associations_absent')?.status,'pass');assert.equal(report.checks.find(c=>c.name==='single_maintenance_application')?.status,'pass');}
+ else assert.equal(report.checks.find(c=>c.name==='service_token_matches_policy_and_client')?.status,'pass');
  const grants=report.checks.find(c=>c.name==='token_permission_grants'),scope=report.checks.find(c=>c.name==='token_staging_only_scope');
  if(grants?.status==='pass'&&scope?.status==='pass')return;
  const a=JSON.parse(fs.readFileSync(path.join(root,'../docs/cvie-evidence/staging-owner-attestation.json'),'utf8'));
@@ -56,7 +57,7 @@ export async function executeRelease(env,event,checkout,deps={}){
  const step=(name,evidence)=>{report.steps.push({name,...evidence});record(report);};
  try{
   if(recovery)step('migration_recovery',recovery);
-  const p=await (deps.preflight||preflight)(env,transport,{existingDatabase:true,workerState:'deployed'});acceptPreflight(p);step('access_and_inventory',{passed:true});
+  const p=await (deps.preflight||preflight)(env,transport,{existingDatabase:true,workerState:'deployed',maintenance:action==='migrate'});acceptPreflight(p,{maintenance:action==='migrate'});step('access_and_inventory',{passed:true});
   const initial=await (deps.diagnose||diagnose)(env,transport,()=>{},{allowLegacy:true});assert.ok(initial.verified);step('existing_workers',{workers:initial.workers.map(w=>({name:w.name,version_id:w.version_id,deployment_id:w.deployment_id,profile:w.profile}))});
   if(action!=='verify'){
    const bookmark=await get(`/d1/database/${resourceManifest().permanent_database.uuid}/time_travel/bookmark`);
