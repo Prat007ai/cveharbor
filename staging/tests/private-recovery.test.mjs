@@ -58,7 +58,7 @@ async function harness(t){
 }
 async function prepared(t){const h=await harness(t),snapshot=await execute({...base,CF_STAGING_PROVISION_ACTION:'recovery-snapshot'},h.deps);h.block();const env={...base,GITHUB_RUN_ID:'124',CF_STAGING_PROVISION_ACTION:'recovery-capture',CF_STAGING_RECOVERY_SNAPSHOT_KEY:'recovery/v1/'+sha+'/123-2/snapshot.cms',CF_STAGING_RECOVERY_SNAPSHOT_SHA256:snapshot.ciphertext_sha256,CF_STAGING_RECOVERY_ISOLATION:h.isolation(snapshot.ciphertext_sha256)};return {h,env};}
 test('exact source/action/account approval, public certificate and management/object boundaries',()=>{
- const env={...base,CF_STAGING_PROVISION_ACTION:'recovery-inventory'},event={head_commit:{id:sha,message:'review [staging-release]'}};assert.equal(authorize(env,event,sha),'recovery-inventory');
+ const env={...base,CF_STAGING_PROVISION_ACTION:'recovery-inventory'},event={head_commit:{id:sha,message:'review [staging-release] [staging-recovery]'}};assert.equal(authorize(env,event,sha),'recovery-inventory');
  for(const patch of [{GITHUB_RUN_ATTEMPT:'1'},{CF_STAGING_D1_DATABASE_ID:'46710e51-7ca4-4571-b89c-921b9969de0b'},{CF_STAGING_APPROVED_COMMIT:'b'.repeat(40)},{CF_STAGING_PROVISION_ACTION:'migrate'}])assert.throws(()=>authorize({...env,...patch},event,sha));
  assert.throws(()=>secureTemp(Number.MAX_SAFE_INTEGER));
  assert.throws(()=>certificate(pem,'0'.repeat(64)));assert.ok(certificate(pem,fingerprint));assert.throws(()=>certificate(pem+fs.readFileSync(fixture+'/key.pem','utf8'),fingerprint));

@@ -16,8 +16,9 @@ MANUAL = MAIN + " && github.event_name == 'workflow_dispatch'"
 RELEASE = MAIN + " && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true'"
 PHASE1 = 'd791cb8e84f85f980926dd1e1acfd0b369c64b46'
 STAGING_RELEASE = "github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/codex/cvie-core-phase012' && ((github.event_name == 'workflow_dispatch' && inputs.operation != 'none') || (github.event_name == 'push' && github.run_attempt > 1 && contains(github.event.head_commit.message, '[staging-release]')))"
-STAGING_RECOVERY = STAGING_RELEASE + " && startsWith(vars.CF_STAGING_PROVISION_ACTION, 'recovery-')"
-STAGING_NORMAL = STAGING_RELEASE + " && !startsWith(vars.CF_STAGING_PROVISION_ACTION, 'recovery-')"
+RECOVERY_SELECTOR = "((github.event_name == 'workflow_dispatch' && startsWith(inputs.operation, 'recovery-')) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[staging-recovery]')))"
+STAGING_RECOVERY = STAGING_RELEASE + " && " + RECOVERY_SELECTOR
+STAGING_NORMAL = STAGING_RELEASE + " && !" + RECOVERY_SELECTOR
 ENVIRONMENTS = {'cloudflare-cvie-staging','cloudflare-worker-production', 'cloudflare-site-production', 'github-pages',
                 'cloudflare-production-audit', 'cloudflare-notifications-production', 'cloudflare-phase1-staging', 'cloudflare-intelligence-data'}
 SECRET_BOUNDARIES = {

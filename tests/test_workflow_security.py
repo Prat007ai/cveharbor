@@ -117,6 +117,8 @@ class RecoveryIsolationTests(unittest.TestCase):
   doc=self.workflow();job=doc['jobs']['recovery']
   self.assertEqual(job['environment'],'cloudflare-cvie-staging')
   self.assertEqual(job['if'],policy.STAGING_RECOVERY)
+  self.assertNotIn('vars.',job['if'])
+  self.assertNotIn('vars.',doc['jobs']['release']['if'])
   self.assertEqual(doc['jobs']['release']['if'],policy.STAGING_NORMAL)
   self.assertEqual(job['concurrency'],doc['jobs']['release']['concurrency'])
   self.assertEqual(policy.validate(doc,'cvie-staging.yml'),[])

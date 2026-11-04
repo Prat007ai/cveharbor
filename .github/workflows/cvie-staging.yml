@@ -51,7 +51,7 @@ jobs:
     # Initial pushes and PR events never receive credentials. A marked commit's
     # manual rerun is only a pre-merge dispatch mechanism; exact SHA, operation
     # and protected-environment approval are still mandatory.
-    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/codex/cvie-core-phase012' && ((github.event_name == 'workflow_dispatch' && inputs.operation != 'none') || (github.event_name == 'push' && github.run_attempt > 1 && contains(github.event.head_commit.message, '[staging-release]'))) && !startsWith(vars.CF_STAGING_PROVISION_ACTION, 'recovery-')
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/codex/cvie-core-phase012' && ((github.event_name == 'workflow_dispatch' && inputs.operation != 'none') || (github.event_name == 'push' && github.run_attempt > 1 && contains(github.event.head_commit.message, '[staging-release]'))) && !((github.event_name == 'workflow_dispatch' && startsWith(inputs.operation, 'recovery-')) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[staging-recovery]')))
     needs: prepare
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -140,7 +140,7 @@ jobs:
 
   recovery:
     # Dedicated protected job. No artifacts, caches, release dispatcher or deployment tools.
-    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/codex/cvie-core-phase012' && ((github.event_name == 'workflow_dispatch' && inputs.operation != 'none') || (github.event_name == 'push' && github.run_attempt > 1 && contains(github.event.head_commit.message, '[staging-release]'))) && startsWith(vars.CF_STAGING_PROVISION_ACTION, 'recovery-')
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/codex/cvie-core-phase012' && ((github.event_name == 'workflow_dispatch' && inputs.operation != 'none') || (github.event_name == 'push' && github.run_attempt > 1 && contains(github.event.head_commit.message, '[staging-release]'))) && ((github.event_name == 'workflow_dispatch' && startsWith(inputs.operation, 'recovery-')) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[staging-recovery]')))
     needs: prepare
     runs-on: ubuntu-latest
     timeout-minutes: 30

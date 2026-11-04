@@ -9,7 +9,8 @@ The continuation plan and all SQL hashes remain unchanged.
 ## Operations and sequencing
 
 All four operations run in a **separate recovery job**. The release job excludes
-`recovery-*`. Both share `cveharbor-permanent-staging` concurrency. Recovery has no
+`recovery-*` dispatches and commits marked `[staging-recovery]`. Job guards use
+GitHub event/input data, never environment variables unavailable before startup. Both share `cveharbor-permanent-staging` concurrency. Recovery has no
 artifact upload, cache, deployment/migration tool or release dispatcher. An initial
 push/PR never receives credentials: an exact-source manual dispatch or marked-push
 rerun and environment review are required. Source/operation/target authorization

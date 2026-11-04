@@ -17,7 +17,7 @@ export function authorize(env,event,checkout){
  requireThat(OPERATIONS.includes(op)&&env.GITHUB_REPOSITORY==='Prat007ai/cveharbor'&&env.GITHUB_REF==='refs/heads/codex/cvie-core-phase012','operation_boundary');
  requireThat(/^[a-f0-9]{40}$/.test(checkout||'')&&checkout===env.GITHUB_SHA&&checkout===env.CF_STAGING_APPROVED_COMMIT,'source_approval');
  requireThat(env.CF_STAGING_ACCOUNT_ID===TARGET.account&&env.CF_STAGING_D1_DATABASE_ID===DIAGNOSTIC_DATABASE_ID,'target_boundary');
- requireThat(env.GITHUB_EVENT_NAME==='workflow_dispatch'?event.inputs?.operation===op:env.GITHUB_EVENT_NAME==='push'&&Number(env.GITHUB_RUN_ATTEMPT)>1&&event.head_commit?.id===checkout&&event.head_commit.message.includes('[staging-release]'),'event_boundary');return op;
+ requireThat(env.GITHUB_EVENT_NAME==='workflow_dispatch'?event.inputs?.operation===op:env.GITHUB_EVENT_NAME==='push'&&Number(env.GITHUB_RUN_ATTEMPT)>1&&event.head_commit?.id===checkout&&event.head_commit.message.includes('[staging-release]')&&event.head_commit.message.includes('[staging-recovery]'),'event_boundary');return op;
 }
 export function maintenance(env,now=Date.now()){
  let p;try{p=JSON.parse(env.CF_STAGING_RECOVERY_ISOLATION||'');}catch{throw Error('maintenance_evidence_missing');}
