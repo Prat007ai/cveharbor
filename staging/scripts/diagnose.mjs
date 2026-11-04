@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {failure} from './errors.mjs';
 import {resourceManifest,checkDatabases} from './inventory.mjs';
 import {TARGET} from '../target.mjs';
 import {root,configs,adminEmails} from './configure.mjs';
@@ -10,9 +11,11 @@ export function management(env,transport=fetch){
  if(env.CF_STAGING_ACCOUNT_ID!==TARGET.account||!env.CF_STAGING_API_TOKEN)throw Error('Dedicated staging credentials required');
  return async route=>{
   if(!route.startsWith('/')&&route!==''||route.includes('..')||route.includes('://'))throw Error('Invalid staging route');
-  const r=await transport(`https://api.cloudflare.com/client/v4/accounts/${TARGET.account}${route}`,{method:'GET',redirect:'error',signal:AbortSignal.timeout(30000),headers:{Authorization:'Bearer '+env.CF_STAGING_API_TOKEN}});
-  let body;try{body=await r.json();}catch{throw Error('Invalid management response');}
-  if(!r.ok||!body?.success)throw Error('Staging metadata unavailable ('+r.status+')');return body.result;
+  // Classify fixed routes; never emit URLs, headers, response bodies or tokens.
+  const operation=route.includes('/time_travel/bookmark')?'metadata.recovery_bookmark':route.includes('/workers/scripts/')?'metadata.worker.'+( ['settings','subdomain','schedules','deployments'].includes(route.split('/').at(-1))?route.split('/').at(-1):'content'):route.startsWith('/d1/database')?'metadata.database':route.startsWith('/access/')?'metadata.access':'metadata.inventory';
+  let r;try{r=await transport(`https://api.cloudflare.com/client/v4/accounts/${TARGET.account}${route}`,{method:'GET',redirect:'error',signal:AbortSignal.timeout(30000),headers:{Authorization:'Bearer '+env.CF_STAGING_API_TOKEN}});}catch{throw failure(operation,'network');}
+  let body;try{body=await r.json();}catch{throw failure(operation,'invalid_json',{http_status:r.status});}
+  if(!r.ok||!body?.success)throw failure(operation,r.status===401||r.status===403?'authorization':r.status===429?'rate_limit':'cloudflare_api',{http_status:r.status,api_codes:(Array.isArray(body?.errors)?body.errors:[]).map(e=>e?.code).filter(Number.isInteger).slice(0,8)});return body.result;
  };
 }
 const legacy=JSON.parse(fs.readFileSync(new URL('../legacy-profile.v1.json',import.meta.url),'utf8'));

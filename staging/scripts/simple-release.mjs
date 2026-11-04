@@ -1,6 +1,7 @@
 // Enabled only after the one-time baseline review and administrator activation.
 import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';import {spawnSync} from 'node:child_process';import {fileURLToPath} from 'node:url';
 import {TARGET} from '../target.mjs';import {root} from './configure.mjs';import {management} from './diagnose.mjs';
+import {safeFailure,diagnosticTransport} from './errors.mjs';
 import {migrate} from './migrate.mjs';import {migrationState,verifySchema} from './manifest-state.mjs';
 import {executeRelease} from './release.mjs';import {holdStatus,setHold,installGuards} from '../../scripts/recovery_control.mjs';
 import {d1Client} from '../../scripts/cloudflare_d1.mjs';import {forwardMigrations,migrationConfig} from '../../scripts/release_migrations.mjs';
@@ -16,15 +17,27 @@ export function simpleAuthorization(env,baseline){
  assert.match(baseline.source_sha,/^[a-f0-9]{40}$/);assert.match(baseline.schema_sha256,/^[a-f0-9]{64}$/);
  assert.ok(baseline.application_schema_files.length>0,'Reviewed production baseline required');
 }
-export async function simpleRelease(env,{baseline=JSON.parse(fs.readFileSync(path.join(root,'../release/baseline.json'))),get,DB,runner,initialize,deploy,checkNative,sleep=ms=>new Promise(r=>setTimeout(r,ms)),clock=()=>new Date().toISOString()}={}){
+export async function simpleRelease(env,{baseline=JSON.parse(fs.readFileSync(path.join(root,'../release/baseline.json'))),get,DB,runner,initialize,deploy,checkNative,sleep=ms=>new Promise(r=>setTimeout(r,ms)),clock=()=>new Date().toISOString(),record=()=>{}}={}){
+ const report={version:1,status:'stopped',operation:'authorization',production_mutations:0};
+ let stage='release.authorization';
+ const persist=()=>record(structuredClone(report));
+ const at=async(operation,fn)=>{stage=operation;report.current_operation=operation;persist();return await fn();};
+ try{
  simpleAuthorization(env,baseline);
- const operation=env.SIMPLE_STAGING_OPERATION||'release';assert.ok(['release','initialize','resume'].includes(operation));
+ const operation=env.SIMPLE_STAGING_OPERATION||'release';assert.ok(['release','initialize','resume','diagnose'].includes(operation));
  if(operation!=='release')assert.equal(env.GITHUB_EVENT_NAME,'workflow_dispatch','Initialization/recovery needs one explicit approval');
  const derived={...env,CF_STAGING_APPROVED_COMMIT:env.GITHUB_SHA};
- get??=management(derived);DB??=d1Client({database:env.CF_STAGING_D1_DATABASE_ID,readOnly:false,env:{CLOUDFLARE_ACCOUNT_ID:TARGET.account,CLOUDFLARE_API_TOKEN:env.CF_STAGING_API_TOKEN}});
- const report={version:1,status:'stopped',source_sha:env.GITHUB_SHA,operation,account:TARGET.account,database_id:env.CF_STAGING_D1_DATABASE_ID,started_at:clock(),baseline_source_sha:baseline.source_sha,production_mutations:0};
+ get??=management(derived);DB??=d1Client({database:env.CF_STAGING_D1_DATABASE_ID,readOnly:false,fetcher:(...args)=>diagnosticTransport(stage)(...args),env:{CLOUDFLARE_ACCOUNT_ID:TARGET.account,CLOUDFLARE_API_TOKEN:env.CF_STAGING_API_TOKEN}});
+ Object.assign(report,{version:1,status:'stopped',source_sha:env.GITHUB_SHA,operation,account:TARGET.account,database_id:env.CF_STAGING_D1_DATABASE_ID,started_at:clock(),baseline_source_sha:baseline.source_sha,production_mutations:0});
+ const capture=(name,value)=>{if(name==='migration')report.baseline=structuredClone(value);else if(name==='migration-inventory')report.inventory=structuredClone(value);else if(name.startsWith('migration-access-'))report.access_check=structuredClone(value);persist();};
+ if(operation==='diagnose'){
+  const {plan,sha256,endStep}=await at('release.baseline_plan',()=>productionBaselinePlan(baseline));
+  report.baseline=await at('release.read_only_diagnostic',()=>migrate({...derived,STAGING_CHANGE_APPROVED:'PR243-STAGING-ONLY',CF_STAGING_PROVISION_ACTION:'migrate',CF_STAGING_SCHEMA_PLAN_SHA256:sha256,CF_STAGING_SCHEMA_RESUME_STEP:'37'},{plan,endStep,readOnly:true,record:capture}));
+  await at('release.recovery_bookmark',async()=>{const bookmark=await get('/d1/database/'+env.CF_STAGING_D1_DATABASE_ID+'/time_travel/bookmark');assert.ok(bookmark?.bookmark,'D1 Time Travel unavailable');});
+  report.status='diagnosed';report.workers_deployed=false;report.access_restored=false;return report;
+ }
  // Recoverable Time Travel availability, not a secret containing a hand-edited deadline.
- const bookmark=await get('/d1/database/'+env.CF_STAGING_D1_DATABASE_ID+'/time_travel/bookmark');assert.ok(bookmark?.bookmark,'D1 Time Travel unavailable');
+ await at('release.recovery_bookmark',async()=>{const bookmark=await get('/d1/database/'+env.CF_STAGING_D1_DATABASE_ID+'/time_travel/bookmark');assert.ok(bookmark?.bookmark,'D1 Time Travel unavailable');});
  report.recovery_timestamp=clock(); // Raw bookmark stays in memory, never public artifacts.
  if(operation==='resume'){
   assert.notEqual(baseline.version,2,'Production baseline has no 0032 write hold; use existing Access maintenance');
@@ -35,12 +48,12 @@ export async function simpleRelease(env,{baseline=JSON.parse(fs.readFileSync(pat
   report.status='resumed';report.workers_deployed=false;return report;
  }
  if(operation==='initialize'){
-  const state=await migrationState(DB);assert.equal(state.rows.length,2,'Only verified adopted checkpoint 37 may initialize');
-  const {plan,sha256,endStep}=productionBaselinePlan(baseline);
+  stage='release.initialization_receipts';report.current_operation=stage;persist();const state=await migrationState(DB);assert.equal(state.rows.length,2,'Only verified adopted checkpoint 37 may initialize');
+  const {plan,sha256,endStep}=await at('release.baseline_plan',()=>productionBaselinePlan(baseline));
   const baseEnv={...derived,STAGING_CHANGE_APPROVED:'PR243-STAGING-ONLY',CF_STAGING_PROVISION_ACTION:'migrate',CF_STAGING_SCHEMA_PLAN_SHA256:sha256,CF_STAGING_SCHEMA_RESUME_STEP:'37'};
-  report.baseline=await (initialize||migrate)(baseEnv,{plan,endStep});
+  report.baseline=await at('release.migration',()=>(initialize||migrate)(baseEnv,{plan,endStep,record:capture}));
   assert.equal(report.baseline.status,'complete');assert.equal(report.baseline.last_verified_step,endStep);
-  report.schema=await verifyProductionBaseline(DB,baseline);
+  report.schema=await at('release.baseline_verification',()=>verifyProductionBaseline(DB,baseline));
   report.production_baseline_end_step=endStep;report.continued_to_candidate=false;
   report.status='schema_initialized';report.access_restored=false;report.workers_deployed=false;return report;
  }
@@ -65,6 +78,11 @@ export async function simpleRelease(env,{baseline=JSON.parse(fs.readFileSync(pat
  const internal={...derived,CF_STAGING_PROVISION_ACTION:'update'};
  await (deploy||executeRelease)(internal,{inputs:{operation:'update'}},env.GITHUB_SHA);
  report.status='passed';report.backend_identity=backendIdentity();report.native_migrations=migrations.map(({name,sha256})=>({name,sha256}));report.completed_at=clock();return report;
+ }catch(error){
+  const known=safeFailure(error);report.failure=known.category==='unknown'?{operation:stage,category:error?.code==='ERR_ASSERTION'?'validation':'unexpected_error'}:known;
+  report.status='stopped';report.next='Run diagnose only. Review the observed checkpoint before separately approving any migration retry.';
+  throw error;
+ }finally{report.completed_at=clock();persist();}
 }
 export async function verifyNativeHistory(DB,files){
  const has=await DB.prepare("SELECT name FROM sqlite_schema WHERE type='table' AND name='d1_migrations'").first();
@@ -82,6 +100,7 @@ export async function recordNativeChecksums(DB,files){
  await verifyNativeHistory(DB,files);
 }
 if(process.argv[1]===fileURLToPath(import.meta.url)){
- try{const report=await simpleRelease(process.env);fs.mkdirSync('release/artifacts',{recursive:true});fs.writeFileSync('release/artifacts/staging-release.json',JSON.stringify(report,null,2)+'\n');console.log('Staging operation completed: '+report.status);}
- catch{console.error('Staging release stopped; no automatic reset/restore or production action. Existing maintenance is retained.');process.exitCode=1;}
+ let latest;const record=report=>{latest=report;fs.mkdirSync('release/artifacts',{recursive:true});fs.writeFileSync('release/artifacts/staging-release.json',JSON.stringify(report,null,2)+'\n',{mode:0o600});};
+ try{const report=await simpleRelease(process.env,{record});console.log('Staging operation completed: '+report.status);}
+ catch(error){console.error('Staging release stopped: '+JSON.stringify(latest?.failure||safeFailure(error))+'. No automatic retry, restore or deployment.');process.exitCode=1;}
 }
