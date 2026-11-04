@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-04",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 8089,
+  "candidate_records": 8098,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -2272,7 +2272,7 @@
     },
     {
       "id": "CVE-2026-56065",
-      "title": "Insertion of Sensitive Information into Externally-Accessible File or Directory vulnerability in Doofinder Doofinder for WooCommerce doofinder-for-woocommerce allows Retrieve ",
+      "title": "Insertion of Sensitive Information into Externally-Accessible File or Directory vulnerability in...",
       "severity": "high",
       "categories": [
         "WordPress / Plugins"
@@ -2280,22 +2280,690 @@
       "published": "2026-11-04",
       "updated": "2026-11-04",
       "summary": "Insertion of Sensitive Information into Externally-Accessible File or Directory vulnerability in Doofinder Doofinder for WooCommerce doofinder-for-woocommerce allows Retrieve Embedded Sensitive Data.This issue affects Doofinder for WooCommerce: from n/a through 2.17.2.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
           "label": "NVD CVE record",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-56065"
+        },
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-2rjp-mrq2-jh6r"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://patchstack.com/database/wordpress/plugin/doofinder-for-woocommerce/vulnerability/wordpress-doofinder-for-woocommerce-plugin-2-17-2-sensitive-data-exposure-vulnerability?_s_id=cve"
         }
       ],
       "exploitation": "Not confirmed by this source; check CISA KEV",
       "kind": "cve",
       "cvss": "7.5",
-      "status": "NVD indexed CVE",
+      "status": "GitHub unreviewed advisory",
       "first_seen_at": "2026-11-04T09:08:42Z",
-      "source_updated_at": "2026-11-04T08:17:17.210",
-      "source_type": "nvd",
+      "source_updated_at": "2026-11-04T09:32:22Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-rp9h-2jgp-qrpx",
+      "title": "Malicious code in temporary_smelt_lavender-81 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Part of a self-republishing campaign: generated names of the form <adjective>_<animal>_<colour>-<number>, each package shipping the same autopublish.js, which runs `npm publish --access public` to publish the package again. Self-replicating publication is the propagation step of a registry worm and fills the registry with copies. Version examined: 3.3.1; tarball SHA-256 3d62a6900cb2eec57c55e599f930c466dcd4ca3539ad7b2ca55779b0fbccba6a. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/temporary_smelt_lavender-81/MAL-2026-18620.json))",
+      "affected": "npm: temporary_smelt_lavender-81 (= 3.3.1)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-rp9h-2jgp-qrpx"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/temporary_smelt_lavender-81/MAL-2026-18620.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:29Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-4cx4-qwq4-4vf4",
+      "title": "Malicious code in southern_duck_tan-16 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Part of a self-republishing campaign: generated names of the form <adjective>_<animal>_<colour>-<number>, each package shipping the same autopublish.js, which runs `npm publish --access public` to publish the package again. Self-replicating publication is the propagation step of a registry worm and fills the registry with copies. Version examined: 2.4.3; tarball SHA-256 a3154921b8a06cfa66c41cf8d689a9e16610ddda9e78c8db51e986bcf1e056d9. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/southern_duck_tan-16/MAL-2026-18618.json))",
+      "affected": "npm: southern_duck_tan-16 (= 2.4.3)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-4cx4-qwq4-4vf4"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/southern_duck_tan-16/MAL-2026-18618.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:28Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-pg9r-hv46-j2pp",
+      "title": "Malicious code in xenacious_kangaroo_blush-47 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Part of a self-republishing campaign: generated names of the form <adjective>_<animal>_<colour>-<number>, each package shipping the same autopublish.js, which runs `npm publish --access public` to publish the package again. Self-replicating publication is the propagation step of a registry worm and fills the registry with copies. Version examined: 4.3.3; tarball SHA-256 d3d633c35cdfcf07a34516e2f1d6a1761c15d4e5b0769b0fb55117520cc90225. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/xenacious_kangaroo_blush-47/MAL-2026-18623.json))",
+      "affected": "npm: xenacious_kangaroo_blush-47 (= 4.3.3)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-pg9r-hv46-j2pp"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/xenacious_kangaroo_blush-47/MAL-2026-18623.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:28Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-5wjr-j33q-664x",
+      "title": "Malicious code in unfortunate_crawdad_emerald-79 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Part of a self-republishing campaign: generated names of the form <adjective>_<animal>_<colour>-<number>, each package shipping the same autopublish.js, which runs `npm publish --access public` to publish the package again. Self-replicating publication is the propagation step of a registry worm and fills the registry with copies. Version examined: 3.3.1; tarball SHA-256 9b1c0d601c4b827fd86f48aff1ab51a397ef52f5ccd42b4b03947234dcc2f891. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/unfortunate_crawdad_emerald-79/MAL-2026-18621.json))",
+      "affected": "npm: unfortunate_crawdad_emerald-79 (= 3.3.1)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-5wjr-j33q-664x"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/unfortunate_crawdad_emerald-79/MAL-2026-18621.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:28Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-82ch-xhq2-7r3m",
+      "title": "Malicious code in valid_antlion_amber-50 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Part of a self-republishing campaign: generated names of the form <adjective>_<animal>_<colour>-<number>, each package shipping the same autopublish.js, which runs `npm publish --access public` to publish the package again. Self-replicating publication is the propagation step of a registry worm and fills the registry with copies. Version examined: 4.1.3; tarball SHA-256 9e9bed34eb0cb325419b2806fb984dbe3c4f5e59dfe33519010cdf6cfad3f6eb. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/valid_antlion_amber-50/MAL-2026-18622.json))",
+      "affected": "npm: valid_antlion_amber-50 (= 4.1.3)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-82ch-xhq2-7r3m"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/valid_antlion_amber-50/MAL-2026-18622.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:28Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-5mpx-92v3-9wqv",
+      "title": "Malicious code in intimate_ostrich_amethyst-45 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Part of a self-republishing campaign: generated names of the form <adjective>_<animal>_<colour>-<number>, each package shipping the same autopublish.js, which runs `npm publish --access public` to publish the package again. Self-replicating publication is the propagation step of a registry worm and fills the registry with copies. Version examined: 3.1.4; tarball SHA-256 c2602bb843cad68aa7f593fca592887cf660bfcf72e918d1865320c0fed5ec38. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/intimate_ostrich_amethyst-45/MAL-2026-18612.json))",
+      "affected": "npm: intimate_ostrich_amethyst-45 (= 3.1.4)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-5mpx-92v3-9wqv"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/intimate_ostrich_amethyst-45/MAL-2026-18612.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:28Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-m9wf-f42x-gw8v",
+      "title": "Malicious code in specific_sheep_violet-22 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Part of a self-republishing campaign: generated names of the form <adjective>_<animal>_<colour>-<number>, each package shipping the same autopublish.js, which runs `npm publish --access public` to publish the package again. Self-replicating publication is the propagation step of a registry worm and fills the registry with copies. Version examined: 2.4.1; tarball SHA-256 3f547db278b249244788b7b77fef67286b74bf08baf45514c6d2480fa1671ce7. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/specific_sheep_violet-22/MAL-2026-18619.json))",
+      "affected": "npm: specific_sheep_violet-22 (= 2.4.1)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-m9wf-f42x-gw8v"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/specific_sheep_violet-22/MAL-2026-18619.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:28Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-2wgq-m2g9-mxg2",
+      "title": "Malicious code in pure_opossum_amaranth-54 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Part of a self-republishing campaign: generated names of the form <adjective>_<animal>_<colour>-<number>, each package shipping the same autopublish.js, which runs `npm publish --access public` to publish the package again. Self-replicating publication is the propagation step of a registry worm and fills the registry with copies. Version examined: 2.3.2; tarball SHA-256 0fe7b3d8ed7ec429ff5f53971bb933640ddb717f2dd39621a5d435b7664ac18a. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/pure_opossum_amaranth-54/MAL-2026-18615.json))",
+      "affected": "npm: pure_opossum_amaranth-54 (= 2.3.2)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-2wgq-m2g9-mxg2"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/pure_opossum_amaranth-54/MAL-2026-18615.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:23Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-3233-8hj3-rwrf",
+      "title": "Malicious code in itchy_gecko_magenta-98 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Part of a self-republishing campaign: generated names of the form <adjective>_<animal>_<colour>-<number>, each package shipping the same autopublish.js, which runs `npm publish --access public` to publish the package again. Self-replicating publication is the propagation step of a registry worm and fills the registry with copies. Version examined: 2.3.4; tarball SHA-256 ce54dc3b5212e9e3c4ea35938e592aeba77d0683479bb3b4d9cb0d254ae97fb5. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/itchy_gecko_magenta-98/MAL-2026-18613.json))",
+      "affected": "npm: itchy_gecko_magenta-98 (= 2.3.4)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-3233-8hj3-rwrf"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/itchy_gecko_magenta-98/MAL-2026-18613.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:23Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-xmw7-j9hm-q72w",
+      "title": "Malicious code in smooth_angelfish_emerald-54 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Part of a self-republishing campaign: generated names of the form <adjective>_<animal>_<colour>-<number>, each package shipping the same autopublish.js, which runs `npm publish --access public` to publish the package again. Self-replicating publication is the propagation step of a registry worm and fills the registry with copies. Version examined: 2.2.2; tarball SHA-256 223ace08ab038a6ee47fd7d04a2f489d9d4817d4b147f164be1de264918235c1. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/smooth_angelfish_emerald-54/MAL-2026-18616.json))",
+      "affected": "npm: smooth_angelfish_emerald-54 (= 2.2.2)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-xmw7-j9hm-q72w"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/smooth_angelfish_emerald-54/MAL-2026-18616.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:23Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-3h5h-ppq8-3hx6",
+      "title": "Malicious code in motionless_mandrill_blush-51 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Part of a self-republishing campaign: generated names of the form <adjective>_<animal>_<colour>-<number>, each package shipping the same autopublish.js, which runs `npm publish --access public` to publish the package again. Self-replicating publication is the propagation step of a registry worm and fills the registry with copies. Version examined: 2.2.3; tarball SHA-256 b524996b7179cbc2702ad62f3d2917241f9cf8ad5d559202eac825ebd7cd9844. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/motionless_mandrill_blush-51/MAL-2026-18614.json))",
+      "affected": "npm: motionless_mandrill_blush-51 (= 2.2.3)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-3h5h-ppq8-3hx6"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/motionless_mandrill_blush-51/MAL-2026-18614.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:23Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-82p5-694j-365v",
+      "title": "Malicious code in sound_deer_apricot-15 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Part of a self-republishing campaign: generated names of the form <adjective>_<animal>_<colour>-<number>, each package shipping the same autopublish.js, which runs `npm publish --access public` to publish the package again. Self-replicating publication is the propagation step of a registry worm and fills the registry with copies. Version examined: 2.1.4; tarball SHA-256 27600206fc32a99f42d2dc8e77a71b222ae457b0345dfec2f397d6883b49f9f4. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/sound_deer_apricot-15/MAL-2026-18617.json))",
+      "affected": "npm: sound_deer_apricot-15 (= 2.1.4)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-82p5-694j-365v"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/sound_deer_apricot-15/MAL-2026-18617.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:22Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-628r-xfpw-6m2c",
+      "title": "Malicious code in inadequate_earwig_magenta-66 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Part of a self-republishing campaign: generated names of the form <adjective>_<animal>_<colour>-<number>, each package shipping the same autopublish.js, which runs `npm publish --access public` to publish the package again. Self-replicating publication is the propagation step of a registry worm and fills the registry with copies. Version examined: 3.4.3; tarball SHA-256 cdf7bcc56962d977f34fdb72789ce2b6aaac0020f0debb9ce4d55de8257ac352. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/inadequate_earwig_magenta-66/MAL-2026-18611.json))",
+      "affected": "npm: inadequate_earwig_magenta-66 (= 3.4.3)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-628r-xfpw-6m2c"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/inadequate_earwig_magenta-66/MAL-2026-18611.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:22Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-q48q-wm7f-f23f",
+      "title": "Malicious code in hushed_zebra_green-81 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Part of a self-republishing campaign: generated names of the form <adjective>_<animal>_<colour>-<number>, each package shipping the same autopublish.js, which runs `npm publish --access public` to publish the package again. Self-replicating publication is the propagation step of a registry worm and fills the registry with copies. Version examined: 2.4.2; tarball SHA-256 ffebf73f874c957dd668301a366650064b7e52d0b33aca0943fdd0e1f7d58807. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/hushed_zebra_green-81/MAL-2026-18610.json))",
+      "affected": "npm: hushed_zebra_green-81 (= 2.4.2)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-q48q-wm7f-f23f"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/hushed_zebra_green-81/MAL-2026-18610.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:21Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-fvr3-7hr3-jwv9",
+      "title": "Malicious code in hollow_wildebeest_silver-94 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Part of a self-republishing campaign: generated names of the form <adjective>_<animal>_<colour>-<number>, each package shipping the same autopublish.js, which runs `npm publish --access public` to publish the package again. Self-replicating publication is the propagation step of a registry worm and fills the registry with copies. Version examined: 1.1.2; tarball SHA-256 01f53d63acbd1e1c1275a099ac442ab52446e4fa180395088fd49c7a168f193c. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/hollow_wildebeest_silver-94/MAL-2026-18609.json))",
+      "affected": "npm: hollow_wildebeest_silver-94 (= 1.1.2)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-fvr3-7hr3-jwv9"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/hollow_wildebeest_silver-94/MAL-2026-18609.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:21Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-8f66-hgpp-j732",
+      "title": "Malicious code in gugodapis (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Dropper. At run time the package downloads a Windows batch file from a remote URL into the system temporary directory and executes it with child_process.exec. The payload is fetched, not shipped, so the code that runs is controlled by the remote host. Version examined: 1.0.0; tarball SHA-256 ea725cf1c5c950a7a8f091a717cfd2a76e7dd7b81000afe37b7398c76f3c4e3a. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/gugodapis/MAL-2026-18608.json))",
+      "affected": "npm: gugodapis (= 1.0.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-8f66-hgpp-j732"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/gugodapis/MAL-2026-18608.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:20Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-22c9-84j8-wjjv",
+      "title": "Malicious code in et_phone_home (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Runs on install. The postinstall script fetches a path from a bare IPv4 address with wget, contacting a remote host from every machine that installs the package. Version examined: 0.0.5; tarball SHA-256 58f9b4c9c26abe6ac52353ce1e0a824fba06c8aa7cefa94d2d4805306053e82c. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/et_phone_home/MAL-2026-18607.json))",
+      "affected": "npm: et_phone_home (= 0.0.5)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-22c9-84j8-wjjv"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/et_phone_home/MAL-2026-18607.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:20Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-5r7f-gw4c-j48p",
+      "title": "Malicious code in colossal_wallaby_pink-87 (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Part of a self-republishing campaign: generated names of the form <adjective>_<animal>_<colour>-<number>, each package shipping the same autopublish.js, which runs `npm publish --access public` to publish the package again. Self-replicating publication is the propagation step of a registry worm and fills the registry with copies. Version examined: 1.2.1; tarball SHA-256 eefa5998b053240ecd251b218193b2352c7dc55759fcaaeeb814f3c5fccf9539. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/colossal_wallaby_pink-87/MAL-2026-18606.json))",
+      "affected": "npm: colossal_wallaby_pink-87 (= 1.2.1)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-5r7f-gw4c-j48p"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/colossal_wallaby_pink-87/MAL-2026-18606.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:20Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-x23x-7rrv-ffw6",
+      "title": "Malicious code in babyyodaa (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Runs on install. The preinstall script marks a shell script bundled in the package as executable and runs it; the script contains a reverse-shell pattern, giving a remote party a shell on the installing machine. Version examined: 1.1.0; tarball SHA-256 8321ef8b36b40d9a5b5ba649e9ad4ec3bcbe18a9a484075c5e8e5e872ec0db0b. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/babyyodaa/MAL-2026-18605.json))",
+      "affected": "npm: babyyodaa (= 1.1.0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-x23x-7rrv-ffw6"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/babyyodaa/MAL-2026-18605.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:19Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-546q-f34h-xwmx",
+      "title": "Malicious code in @signals-notebook/annotation-editor (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Runs on install. The preinstall script sends the output of `id` (the installing user's identity and groups), base64-encoded, to a request-bin host with curl. This is the dependency-confusion probe pattern; it leaks data from every machine that installs the package. Version examined: 2.2.60-630109c; tarball SHA-256 023e55d33ea70625a746ab25627ea450718c9db722988bd233d370c1587db248. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/@signals-notebook/annotation-editor/MAL-2026-18604.json))",
+      "affected": "npm: @signals-notebook/annotation-editor (= 2.2.60-630109c)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-546q-f34h-xwmx"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/65d7c0b05e1069e74e09136ec74ac3530ebad741/osv/malicious/npm/@signals-notebook/annotation-editor/MAL-2026-18604.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T10:17:14Z",
+      "source_updated_at": "2026-11-04T09:32:19Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -185462,630 +186130,6 @@
       "epss_as_of": "2026-11-04"
     },
     {
-      "id": "CVE-2026-103693",
-      "title": "The Frontend Dashboard WordPress plugin before 3.0.5, ProfileGrid WordPress plugin before 6.0.0.5 do not prevent an unauthenticated user from storing a serialized PHP object i",
-      "severity": "critical",
-      "categories": [
-        "PHP",
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Frontend Dashboard WordPress plugin before 3.0.5, ProfileGrid WordPress plugin before 6.0.0.5 do not prevent an unauthenticated user from storing a serialized PHP object in user metadata that is deserialized when a public profile is viewed, allowing PHP object injection that can lead to arbitrary file write and potential remote code execution.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-103693"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.0",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0047,
-      "epss_percentile": 0.40679,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-105258",
-      "title": "The Appointment Booking Plugin WordPress plugin before 5.7.6 does not escape several booking-form step content settings before rendering them on the public booking form, allow",
-      "severity": "low",
-      "categories": [
-        "JavaScript / TypeScript",
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Appointment Booking Plugin WordPress plugin before 5.7.6 does not escape several booking-form step content settings before rendering them on the public booking form, allowing high-privilege users such as administrators to inject JavaScript that executes in the browser of any visitor who loads the form; on multisite, where administrators do not hold the unfiltered_html capability, this crosses a privilege boundary to unauthenticated visitors.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-105258"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "3.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00173,
-      "epss_percentile": 0.06807,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-108685",
-      "title": "The WP Post Author WordPress plugin before 4.2.0 does not check that the account was created before updating its profile during front-end registration, allowing unauthenticate",
-      "severity": "low",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The WP Post Author WordPress plugin before 4.2.0 does not check that the account was created before updating its profile during front-end registration, allowing unauthenticated users to overwrite the display name, nickname and website of the first user account, which is normally the administrator, when a registration form declares one of those fields.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108685"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "3.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00259,
-      "epss_percentile": 0.17673,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-108686",
-      "title": "The WP Post Author WordPress plugin before 4.2.0 does not restrict the integration settings it returns to visitors, allowing unauthenticated users to read the reCAPTCHA secret",
-      "severity": "low",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The WP Post Author WordPress plugin before 4.2.0 does not restrict the integration settings it returns to visitors, allowing unauthenticated users to read the reCAPTCHA secret key when one has been saved.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108686"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "3.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00216,
-      "epss_percentile": 0.12165,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-108763",
-      "title": "The Wallet System for WooCommerce WordPress plugin before 2.8.2 does not restrict its KYC document submission handler to the current user's own account, taking the target user",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Wallet System for WooCommerce WordPress plugin before 2.8.2 does not restrict its KYC document submission handler to the current user's own account, taking the target user ID from a client-supplied request field with no ownership or capability check, allowing authenticated users with minimal privileges such as Subscriber or Customer to overwrite the KYC documents and verification status of any other user, including an administrator.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108763"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00185,
-      "epss_percentile": 0.08165,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-110030",
-      "title": "The Hide Price Until Login WordPress plugin before 1.1.2 does not restrict a guest-registration handler and does not honour the site's user-registration setting, allowing anyo",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Hide Price Until Login WordPress plugin before 1.1.2 does not restrict a guest-registration handler and does not honour the site's user-registration setting, allowing anyone to create a WordPress account and obtain a logged-in session even when registration is disabled.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110030"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00214,
-      "epss_percentile": 0.1179,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-110504",
-      "title": "The Enable SVG, WebP, and ICO Upload WordPress plugin before 1.1.6 does not sanitize uploaded SVG files whose content is not detected as SVG, while still storing and serving t",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Enable SVG, WebP, and ICO Upload WordPress plugin before 1.1.6 does not sanitize uploaded SVG files whose content is not detected as SVG, while still storing and serving them as SVG images, which could allow users with the author role and above to perform Stored Cross-Site Scripting attacks.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110504"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0029,
-      "epss_percentile": 0.2166,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-110505",
-      "title": "The Enable SVG, WebP, and ICO Upload WordPress plugin before 1.1.6 does not prevent animation elements in uploaded SVG files from changing a link's target to a javascript: URI",
-      "severity": "medium",
-      "categories": [
-        "JavaScript / TypeScript",
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Enable SVG, WebP, and ICO Upload WordPress plugin before 1.1.6 does not prevent animation elements in uploaded SVG files from changing a link's target to a javascript: URI, which could allow users with the author role and above to bypass its SVG sanitization and perform Stored Cross-Site Scripting attacks that execute in WebKit-based browsers such as Safari.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110505"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00391,
-      "epss_percentile": 0.33289,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-110983",
-      "title": "The WP Photo Album Plus WordPress plugin before 9.3.04.004 does not verify the origin or a security token for one of its comment-management requests, allowing attackers to del",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The WP Photo Album Plus WordPress plugin before 9.3.04.004 does not verify the origin or a security token for one of its comment-management requests, allowing attackers to delete photo comments by tricking a logged-in user who holds comment-moderation rights into loading a crafted page.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110983"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00107,
-      "epss_percentile": 0.01151,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-111739",
-      "title": "The Two Factor Authentication WordPress plugin before 1.17.0, All-In-One Security (AIOS) WordPress plugin before 5.5.0 do not bind the account whose two-factor code is verifie",
-      "severity": "high",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Two Factor Authentication WordPress plugin before 1.17.0, All-In-One Security (AIOS) WordPress plugin before 5.5.0 do not bind the account whose two-factor code is verified to the account being authenticated, allowing an attacker who knows a victim's password and holds their own two-factor-enabled account to satisfy the victim's second-factor check with their own code and obtain the victim's session.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111739"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00286,
-      "epss_percentile": 0.21248,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-113616",
-      "title": "The LogixFast Auth WordPress plugin before 1.0.4 does not deliver its password-reset one-time code to the resolved account's own email address, mailing it to the address suppl",
-      "severity": "critical",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The LogixFast Auth WordPress plugin before 1.0.4 does not deliver its password-reset one-time code to the resolved account's own email address, mailing it to the address supplied in the request instead, allowing unauthenticated attackers to reset any user's password, including an administrator's, and take over the account.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-113616"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00341,
-      "epss_percentile": 0.27719,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-113617",
-      "title": "The Automated Import Products to Cart WordPress plugin before 1.0.4 does not sanitize a user-supplied file path before using it to read and delete files, allowing users with m",
-      "severity": "critical",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Automated Import Products to Cart WordPress plugin before 1.0.4 does not sanitize a user-supplied file path before using it to read and delete files, allowing users with minimal permissions, such as subscribers, to read arbitrary files (including ones containing the database credentials) and delete arbitrary files on the server.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-113617"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00344,
-      "epss_percentile": 0.2803,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-114270",
-      "title": "The GeoDirectory WordPress plugin before 2.8.197 does not honour post password protection when rendering a listing, allowing unauthenticated users to disclose the content and ",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The GeoDirectory WordPress plugin before 2.8.197 does not honour post password protection when rendering a listing, allowing unauthenticated users to disclose the content and custom fields of published listings that are protected by a post password.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-114270"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00206,
-      "epss_percentile": 0.10707,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-115245",
-      "title": "The Chat AI with Dispatcher WordPress plugin before 2.4 does not properly validate uploaded files, relying only on a spoofable client-supplied content type, allowing unauthent",
-      "severity": "critical",
-      "categories": [
-        "PHP",
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Chat AI with Dispatcher WordPress plugin before 2.4 does not properly validate uploaded files, relying only on a spoofable client-supplied content type, allowing unauthenticated attackers to upload arbitrary files, including PHP, which can lead to remote code execution.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115245"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00462,
-      "epss_percentile": 0.40066,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-115259",
-      "title": "The Photo Engine (Media Organizer & Lightroom) WordPress plugin before 6.6.0 does not have proper authorization checks when updating post data through one of its REST API rout",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Photo Engine (Media Organizer & Lightroom) WordPress plugin before 6.6.0 does not have proper authorization checks when updating post data through one of its REST API routes in all versions up to, and including, 6.5.8. This makes it possible for authenticated attackers, with Author-level access and above, to modify the title, content, excerpt and other fields of arbitrary posts, pages and attachments, including those belonging to other users.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115259"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.9",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00193,
-      "epss_percentile": 0.09053,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-115282",
-      "title": "The Recipe Card Blocks Lite WordPress plugin before 3.6.4 does not perform an authorization check before rendering posts through its recipe print feature, allowing unauthentic",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Recipe Card Blocks Lite WordPress plugin before 3.6.4 does not perform an authorization check before rendering posts through its recipe print feature, allowing unauthenticated users to disclose the title, ID and recipe content of unpublished posts, including drafts, pending, private and password-protected posts, that contain a recipe card block. Its optional \"print only published posts\" protection does not prevent this, because the status check is applied to a different post than the one ultimately rendered.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115282"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00206,
-      "epss_percentile": 0.10707,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-115299",
-      "title": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not verify a CSRF nonce before saving its mail settings, allowing an attacker to overwrite the site's outboun",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not verify a CSRF nonce before saving its mail settings, allowing an attacker to overwrite the site's outbound mail configuration, including the SMTP server, its credentials and the notification recipient, by tricking a logged-in administrator into visiting a crafted page, which can route the Contact Form by Supsystic WordPress plugin before 1.11.1's contact-form notifications through infrastructure the attacker controls.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115299"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00091,
-      "epss_percentile": 0.00466,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-115300",
-      "title": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not validate a CSRF token or request origin on two administrator-only actions that bulk-delete captured form ",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not validate a CSRF token or request origin on two administrator-only actions that bulk-delete captured form submissions and wipe a form's statistics, allowing attackers to permanently destroy a site's stored contact leads and analytics by tricking a logged-in administrator into sending a forged request.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115300"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00098,
-      "epss_percentile": 0.00747,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-115301",
-      "title": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not sandbox the template engine used to render its forms and allows stored form-editor content to reach that ",
-      "severity": "high",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not sandbox the template engine used to render its forms and allows stored form-editor content to reach that engine as executable template code, enabling an administrator to perform server-side template injection and execute arbitrary code on the server. The injected template is compiled and executed whenever any visitor loads a page containing the form, so the stored payload also lets an unauthenticated visitor read server-side secrets such as authentication salts and database credentials.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115301"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.2",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00422,
-      "epss_percentile": 0.36546,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-115302",
-      "title": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not restrict access to an AJAX action that deletes stored form statistics records, allowing unauthenticated a",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not restrict access to an AJAX action that deletes stored form statistics records, allowing unauthenticated attackers to delete arbitrary statistics entries.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115302"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00182,
-      "epss_percentile": 0.07804,
-      "epss_as_of": "2026-11-04"
-    },
-    {
       "id": "CVE-2026-105477",
       "title": "Managed Veeam Agent for Linux local privilege escalation",
       "severity": "high",
@@ -186697,6 +186741,42 @@
       "epss_as_of": "2026-11-04"
     },
     {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.6081,
+      "epss_as_of": "2026-11-04"
+    },
+    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -186735,42 +186815,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55938,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.6081,
       "epss_as_of": "2026-11-04"
     },
     {
@@ -187076,85 +187120,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-04T09:08:42Z",
-      "last_attempt": "2026-11-04T09:08:42Z",
-      "items_processed": 264,
+      "last_success": "2026-11-04T10:17:14Z",
+      "last_attempt": "2026-11-04T10:17:14Z",
+      "items_processed": 265,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-04T09:08:42Z",
-      "last_attempt": "2026-11-04T09:08:42Z",
+      "last_success": "2026-11-04T10:17:14Z",
+      "last_attempt": "2026-11-04T10:17:14Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-04T09:08:42Z",
-      "last_attempt": "2026-11-04T09:08:42Z",
-      "items_processed": 391,
+      "last_success": "2026-11-04T10:17:14Z",
+      "last_attempt": "2026-11-04T10:17:14Z",
+      "items_processed": 380,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-04T09:08:42Z",
-      "last_attempt": "2026-11-04T09:08:42Z",
+      "last_success": "2026-11-04T10:17:14Z",
+      "last_attempt": "2026-11-04T10:17:14Z",
       "items_processed": 485,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-04T09:08:42Z",
-      "last_attempt": "2026-11-04T09:08:42Z",
+      "last_success": "2026-11-04T10:17:14Z",
+      "last_attempt": "2026-11-04T10:17:14Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-04T09:08:42Z",
-      "last_attempt": "2026-11-04T09:08:42Z",
+      "last_success": "2026-11-04T10:17:14Z",
+      "last_attempt": "2026-11-04T10:17:14Z",
       "items_processed": 15,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-04T09:08:42Z",
-      "last_attempt": "2026-11-04T09:08:42Z",
+      "last_success": "2026-11-04T10:17:14Z",
+      "last_attempt": "2026-11-04T10:17:14Z",
       "items_processed": 11,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-04T09:08:42Z",
-      "last_attempt": "2026-11-04T09:08:42Z",
+      "last_success": "2026-11-04T10:17:14Z",
+      "last_attempt": "2026-11-04T10:17:14Z",
       "items_processed": 47,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-04T09:08:42Z",
-      "last_attempt": "2026-11-04T09:08:42Z",
+      "last_success": "2026-11-04T10:17:14Z",
+      "last_attempt": "2026-11-04T10:17:14Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-04T09:08:42Z",
-      "last_attempt": "2026-11-04T09:08:42Z",
+      "last_success": "2026-11-04T10:17:14Z",
+      "last_attempt": "2026-11-04T10:17:14Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-04T09:08:42Z",
-      "last_attempt": "2026-11-04T09:08:42Z",
+      "last_success": "2026-11-04T10:17:14Z",
+      "last_attempt": "2026-11-04T10:17:14Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-04T09:08:42Z",
-      "last_attempt": "2026-11-04T09:08:42Z",
+      "last_success": "2026-11-04T10:17:14Z",
+      "last_attempt": "2026-11-04T10:17:14Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -187166,7 +187210,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-04T09:08:42Z",
-  "last_successful_update": "2026-11-04T09:08:42Z",
+  "last_checked_at": "2026-11-04T10:17:14Z",
+  "last_successful_update": "2026-11-04T10:17:14Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
