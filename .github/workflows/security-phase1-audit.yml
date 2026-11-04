@@ -7,7 +7,7 @@ on:
         options: [integrity, schema-baseline]
         default: integrity
       baseline_source_sha:
-        description: Immutable deployed-source candidate SHA (must be an ancestor of main)
+        description: 'Optional: exact backend SHA in release/baseline.json; leave blank to use the reviewed pin'
         type: string
         required: false
 permissions:

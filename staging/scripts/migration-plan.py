@@ -5,6 +5,7 @@ import sqlite3
 from pathlib import Path
 import subprocess
 import os
+import sys
 import tempfile
 ROOT=Path(__file__).resolve().parents[2]
 OUT=ROOT/'staging/.build/schema'
@@ -62,15 +63,24 @@ def row_sql(name, columns):
         values.append('quote(' + value + ')')
     return 'SELECT ' + "||'|'||".join(values) + ' AS value FROM ' + identifier(name) + ' ORDER BY value COLLATE BINARY'
 
-def build():
+def build(production_baseline=False):
     subprocess.run(['node','staging/scripts/schema.mjs'],cwd=ROOT,check=True,capture_output=True)
     approved_bytes=(ROOT/'staging/migrations.v1.json').read_bytes()
     approved=json.loads(approved_bytes)
     validated=json.loads((OUT/'validated-plan.json').read_text())
     manifest=[{'file':e['path'],'sha256':e['sha256'],'phase':'manifest'} for e in approved['entries']]
-    guards=';\n'.join(validated['guards'])+';\n'
-    manifest.append({'file':'staging/.build/schema/recovery-guards.sql','sha256':digest(guards),'phase':'recovery-guards'})
-    write_atomic(OUT/'recovery-guards.sql', guards)
+    if production_baseline:
+        profile_bytes=(ROOT/'release/baseline.json').read_bytes()
+        profile=json.loads(profile_bytes)
+        if profile['version']!=2 or profile['status']!='verified': raise ValueError('Reviewed production profile required')
+        selected=[approved['entries'][0], *profile['application_schema_files']]
+        positions=[next((i for i,e in enumerate(approved['entries']) if e['path']==f['path'] and e['sha256']==f['sha256']),-1) for f in selected]
+        if positions!=sorted(set(positions)) or -1 in positions: raise ValueError('Invalid production profile order/checksum')
+        manifest=[{'file':f['path'],'sha256':f['sha256'],'phase':'manifest'} for f in selected]
+    else:
+        guards=';\n'.join(validated['guards'])+';\n'
+        manifest.append({'file':'staging/.build/schema/recovery-guards.sql','sha256':digest(guards),'phase':'recovery-guards'})
+        write_atomic(OUT/'recovery-guards.sql', guards)
     db = sqlite3.connect(':memory:')
     d1_limits(db)
     db.execute('PRAGMA foreign_keys=ON')
@@ -112,15 +122,18 @@ def build():
                 raise ValueError('Foreign key violation')
             checkpoint()
         plan['files'].append({**entry, 'start': start, 'end': len(plan['checkpoints']) - 1, 'statements': batch})
-    if db.execute('PRAGMA integrity_check').fetchone()[0] != 'ok' or len(plan['checkpoints'][-1]['counts']) != validated['table_count']-1:
+    if db.execute('PRAGMA integrity_check').fetchone()[0] != 'ok' or len(plan['checkpoints'][-1]['counts']) != (profile['object_counts']['tables']+4 if production_baseline else validated['table_count']-1):
         raise ValueError('Invalid final schema')
+    if production_baseline:
+        plan['profile']='production-baseline'
+        plan['profile_sha256']=hashlib.sha256(profile_bytes).hexdigest()
     payload = encoded(plan) + '\n'
-    write_atomic(OUT / 'execution-plan.json', payload)
+    write_atomic(OUT / ('production-baseline-plan.json' if production_baseline else 'execution-plan.json'), payload)
     print('Migration execution plan SHA-256: ' + digest(payload))
     print('Statements: ' + str(len(plan['checkpoints']) - 1) + '; source files: ' + str(len(plan['files'])))
     db.close()
     return plan, digest(payload)
 
 if __name__ == '__main__':
-    build()
+    build(production_baseline=sys.argv[1:]==['--production-baseline'])
 

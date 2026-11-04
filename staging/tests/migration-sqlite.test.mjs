@@ -250,3 +250,26 @@ test('one approved initialization can stop at a reviewed production prefix then 
  assert.equal(second.last_verified_step,740);assert.equal(second.actual_state.counts.length,102);
  assert.ok(second.batches.every(b=>b.from_step>=baselineEnd));assert.equal(second.invariants_unchanged,true);
 });
+
+test('production profile runs checkpoint 37 to its own 209 endpoint under the existing D1 guards',async t=>{
+ const {productionBaselinePlan}=await import('../scripts/production-baseline.mjs');
+ const baseline=JSON.parse(fs.readFileSync(path.join(root,'../release/baseline.json')));
+ const selected=productionBaselinePlan(baseline);const h=harness(t);
+ for(const f of plan.files.slice(0,2)){const r=await h.execute({batch:f.statements.map(sql=>({sql}))});assert.equal(r.success,true);}
+ const report=await migrate({...env,CF_STAGING_SCHEMA_RESUME_STEP:'37',CF_STAGING_SCHEMA_PLAN_SHA256:selected.sha256},{...h.deps,plan:selected.plan,endStep:selected.endStep});
+ assert.equal(report.last_verified_step,209);assert.equal(report.actual_state.counts.length,74);assert.equal(report.status,'complete');
+ assert.ok(report.batches.every(b=>b.outcome==='verified'&&!/0023_|0031_|0032_|recovery-guards/.test(b.file)));
+ assert.equal(report.invariants_unchanged,true);assert.equal(report.worker_or_access_mutations,0);
+ const r=await h.execute({sql:'SELECT COUNT(*) n FROM staging_schema_history'});assert.equal(r.result[0].results[0].n,30);
+});
+test('production profile rejects preexisting or concurrent application data without erasing it',async t=>{
+ const {productionBaselinePlan}=await import('../scripts/production-baseline.mjs');const baseline=JSON.parse(fs.readFileSync(path.join(root,'../release/baseline.json')));const selected=productionBaselinePlan(baseline);
+ for(const concurrent of [false,true]){
+  let inserted=false;const h=harness(t,async({body,execute})=>{if(concurrent&&!inserted&&body.batch?.some(q=>!q.sql.trimStart().startsWith('SELECT'))){inserted=true;await execute({sql:"INSERT INTO users(id,email) VALUES('synthetic','synthetic@example.invalid')"});}});
+  for(const f of plan.files.slice(0,2))await h.execute({batch:f.statements.map(sql=>({sql}))});
+  if(!concurrent)await h.execute({sql:"INSERT INTO users(id,email) VALUES('synthetic','synthetic@example.invalid')"});
+  await assert.rejects(migrate({...env,CF_STAGING_SCHEMA_RESUME_STEP:'37',CF_STAGING_SCHEMA_PLAN_SHA256:selected.sha256},{...h.deps,plan:selected.plan,endStep:selected.endStep}));
+  const r=await h.execute({sql:'SELECT COUNT(*) n FROM users'});assert.equal(r.result[0].results[0].n,1);
+  const receipts=await h.execute({sql:'SELECT COUNT(*) n FROM staging_schema_history'});assert.equal(receipts.result[0].results[0].n,2);
+ }
+});
