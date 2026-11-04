@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-04",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 7945,
+  "candidate_records": 7942,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -3688,8 +3688,8 @@
       "title": "@payloadcms/storage-vercel-blob has access control bypass of uploads in Vercel Storage adapter",
       "severity": "medium",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-11-04",
       "updated": "2026-11-04",
@@ -3729,8 +3729,8 @@
       "title": "odf-kit: HTML injection leading to XSS in odtToHtml() and odsToHtml() via unescaped style attribute values",
       "severity": "medium",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-11-04",
       "updated": "2026-11-04",
@@ -3770,8 +3770,8 @@
       "title": "Malware in @realvare/baileys",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-11-04",
       "updated": "2026-11-04",
@@ -3799,8 +3799,8 @@
       "title": "Malware in @realvare/based",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-11-04",
       "updated": "2026-11-04",
@@ -3828,8 +3828,8 @@
       "title": "Malware in canta-baileys",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-11-04",
       "updated": "2026-11-04",
@@ -3857,8 +3857,8 @@
       "title": "Malware in @fyxzpediaa/libsignal",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-11-04",
       "updated": "2026-11-04",
@@ -3886,8 +3886,8 @@
       "title": "Malware in @fyxzpediaa/baileys",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-11-04",
       "updated": "2026-11-04",
@@ -3915,8 +3915,8 @@
       "title": "Malware in noon-contracts",
       "severity": "bulletin",
       "categories": [
-        "Node.js / npm",
-        "Application dependencies"
+        "Application dependencies",
+        "Node.js / npm"
       ],
       "published": "2026-11-04",
       "updated": "2026-11-04",
@@ -3972,9 +3972,9 @@
       "title": "Warpgate is an open source SSH, HTTPS, and MySQL bastion host for Linux",
       "severity": "low",
       "categories": [
-        "MySQL / MariaDB",
+        "Docker / Kubernetes",
         "Linux",
-        "Docker / Kubernetes"
+        "MySQL / MariaDB"
       ],
       "published": "2026-11-04",
       "updated": "2026-11-04",
@@ -4002,9 +4002,9 @@
       "title": "Warpgate is an open source SSH, HTTPS, and MySQL bastion host for Linux",
       "severity": "medium",
       "categories": [
-        "MySQL / MariaDB",
+        "Docker / Kubernetes",
         "Linux",
-        "Docker / Kubernetes"
+        "MySQL / MariaDB"
       ],
       "published": "2026-11-04",
       "updated": "2026-11-04",
@@ -4032,8 +4032,8 @@
       "title": "SharpEmu is an experimental PlayStation 5 emulator for Windows and Linux",
       "severity": "high",
       "categories": [
-        "Windows",
-        "Linux"
+        "Linux",
+        "Windows"
       ],
       "published": "2026-11-04",
       "updated": "2026-11-04",
@@ -4053,6 +4053,178 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-11-04T17:06:58Z",
       "source_updated_at": "2026-11-04T16:17:55.097",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-cwjc-3f32-g7cg",
+      "title": "Malware in that-fetch",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: that-fetch (>= 0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-cwjc-3f32-g7cg"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T18:00:46Z",
+      "source_updated_at": "2026-11-04T17:39:30Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-56fp-mx7r-63x8",
+      "title": "Malware in filipt",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: filipt (>= 0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-56fp-mx7r-63x8"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T18:00:46Z",
+      "source_updated_at": "2026-11-04T17:28:46Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-73vv-6qcp-qgpw",
+      "title": "Malware in @pasqua-baileys/baileys",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Any computer that has this package installed or running should be considered fully compromised. All secrets and keys stored on that computer should be rotated immediately from a different computer. The package should be removed, but as full control of the computer may have been given to an outside entity, there is no guarantee that removing the package will remove all malicious software resulting from installing it.",
+      "affected": "npm: @pasqua-baileys/baileys (>= 0)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-73vv-6qcp-qgpw"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T18:00:46Z",
+      "source_updated_at": "2026-11-04T17:12:36Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119747",
+      "title": "The GetPaid plugin for WordPress before 2.8.63 contains an incorrect authorization vulnerability where the check_post_permissions() method in includes/api/class-getpaid-rest-p",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins",
+        "PHP"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The GetPaid plugin for WordPress before 2.8.63 contains an incorrect authorization vulnerability where the check_post_permissions() method in includes/api/class-getpaid-rest-posts-controller.php maps REST operations to generic WordPress post capabilities instead of enforcing the plugin's manage_invoicing permission. Authenticated users with lower-privileged roles such as Editor or Author can exploit this flaw to list other users' invoices, mark pending invoices as paid without recording payment transactions, or create published items and new invoices through the REST API.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119747"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "7.1",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-04T18:00:46Z",
+      "source_updated_at": "2026-11-04T17:17:34.607",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119748",
+      "title": "The GetPaid plugin for WordPress before 2.8.63 contains an authorization bypass vulnerability that allows unauthenticated attackers to access and manipulate another user's inv",
+      "severity": "medium",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The GetPaid plugin for WordPress before 2.8.63 contains an authorization bypass vulnerability that allows unauthenticated attackers to access and manipulate another user's invoice by supplying its ID through the maybe_use_invoice parameter in process_invoice(), bypassing the ownership and key checks performed by is_authorized_to_pay(). Attackers can submit a known pending invoice ID via maybe_use_invoice to read checkout pricing details and initiate a checkout workflow, resulting in an unauthorized state change of the invoice to on-hold.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119748"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "6.9",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-04T18:00:46Z",
+      "source_updated_at": "2026-11-04T17:17:34.770",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-119749",
+      "title": "The GetPaid plugin for WordPress before 2.8.63 contains an improper input validation vulnerability that allows unauthenticated attackers to bypass payment processing by submit",
+      "severity": "high",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The GetPaid plugin for WordPress before 2.8.63 contains an improper input validation vulnerability that allows unauthenticated attackers to bypass payment processing by submitting a negative item quantity on a public payment form. Attackers can exploit the unchecked quantity value in process_item() to produce a negative line subtotal that reduces the invoice total to zero, causing process_free_payment() to mark the invoice as paid without any actual gateway charge.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119749"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.7",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-04T18:00:46Z",
+      "source_updated_at": "2026-11-04T17:17:34.930",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -4776,6 +4948,67 @@
       "epss": 0.0014,
       "epss_percentile": 0.03348,
       "epss_as_of": "2026-11-04"
+    },
+    {
+      "id": "CVE-2026-120567",
+      "title": "The MongoDB Entity Framework Core provider does not neutralize special elements in values passed to SetProperty when an ExecuteUpdate call also contains a setter that reads th",
+      "severity": "low",
+      "categories": [
+        ".NET / ASP.NET",
+        "NoSQL / MongoDB"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-04",
+      "summary": "The MongoDB Entity Framework Core provider does not neutralize special elements in values passed to SetProperty when an ExecuteUpdate call also contains a setter that reads the entity being updated. In that case the update is sent as an aggregation pipeline, and a caller-supplied string beginning with $ is evaluated as an expression rather than stored as data. A party who can influence such a value may modify or remove fields in the records being updated, or copy other fields of the same record into them.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120567"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "2.3",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T20:58:02Z",
+      "source_updated_at": "2026-11-04T17:17:35.210",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121074",
+      "title": "Memory corruption in GPU in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafte",
+      "severity": "critical",
+      "categories": [
+        "iOS / Android"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-04",
+      "summary": "Memory corruption in GPU in Google Chrome on on Android prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High)",
+      "affected": "Products identified in NVD configurations: google chrome; google android",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121074"
+        },
+        {
+          "label": "Vendor advisory",
+          "url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.6",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-04T18:00:46Z",
+      "source_updated_at": "2026-11-04T17:36:32.920",
+      "source_type": "nvd",
+      "known_exploited": false
     },
     {
       "id": "CVE-2026-120091",
@@ -156189,35 +156422,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-120567",
-      "title": "The MongoDB Entity Framework Core provider does not neutralize special elements when it places a caller-supplied value into a bulk update that is expressed as a databasea resu",
-      "severity": "low",
-      "categories": [
-        ".NET / ASP.NET",
-        "NoSQL / MongoDB"
-      ],
-      "published": "2026-11-03",
-      "updated": "2026-11-03",
-      "summary": "The MongoDB Entity Framework Core provider does not neutralize special elements when it places a caller-supplied value into a bulk update that is expressed as a databasea result, a value supplied as plain data may be interpreted by the database as expression syntax. A part value through normal application input may causeunintended modification of fields in the records the application is updating, and may cause data already held in those records to be relocated into other fields of the same record.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120567"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "2.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-11-03T20:58:02Z",
-      "source_updated_at": "2026-11-03T20:18:12.137",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-45146",
       "title": "Chamilo LMS is an open-source learning management system",
       "severity": "high",
@@ -185628,226 +185832,6 @@
       "epss_as_of": "2026-11-04"
     },
     {
-      "id": "CVE-2026-115865",
-      "title": "perl-starlet: perl-starlet: Denial of Service via large Content-Length header",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-30",
-      "updated": "2026-10-30",
-      "summary": "perl-starlet: perl-starlet: Denial of Service via large Content-Length header",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-115865"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-11-04T01:19:03Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00239,
-      "epss_percentile": 0.15109,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-119426",
-      "title": "phpMyAdmin: phpMyAdmin: Arbitrary SQL execution via CSRF token bypass",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-30",
-      "updated": "2026-10-30",
-      "summary": "phpMyAdmin: phpMyAdmin: Arbitrary SQL execution via CSRF token bypass",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119426"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-11-04T01:19:03Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00284,
-      "epss_percentile": 0.20963,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-119147",
-      "title": "proftpd: proftpd: Authorization bypass via mod_sftp copy-file extension",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-30",
-      "updated": "2026-10-30",
-      "summary": "proftpd: proftpd: Authorization bypass via mod_sftp copy-file extension",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119147"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-11-04T01:19:03Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false,
-      "epss": 0.00289,
-      "epss_percentile": 0.21499,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-104067",
-      "title": "scribus: scribus: Arbitrary code execution via crafted SVM file",
-      "severity": "high",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-30",
-      "updated": "2026-10-30",
-      "summary": "scribus: scribus: Arbitrary code execution via crafted SVM file",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-104067"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-11-04T13:19:41Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-104063",
-      "title": "scribus: scribus: Denial of Service via crafted PICT image",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-30",
-      "updated": "2026-10-30",
-      "summary": "scribus: scribus: Denial of Service via crafted PICT image",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-104063"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-11-04T13:19:41Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-116130",
-      "title": "perl-http-parser-xs: HTTP::Parser::XS: Security control bypass via path truncation on encoded null bytes",
-      "severity": "medium",
-      "categories": [
-        "Linux"
-      ],
-      "published": "2026-10-30",
-      "updated": "2026-10-30",
-      "summary": "perl-http-parser-xs: HTTP::Parser::XS: Security control bypass via path truncation on encoded null bytes",
-      "affected": "Check Red Hat's product-specific CVE page for affected RHEL releases and package fix status.",
-      "remediation": "Consult Red Hat's official CVE details and applicable RHSA advisories.",
-      "action": "Check installed Red Hat products and package versions.",
-      "sources": [
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-116130"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": null,
-      "status": "Red Hat CVE catalog",
-      "first_seen_at": "2026-11-04T13:19:41Z",
-      "source_updated_at": "",
-      "source_type": "redhat",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-51851",
-      "title": "modelscope agent-zero 1.7, 1.8, 1.9, and 1.10 is vulnerable to Directory Traversal in python...",
-      "severity": "high",
-      "categories": [
-        "Python / PyPI"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-11-04",
-      "summary": "modelscope agent-zero 1.7, 1.8, 1.9, and 1.10 is vulnerable to Directory Traversal in python/helpers/file_browser.py:FileBrowser.save_text_file. The save_text_file method accepts user-controlled file paths without normalization or validation, allowing path traversal attacks.",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-51851"
-        },
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-jmhq-mcj5-qjhx"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/agent0ai/agent-zero/issues/1541"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://gist.github.com/Ro1ME/a1bbf47465175e279a72121cd0df298b"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-10-29T18:23:28Z",
-      "source_updated_at": "2026-11-04T03:33:32Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00244,
-      "epss_percentile": 0.15649,
-      "epss_as_of": "2026-11-04"
-    },
-    {
       "id": "CVE-2026-105477",
       "title": "Managed Veeam Agent for Linux local privilege escalation",
       "severity": "high",
@@ -186204,57 +186188,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation."
     },
     {
-      "id": "CVE-2026-102870",
-      "title": "Microsoft Security Advisory CVE-2026-102870 - ASP.NET Core Remote Code Execution Vulnerability",
-      "severity": "high",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core",
-        "Application dependencies",
-        "Linux",
-        "Windows"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-11-03",
-      "summary": "## Executive summary Microsoft is releasing this security advisory to provide information about a vulnerability in the Blazor WebAssembly debugger included in `Microsoft.AspNetCore.Components.WebAssembly.Server`. This advisory also provides guidance on what developers can do to update their applications to remove this vulnerability. The Blazor WebAssembly debug proxy evaluates debugger expressions by generating and compiling C# source. Certain values originating in the application being debugged, including `ToString()` results, descriptions, and class names, are embedded in that generated source without consistent escaping. An attacker-controlled value can escape the generated string literal and execute code on a developer's machine when the developer evaluates an expression during debugging. ## Announcement Announcement for this issue can be found at https://github.com/dotnet/announcements/issues/445 ## CVSS Details - **Version:** 3.1 - **Severity:** High - **Score:** 8.8 - **Vector:** `CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H` - **Weakness:** CWE-94 (Improper Control of Generation of Code ('Code Injection')) ## Affected Platforms - **Platforms:** Windows, Linux, macOS - **Architectures:** All ## <a name=\"affected-packages\"></a>Affected Packages The vulnerability affects Mic",
-      "affected": "nuget: Microsoft.AspNetCore.Components.WebAssembly.Server (>= 10.0.0, <= 10.0.13); nuget: Microsoft.AspNetCore.Components.WebAssembly.Server (>= 11.0.0-preview.1, < 11.0.0-rc.3.26522.148)",
-      "remediation": "Microsoft.AspNetCore.Components.WebAssembly.Server: 10.0.14; Microsoft.AspNetCore.Components.WebAssembly.Server: 11.0.0-rc.3.26522.148",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "Microsoft corrected Blazor debugger security advisory",
-          "url": "https://github.com/dotnet/announcements/issues/492"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
-        },
-        {
-          "label": "Ubuntu Security Notice",
-          "url": "https://ubuntu.com/security/notices/USN-8958-1"
-        },
-        {
-          "label": "GitHub reviewed advisory",
-          "url": "https://github.com/advisories/GHSA-g27p-qf6j-c96c"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.8",
-      "status": "GitHub reviewed advisory",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "source_updated_at": "2026-11-03T17:07:38Z",
-      "source_type": "github",
-      "known_exploited": false,
-      "epss": 0.00906,
-      "epss_percentile": 0.59898,
-      "epss_as_of": "2026-11-04"
-    },
-    {
       "id": "CVE-2026-70197",
       "title": "Microsoft Security Advisory CVE-2026-70197 - .NET and Visual Studio Remote Code Execution Vulnerability",
       "severity": "high",
@@ -186303,6 +186236,57 @@
       "known_exploited": false,
       "epss": 0.00788,
       "epss_percentile": 0.56255,
+      "epss_as_of": "2026-11-04"
+    },
+    {
+      "id": "CVE-2026-102870",
+      "title": "Microsoft Security Advisory CVE-2026-102870 - ASP.NET Core Remote Code Execution Vulnerability",
+      "severity": "high",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core",
+        "Application dependencies",
+        "Linux",
+        "Windows"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-11-03",
+      "summary": "## Executive summary Microsoft is releasing this security advisory to provide information about a vulnerability in the Blazor WebAssembly debugger included in `Microsoft.AspNetCore.Components.WebAssembly.Server`. This advisory also provides guidance on what developers can do to update their applications to remove this vulnerability. The Blazor WebAssembly debug proxy evaluates debugger expressions by generating and compiling C# source. Certain values originating in the application being debugged, including `ToString()` results, descriptions, and class names, are embedded in that generated source without consistent escaping. An attacker-controlled value can escape the generated string literal and execute code on a developer's machine when the developer evaluates an expression during debugging. ## Announcement Announcement for this issue can be found at https://github.com/dotnet/announcements/issues/445 ## CVSS Details - **Version:** 3.1 - **Severity:** High - **Score:** 8.8 - **Vector:** `CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H` - **Weakness:** CWE-94 (Improper Control of Generation of Code ('Code Injection')) ## Affected Platforms - **Platforms:** Windows, Linux, macOS - **Architectures:** All ## <a name=\"affected-packages\"></a>Affected Packages The vulnerability affects Mic",
+      "affected": "nuget: Microsoft.AspNetCore.Components.WebAssembly.Server (>= 10.0.0, <= 10.0.13); nuget: Microsoft.AspNetCore.Components.WebAssembly.Server (>= 11.0.0-preview.1, < 11.0.0-rc.3.26522.148)",
+      "remediation": "Microsoft.AspNetCore.Components.WebAssembly.Server: 10.0.14; Microsoft.AspNetCore.Components.WebAssembly.Server: 11.0.0-rc.3.26522.148",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "Microsoft corrected Blazor debugger security advisory",
+          "url": "https://github.com/dotnet/announcements/issues/492"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-g27p-qf6j-c96c"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-102870"
+        },
+        {
+          "label": "Ubuntu Security Notice",
+          "url": "https://ubuntu.com/security/notices/USN-8958-1"
+        },
+        {
+          "label": "GitHub reviewed advisory",
+          "url": "https://github.com/advisories/GHSA-g27p-qf6j-c96c"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "8.8",
+      "status": "GitHub reviewed advisory",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "source_updated_at": "2026-11-03T17:07:38Z",
+      "source_type": "github",
+      "known_exploited": false,
+      "epss": 0.00906,
+      "epss_percentile": 0.59898,
       "epss_as_of": "2026-11-04"
     },
     {
@@ -186459,6 +186443,42 @@
       "epss_as_of": "2026-11-04"
     },
     {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.6081,
+      "epss_as_of": "2026-11-04"
+    },
+    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -186497,42 +186517,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55938,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.6081,
       "epss_as_of": "2026-11-04"
     },
     {
@@ -186838,85 +186822,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-04T17:06:58Z",
-      "last_attempt": "2026-11-04T17:06:58Z",
-      "items_processed": 260,
+      "last_success": "2026-11-04T18:00:46Z",
+      "last_attempt": "2026-11-04T18:00:46Z",
+      "items_processed": 257,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-04T17:06:58Z",
-      "last_attempt": "2026-11-04T17:06:58Z",
+      "last_success": "2026-11-04T18:00:46Z",
+      "last_attempt": "2026-11-04T18:00:46Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-04T17:06:58Z",
-      "last_attempt": "2026-11-04T17:06:58Z",
-      "items_processed": 237,
+      "last_success": "2026-11-04T18:00:46Z",
+      "last_attempt": "2026-11-04T18:00:46Z",
+      "items_processed": 245,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-04T17:06:58Z",
-      "last_attempt": "2026-11-04T17:06:58Z",
+      "last_success": "2026-11-04T18:00:46Z",
+      "last_attempt": "2026-11-04T18:00:46Z",
       "items_processed": 485,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-04T17:06:58Z",
-      "last_attempt": "2026-11-04T17:06:58Z",
+      "last_success": "2026-11-04T18:00:46Z",
+      "last_attempt": "2026-11-04T18:00:46Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-04T17:06:58Z",
-      "last_attempt": "2026-11-04T17:06:58Z",
+      "last_success": "2026-11-04T18:00:46Z",
+      "last_attempt": "2026-11-04T18:00:46Z",
       "items_processed": 15,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-04T17:06:58Z",
-      "last_attempt": "2026-11-04T17:06:58Z",
+      "last_success": "2026-11-04T18:00:46Z",
+      "last_attempt": "2026-11-04T18:00:46Z",
       "items_processed": 11,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-04T17:06:58Z",
-      "last_attempt": "2026-11-04T17:06:58Z",
+      "last_success": "2026-11-04T18:00:46Z",
+      "last_attempt": "2026-11-04T18:00:46Z",
       "items_processed": 47,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-04T17:06:58Z",
-      "last_attempt": "2026-11-04T17:06:58Z",
+      "last_success": "2026-11-04T18:00:46Z",
+      "last_attempt": "2026-11-04T18:00:46Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-04T17:06:58Z",
-      "last_attempt": "2026-11-04T17:06:58Z",
+      "last_success": "2026-11-04T18:00:46Z",
+      "last_attempt": "2026-11-04T18:00:46Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-04T17:06:58Z",
-      "last_attempt": "2026-11-04T17:06:58Z",
+      "last_success": "2026-11-04T18:00:46Z",
+      "last_attempt": "2026-11-04T18:00:46Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-04T17:06:58Z",
-      "last_attempt": "2026-11-04T17:06:58Z",
+      "last_success": "2026-11-04T18:00:46Z",
+      "last_attempt": "2026-11-04T18:00:46Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -186928,7 +186912,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-04T17:06:58Z",
-  "last_successful_update": "2026-11-04T17:06:58Z",
+  "last_checked_at": "2026-11-04T18:00:46Z",
+  "last_successful_update": "2026-11-04T18:00:46Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
