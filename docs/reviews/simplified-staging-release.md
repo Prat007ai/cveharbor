@@ -6,10 +6,14 @@ run the queued legacy 37 → 740 operation to establish production parity.
 
 ## Reviewed production baseline
 
-`release/baseline.json` records read-only audit run **41900058502** and the local
-reconstruction of every object definition hash, not a new claim that the old audit
-passed. Its `verification_method` identifies that reconstruction. No customer
-records were read or copied. The existing audit can independently reconfirm it.
+`release/baseline.json` now records the reconciled read-only evidence from run
+**41909431530**, artifact **13361372888** (ZIP SHA256
+`c6f4eac1c2fee433a30a887a521b433d9e36dfb54d6f3bb038f0706c5281c604`).
+The audit confirmed the same schema, frontend and backend release identity with a
+stable new backend deployment. Its only identity mismatch was the obsolete pinned
+backend version. The active-version content ETag check passed. Local source hashing
+reconfirmed the identity before updating the pin. No customer records were read.
+The earlier schema reconstruction from run 41900058502 remains historical evidence.
 
 - Application schema: **70 tables, 48 explicit indexes, 24 triggers, one view**.
 - Ordered, checksum-pinned production SQL: base schemas and migrations through
@@ -21,7 +25,8 @@ records were read or copied. The existing audit can independently reconfirm it.
   meaningful SQL differences. The old raw fingerprint remains as evidence; the
   new token fingerprint is explicitly versioned `sqlite-tokens-v1`.
 - Backend source equivalent: `6e05106ce7d5f4c8741261775f2e4e69c6eea719`;
-  deployed version `aa8ce0f2-73d3-4714-b4c1-583d1f7283e1`. Source equivalence is
+  deployed version `89380b13-b600-4fef-82f4-69b8cc2f2c17`, deployment
+  `32de70d4-aa64-4ea4-b7dd-2a8cc31b4806`. Source equivalence is
   proven by deployed release identity, not a uniquely recoverable deployment Git SHA.
 - Frontend application source: `019efc6ca029f4113ce71c6ebfad3680fa66ba68`;
   deployed version `e22850fa-851d-453f-8336-5e78d96babdd`, publication run
@@ -38,14 +43,15 @@ do not change pins simply to suppress a mismatch. Existing safe diagnostics rema
 
 1. Review this draft correction and its CI. Merge only with owner approval.
    Keep production deployment flags disabled and production approvals unchanged.
-2. Run the existing **Phase 1 readiness - SELECT-only production audit** on the
-   reviewed main revision: `audit_mode=schema-baseline`, leave
-   `baseline_source_sha` **blank**. The existing protected
-   `cloudflare-production-audit` credentials are reused. Blank selects the reviewed
-   backend pin; an arbitrary/different source is rejected. Expect `verified`, both
-   version checks true, exact object counts and zero rows written. No new secret,
-   workflow or manually updated recovery-evidence contract is needed.
-3. After the audit passes and the owner approves staging initialization, retain
+2. Use the reconciled evidence above for the schema-only initialization review.
+   There is no need to obtain another export, change secrets, or rebuild staging
+   to accept the verified new deployment ID. If a fresh read is desired or the
+   deployment changes again, reuse the existing **Phase 1 readiness - SELECT-only
+   production audit** with `audit_mode=schema-baseline` and
+   `baseline_source_sha` blank. Its `verified` status means schema/source/version
+   verification, **not functional application readiness**. It separately reports
+   the incompatible recovery configuration and `application_ready=false`.
+3. After the owner approves this reconciliation and staging initialization, retain
    account `9706b4d98ad72884e67fd1eb875c8a61`, database
    `cveharbor-accounts-staging` / `fac61562-fc31-426d-8032-550aba63b7f6`, and both
    existing Workers/bindings. Reuse `cloudflare-cvie-staging` credentials and
@@ -86,15 +92,32 @@ readiness check, which requires `0031` integrity objects and `0032` write holds.
 for this profile. `resume` also stops because that database has no `0032` hold.
 The initializer's receipt is not successful candidate-promotion evidence.
 
-This distinction addresses a confirmed local finding: the released backend source
-sets `RECOVERY_CONTROL_REQUIRED=true`, but the audited production schema has no
-`0032` tables. The current integrated staging wrapper additionally enables CVIE
-features that require later tables; a synthetic scheduler test against the actual
-production schema failed. Production may use live variable overrides. Do not infer
-those overrides, disable guards just to pass a test, or silently add missing schema.
-The already-authorized metadata audit can report safe active-version flags during
-its next run. Source/schema parity is established; full functional parity and the
-first Worker activation still require that configuration reconciliation.
+The active-version runtime flags are now confirmed, not inferred from source:
+
+| Setting group | Active-version evidence |
+| --- | --- |
+| `RECOVERY_CONTROL_REQUIRED` | `true` |
+| Assignment email, acknowledgement, FYI, progress and remediation workflow | `true` |
+| `CVIE_SHARED_SCANS_ENABLED`, `PLUGIN_MONITOR_ENABLED`, manual website monitoring | `true` |
+| Scheduled website monitoring | `false` |
+| CVIE registry/fast evidence, product-monitor checks/delivery, alert/lifecycle delivery | Not set in the active version's bindings |
+
+`operations_control`, `operations_leases` and `operations_events` are absent from
+the audited database. With that schema and `RECOVERY_CONTROL_REQUIRED=true`, the
+released recovery wrapper fails closed: protected HTTP requests return maintenance
+503 responses, and scheduled handlers do not run. Local synthetic tests reproduce
+both outcomes without writes. This is a configuration/schema incompatibility, not
+a formatting issue or an active maintenance record. No live customer endpoint was
+probed; the assessment applies to the audited database, which the released Worker
+configuration declares as its DB binding. Existing assignments and links are not
+deleted by this behavior.
+
+Schema-only staging initialization may proceed after approval while Worker
+activation remains blocked. Do not copy this incompatible configuration into an
+operational staging release, bypass recovery checks, or add `0032` to hide it.
+Any production configuration correction requires separate explicit approval and
+is outside this baseline update. The identity evidence does not establish who
+created the new version or the deployment mechanism; those details are not claimed.
 
 No application code, runtime flags, provider behavior, deployment ordering or
 production promotion guards are changed here. The pinned application sources are
@@ -115,5 +138,6 @@ restrictions and disabled schedules. Do not use the integrated `resume` action o
 claim a database write hold exists. Recovery changes and restores remain explicit
 operations; bookmarks and exports stay private. Production safeguards are unchanged.
 
-No new resources or credentials are required by this correction. Remote audit,
-initialization, Worker activation and signed-in acceptance remain pending approval.
+No new resources or credentials are required. The read-only audit evidence has
+been reconciled; staging initialization, Worker activation and signed-in acceptance
+remain separate operations requiring approval.

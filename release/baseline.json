@@ -2,15 +2,15 @@
   "version": 2,
   "profile": "production-2026-11-04",
   "status": "verified",
-  "verification_method": "read-only-audit-41900058502-and-local-schema-reconstruction",
-  "evidence_run": 41900058502,
-  "evidence_captured_at": "2026-11-04T19:46:06.746Z",
+  "verification_method": "read-only-audit-41909431530-and-source-identity-reconciliation",
+  "evidence_run": 41909431530,
+  "evidence_captured_at": "2026-11-04T20:44:39.489Z",
   "production_database_id": "46710e51-7ca4-4571-b89c-921b9969de0b",
   "source_sha": "6e05106ce7d5f4c8741261775f2e4e69c6eea719",
   "backend": {
     "source_sha": "6e05106ce7d5f4c8741261775f2e4e69c6eea719",
-    "version_id": "aa8ce0f2-73d3-4714-b4c1-583d1f7283e1",
-    "deployment_id": "46019ca2-ff00-4c90-a652-130d44c36ae6",
+    "version_id": "89380b13-b600-4fef-82f4-69b8cc2f2c17",
+    "deployment_id": "32de70d4-aa64-4ea4-b7dd-2a8cc31b4806",
     "identity": "845dddb703e404b25763c17ea586aa11b88e316413b1cb22bb9562e949cd7a8c",
     "source_evidence": "releaseIdentity-and-identical-account-backend-git-tree"
   },
@@ -157,5 +157,36 @@
     "0032_recovery_control.sql"
   ],
   "schema_comparison": "sqlite-tokens-v1",
-  "schema_sha256": "327bab011a4ffe3654aab618f859a8cdaef14aa7d4bbd03c0db96d4f7b0a225d"
+  "schema_sha256": "327bab011a4ffe3654aab618f859a8cdaef14aa7d4bbd03c0db96d4f7b0a225d",
+  "runtime_flags": {
+    "available": true,
+    "values": {
+      "RECOVERY_CONTROL_REQUIRED": "true",
+      "CVIE_SHARED_SCANS_ENABLED": "true",
+      "CVIE_REGISTRY_ENABLED": null,
+      "CVIE_FAST_EVIDENCE_ENABLED": null,
+      "PRODUCT_MONITOR_CHECKS_ENABLED": null,
+      "PRODUCT_MONITOR_DELIVERY_ENABLED": null,
+      "WEBSITE_MONITOR_ENABLED": "false",
+      "WEBSITE_MONITOR_MANUAL_ENABLED": "true",
+      "PLUGIN_MONITOR_ENABLED": "true",
+      "ALERT_DELIVERY_ENABLED": null,
+      "LIFECYCLE_DELIVERY_ENABLED": null,
+      "ASSIGNMENT_EMAIL_ENABLED": "true",
+      "ASSIGNMENT_ACK_ENABLED": "true",
+      "ASSIGNMENT_FYI_ENABLED": "true",
+      "ASSIGNMENT_PROGRESS_ENABLED": "true",
+      "REMEDIATION_WORKFLOW_ENABLED": "true"
+    }
+  },
+  "runtime_compatibility": {
+    "status": "incompatible",
+    "reason": "required_recovery_schema_missing",
+    "missing_tables": [
+      "operations_control",
+      "operations_leases",
+      "operations_events"
+    ]
+  },
+  "application_ready": false
 }
