@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-04",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 8220,
+  "candidate_records": 8214,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -1085,6 +1085,64 @@
       "first_seen_at": "2026-11-03T21:56:58Z",
       "source_updated_at": "2026-11-04T00:31:07Z",
       "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-112917",
+      "title": "In Docker Desktop for Windows with the WSL2 backend, an unprivileged Linux container can use 32-bit socketcall to bypass the default seccomp restriction on AF_VSOCK",
+      "severity": "critical",
+      "categories": [
+        "Docker / Kubernetes",
+        "Linux",
+        "Windows"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-04",
+      "summary": "In Docker Desktop for Windows with the WSL2 backend, an unprivileged Linux container can use 32-bit socketcall to bypass the default seccomp restriction on AF_VSOCK. This can expose host-facing services and Windows files accessible to the logged-in user. The issue affects x86-64 WSL2; LinuxKit-based backends are unaffected. The issue is fully fixed only with Docker Desktop 4.98.0 or later and WSL 3.0.3 or later. Docker Desktop 4.98.0 or later running on an older WSL remains affected.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112917"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.2",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T20:02:03Z",
+      "source_updated_at": "2026-11-04T05:18:29.063",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-121037",
+      "title": "Out of bounds write in ANGLE in Google Chrome on on Windows prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a cr",
+      "severity": "critical",
+      "categories": [
+        "Windows"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-04",
+      "summary": "Out of bounds write in ANGLE in Google Chrome on on Windows prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High)",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121037"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": "9.6",
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-03T21:56:58Z",
+      "source_updated_at": "2026-11-04T05:18:30.940",
+      "source_type": "nvd",
       "known_exploited": false
     },
     {
@@ -152446,36 +152504,6 @@
       "known_exploited": false
     },
     {
-      "id": "CVE-2026-112917",
-      "title": "In Docker Desktop for Windows with the WSL2 backend, an unprivileged Linux container can use 32-bit socketcall to bypass the default seccomp restriction on AF_VSOCK",
-      "severity": "critical",
-      "categories": [
-        "Docker / Kubernetes",
-        "Linux",
-        "Windows"
-      ],
-      "published": "2026-11-03",
-      "updated": "2026-11-03",
-      "summary": "In Docker Desktop for Windows with the WSL2 backend, an unprivileged Linux container can use 32-bit socketcall to bypass the default seccomp restriction on AF_VSOCK. This can expose host-facing services and Windows files accessible to the logged-in user. The issue affects x86-64 WSL2; LinuxKit-based backends are unaffected. The issue is fully fixed only with Docker Desktop 4.98.0 or later and WSL 3.0.3 or later. Docker Desktop 4.98.0 or later running on an older WSL remains affected.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112917"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.2",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-11-03T20:02:03Z",
-      "source_updated_at": "2026-11-03T19:17:53.727",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
       "id": "CVE-2026-121501",
       "title": "A vulnerability was determined in mathurvishal CloudClassroom-PHP-Project",
       "severity": "low",
@@ -155129,34 +155157,6 @@
       "status": "NVD indexed CVE",
       "first_seen_at": "2026-11-03T21:56:58Z",
       "source_updated_at": "2026-11-03T22:19:32.270",
-      "source_type": "nvd",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-121037",
-      "title": "Out of bounds write in ANGLE in Google Chrome on on Windows prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a cr",
-      "severity": "critical",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-11-03",
-      "updated": "2026-11-03",
-      "summary": "Out of bounds write in ANGLE in Google Chrome on on Windows prior to 157.0.8103.38 allowed a remote attacker to potentially execute arbitrary code outside the sandbox via a crafted HTML page. (Chromium security severity: High)",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121037"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "9.6",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-11-03T21:56:58Z",
-      "source_updated_at": "2026-11-03T22:19:32.780",
       "source_type": "nvd",
       "known_exploited": false
     },
@@ -163892,6 +163892,54 @@
       "epss_as_of": "2026-11-04"
     },
     {
+      "id": "CVE-2026-119977",
+      "title": "WordPress Core is vulnerable to Remote Code Execution in versions 4.7 through 7.1.3. This is due...",
+      "severity": "high",
+      "categories": [
+        "Linux",
+        "WordPress / Plugins"
+      ],
+      "published": "2026-10-31",
+      "updated": "2026-11-04",
+      "summary": "WordPress Core is vulnerable to Remote Code Execution in versions 4.7 through 7.1.3. This is due to predictable, web-accessible staging paths used during full-package core upgrades. This makes it possible for unauthenticated attackers to execute code on the server during the upgrade window.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-p6jj-qrp3-7m4g"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119977"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://core.trac.wordpress.org/browser/tags/7.1.3/src/wp-admin/includes/class-core-upgrader.php#L162"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://core.trac.wordpress.org/browser/tags/7.1.3/src/wp-admin/includes/class-wp-upgrader.php#L378"
+        },
+        {
+          "label": "Red Hat Security Data API",
+          "url": "https://access.redhat.com/security/cve/CVE-2026-119977"
+        }
+      ],
+      "exploitation": "Confirmed: listed in CISA KEV",
+      "kind": "cve",
+      "cvss": "8.1",
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-10-31T07:05:46Z",
+      "source_updated_at": "2026-10-31T06:30:35Z",
+      "source_type": "github",
+      "known_exploited": true,
+      "epss": 0.006,
+      "epss_percentile": 0.48751,
+      "epss_as_of": "2026-11-04"
+    },
+    {
       "id": "CVE-2026-92294",
       "title": "The Spectra Gutenberg Blocks – Website Builder for the Block Editor plugin for WordPress is...",
       "severity": "medium",
@@ -164192,54 +164240,6 @@
       "known_exploited": false,
       "epss": 0.00369,
       "epss_percentile": 0.30916,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-119977",
-      "title": "WordPress Core is vulnerable to Remote Code Execution in versions 4.7 through 7.1.3. This is due...",
-      "severity": "high",
-      "categories": [
-        "Linux",
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-31",
-      "updated": "2026-11-03",
-      "summary": "WordPress Core is vulnerable to Remote Code Execution in versions 4.7 through 7.1.3. This is due to predictable, web-accessible staging paths used during full-package core upgrades. This makes it possible for unauthenticated attackers to execute code on the server during the upgrade window.",
-      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub unreviewed advisory",
-          "url": "https://github.com/advisories/GHSA-p6jj-qrp3-7m4g"
-        },
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119977"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://core.trac.wordpress.org/browser/tags/7.1.3/src/wp-admin/includes/class-core-upgrader.php#L162"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://core.trac.wordpress.org/browser/tags/7.1.3/src/wp-admin/includes/class-wp-upgrader.php#L378"
-        },
-        {
-          "label": "Red Hat Security Data API",
-          "url": "https://access.redhat.com/security/cve/CVE-2026-119977"
-        }
-      ],
-      "exploitation": "Confirmed: listed in CISA KEV",
-      "kind": "cve",
-      "cvss": "8.1",
-      "status": "GitHub unreviewed advisory",
-      "first_seen_at": "2026-10-31T07:05:46Z",
-      "source_updated_at": "2026-10-31T06:30:35Z",
-      "source_type": "github",
-      "known_exploited": true,
-      "epss": 0.006,
-      "epss_percentile": 0.48751,
       "epss_as_of": "2026-11-04"
     },
     {
@@ -168174,7 +168174,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119206"
         },
         {
@@ -168186,7 +168186,7 @@
           "url": "https://github.com/advisories/GHSA-42gh-23hr-vphw"
         },
         {
-          "label": "Vendor advisory",
+          "label": "Additional advisory",
           "url": "https://github.com/py-pdf/pypdf/security/advisories/GHSA-42gh-23hr-vphw"
         },
         {
@@ -168223,7 +168223,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119194"
         },
         {
@@ -168272,7 +168272,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119198"
         },
         {
@@ -168317,7 +168317,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119210"
         },
         {
@@ -168365,7 +168365,7 @@
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
         {
-          "label": "NVD CVE record",
+          "label": "Additional advisory",
           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-119279"
         },
         {
@@ -186591,42 +186591,6 @@
       "epss_as_of": "2026-11-04"
     },
     {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.6081,
-      "epss_as_of": "2026-11-04"
-    },
-    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -186665,6 +186629,42 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55938,
+      "epss_as_of": "2026-11-04"
+    },
+    {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.6081,
       "epss_as_of": "2026-11-04"
     },
     {
@@ -186970,85 +186970,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-04T05:10:31Z",
-      "last_attempt": "2026-11-04T05:10:31Z",
+      "last_success": "2026-11-04T06:11:20Z",
+      "last_attempt": "2026-11-04T06:11:20Z",
       "items_processed": 240,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-04T05:10:31Z",
-      "last_attempt": "2026-11-04T05:10:31Z",
+      "last_success": "2026-11-04T06:11:20Z",
+      "last_attempt": "2026-11-04T06:11:20Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-04T05:10:31Z",
-      "last_attempt": "2026-11-04T05:10:31Z",
-      "items_processed": 512,
+      "last_success": "2026-11-04T06:11:20Z",
+      "last_attempt": "2026-11-04T06:11:20Z",
+      "items_processed": 493,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-04T05:10:31Z",
-      "last_attempt": "2026-11-04T05:10:31Z",
+      "last_success": "2026-11-04T06:11:20Z",
+      "last_attempt": "2026-11-04T06:11:20Z",
       "items_processed": 485,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-04T05:10:31Z",
-      "last_attempt": "2026-11-04T05:10:31Z",
+      "last_success": "2026-11-04T06:11:20Z",
+      "last_attempt": "2026-11-04T06:11:20Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-04T05:10:31Z",
-      "last_attempt": "2026-11-04T05:10:31Z",
+      "last_success": "2026-11-04T06:11:20Z",
+      "last_attempt": "2026-11-04T06:11:20Z",
       "items_processed": 15,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-04T05:10:31Z",
-      "last_attempt": "2026-11-04T05:10:31Z",
+      "last_success": "2026-11-04T06:11:20Z",
+      "last_attempt": "2026-11-04T06:11:20Z",
       "items_processed": 11,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-04T05:10:31Z",
-      "last_attempt": "2026-11-04T05:10:31Z",
+      "last_success": "2026-11-04T06:11:20Z",
+      "last_attempt": "2026-11-04T06:11:20Z",
       "items_processed": 47,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-04T05:10:31Z",
-      "last_attempt": "2026-11-04T05:10:31Z",
+      "last_success": "2026-11-04T06:11:20Z",
+      "last_attempt": "2026-11-04T06:11:20Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-04T05:10:31Z",
-      "last_attempt": "2026-11-04T05:10:31Z",
+      "last_success": "2026-11-04T06:11:20Z",
+      "last_attempt": "2026-11-04T06:11:20Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-04T05:10:31Z",
-      "last_attempt": "2026-11-04T05:10:31Z",
+      "last_success": "2026-11-04T06:11:20Z",
+      "last_attempt": "2026-11-04T06:11:20Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-04T05:10:31Z",
-      "last_attempt": "2026-11-04T05:10:31Z",
+      "last_success": "2026-11-04T06:11:20Z",
+      "last_attempt": "2026-11-04T06:11:20Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -187060,7 +187060,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-04T05:10:31Z",
-  "last_successful_update": "2026-11-04T05:10:31Z",
+  "last_checked_at": "2026-11-04T06:11:20Z",
+  "last_successful_update": "2026-11-04T06:11:20Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
