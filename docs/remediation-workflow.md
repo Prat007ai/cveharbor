@@ -1,3 +1,5 @@
+> **Phase 1 deployment notice:** Use [the consolidated administrator checklist](reviews/phase1-administrator-checklist.md) for current release, credential, staging and recovery steps. Deployment/migration/rollback recipes below are feature-history references, not instructions to execute during Phase 1. Feature behavior descriptions remain applicable unless superseded by the current implementation.
+
 # Remediation workflow and confirmation hostname
 
 The tracker describes private CVEHarbor storage without exposing infrastructure names. The assignment form uses **Assigned reviewer email** and offers **Assigned severity**: Critical, High, Medium, Low, Informational, or the published advisory rating. External recipients remain supported.

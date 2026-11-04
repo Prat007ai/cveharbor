@@ -1,0 +1,267 @@
+name: Permanent staging preparation and approved updates
+on:
+  push:
+    branches: [codex/cvie-core-phase012, main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      simple_operation:
+        description: Simplified staging operation after activation
+        type: choice
+        options: [release, initialize, resume]
+        default: release
+      hold_revision:
+        description: Expected hold revision (recovery resume only)
+        type: string
+        required: false
+      recovery_reason:
+        description: Reviewed operational reason (recovery resume only)
+        type: string
+        required: false
+      operation:
+        description: Exact separately approved existing-resource operation
+        type: choice
+        options: [recovery-inventory, recovery-snapshot, recovery-capture, recovery-verify, none, diagnose-schema, adopt-schema, verify, migrate, publish-synthetic, update, recover-code, hold, freeze, resume]
+        default: none
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: npm install --prefix staging --ignore-scripts --no-package-lock
+      - run: python staging/scripts/continuation-review.py
+      - run: node staging/scripts/prepare-adoption.mjs
+      - run: node staging/scripts/build.mjs
+      - run: node --test staging/tests/*.test.mjs
+      - run: node staging/scripts/check-build.mjs
+      - run: node staging/scripts/check-access-runtime.mjs
+      - run: node staging/scripts/dry-run.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: permanent-staging-preparation-${{ github.sha }}
+          path: |
+            staging/.build/manifest.json
+            staging/.build/schema/manifest.json
+            staging/.build/schema/execution-plan.json
+            staging/.build/schema/adoption-batch.sql
+            staging/.build/schema/adoption-review.json
+            staging/.build/schema/continuation-summary.json
+            staging/.build/schema/continuation-*.sql
+            staging/artifacts/*.json
+          retention-days: 14
+  release:
+    # Initial pushes and PR events never receive credentials. A marked commit's
+    # manual rerun is only a pre-merge dispatch mechanism; exact SHA, operation
+    # and protected-environment approval are still mandatory.
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/codex/cvie-core-phase012' && ((github.event_name == 'workflow_dispatch' && inputs.operation != 'none') || (github.event_name == 'push' && github.run_attempt > 1 && contains(github.event.head_commit.message, '[staging-release]'))) && !((github.event_name == 'workflow_dispatch' && startsWith(inputs.operation, 'recovery-')) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[staging-recovery]')))
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: cveharbor-permanent-staging
+      cancel-in-progress: false
+    environment: cloudflare-cvie-staging
+    env:
+      CF_STAGING_APPROVED_COMMIT: ${{ vars.CF_STAGING_APPROVED_COMMIT }}
+      CF_STAGING_PROVISION_ACTION: ${{ vars.CF_STAGING_PROVISION_ACTION }}
+      CF_STAGING_ACCOUNT_ID: ${{ vars.CF_STAGING_ACCOUNT_ID || secrets.CF_STAGING_ACCOUNT_ID }}
+      CF_STAGING_D1_DATABASE_ID: ${{ vars.CF_STAGING_D1_DATABASE_ID }}
+      CF_STAGING_ADMIN_EMAILS: ${{ vars.CF_STAGING_ADMIN_EMAILS }}
+      CF_STAGING_MANUAL_JOBS_ENABLED: ${{ vars.CF_STAGING_MANUAL_JOBS_ENABLED }}
+      CF_STAGING_SCHEMA_DIAGNOSTIC_SHA256: ${{ vars.CF_STAGING_SCHEMA_DIAGNOSTIC_SHA256 }}
+      CF_STAGING_ADOPTION_SHA256: ${{ vars.CF_STAGING_ADOPTION_SHA256 }}
+      CF_STAGING_SCHEMA_PLAN_SHA256: ${{ vars.CF_STAGING_SCHEMA_PLAN_SHA256 }}
+      CF_STAGING_SCHEMA_RESUME_STEP: ${{ vars.CF_STAGING_SCHEMA_RESUME_STEP }}
+      CF_STAGING_EXPECTED_HOLD_REVISION: ${{ vars.CF_STAGING_EXPECTED_HOLD_REVISION }}
+      CF_STAGING_RECOVERY_REASON: ${{ vars.CF_STAGING_RECOVERY_REASON }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Build local manifest checkpoints before authorization
+        if: env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema'
+        run: python staging/scripts/migration-plan.py
+      - name: Validate exact reviewed source and operation before management credentials
+        run: node staging/scripts/release.mjs --check
+      - name: Rebuild reviewed packages without credentials
+        if: env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema' && env.CF_STAGING_PROVISION_ACTION != 'adopt-schema' && env.CF_STAGING_PROVISION_ACTION != 'migrate'
+        run: |
+          npm install --prefix staging --ignore-scripts --no-package-lock
+          python staging/scripts/migration-plan.py
+          node staging/scripts/build.mjs
+          node staging/scripts/check-build.mjs
+      - name: Install pinned publisher dependency only for approved synthetic publication
+        if: env.CF_STAGING_PROVISION_ACTION == 'publish-synthetic'
+        run: python -m pip install boto3==1.40.70
+      - name: Execute only the approved read-only schema diagnostic
+        if: env.CF_STAGING_PROVISION_ACTION == 'diagnose-schema'
+        env:
+          CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
+        run: node staging/scripts/release.mjs
+      - name: Execute only the approved schema migration phase
+        if: env.CF_STAGING_PROVISION_ACTION == 'migrate'
+        env:
+          CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
+          CF_STAGING_RECOVERY_EVIDENCE: ${{ secrets.CF_STAGING_RECOVERY_EVIDENCE }}
+          CF_STAGING_ACCESS_ISSUER: ${{ vars.CF_STAGING_ACCESS_ISSUER || secrets.CF_STAGING_ACCESS_ISSUER }}
+          CF_STAGING_ACCESS_AUD: ${{ vars.CF_STAGING_ACCESS_AUD || secrets.CF_STAGING_ACCESS_AUD }}
+          CF_STAGING_ACCESS_CLIENT_ID: ${{ secrets.CF_STAGING_ACCESS_CLIENT_ID }}
+          CF_STAGING_ACCESS_CLIENT_SECRET: ${{ secrets.CF_STAGING_ACCESS_CLIENT_SECRET }}
+        run: node staging/scripts/release.mjs
+      - name: Execute only the approved existing-resource operation
+        if: env.CF_STAGING_PROVISION_ACTION != 'diagnose-schema' && env.CF_STAGING_PROVISION_ACTION != 'adopt-schema' && env.CF_STAGING_PROVISION_ACTION != 'migrate'
+        env:
+          CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
+          CF_STAGING_R2_ACCESS_KEY_ID: ${{ secrets.CF_STAGING_R2_ACCESS_KEY_ID }}
+          CF_STAGING_R2_SECRET_ACCESS_KEY: ${{ secrets.CF_STAGING_R2_SECRET_ACCESS_KEY }}
+          CF_STAGING_ACCESS_ISSUER: ${{ vars.CF_STAGING_ACCESS_ISSUER || secrets.CF_STAGING_ACCESS_ISSUER }}
+          CF_STAGING_ACCESS_AUD: ${{ vars.CF_STAGING_ACCESS_AUD || secrets.CF_STAGING_ACCESS_AUD }}
+          CF_STAGING_ACCESS_CLIENT_ID: ${{ secrets.CF_STAGING_ACCESS_CLIENT_ID }}
+          CF_STAGING_ACCESS_CLIENT_SECRET: ${{ secrets.CF_STAGING_ACCESS_CLIENT_SECRET }}
+        run: node staging/scripts/release.mjs
+      - name: Execute only the approved original-schema adoption
+        if: env.CF_STAGING_PROVISION_ACTION == 'adopt-schema'
+        env:
+          CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
+          CF_STAGING_RECOVERY_EVIDENCE: ${{ secrets.CF_STAGING_RECOVERY_EVIDENCE }}
+        run: node staging/scripts/release.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: permanent-staging-release-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            staging/artifacts/*.json
+          retention-days: 14
+
+  recovery:
+    # Dedicated protected job. No artifacts, caches, release dispatcher or deployment tools.
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/codex/cvie-core-phase012' && ((github.event_name == 'workflow_dispatch' && inputs.operation != 'none') || (github.event_name == 'push' && github.run_attempt > 1 && contains(github.event.head_commit.message, '[staging-release]'))) && ((github.event_name == 'workflow_dispatch' && startsWith(inputs.operation, 'recovery-')) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[staging-recovery]')))
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: cveharbor-permanent-staging
+      cancel-in-progress: false
+    environment: cloudflare-cvie-staging
+    env:
+      CF_STAGING_APPROVED_COMMIT: ${{ vars.CF_STAGING_APPROVED_COMMIT }}
+      CF_STAGING_PROVISION_ACTION: ${{ vars.CF_STAGING_PROVISION_ACTION }}
+      CF_STAGING_ACCOUNT_ID: ${{ vars.CF_STAGING_ACCOUNT_ID || secrets.CF_STAGING_ACCOUNT_ID }}
+      CF_STAGING_D1_DATABASE_ID: ${{ vars.CF_STAGING_D1_DATABASE_ID }}
+      CF_STAGING_RECOVERY_BUCKET: ${{ vars.CF_STAGING_RECOVERY_BUCKET }}
+      CF_STAGING_RECOVERY_KEY_CUSTODY_CONFIRMED: ${{ vars.CF_STAGING_RECOVERY_KEY_CUSTODY_CONFIRMED }}
+      CF_STAGING_RECOVERY_CERT_SHA256: ${{ vars.CF_STAGING_RECOVERY_CERT_SHA256 }}
+      CF_STAGING_RECOVERY_SNAPSHOT_KEY: ${{ vars.CF_STAGING_RECOVERY_SNAPSHOT_KEY }}
+      CF_STAGING_RECOVERY_SNAPSHOT_SHA256: ${{ vars.CF_STAGING_RECOVERY_SNAPSHOT_SHA256 }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Authorize reviewed recovery operation without management credentials
+        run: node staging/recovery/recovery.mjs --check
+      - name: Disable swap before recovery credentials are released
+        run: |
+          sudo swapoff -a
+          python -c "from pathlib import Path; assert len(Path('/proc/swaps').read_text().strip().splitlines()) == 1"
+      - name: Inspect staging recovery inventory only
+        if: env.CF_STAGING_PROVISION_ACTION == 'recovery-inventory'
+        env:
+          CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
+        run: node staging/recovery/recovery.mjs
+      - name: Execute approved private recovery operation
+        if: env.CF_STAGING_PROVISION_ACTION == 'recovery-snapshot' || env.CF_STAGING_PROVISION_ACTION == 'recovery-capture' || env.CF_STAGING_PROVISION_ACTION == 'recovery-verify'
+        env:
+          CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
+          CF_STAGING_RECOVERY_R2_ACCESS_KEY_ID: ${{ secrets.CF_STAGING_RECOVERY_R2_ACCESS_KEY_ID }}
+          CF_STAGING_RECOVERY_R2_SECRET_ACCESS_KEY: ${{ secrets.CF_STAGING_RECOVERY_R2_SECRET_ACCESS_KEY }}
+          CF_STAGING_RECOVERY_CERT_PEM: ${{ vars.CF_STAGING_RECOVERY_CERT_PEM }}
+          CF_STAGING_RECOVERY_ISOLATION: ${{ secrets.CF_STAGING_RECOVERY_ISOLATION }}
+          CF_STAGING_RECOVERY_RESTORE_RECEIPT: ${{ secrets.CF_STAGING_RECOVERY_RESTORE_RECEIPT }}
+          CF_STAGING_RECOVERY_RESTORE_SIGNATURE: ${{ secrets.CF_STAGING_RECOVERY_RESTORE_SIGNATURE }}
+          CF_STAGING_ACCESS_CLIENT_ID: ${{ secrets.CF_STAGING_ACCESS_CLIENT_ID }}
+          CF_STAGING_ACCESS_CLIENT_SECRET: ${{ secrets.CF_STAGING_ACCESS_CLIENT_SECRET }}
+        run: node staging/recovery/recovery.mjs
+      - name: Remove only this job's memory-backed recovery files
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import shutil
+          for directory in Path('/dev/shm').glob('cvie-recovery-*'):
+              if directory.is_dir() and not directory.is_symlink():
+                  shutil.rmtree(directory)
+          PY
+
+  automatic-staging:
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && vars.SIMPLE_STAGING_ENABLED == 'true' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: cveharbor-permanent-staging
+      cancel-in-progress: false
+    environment: cloudflare-cvie-staging
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Build the exact tested staging release without cloud credentials
+        run: |
+          npm install --prefix staging --ignore-scripts --no-package-lock
+          python staging/scripts/migration-plan.py
+          node scripts/build_release_identity.mjs
+          node staging/scripts/build.mjs
+          node staging/scripts/check-build.mjs
+      - name: Initialize once or release automatically to existing staging resources
+        env:
+          SIMPLE_STAGING_ENABLED: ${{ vars.SIMPLE_STAGING_ENABLED }}
+          SIMPLE_STAGING_OPERATION: ${{ inputs.simple_operation || 'release' }}
+          CF_STAGING_EXPECTED_HOLD_REVISION: ${{ inputs.hold_revision }}
+          CF_STAGING_RECOVERY_REASON: ${{ inputs.recovery_reason }}
+          CF_STAGING_ACCOUNT_ID: ${{ vars.CF_STAGING_ACCOUNT_ID || secrets.CF_STAGING_ACCOUNT_ID }}
+          CF_STAGING_D1_DATABASE_ID: ${{ vars.CF_STAGING_D1_DATABASE_ID }}
+          CF_STAGING_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
+          CF_STAGING_ACCESS_ISSUER: ${{ vars.CF_STAGING_ACCESS_ISSUER || secrets.CF_STAGING_ACCESS_ISSUER }}
+          CF_STAGING_ACCESS_AUD: ${{ vars.CF_STAGING_ACCESS_AUD || secrets.CF_STAGING_ACCESS_AUD }}
+          CF_STAGING_ACCESS_CLIENT_ID: ${{ secrets.CF_STAGING_ACCESS_CLIENT_ID }}
+          CF_STAGING_ACCESS_CLIENT_SECRET: ${{ secrets.CF_STAGING_ACCESS_CLIENT_SECRET }}
+          CF_STAGING_ADMIN_EMAILS: ${{ vars.CF_STAGING_ADMIN_EMAILS }}
+          CF_STAGING_MANUAL_JOBS_ENABLED: 'false'
+        run: node staging/scripts/simple-release.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: staging-tested-${{ github.sha }}-${{ github.run_attempt }}
+          path: release/artifacts/staging-release.json
+          retention-days: 30

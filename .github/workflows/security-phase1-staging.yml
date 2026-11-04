@@ -1,0 +1,54 @@
+name: Phase 1 readiness - isolated synthetic D1 rehearsal
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        type: choice
+        options: [validate, bootstrap]
+        default: validate
+        required: true
+        description: Bootstrap only a verified empty disposable staging database
+permissions:
+  contents: read
+concurrency:
+  group: cveharbor-phase1-staging
+  cancel-in-progress: false
+jobs:
+  staging:
+    name: Phase 1 separate-account D1 rehearsal
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: cloudflare-phase1-staging
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          path: security-config
+      - name: Check out the reviewed Phase 1 harness, never an input ref
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          path: phase1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - name: Verify separate account and resource before any Cloudflare request
+        env:
+          STAGING_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_STAGING_ACCOUNT_ID }}
+          PRODUCTION_ACCOUNT_ID: ${{ vars.PRODUCTION_ACCOUNT_ID }}
+          STAGING_DATABASE_ID: ${{ vars.STAGING_DATABASE_ID }}
+          STAGING_DATABASE_NAME: ${{ vars.STAGING_DATABASE_NAME }}
+          STAGING_DISPOSABLE: ${{ vars.STAGING_DISPOSABLE }}
+        run: node security-config/scripts/check_phase1_staging_boundary.mjs
+      - name: Rehearse with staging credentials only; intercept every email
+        working-directory: phase1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_STAGING_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_STAGING_ACCOUNT_ID }}
+          STAGING_DATABASE_ID: ${{ vars.STAGING_DATABASE_ID }}
+          STAGING_DATABASE_NAME: ${{ vars.STAGING_DATABASE_NAME }}
+          STAGING_DISPOSABLE: ${{ vars.STAGING_DISPOSABLE }}
+          STAGING_OPERATION: ${{ inputs.operation }}
+        run: node scripts/staging_workflow.mjs

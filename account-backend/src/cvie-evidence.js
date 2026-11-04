@@ -1,3 +1,4 @@
+import {runIdentityIndexWork} from './cvie-index-maintenance.js';
 // Original CVE Program records from vendors/authorized CNAs and independent CISA KEV.
 // URLs from provider content are never fetched: all request destinations are fixed.
 import {cveMirrorUrl,simplifyCve,normalizeCveId} from './cve-lookup.js';
@@ -144,7 +145,7 @@ function queueSql(env,items,sourceId=null,lease=null){
    next_attempt_at=CASE WHEN excluded.revision>revision THEN 0 ELSE next_attempt_at END,
    attempts=CASE WHEN excluded.revision>revision THEN 0 ELSE attempts END,
    error=CASE WHEN excluded.revision>revision THEN '' ELSE error END,
-   revision=MAX(revision,excluded.revision)`,JSON.stringify(items),...(sourceId?[sourceId,lease]:[]));
+   revision=MAX(revision,excluded.revision) WHERE excluded.revision>revision OR excluded.priority<priority`,JSON.stringify(items),...(sourceId?[sourceId,lease]:[]));
 }
 export function disclosureCandidatesStatement(env,ids){
  // Keywords discover public CVE IDs only. Original affected-product evidence is
@@ -161,17 +162,40 @@ export function relevantKev(kev,products){
   return [wordKey(parts[4]),wordKey(p.name)].filter(Boolean).some(value=>value===name||value.startsWith(name)||name===vendor+value);
  });
 }
+// Public catalogue only, bounded by the validated 3 MB feed limit. Coalesce cold
+// reads within an isolate; no customer matches or private product fields cached.
+const kevCatalogues=new WeakMap();
+export const KEV_CATALOGUE_TTL=30000;
+export function invalidateKevCatalogue(env){kevCatalogues.delete(env.CVIE_UNWRAPPED_DB||env.DB);}
+export async function publicKevCatalogue(env,now=Date.now()){
+ const key=env.CVIE_UNWRAPPED_DB||env.DB;let entry=kevCatalogues.get(key);
+ if(!entry||now<entry.started||now>=entry.expires){
+  entry={started:now,expires:now+KEV_CATALOGUE_TTL};
+  entry.promise=Promise.resolve().then(()=>env.DB.prepare('SELECT record_json FROM cvie_kev').all()).then(r=>(r.results||[]).map(row=>JSON.parse(row.record_json)));
+  kevCatalogues.set(key,entry);
+ }
+ try{return await entry.promise;}catch(error){if(kevCatalogues.get(key)===entry)kevCatalogues.delete(key);throw error;}
+}
 export async function queueRelevantKev(env,products){
  if(!products.length||!await evidenceReady(env))return;
- const rows=(await env.DB.prepare('SELECT record_json FROM cvie_kev').all()).results||[];
- const items=rows.map(row=>JSON.parse(row.record_json)).filter(k=>relevantKev(k,products)).map(k=>({id:k.cveID,revision:'',priority:0}));
- if(items.length){await queueSql(env,items).run();invalidatePublicSourceStatus(env);}
+ const rows=await publicKevCatalogue(env);
+ const items=rows.filter(k=>relevantKev(k,products)).map(k=>({id:k.cveID,revision:'',priority:0}));
+ if(items.length){const result=await queueSql(env,items).run();if(result.meta.changes)invalidatePublicSourceStatus(env);}
 }
+// Canonical public-content hash ignores object key order and fetch timestamps.
+export function stableContent(value){
+ if(Array.isArray(value))return '['+value.map(stableContent).join(',')+']';
+ if(value&&typeof value==='object')return '{'+Object.keys(value).sort().map(k=>JSON.stringify(k)+':'+stableContent(value[k])).join(',')+'}';
+ return JSON.stringify(value);
+}
+export async function contentHash(value){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(stableContent(value))))].map(x=>x.toString(16).padStart(2,'0')).join('');}
+const snapshotSchemas=new WeakMap();
+async function snapshotReady(env){const db=env.CVIE_UNWRAPPED_DB||env.DB;if(!snapshotSchemas.has(db)){try{await env.DB.prepare('SELECT source_id FROM cvie_source_snapshots LIMIT 0').all();snapshotSchemas.set(db,true);}catch{snapshotSchemas.set(db,false);}}return snapshotSchemas.get(db);}
 export async function refreshEvidence(env,fetcher=fetch,now=Date.now()){
  if(!await evidenceReady(env))return {ready:false};
  const source=await q(env.DB,'SELECT * FROM cvie_sources WHERE next_attempt_at<=? AND lease_until<? ORDER BY next_attempt_at,id LIMIT 1',now,now).first();
  if(!source)return {idle:true};const lease=now+120000;
- const claimed=await q(env.DB,'UPDATE cvie_sources SET last_attempt_at=?,lease_until=? WHERE id=? AND lease_until<?',now,lease,source.id,now).run();
+ const claimed=await q(env.DB,'UPDATE cvie_sources SET last_attempt_at=?,lease_until=? WHERE id=? AND lease_until<? AND next_attempt_at<=?',now,lease,source.id,now,now).run();
  if(claimed.meta.changes!==1)return {busy:true};
  try{
   const statements=[];let publisher,checkpoint=source.checkpoint,coverage=source.coverage_start_at;
@@ -188,20 +212,33 @@ export async function refreshEvidence(env,fetcher=fetch,now=Date.now()){
    for(const k of feed.vulnerabilities){
     if(!normalizeCveId(k.cveID)||seen.has(k.cveID)||!validAddedDate(k.dateAdded,now)||typeof k.vendorProject!=='string'||typeof k.product!=='string')throw Error('Invalid CISA KEV entry');seen.add(k.cveID);
    }
-   const old=await env.DB.prepare('SELECT COUNT(*) AS total FROM cvie_kev').first();
-   if(old.total>10&&feed.count<old.total/2)throw Error('Unexpected large CISA catalogue reduction; saved evidence retained for review');
-   const products=(await env.DB.prepare('SELECT DISTINCT name,cpe FROM cvie_products WHERE cpe<>\'\'').all()).results||[];
-   const items=feed.vulnerabilities.map(k=>({id:k.cveID,revision:'',priority:relevantKev(k,products)?0:2}));
-   const values=feed.vulnerabilities.map(k=>({id:k.cveID,date:k.dateAdded,vendor:k.vendorProject,product:k.product,record:k}));
-   statements.push(q(env.DB,'DELETE FROM cvie_kev WHERE EXISTS(SELECT 1 FROM cvie_sources WHERE id=? AND lease_until=?)',source.id,lease));
-   for(const chunk of jsonChunks(values))statements.push(q(env.DB,`INSERT INTO cvie_kev(cve_id,date_added,vendor,product,record_json,checked_at)
-    SELECT json_extract(value,'$.id'),json_extract(value,'$.date'),json_extract(value,'$.vendor'),json_extract(value,'$.product'),json_extract(value,'$.record'),?
-    FROM json_each(?) WHERE EXISTS(SELECT 1 FROM cvie_sources WHERE id=? AND lease_until=?)`,now,chunk,source.id,lease));
-   statements.push(queueSql(env,items,source.id,lease));
+   const hash=await contentHash([...feed.vulnerabilities].sort((a,b)=>a.cveID.localeCompare(b.cveID)));
+   const snapshots=await snapshotReady(env);
+   const saved=snapshots?await q(env.DB,'SELECT content_hash FROM cvie_source_snapshots WHERE source_id=?',source.id).first():null;
+   if(saved?.content_hash===hash&&env.CVIE_METRIC_CONTEXT)env.CVIE_METRIC_CONTEXT.kev_unchanged=feed.count;
+   if(saved?.content_hash!==hash){
+    const old=(await env.DB.prepare('SELECT cve_id,record_json FROM cvie_kev').all()).results||[];
+    if(old.length>10&&feed.count<old.length/2)throw Error('Unexpected large CISA catalogue reduction; saved evidence retained for review');
+    const previous=new Map(old.map(r=>[r.cve_id,stableContent(JSON.parse(r.record_json))]));
+    const changed=feed.vulnerabilities.filter(k=>previous.get(k.cveID)!==stableContent(k));
+    const removed=old.filter(r=>!seen.has(r.cve_id)).map(r=>r.cve_id);
+    if(env.CVIE_METRIC_CONTEXT)Object.assign(env.CVIE_METRIC_CONTEXT,{kev_inserted:changed.filter(r=>!previous.has(r.cveID)).length,kev_updated:changed.filter(r=>previous.has(r.cveID)).length,kev_removed:removed.length,kev_unchanged:feed.count-changed.length});
+    if(removed.length)statements.push(q(env.DB,'DELETE FROM cvie_kev WHERE cve_id IN(SELECT value FROM json_each(?)) AND EXISTS(SELECT 1 FROM cvie_sources WHERE id=? AND lease_until=?)',JSON.stringify(removed),source.id,lease));
+    for(const chunk of jsonChunks(changed))statements.push(q(env.DB,`INSERT INTO cvie_kev(cve_id,date_added,vendor,product,record_json,checked_at)
+     SELECT json_extract(value,'$.cveID'),json_extract(value,'$.dateAdded'),json_extract(value,'$.vendorProject'),json_extract(value,'$.product'),value,?
+     FROM json_each(?) WHERE EXISTS(SELECT 1 FROM cvie_sources WHERE id=? AND lease_until=?)
+     ON CONFLICT(cve_id) DO UPDATE SET date_added=excluded.date_added,vendor=excluded.vendor,product=excluded.product,record_json=excluded.record_json,checked_at=excluded.checked_at`,now,chunk,source.id,lease));
+    if(changed.length){
+     const products=(await env.DB.prepare("SELECT DISTINCT name,cpe FROM cvie_products WHERE cpe<>''").all()).results||[];
+     statements.push(queueSql(env,changed.map(k=>({id:k.cveID,revision:'',priority:relevantKev(k,products)?0:2})),source.id,lease));
+    }
+    if(snapshots)statements.push(q(env.DB,`INSERT INTO cvie_source_snapshots(source_id,content_hash) SELECT ?,? WHERE EXISTS(SELECT 1 FROM cvie_sources WHERE id=? AND lease_until=?)
+     ON CONFLICT(source_id) DO UPDATE SET content_hash=excluded.content_hash WHERE content_hash<>excluded.content_hash`,source.id,hash,source.id,lease));
+   }
   }
   statements.push(q(env.DB,`UPDATE cvie_sources SET status='ok',last_success_at=?,publisher_at=?,checkpoint=?,coverage_start_at=?,
    next_attempt_at=?,lease_until=0,error='',source_url=? WHERE id=? AND lease_until=?`,now,publisher,checkpoint,coverage,now+(source.id==='cisa_kev'?15:5)*60000,SOURCE_URLS[source.id],source.id,lease));
-  await env.DB.batch(statements);invalidatePublicSourceStatus(env);return {source:source.id,ok:true};
+  await env.DB.batch(statements);invalidatePublicSourceStatus(env);if(source.id==='cisa_kev')invalidateKevCatalogue(env);return {source:source.id,ok:true};
  }catch(error){
   const retry=now+(error.delay||60000);
   await q(env.DB,"UPDATE cvie_sources SET status='unavailable',error=?,next_attempt_at=?,record_retry_at=MAX(record_retry_at,?),lease_until=0 WHERE id=? AND lease_until=?",String(error.message).slice(0,220),retry,source.id==='cve_program'&&error.throttled?retry:0,source.id,lease).run();invalidatePublicSourceStatus(env);return {source:source.id,ok:false};
@@ -214,7 +251,7 @@ export async function ingestDisclosures(env,fetcher=fetch,now=Date.now(),limit=1
  const jobs=(await q(env.DB,'SELECT * FROM cvie_disclosure_queue WHERE next_attempt_at<=? AND lease_until<? ORDER BY priority,next_attempt_at,revision DESC,cve_id LIMIT ?',now,now,Math.min(15,limit)).all()).results||[];
  if(!jobs.length)return {processed:0};const lease=now+120000;
  const ids=JSON.stringify(jobs.map(j=>j.cve_id));
- const claimed=(await q(env.DB,'UPDATE cvie_disclosure_queue SET lease_until=? WHERE cve_id IN(SELECT value FROM json_each(?)) AND lease_until<? RETURNING *',lease,ids,now).all()).results||[];
+ const claimed=(await q(env.DB,'UPDATE cvie_disclosure_queue SET lease_until=? WHERE cve_id IN(SELECT value FROM json_each(?)) AND lease_until<? AND next_attempt_at<=? RETURNING *',lease,ids,now,now).all()).results||[];
  const successes=[],failures=[];let throttledUntil=0;
  // Bounded batches avoid overwhelming CVE Program endpoints or the Worker.
  for(let i=0;i<claimed.length;i+=5)await Promise.all(claimed.slice(i,i+5).map(async job=>{
@@ -224,7 +261,7 @@ export async function ingestDisclosures(env,fetcher=fetch,now=Date.now(),limit=1
    successes.push(record);
   }catch(error){if(error.throttled)throttledUntil=Math.max(throttledUntil,now+error.delay);failures.push({id:job.cve_id,error:String(error.message).slice(0,180),delay:Math.max(error.delay||60000,Math.min(6*3600000,60000*2**Math.min(job.attempts,9)))});}
  }));
- const records=successes.map(r=>({id:r.id,state:r.state,published:r.published,updated:r.updated_at,record:r.base}));
+ const records=await Promise.all(successes.map(async r=>({id:r.id,state:r.state,published:r.published,updated:r.updated_at,record:{...r.base,cvie_content_hash:await contentHash({base:r.base,families:r.families})}})));
  const families=successes.flatMap(r=>r.families.map(f=>({id:r.id,updated:r.updated_at,key:f.family_key,applicability:f.applicability,rows:f.rows})));
  const revisions=JSON.stringify(successes.map(r=>({id:r.id,updated:r.updated_at})));
  const successIds=JSON.stringify(successes.map(r=>r.id));
@@ -233,15 +270,17 @@ export async function ingestDisclosures(env,fetcher=fetch,now=Date.now(),limit=1
    SELECT json_extract(value,'$.id'),json_extract(value,'$.state'),json_extract(value,'$.published'),json_extract(value,'$.updated'),json_extract(value,'$.record'),?
    FROM json_each(?) WHERE EXISTS(SELECT 1 FROM cvie_disclosure_queue j WHERE j.cve_id=json_extract(value,'$.id') AND j.lease_until=?)
    ON CONFLICT(cve_id) DO UPDATE SET state=excluded.state,published=COALESCE(excluded.published,published),updated_at=excluded.updated_at,record_json=excluded.record_json,checked_at=excluded.checked_at
-   WHERE excluded.updated_at>=cvie_disclosures.updated_at`,now,chunk,lease));
+   WHERE excluded.updated_at>=cvie_disclosures.updated_at AND (excluded.updated_at<>cvie_disclosures.updated_at OR excluded.state<>cvie_disclosures.state OR excluded.record_json<>cvie_disclosures.record_json)`,now,chunk,lease));
  statements.push(q(env.DB,`DELETE FROM cvie_disclosure_products WHERE cve_id IN(SELECT value FROM json_each(?))
   AND EXISTS(SELECT 1 FROM cvie_disclosure_queue j WHERE j.cve_id=cvie_disclosure_products.cve_id AND j.lease_until=?)
   AND EXISTS(SELECT 1 FROM cvie_disclosures d JOIN json_each(?) r ON json_extract(r.value,'$.id')=d.cve_id
-   WHERE d.cve_id=cvie_disclosure_products.cve_id AND d.updated_at=json_extract(r.value,'$.updated') AND d.checked_at=?)`,successIds,lease,revisions,now));
+   WHERE d.cve_id=cvie_disclosure_products.cve_id AND d.updated_at=json_extract(r.value,'$.updated') AND d.checked_at=?)
+  AND NOT EXISTS(SELECT 1 FROM json_each(?) f WHERE json_extract(f.value,'$[0]')=cvie_disclosure_products.cve_id AND json_extract(f.value,'$[1]')=cvie_disclosure_products.family_key)`,successIds,lease,revisions,now,JSON.stringify(families.map(f=>[f.id,f.key]))));
  for(const chunk of jsonChunks(families))statements.push(q(env.DB,`INSERT INTO cvie_disclosure_products(cve_id,family_key,applicability,affected_json)
    SELECT json_extract(value,'$.id'),json_extract(value,'$.key'),json_extract(value,'$.applicability'),json_extract(value,'$.rows') FROM json_each(?)
    WHERE EXISTS(SELECT 1 FROM cvie_disclosure_queue j WHERE j.cve_id=json_extract(value,'$.id') AND j.lease_until=?)
-   AND EXISTS(SELECT 1 FROM cvie_disclosures d WHERE d.cve_id=json_extract(value,'$.id') AND d.updated_at=json_extract(value,'$.updated') AND d.checked_at=?)`,chunk,lease,now));
+   AND EXISTS(SELECT 1 FROM cvie_disclosures d WHERE d.cve_id=json_extract(value,'$.id') AND d.updated_at=json_extract(value,'$.updated') AND d.checked_at=?)
+   ON CONFLICT(cve_id,family_key) DO UPDATE SET applicability=excluded.applicability,affected_json=excluded.affected_json WHERE applicability<>excluded.applicability OR affected_json<>excluded.affected_json`,chunk,lease,now));
  statements.push(q(env.DB,`DELETE FROM cvie_disclosure_queue WHERE cve_id IN(SELECT value FROM json_each(?)) AND lease_until=?
    AND revision<=(SELECT updated_at FROM cvie_disclosures d WHERE d.cve_id=cvie_disclosure_queue.cve_id)`,successIds,lease),
   q(env.DB,`UPDATE cvie_disclosure_queue SET lease_until=0,next_attempt_at=?+COALESCE((SELECT json_extract(value,'$.delay') FROM json_each(?) WHERE json_extract(value,'$.id')=cvie_disclosure_queue.cve_id),60000),attempts=attempts+1,
@@ -253,5 +292,7 @@ export async function ingestDisclosures(env,fetcher=fetch,now=Date.now(),limit=1
 export async function dispatchEvidence(env){
  // Separate minute tick keeps this source-ingestion budget independent of NVD backfills.
  await refreshEvidence(env);await refreshEvidence(env);
- return ingestDisclosures(env,fetch,Date.now(),5);
+ const result=await ingestDisclosures(env,fetch,Date.now(),5);
+ const indexed=await runIdentityIndexWork(env);
+ return {...result,indexed:indexed.processed||0};
 }

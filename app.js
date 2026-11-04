@@ -735,7 +735,7 @@
     if(draft.products.length>=50){statusMessage('Maximum of 50 additional products.');return}
     const category=$('technologyAddCategory').value||inferProductCategory(name)||'applications';
     const vendor=$('technologyAddVendor')?.value.trim()||'',cpe=$('technologyAddCpe')?.value.trim()||'';
-    draft.products.push({name,version,category,vendor,cpe});customForm.reset();drawCustomizer();await saveCatalogue();
+    draft.products.push({name,version,category,vendor,cpe,...($('technologyAddName').dataset.cvieIdentity?{identity_id:$('technologyAddName').dataset.cvieIdentity}:{})});delete $('technologyAddName').dataset.cvieIdentity;customForm.reset();drawCustomizer();await saveCatalogue();
   });
   async function saveCatalogue(submission=draft){if(!submission||catalogueSaving)return false;catalogueSaving=true;$('technologySaveButton').disabled=true;customForm.querySelector('button[type="submit"]').disabled=true;statusMessage('Saving catalogue...');const submitted=JSON.parse(JSON.stringify(submission)),epoch=catalogueEpoch;document.querySelectorAll('.technology-remove').forEach(el=>el.disabled=true);
     $('technologyDefaultChoices').querySelectorAll('input').forEach(el=>el.disabled=true);$('technologyCustomList').querySelectorAll('input,button').forEach(el=>el.disabled=true);$('technologyResetButton').disabled=true;

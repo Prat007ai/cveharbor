@@ -1,0 +1,32 @@
+{
+  "local_backend": {
+    "files": 35,
+    "tests": 361,
+    "failures": 0
+  },
+  "python_unittest": {
+    "tests": 122,
+    "failures": 0
+  },
+  "local_targeted_smoke_checks": 12,
+  "staging": "not available; not run",
+  "production_deployment": false,
+  "cloud_resources_created": false,
+  "cloudflare_configuration_changed": false,
+  "compatibility_note": "Local Workerd supports 2026-08-06; deployed configuration uses 2026-10-28",
+  "ci": {
+    "implementation_commit": "ea7fa077b3128ce024603f5e2abfd5afd9896d82",
+    "cvie": {
+      "run": 41538948132,
+      "conclusion": "success"
+    },
+    "website": {
+      "run": 41538948223,
+      "conclusion": "success"
+    },
+    "product_monitoring": {
+      "run": 41538948632,
+      "conclusion": "success"
+    }
+  }
+}

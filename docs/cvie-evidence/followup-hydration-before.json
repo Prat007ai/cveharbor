@@ -1,0 +1,63 @@
+{
+  "environment": "local Miniflare Worker service operations; no remote staging",
+  "scope_creation": {
+    "requests": 50,
+    "p95_ms": 90,
+    "p95_rows_read": 81,
+    "total_rows_read": 3396,
+    "total_rows_written": 605,
+    "total_statements": 739,
+    "shared_scopes": 1
+  },
+  "hydration": [
+    {
+      "concurrency": 1,
+      "requests": 1,
+      "p95_ms": 7,
+      "p95_rows_read": 1410,
+      "total_rows_read": 1410,
+      "total_rows_written": 620,
+      "total_statements": 15,
+      "jobs": 1,
+      "indexed_records": 100,
+      "checkpoint": {
+        "cursor_json": "{\"phase\":\"cna\",\"family_after\":\"\",\"after\":\"CVE-2026-7001099\"}",
+        "complete": 0,
+        "failed": 0
+      }
+    },
+    {
+      "concurrency": 10,
+      "requests": 10,
+      "p95_ms": 8,
+      "p95_rows_read": 1410,
+      "total_rows_read": 1428,
+      "total_rows_written": 620,
+      "total_statements": 24,
+      "jobs": 1,
+      "indexed_records": 100,
+      "checkpoint": {
+        "cursor_json": "{\"phase\":\"cna\",\"family_after\":\"\",\"after\":\"CVE-2026-7010099\"}",
+        "complete": 0,
+        "failed": 0
+      }
+    },
+    {
+      "concurrency": 50,
+      "requests": 50,
+      "p95_ms": 7,
+      "p95_rows_read": 2,
+      "total_rows_read": 1508,
+      "total_rows_written": 620,
+      "total_statements": 72,
+      "jobs": 1,
+      "indexed_records": 100,
+      "checkpoint": {
+        "cursor_json": "{\"phase\":\"cna\",\"family_after\":\"\",\"after\":\"CVE-2026-7050099\"}",
+        "complete": 0,
+        "failed": 0
+      }
+    }
+  ],
+  "external_requests": 0
+}

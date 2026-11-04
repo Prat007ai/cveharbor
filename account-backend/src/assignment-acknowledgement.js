@@ -1,3 +1,4 @@
+import {activeRecords} from './remediation-integrity.js';
 import {publicCve,recordScope,scopeLabel} from './remediation-identity.js';
 import {progressReady,reminderInterval,reviewLink} from './assignment-progress-common.js';
 import {workflowReady,assignedSeverity} from './remediation-workflow.js';
@@ -61,7 +62,7 @@ export async function assignWithAcknowledgement(env,user,cve,recipient,notes,raw
  if(!await quota(env,'assignment-target:'+await hashToken(recipient),86400,20))throw new AssignmentError('Recipient notification limit reached for today',429);
  const record=await env.DB.prepare('SELECT owner,due FROM remediations WHERE user_id=? AND cve_id=?').bind(user.id,cve).first();
  if(record&&!String(record.owner||'').trim())throw new AssignmentError('Please select an owner. Edit this record before assigning.');
- if(!record){const count=await env.DB.prepare('SELECT COUNT(*) AS total FROM remediations WHERE user_id=?').bind(user.id).first();if(Number(count?.total||0)>=250)throw new AssignmentError('The account has reached its 250 remediation record limit',409);}
+ if(!record){const count=await env.DB.prepare('SELECT COUNT(*) AS total FROM remediations WHERE user_id=?'+await activeRecords(env)).bind(user.id).first();if(Number(count?.total||0)>=250)throw new AssignmentError('The account has reached its 250 remediation record limit',409);}
  await env.DB.prepare("INSERT OR IGNORE INTO remediations(user_id,cve_id,status,owner,due,notes,updated_at) VALUES(?,?,'Open',?,'','',?)").bind(user.id,cve,recipient,new Date().toISOString()).run();
  const claim=await env.DB.prepare("INSERT INTO remediation_assignments(user_id,cve_id,assignee_email,assigned_by,state,claimed_at) VALUES(?,?,?,?,'sending',?) ON CONFLICT(user_id,cve_id) DO UPDATE SET assignee_email=excluded.assignee_email,assigned_by=excluded.assigned_by,state=excluded.state,claimed_at=excluded.claimed_at WHERE remediation_assignments.state!='sending' OR remediation_assignments.claimed_at<?").bind(user.id,cve,recipient,user.email,time,time-900).run();
  if(claim.meta?.changes!==1)throw new AssignmentError('An assignment notification is already in progress',409);

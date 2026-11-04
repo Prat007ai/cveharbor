@@ -1,3 +1,4 @@
+import {activeRecords,integrityError} from './remediation-integrity.js';
 import {recordKey,publicCve,recordScope,linkedReady,scopeSQL} from './remediation-identity.js';
 import {progressReady} from './assignment-progress-common.js';
 import {workflowReady,requireWorkflow,workflowWriteStatements,runWorkflowWrite,recordMetadata} from './remediation-workflow.js';
@@ -51,9 +52,10 @@ export async function capabilities(env){
 }
 export async function listRemediations(env,user){
   const migrated=await isMigrated(env);
+  const active=await activeRecords(env,'r'),plainActive=await activeRecords(env);
   const sql=migrated
-    ? 'SELECT r.cve_id AS id,r.status,r.owner,r.due,r.notes,r.updated_at AS updated,a.assignee_email AS assigned_to,a.state AS assignment_status,a.last_sent_at AS notified_at FROM remediations r LEFT JOIN remediation_assignments a ON r.user_id=a.user_id AND r.cve_id=a.cve_id WHERE r.user_id=? ORDER BY r.updated_at DESC LIMIT 250'
-    : 'SELECT cve_id AS id,status,owner,due,notes,updated_at AS updated FROM remediations WHERE user_id=? ORDER BY updated_at DESC LIMIT 250';
+    ? 'SELECT r.cve_id AS id,r.status,r.owner,r.due,r.notes,r.updated_at AS updated,a.assignee_email AS assigned_to,a.state AS assignment_status,a.last_sent_at AS notified_at FROM remediations r LEFT JOIN remediation_assignments a ON r.user_id=a.user_id AND r.cve_id=a.cve_id WHERE r.user_id=?'+active+' ORDER BY r.updated_at DESC LIMIT 250'
+    : 'SELECT cve_id AS id,status,owner,due,notes,updated_at AS updated FROM remediations WHERE user_id=?'+plainActive+' ORDER BY updated_at DESC LIMIT 250';
   const rows=await env.DB.prepare(sql).bind(user.id).all();
   let acknowledgements=new Map(),acknowledgementsAvailable=false;
   if(env.ASSIGNMENT_ACK_ENABLED==='true'){try{acknowledgements=await assignmentSummary(env,user);acknowledgementsAvailable=true;}catch{}}
@@ -68,7 +70,7 @@ export async function listRemediations(env,user){
 async function capacity(env,userId,id){
   const existing=await env.DB.prepare('SELECT cve_id FROM remediations WHERE user_id=? AND cve_id=?').bind(userId,id).first();
   if(existing)return;
-  const count=await env.DB.prepare('SELECT COUNT(*) AS total FROM remediations WHERE user_id=?').bind(userId).first();
+  const count=await env.DB.prepare('SELECT COUNT(*) AS total FROM remediations WHERE user_id=?'+await activeRecords(env)).bind(userId).first();
   if(Number(count?.total||0)>=250)throw new RemediationError('The account has reached its 250 remediation record limit',409);
 }
 export async function upsertRemediation(env,user,id,data){
@@ -89,7 +91,7 @@ export async function upsertRemediation(env,user,id,data){
 export async function removeRemediation(env,user,id){
   if(String(id).includes('~')||await recordScope(env,user.id,id))throw new RemediationError('Use the finding status to resolve asset-linked work. Its history is retained.',409);
   if(!normalizeId(id))throw new RemediationError('Invalid CVE ID');
-  await env.DB.prepare('DELETE FROM remediations WHERE user_id=? AND cve_id=?').bind(user.id,id).run();
+  try{await env.DB.prepare('DELETE FROM remediations WHERE user_id=? AND cve_id=?').bind(user.id,id).run();}catch(error){throw integrityError(error);}
   return reply({removed:true,id});
 }
 // Previous browser-to-cloud import must never delete other D1 records or
@@ -100,7 +102,7 @@ export async function importLegacy(env,user,records){
   const items=records.map(row=>normalizeRecord(row?.id,row));
   if(new Set(items.map(item=>item.id)).size!==items.length)
     throw new RemediationError('Duplicate CVE identifiers in import');
-  const existing=await env.DB.prepare('SELECT cve_id FROM remediations WHERE user_id=?').bind(user.id).all();
+  const existing=await env.DB.prepare('SELECT cve_id FROM remediations WHERE user_id=?'+await activeRecords(env)).bind(user.id).all();
   const union=new Set([...(existing.results||[]).map(x=>x.cve_id),...items.map(x=>x.id)]);
   if(union.size>250)throw new RemediationError('Import would exceed the 250 record limit',409);
   if(!items.length)return reply({saved:0,storage:'d1'});

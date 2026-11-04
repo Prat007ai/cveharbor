@@ -1,3 +1,5 @@
+> **Phase 1 deployment notice:** Use [the consolidated administrator checklist](reviews/phase1-administrator-checklist.md) for current release, credential, staging and recovery steps. Deployment/migration/rollback recipes below are feature-history references, not instructions to execute during Phase 1. Feature behavior descriptions remain applicable unless superseded by the current implementation.
+
 # Reviewer progress and inactivity reminders
 
 New assignment emails include **View / Update Assignment** at `confirm.cveharbor.com/assignment/<invitation-id>`. The recipient verifies their assigned email with a one-time code; a CVEHarbor account is not required. The invitation ID alone grants no access. Old invitations are not enrolled or emailed retroactively. The owner can deliberately resend an invitation to enable this workflow, revoking the previous invitation through the existing resend flow.

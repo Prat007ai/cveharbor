@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DB} from './helpers/d1.mjs';
-import {subscribeProducts,syncAccountProducts,runCvieStep,cvieRoute,normalizeNvd} from '../src/cvie.js';
+import {repairAccountCoverage,subscribeProducts,syncAccountProducts,runCvieStep,cvieRoute,normalizeNvd} from '../src/cvie.js';
 import {ingestDisclosures} from '../src/cvie-evidence.js';
 import {combinedPage} from '../src/cvie-records.js';
 import {coveragePlan,coverageSummary,catalogueNames,catalogueKind,sourceWorkTypes,DISCOVERY_PAGES} from '../src/product-coverage.js';
@@ -91,7 +91,7 @@ check('old completed single-family jobs are requeued once without deleting their
  const saved=await q(e,"SELECT id FROM cvie_products WHERE user_id='a'").first();
  await q(e,'INSERT INTO cvie_advisories VALUES(?,?,?,?,?)',saved.id,'CVE-2026-19999','2026-10-15T00:00:00Z',JSON.stringify({id:'CVE-2026-19999',published:'2026-10-15T00:00:00Z',summary:'Saved verified source fixture',cvie_identities:[{name:p.name,cpe:p.cpe}]}),'previous').run();
  await q(e,"UPDATE cvie_products SET status='ready',last_success_at=?,recent_complete_at=?,history_complete_at=?",NOW,NOW,NOW).run();
- const s=await state(e);assert.equal(s.products[0].status,'queued');assert.equal(s.products[0].recent_complete_at,null);assert.ok(s.products[0].coverage.discovery_terms.length);
+ await repairAccountCoverage(e,'a');const s=await state(e);assert.equal(s.products[0].status,'queued');assert.equal(s.products[0].recent_complete_at,null);assert.ok(s.products[0].coverage.discovery_terms.length);
  assert.equal((await q(e,'SELECT COUNT(*) AS total FROM cvie_advisories').first()).total,1);
  assert.equal((await q(e,"SELECT status FROM cvie_products WHERE user_id='b'").first()).status,'ready');
  await q(e,"UPDATE cvie_products SET status='ready' WHERE user_id='a'").run();await state(e);assert.equal((await q(e,"SELECT status FROM cvie_products WHERE user_id='a'").first()).status,'ready');

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
+  "name": "cveharbor-accounts-staging",
+  "account_id": "9706b4d98ad72884e67fd1eb875c8a61",
+  "main": ".build/api.mjs",
+  "compatibility_date": "2026-10-28",
+  "workers_dev": false,
+  "preview_urls": false,
+  "keep_vars": false,
+  "routes": [],
+  "triggers": {
+    "crons": []
+  },
+  "vars": {
+    "STAGING_MODE": "true",
+    "OUTBOUND_EMAIL_DISABLED": "true",
+    "SCHEDULED_JOBS_ENABLED": "false",
+    "STAGING_EMAIL_CAPTURE_ENABLED": "true",
+    "STAGING_MANUAL_JOBS_ENABLED": "false",
+    "STAGING_ADMIN_EMAILS": "",
+    "STAGING_RELEASE": "REQUIRES_REVIEWED_COMMIT",
+    "INTELLIGENCE_SOURCE": "r2",
+    "RECOVERY_CONTROL_REQUIRED": "true"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cveharbor-accounts-staging",
+      "database_id": "fac61562-fc31-426d-8032-550aba63b7f6",
+      "migrations_dir": "../account-backend/migrations"
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "ASSIGNMENT_ACK_RATE_LIMITER",
+      "namespace_id": "24302",
+      "simple": {
+        "limit": 60,
+        "period": 60
+      }
+    }
+  ],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "r2_buckets": [
+    {
+      "binding": "INTELLIGENCE_BUCKET",
+      "bucket_name": "cveharbor-intelligence-staging"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "task": "Task 2C staging configuration preparation",
+  "environment": "local workspace only",
+  "baseline_commit": "8adacdd07da36ebe98d08082e582a8052b4cb419",
+  "source_state": "Prepared staging files in this commit; no production application changes; old production-read CI job excluded for PR 243",
+  "staging_account": "9706b4d98ad72884e67fd1eb875c8a61",
+  "tests": {
+    "staging_test_groups": { "passed": 8, "failed": 0 },
+    "backend": { "files": 35, "passed": 361, "failed": 0 },
+    "python": { "passed": 122, "failed": 0 },
+    "full_local_schema": { "tables": 90, "integrity_check": "ok", "foreign_key_violations": 0 },
+    "built_api_egress_attempts_reaching_native_fetch": 0,
+    "built_api_scheduled_db_calls": 0,
+    "built_api_email_login_with_injected_credentials": "503; provider credentials stripped",
+    "built_api_unauthenticated_me": "401",
+    "frontend_production_origin_scan": "passed",
+    "workflow_yaml": "parsed; no deployment job"
+  },
+  "wrangler": {
+    "version": "4.156.0",
+    "operation": "deploy --dry-run only",
+    "credentials_used": false,
+    "database_binding": "synthetic placeholder UUID; not a remote database",
+    "access_values": "synthetic issuer/AUD; not a real Access application",
+    "api_package_kib": 618.85,
+    "api_package_gzip_kib": 153.26,
+    "frontend_package_kib": 6.04,
+    "frontend_package_gzip_kib": 2.40,
+    "frontend_asset_files": 75,
+    "api_result": "passed",
+    "frontend_result": "passed"
+  },
+  "remote": {
+    "resources_created": false,
+    "deployed": false,
+    "migrations_applied": false,
+    "credentials_checked": false,
+    "access_policies_validated": false,
+    "performance_validation": "not run",
+    "production_access": false
+  }
+}

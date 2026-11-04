@@ -3,21 +3,24 @@ on:
   push:
     branches: [feat/assignment-acknowledgement, feat/assignment-fyi, feat/remediation-workflow-polish, feat/assignment-progress-reminders, feat/manager-inactivity-notices]
   pull_request:
-    paths: ['account-backend/tests/status-mail-repair.test.mjs', 'scripts/status_mail_repair_browser.mjs', 'account-backend/src/status-update-mail.js', 'account-backend/tests/status-update-mail.test.mjs', 'account-backend/migrations/0030_status_update_notifications.sql', 'scripts/status_mail_browser.mjs', 'scripts/verify_status_mail_d1.mjs', 'account-backend/src/finding-assignment-links.js', 'account-backend/tests/finding-assignment-links.test.mjs', 'account-backend/migrations/0029_finding_assignment_links.sql', 'scripts/finding_links_browser.mjs', 'scripts/verify_finding_links_d1.mjs', 'account-backend/src/finding-remediation.js', 'account-backend/src/remediation-identity.js', 'account-backend/migrations/0028_unified_findings.sql', 'shared-remediation.js', 'scripts/unified_findings_browser.mjs', 'account-backend/migrations/0027_assignment_progress.sql', 'scripts/assignment_progress_browser.mjs', 'scripts/verify_assignment_progress_d1.mjs', 'account-backend/src/remediation-workflow.js', 'account-backend/src/confirmation-host.js', 'account-backend/migrations/0026_remediation_workflow.sql', 'account-backend/tests/remediation-workflow.test.mjs', 'scripts/remediation_workflow_browser.mjs', 'scripts/verify_remediation_workflow_d1.mjs', 'account-backend/src/assignment-*.js', 'account-backend/src/remediation.js', 'account-backend/migrations/0024_assignment_acknowledgements.sql', 'account-backend/migrations/0025_assignment_fyi.sql', 'scripts/assignment_fyi_browser.mjs', 'scripts/verify_assignment_fyi_d1.mjs', 'account-backend/tests/assignment-*.mjs', 'account-backend/tests/helpers/assignment-db.mjs', 'scripts/assignment_ack_browser.mjs', 'scripts/verify_assignment_ack_d1.mjs', '.github/workflows/verify-assignment-acknowledgement.yml']
+    paths: ['scripts/phase1*', 'scripts/recovery*', 'scripts/cloudflare_d1.mjs', 'scripts/verify_frontend_backend.mjs', 'scripts/build_release_identity.mjs', '.github/workflows/deploy-worker-code.yml', '.github/workflows/bootstrap.yml', '.github/workflows/*phase1*', '.github/workflows/recovery-write-hold.yml', '.github/workflows/audit-remediation-integrity.yml', 'account-backend/migrations/0032_recovery_control.sql', 'account-backend/src/recovery-control.js', 'account-backend/src/release-*.js', 'account-backend/tests/recovery-control.test.mjs', 'account-backend/migrations/0031_remediation_integrity.sql', 'account-backend/src/remediation-integrity.js', 'account-backend/tests/remediation-integrity.test.mjs', 'scripts/remediation_integrity_browser.mjs', 'scripts/verify_remediation_integrity_d1.mjs', 'account-backend/tests/status-mail-repair.test.mjs', 'scripts/status_mail_repair_browser.mjs', 'account-backend/src/status-update-mail.js', 'account-backend/tests/status-update-mail.test.mjs', 'account-backend/migrations/0030_status_update_notifications.sql', 'scripts/status_mail_browser.mjs', 'scripts/verify_status_mail_d1.mjs', 'account-backend/src/finding-assignment-links.js', 'account-backend/tests/finding-assignment-links.test.mjs', 'account-backend/migrations/0029_finding_assignment_links.sql', 'scripts/finding_links_browser.mjs', 'scripts/verify_finding_links_d1.mjs', 'account-backend/src/finding-remediation.js', 'account-backend/src/remediation-identity.js', 'account-backend/migrations/0028_unified_findings.sql', 'shared-remediation.js', 'scripts/unified_findings_browser.mjs', 'account-backend/migrations/0027_assignment_progress.sql', 'scripts/assignment_progress_browser.mjs', 'scripts/verify_assignment_progress_d1.mjs', 'account-backend/src/remediation-workflow.js', 'account-backend/src/confirmation-host.js', 'account-backend/migrations/0026_remediation_workflow.sql', 'account-backend/tests/remediation-workflow.test.mjs', 'scripts/remediation_workflow_browser.mjs', 'scripts/verify_remediation_workflow_d1.mjs', 'account-backend/src/assignment-*.js', 'account-backend/src/remediation.js', 'account-backend/migrations/0024_assignment_acknowledgements.sql', 'account-backend/migrations/0025_assignment_fyi.sql', 'scripts/assignment_fyi_browser.mjs', 'scripts/verify_assignment_fyi_d1.mjs', 'account-backend/tests/assignment-*.mjs', 'account-backend/tests/helpers/assignment-db.mjs', 'scripts/assignment_ack_browser.mjs', 'scripts/verify_assignment_ack_d1.mjs', '.github/workflows/verify-assignment-acknowledgement.yml']
 permissions:
   contents: read
 jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
       - run: npm install --no-save --no-package-lock jsdom@26 playwright-core@1.56.1
+      - run: node --test scripts/phase1_release.test.mjs
       - run: npm test --prefix account-backend
       - run: python -m unittest discover -s tests
       - run: python scripts/build_site.py && python scripts/verify_production.py --preflight
@@ -41,7 +44,9 @@ jobs:
         run: node scripts/status_mail_browser.mjs
       - name: Reproduce status updates before linking and preserve their history
         run: node scripts/status_mail_repair_browser.mjs
-      - uses: actions/upload-artifact@v4
+      - name: Exercise Phase 1 retained records, conflict confirmation and first-save history
+        run: node scripts/remediation_integrity_browser.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: acknowledgement-review-synthetic-data
@@ -54,3 +59,4 @@ jobs:
             work/finding-link-review/
             work/status-mail-review/
             work/mail-repair-review/
+            work/integrity-review/

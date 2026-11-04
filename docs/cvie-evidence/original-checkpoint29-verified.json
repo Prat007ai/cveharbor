@@ -1,0 +1,291 @@
+{
+  "action": "diagnose-schema",
+  "account": "9706b4d98ad72884e67fd1eb875c8a61",
+  "database_id": "fac61562-fc31-426d-8032-550aba63b7f6",
+  "source_sha": "57069a36a98fed0b29a4b2fb537255e11e80ab90",
+  "reference_sha256": "d2a9af7136414eabe7dc5c74814addbdbb113e43d7edc0c85d8fbaadc1e9248e",
+  "expected_step": 29,
+  "first_29_verified": true,
+  "original_source": {
+    "commit": "515e224c093a9102e5075d6daefae2d39c32e2ce",
+    "sql_sha256": "b89e3589c3df611f2e9cb1c6f6bc6e49fa928329deb2ba3a2c6c9fae675f0e07",
+    "expected_step": 29
+  },
+  "integrity": {
+    "foreign_keys_passed": true,
+    "quick_check_passed": true
+  },
+  "usage": {
+    "rows_read": 406,
+    "rows_written": 0,
+    "complete": true
+  },
+  "storage_before_bytes": 233472,
+  "storage_after_bytes": 233472,
+  "storage_delta_bytes": 0,
+  "completed_at": "2026-11-03T22:06:17.067Z",
+  "actual_state": {
+    "inspection": "read-only-final",
+    "observed_at": "2026-11-03T22:06:11.008Z",
+    "status": "complete",
+    "complete": true,
+    "schema_sha256": "f9d246474e0d003726dd77be471529fd680eefc243935ce36cff193ca6f7414d",
+    "objects": [
+      {
+        "type": "index",
+        "name": "idx_alert_items_user",
+        "table": "alert_delivery_items",
+        "definition_sha256": "48d6e1aa6a485fc866f4a2eef7b0d94cd8429f75a76f30bcc77455eaa0a9b10c"
+      },
+      {
+        "type": "index",
+        "name": "idx_alert_runs_user_date",
+        "table": "alert_digest_runs",
+        "definition_sha256": "55eeb24c2533a835d15b4fc140e685e3e4cf990ddf0cecf229dd3df02cb1530b"
+      },
+      {
+        "type": "index",
+        "name": "idx_challenges_email",
+        "table": "login_challenges",
+        "definition_sha256": "0acacc7c34a5d67659e6dd51ca9498028baac8b53edaa849eb93f40e0d1cfac4"
+      },
+      {
+        "type": "index",
+        "name": "idx_inventory_assets_user",
+        "table": "inventory_assets",
+        "definition_sha256": "d899dfbba727709cfbb1e0d7e4dcfb5744ab92f1be5a80f5aecd04bfeb3e6308"
+      },
+      {
+        "type": "index",
+        "name": "idx_inventory_customers_user",
+        "table": "inventory_customers",
+        "definition_sha256": "0a81589de028e1925dca15802d45c25eeb6a9047a5b28a681d9b8995e365efc2"
+      },
+      {
+        "type": "index",
+        "name": "idx_inventory_environments_user",
+        "table": "inventory_environments",
+        "definition_sha256": "a16859125c68827e6c8361d272435637470a3bd9bf11c2698277b23d78ff0307"
+      },
+      {
+        "type": "index",
+        "name": "idx_lifecycle_delivery_user",
+        "table": "lifecycle_delivery",
+        "definition_sha256": "d6387c86aa85e148aa6229e2eabbf1eb78f18472f7527347500577aac099f084"
+      },
+      {
+        "type": "index",
+        "name": "idx_lifecycle_watches_user",
+        "table": "lifecycle_watches",
+        "definition_sha256": "db58cfc82f519cf2ba2a483c522af903033d3babc535e265d2d530ef2b37886c"
+      },
+      {
+        "type": "index",
+        "name": "idx_remediation_assignment_assignee",
+        "table": "remediation_assignments",
+        "definition_sha256": "ca6ac99e1269ea1e83f93480a7d63e240fb565944649f242fadb13d77475fe75"
+      },
+      {
+        "type": "index",
+        "name": "idx_sessions_user",
+        "table": "sessions",
+        "definition_sha256": "63648c88614f43be3f9b930a1801d12fd148b42cb370e63dc0b7d67308dd0bea"
+      },
+      {
+        "type": "table",
+        "name": "alert_delivery_items",
+        "table": "alert_delivery_items",
+        "definition_sha256": "25d8901a2df09474ee8cc4afa4c196fb234d9e2472a013596ca81f43298e593f"
+      },
+      {
+        "type": "table",
+        "name": "alert_digest_runs",
+        "table": "alert_digest_runs",
+        "definition_sha256": "cb6cc06efb04dbb2fd73328c1fd5e0536c7bbd57f2157a76df18f17891ebe8f0"
+      },
+      {
+        "type": "table",
+        "name": "alert_optins",
+        "table": "alert_optins",
+        "definition_sha256": "98e7e8081a2ef1180c05bf4a91b015ec2efa10d5e78f95ded3552bd4e22510d9"
+      },
+      {
+        "type": "table",
+        "name": "alert_preferences",
+        "table": "alert_preferences",
+        "definition_sha256": "c27a7e771d3452e8b38df4cc0e732a92eb2954a67701d011cebb51ab955d987e"
+      },
+      {
+        "type": "table",
+        "name": "auth_rate_limits",
+        "table": "auth_rate_limits",
+        "definition_sha256": "cb8466a7f0f4b9719019b5d7e163dd17433586f1c3f56b92b9a599ffbbbbceef"
+      },
+      {
+        "type": "table",
+        "name": "inventory_assets",
+        "table": "inventory_assets",
+        "definition_sha256": "a1581cece4d1c890d9b774f569cc372c754bd0c9b0dab51306e6dc015d87f055"
+      },
+      {
+        "type": "table",
+        "name": "inventory_customers",
+        "table": "inventory_customers",
+        "definition_sha256": "b9b2dd45b0beb641120dbafffc5656f52e34f910a3ac1e195d6ce291e32a0c0e"
+      },
+      {
+        "type": "table",
+        "name": "inventory_environments",
+        "table": "inventory_environments",
+        "definition_sha256": "bbfa073ed89fe88c24ab79a39c4086b4bfd238936656ef6fc836e54ee4a15762"
+      },
+      {
+        "type": "table",
+        "name": "lifecycle_delivery",
+        "table": "lifecycle_delivery",
+        "definition_sha256": "4f63e00a2f77f30e700d92b05f51a976805cd486f1df50302cfa6be620d920f1"
+      },
+      {
+        "type": "table",
+        "name": "lifecycle_preferences",
+        "table": "lifecycle_preferences",
+        "definition_sha256": "d1aa3a932e5f037ac14af50838cee8fc85cadeafbb7782ddfd18b6445c47eda7"
+      },
+      {
+        "type": "table",
+        "name": "lifecycle_watches",
+        "table": "lifecycle_watches",
+        "definition_sha256": "aea85eb4de90851f59e426d9a44ffba28efef46c94d7981be2bb9792a9a6fa8b"
+      },
+      {
+        "type": "table",
+        "name": "login_challenges",
+        "table": "login_challenges",
+        "definition_sha256": "6b9f13245d09475256c0ad010ec090cdc692361f7616d4b43368a49c901bbc7e"
+      },
+      {
+        "type": "table",
+        "name": "remediation_assignment_limits",
+        "table": "remediation_assignment_limits",
+        "definition_sha256": "c643bc476e6c1d5d04f0b38cc69f43737990309f096f1fdbb2e90de2998f2120"
+      },
+      {
+        "type": "table",
+        "name": "remediation_assignments",
+        "table": "remediation_assignments",
+        "definition_sha256": "72c19a36b32e8b4e9f3353e27176fff2d9f8a706c25623a2b91a33ccbeed3c25"
+      },
+      {
+        "type": "table",
+        "name": "remediations",
+        "table": "remediations",
+        "definition_sha256": "a52199387eb736bc6ae0e0326f7af064a5e000569e8e30ec7f41b43c331e519b"
+      },
+      {
+        "type": "table",
+        "name": "sessions",
+        "table": "sessions",
+        "definition_sha256": "492e07e30a15378bbcac81782e224458caf764f3ec063bff9ea4fa6742db40ce"
+      },
+      {
+        "type": "table",
+        "name": "user_stack",
+        "table": "user_stack",
+        "definition_sha256": "bc4d85a70fc40148d1c70481762844c97dee0435f454df2575b4af9095f8de35"
+      },
+      {
+        "type": "table",
+        "name": "users",
+        "table": "users",
+        "definition_sha256": "209eb6d7ddd484417c514dee98389101fc8a541e598d55cc7bc2800e5c33e307"
+      }
+    ],
+    "counts": [
+      [
+        "alert_delivery_items",
+        0
+      ],
+      [
+        "alert_digest_runs",
+        0
+      ],
+      [
+        "alert_optins",
+        0
+      ],
+      [
+        "alert_preferences",
+        0
+      ],
+      [
+        "auth_rate_limits",
+        0
+      ],
+      [
+        "inventory_assets",
+        0
+      ],
+      [
+        "inventory_customers",
+        0
+      ],
+      [
+        "inventory_environments",
+        0
+      ],
+      [
+        "lifecycle_delivery",
+        0
+      ],
+      [
+        "lifecycle_preferences",
+        0
+      ],
+      [
+        "lifecycle_watches",
+        0
+      ],
+      [
+        "login_challenges",
+        0
+      ],
+      [
+        "remediation_assignment_limits",
+        0
+      ],
+      [
+        "remediation_assignments",
+        0
+      ],
+      [
+        "remediations",
+        0
+      ],
+      [
+        "sessions",
+        0
+      ],
+      [
+        "user_stack",
+        0
+      ],
+      [
+        "users",
+        0
+      ]
+    ],
+    "counts_complete": true,
+    "rows_verified": true,
+    "matching_steps": [
+      29
+    ],
+    "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "completed_at": "2026-11-03T22:06:16.896Z"
+  },
+  "workflow_run": 41707547474,
+  "attempt": 2,
+  "artifact_id": 13275811878,
+  "artifact_report_sha256": "59c30b1c887aceb853f7b1e1a8359d88010950b3c605d5e8d7e2f03991d9641e",
+  "index_metadata_verified": true,
+  "column_metadata_verified": true
+}

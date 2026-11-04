@@ -1,0 +1,222 @@
+{
+  "account": "9706b4d98ad72884e67fd1eb875c8a61",
+  "origin": "https://cveharbor-site-staging.cveharbor-staging.workers.dev",
+  "checked_at": "2026-11-03T01:49:33.515Z",
+  "operation": "read-only staging preflight",
+  "checks": [
+    {
+      "name": "configured_account",
+      "status": "pass",
+      "expected": "9706b4d98ad72884e67fd1eb875c8a61"
+    },
+    {
+      "name": "management_token_present",
+      "status": "pass"
+    },
+    {
+      "name": "access_settings_format",
+      "status": "pass"
+    },
+    {
+      "name": "service_credentials_present",
+      "status": "pass"
+    },
+    {
+      "name": "account_identity",
+      "status": "pass",
+      "http_status": 200,
+      "name_matches_owner_label": true
+    },
+    {
+      "name": "token_active",
+      "status": "pass",
+      "http_status": 200,
+      "verification_endpoint": "account"
+    },
+    {
+      "name": "token_permission_grants",
+      "status": "unverified",
+      "http_status": 403,
+      "required_grants": {
+        "workers_edit": null,
+        "d1_edit": null,
+        "account_read": null,
+        "access_read": null
+      },
+      "metadata_available": false
+    },
+    {
+      "name": "token_staging_only_scope",
+      "status": "unverified",
+      "metadata_available": false,
+      "production_access_probe_performed": false
+    },
+    {
+      "name": "workers_subdomain",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "workers_read_permission",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "approved_worker_names_available",
+      "status": "pass",
+      "worker_count": 0
+    },
+    {
+      "name": "d1_read_permission",
+      "status": "pass",
+      "http_status": 200,
+      "database_count": 0
+    },
+    {
+      "name": "approved_database_name_available",
+      "status": "pass"
+    },
+    {
+      "name": "production_resources_absent",
+      "status": "pass"
+    },
+    {
+      "name": "exact_access_application",
+      "status": "pass",
+      "http_status": 200,
+      "name_matches_owner_label": true
+    },
+    {
+      "name": "reviewer_email_allow_policy",
+      "status": "pass",
+      "email_rule_count": 1
+    },
+    {
+      "name": "service_auth_policy",
+      "status": "pass"
+    },
+    {
+      "name": "no_access_bypass_or_additional_allow",
+      "status": "pass",
+      "policy_count": 2
+    },
+    {
+      "name": "service_token_matches_policy_and_client",
+      "status": "unverified",
+      "http_status": 200,
+      "metadata_available": true,
+      "metadata_is_array": true,
+      "listed_count": 0,
+      "record_count": 0,
+      "policy_token_detail_statuses": [
+        403
+      ],
+      "name_match_count": 0,
+      "client_match_count": 0,
+      "named_record_has_client_id": false,
+      "named_record_policy_linked": false,
+      "matching_client_policy_linked": false,
+      "matched_enabled": null,
+      "matched_unexpired": null
+    },
+    {
+      "name": "access_issuer_signing_keys",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "service_secret_end_to_end",
+      "status": "unverified",
+      "http_status": 404,
+      "reason": "No valid JWT returned; origin may not exist yet. HTTP status alone does not validate credentials."
+    }
+  ],
+  "requests": [
+    {
+      "check": "account_identity",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "check": "account_token_active",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "check": "token_permission_metadata",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "check": "user_token_permission_metadata",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "check": "workers_subdomain",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "check": "workers_inventory",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "check": "d1_inventory",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "check": "access_applications",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "check": "access_policies",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "check": "service_token_metadata",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "check": "policy_service_token_detail",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "check": "access_issuer_keys",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "check": "access_service_auth_probe",
+      "method": "GET",
+      "status": 404
+    }
+  ],
+  "blockers": [],
+  "limitations": [
+    "token_permission_grants",
+    "token_staging_only_scope",
+    "service_token_matches_policy_and_client",
+    "service_secret_end_to_end"
+  ],
+  "mutation_requests": 0,
+  "production_requests": 0,
+  "ready_for_creation": false,
+  "read_only_checks_passed": true,
+  "write_permissions_exercised": false,
+  "source_commit": "0a67b71cd71c616a9881a2df7d72c46f2853fa27",
+  "workflow_run": 41562186396,
+  "workflow_url": "https://github.com/Prat007ai/cveharbor/actions/runs/41562186396",
+  "job_id": 125675237331,
+  "previous_runs": [
+    41561705274,
+    41561968492
+  ],
+  "scope_note": "Remote GET-only staging diagnostics. No D1 SQL, Cloudflare resource creation, deployment, migration or production probe."
+}

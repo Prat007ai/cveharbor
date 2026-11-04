@@ -1,3 +1,4 @@
+import { useIntelligenceStore, openIntelligenceSnapshot } from './intelligence-store.js';
 // Private lifecycle watchlist and explicit opt-in. No public customer records.
 import { sendEmail } from './delivery.js';
 import {common,cachedDirectory,lookupDirectory,directoryWatchInfo,directoryRecord} from './monitor-directory.js';
@@ -161,8 +162,13 @@ export function vendorReleaseNotices(watches,releases){
  }
  return found;
 }
-async function loadVendorNotes(){
+export async function loadVendorNotes(env={},snapshot=null){
  try{
+  if(useIntelligenceStore(env)){
+   const data=await (snapshot||await openIntelligenceSnapshot(env)).json('patch-notes.js');
+   if(!Array.isArray(data.releases)||!Number.isFinite(Date.parse(data.checked_at))||Date.now()-Date.parse(data.checked_at)>3*86400000)return [];
+   return freshFeedRows(data.releases,data.checked_at);
+  }
   const response=await fetch(SITE+'/patch-notes.js',{headers:{Accept:'text/javascript'}});
   if(!response.ok)return [];
   const raw=await response.text();
@@ -174,7 +180,16 @@ async function loadVendorNotes(){
   return data.releases;
  }catch(_){return []}
 }
-export async function loadLifecycleFeed(){
+export function freshFeedRows(rows,fallback){
+ return rows.filter(row=>{const stamp=Date.parse(row._feed_last_success||fallback);return Number.isFinite(stamp)&&stamp<=Date.now()+300000&&Date.now()-stamp<=3*86400000});
+}
+export async function loadLifecycleFeed(env={},snapshot=null){
+ if(useIntelligenceStore(env)){
+  const obj=await (snapshot||await openIntelligenceSnapshot(env)).json('lifecycle.js');
+  const stamp=Date.parse(obj.checked_at||'');
+  if(!Array.isArray(obj.cycles)||!Number.isFinite(stamp)||stamp>Date.now()+300000||Date.now()-stamp>3*86400000)throw Error('Lifecycle snapshot is too old to email');
+  return {...obj,cycles:freshFeedRows(obj.cycles,obj.checked_at)};
+ }
  const response=await fetch(DATA,{headers:{Accept:'text/javascript'}});
  if(!response.ok)throw Error('Lifecycle source unavailable');
  const raw=await response.text();
@@ -192,8 +207,9 @@ export async function dispatchLifecycle(env,day=new Date()){
  if(!await ready(env))return {status:'migration_required'};
  const config=await env.DB.prepare('SELECT u.id,u.email,p.lead_days FROM users u JOIN lifecycle_preferences p ON p.user_id=u.id WHERE p.email_enabled=1 ORDER BY p.updated_at LIMIT 500').all();
  const people=config.results||[];if(!people.length)return {status:'none'};
- const feed=await loadLifecycleFeed();
- const vendorNotes=await loadVendorNotes();
+ const snapshot=useIntelligenceStore(env)?await openIntelligenceSnapshot(env):null;
+ const feed=await loadLifecycleFeed(env,snapshot);
+ const vendorNotes=await loadVendorNotes(env,snapshot);
  const enhanced=await monitorReady(env);
  let sent=0,failed=0;
  for(const person of people){

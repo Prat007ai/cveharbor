@@ -1,5 +1,9 @@
+import {recoveryProtected} from './recovery-control.js';
+import {releaseReadiness} from './release-readiness.js';
+import {canonicalRecord,integrityError} from './remediation-integrity.js';
 import {scheduleStatusMail} from './status-update-mail.js';
 import {sharedRoute} from './finding-remediation.js';
+import {observeCvie} from './cvie-metrics.js';
 import {reviewerRoute,reviewActivity} from './assignment-progress.js';
 import {ReviewError} from './assignment-progress-common.js';
 import {scheduleProgress,retryProgress} from './assignment-progress-mail.js';
@@ -50,7 +54,7 @@ function retryResponse(seconds,kind='limit'){
  return response({error:kind==='resend'?'Please wait before requesting another verification code.':'Too many verification requests. Please try again when the limit resets.',retry_after:delay},429,{'Retry-After':String(delay)});
 }
 async function emailCode(env,address,code){const response=await fetch('https://api.smtp2go.com/v3/email/send',{method:'POST',headers:{'Content-Type':'application/json','X-Smtp2go-Api-Key':env.SMTP2GO_API_KEY},body:JSON.stringify({sender:env.EMAIL_FROM,to:[address],subject:'CVEHarbor sign in code',text_body:'Your CVEHarbor code: '+code+'\n\nExpires in 10 minutes. If you did not request this, ignore this email.'})});if(!response.ok)throw Error('Email delivery unavailable');const payload=await response.json();if(!payload.data||payload.data.failed>0||payload.data.succeeded<1)throw Error('Email delivery unsuccessful')}
-export default {async fetch(req,env,ctx){
+const application = {async fetch(req,env,ctx){
  const url=new URL(req.url),origin=req.headers.get('origin');
  // The confirmation hostname exposes only the guest confirmation page, never account APIs.
  if(url.hostname==='confirm.cveharbor.com'){
@@ -78,7 +82,7 @@ export default {async fetch(req,env,ctx){
  // Published CVE lookup is public, read-only, and independent of account login or D1.
  if(url.pathname.startsWith('/v1/cve/'))return handlePublicCveLookup(req,ctx);
  if(!env.DB)return response({error:'Account service not configured'},503);
- const path=url.pathname;
+ let path=url.pathname;
  try {
   if(path==='/v1/health'&&req.method==='GET')return response({ready:!!(env.SMTP2GO_API_KEY&&env.EMAIL_FROM),accounts:'configured'});
   if(path==='/v1/auth/request'&&req.method==='POST'){
@@ -190,6 +194,8 @@ export default {async fetch(req,env,ctx){
   const user=await me(req,env);
   if(path==='/v1/me'&&req.method==='GET')return response(user?{authenticated:true,email:user.email}:{authenticated:false},user?200:401);
   if(!user)return response({error:'Sign in required'},401);
+  const recordPath=/^\/v1\/(remediations|remediation-records)\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)(.*)$/.exec(path);
+  if(recordPath){const canonical=await canonicalRecord(env,user.id,recordPath[2]);if(canonical!==recordPath[2]){if(req.method!=='GET')return response({error:'This record was linked to an existing assignment. Open the current shared record before making changes.',canonical_id:canonical},409);path='/v1/'+recordPath[1]+'/'+canonical+recordPath[3];}}
   if(path.startsWith('/v1/workspace/'))return await workspaceRoute(req,env,user);
   if(path==='/v1/auth/totp/status'&&req.method==='GET'){
    const row=env.TOTP_ENCRYPTION_KEY?await env.DB.prepare('SELECT enabled FROM user_totp WHERE user_id=?').bind(user.id).first():null;
@@ -281,10 +287,13 @@ export default {async fetch(req,env,ctx){
   if(path.startsWith('/v1/website-monitor'))return await websiteMonitorRoute(req,env,user,path,req.method==='POST'&&path==='/v1/website-monitor'?await body(req):{});
   if(path.startsWith('/v1/plugin-monitor'))return await monitorRoute(req,env,user,path,req.method==='POST'?await body(req):{});
   if(path==='/v1/plugin-advisories'&&req.method==='GET')return await pluginAdvisoryRoute(req,env,user);
-  if(path.startsWith('/v1/cvie'))return await cvieRoute(req,env,user,ctx,req.method==='PUT'||req.method==='POST'?await body(req):{});
+  if(path.startsWith('/v1/cvie')){const data=req.method==='PUT'||req.method==='POST'?await body(req):{};return observeCvie(env,req.method!=='GET'?'onboard':path.endsWith('/progress')?'progress':path.includes('advisories')||path.includes('/evidence')?'evidence':path.includes('/directory')?'directory':'status',measured=>cvieRoute(req,measured,user,ctx,data));}
   if(path.startsWith('/v1/inventory')){
    const result=await inventoryRoute(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
-   if(result.ok&&['POST','PUT','DELETE'].includes(req.method))ctx?.waitUntil(syncAccountProducts(env,user.id).then(()=>runCvieStep(env,fetch,Date.now(),user.id)).catch(()=>console.warn('CVIE inventory synchronization will retry on the next account sync')));
+   if(result.ok&&['POST','PUT','DELETE'].includes(req.method)&&(/\/assets(?:\/|$)/.test(path)||req.method==='DELETE')){
+    const sync=observeCvie(env,'inventory',measured=>syncAccountProducts(measured,user.id,'inventory')).then(s=>{if(s.changed)ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id,'inventory'));}).catch(()=>console.warn('CVIE inventory synchronization will retry on the next account sync'));
+    if(env.CVIE_REGISTRY_ENABLED==='true')await sync;else ctx?.waitUntil(sync);
+   }
    return result;
   }
   if(path==='/v1/technology-catalogue'&&req.method==='GET'){
@@ -308,7 +317,7 @@ export default {async fetch(req,env,ctx){
     await env.DB.prepare('INSERT OR IGNORE INTO user_technology_catalogue(user_id,preferences_json,updated_at) VALUES(?,?,?)').bind(user.id,payload,Math.floor(Date.now()/1000)).run();
    if(saved.meta.changes!==1)return response({error:'Your catalogue changed while saving. Reload the saved catalogue and try again.'},409);
    const nextRevision=await catalogueRevision(payload);
-   try{const cvie=await subscribeProducts(env,user.id,selected,'catalogue',payload);if(cvie.changed)ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id,'catalogue'));return response({saved:true,revision:nextRevision,cvie:{...cvie,status:cvie.ready?'updated':'setup_required'}});}
+   try{const cvie=await observeCvie(env,'catalogue',measured=>subscribeProducts(measured,user.id,selected,'catalogue',payload));if(cvie.changed)ctx?.waitUntil(runCvieStep(env,fetch,Date.now(),user.id,'catalogue'));return response({saved:true,revision:nextRevision,cvie:{...cvie,status:cvie.ready?'updated':'setup_required'}});}
    catch{return response({saved:true,revision:nextRevision,cvie:{ready:false,status:'sync_required',message:'Catalogue saved. CVIE synchronization will retry from the intelligence panel.'}});}
   }
   if(path==='/v1/stack'&&req.method==='GET'){const rows=await env.DB.prepare('SELECT technology,product_version FROM user_stack WHERE user_id=? ORDER BY technology').bind(user.id).all();return response({stack:rows.results})}
@@ -316,9 +325,13 @@ export default {async fetch(req,env,ctx){
    const data=await body(req);if(!Array.isArray(data.stack)||data.stack.length>100)return response({error:'Invalid stack'},400);
    const rows=data.stack.map(x=>({technology:String(x.technology||'').trim().slice(0,120),product_version:String(x.product_version||'').trim().slice(0,80)}));
    if(rows.some(x=>!x.technology))return response({error:'Invalid technology'},400);
-   const ops=[env.DB.prepare('DELETE FROM user_stack WHERE user_id=?').bind(user.id),...rows.map(x=>env.DB.prepare('INSERT INTO user_stack(user_id,technology,product_version) VALUES(?,?,?)').bind(user.id,x.technology,x.product_version))];
+   if(new Set(rows.map(r=>r.technology)).size!==rows.length)return response({error:'Duplicate technology'},400);
+   const prior=(await env.DB.prepare('SELECT technology,product_version FROM user_stack WHERE user_id=?').bind(user.id).all()).results||[];
+   const ops=prior.filter(p=>!rows.some(r=>r.technology===p.technology)).map(p=>env.DB.prepare('DELETE FROM user_stack WHERE user_id=? AND technology=?').bind(user.id,p.technology));
+   for(const row of rows)if(!prior.some(p=>p.technology===row.technology&&p.product_version===row.product_version))ops.push(env.DB.prepare(`INSERT INTO user_stack(user_id,technology,product_version) VALUES(?,?,?) ON CONFLICT(user_id,technology) DO UPDATE SET product_version=excluded.product_version WHERE product_version<>excluded.product_version`).bind(user.id,row.technology,row.product_version));
+   if(!ops.length)return response({saved:rows.length,unchanged:true});
    await env.DB.batch(ops);
-   ctx?.waitUntil(syncAccountProducts(env,user.id).then(()=>runCvieStep(env,fetch,Date.now(),user.id)).catch(()=>console.warn('CVIE watchlist synchronization will retry on the next account sync')));
+   ctx?.waitUntil(observeCvie(env,path.startsWith('/v1/inventory')?'inventory':'stack',measured=>syncAccountProducts(measured,user.id)).then(()=>runCvieStep(env,fetch,Date.now(),user.id)).catch(()=>console.warn('CVIE watchlist synchronization will retry on the next account sync')));
    return response({saved:rows.length});
   }
   if(path==='/v1/remediations/features'&&req.method==='GET')return await capabilities(env);
@@ -375,11 +388,11 @@ export default {async fetch(req,env,ctx){
    await env.DB.prepare('DELETE FROM users WHERE id=?').bind(user.id).run();return response({deleted:true},200,{'Set-Cookie':setCookie('',0)});
   }
   return response({error:'Not found'},404);
- }catch(error){if(error instanceof ReviewError||error instanceof WorkflowError||error instanceof FyiError||error instanceof AssignmentError||error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
+ }catch(error){error=integrityError(error);if(error instanceof ReviewError||error instanceof WorkflowError||error instanceof FyiError||error instanceof AssignmentError||error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
-  if(_event.cron==='* * * * *'){scheduleStatusMail(env,ctx);scheduleProgress(env,ctx);scheduleFyi(env,ctx);ctx.waitUntil(approvedTest(env));ctx.waitUntil(dispatchEvidence(env));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}
-  if(_event.cron==='*/5 * * * *'){ctx.waitUntil(dispatchCvie(env));return;}
+  if(_event.cron==='* * * * *'){scheduleStatusMail(env,ctx);scheduleProgress(env,ctx);scheduleFyi(env,ctx);ctx.waitUntil(approvedTest(env));ctx.waitUntil(observeCvie(env,'disclosure_dispatch',dispatchEvidence));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}
+  if(_event.cron==='*/5 * * * *'){ctx.waitUntil(observeCvie(env,'nvd_dispatch',dispatchCvie));return;}
   if(env.ALERT_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchDueDigests(env));
   if(env.LIFECYCLE_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchLifecycle(env));
   if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true')ctx.waitUntil(dispatchProductMonitoring(env));
@@ -388,3 +401,9 @@ export default {async fetch(req,env,ctx){
  }
 };
 
+
+const protectedApplication=recoveryProtected(application);
+export default {
+ fetch(req,env,ctx){if(req.method==='GET'&&new URL(req.url).hostname!=='confirm.cveharbor.com'&&new URL(req.url).pathname==='/v1/release-readiness')return releaseReadiness(env);return protectedApplication.fetch(req,env,ctx);},
+ scheduled:protectedApplication.scheduled
+};

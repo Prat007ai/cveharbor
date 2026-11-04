@@ -4,6 +4,7 @@ compatibility_date = "2026-10-28"
 keep_vars = true
 
 [vars]
+RECOVERY_CONTROL_REQUIRED = "true"
 CVIE_SHARED_SCANS_ENABLED = "true"
 EMAIL_FROM = "alerts@cveharbor.com"
 ASSIGNMENT_EMAIL_ENABLED = "true"
@@ -36,3 +37,6 @@ crons = ["5 * * * *", "*/5 * * * *", "* * * * *"]
 name = "ASSIGNMENT_ACK_RATE_LIMITER"
 namespace_id = "23501"
 simple = { limit = 60, period = 60 }
+
+[build]
+command = "node ../scripts/build_release_identity.mjs"

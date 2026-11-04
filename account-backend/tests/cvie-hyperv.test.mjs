@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DB} from './helpers/d1.mjs';
-import {subscribeProducts,runCvieStep,cvieRoute,normalizeNvd,loadCvieDigest} from '../src/cvie.js';
+import {repairAccountCoverage,subscribeProducts,runCvieStep,cvieRoute,normalizeNvd,loadCvieDigest} from '../src/cvie.js';
 import {ingestDisclosures} from '../src/cvie-evidence.js';
 import {combinedPage,combinedCounts,mergeDigestEvidence} from '../src/cvie-records.js';
 import {isHyperV,hyperVHosts,hyperVHost,hyperVStatement} from '../src/hyperv.js';
@@ -51,10 +51,10 @@ check('new Hyper-V subscriptions ask for the Microsoft host without a broad dire
  assert.ok(p.candidates.some(h=>h.label==='Microsoft Windows Server 2022 · Hyper-V'));
  assert.ok(p.candidates.every(h=>h.cpe.startsWith('cpe:2.3:o:microsoft:windows_')));
 });
-check('opening CVIE repairs old choices once and keeps repairs private to the account',async()=>{
+check('explicit maintenance repairs old choices once and keeps repairs private to the account',async()=>{
  const e=env();await subscribeProducts(e,'a',[{name:'HyperV'}]);await subscribeProducts(e,'b',[{name:'HyperV'}]);
  await q(e,"UPDATE cvie_products SET status='needs_identity',candidates_json=?",JSON.stringify([{cpe:'cpe:2.3:o:citrix:hypervisor:*:*:*:*:*:*:*:*',label:'citrix / hypervisor'}])).run();
- await state(e);assert.equal((await q(e,"SELECT candidates_json FROM cvie_products WHERE user_id='b'").first()).candidates_json.includes('citrix'),true);
+ await repairAccountCoverage(e,'a');await state(e);assert.equal((await q(e,"SELECT candidates_json FROM cvie_products WHERE user_id='b'").first()).candidates_json.includes('citrix'),true);
  const before=e.DB.executions;await state(e);const unchanged=e.DB.executions-before;
  assert.equal((await state(e)).products[0].candidates.some(x=>x.label.includes('citrix')),false);
  assert.ok(unchanged<30,'subsequent polls do not repeatedly reset or rewrite the product');
@@ -70,7 +70,7 @@ check('legacy unrelated selections cannot be submitted and invalid cached identi
  await assert.rejects(()=>cvieRoute(new Request('https://api.cveharbor.com/v1/cvie/products/'+p.id+'/identity',{method:'PUT'}),e,{id:'a'},null,{cpe:bad}),/Windows host/);
  await q(e,"UPDATE cvie_products SET cpe=?,status='ready'",bad).run();
  await q(e,"INSERT INTO cvie_advisories VALUES(?,?,?,?,?)",p.id,'CVE-2026-12345',cutoff,JSON.stringify({id:'CVE-2026-12345',summary:'Wrong product cache'}),'old').run();
- assert.equal((await state(e)).products[0].status,'needs_identity');
+ await repairAccountCoverage(e,'a');assert.equal((await state(e)).products[0].status,'needs_identity');
  assert.equal((await q(e,'SELECT COUNT(*) AS total FROM cvie_advisories').first()).total,0);
 });
 check('a concurrent explicit vendor correction wins over the old Hyper-V chooser repair',async t=>{
@@ -80,7 +80,7 @@ check('a concurrent explicit vendor correction wins over the old Hyper-V chooser
   if(pending){pending=false;await subscribeProducts(e,'a',[{name:'HyperV',vendor:'Other Vendor'}]);}
   return batch(statements);
  });
- await state(e);
+ await repairAccountCoverage(e,'a');await state(e);
  const p=await q(e,'SELECT * FROM cvie_products').first();
  assert.equal(p.vendor,'Other Vendor');assert.equal(p.status,'queued');assert.equal(p.candidates_json,'[]');
 });

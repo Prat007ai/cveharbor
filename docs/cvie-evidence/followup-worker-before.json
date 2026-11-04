@@ -1,0 +1,371 @@
+{
+  "environment": "local Miniflare Worker HTTP + D1; not remote staging or browser rendering",
+  "source_revision": "snapshot a2e4597",
+  "started_at": "2026-11-02T22:10:49.383Z",
+  "scenarios": [
+    {
+      "concurrency": 1,
+      "waves": 20,
+      "samples": 20,
+      "foreground_ms": {
+        "p50": 30,
+        "p95": 38,
+        "max": 52
+      },
+      "total_ms": {
+        "p50": 30,
+        "p95": 38,
+        "max": 52
+      },
+      "rows_read": {
+        "p50": 2395,
+        "p95": 2404,
+        "max": 2405
+      },
+      "rows_written": {
+        "p50": 14,
+        "p95": 14,
+        "max": 14
+      },
+      "rpc_calls": {
+        "p50": 33,
+        "p95": 33,
+        "max": 33
+      },
+      "d1_ms": {
+        "p50": 4,
+        "p95": 7,
+        "max": 7
+      },
+      "groups": {
+        "authentication": {
+          "calls": 60,
+          "statements": 60,
+          "elapsed_ms": 45,
+          "d1_ms": 4,
+          "read": 180,
+          "write": 0
+        },
+        "catalogue": {
+          "calls": 60,
+          "statements": 80,
+          "elapsed_ms": 37,
+          "d1_ms": 6,
+          "read": 160,
+          "write": 160
+        },
+        "shared_scope": {
+          "calls": 200,
+          "statements": 220,
+          "elapsed_ms": 173,
+          "d1_ms": 20,
+          "read": 1172,
+          "write": 80
+        },
+        "private_products": {
+          "calls": 80,
+          "statements": 80,
+          "elapsed_ms": 48,
+          "d1_ms": 1,
+          "read": 31,
+          "write": 0
+        },
+        "kev_queue": {
+          "calls": 120,
+          "statements": 120,
+          "elapsed_ms": 144,
+          "d1_ms": 35,
+          "read": 36060,
+          "write": 0
+        },
+        "identity_binding": {
+          "calls": 40,
+          "statements": 40,
+          "elapsed_ms": 24,
+          "d1_ms": 1,
+          "read": 100,
+          "write": 40
+        },
+        "other": {
+          "calls": 60,
+          "statements": 60,
+          "elapsed_ms": 41,
+          "d1_ms": 7,
+          "read": 80,
+          "write": 0
+        },
+        "evidence_page": {
+          "calls": 40,
+          "statements": 40,
+          "elapsed_ms": 46,
+          "d1_ms": 16,
+          "read": 10100,
+          "write": 0
+        }
+      },
+      "stages": {
+        "/v1/technology-catalogue": {
+          "p50": 18,
+          "p95": 22
+        },
+        "/v1/cvie": {
+          "p50": 5,
+          "p95": 8
+        },
+        "/v1/cvie/products/:id/evidence": {
+          "p50": 7,
+          "p95": 11
+        }
+      }
+    },
+    {
+      "concurrency": 10,
+      "waves": 5,
+      "samples": 50,
+      "foreground_ms": {
+        "p50": 169,
+        "p95": 215,
+        "max": 217
+      },
+      "total_ms": {
+        "p50": 169,
+        "p95": 215,
+        "max": 217
+      },
+      "rows_read": {
+        "p50": 2427,
+        "p95": 2447,
+        "max": 2455
+      },
+      "rows_written": {
+        "p50": 14,
+        "p95": 14,
+        "max": 14
+      },
+      "rpc_calls": {
+        "p50": 30,
+        "p95": 33,
+        "max": 33
+      },
+      "d1_ms": {
+        "p50": 3,
+        "p95": 6,
+        "max": 8
+      },
+      "groups": {
+        "authentication": {
+          "calls": 150,
+          "statements": 150,
+          "elapsed_ms": 527,
+          "d1_ms": 4,
+          "read": 450,
+          "write": 0
+        },
+        "catalogue": {
+          "calls": 150,
+          "statements": 200,
+          "elapsed_ms": 430,
+          "d1_ms": 7,
+          "read": 400,
+          "write": 400
+        },
+        "shared_scope": {
+          "calls": 500,
+          "statements": 550,
+          "elapsed_ms": 2136,
+          "d1_ms": 26,
+          "read": 4905,
+          "write": 200
+        },
+        "private_products": {
+          "calls": 200,
+          "statements": 200,
+          "elapsed_ms": 546,
+          "d1_ms": 8,
+          "read": 100,
+          "write": 0
+        },
+        "kev_queue": {
+          "calls": 220,
+          "statements": 220,
+          "elapsed_ms": 2961,
+          "d1_ms": 74,
+          "read": 89910,
+          "write": 0
+        },
+        "identity_binding": {
+          "calls": 100,
+          "statements": 100,
+          "elapsed_ms": 276,
+          "d1_ms": 6,
+          "read": 250,
+          "write": 100
+        },
+        "other": {
+          "calls": 110,
+          "statements": 110,
+          "elapsed_ms": 310,
+          "d1_ms": 4,
+          "read": 120,
+          "write": 0
+        },
+        "evidence_page": {
+          "calls": 100,
+          "statements": 100,
+          "elapsed_ms": 722,
+          "d1_ms": 23,
+          "read": 25250,
+          "write": 0
+        }
+      },
+      "stages": {
+        "/v1/technology-catalogue": {
+          "p50": 108,
+          "p95": 138
+        },
+        "/v1/cvie": {
+          "p50": 28,
+          "p95": 30
+        },
+        "/v1/cvie/products/:id/evidence": {
+          "p50": 38,
+          "p95": 49
+        }
+      }
+    },
+    {
+      "concurrency": 50,
+      "waves": 3,
+      "samples": 150,
+      "foreground_ms": {
+        "p50": 702,
+        "p95": 984,
+        "max": 988
+      },
+      "total_ms": {
+        "p50": 702,
+        "p95": 984,
+        "max": 988
+      },
+      "rows_read": {
+        "p50": 2529,
+        "p95": 2595,
+        "max": 2605
+      },
+      "rows_written": {
+        "p50": 14,
+        "p95": 14,
+        "max": 14
+      },
+      "rpc_calls": {
+        "p50": 30,
+        "p95": 33,
+        "max": 33
+      },
+      "d1_ms": {
+        "p50": 3,
+        "p95": 5,
+        "max": 8
+      },
+      "groups": {
+        "authentication": {
+          "calls": 450,
+          "statements": 450,
+          "elapsed_ms": 4548,
+          "d1_ms": 16,
+          "read": 1350,
+          "write": 0
+        },
+        "catalogue": {
+          "calls": 450,
+          "statements": 600,
+          "elapsed_ms": 2891,
+          "d1_ms": 30,
+          "read": 1200,
+          "write": 1200
+        },
+        "shared_scope": {
+          "calls": 1500,
+          "statements": 1650,
+          "elapsed_ms": 14169,
+          "d1_ms": 77,
+          "read": 30208,
+          "write": 600
+        },
+        "private_products": {
+          "calls": 600,
+          "statements": 600,
+          "elapsed_ms": 3620,
+          "d1_ms": 23,
+          "read": 299,
+          "write": 0
+        },
+        "kev_queue": {
+          "calls": 626,
+          "statements": 626,
+          "elapsed_ms": 14407,
+          "d1_ms": 210,
+          "read": 269628,
+          "write": 0
+        },
+        "identity_binding": {
+          "calls": 300,
+          "statements": 300,
+          "elapsed_ms": 3001,
+          "d1_ms": 10,
+          "read": 750,
+          "write": 300
+        },
+        "other": {
+          "calls": 313,
+          "statements": 313,
+          "elapsed_ms": 3420,
+          "d1_ms": 6,
+          "read": 326,
+          "write": 0
+        },
+        "evidence_page": {
+          "calls": 300,
+          "statements": 300,
+          "elapsed_ms": 13747,
+          "d1_ms": 76,
+          "read": 75750,
+          "write": 0
+        }
+      },
+      "stages": {
+        "/v1/technology-catalogue": {
+          "p50": 179,
+          "p95": 198
+        },
+        "/v1/cvie": {
+          "p50": 297,
+          "p95": 602
+        },
+        "/v1/cvie/products/:id/evidence": {
+          "p50": 215,
+          "p95": 226
+        }
+      }
+    }
+  ],
+  "public_cves": 10000,
+  "ingestion": {
+    "disclosures": {
+      "read": 10000,
+      "write": 30000
+    },
+    "affected_relationships": {
+      "read": 40000,
+      "write": 36000
+    },
+    "nvd": {
+      "read": 19090,
+      "write": 4000
+    }
+  },
+  "scopes": 1,
+  "provider_requests": 0,
+  "source_state": "Archived a2e4597 source",
+  "compatibility_date": "2026-08-06"
+}

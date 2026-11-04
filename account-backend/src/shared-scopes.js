@@ -1,3 +1,4 @@
+import {registryCpe} from './product-registry.js';
 import {activeSubscription} from './catalogue-selection.js';
 // Shared tables contain public source identities/history only. The separate
 // product bridge and seed cursor are private and always joined through an owner.
@@ -14,7 +15,7 @@ const readCursor=value=>{try{return JSON.parse(value||'{}');}catch{return {};}};
 export const publicIdentityProof=(p='p')=>`EXISTS(SELECT 1 FROM cvie_advisories proof WHERE proof.product_id=${p}.id
  AND json_extract(proof.record_json,'$.source_type')='cvie_nvd' AND EXISTS(SELECT 1 FROM json_each(json_extract(proof.record_json,'$.cvie_identities')) i WHERE json_extract(i.value,'$.cpe')=${p}.cpe))`;
 export function trustedSharedIdentity(product){
- return curatedProductFamily(product.cpe)||Boolean(hyperVHost(product.cpe))||Boolean(dotnetProfile({name:'.NET Core',cpe:product.cpe,vendor:product.cpe?.split(':')[3]}))||Boolean(product.public_identity_verified)||
+ return Boolean(registryCpe(product.cpe))||curatedProductFamily(product.cpe)||Boolean(hyperVHost(product.cpe))||Boolean(dotnetProfile({name:'.NET Core',cpe:product.cpe,vendor:product.cpe?.split(':')[3]}))||Boolean(product.public_identity_verified)||
   Boolean(readCursor(product.candidates_json)?.some?.(choice=>choice.cpe===product.cpe));
 }
 export async function sharedDescriptor(product){
@@ -55,8 +56,9 @@ function inheritedState(donor,descriptor,now){
 function chunks(rows,size=50){const out=[];for(let i=0;i<rows.length;i+=size)out.push(JSON.stringify(rows.slice(i,i+size)));return out;}
 export async function reconcileSharedScopes(env,userId=null,now=Date.now(),limit=userId?500:100){
  if(!sharedScans(env))return {linked:0};
- const rows=(await q(env.DB,`SELECT p.*,${publicIdentityProof()} AS public_identity_verified FROM cvie_products p LEFT JOIN cvie_product_scopes m ON ${validScopeLink()}
-  WHERE (m.product_id IS NULL OR (m.scope_id IS NULL AND m.candidate_scope_id IS NOT NULL AND ${publicIdentityProof()}))
+ const registryProof=env.CVIE_REGISTRY_ENABLED==='true'?" OR EXISTS(SELECT 1 FROM cvie_identity_identifiers ri WHERE ri.scheme='cpe' AND ri.value=p.cpe)":'';
+ const rows=(await q(env.DB,`SELECT p.*,(${publicIdentityProof()}${registryProof}) AS public_identity_verified FROM cvie_products p LEFT JOIN cvie_product_scopes m ON ${validScopeLink()}
+  WHERE (m.product_id IS NULL OR (m.scope_id IS NULL AND m.candidate_scope_id IS NOT NULL AND (${publicIdentityProof()}${registryProof})))
   AND ${activeSubscription()} ${userId?'AND p.user_id=?':''}
   ORDER BY p.history_complete_at DESC,p.last_success_at DESC,p.id LIMIT ?`,...(userId?[userId]:[]),limit).all()).results||[];
  if(!rows.length)return {linked:0};
@@ -88,9 +90,12 @@ export async function reconcileSharedScopes(env,userId=null,now=Date.now(),limit
   ON CONFLICT(product_id) DO UPDATE SET scope_id=excluded.scope_id,candidate_scope_id=excluded.candidate_scope_id,source_name=excluded.source_name,source_vendor=excluded.source_vendor,source_cpe=excluded.source_cpe,version=excluded.version`,SHARED_VERSION,payload));
  if(missing.length)statements.push(q(env.DB,`UPDATE cvie_product_scopes SET scope_id=candidate_scope_id WHERE scope_id IS NULL
   AND candidate_scope_id IN(SELECT value FROM json_each(?)) AND version=? AND EXISTS(SELECT 1 FROM cvie_products p WHERE ${validScopeLink('p','cvie_product_scopes')})`,JSON.stringify(missing.map(d=>d.id)),SHARED_VERSION));
- statements.push(q(env.DB,`UPDATE cvie_products SET lease_until=0,cursor_json=json_remove(cursor_json,'$.active_scan') WHERE lease_until<>0 AND (
+ // Restrict lease cleanup to affected products/donors and newly promoted scopes.
+ // Existing indexed membership avoids a full private-products scan per save.
+ statements.push(q(env.DB,`UPDATE cvie_products SET lease_until=0,cursor_json=json_remove(cursor_json,'$.active_scan') WHERE id IN(
+  SELECT value FROM json_each(?) UNION SELECT product_id FROM cvie_product_scopes WHERE scope_id IN(SELECT value FROM json_each(?))) AND lease_until<>0 AND (
   EXISTS(SELECT 1 FROM cvie_product_scopes m WHERE ${validScopeLink('cvie_products')} AND m.scope_id IS NOT NULL)
-  OR id IN(SELECT product_id FROM cvie_shared_seeds))`));
+  OR id IN(SELECT product_id FROM cvie_shared_seeds))`,JSON.stringify([...entries.map(({p})=>p.id),...seeds.map(s=>s.product_id)]),JSON.stringify(missing.map(d=>d.id))));
  await env.DB.batch(statements);
  return {linked:entries.length,scopes_created:scopes.length};
 }

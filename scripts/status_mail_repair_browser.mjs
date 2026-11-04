@@ -37,6 +37,8 @@ try{
  assert.equal(seen.some(x=>/^\/v1\/(?:finding|remediation)/.test(x.path)&&x.method!=='GET'),false,'Viewing customer findings performs no writes');
  const row=table.locator('tbody tr').first();assert.match(await row.innerText(),/Existing record — connect it to this customer asset/);assert.match(await row.innerText(),/Acknowledged · alex@example.net/);
  await row.getByRole('combobox').selectOption('Fix in Progress');await row.getByRole('button',{name:'Save status',exact:true}).click();const dialog=page.locator('.shared-record');await dialog.getByRole('heading',{name:'Link existing assignment'}).waitFor();
+ // The heading precedes the assignments fetch; the link form marks completed rendering.
+ await dialog.getByRole('button',{name:'Link existing assignment',exact:true}).waitFor();
  assert.match(await dialog.innerText(),/Customer North.*Production.*Web Server 01/);assert.match(await dialog.innerText(),/alex@example.net · Acknowledged/);
  assert.equal(await dialog.getByLabel('Status after linking').inputValue(),'Investigating');
  await dialog.screenshot({path:directory+'/link-preview.png'});

@@ -1,3 +1,5 @@
+> **Phase 1 deployment notice:** Use [the consolidated administrator checklist](../docs/reviews/phase1-administrator-checklist.md) for current release, credential, staging and recovery steps. Deployment/migration/rollback recipes below are feature-history references, not instructions to execute during Phase 1. Feature behavior descriptions remain applicable unless superseded by the current implementation.
+
 # CVEHarbor Accounts — deployment guide
 
 The public dashboard remains on GitHub Pages. **Account sign-in and synchronization do not work until this separate API is deployed.** The account screen displays a setup notice until then.

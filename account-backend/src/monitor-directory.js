@@ -1,3 +1,4 @@
+import {searchRegistry} from './product-registry.js';
 // Bounded shared Cache API storage of public lifecycle identities. Customer names, versions,
 // URLs and failed queries never enter the shared directory. No new D1 tables.
 import common from '../../data/lifecycle-products.json' with {type:'json'};
@@ -11,7 +12,8 @@ export function directoryIdentity(name){
  const known=matches.length===1?matches[0]:null;
  const slug=known?.slug||query.replaceAll(' ','-');
  if(!/^[a-z0-9][a-z0-9-]{0,69}$/.test(slug))throw Error('Enter the official product name (up to 70 letters, numbers or hyphens).');
- return known||{slug,name:slug.split('-').map(w=>w[0].toUpperCase()+w.slice(1)).join(' '),category:'Other',aliases:[]};
+ const identity=known?searchRegistry({scheme:'lifecycle',identifier:known.slug}).identity:null;
+ return known?{...known,...(identity?{cvie_identity_id:identity.id}: {})}:{slug,name:slug.split('-').map(w=>w[0].toUpperCase()+w.slice(1)).join(' '),category:'Other',aliases:[]};
 }
 const date=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value))&&new Date(value+'T00:00:00Z').toISOString().slice(0,10)===value?value:null;
 export function directoryCycles(raw){

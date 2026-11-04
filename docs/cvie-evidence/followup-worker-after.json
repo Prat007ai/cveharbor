@@ -1,0 +1,371 @@
+{
+  "environment": "local Miniflare Worker HTTP + D1; not remote staging or browser rendering",
+  "source_revision": "afbce80afefab7eb2e23c503416319e28f68c61e",
+  "started_at": "2026-11-02T22:29:07.491Z",
+  "scenarios": [
+    {
+      "concurrency": 1,
+      "waves": 20,
+      "samples": 20,
+      "foreground_ms": {
+        "p50": 21,
+        "p95": 25,
+        "max": 38
+      },
+      "total_ms": {
+        "p50": 21,
+        "p95": 25,
+        "max": 38
+      },
+      "rows_read": {
+        "p50": 616,
+        "p95": 616,
+        "max": 2387
+      },
+      "rows_written": {
+        "p50": 14,
+        "p95": 14,
+        "max": 14
+      },
+      "rpc_calls": {
+        "p50": 27,
+        "p95": 27,
+        "max": 31
+      },
+      "d1_ms": {
+        "p50": 3,
+        "p95": 5,
+        "max": 5
+      },
+      "groups": {
+        "authentication": {
+          "calls": 60,
+          "statements": 60,
+          "elapsed_ms": 37,
+          "d1_ms": 6,
+          "read": 180,
+          "write": 0
+        },
+        "catalogue": {
+          "calls": 60,
+          "statements": 80,
+          "elapsed_ms": 32,
+          "d1_ms": 4,
+          "read": 160,
+          "write": 160
+        },
+        "shared_scope": {
+          "calls": 200,
+          "statements": 220,
+          "elapsed_ms": 152,
+          "d1_ms": 19,
+          "read": 1042,
+          "write": 80
+        },
+        "private_products": {
+          "calls": 20,
+          "statements": 60,
+          "elapsed_ms": 14,
+          "d1_ms": 1,
+          "read": 0,
+          "write": 0
+        },
+        "kev_queue": {
+          "calls": 63,
+          "statements": 63,
+          "elapsed_ms": 37,
+          "d1_ms": 3,
+          "read": 2392,
+          "write": 0
+        },
+        "identity_binding": {
+          "calls": 60,
+          "statements": 60,
+          "elapsed_ms": 35,
+          "d1_ms": 5,
+          "read": 131,
+          "write": 40
+        },
+        "other": {
+          "calls": 41,
+          "statements": 41,
+          "elapsed_ms": 16,
+          "d1_ms": 0,
+          "read": 62,
+          "write": 0
+        },
+        "evidence_page": {
+          "calls": 40,
+          "statements": 40,
+          "elapsed_ms": 52,
+          "d1_ms": 13,
+          "read": 10100,
+          "write": 0
+        }
+      },
+      "stages": {
+        "/v1/technology-catalogue": {
+          "p50": 10,
+          "p95": 12
+        },
+        "/v1/cvie": {
+          "p50": 4,
+          "p95": 6
+        },
+        "/v1/cvie/products/:id/evidence": {
+          "p50": 7,
+          "p95": 10
+        }
+      }
+    },
+    {
+      "concurrency": 10,
+      "waves": 5,
+      "samples": 50,
+      "foreground_ms": {
+        "p50": 132,
+        "p95": 148,
+        "max": 150
+      },
+      "total_ms": {
+        "p50": 132,
+        "p95": 148,
+        "max": 150
+      },
+      "rows_read": {
+        "p50": 616,
+        "p95": 616,
+        "max": 616
+      },
+      "rows_written": {
+        "p50": 14,
+        "p95": 14,
+        "max": 14
+      },
+      "rpc_calls": {
+        "p50": 27,
+        "p95": 27,
+        "max": 27
+      },
+      "d1_ms": {
+        "p50": 2,
+        "p95": 4,
+        "max": 5
+      },
+      "groups": {
+        "authentication": {
+          "calls": 150,
+          "statements": 150,
+          "elapsed_ms": 492,
+          "d1_ms": 7,
+          "read": 450,
+          "write": 0
+        },
+        "catalogue": {
+          "calls": 150,
+          "statements": 200,
+          "elapsed_ms": 538,
+          "d1_ms": 6,
+          "read": 400,
+          "write": 400
+        },
+        "shared_scope": {
+          "calls": 500,
+          "statements": 550,
+          "elapsed_ms": 2371,
+          "d1_ms": 32,
+          "read": 2650,
+          "write": 200
+        },
+        "private_products": {
+          "calls": 50,
+          "statements": 150,
+          "elapsed_ms": 203,
+          "d1_ms": 4,
+          "read": 0,
+          "write": 0
+        },
+        "kev_queue": {
+          "calls": 150,
+          "statements": 150,
+          "elapsed_ms": 1084,
+          "d1_ms": 5,
+          "read": 1550,
+          "write": 0
+        },
+        "identity_binding": {
+          "calls": 150,
+          "statements": 150,
+          "elapsed_ms": 458,
+          "d1_ms": 8,
+          "read": 350,
+          "write": 100
+        },
+        "other": {
+          "calls": 100,
+          "statements": 100,
+          "elapsed_ms": 303,
+          "d1_ms": 5,
+          "read": 150,
+          "write": 0
+        },
+        "evidence_page": {
+          "calls": 100,
+          "statements": 100,
+          "elapsed_ms": 942,
+          "d1_ms": 27,
+          "read": 25250,
+          "write": 0
+        }
+      },
+      "stages": {
+        "/v1/technology-catalogue": {
+          "p50": 69,
+          "p95": 72
+        },
+        "/v1/cvie": {
+          "p50": 21,
+          "p95": 31
+        },
+        "/v1/cvie/products/:id/evidence": {
+          "p50": 45,
+          "p95": 49
+        }
+      }
+    },
+    {
+      "concurrency": 50,
+      "waves": 3,
+      "samples": 150,
+      "foreground_ms": {
+        "p50": 232,
+        "p95": 263,
+        "max": 266
+      },
+      "total_ms": {
+        "p50": 232,
+        "p95": 263,
+        "max": 266
+      },
+      "rows_read": {
+        "p50": 616,
+        "p95": 616,
+        "max": 616
+      },
+      "rows_written": {
+        "p50": 14,
+        "p95": 14,
+        "max": 14
+      },
+      "rpc_calls": {
+        "p50": 27,
+        "p95": 27,
+        "max": 27
+      },
+      "d1_ms": {
+        "p50": 2,
+        "p95": 4,
+        "max": 6
+      },
+      "groups": {
+        "authentication": {
+          "calls": 450,
+          "statements": 450,
+          "elapsed_ms": 2988,
+          "d1_ms": 17,
+          "read": 1350,
+          "write": 0
+        },
+        "catalogue": {
+          "calls": 450,
+          "statements": 600,
+          "elapsed_ms": 2369,
+          "d1_ms": 21,
+          "read": 1200,
+          "write": 1200
+        },
+        "shared_scope": {
+          "calls": 1500,
+          "statements": 1650,
+          "elapsed_ms": 12540,
+          "d1_ms": 102,
+          "read": 7946,
+          "write": 600
+        },
+        "private_products": {
+          "calls": 150,
+          "statements": 450,
+          "elapsed_ms": 1084,
+          "d1_ms": 10,
+          "read": 0,
+          "write": 0
+        },
+        "kev_queue": {
+          "calls": 450,
+          "statements": 450,
+          "elapsed_ms": 6012,
+          "d1_ms": 13,
+          "read": 4650,
+          "write": 0
+        },
+        "identity_binding": {
+          "calls": 450,
+          "statements": 450,
+          "elapsed_ms": 2315,
+          "d1_ms": 21,
+          "read": 1048,
+          "write": 300
+        },
+        "other": {
+          "calls": 300,
+          "statements": 300,
+          "elapsed_ms": 1881,
+          "d1_ms": 12,
+          "read": 450,
+          "write": 0
+        },
+        "evidence_page": {
+          "calls": 300,
+          "statements": 300,
+          "elapsed_ms": 5459,
+          "d1_ms": 88,
+          "read": 75750,
+          "write": 0
+        }
+      },
+      "stages": {
+        "/v1/technology-catalogue": {
+          "p50": 109,
+          "p95": 125
+        },
+        "/v1/cvie": {
+          "p50": 39,
+          "p95": 78
+        },
+        "/v1/cvie/products/:id/evidence": {
+          "p50": 77,
+          "p95": 110
+        }
+      }
+    }
+  ],
+  "public_cves": 10000,
+  "ingestion": {
+    "disclosures": {
+      "read": 10000,
+      "write": 20000
+    },
+    "affected_relationships": {
+      "read": 34000,
+      "write": 34000
+    },
+    "nvd": {
+      "read": 20090,
+      "write": 4000
+    }
+  },
+  "scopes": 1,
+  "provider_requests": 0,
+  "source_state": "PR #243 follow-up worktree, preserved with this evidence commit",
+  "compatibility_date": "2026-08-06"
+}

@@ -1,0 +1,113 @@
+{
+  "checked_at": "2026-11-02T20:00:19.738Z",
+  "environment": "production read-only aggregate diagnostics",
+  "read_only": true,
+  "customer_content": false,
+  "sources": [
+    {
+      "id": "cisa_kev",
+      "status": "ok",
+      "last_attempt_at": 1793649190125,
+      "last_success_at": 1793649190125,
+      "publisher_at": 1793379765366,
+      "checkpoint": null,
+      "coverage_start_at": null,
+      "next_attempt_at": 1793650090125,
+      "lease_until": 0,
+      "record_retry_at": 0,
+      "has_error": 0
+    },
+    {
+      "id": "cve_program",
+      "status": "ok",
+      "last_attempt_at": 1793649490947,
+      "last_success_at": 1793649490947,
+      "publisher_at": 1793649254647,
+      "checkpoint": 1793649254647,
+      "coverage_start_at": 1793414636064,
+      "next_attempt_at": 1793649790947,
+      "lease_until": 0,
+      "record_retry_at": 0,
+      "has_error": 0
+    }
+  ],
+  "queue": [
+    {
+      "priority": 1,
+      "processing_status": "not_attempted",
+      "records": 96,
+      "oldest_publisher_revision": "2026-11-02T19:42:56.540Z",
+      "maximum_attempts": 0
+    },
+    {
+      "priority": 2,
+      "processing_status": "retrying",
+      "records": 1,
+      "oldest_publisher_revision": null,
+      "maximum_attempts": 9
+    }
+  ],
+  "queue_age_note": "Existing schema has no enqueue timestamps. Publisher revision age is not queue age; processing throughput requires multiple observations or new operation telemetry.",
+  "scan_states": [
+    {
+      "status": "ready",
+      "scopes": 8,
+      "oldest_success": 1793630432078,
+      "latest_success": 1793647856213
+    },
+    {
+      "status": "scanning",
+      "scopes": 1,
+      "oldest_success": 1793649355930,
+      "latest_success": 1793649355930
+    }
+  ],
+  "records": {
+    "kev": 1766,
+    "disclosures": 7838,
+    "rejected": 4,
+    "queued": 97,
+    "shared_nvd": 201
+  },
+  "existing_public_php_lookup": {
+    "result_count": 5,
+    "has_more": false,
+    "statements": 2,
+    "rows_read": 336509,
+    "rows_written": 0,
+    "elapsed_ms": 621.1038640000002,
+    "synthetic_identity": true
+  },
+  "query_metrics": [
+    {
+      "rows_read": 2,
+      "rows_written": 0,
+      "duration_ms": 0.3135
+    },
+    {
+      "rows_read": 194,
+      "rows_written": 0,
+      "duration_ms": 0.3914
+    },
+    {
+      "rows_read": 18,
+      "rows_written": 0,
+      "duration_ms": 0.3002
+    },
+    {
+      "rows_read": 17740,
+      "rows_written": 0,
+      "duration_ms": 84.6993
+    },
+    {
+      "rows_read": 168397,
+      "rows_written": 0,
+      "duration_ms": 213.3938
+    },
+    {
+      "rows_read": 168112,
+      "rows_written": 0,
+      "duration_ms": 119.421
+    }
+  ]
+}

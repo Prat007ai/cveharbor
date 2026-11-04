@@ -1,0 +1,183 @@
+{
+  "baseline_commit": "3b9dfce",
+  "environment": "local Miniflare D1; not Cloudflare staging or billing",
+  "timestamp": "2026-11-02T20:06:07.702Z",
+  "workload": {
+    "public_cves": 100000,
+    "relevant_cves": 10000,
+    "accounts": 50,
+    "synthetic_inventory_rows": 5000,
+    "page_limit": 100
+  },
+  "samples": {
+    "BASE_cold_identity_save": {
+      "event": "cvie_operation",
+      "trace_id": "ce4c0917-1763-4d01-bac7-89b30fa49339",
+      "operation": "onboard",
+      "statements": 15,
+      "rows_read": 35,
+      "rows_written": 14,
+      "d1_duration_ms": 2,
+      "metadata_complete": true,
+      "ok": true,
+      "duration_ms": 195.74,
+      "wall_ms": 195.93019800000002
+    },
+    "BASE_fixture_ingestion_rows_written": 530000,
+    "BASE_100_result_page": {
+      "runs": 20,
+      "rows_read_p95": 450254,
+      "rows_written_p95": 0,
+      "duration_ms_p95": 246.88,
+      "wall_ms_p95": 246.8938339999986,
+      "metadata_complete": true
+    },
+    "BASE_identical_save": {
+      "runs": 20,
+      "rows_read_p95": 9,
+      "rows_written_p95": 0,
+      "duration_ms_p95": 49.8,
+      "wall_ms_p95": 49.81604300000254,
+      "metadata_complete": true
+    },
+    "BASE_kev_first": {
+      "event": "cvie_operation",
+      "trace_id": "5e9e2bfe-5f11-4aed-ac94-af23380ce088",
+      "operation": "disclosure_dispatch",
+      "statements": 9,
+      "rows_read": 5312,
+      "rows_written": 3534,
+      "d1_duration_ms": 9,
+      "metadata_complete": true,
+      "ok": true,
+      "duration_ms": 120.4,
+      "wall_ms": 120.41252600000007
+    },
+    "BASE_kev_unchanged": {
+      "event": "cvie_operation",
+      "trace_id": "1bd9816f-d199-4233-af38-7683fcc3d1b6",
+      "operation": "disclosure_dispatch",
+      "statements": 9,
+      "rows_read": 10610,
+      "rows_written": 5300,
+      "d1_duration_ms": 13,
+      "metadata_complete": true,
+      "ok": true,
+      "duration_ms": 105.42,
+      "wall_ms": 105.42695999999705
+    },
+    "NEW_cold_identity_save": {
+      "event": "cvie_operation",
+      "trace_id": "0be285f0-a173-4dcc-aba6-6906be3b5c7b",
+      "operation": "onboard",
+      "statements": 17,
+      "rows_read": 37,
+      "rows_written": 17,
+      "d1_duration_ms": 3,
+      "metadata_complete": true,
+      "ok": true,
+      "duration_ms": 149.73,
+      "wall_ms": 149.7503760000036
+    },
+    "NEW_fixture_ingestion_rows_written": 700000,
+    "NEW_100_result_page": {
+      "runs": 20,
+      "rows_read_p95": 409,
+      "rows_written_p95": 0,
+      "duration_ms_p95": 71.71,
+      "wall_ms_p95": 71.72894400000223,
+      "metadata_complete": true
+    },
+    "NEW_identical_save": {
+      "runs": 20,
+      "rows_read_p95": 11,
+      "rows_written_p95": 0,
+      "duration_ms_p95": 89.55,
+      "wall_ms_p95": 89.5592089999991,
+      "metadata_complete": true
+    },
+    "NEW_kev_first": {
+      "event": "cvie_operation",
+      "trace_id": "5debab7f-4476-4297-add9-98f0b67248da",
+      "operation": "disclosure_dispatch",
+      "statements": 11,
+      "rows_read": 21257,
+      "rows_written": 7068,
+      "d1_duration_ms": 28,
+      "metadata_complete": true,
+      "kev_inserted": 1766,
+      "kev_updated": 0,
+      "kev_removed": 0,
+      "kev_unchanged": 0,
+      "ok": true,
+      "duration_ms": 177.46,
+      "wall_ms": 177.4809649999952
+    },
+    "NEW_kev_unchanged": {
+      "event": "cvie_operation",
+      "trace_id": "5791ea11-0819-4574-bfe9-0693e06d78b4",
+      "operation": "disclosure_dispatch",
+      "statements": 5,
+      "rows_read": 11,
+      "rows_written": 2,
+      "d1_duration_ms": 1,
+      "metadata_complete": true,
+      "kev_unchanged": 1766,
+      "ok": true,
+      "duration_ms": 70.36,
+      "wall_ms": 70.37279999999737
+    }
+  },
+  "query_plan": [
+    {
+      "id": 3,
+      "parent": 0,
+      "notused": 0,
+      "detail": "MATERIALIZE page"
+    },
+    {
+      "id": 11,
+      "parent": 3,
+      "notused": 49,
+      "detail": "SEARCH cvie_identity_evidence USING INDEX cvie_identity_evidence_page (identity_id=? AND sort_date>? AND (sort_date,cve_id)<(?,?))"
+    },
+    {
+      "id": 54,
+      "parent": 0,
+      "notused": 11,
+      "detail": "SCAN p"
+    },
+    {
+      "id": 56,
+      "parent": 0,
+      "notused": 47,
+      "detail": "SEARCH n USING INDEX sqlite_autoindex_cvie_shared_advisories_1 (scope_id=? AND cve_id=?) LEFT-JOIN"
+    },
+    {
+      "id": 66,
+      "parent": 0,
+      "notused": 46,
+      "detail": "SEARCH d USING INDEX sqlite_autoindex_cvie_disclosures_1 (cve_id=?) LEFT-JOIN"
+    },
+    {
+      "id": 74,
+      "parent": 0,
+      "notused": 46,
+      "detail": "SEARCH k USING INDEX sqlite_autoindex_cvie_kev_1 (cve_id=?) LEFT-JOIN"
+    },
+    {
+      "id": 82,
+      "parent": 0,
+      "notused": 44,
+      "detail": "SEARCH j USING COVERING INDEX sqlite_autoindex_cvie_disclosure_queue_1 (cve_id=?) LEFT-JOIN"
+    }
+  ],
+  "concurrent": {
+    "accounts": 50,
+    "new_parallel_saves": 49,
+    "service_orchestration_p95_ms": 6707.615556999997,
+    "duration_ms": 6747.081608000008,
+    "scopes": 1
+  },
+  "evidence_read_target_met_local": true
+}

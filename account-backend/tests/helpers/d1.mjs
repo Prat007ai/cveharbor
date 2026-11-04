@@ -17,7 +17,7 @@ export class DB{
   bind:(...values)=>make(values),
   first:async()=>{db.executions++;return statement.get(...args)||null;},
   all:async()=>{db.executions++;return {results:statement.all(...args)};},
-  run:async()=>{db.executions++;return {meta:{changes:Number(statement.run(...args).changes)}};},
+  run:async()=>{db.executions++;return statement.columns().length?{results:statement.all(...args),meta:{changes:0}}:{meta:{changes:Number(statement.run(...args).changes)}};},
  });return make([]);}
  async batch(statements){this.sql.exec('BEGIN');try{const values=[];for(const s of statements)values.push(await s.run());this.sql.exec('COMMIT');return values;}catch(e){this.sql.exec('ROLLBACK');throw e;}}
 }
