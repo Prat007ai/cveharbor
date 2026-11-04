@@ -1,3 +1,5 @@
+> Routine staging releases are superseded by [Simplified staging releases](simplified-staging-release.md) once reviewed and activated. This document remains applicable to historical/exception operations and unchanged production safeguards. Do not run the queued legacy continuation concurrently with simplified initialization.
+
 # Checkpoint 37 to 740: existing staging database, separate approval
 
 ## Verified starting point

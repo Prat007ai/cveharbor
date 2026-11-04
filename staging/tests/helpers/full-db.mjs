@@ -1,9 +1,10 @@
+import {forwardMigrations} from '../../../scripts/release_migrations.mjs';
 import {DatabaseSync} from 'node:sqlite';
 import fs from 'node:fs';
 import path from 'node:path';
 import {loadManifest,project,validateSchema} from '../../scripts/schema.mjs';
 export class FullDB{
- constructor({empty=false}={}){this.sql=new DatabaseSync(':memory:');this.sql.exec('PRAGMA foreign_keys=ON');if(!empty){for(const e of loadManifest().entries){this.sql.exec(fs.readFileSync(path.join(project,e.path),'utf8'));this.sql.prepare('INSERT INTO staging_schema_history(path,sha256,manifest_version) VALUES(?,?,1)').run(e.path,e.sha256);}for(const sql of validateSchema().guards)this.sql.exec(sql);}}
+ constructor({empty=false}={}){this.sql=new DatabaseSync(':memory:');this.sql.exec('PRAGMA foreign_keys=ON');if(!empty){for(const e of loadManifest().entries){this.sql.exec(fs.readFileSync(path.join(project,e.path),'utf8'));this.sql.prepare('INSERT INTO staging_schema_history(path,sha256,manifest_version) VALUES(?,?,1)').run(e.path,e.sha256);}for(const f of forwardMigrations(project))this.sql.exec(f.sql);for(const sql of validateSchema().guards)this.sql.exec(sql);}}
  prepare(sql){const db=this;const make=params=>({sql,params,bind:(...v)=>make(v),async first(){return db.sql.prepare(sql).get(...params)||null;},async all(){return {results:db.sql.prepare(sql).all(...params)};},async run(){const s=db.sql.prepare(sql);if(s.columns().length)return {results:s.all(...params),meta:{changes:0}};const r=s.run(...params);return {meta:{changes:Number(r.changes),last_row_id:Number(r.lastInsertRowid)}};}});return make([]);}
  async batch(statements){this.sql.exec('BEGIN');try{const values=[];for(const s of statements)values.push(await s.run());this.sql.exec('COMMIT');return values;}catch(e){this.sql.exec('ROLLBACK');throw e;}}
  async query(sql){this.sql.exec('BEGIN');try{this.sql.exec(sql);this.sql.exec('COMMIT');return [{success:true}];}catch(e){this.sql.exec('ROLLBACK');throw e;}}

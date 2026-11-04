@@ -1,3 +1,5 @@
+> Routine staging releases are superseded by [Simplified staging releases](simplified-staging-release.md) once reviewed and activated. This document remains applicable to historical/exception operations and unchanged production safeguards. Do not run the queued legacy continuation concurrently with simplified initialization.
+
 > **Original checkpoint 29 verified; adoption awaits approval.** Run 41707547474,
 
 > Current coordinated plan: [Task 2C two-phase continuation](../cvie-staging-continuation-plan.md). Original checkpoint 29 is verified. Adoption 29→37 and remaining migration 37→740 remain separate approvals, both requiring fresh private recovery evidence; nothing has executed beyond original 29.

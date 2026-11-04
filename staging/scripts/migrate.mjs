@@ -54,7 +54,7 @@ export function guardSQL(plan, step, observedRows) {
   return guards;
 }
 
-export async function migrate(env, { plan, transport = fetch, inventory = diagnose, probe = probeMaintenanceAccess, record = () => {}, requestIntervalMs = 350, beforeWrite = () => {} } = {}) {
+export async function migrate(env, { plan, transport = fetch, inventory = diagnose, probe = probeMaintenanceAccess, record = () => {}, requestIntervalMs = 350, beforeWrite = () => {}, endStep = null } = {}) {
   const report = { status: 'stopped', action: env.CF_STAGING_PROVISION_ACTION, account: TARGET.account, database_id: STAGING_DATABASE_ID,
     source_sha: env.GITHUB_SHA, plan_sha256: env.CF_STAGING_SCHEMA_PLAN_SHA256, started_at: new Date().toISOString(),
     requests: [], batches: [], storage: [], usage: { migration: { rows_read: 0, rows_written: 0 }, verification: { rows_read: 0, rows_written: 0 }, complete: true },
@@ -158,6 +158,9 @@ export async function migrate(env, { plan, transport = fetch, inventory = diagno
     plan ??= loadMigrationPlan(env);
     const start = Number(env.CF_STAGING_SCHEMA_RESUME_STEP);
     if (!Number.isSafeInteger(start) || start >= plan.checkpoints.length) throw failure('migration.resume', 'configuration');
+    endStep ??= plan.checkpoints.length - 1;
+    if (!Number.isSafeInteger(endStep) || endStep <= start || !plan.files.some(f => f.end === endStep)) throw failure('migration.end', 'configuration');
+    report.approved_end_step = endStep;
     report.approved_start_step = start; report.total_statements = plan.checkpoints.length - 1; persist();
     if ((await request('', 'migration.account'))?.id !== TARGET.account) throw failure('migration.account', 'target');
     report.storage_before_bytes = await storage('before'); identified = true;
@@ -171,7 +174,7 @@ export async function migrate(env, { plan, transport = fetch, inventory = diagno
     if (!state.actual.matching_steps.includes(start)) throw failure('migration.resume', 'state_mismatch');
     if (!report.usage.complete) throw failure('migration.metrics', 'metadata_unavailable');
     budget();
-    for (const file of plan.files.filter(f => f.end > start)) {
+    for (const file of plan.files.filter(f => f.end > start && f.end <= endStep)) {
       const from = Math.max(start, file.start);
       if (!state.actual.matching_steps.includes(from)) throw failure('migration.checkpoint', 'state_mismatch');
       const guards = guardSQL(plan, from, state.rows);

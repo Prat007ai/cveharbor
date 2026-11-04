@@ -4,6 +4,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash,randomUUID} from 'node:crypto';
 import {DatabaseSync} from 'node:sqlite';
+import {forwardMigrations} from '../../scripts/release_migrations.mjs';
 import {recoveryTablesSQL,recoveryGuardSQL,normalizedDDL} from '../../account-backend/src/recovery-schema.js';
 export const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 export const hash = text => createHash('sha256').update(text).digest('hex');
@@ -27,7 +28,7 @@ export function loadManifest(base=project) {
  return manifest;
 }
 export function schemaObjects(db){return db.prepare("SELECT type,name,tbl_name,sql FROM sqlite_master WHERE sql IS NOT NULL AND name NOT LIKE 'sqlite_%' AND name NOT GLOB '_cf_*' AND name NOT GLOB 'd1_*' ORDER BY type,name").all().map(x=>({...x,sql:normalizedDDL(x.sql)}));}
-export function validateSchema(base=project){
+export function validateSchema(base=project,{includeForward=true}={}){
  const manifest=loadManifest(base),db=new DatabaseSync(':memory:');db.exec('PRAGMA foreign_keys=ON');
  try{
   for(const entry of manifest.entries){
@@ -35,6 +36,7 @@ export function validateSchema(base=project){
    try{db.exec(fs.readFileSync(path.join(base,entry.path),'utf8'));db.prepare('INSERT INTO staging_schema_history(path,sha256,manifest_version) VALUES(?,?,?)').run(entry.path,entry.sha256,manifest.version);db.exec('COMMIT');}catch(e){db.exec('ROLLBACK');throw e;}
    if(db.prepare('PRAGMA foreign_key_check').all().length)throw Error('Foreign keys failed: '+entry.path);
   }
+  if(includeForward)for(const migration of forwardMigrations(base))db.exec(migration.sql);
   const guards=db.prepare(recoveryTablesSQL).all().flatMap(({name})=>['insert','update','delete'].map(op=>recoveryGuardSQL(name,op)));
   for(const sql of guards)db.exec(sql);
   if(db.prepare('PRAGMA integrity_check').get().integrity_check!=='ok')throw Error('Integrity failed');
@@ -42,7 +44,7 @@ export function validateSchema(base=project){
  }finally{db.close();}
 }
 export function prepare(base=project){
- const result=validateSchema(base),out=path.join(base,'staging/.build/schema');fs.mkdirSync(out,{recursive:true});
+ const result=validateSchema(base,{includeForward:false}),out=path.join(base,'staging/.build/schema');fs.mkdirSync(out,{recursive:true});
  writeAtomic(path.join(out,'validated-plan.json'),JSON.stringify({...result,manifest_sha256:hash(JSON.stringify(result.manifest))},null,2)+'\n');
  // Remove the obsolete ambiguous filename, never emit an auto-sorted bootstrap.
  fs.rmSync(path.join(out,'bootstrap-through-0027.sql'),{force:true});

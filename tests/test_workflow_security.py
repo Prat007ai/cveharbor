@@ -148,3 +148,26 @@ class RecoveryIsolationTests(unittest.TestCase):
  def test_release_cannot_receive_recovery_storage_credentials(self):
   doc=self.workflow();doc['jobs']['release']['steps'].append({'run':'echo forbidden','env':{'KEY':'${{ secrets.CF_STAGING_RECOVERY_R2_SECRET_ACCESS_KEY }}'}})
   self.assertTrue(policy.validate(doc,'cvie-staging.yml'))
+
+class SimplifiedReleaseSecurityTests(unittest.TestCase):
+ def test_production_publishers_cannot_skip_exact_commit_staging_gate(self):
+  for filename,job in [('bootstrap.yml','sync'),('deploy-worker-code.yml','deploy'),('deploy-account-worker.yml','deploy'),('activate-confirmation-domain.yml','activate')]:
+   doc=policy.load_workflow((ROOT/'.github/workflows'/filename).read_text())
+   self.assertEqual(policy.validate(doc,filename),[])
+   doc['jobs'][job].pop('needs')
+   self.assertTrue(policy.validate(doc,filename))
+   doc=policy.load_workflow((ROOT/'.github/workflows'/filename).read_text())
+   next(s for s in doc['jobs']['staging-ready']['steps'] if s.get('run')=='node scripts/require_staging_release.mjs')['if']='false'
+   self.assertTrue(policy.validate(doc,filename))
+ def test_automatic_staging_cannot_gain_production_or_manual_recovery_credentials(self):
+  for secret in ['CVEHARBOR_PROD_WORKER_TOKEN','CF_STAGING_RECOVERY_EVIDENCE','CF_STAGING_APPROVED_COMMIT']:
+   doc=policy.load_workflow((ROOT/'.github/workflows/cvie-staging.yml').read_text())
+   doc['jobs']['automatic-staging']['steps'].append({'run':'echo unsafe','env':{'TOKEN':'${{ secrets.'+secret+' }}'}})
+   self.assertTrue(policy.validate(doc,'cvie-staging.yml'))
+ def test_frontend_wait_does_not_hold_the_production_mutation_lock(self):
+  for filename,job in [('bootstrap.yml','sync'),('deploy-worker-code.yml','deploy')]:
+   doc=policy.load_workflow((ROOT/'.github/workflows'/filename).read_text())
+   self.assertNotIn('concurrency',doc)
+   self.assertNotIn('concurrency',doc['jobs']['staging-ready'])
+   self.assertEqual(doc['jobs'][job]['concurrency'],{'group':'cveharbor-production-release','cancel-in-progress':False})
+  self.assertTrue(any(s.get('run')=='node scripts/verify_frontend_backend.mjs --wait' for s in policy.load_workflow((ROOT/'.github/workflows/bootstrap.yml').read_text())['jobs']['staging-ready']['steps']))

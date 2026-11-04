@@ -236,3 +236,17 @@ test('failed post-write count verification and failed reconciliation retain fres
   assert.deepEqual(report.actual_state.matching_steps, []); assert.equal(report.actual_state.rows_verified, false);
   assert.ok(report.state_inspection_failure); assert.equal(report.automatic_retries, 0);
 });
+
+test('one approved initialization can stop at a reviewed production prefix then continue without replaying adopted objects', async t => {
+ const h=harness(t);
+ // Exact currently adopted checkpoint, established locally; no remote writes.
+ for(const f of plan.files.filter(f=>f.end<=37)){
+  const r=await h.execute({batch:f.statements.map(sql=>({sql}))});assert.equal(r.success,true);
+ }
+ const baselineEnd=plan.files.find(f=>f.file.endsWith('0030_status_update_notifications.sql')).end;
+ const first=await migrate({...env,CF_STAGING_SCHEMA_RESUME_STEP:'37'},{...h.deps,endStep:baselineEnd});
+ assert.equal(first.last_verified_step,baselineEnd);assert.ok(first.batches.every(b=>b.from_step>=37&&b.to_step<=baselineEnd));
+ const second=await migrate({...env,CF_STAGING_SCHEMA_RESUME_STEP:String(baselineEnd)},h.deps);
+ assert.equal(second.last_verified_step,740);assert.equal(second.actual_state.counts.length,102);
+ assert.ok(second.batches.every(b=>b.from_step>=baselineEnd));assert.equal(second.invariants_unchanged,true);
+});

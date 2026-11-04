@@ -1,6 +1,15 @@
 name: Phase 1 readiness - SELECT-only production audit
 on:
   workflow_dispatch:
+    inputs:
+      audit_mode:
+        type: choice
+        options: [integrity, schema-baseline]
+        default: integrity
+      baseline_source_sha:
+        description: Immutable deployed-source candidate SHA (must be an ancestor of main)
+        type: string
+        required: false
 permissions:
   contents: read
 concurrency:
@@ -19,10 +28,31 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: '22'
+          node-version: '24'
+      - name: Prepare immutable baseline source without Cloudflare credentials
+        if: inputs.audit_mode == 'schema-baseline'
+        env:
+          BASELINE_SOURCE_SHA: ${{ inputs.baseline_source_sha }}
+        run: python scripts/checkout_baseline_source.py
+      - name: Compare production schema metadata and deployed version only
+        if: inputs.audit_mode == 'schema-baseline'
+        env:
+          CLOUDFLARE_AUDIT_API_TOKEN: ${{ secrets.CLOUDFLARE_AUDIT_API_TOKEN }}
+          CLOUDFLARE_AUDIT_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_AUDIT_ACCOUNT_ID }}
+          BASELINE_SOURCE_SHA: ${{ inputs.baseline_source_sha }}
+          BASELINE_SOURCE_ROOT: release/.build/production-source
+        run: node scripts/production_schema_baseline.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always() && inputs.audit_mode == 'schema-baseline'
+        with:
+          name: production-schema-baseline
+          path: release/artifacts/production-baseline.json
+          retention-days: 14
       - name: Execute aggregate SELECT-only preflight
+        if: inputs.audit_mode != 'schema-baseline'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_AUDIT_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_AUDIT_ACCOUNT_ID }}

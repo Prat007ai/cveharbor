@@ -20,10 +20,12 @@ import {migrationRecoveryEvidence} from './migration-recovery.mjs';
 import {holdStatus,setHold,freezeHold} from '../../scripts/recovery_control.mjs';
 export const OPERATIONS=Object.freeze(['diagnose-schema','adopt-schema','publish-synthetic','verify','migrate','update','recover-code','hold','freeze','resume']);
 export function authorize(env,event,checkout){
- assert.equal(env.GITHUB_REPOSITORY,'Prat007ai/cveharbor');assert.equal(env.GITHUB_REF,'refs/heads/codex/cvie-core-phase012');
+ assert.equal(env.GITHUB_REPOSITORY,'Prat007ai/cveharbor');
+ const automatic=env.SIMPLE_STAGING_ENABLED==='true'&&env.GITHUB_REF==='refs/heads/main'&&env.CF_STAGING_PROVISION_ACTION==='update'&&['push','workflow_dispatch'].includes(env.GITHUB_EVENT_NAME);
+ if(!automatic)assert.equal(env.GITHUB_REF,'refs/heads/codex/cvie-core-phase012');
  assert.match(env.CF_STAGING_APPROVED_COMMIT||'',/^[a-f0-9]{40}$/);assert.equal(env.GITHUB_SHA,env.CF_STAGING_APPROVED_COMMIT);assert.equal(checkout,env.GITHUB_SHA);
  const action=env.CF_STAGING_PROVISION_ACTION;assert.ok(OPERATIONS.includes(action));
- assert.ok(env.GITHUB_EVENT_NAME==='workflow_dispatch'?event.inputs?.operation===action:env.GITHUB_EVENT_NAME==='push'&&Number(env.GITHUB_RUN_ATTEMPT)>1&&event.head_commit?.id===checkout&&event.head_commit?.message?.includes('[staging-release]'),'Explicit reviewed operation required');
+ assert.ok(automatic|| (env.GITHUB_EVENT_NAME==='workflow_dispatch'?event.inputs?.operation===action:env.GITHUB_EVENT_NAME==='push'&&Number(env.GITHUB_RUN_ATTEMPT)>1&&event.head_commit?.id===checkout&&event.head_commit?.message?.includes('[staging-release]')),'Explicit reviewed operation required');
  assert.equal(env.CF_STAGING_ACCOUNT_ID,TARGET.account);assert.equal(env.CF_STAGING_D1_DATABASE_ID,resourceManifest().permanent_database.uuid);
  if(action==='diagnose-schema')loadDiagnosticReference(env);
  if(action==='adopt-schema'){assert.ok(!env.CF_STAGING_SCHEMA_RESUME_STEP,'Adoption does not accept a resume cursor');loadAdoption(env);}

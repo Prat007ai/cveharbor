@@ -1,3 +1,5 @@
+> Routine staging releases are superseded by [Simplified staging releases](simplified-staging-release.md) once reviewed and activated. This document remains applicable to historical/exception operations and unchanged production safeguards. Do not run the queued legacy continuation concurrently with simplified initialization.
+
 # Optional R2 staging recovery: separate future review
 
 > Not part of the approved checkpoint 29 → 37 adoption. Retain the original

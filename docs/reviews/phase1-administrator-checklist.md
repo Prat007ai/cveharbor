@@ -1,3 +1,5 @@
+> Routine staging releases are superseded by [Simplified staging releases](simplified-staging-release.md) once reviewed and activated. This document remains applicable to historical/exception operations and unchanged production safeguards. Do not run the queued legacy continuation concurrently with simplified initialization.
+
 > **Permanent staging update:** use [the consolidated activation runbook](permanent-staging-activation.md)
 > for the current integrated #243 candidate. It supersedes earlier staging bootstrap,
 > publisher and email-blocking instructions in this checklist. Production approval,

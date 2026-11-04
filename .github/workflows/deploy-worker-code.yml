@@ -3,6 +3,10 @@ on:
   push:
     branches: [main]
     paths:
+      - 'release/**'
+      - 'scripts/production_forward_migrations.mjs'
+      - 'scripts/release_migrations.mjs'
+      - 'scripts/require_staging_release.mjs'
       - 'account-backend/src/**'
       - 'data/lifecycle-products.json'
       - 'account-backend/tests/**'
@@ -53,12 +57,31 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: cveharbor-production-release
-  cancel-in-progress: false
-
 jobs:
+  staging-ready:
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Require staging success for this exact commit before production approval
+        env:
+          SIMPLE_RELEASE_ENABLED: ${{ vars.SIMPLE_RELEASE_ENABLED }}
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/require_staging_release.mjs
   deploy:
+    concurrency:
+      group: cveharbor-production-release
+      cancel-in-progress: false
+    needs: staging-ready
     if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true'
     name: Validate and deploy account Worker
     runs-on: ubuntu-latest
@@ -265,6 +288,13 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/refresh_recovery_guards.mjs
+      - name: Apply tested additive native migrations only after production approval
+        if: vars.SIMPLE_RELEASE_ENABLED == 'true'
+        env:
+          SIMPLE_RELEASE_ENABLED: ${{ vars.SIMPLE_RELEASE_ENABLED }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
+        run: node scripts/production_forward_migrations.mjs
       - name: Deploy Worker source
         working-directory: account-backend
         env:
