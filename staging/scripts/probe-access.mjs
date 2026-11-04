@@ -54,23 +54,35 @@ export async function probeAccess(env, transport = fetch) {
 }
 // Migration maintenance checks require denial, never a successful application login.
 // Normal deployment probes above retain their positive authentication requirements.
+function maintenanceLoginRedirect(response, issuer) {
+  if (response.status !== 302) return false;
+  try {
+    const url = new URL(response.headers.get('Location'));
+    return url.origin === issuer && !url.username && !url.password && !url.hash &&
+      ['/cdn-cgi/access/login', '/cdn-cgi/access/login/' + new URL(TARGET.origin).hostname].includes(url.pathname);
+  } catch { return false; }
+}
 export async function probeMaintenanceAccess(env, transport = fetch) {
   if (env.CF_STAGING_PROVISION_ACTION !== 'migrate' || !env.CF_STAGING_ACCESS_CLIENT_ID || !env.CF_STAGING_ACCESS_CLIENT_SECRET)
     throw Error('Migration maintenance service credentials required');
+  const { ACCESS_ISSUER } = accessSettings(env.CF_STAGING_ACCESS_ISSUER, env.CF_STAGING_ACCESS_AUD);
   const auth = { 'CF-Access-Client-Id': env.CF_STAGING_ACCESS_CLIENT_ID, 'CF-Access-Client-Secret': env.CF_STAGING_ACCESS_CLIENT_SECRET };
   const checks = [];
-  async function check(url, name, headers, expected) {
-    let status = 599;
+  async function check(url, name, headers, expected, allowLoginRedirect = false) {
+    let status = 599, passed = false, login_redirect_verified = false;
     try {
       const response = await transport(url, { method: 'GET', headers, redirect: 'manual', signal: AbortSignal.timeout(20000) });
       status = response.status;
+      // Verify in memory; Location query parameters can contain sensitive Access metadata.
+      login_redirect_verified = allowLoginRedirect && maintenanceLoginRedirect(response, ACCESS_ISSUER);
       await response.body?.cancel();
+      passed = status === expected || login_redirect_verified;
     } catch {}
-    checks.push({ name, status, passed: status === expected });
+    checks.push({ name, status, passed, login_redirect_verified });
   }
   for (const route of ['/', '/styles.css', '/app.js', '/data.js', '/assets/workspace-harbor.svg', '/workspace/', '/v1/me']) {
     for (const [name, headers] of [['anonymous', {}], ['service_token', auth], ['forged_jwt', { 'Cf-Access-Jwt-Assertion': 'invalid.signature.token' }]])
-      await check(TARGET.origin + route, name + ':' + route, headers, 403);
+      await check(TARGET.origin + route, name + ':' + route, headers, 403, name !== 'service_token');
   }
   await check('https://cveharbor-accounts-staging.cveharbor-staging.workers.dev/v1/me', 'private_backend', {}, 404);
   return { access_mode: 'maintenance', passed: checks.every(c => c.passed), checks, requests: checks.length, method: 'GET', application_sessions_used: false };

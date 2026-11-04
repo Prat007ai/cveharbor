@@ -111,16 +111,17 @@ test('migration maintenance accepts a known zero-policy app; denied metadata is 
 });
 test('maintenance probes require denial for anonymous, forged and service requests and keep backend private', async () => {
   const settings={...env,CF_STAGING_PROVISION_ACTION:'migrate'};
-  for(const mode of ['blocked','service_open','api_open','login_redirect','network']) {
+  for(const mode of ['blocked','service_open','api_open','login_redirect','browser_login_redirect','network']) {
     const calls=[];
     const result=await probeMaintenanceAccess(settings,async(url,init)=>{
       calls.push(String(url));assert.equal(init.method,'GET');assert.equal(init.redirect,'manual');
       if(mode==='network')throw Error('fixture');
       if(String(url).includes('accounts-staging'))return new Response('',{status:mode==='api_open'?200:404});
       if(mode==='login_redirect')return new Response('',{status:302,headers:{Location:env.CF_STAGING_ACCESS_ISSUER+'/cdn-cgi/access/login'}});
+      if(mode==='browser_login_redirect'&&!init.headers['CF-Access-Client-Id'])return new Response('',{status:302,headers:{Location:env.CF_STAGING_ACCESS_ISSUER+'/cdn-cgi/access/login/'+new URL(TARGET.origin).hostname}});
       return new Response('',{status:mode==='service_open'&&init.headers['CF-Access-Client-Id']?200:403});
     });
-    assert.equal(result.passed,mode==='blocked');assert.equal(calls.length,22);
+    assert.equal(result.passed,mode==='blocked'||mode==='browser_login_redirect');assert.equal(calls.length,22);
     assert.doesNotMatch(JSON.stringify(result),/private-service/);
   }
   await assert.rejects(probeMaintenanceAccess({...settings,CF_STAGING_PROVISION_ACTION:'update'}));

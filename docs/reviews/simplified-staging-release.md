@@ -181,3 +181,26 @@ unverified until this diagnostic runs with the configured staging credentials.
 Review its evidence before approving any correction or exact migration retry.
 The destination remains production baseline step **209**; no automatic retry,
 rebuild, restore, candidate step 740 migration or Worker deployment is introduced.
+
+### Maintenance authentication redirects
+
+Diagnostic run 41919567329 verified production-profile checkpoint 37 (22 tables,
+12 indexes, two receipts, valid integrity and foreign keys). Its maintenance
+probe rejected anonymous/forged-JWT HTTP 302 responses; service tokens received
+403 and the private backend received 404. Neither its artifact nor its job log
+captured the redirect destinations, so those historical destinations are unverified.
+
+The maintenance probe now checks `Location` in memory. Only HTTP 302 for anonymous
+or forged-JWT requests can qualify, and only at the configured HTTPS Access issuer
+with the exact `/cdn-cgi/access/login` path or that path followed by the exact
+staging frontend hostname. Credentials, fragments, other origins, other paths and
+other redirect statuses fail. It never follows redirects. Service tokens still
+require 403, the private backend still requires 404, and the migration executor's
+zero-policy maintenance checks remain unchanged.
+
+After this correction is reviewed and available on main, run the existing workflow
+with `simple_operation=diagnose` and legacy `operation=none`. Confirm
+`access_check.passed=true` and `login_redirect_verified=true` for each 302 browser
+check before approving initialization to step 209. Only a boolean is recorded;
+Access redirect query parameters are never published. This change does not itself
+run migrations, change policies, restore access or deploy Workers.
