@@ -28,6 +28,7 @@ export async function simpleRelease(env,{baseline=JSON.parse(fs.readFileSync(pat
  if(operation==='resume'){
   assert.match(env.CF_STAGING_EXPECTED_HOLD_REVISION||'',/^\d+$/);
   await verifySchema(DB);
+  assert.equal((await verifyNativeHistory(DB,forwardMigrations(path.resolve(root,'..')))).length,0,'Pending or unverified native migrations block resume');
   await setHold(DB,{hold:false,revision:Number(env.CF_STAGING_EXPECTED_HOLD_REVISION),reason:env.CF_STAGING_RECOVERY_REASON});
   report.status='resumed';report.workers_deployed=false;return report;
  }

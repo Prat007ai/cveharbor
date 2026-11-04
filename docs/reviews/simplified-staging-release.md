@@ -57,7 +57,7 @@ Still required: actual Cloudflare metadata baseline, remote initialization/updat
 - Existing backend regression: 42 test files passed.
 - Permanent staging regression: 22 test files passed; newly added resume/failure cases rerun successfully after the full suite.
 - Phase 1 release/boundary regression: two test files passed.
-- Workflow security: all 38 workflows passed policy; 34 policy tests passed.
+- Workflow security: all 38 workflows passed policy; 34 policy tests passed. Full Python regression: 183 tests passed.
 - Synthetic Worker/frontend build and compiled isolation checks passed (no provider egress, native schedules disabled, no production origins in synthetic assets).
 - Exact adopted-prefix local rehearsal passed: 37 → source-derived baseline 232 → candidate 740, preserving installed objects and verifying foreign keys/integrity.
 - Frozen execution-plan digest remains `a4ad0b27ff77266706693bf34f0880088b0bfe12139a583cca518975981a0fc3`; original adoption SQL/manifest/checksums were not edited.
