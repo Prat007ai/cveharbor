@@ -1,5 +1,5 @@
 import { ACCESS_FAILURE_CATEGORIES } from '../access.mjs';
-import { TARGET, accessSettings } from '../target.mjs';
+import { TARGET, LEGACY_ORIGIN, accessSettings } from '../target.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -48,6 +48,14 @@ export async function probeAccess(env, transport = fetch) {
   try { direct = await transport('https://cveharbor-accounts-staging.cveharbor-staging.workers.dev/v1/me', { method: 'GET', headers: {}, redirect: 'manual', signal: AbortSignal.timeout(20000) }); }
   catch { direct = new Response('', { status: 599 }); }
   checks.push({ name: 'private_api_has_no_public_origin', passed: direct.status === 404, status: direct.status });
+  // The retired frontend hostname must not serve application pages even with Access credentials.
+  for (const route of ['/', '/workspace/', '/v1/me', '/assignment/test', '/data.js']) {
+    for (const headers of [{}, auth]) {
+      requests++; let status = 599;
+      try { const r = await transport(LEGACY_ORIGIN + route, {method:'GET', headers, redirect:'manual', signal:AbortSignal.timeout(20000)}); status=r.status; await r.body?.cancel(); } catch {}
+      checks.push({name:'legacy_application_disabled',route,status,passed:status===403});
+    }
+  }
   const report = { checks, passed: checks.every(c => c.passed), method: 'GET', requests, application_sessions_used: false, sampled_assets: assets.length, universal_routing_requires_active_version_metadata: true };
   // Return failure evidence; caller records it before failing the job.
   return report;

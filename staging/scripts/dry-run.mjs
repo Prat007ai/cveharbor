@@ -9,6 +9,7 @@ import { failure, safeFailure, wranglerCategory } from './errors.mjs';
 
 export function dryRun(env = process.env, runner = spawnSync) {
   writeConfigs({ CF_STAGING_ACCOUNT_ID: TARGET.account, CF_STAGING_D1_DATABASE_ID: 'fac61562-fc31-426d-8032-550aba63b7f6',
+    CF_STAGING_APPLICATION_PROFILE:fs.existsSync(path.join(root,'.build/manifest.json'))&&JSON.parse(fs.readFileSync(path.join(root,'.build/manifest.json'))).application_profile==='production-baseline'?'production-baseline':undefined,
     CF_STAGING_ACCESS_ISSUER: 'https://synthetic-staging.cloudflareaccess.com', CF_STAGING_ACCESS_AUD: 'a'.repeat(64) });
   // Same isolated subprocess setup as provisioning, but without any token.
   const childEnv = { PATH: env.PATH, XDG_CONFIG_HOME: path.join(root, '.build/dry-run-config'), CI: 'true',

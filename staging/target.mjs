@@ -4,7 +4,7 @@ export const TARGET = Object.freeze({
   api: 'cveharbor-accounts-staging',
   site: 'cveharbor-site-staging',
   database: 'cveharbor-accounts-staging',
-  origin: 'https://cveharbor-site-staging.cveharbor-staging.workers.dev',
+  origin: 'https://cveharborstage.com',
   productionDatabase: '46710e51-7ca4-4571-b89c-921b9969de0b',
   compatibility: '2026-10-28',
 });
@@ -18,3 +18,6 @@ export function accessSettings(issuer, audience) {
     throw Error('Set the staging Access team issuer and application AUD before configuration.');
   return { ACCESS_ISSUER: issuer, ACCESS_AUD: audience };
 }
+
+// Retained only for authenticated backend readiness during the existing-Worker transition.
+export const LEGACY_ORIGIN='https://cveharbor-site-staging.cveharbor-staging.workers.dev';

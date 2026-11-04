@@ -20,6 +20,7 @@ export function configs(env){
  api.vars={...api.vars,STAGING_ADMIN_EMAILS:admins,STAGING_RELEASE:sha,STAGING_MANUAL_JOBS_ENABLED:env.CF_STAGING_MANUAL_JOBS_ENABLED||'false'};
  site.vars={...site.vars,...access,STAGING_ADMIN_EMAILS:admins,STAGING_RELEASE:sha};
  api.main=path.join(root,'.build/api.mjs');api.d1_databases[0].migrations_dir=path.resolve(root,'../account-backend/migrations');
+ if(env.CF_STAGING_APPLICATION_PROFILE==='production-baseline')site.routes=[{pattern:new URL(TARGET.origin).hostname,custom_domain:true}];
  site.main=path.join(root,'frontend.mjs');site.assets.directory=path.join(root,'.build/public');
  validate(api,site);return {api,site};
 }
@@ -27,7 +28,7 @@ export function validate(api,site){
  const common=['$schema','name','account_id','main','compatibility_date','workers_dev','preview_urls','keep_vars','routes','triggers','vars','r2_buckets'];
  if(Object.keys(api).some(k=>![...common,'d1_databases','ratelimits','compatibility_flags'].includes(k))||Object.keys(site).some(k=>![...common,'assets','services'].includes(k)))throw Error('Unreviewed configuration');
  for(const [config,name] of [[api,TARGET.api],[site,TARGET.site]]){
-  if(config.name!==name||config.account_id!==TARGET.account||config.compatibility_date!==TARGET.compatibility||config.keep_vars!==false||config.preview_urls!==false||config.routes?.length||config.triggers?.crons?.length)throw Error('Unexpected identity, exposure or schedules');
+  if(config.name!==name||config.account_id!==TARGET.account||config.compatibility_date!==TARGET.compatibility||config.keep_vars!==false||config.preview_urls!==false||(config.routes?.length&&!(name===TARGET.site&&JSON.stringify(config.routes)===JSON.stringify([{pattern:new URL(TARGET.origin).hostname,custom_domain:true}])))||config.triggers?.crons?.length)throw Error('Unexpected identity, exposure or schedules');
   if(JSON.stringify(config.r2_buckets)!==JSON.stringify([{binding:'INTELLIGENCE_BUCKET',bucket_name:resourceManifest().intelligence_bucket}]))throw Error('Unapproved staging bucket');
  }
  if(api.workers_dev!==false||site.workers_dev!==true||JSON.stringify(api.compatibility_flags)!=='["nodejs_compat"]')throw Error('Invalid runtime/exposure');

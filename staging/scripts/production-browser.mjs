@@ -1,0 +1,29 @@
+// Local browser + pinned assets/handlers + synthetic SQLite/R2. No remote application requests.
+import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';
+import application from '../.build/api.mjs';import {createFrontend} from '../frontend.mjs';
+import {FullDB,bucketFixture} from '../tests/helpers/full-db.mjs';import {TARGET} from '../target.mjs';import {totp} from '../../account-backend/src/totp.js';
+const {chromium}=await import(process.env.CVEHARBOR_PLAYWRIGHT_MODULE||'playwright-core');
+assert.equal(JSON.parse(fs.readFileSync('staging/.build/manifest.json')).application_profile,'production-baseline');
+const DB=new FullDB({empty:true});DB.sql.exec(fs.readFileSync('staging/schema.sql','utf8'));for(const f of JSON.parse(fs.readFileSync('release/baseline.json')).application_schema_files)DB.sql.exec(fs.readFileSync(f.path,'utf8'));
+const env={DB,STAGING_MODE:'true',STAGING_APPLICATION_PROFILE:'production-baseline',STAGING_EMAIL_CAPTURE_ENABLED:'true',STAGING_TOTP_ENCRYPTION_KEY:'synthetic-staging-key-not-used-in-production',STAGING_MONITOR_WEBHOOK_TOKEN:'synthetic-only',STAGING_ADMIN_EMAILS:'browser@example.invalid',INTELLIGENCE_SOURCE:'r2',INTELLIGENCE_BUCKET:await bucketFixture(),ASSIGNMENT_ACK_RATE_LIMITER:{limit:async()=>({success:true})}};
+const pending=[];env.STAGING_API={fetch:req=>application.fetch(req,env,{waitUntil:p=>pending.push(p)})};
+const directory=path.resolve('staging/.build/public');env.ASSETS={fetch:async req=>{const url=new URL(req.url);const file=path.resolve(directory,'.'+url.pathname+(url.pathname.endsWith('/')?'index.html':''));if(!file.startsWith(directory+path.sep)||!fs.existsSync(file))return new Response('Not found',{status:404});return new Response(fs.readFileSync(file),{headers:{'Content-Type':{'.html':'text/html','.js':'application/javascript','.json':'application/json','.css':'text/css','.svg':'image/svg+xml','.png':'image/png'}[path.extname(file)]||'application/octet-stream'}});}};
+// Access cryptography/denial is tested independently. This fixture represents one verified test administrator.
+const front=createFrontend(async(_token,_issuer,_aud,_reject,identity)=>{identity({email:'browser@example.invalid'});return true;});
+const deadline=setTimeout(()=>{console.error('Local browser validation exceeded 90 seconds');process.exit(1);},90000);
+const browser=await chromium.launch({headless:true,executablePath:process.env.CVEHARBOR_CHROMIUM_PATH||'/usr/bin/google-chrome',args:['--no-sandbox']});
+try{
+ const context=await browser.newContext({serviceWorkers:'block'}),errors=[],external=[];
+ const checks=[];
+ await context.route('**/*',async route=>{const req=route.request();if(new URL(req.url()).origin!==TARGET.origin){external.push(new URL(req.url()).origin);return route.abort();}try{const response=await front.fetch(new Request(req.url(),{method:req.method(),headers:await req.allHeaders(),...(req.postData()?{body:req.postData()}:{} )}),env);while(pending.length)await Promise.all(pending.splice(0));checks.push({path:new URL(req.url()).pathname,status:response.status});await route.fulfill({status:response.status,headers:Object.fromEntries(response.headers),body:Buffer.from(await response.arrayBuffer())});}catch(error){errors.push(error.message);await route.fulfill({status:500,body:'Local test failure'});}});
+ context.setDefaultTimeout(15000);context.setDefaultNavigationTimeout(15000);const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+ console.log('Browser: sign in');await page.goto(TARGET.origin+'/workspace/');await page.locator('#accountPageEmail').fill('browser@example.invalid');await page.locator('#accountPageSend').click();await page.locator('#accountPageCode').waitFor();
+ const mail=JSON.parse(DB.sql.prepare('SELECT payload_json FROM staging_mail ORDER BY rowid DESC LIMIT 1').get().payload_json);await page.locator('#accountPageCode').fill(mail.text_body.match(/code: (\d{6})/)[1]);await page.locator('#accountPageConfirm').click();
+ try{await page.locator('#accountPageRequiredCode').waitFor({timeout:10000});}catch{throw Error(JSON.stringify({message:await page.locator('#accountPageMessage').textContent(),errors,checks}));}const secret=await page.locator('#accountPageRequiredSecret').textContent();await page.locator('#accountPageRequiredCode').fill(await totp(secret));await page.locator('#accountPageRequiredEnrollForm button[type=submit]').click();await page.locator('#accountPageRequiredContinue').click();await page.waitForFunction(()=>document.body.classList.contains('workspace-authenticated'));
+ console.log('Browser: authenticated');const cookies=await context.cookies();const session=cookies.find(c=>c.name==='cvh_session');assert.equal(session.domain,'cveharborstage.com');assert.equal(session.httpOnly,true);assert.equal(session.secure,true);assert.equal(session.sameSite,'Strict');
+ const routes=['/workspace/','/account/','/environments/','/customer-dashboard/','/remediation/','/customer-reports/','/__staging/'];
+ for(const route of routes){console.log('Browser route: '+route);const r=await page.goto(TARGET.origin+route);assert.equal(r.status(),200,route);await page.locator(route==='/__staging/'?'body':'main').first().waitFor({state:'visible'});assert.ok((await page.locator('body').innerText()).includes('CVEHarbor'));}
+ assert.deepEqual(external,[]);assert.deepEqual(errors,[]);
+ fs.mkdirSync('staging/artifacts',{recursive:true});fs.writeFileSync('staging/artifacts/production-browser.json',JSON.stringify({passed:true,synthetic_only:true,remote_requests:0,email_captured:true,mfa_enrolled:true,host_only_cookie:true,routes},null,2)+'\n');
+ console.log('Production replica browser passed: captured OTP, MFA, host-only session, workspace, account, inventory, findings, tracker, reports and captured-email administration.');
+}finally{clearTimeout(deadline);await browser.close();DB.close();}
