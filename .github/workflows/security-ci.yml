@@ -1,0 +1,44 @@
+name: Security and application validation
+on:
+  pull_request:
+  push:
+    branches: [main, security/phase1-deployment-boundaries]
+permissions:
+  contents: read
+jobs:
+  policy:
+    name: Security / workflow policy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - run: python -m pip install PyYAML==6.0.3
+      - run: python scripts/check_workflow_security.py
+      - run: python -m unittest discover -s tests -p test_workflow_security.py -v
+      - run: node --test scripts/check_phase1_staging_boundary.test.mjs
+  regression:
+    name: CI / application regression
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - run: python -m pip install PyYAML==6.0.3
+      - run: python -m unittest discover -s tests -v
+      - run: npm test --prefix account-backend && node --test site-gate/tests/*.test.mjs
+      - run: python scripts/build_site.py && python scripts/verify_production.py --preflight
+      - run: npm install --no-save --no-package-lock jsdom@26
+      - run: node scripts/browser_smoke.mjs && node scripts/customer_security_smoke.mjs && node scripts/product_monitoring_smoke.mjs

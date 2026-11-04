@@ -1,3 +1,5 @@
+> **Phase 1 deployment notice:** Use [the consolidated administrator checklist](reviews/phase1-administrator-checklist.md) for current release, credential, staging and recovery steps. Deployment/migration/rollback recipes below are feature-history references, not instructions to execute during Phase 1. Feature behavior descriptions remain applicable unless superseded by the current implementation.
+
 # Catalogue product chooser and compact controls
 
 Isolated branch: `codex/catalogue-product-controls`, based on `d28c8bb28defd00c8f4d757c931d2d4402f04866`. Existing working trees and the recently merged monitoring work remain intact. Open PRs 92/93 concern public advisory coverage; shared-file integration should preserve the existing catalogue scope controls and monitoring release classifier.

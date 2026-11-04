@@ -1,0 +1,38 @@
+{
+  "scope": "local synthetic validation; no remote staging or production changes",
+  "integrated_sources": {
+    "pr243": "515e224c093a9102e5075d6daefae2d39c32e2ce",
+    "pr251": "2f761c9da669917b8f4a70649cc814c65b6a0329",
+    "pr253": "fef46f8f1937a4f21dc56821d7939cbb516a11b6"
+  },
+  "schema": {
+    "source_inputs": 35,
+    "generated_guard_batches": 1,
+    "statements": 740,
+    "application_and_staging_tables": 102,
+    "including_sqlite_sequence": 103,
+    "foreign_keys": "passed",
+    "integrity": "passed",
+    "plan_sha256": "a4ad0b27ff77266706693bf34f0880088b0bfe12139a583cca518975981a0fc3"
+  },
+  "tests": {
+    "staging_test_files_passed": 15,
+    "migration_failure_and_resume_cases_passed": 9,
+    "backend_test_files_passed": 42,
+    "release_script_and_site_gate_test_files_passed": 7,
+    "python_test_cases_passed": 169,
+    "workflow_boundary_policy": "passed",
+    "ui_smoke_suites": ["CVIE fast onboarding", "customer security and software upgrades", "product monitoring"],
+    "native_workerd": "Access signature verification, rejected redirects, AsyncLocalStorage capture isolation and synthetic provider transport passed",
+    "credential_free_wrangler_packages": ["api", "site"],
+    "real_email_sends": 0
+  },
+  "pending": [
+    "Live resource inventory and protected-environment enforcement verification",
+    "Approved remote D1 bootstrap/provider semantics and metrics",
+    "Approved remote R2 publication/conditional-write rehearsal",
+    "Approved existing-Worker update and service-binding/readiness gates",
+    "Human Access SSO and full deployed staging browser acceptance",
+    "Separate SELECT-only production integrity audit"
+  ]
+}

@@ -1,16 +1,19 @@
-name: Verify CVIE queries against production D1 without customer data
+name: Verify CVIE development contracts without production access
 on:
   push:
     branches: [fix/cvie-status-d1, fix/cvie-navigation-resume, perf/cvie-read-usage, feat/cvie-shared-product-scans]
     paths: ['account-backend/**', 'cvie.js', 'app.js', 'scripts/cvie_client_smoke.mjs', 'scripts/cvie_polling_smoke.mjs', 'scripts/probe_cvie_shared.mjs', 'scripts/bootstrap_cvie_shared.mjs', 'scripts/cvie_rest_batch.mjs', 'scripts/cvie_rest_batch.test.mjs', 'scripts/verify_cvie_d1.mjs', '.github/workflows/verify-cvie-d1.yml']
 permissions:
-  contents: write
+  contents: read
 jobs:
   verify:
+    name: verify-cvie-d1 / verify
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22'
       - name: Verify scan continuity, subscription changes and private account isolation
@@ -20,19 +23,6 @@ jobs:
           npm install --no-save --no-package-lock jsdom@26
           node scripts/cvie_client_smoke.mjs
           node scripts/cvie_polling_smoke.mjs
-      - name: Add the shared schema without changing production runtime behavior
-        if: github.ref_name == 'feat/cvie-shared-product-scans'
-        working-directory: account-backend
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0022_cvie_shared_scans.sql
-      - name: Validate the migration batch transport without customer reads or writes
-        if: github.ref_name == 'feat/cvie-shared-product-scans'
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: node scripts/cvie_rest_batch.test.mjs && node scripts/bootstrap_cvie_shared.mjs --preflight
       - name: Verify one real provider page is reused by two isolated accounts
         if: github.ref_name == 'feat/cvie-shared-product-scans'
         id: shared_provider
@@ -40,28 +30,12 @@ jobs:
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: node scripts/probe_cvie_shared.mjs
-      - name: Exercise the actual production database query contracts with synthetic identities
-        id: probe
-        continue-on-error: true
-        env:
-          CVIE_SHARED_SCANS_ENABLED: 'true'
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: node scripts/verify_cvie_d1.mjs
-      - name: Record only query outcomes and public schema metadata
-        env:
-          CVIE_CHECK_BRANCH: ${{ github.ref_name }}
-        run: |
-          git config user.name 'cveharbor-updater[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/cvie-d1-check.json
-          if test -f data/cvie-shared-check.json; then git add data/cvie-shared-check.json; fi
-          git commit -m 'Record read-only production D1 CVIE query check'
-          git push origin "HEAD:$CVIE_CHECK_BRANCH"
-      - name: Require successful production query checks
-        env:
-          QUERY_OUTCOME: ${{ steps.probe.outcome }}
-          PROVIDER_OUTCOME: ${{ steps.shared_provider.outcome }}
-          VERIFY_SHARED: ${{ github.ref_name == 'feat/cvie-shared-product-scans' }}
-        run: node -e "if(process.env.QUERY_OUTCOME!=='success'||!require('./data/cvie-d1-check.json').ok||process.env.VERIFY_SHARED==='true'&&(process.env.PROVIDER_OUTCOME!=='success'||!require('./data/cvie-shared-check.json').ok))process.exit(1)"
-
+      - name: Retain diagnostic evidence without repository writes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: cvie-contracts-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            data/cvie-shared-check.json

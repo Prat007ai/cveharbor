@@ -115,7 +115,7 @@ export async function dispatchDueDigests(env, currentDate = new Date()) {
   ).bind(hour, hourlySlot, dailySlot, nowSec() - 3600, MAX_SEND_PER_TICK).all();
   const pending = (subscribers.results || []).map(user => ({ ...user, slot: digestSlot(user.frequency, currentDate) }));
   if (!pending.length) return { status: 'up_to_date' };
-  const feed = await loadPublicFeed();
+  const feed = await loadPublicFeed(fetch, env);
   let sent = 0, empty = 0, failed = 0;
   for (const user of pending) {
     if (!await claimDigest(env, user.id, user.slot)) continue;
@@ -155,7 +155,7 @@ export async function sendUserSample(env, user) {
   const rows = await env.DB.prepare('SELECT technology FROM user_stack WHERE user_id=?').bind(user.id).all();
   const selected = (rows.results || []).map(x => x.technology);
   if (!selected.length) return json({ error: 'Upload a technology selection to your account before requesting a sample.' }, 409);
-  const feed = await loadPublicFeed();
+  const feed = await loadPublicFeed(fetch, env);
   const intelligence=await loadCvieDigest(env,user.id,Date.now(),selected);
   const digest = selectDigest(mergeDigestEvidence(feed.records,intelligence.records,intelligence.withdrawn_ids,intelligence.excluded_product_cves,intelligence.component_products), selected, prefs.severity, new Map(), Date.now(), 10);
   const subscribed = await env.DB.prepare('SELECT unsubscribe_token FROM alert_optins WHERE user_id=?').bind(user.id).first();

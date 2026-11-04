@@ -1,3 +1,5 @@
+> **Phase 1 deployment notice:** Use [the consolidated administrator checklist](reviews/phase1-administrator-checklist.md) for current release, credential, staging and recovery steps. Deployment/migration/rollback recipes below are feature-history references, not instructions to execute during Phase 1. Feature behavior descriptions remain applicable unless superseded by the current implementation.
+
 # Vulnerability assignment email and acknowledgement
 
 The existing authenticated remediation assignment workflow now sends the professional navy/teal email and an expiring guest acknowledgement link. Acknowledgement confirms receipt through an emailed bearer link. It is not identity verification, a read receipt, proof of exposure, investigation, or remediation. It never changes the saved remediation status.
