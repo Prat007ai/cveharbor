@@ -6,7 +6,7 @@ import { TARGET } from '../target.mjs';
 import { root } from './configure.mjs';
 import { diagnose } from './diagnose.mjs';
 import { probeMaintenanceAccess } from './probe-access.mjs';
-import { failure, safeFailure } from './errors.mjs';
+import { failure, safeFailure, providerCategory } from './errors.mjs';
 import { inspectSchemaState, countSQL } from './schema-state.mjs';
 
 export const STAGING_DATABASE_ID = 'fac61562-fc31-426d-8032-550aba63b7f6';
@@ -54,8 +54,8 @@ export function guardSQL(plan, step, observedRows) {
   return guards;
 }
 
-export async function migrate(env, { plan, transport = fetch, inventory = diagnose, probe = probeMaintenanceAccess, record = () => {}, requestIntervalMs = 350, beforeWrite = () => {}, endStep = null } = {}) {
-  const report = { status: 'stopped', action: env.CF_STAGING_PROVISION_ACTION, account: TARGET.account, database_id: STAGING_DATABASE_ID,
+export async function migrate(env, { plan, transport = fetch, inventory = diagnose, probe = probeMaintenanceAccess, record = () => {}, requestIntervalMs = 350, beforeWrite = () => {}, endStep = null, readOnly = false } = {}) {
+  const report = { status: 'stopped', read_only: readOnly, action: env.CF_STAGING_PROVISION_ACTION, account: TARGET.account, database_id: STAGING_DATABASE_ID,
     source_sha: env.GITHUB_SHA, plan_sha256: env.CF_STAGING_SCHEMA_PLAN_SHA256, started_at: new Date().toISOString(),
     requests: [], batches: [], storage: [], usage: { migration: { rows_read: 0, rows_written: 0 }, verification: { rows_read: 0, rows_written: 0 }, complete: true },
     limits: LIMITS, request_interval_ms: requestIntervalMs, automatic_retries: 0, production_requests: 0, worker_or_access_mutations: 0 };
@@ -71,6 +71,7 @@ export async function migrate(env, { plan, transport = fetch, inventory = diagno
   async function request(route, operation, body, group = 'verification') {
     // The only permitted POST is the exact staging D1 query endpoint. No SDK retry.
     if ((!route.startsWith('/') && route !== '') || route.includes('..') || route.includes('://') || body && route !== dbRoute + '/query') throw failure(operation, 'route');
+    if(readOnly && body && (body.batch || typeof body.sql !== 'string' || body.sql.includes(';') || !(/^(SELECT\b|PRAGMA (foreign_key_check|quick_check)$)/i.test(body.sql))))throw failure(operation,'read_only_violation');
     const gap = lastRequestAt + requestIntervalMs - Date.now();
     if (gap > 0) await new Promise(resolve => setTimeout(resolve, gap));
     lastRequestAt = Date.now();
@@ -107,9 +108,10 @@ export async function migrate(env, { plan, transport = fetch, inventory = diagno
     if (bad) {
       if (body) report.usage.complete = false;
       const failed = results.findIndex(r => r?.success !== true || r?.error || (Array.isArray(r?.errors) && r.errors.length));
-      throw failure(operation, response.status === 401 || response.status === 403 ? 'authorization' : response.status === 429 ? 'rate_limit' : /too many terms in compound select/i.test(JSON.stringify(payload?.errors || [])) ? 'compound_select_limit' : body ? 'd1_statement_or_batch' : 'cloudflare_api',
+      throw failure(operation, providerCategory(response.status,payload)==='cloudflare_api' && body ? 'd1_statement_or_batch' : providerCategory(response.status,payload),
         { http_status: response.status, ...(failed >= 0 ? { result_index: failed } : {}), api_codes: (Array.isArray(payload?.errors) ? payload.errors : []).map(e => e?.code).filter(Number.isInteger).slice(0, 8) });
     }
+    if(readOnly && body && results.some(r=>r?.meta?.rows_written!==0))throw failure(operation,'read_only_metrics');
     if (body && results.length !== (body.batch?.length || 1)) { report.usage.complete = false; throw failure(operation, 'result_count'); }
     return payload.result;
   }
@@ -143,7 +145,7 @@ export async function migrate(env, { plan, transport = fetch, inventory = diagno
       report.historical_verified_step = report.last_verified_step;
     report.last_verified_step = null;
     return inspectSchemaState(plan, (sql, suffix) => query(sql, 'migration.state.' + label + '.' + suffix),
-      state => { report.actual_state = state; persist(); }, label, { countBatch: async (names, suffix) => {
+      state => { report.actual_state = state; persist(); }, label, { countBatch: readOnly ? undefined : async (names, suffix) => {
         if (!names.length || names.length > 5) throw failure('migration.counts', 'inspection_limit');
         const results = await request(dbRoute + '/query', 'migration.state.' + label + '.' + suffix, { batch: names.map(name => ({ sql: countSQL(name) })) });
         return results.map(r => r.results?.length === 1 ? r.results[0]?.n : null);
@@ -164,12 +166,23 @@ export async function migrate(env, { plan, transport = fetch, inventory = diagno
     report.approved_start_step = start; report.total_statements = plan.checkpoints.length - 1; persist();
     if ((await request('', 'migration.account'))?.id !== TARGET.account) throw failure('migration.account', 'target');
     report.storage_before_bytes = await storage('before'); identified = true;
-    const inventoryReport = await inventory(env, transport);
+    if(readOnly){
+      const state=await inspect('diagnostic');
+      const receipts=state.actual.objects.some(o=>o.name==='staging_schema_history')?await query('SELECT path,sha256,manifest_version FROM staging_schema_history ORDER BY rowid','migration.diagnostic.receipts'):[];
+      report.receipts=receipts.map(r=>({file_index:plan.files.findIndex(f=>f.file===r.path&&f.sha256===r.sha256),manifest_version:r.manifest_version===1?1:null,receipt_sha256:hash(encoded(r))}));
+      report.receipt_count=receipts.length;
+      const fk=await query('PRAGMA foreign_key_check','migration.diagnostic.foreign_keys');
+      const integrity=await query('PRAGMA quick_check','migration.diagnostic.integrity');
+      report.foreign_keys_ok=fk.length===0;report.integrity_ok=integrity.length===1&&Object.values(integrity[0])[0]==='ok';persist();
+      if(!report.foreign_keys_ok||!report.integrity_ok)throw failure('migration.diagnostic.integrity','integrity');
+    }
+    let inventoryReport;try{inventoryReport=await inventory(env, transport);}catch(error){throw failure('migration.inventory','validation',{},error);}
     record('migration-inventory', inventoryReport);
     if (!inventoryReport.verified) throw failure('migration.inventory', 'validation');
     before = await immutableState(); report.invariants_before_sha256 = before;
     const access = await probe(env, transport); record('migration-access-before', access);
     if (!access.passed) throw failure('migration.access.before', 'validation');
+    if(readOnly){report.status='diagnosed';report.invariants_checked=true;return report;}
     let state = await inspect('before');
     if (!state.actual.matching_steps.includes(start)) throw failure('migration.resume', 'state_mismatch');
     if (!report.usage.complete) throw failure('migration.metrics', 'metadata_unavailable');

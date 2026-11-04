@@ -8,7 +8,7 @@ on:
       simple_operation:
         description: Simplified staging operation after activation
         type: choice
-        options: [release, initialize, resume]
+        options: [release, initialize, resume, diagnose]
         default: release
       hold_revision:
         description: Expected hold revision (recovery resume only)
@@ -261,6 +261,7 @@ jobs:
           CF_STAGING_MANUAL_JOBS_ENABLED: 'false'
         run: node staging/scripts/simple-release.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ always() }}
         with:
           name: staging-tested-${{ github.sha }}-${{ github.run_attempt }}
           path: release/artifacts/staging-release.json

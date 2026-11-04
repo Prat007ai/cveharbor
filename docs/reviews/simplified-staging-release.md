@@ -141,3 +141,43 @@ operations; bookmarks and exports stay private. Production safeguards are unchan
 No new resources or credentials are required. The read-only audit evidence has
 been reconciled; staging initialization, Worker activation and signed-in acceptance
 remain separate operations requiring approval.
+
+### Failed initialization: diagnose before retrying
+
+Run 41916213494 did not preserve the automatic job's underlying exception or
+migration progress: `simple-release.mjs` discarded the exception and never
+connected the migration runner's `record` callback, and artifact upload was
+success-only. Its preparation artifact predates the initialization attempt.
+It is not evidence that the database remains at checkpoint 37.
+
+The existing **Permanent staging preparation and approved updates** workflow now
+has `simple_operation: diagnose`. Once this correction is reviewed and available
+on main, select **Run workflow**, branch **main**, simplified operation
+**diagnose**, leaving the legacy `operation` at **none**. Do not use **Re-run
+failed jobs** on the initialization run: that would execute initialization again.
+No credential changes, backup evidence updates or new workflow are needed.
+
+This explicit read-only operation uses the existing protected staging environment
+and exact account/database validation. It inspects schema definitions, table
+counts, migration receipts and integrity against the production-only plan first,
+then performs existing inventory/maintenance checks and GET-only Time Travel
+availability verification. It accepts observation of a partial or completed
+initialization; it does not require or set checkpoint 37 as the actual state.
+It cannot reach mutation batches, deploy Workers or restore Access policies.
+
+Inspect `staging-tested-<commit>-<attempt>/staging-release.json`, even if the job
+fails. `baseline.actual_state.matching_steps` is the observed production-profile
+checkpoint, `receipt_count` and receipt file indexes identify applied migrations,
+and integrity results are explicit. Unknown state has an empty matching list;
+failed/partial observations are marked incomplete. Never interpret an incomplete
+observation as checkpoint 37. `failure.operation`, `category`, HTTP status and
+numeric API codes identify the failed check without provider response bodies,
+credentials, bookmarks or customer row values. Inventory booleans and the
+migration runner's per-operation progress are retained. Captured seed values
+remain in memory; artifacts contain hashes and counts only.
+
+The remote database state and runtime failure from run 41916213494 remain
+unverified until this diagnostic runs with the configured staging credentials.
+Review its evidence before approving any correction or exact migration retry.
+The destination remains production baseline step **209**; no automatic retry,
+rebuild, restore, candidate step 740 migration or Worker deployment is introduced.
