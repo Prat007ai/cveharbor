@@ -29,6 +29,28 @@ export function expectedBaseline(sourceRoot, manifestRoot=path.resolve(path.dirn
 class AuditRequestError extends Error {
  constructor(category,status,codes=[]){super(category);this.category=category;this.http_status=status;this.cloudflare_error_codes=codes;}
 }
+// /content/v2 returns raw content, not a Cloudflare JSON result envelope.
+// Wrangler uses cf-entrypoint to identify the entry module in multipart responses.
+async function workerContent(response){
+ const raw=await response.arrayBuffer();
+ if(raw.byteLength>=20000000)throw new AuditRequestError('response_too_large',response.status);
+ const type=(response.headers.get('content-type')||'').split(';')[0].trim().toLowerCase();
+ let script;
+ if(type==='multipart/form-data'){
+  const form=await new Response(raw,{headers:response.headers}).formData();
+  const entry=response.headers.get('cf-entrypoint')||'src/index.js';
+  const parts=form.getAll(entry);
+  if(parts.length!==1)throw new AuditRequestError('invalid_content_format',response.status);
+  script=typeof parts[0]==='string'?parts[0]:await parts[0].text();
+ }else if(!['application/javascript','text/javascript','application/javascript+module','text/javascript+module','text/plain','application/octet-stream'].includes(type)){
+  throw new AuditRequestError('invalid_content_format',response.status);
+ }else script=new TextDecoder().decode(raw);
+ return {script,etag:response.headers.get('etag')};
+}
+function strongETag(value){
+ assert.ok(typeof value==='string'&&value.trim()&&!value.trim().startsWith('W/'),'Strong content ETag required');
+ const tag=value.trim().replace(/^"(.*)"$/,'$1');assert.ok(tag.length>0);return tag;
+}
 function safeFailure(error,operation){
  const category=error instanceof AuditRequestError?error.category:
   error?.code==='ERR_ASSERTION'?'validation_failed':
@@ -50,8 +72,9 @@ export async function auditBaseline(env,expected,{transport=fetch,progress=()=>{
   try{r=await transport(base+route,{method:sql?'POST':'GET',redirect:'error',signal:AbortSignal.timeout(20000),headers:{Authorization:'Bearer '+token,...(sql?{'Content-Type':'application/json'}:{})},...(sql?{body:JSON.stringify({sql})}:{})});}
   catch(error){throw new AuditRequestError(['TimeoutError','AbortError'].includes(error?.name)?'timeout':'network_error',null);}
   let body;
-  try{body=content&&r.ok?await r.text():await r.json();}
+  try{body=content&&r.ok?await workerContent(r):await r.json();}
   catch(error){
+   if(error instanceof AuditRequestError)throw error;
    if(r.ok)throw new AuditRequestError(['TimeoutError','AbortError'].includes(error?.name)?'timeout':content?'response_read_failed':'invalid_json',r.status);
   }
   const codes=Array.isArray(body?.errors)?body.errors.map(e=>e?.code).filter(c=>Number.isSafeInteger(c)&&c>=0&&c<=2147483647).slice(0,8):[];
@@ -66,7 +89,7 @@ export async function auditBaseline(env,expected,{transport=fetch,progress=()=>{
  progress('frontend.deployment_shape');
  const frontendActive=frontend?.deployments?.[0];assert.ok(frontendActive?.id&&frontendActive.versions?.length===1&&frontendActive.versions[0].percentage===100,'Unknown active frontend deployment');
  progress('backend.deployment_shape');
- const active=deployments?.deployments?.[0];assert.ok(active?.id&&active.versions?.length===1&&active.versions[0].percentage===100,'Unknown active Worker deployment');
+ const active=deployments?.deployments?.[0];assert.ok(active?.id&&active.versions?.length===1&&active.versions[0].percentage===100&&typeof active.versions[0].version_id==='string'&&active.versions[0].version_id.length>0,'Unknown active Worker deployment');
  const results=await request('d1.schema_select','/d1/database/'+PRODUCTION_DB+'/query',{sql:schemaSQL});
  assert.ok(results?.length===1&&results[0].success,'Schema metadata read failed');
  progress('d1.schema_no_writes');assert.equal(results[0].meta?.rows_written,0,'Audit must write zero rows');
@@ -74,12 +97,17 @@ export async function auditBaseline(env,expected,{transport=fetch,progress=()=>{
  const actual=canonical(results[0].results),schemaMatch=digest(actual)===expected.schema_sha256;
  // Read deployed script metadata/content only. The public readiness endpoint runs
  // integrity queries over application tables, so it is intentionally not used here.
- const script=await request('backend.script_content','/workers/scripts/cveharbor-accounts/content',{content:true});
+ const versionId=active.versions[0].version_id;
+ const version=await get('backend.active_version','/workers/scripts/cveharbor-accounts/versions/'+encodeURIComponent(versionId));
+ assert.equal(version?.id,versionId,'Active version metadata mismatch');
+ const {script,etag}=await request('backend.script_content','/workers/scripts/cveharbor-accounts/content/v2',{content:true});
+ progress('backend.content_version_match');assert.equal(strongETag(etag),strongETag(version?.resources?.script?.etag),'Content is not the active version');
  progress('backend.script_identity');assert.ok(script.length<20000000,'Script exceeds audit limit');
  const matches=[...script.matchAll(/(?:var|const|let)\s+releaseIdentity\s*=\s*["']([a-f0-9]{64})["']/g)];
  const identity=matches.length===1?matches[0][1]:null;
  const after=await get('backend.deployment_recheck','/workers/scripts/cveharbor-accounts/deployments');
- const stable=after?.deployments?.[0]?.id===active.id;
+ const current=after?.deployments?.[0];
+ const stable=current?.id===active.id&&current?.versions?.length===1&&current.versions[0].version_id===versionId&&current.versions[0].percentage===100;
  const releaseMatch=stable&&identity===expected.backend_identity;
  progress('baseline.compare');
  const names=new Map(expected.objects.map(o=>[o.type+':'+o.name,o]));

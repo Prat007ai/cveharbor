@@ -42,7 +42,8 @@ test('production baseline uses only schema SELECT and Worker metadata/content, n
  const calls=[],auditEnv={CLOUDFLARE_AUDIT_ACCOUNT_ID:'e'.repeat(32),CLOUDFLARE_AUDIT_API_TOKEN:'secret-fixture',BASELINE_SOURCE_SHA:sha};
  const transport=async(url,init)=>{calls.push({url:String(url),method:init.method});assert.equal(init.redirect,'error');assert.ok(String(url).startsWith('https://api.cloudflare.com/client/v4/accounts/'+'e'.repeat(32)));
  if(init.method==='POST'){assert.ok(String(url).endsWith('/'+PRODUCTION_DB+'/query'));assert.deepEqual(JSON.parse(init.body),{sql:schemaSQL});return Response.json({success:true,result:[{success:true,results:objects,meta:{rows_written:0}}]});}
- assert.equal(init.method,'GET');if(String(url).endsWith('/content'))return new Response('var releaseIdentity="'+identity+'";');
+ assert.equal(init.method,'GET');if(String(url).endsWith('/content/v2'))return new Response('var releaseIdentity="'+identity+'";',{headers:{ETag:'"deployed-content"'}});
+ if(String(url).endsWith('/versions/version'))return Response.json({success:true,result:{id:'version',resources:{script:{etag:'deployed-content'}}}});
  return Response.json({success:true,result:String(url).endsWith('/deployments')?{deployments:[{id:'deployment',versions:[{version_id:'version',percentage:100}]}]}:{uuid:PRODUCTION_DB,name:'cveharbor-accounts'}});};
  const report=await auditBaseline(auditEnv,expected,{transport});assert.equal(report.status,'verified');assert.equal(report.customer_records_read,false);assert.equal(report.rows_written,0);assert.doesNotMatch(JSON.stringify(report),/secret-fixture|CREATE TABLE/);assert.equal(calls.filter(c=>c.method==='POST').length,1);
  const wrong=await auditBaseline(auditEnv,{...expected,backend_identity:'f'.repeat(64)},{transport});assert.equal(wrong.status,'blocked');
