@@ -126,6 +126,7 @@ test('direct and replacement association deletion fails atomically; authenticate
   assert.throws(()=>f.DB.sql.exec('DELETE FROM remediation_customer_scopes'),/association must be retained/);
   const original=f.DB.sql.prepare('SELECT * FROM remediation_customer_scopes WHERE user_id=? AND record_id=?').get('a',a);
   assert.throws(()=>f.DB.sql.prepare('INSERT OR REPLACE INTO remediation_customer_scopes VALUES(?,?,?,?,?,?,?)').run(...Object.values(original)),/context mismatch/);
+  assert.throws(()=>f.DB.sql.prepare('INSERT OR REPLACE INTO remediation_customer_scopes VALUES(?,?,?,?,?,?,?)').run(original.user_id,fixtureCve,original.cve_id,original.customer_id,original.environment_id,original.associated_by,original.associated_at),/context mismatch/);
   assert.throws(()=>f.DB.sql.prepare('DELETE FROM inventory_customers WHERE id=?').run(customerA),/FOREIGN KEY/);
   assert.deepEqual(snapshot(f.DB.sql),before);
   assert.equal((await worker.fetch(new Request('https://api.cveharbor.com/v1/account',{method:'DELETE',headers:{Origin:'https://cveharbor.com'}}),f.env,{})).status,401);
@@ -133,6 +134,7 @@ test('direct and replacement association deletion fails atomically; authenticate
   assert.equal((await f.call('/remediation-records/'+b,'GET',null,'a')).status,404);
   assert.equal((await f.call('/remediation-records/'+a+'/tickets','POST',{ticket_number:'PRESERVE-A'})).status,200);
   assert.equal((await f.call('/remediation-records/'+b+'/tickets','POST',{ticket_number:'PRESERVE-B'},'b')).status,200);
+  const withTickets=snapshot(f.DB.sql);assert.throws(()=>f.DB.sql.prepare('DELETE FROM remediation_customer_scopes WHERE user_id=? AND record_id=?').run('a',a),/association must be retained/);assert.deepEqual(snapshot(f.DB.sql),withTickets);
   const otherRecord=f.DB.sql.prepare("SELECT * FROM remediations WHERE user_id='b'").all(),otherScope=f.DB.sql.prepare("SELECT * FROM remediation_customer_scopes WHERE user_id='b'").all();
   assert.equal((await f.call('/account','DELETE')).status,200);
   for(const table of ['remediation_customer_scopes','remediation_customer_ticket_history','remediations'])assert.equal(f.DB.sql.prepare('SELECT count(*) n FROM '+table+" WHERE user_id='a'").get().n,0);
