@@ -47,6 +47,7 @@ function renderMatches(){
  if(!signedIn||!ready){panel.append(make('p','ops-note','Sign in and connect D1 to review customer-specific advisory matches.'));return;}
  if(!engine){panel.append(make('p','ops-note','Matching module unavailable.'));return;}
  const chosen=$('inventoryMatchCustomer').value;
+ let tracker=$('inventoryRemediationLink');if(!tracker){tracker=make('a','ops-link','Open Remediation Tracker');tracker.id='inventoryRemediationLink';$('inventoryMatchCustomer').parentElement.append(tracker);}tracker.href='/remediation/'+(chosen?'?customer_id='+encodeURIComponent(chosen):'');
  const environments=new Set(data.environments.filter(e=>!chosen||e.customer_id===chosen).map(e=>e.id));
  const assets=data.assets.filter(a=>environments.has(a.environment_id));
  const baseline=[...(feed.advisories||[]),...(catalog.advisories||[])];
@@ -675,6 +676,7 @@ function render(){
    status('Editing '+customer.name+'. Select a saved technology below to edit its version, or import more technologies and packages into this customer environment.');
   });
   const customerActions=make('div','inventory-customer-actions');customerActions.append(editCustomer);
+  const tracker=make('a','ops-link','Remediation Tracker');tracker.href='/remediation/?customer_id='+encodeURIComponent(customer.id);customerActions.append(tracker);
   const deleteCustomer=make('button','ops-remove','Remove customer');deleteCustomer.type='button';
   deleteCustomer.addEventListener('click',()=>remove('customers',customer.id,customer.name));
   customerActions.append(deleteCustomer);header.append(customerActions);card.append(header);

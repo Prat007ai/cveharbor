@@ -1,13 +1,18 @@
 // Local browser + pinned assets/handlers + synthetic SQLite/R2. No remote application requests.
 import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';
-import application from '../.build/api.mjs';import {createFrontend} from '../frontend.mjs';
+import {createFrontend} from '../frontend.mjs';
 import {FullDB,bucketFixture} from '../tests/helpers/full-db.mjs';import {TARGET} from '../target.mjs';import {totp} from '../../account-backend/src/totp.js';
 const {chromium}=await import(process.env.CVEHARBOR_PLAYWRIGHT_MODULE||'playwright-core');
-assert.equal(JSON.parse(fs.readFileSync('staging/.build/manifest.json')).application_profile,'production-baseline');
+const profile=process.env.STAGING_BROWSER_PROFILE||'production-baseline';
+assert.ok(['production-baseline','customer-remediation-candidate'].includes(profile));
+const buildPath='staging/.build/'+(profile==='customer-remediation-candidate'?'customer-remediation-candidate/':'');
+const {default:application}=await import(new URL('../../'+buildPath+'api.mjs',import.meta.url));
+assert.equal(JSON.parse(fs.readFileSync(buildPath+'manifest.json')).application_profile,profile);
 const DB=new FullDB({empty:true});DB.sql.exec(fs.readFileSync('staging/schema.sql','utf8'));for(const f of JSON.parse(fs.readFileSync('release/baseline.json')).application_schema_files)DB.sql.exec(fs.readFileSync(f.path,'utf8'));
-const env={DB,STAGING_MODE:'true',STAGING_APPLICATION_PROFILE:'production-baseline',STAGING_EMAIL_CAPTURE_ENABLED:'true',STAGING_TOTP_ENCRYPTION_KEY:'synthetic-staging-key-not-used-in-production',STAGING_MONITOR_WEBHOOK_TOKEN:'synthetic-only',STAGING_ADMIN_EMAILS:'browser@example.invalid',INTELLIGENCE_SOURCE:'r2',INTELLIGENCE_BUCKET:await bucketFixture(),ASSIGNMENT_ACK_RATE_LIMITER:{limit:async()=>({success:true})}};
+if(profile==='customer-remediation-candidate')DB.sql.exec(fs.readFileSync('deployment/proposals/customer-remediation/schema.sql','utf8'));
+const env={DB,STAGING_MODE:'true',STAGING_APPLICATION_PROFILE:profile,STAGING_EMAIL_CAPTURE_ENABLED:'true',STAGING_TOTP_ENCRYPTION_KEY:'synthetic-staging-key-not-used-in-production',STAGING_MONITOR_WEBHOOK_TOKEN:'synthetic-only',STAGING_ADMIN_EMAILS:'browser@example.invalid',INTELLIGENCE_SOURCE:'r2',INTELLIGENCE_BUCKET:await bucketFixture(),ASSIGNMENT_ACK_RATE_LIMITER:{limit:async()=>({success:true})}};
 const pending=[];env.STAGING_API={fetch:req=>application.fetch(req,env,{waitUntil:p=>pending.push(p)})};
-const directory=path.resolve('staging/.build/public');env.ASSETS={fetch:async req=>{const url=new URL(req.url);const file=path.resolve(directory,'.'+url.pathname+(url.pathname.endsWith('/')?'index.html':''));if(!file.startsWith(directory+path.sep)||!fs.existsSync(file))return new Response('Not found',{status:404});return new Response(fs.readFileSync(file),{headers:{'Content-Type':{'.html':'text/html','.js':'application/javascript','.json':'application/json','.css':'text/css','.svg':'image/svg+xml','.png':'image/png'}[path.extname(file)]||'application/octet-stream'}});}};
+const directory=path.resolve(buildPath+'public');env.ASSETS={fetch:async req=>{const url=new URL(req.url);const file=path.resolve(directory,'.'+url.pathname+(url.pathname.endsWith('/')?'index.html':''));if(!file.startsWith(directory+path.sep)||!fs.existsSync(file))return new Response('Not found',{status:404});return new Response(fs.readFileSync(file),{headers:{'Content-Type':{'.html':'text/html','.js':'application/javascript','.json':'application/json','.css':'text/css','.svg':'image/svg+xml','.png':'image/png'}[path.extname(file)]||'application/octet-stream'}});}};
 // Access cryptography/denial is tested independently. This fixture represents one verified test administrator.
 const front=createFrontend(async(_token,_issuer,_aud,_reject,identity)=>{identity({email:'browser@example.invalid'});return true;});
 const deadline=setTimeout(()=>{console.error('Local browser validation exceeded 90 seconds');process.exit(1);},90000);
@@ -25,8 +30,8 @@ try{
  const secret=await page.locator('#accountPageRequiredSecret').textContent();await page.locator('#accountPageRequiredCode').fill(await totp(secret));await page.locator('#accountPageRequiredEnrollForm button[type=submit]').click();await page.locator('#accountPageRequiredContinue').click();await page.waitForFunction(()=>document.body.classList.contains('workspace-authenticated'));
  console.log('Browser: authenticated');const cookies=await context.cookies();const session=cookies.find(c=>c.name==='cvh_session');assert.equal(session.domain,'cveharborstage.com');assert.equal(session.httpOnly,true);assert.equal(session.secure,true);assert.equal(session.sameSite,'Strict');
  const routes=['/workspace/','/account/','/environments/','/customer-dashboard/','/remediation/','/customer-reports/','/__staging/'];
- for(const route of routes){console.log('Browser route: '+route);const r=await page.goto(TARGET.origin+route);assert.equal(r.status(),200,route);await page.locator(route==='/__staging/'?'body':'main').first().waitFor({state:'visible'});assert.ok((await page.locator('body').innerText()).includes('CVEHarbor'));}
+ for(const route of routes){console.log('Browser route: '+route);const r=await page.goto(TARGET.origin+route);assert.equal(r.status(),200,route);await page.locator(route==='/__staging/'?'body':'main').first().waitFor({state:'visible'});assert.ok((await page.locator('body').innerText()).includes('CVEHarbor'));if(route==='/remediation/'&&profile==='customer-remediation-candidate'){await page.locator('#remediationCustomerFilter').waitFor();assert.equal(await page.locator('.rt-stat').count(),4);}}
  assert.deepEqual(external,[]);assert.deepEqual(errors,[]);
- fs.mkdirSync('staging/artifacts',{recursive:true});fs.writeFileSync('staging/artifacts/production-browser.json',JSON.stringify({passed:true,synthetic_only:true,remote_requests:0,email_captured:true,mfa_enrolled:true,host_only_cookie:true,routes},null,2)+'\n');
- console.log('Production replica browser passed: captured OTP, MFA, host-only session, workspace, account, inventory, findings, tracker, reports and captured-email administration.');
+ fs.mkdirSync('staging/artifacts',{recursive:true});fs.writeFileSync('staging/artifacts/'+(profile==='production-baseline'?'production':'customer-remediation-candidate')+'-browser.json',JSON.stringify({passed:true,synthetic_only:true,remote_requests:0,email_captured:true,mfa_enrolled:true,host_only_cookie:true,routes},null,2)+'\n');
+ console.log(profile+' browser passed: captured OTP, MFA, host-only session, workspace, account, inventory, findings, tracker, reports and captured-email administration.');
 }finally{clearTimeout(deadline);await browser.close();DB.close();}

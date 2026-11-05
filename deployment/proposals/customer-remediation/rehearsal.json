@@ -1,0 +1,63 @@
+{
+  "local_only": true,
+  "applied_to_live_database": false,
+  "baseline_profile_unchanged": true,
+  "migration": "deployment/proposals/customer-remediation/schema.sql",
+  "migration_sha256": "4cb409cd1ad836c3e71394e3f054168d99b7896817421d92d795d71235a8977a",
+  "baseline_application_schema_sha256": "327bab011a4ffe3654aab618f859a8cdaef14aa7d4bbd03c0db96d4f7b0a225d",
+  "baseline_application_objects": 143,
+  "proposed_schema_sha256": "9db275d5b7baddbd372146eae2b6fd50e782776285c6bae98fbbedb599c0cf5a",
+  "new_objects": [
+    {
+      "type": "index",
+      "name": "remediation_customer_context_unique"
+    },
+    {
+      "type": "table",
+      "name": "remediation_customer_scopes"
+    },
+    {
+      "type": "table",
+      "name": "remediation_customer_ticket_history"
+    },
+    {
+      "type": "trigger",
+      "name": "remediation_customer_asset_exclusive"
+    },
+    {
+      "type": "trigger",
+      "name": "remediation_customer_environment_stable"
+    },
+    {
+      "type": "trigger",
+      "name": "remediation_customer_history"
+    },
+    {
+      "type": "trigger",
+      "name": "remediation_customer_owned"
+    },
+    {
+      "type": "trigger",
+      "name": "remediation_customer_owner_stable"
+    },
+    {
+      "type": "trigger",
+      "name": "remediation_customer_scope_immutable"
+    },
+    {
+      "type": "trigger",
+      "name": "remediation_customer_scope_retained"
+    },
+    {
+      "type": "trigger",
+      "name": "remediation_customer_ticket_immutable"
+    },
+    {
+      "type": "trigger",
+      "name": "remediation_customer_ticket_retained"
+    }
+  ],
+  "rows_written": 0,
+  "foreign_key_errors": 0,
+  "backfill": false
+}

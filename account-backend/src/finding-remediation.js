@@ -5,14 +5,23 @@ import {WorkflowError,requireWorkflow,workflowWriteStatements,runWorkflowWrite} 
 import {linkedReady,recordKey,publicCve,recordScope,workStatus,findingStatus} from './remediation-identity.js';
 const json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','Access-Control-Allow-Origin':'https://cveharbor.com','Access-Control-Allow-Credentials':'true','Vary':'Origin'}});
 const assetSQL=`SELECT a.*,e.name environment_name,c.name customer_name FROM inventory_assets a JOIN inventory_environments e ON e.id=a.environment_id AND e.user_id=a.user_id JOIN inventory_customers c ON c.id=e.customer_id AND c.user_id=e.user_id WHERE a.user_id=? AND a.id=?`;
-export async function linkFinding(env,user,assetId,cve,data={}){
+export async function linkFinding(env,user,assetId,cve,data={},initial=null){
  await requireWorkflow(env);if(!await linkedReady(env))throw new WorkflowError('Shared remediation is temporarily unavailable.',503);
- if(await integrityReady(env))return createFindingRecord(env,user,assetId,cve,data);
+ if(await integrityReady(env))return createFindingRecord(env,user,assetId,cve,data,false,initial);
  const asset=await env.DB.prepare(assetSQL).bind(user.id,assetId).first();if(!asset)throw new WorkflowError('Asset not found in your account.',404);
  const id=recordKey(cve+'~'+assetId);if(!id||publicCve(id)!==cve)throw new WorkflowError('Invalid finding.');
  const existing=await env.DB.prepare('SELECT record_id FROM remediation_finding_links WHERE user_id=? AND asset_id=? AND cve_id=?').bind(user.id,assetId,cve).first();
- if(existing)return {id:existing.record_id,scope:await recordScope(env,user.id,existing.record_id)};
+ if(existing){if(initial)throw new WorkflowError('This asset already has this CVE. Open its existing record.',409);return {id:existing.record_id,scope:await recordScope(env,user.id,existing.record_id)};}
  const count=await env.DB.prepare('SELECT COUNT(*) total FROM remediations WHERE user_id=?').bind(user.id).first();if(count.total>=250)throw new WorkflowError('The account has reached its 250 remediation record limit.',409);
+ if(initial){
+  const finding=await env.DB.prepare('SELECT status FROM customer_finding_statuses WHERE user_id=? AND asset_id=? AND cve_id=?').bind(user.id,assetId,cve).first();
+  const before=workStatus(finding?.status||'Needs Review'),stamp=new Date().toISOString(),reason=String(data.status_change_reason||'').trim();
+  if(before!==initial.status&&(!reason||reason.length>1000))throw new WorkflowError('Enter a reason to change the existing finding status.');
+  const statements=[env.DB.prepare('INSERT INTO remediations(user_id,cve_id,status,owner,due,notes,updated_at) VALUES(?,?,?,?,?,?,?)').bind(user.id,id,before,initial.owner,initial.due,initial.notes,stamp),env.DB.prepare('INSERT INTO remediation_finding_links(user_id,record_id,asset_id,cve_id) VALUES(?,?,?,?)').bind(user.id,id,assetId,cve)];
+  if(before!==initial.status){const changed=new Date(Date.parse(stamp)+1).toISOString();statements.push(env.DB.prepare('INSERT INTO remediation_change_context(user_id,cve_id,reason,actor_email,changed_at,expected_updated) VALUES(?,?,?,?,?,?)').bind(user.id,id,reason,user.email,changed,stamp),env.DB.prepare('UPDATE remediations SET status=?,updated_at=? WHERE user_id=? AND cve_id=?').bind(initial.status,changed,user.id,id),env.DB.prepare('DELETE FROM remediation_change_context WHERE user_id=? AND cve_id=?').bind(user.id,id));}
+  try{await runWorkflowWrite(env,statements);}catch(error){if(/UNIQUE/i.test(String(error.message)))throw new WorkflowError('This asset already has this CVE. Open its existing record.',409);throw error;}
+  return {id,scope:await recordScope(env,user.id,id)};
+ }
  await env.DB.batch([
   env.DB.prepare("INSERT OR IGNORE INTO remediations(user_id,cve_id,status,owner,due,notes,updated_at) SELECT ?,?,CASE COALESCE(s.status,'Needs Review') WHEN 'Needs Review' THEN 'Open' WHEN 'Fix in Progress' THEN 'Investigating' WHEN 'Fixed/Patched' THEN 'Remediated' ELSE s.status END,'Unassigned','',COALESCE(s.notes,''),? FROM (SELECT 1) LEFT JOIN customer_finding_statuses s ON s.user_id=? AND s.asset_id=? AND s.cve_id=?").bind(user.id,id,new Date().toISOString(),user.id,assetId,cve),
   env.DB.prepare('INSERT OR IGNORE INTO remediation_finding_links(user_id,record_id,asset_id,cve_id) VALUES(?,?,?,?)').bind(user.id,id,assetId,cve)
@@ -20,20 +29,20 @@ export async function linkFinding(env,user,assetId,cve,data={}){
  return {id,scope:await recordScope(env,user.id,id)};
 }
 // Existing links win. Creation is guarded against concurrent linking and first status edits.
-async function createFindingRecord(env,user,assetId,cve,data={},statusUpdate=false){
+async function createFindingRecord(env,user,assetId,cve,data={},statusUpdate=false,initial=null){
  const p=await findingLinkPreview(env,user,assetId,cve);
- if(p.record){if(statusUpdate)throw new WorkflowError('This finding was linked elsewhere. Refresh before saving.',409);return {id:p.record.id,scope:await recordScope(env,user.id,p.record.id)};}
- if(p.manual&&(statusUpdate||data.keep_separate!==true||data.expected_manual!==p.manual.updated))throw new WorkflowError('An unscoped investigation already exists. Review it and explicitly link it or keep it separate.',409);
+ if(p.record){if(statusUpdate||initial)throw new WorkflowError('This finding was linked elsewhere. Refresh before saving.',409);return {id:p.record.id,scope:await recordScope(env,user.id,p.record.id)};}
+ if(p.manual&&!p.manual.scope&&(statusUpdate||data.keep_separate!==true||data.expected_manual!==p.manual.updated))throw new WorkflowError('An unscoped investigation already exists. Review it and explicitly link it or keep it separate.',409);
  if(statusUpdate&&data.expected_finding!==JSON.stringify(p.finding))throw new WorkflowError('This finding changed. Refresh before saving.',409);
  const id=recordKey(cve+'~'+assetId);if(!id||publicCve(id)!==cve)throw new WorkflowError('Invalid finding.');
  const count=await env.DB.prepare('SELECT COUNT(*) total FROM remediations WHERE user_id=?'+await activeRecords(env)).bind(user.id).first();if(count.total>=250)throw new WorkflowError('The account has reached its 250 remediation record limit.',409);
  // Never adopt a detached record merely because its key resembles this asset.
  if(await env.DB.prepare('SELECT cve_id FROM remediations WHERE user_id=? AND cve_id=?').bind(user.id,id).first())throw new WorkflowError('An existing record needs its relationship reviewed before it can be linked.',409);
- const before=workStatus(p.finding?.status||'Needs Review'),after=statusUpdate?workStatus(data.status):before;
+ const before=workStatus(p.finding?.status||'Needs Review'),after=initial?initial.status:statusUpdate?workStatus(data.status):before;
  const reason=typeof data.status_change_reason==='string'?data.status_change_reason.trim():'';
- if(statusUpdate&&before!==after&&(!reason||reason.length>1000))throw new WorkflowError('Enter a reason of 1–1,000 characters for the status change.');
+ if((statusUpdate||initial)&&before!==after&&(!reason||reason.length>1000))throw new WorkflowError('Enter a reason of 1–1,000 characters for the status change.');
  const stamp=new Date().toISOString(),statements=[findingGuard(env,user,p),
-  env.DB.prepare("INSERT INTO remediations(user_id,cve_id,status,owner,due,notes,updated_at) VALUES(?,?,?,'Unassigned','',?,?)").bind(user.id,id,before,p.finding?.notes||'',stamp),
+  env.DB.prepare('INSERT INTO remediations(user_id,cve_id,status,owner,due,notes,updated_at) VALUES(?,?,?,?,?,?,?)').bind(user.id,id,before,initial?.owner||'Unassigned',initial?.due||'',initial?.notes??p.finding?.notes??'',stamp),
   env.DB.prepare('INSERT INTO remediation_finding_links(user_id,record_id,asset_id,cve_id) VALUES(?,?,?,?)').bind(user.id,id,assetId,cve)];
  if(before!==after){
   const savedAt=new Date(Date.parse(stamp)+1).toISOString();
@@ -45,7 +54,7 @@ async function createFindingRecord(env,user,assetId,cve,data={},statusUpdate=fal
  try{await runWorkflowWrite(env,statements);}catch(error){
   // A competing create/link is a valid idempotent result only for creation, never a stale status save.
   const winner=await env.DB.prepare('SELECT record_id FROM remediation_finding_links WHERE user_id=? AND asset_id=? AND cve_id=?').bind(user.id,assetId,cve).first();
-  if(!statusUpdate&&winner)return {id:winner.record_id,scope:await recordScope(env,user.id,winner.record_id)};
+  if(!statusUpdate&&!initial&&winner)return {id:winner.record_id,scope:await recordScope(env,user.id,winner.record_id)};
   throw integrityError(error);
  }
  const canonical=await env.DB.prepare('SELECT record_id FROM remediation_finding_links WHERE user_id=? AND asset_id=? AND cve_id=?').bind(user.id,assetId,cve).first();
@@ -64,7 +73,7 @@ export async function sharedRecord(env,user,id){
  id=await canonicalRecord(env,user.id,id);
  const row=await env.DB.prepare('SELECT cve_id AS id,status,owner,due,notes,updated_at AS updated FROM remediations WHERE user_id=? AND cve_id=?').bind(user.id,id).first();if(!row)throw new WorkflowError('Record not found.',404);
  const scope=await recordScope(env,user.id,id);if(id.includes('~')&&!scope)throw new WorkflowError('Record not found.',404);
- const tickets=scope?await env.DB.prepare('SELECT ticket_number,created_at FROM customer_finding_ticket_history WHERE user_id=? AND asset_id=? AND cve_id=? ORDER BY created_at').bind(user.id,scope.asset_id,scope.cve_id).all():{results:[]};
+ const tickets=scope?(scope.asset_id?await env.DB.prepare('SELECT ticket_number,created_at FROM customer_finding_ticket_history WHERE user_id=? AND asset_id=? AND cve_id=? ORDER BY created_at').bind(user.id,scope.asset_id,scope.cve_id).all():await env.DB.prepare('SELECT ticket_number,created_at FROM remediation_customer_ticket_history WHERE user_id=? AND record_id=? ORDER BY created_at').bind(user.id,id).all()):{results:[]};
  const comments=await env.DB.prepare('SELECT id,author_email,comment,created_at FROM remediation_owner_comments WHERE user_id=? AND record_id=? ORDER BY id DESC LIMIT 100').bind(user.id,id).all();
  const links=await attachmentReady(env)?await env.DB.prepare('SELECT linked_by,linked_at,snapshot_json FROM remediation_link_audit WHERE user_id=? AND record_id=? ORDER BY id DESC LIMIT 50').bind(user.id,id).all():{results:[]};
  return {...row,status_mail:await statusMailHistory(env,user,id),link_history:links.results,cve_id:publicCve(id),fix_status:findingStatus(row.status),scope,tickets:tickets.results||[],comments:comments.results||[]};

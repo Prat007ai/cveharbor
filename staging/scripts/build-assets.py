@@ -10,7 +10,8 @@ import hashlib
 import base64
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / 'staging/.build/public'
+OUT = Path(os.environ.get('STAGING_ASSET_OUTPUT', ROOT / 'staging/.build/public')).resolve()
+assert OUT in [ROOT/'staging/.build/public', ROOT/'staging/.build/customer-remediation-candidate/public']
 SOURCE=Path(os.environ.get('STAGING_ASSET_SOURCE',ROOT)).resolve()
 ORIGIN=os.environ.get('STAGING_ASSET_ORIGIN','https://cveharborstage.com')
 assert ORIGIN=='https://cveharborstage.com'

@@ -1,4 +1,5 @@
 import {activeRecords,integrityError} from './remediation-integrity.js';
+import {customerRecordsReady,customerScopes,ownedCustomer} from './customer-remediation-context.js';
 import {recordKey,publicCve,recordScope,linkedReady,scopeSQL} from './remediation-identity.js';
 import {progressReady} from './assignment-progress-common.js';
 import {workflowReady,requireWorkflow,workflowWriteStatements,runWorkflowWrite,recordMetadata} from './remediation-workflow.js';
@@ -47,10 +48,11 @@ export function assignmentReady(env){
     !!(env.ASSIGNMENT_SMTP2GO_API_KEY||env.SMTP2GO_API_KEY);
 }
 export async function capabilities(env){
-  return reply({storage:'d1',version:2,shared_records_available:await linkedReady(env),assignments_available:await isMigrated(env),
+  return reply({storage:'d1',version:2,customer_records_available:await customerRecordsReady(env),shared_records_available:await linkedReady(env),assignments_available:await isMigrated(env),
     assignment_email_enabled:assignmentReady(env),reviewer_updates_available:await progressReady(env),workflow_available:await workflowReady(env),fyi_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await fyiReady(env),acknowledgements_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await acknowledgementReady(env)});
 }
-export async function listRemediations(env,user){
+export async function listRemediations(env,user,customer='all'){
+  if(!['all','unassigned'].includes(customer))await ownedCustomer(env,user.id,customer);
   const migrated=await isMigrated(env);
   const active=await activeRecords(env,'r'),plainActive=await activeRecords(env);
   const sql=migrated
@@ -64,6 +66,8 @@ export async function listRemediations(env,user){
   const reviewAvailable=await progressReady(env),reviewCounts=reviewAvailable?await env.DB.prepare('SELECT cve_id,COUNT(*) AS total,MAX(created_at) AS latest FROM remediation_review_activity WHERE user_id=? GROUP BY cve_id').bind(user.id).all():{results:[]};
   const scopes=await linkedReady(env)?await env.DB.prepare(scopeSQL).bind(user.id).all():{results:[]};
   const scopeMap=new Map(scopes.results.map(x=>[x.record_id,x]));
+  for(const scope of await customerScopes(env,user.id))scopeMap.set(scope.record_id,scope);
+  rows.results=(rows.results||[]).filter(row=>customer==='all'||customer==='unassigned'&&!scopeMap.has(row.id)||scopeMap.get(row.id)?.customer_id===customer);
   const reviewProgress=new Map((reviewCounts.results||[]).map(r=>[r.cve_id,{total:r.total,latest:r.latest}]));
   return reply({workflow_available:workflowAvailable,remediations:(rows.results||[]).map(row=>({...row,cve_id:publicCve(row.id),scope:scopeMap.get(row.id)||null,review_progress:reviewProgress.get(row.id)||null,...(details.metadata.get(row.id)||{}),latest_status_change:details.changes.get(row.id)||null,acknowledgements:acknowledgements.get(row.id)||null})),assignments_available:migrated,acknowledgements_available:acknowledgementsAvailable});
 }
@@ -107,6 +111,7 @@ export async function importLegacy(env,user,records){
   if(union.size>250)throw new RemediationError('Import would exceed the 250 record limit',409);
   if(!items.length)return reply({saved:0,storage:'d1'});
   if(await linkedReady(env)){const linked=await env.DB.prepare('SELECT record_id FROM remediation_finding_links WHERE user_id=?').bind(user.id).all();if((linked.results||[]).some(x=>items.some(i=>i.id===x.record_id)))throw new RemediationError('Imports cannot overwrite asset-linked records. Open the shared record instead.',409);}
+  if((await customerScopes(env,user.id)).some(scope=>items.some(item=>item.id===scope.record_id)))throw new RemediationError('Imports cannot overwrite customer-associated records. Open the shared record instead.',409);
   const now=new Date().toISOString();
   if(env.REMEDIATION_WORKFLOW_ENABLED==='true'){
     await requireWorkflow(env);const statements=[];

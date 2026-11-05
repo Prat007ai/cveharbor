@@ -2,6 +2,7 @@ import {integrityReady,activeRecords,findingGuard,clearFindingGuard} from './rem
 import {statusRecipients,statusMailReady} from './status-update-mail.js';
 import {WorkflowError,requireWorkflow,workflowWriteStatements,runWorkflowWrite} from './remediation-workflow.js';
 import {recordScope,scopeSQL,linkedReady,workStatus,findingStatus} from './remediation-identity.js';
+import {customerScopes} from './customer-remediation-context.js';
 import {acknowledgementStatus} from './assignment-acknowledgement.js';
 export async function attachmentReady(env){try{await env.DB.prepare('SELECT id FROM remediation_link_audit LIMIT 1').first();await env.DB.prepare('SELECT record_id FROM remediation_retired_records LIMIT 1').first();return true;}catch{return false;}}
 const fields='r.cve_id AS id,r.status,r.owner,r.due,r.notes,r.updated_at AS updated';
@@ -10,9 +11,10 @@ export async function findingAssignments(env,user){
  if(!await linkedReady(env))return {ready:false,findings:[],standalone:[]};
  const records=await env.DB.prepare('SELECT '+fields+' FROM remediations r WHERE r.user_id=?'+await activeRecords(env,'r')).bind(user.id).all();
  const scopes=await env.DB.prepare(scopeSQL).bind(user.id).all(),byRecord=new Map(scopes.results.map(s=>[s.record_id,s]));
+ const customerRecords=new Set((await customerScopes(env,user.id)).map(s=>s.record_id));
  const requests=await env.DB.prepare('SELECT a.cve_id,a.recipient_email,a.acknowledged_at,a.delivery_status,a.revoked_at,a.expires_at,a.sent_at FROM remediation_assignment_requests a WHERE a.user_id=? AND a.seq=(SELECT MAX(b.seq) FROM remediation_assignment_requests b WHERE b.user_id=a.user_id AND b.cve_id=a.cve_id AND b.recipient_email=a.recipient_email)').bind(user.id).all();
  const assignments=new Map();for(const a of requests.results){const items=assignments.get(a.cve_id)||[];items.push({email:a.recipient_email,status:acknowledgementStatus(a),acknowledged_at:a.acknowledged_at,sent_at:a.sent_at});assignments.set(a.cve_id,items);}
- const findings=[],standalone=[];for(const r of records.results){const scope=byRecord.get(r.id),item={record_id:r.id,cve_id:scope?.cve_id||r.id,owner:r.owner,assignments:assignments.get(r.id)||[]};if(scope)findings.push({...item,asset_id:scope.asset_id});else if(!r.id.includes('~'))standalone.push(item);}
+ const findings=[],standalone=[];for(const r of records.results){const scope=byRecord.get(r.id),item={record_id:r.id,cve_id:scope?.cve_id||r.id,owner:r.owner,assignments:assignments.get(r.id)||[]};if(scope)findings.push({...item,asset_id:scope.asset_id});else if(!r.id.includes('~')&&!customerRecords.has(r.id))standalone.push(item);}
  return {ready:true,linking_available:await attachmentReady(env),findings,standalone};
 }
 export async function findingLinkPreview(env,user,assetId,cve){
@@ -21,9 +23,10 @@ export async function findingLinkPreview(env,user,assetId,cve){
  const link=await env.DB.prepare(scopeSQL+' AND l.asset_id=? AND l.cve_id=?').bind(user.id,assetId,cve).first();
  const record=link?await env.DB.prepare('SELECT '+fields+' FROM remediations r WHERE r.user_id=? AND r.cve_id=?').bind(user.id,link.record_id).first():null;
  const source=await env.DB.prepare('SELECT '+fields+' FROM remediations r WHERE r.user_id=? AND r.cve_id=? AND NOT EXISTS(SELECT 1 FROM remediation_finding_links l WHERE l.user_id=r.user_id AND l.record_id=r.cve_id)').bind(user.id,cve).first();
+ const sourceScope=source?await recordScope(env,user.id,source.id):null;if(sourceScope)source.scope=sourceScope;
  const finding=await env.DB.prepare('SELECT status,notes,updated_at FROM customer_finding_statuses WHERE user_id=? AND asset_id=? AND cve_id=?').bind(user.id,assetId,cve).first();
  const empty=record?!!await env.DB.prepare('SELECT cve_id FROM remediations WHERE user_id=? AND cve_id=? AND '+emptyGuard).bind(user.id,record.id).first():true;
- return {integrity:await integrityReady(env),mail:record?await statusRecipients(env,user,record.id):{available:await statusMailReady(env),recipients:[]},manual_mail:source?await statusRecipients(env,user,source.id):null,asset,asset_id:assetId,cve_id:cve,record:record?{...record,fix_status:findingStatus(record.status)}:null,manual:source?{...source,fix_status:findingStatus(source.status)}:null,finding,can_link:!!source&&empty&&await attachmentReady(env),blocked_reason:source&&!empty?'This asset record has its own owner, due date, severity or assignment. Review both records before combining them.':''};
+ return {integrity:await integrityReady(env),mail:record?await statusRecipients(env,user,record.id):{available:await statusMailReady(env),recipients:[]},manual_mail:source?await statusRecipients(env,user,source.id):null,asset,asset_id:assetId,cve_id:cve,record:record?{...record,fix_status:findingStatus(record.status)}:null,manual:source?{...source,fix_status:findingStatus(source.status)}:null,finding,can_link:!!source&&!sourceScope&&empty&&await attachmentReady(env),blocked_reason:sourceScope?'This investigation already belongs to a customer context and cannot be reassigned here.':source&&!empty?'This asset record has its own owner, due date, severity or assignment. Review both records before combining them.':''};
 }
 export async function attachExisting(env,user,assetId,cve,data){
  await requireWorkflow(env);if(!await attachmentReady(env))throw new WorkflowError('Linking is temporarily unavailable.',503);

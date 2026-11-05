@@ -43,18 +43,24 @@ jobs:
       - run: python staging/scripts/continuation-review.py
       - run: node staging/scripts/prepare-adoption.mjs
       - run: node staging/scripts/build.mjs
+      - name: Check out immutable baseline sources before baseline verification tests
+        run: python scripts/checkout_baseline_source.py
       - run: node --test staging/tests/*.test.mjs
       - run: node staging/scripts/check-build.mjs
       - run: node staging/scripts/check-access-runtime.mjs
       - run: node staging/scripts/dry-run.mjs
       - name: Build and test the pinned production replica without credentials
         run: |
-          python scripts/checkout_baseline_source.py
           STAGING_BUILD_PROFILE=production-baseline node staging/scripts/build.mjs
           node --test staging/tests/application.test.mjs staging/tests/production-activation.test.mjs
           node staging/scripts/production-browser.mjs
           node staging/scripts/check-build.mjs
           node staging/scripts/dry-run.mjs
+      - name: Build and verify inactive customer-remediation candidate locally
+        run: |
+          STAGING_BUILD_PROFILE=customer-remediation-candidate node staging/scripts/build.mjs
+          node staging/scripts/check-customer-remediation-candidate.mjs
+          STAGING_BROWSER_PROFILE=customer-remediation-candidate node staging/scripts/production-browser.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
