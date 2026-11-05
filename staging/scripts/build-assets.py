@@ -14,6 +14,14 @@ ORIGIN=os.environ.get('STAGING_ASSET_ORIGIN','https://cveharborstage.com')
 assert ORIGIN=='https://cveharborstage.com'
 assert SOURCE in [ROOT, ROOT/'release/.build/production-frontend']
 
+def account_auth_for_staging(text):
+    # Correct the pinned frontend only in the isolated staging asset tree.
+    # /v1/me returns 401 + authenticated:false, without an error message.
+    old = "if(!/Sign in required/.test(error.message))message('Account service unavailable. You can still browse the public website.');"
+    new = "if(error.status!==401)message('Account service unavailable. You can still browse the public website.');"
+    assert text.count(old) == 1, 'Review changed account-page.js authentication handler'
+    return text.replace(old, new, 1)
+
 def build():
     with tempfile.TemporaryDirectory(prefix='cvie-staging-assets-') as directory:
         tree = Path(directory)
@@ -52,6 +60,8 @@ def build():
         for target in public.rglob('*'):
             if target.is_file() and target.suffix in {'.js', '.html', '.json', '.css', '.txt', '.svg'}:
                 text = target.read_text()
+                if target.name == 'account-page.js':
+                    text = account_auth_for_staging(text)
                 text = re.sub(r'https://(?:api\.|confirm\.|www\.)?cveharbor\.com', ORIGIN, text)
                 if target.suffix == '.html':
                     text = text.replace('<head>', '<head><meta name="robots" content="noindex,nofollow">', 1)

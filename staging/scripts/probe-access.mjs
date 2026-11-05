@@ -20,6 +20,14 @@ export async function probeAccess(env, transport = fetch) {
     if ([401, 403].includes(response.status)) return true;
     try { const url = new URL(response.headers.get('Location')); return [302, 303, 307, 308].includes(response.status) && url.origin === ACCESS_ISSUER && url.pathname.startsWith('/cdn-cgi/access/login'); } catch { return false; }
   }
+  function accessLoginRedirect(response) {
+    if (![302, 303, 307, 308].includes(response.status)) return false;
+    try {
+      const url = new URL(response.headers.get('Location'));
+      return url.origin === ACCESS_ISSUER && !url.username && !url.password && !url.hash &&
+        ['/cdn-cgi/access/login', '/cdn-cgi/access/login/' + new URL(LEGACY_ORIGIN).hostname].includes(url.pathname);
+    } catch { return false; }
+  }
   const auth = { 'CF-Access-Client-Id': env.CF_STAGING_ACCESS_CLIENT_ID, 'CF-Access-Client-Secret': env.CF_STAGING_ACCESS_CLIENT_SECRET };
   const guarded = response => response.headers.get('X-Robots-Tag') === 'noindex, nofollow, noarchive' && response.headers.get('Cache-Control') === 'private, no-store';
   const assets = [['/', /text\/html/], ['/styles.css', /text\/css/], ['/app.js', /(?:java|ecma)script/], ['/data.js', /(?:java|ecma)script/], ['/assets/workspace-harbor.svg', /image\/svg\+xml/], ['/workspace/', /text\/html/]];
@@ -50,10 +58,18 @@ export async function probeAccess(env, transport = fetch) {
   checks.push({ name: 'private_api_has_no_public_origin', passed: direct.status === 404, status: direct.status });
   // The retired frontend hostname must not serve application pages even with Access credentials.
   for (const route of ['/', '/workspace/', '/v1/me', '/assignment/test', '/data.js']) {
-    for (const headers of [{}, auth]) {
-      requests++; let status = 599;
-      try { const r = await transport(LEGACY_ORIGIN + route, {method:'GET', headers, redirect:'manual', signal:AbortSignal.timeout(20000)}); status=r.status; await r.body?.cancel(); } catch {}
-      checks.push({name:'legacy_application_disabled',route,status,passed:status===403});
+    for (const [authentication, headers] of [['anonymous',{}], ['service',auth]]) {
+      requests++; let status = 599, passed = false, login_redirect_verified = false;
+      try {
+        const r = await transport(LEGACY_ORIGIN + route, {method:'GET', headers, redirect:'manual', signal:AbortSignal.timeout(20000)});
+        status=r.status;
+        login_redirect_verified=authentication==='anonymous'&&accessLoginRedirect(r);
+        // Anonymous traffic may stop at Access. Service traffic must reach the
+        // Worker and prove the retired host cannot serve application routes.
+        passed=authentication==='anonymous' ? [401,403].includes(status)||login_redirect_verified : status===403&&guarded(r)&&await r.text()==='Unknown staging host';
+        if(!r.bodyUsed)await r.body?.cancel();
+      } catch {}
+      checks.push({name:'legacy_application_disabled',route,authentication,status,passed,login_redirect_verified});
     }
   }
   const report = { checks, passed: checks.every(c => c.passed), method: 'GET', requests, application_sessions_used: false, sampled_assets: assets.length, universal_routing_requires_active_version_metadata: true };
