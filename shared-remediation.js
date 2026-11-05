@@ -21,7 +21,7 @@ function draw(row,history,progress,assignments){dialog.replaceChildren(button('C
  const owner=field(form,'Owner',el('input'));owner.value=row.owner;owner.required=true;owner.maxLength=100;
  const due=field(form,'Target date',el('input'));due.type='date';due.value=row.due;
  const notes=field(form,'Notes',el('textarea'));notes.maxLength=1200;notes.value=row.notes||'';
- const reason=field(form,'Reason for status change',el('textarea'));reason.maxLength=1000;reason.rows=2;reason.placeholder='Explain the change and supporting evidence';
+ const reason=field(form,'Reason for status change',el('textarea'));reason.name='status_change_reason';reason.maxLength=1000;reason.rows=2;reason.placeholder='Explain the change and supporting evidence';
  const save=el('button','Save status and details');save.type='submit';form.append(save);
  form.addEventListener('submit',async e=>{e.preventDefault();if(status.value!==row.status&&!reason.value.trim()){message.textContent='Enter a reason for the status change.';reason.focus();return;}await mutate(save,message,()=>api('/remediations/'+row.id,'PUT',{status:status.value,owner:owner.value,due:due.value,notes:notes.value,status_change_reason:reason.value,expected_updated:row.updated}),row.id);});dialog.append(form);
  dialog.append(button('Assign by email',()=>{dialog.close();if(window.CVEHARBOR_REMEDIATION)window.CVEHARBOR_REMEDIATION.openAssign(row.id,scope);else location.assign('/remediation/?record='+encodeURIComponent(row.id)+'&assign=1');}));
