@@ -1,3 +1,4 @@
+import copy
 import importlib.util
 import unittest
 from pathlib import Path
@@ -171,3 +172,19 @@ class SimplifiedReleaseSecurityTests(unittest.TestCase):
    self.assertNotIn('concurrency',doc['jobs']['staging-ready'])
    self.assertEqual(doc['jobs'][job]['concurrency'],{'group':'cveharbor-production-release','cancel-in-progress':False})
   self.assertTrue(any(s.get('run')=='node scripts/verify_frontend_backend.mjs --wait' for s in policy.load_workflow((ROOT/'.github/workflows/bootstrap.yml').read_text())['jobs']['staging-ready']['steps']))
+
+class CustomerCandidateWorkflowTests(unittest.TestCase):
+ def test_candidate_requires_manual_main_opt_in_and_baseline_lane_disabled(self):
+  doc=policy.load_workflow((policy.ROOT/'.github/workflows/cvie-staging.yml').read_text())
+  job=doc['jobs']['customer-candidate']
+  self.assertEqual(job['if'],policy.CANDIDATE_STAGING)
+  self.assertEqual(doc['on']['workflow_dispatch']['inputs']['candidate_operation']['default'],'none')
+  for condition in [job['if'].replace("github.event_name == 'workflow_dispatch'", "github.event_name == 'push'"),job['if'].replace(" && vars.SIMPLE_STAGING_ENABLED == 'false'",'')]:
+   changed=copy.deepcopy(doc);changed['jobs']['customer-candidate']['if']=condition
+   self.assertTrue(policy.validate(changed,'cvie-staging.yml'))
+ def test_candidate_credentials_never_enter_build_and_baseline_is_read_only_dispatch(self):
+  doc=policy.load_workflow((policy.ROOT/'.github/workflows/cvie-staging.yml').read_text())
+  self.assertNotIn("github.event_name == 'push'",doc['jobs']['automatic-staging']['if'])
+  self.assertIn('diagnose',doc['jobs']['automatic-staging']['if'])
+  bad=copy.deepcopy(doc);bad['jobs']['customer-candidate']['steps'][0]['env']={'TOKEN':'${{ secrets.CF_STAGING_API_TOKEN }}'}
+  self.assertTrue(policy.validate(bad,'cvie-staging.yml'))
