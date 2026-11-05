@@ -6,6 +6,8 @@ import re
 import shutil
 import subprocess
 import tempfile
+import hashlib
+import base64
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'staging/.build/public'
@@ -13,6 +15,9 @@ SOURCE=Path(os.environ.get('STAGING_ASSET_SOURCE',ROOT)).resolve()
 ORIGIN=os.environ.get('STAGING_ASSET_ORIGIN','https://cveharborstage.com')
 assert ORIGIN=='https://cveharborstage.com'
 assert SOURCE in [ROOT, ROOT/'release/.build/production-frontend']
+QR_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
+QR_LOCAL = '/assets/vendor/qrcodejs-1.0.0.min.js'
+QR_INTEGRITY = 'CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA=='
 
 def account_auth_for_staging(text):
     # Correct the pinned frontend only in the isolated staging asset tree.
@@ -55,6 +60,14 @@ def build():
             (tree / name).write_text('window.' + variable + ' = ' + json.dumps(content) + ';\n')
         subprocess.run(['python', 'scripts/build_site.py'], cwd=tree, check=True, capture_output=True)
         public = tree / 'public'
+        # Same audited bytes/SRI as the existing CDN reference; never download
+        # a dependency during the build or at runtime. Keep the MIT notice.
+        qr = (ROOT / 'staging/vendor/qrcodejs/qrcode.min.js').read_bytes().rstrip(b'\n')
+        assert base64.b64encode(hashlib.sha512(qr).digest()).decode() == QR_INTEGRITY
+        local_qr = public / QR_LOCAL.lstrip('/')
+        local_qr.parent.mkdir(parents=True, exist_ok=True)
+        local_qr.write_bytes(qr)
+        shutil.copy2(ROOT / 'staging/vendor/qrcodejs/LICENSE', local_qr.with_suffix('.LICENSE.txt'))
         (public / 'CNAME').unlink(missing_ok=True)
         (public / 'robots.txt').write_text('User-agent: *\nDisallow: /\n')
         for target in public.rglob('*'):
@@ -64,6 +77,7 @@ def build():
                     text = account_auth_for_staging(text)
                 text = re.sub(r'https://(?:api\.|confirm\.|www\.)?cveharbor\.com', ORIGIN, text)
                 if target.suffix == '.html':
+                    text = text.replace(QR_CDN, QR_LOCAL)
                     text = text.replace('<head>', '<head><meta name="robots" content="noindex,nofollow">', 1)
                     text = re.sub(r'(<body\b[^>]*>)', r'\1<div role="status" style="padding:8px;background:#573b00;color:white">CVEHarbor STAGING — synthetic data; captured email only; native schedules disabled</div>', text, count=1)
                 target.write_text(text)
