@@ -1,3 +1,5 @@
+import {fileURLToPath} from 'node:url';
+const baselineSource=fileURLToPath(new URL('../../release/.build/production-source/',import.meta.url));
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {expectedBaseline,auditBaseline,schemaSQL,runtimeCompatibility} from '../../scripts/production_schema_baseline.mjs';
 import {backendIdentity} from '../../scripts/build_release_identity.mjs';
@@ -6,8 +8,8 @@ import {recoveryProtected} from '../../account-backend/src/recovery-control.js';
 const profile=JSON.parse(fs.readFileSync(new URL('../../release/baseline.json',import.meta.url)));
 function productionSchema(){const DB=new FullDB({empty:true});for(const f of profile.application_schema_files)DB.sql.exec(fs.readFileSync(new URL('../../'+f.path,import.meta.url),'utf8'));return DB;}
 test('reconciled active version passes with the same source/schema and explicit incompatible runtime result',async()=>{
- const expected=expectedBaseline(new URL('../..',import.meta.url).pathname),DB=productionSchema();let posts=0;
- assert.equal(backendIdentity(new URL('../..',import.meta.url).pathname),profile.backend.identity);
+ const expected=expectedBaseline(baselineSource),DB=productionSchema();let posts=0;
+ assert.equal(backendIdentity(baselineSource),profile.backend.identity);
  const transport=async(url,init)=>{
   const p=new URL(url).pathname;let result;
   if(init.method==='POST'){posts++;assert.ok(p.endsWith('/'+profile.production_database_id+'/query'));assert.deepEqual(JSON.parse(init.body),{sql:schemaSQL});result=[{success:true,results:DB.sql.prepare(schemaSQL).all(),meta:{rows_written:0}}];}
