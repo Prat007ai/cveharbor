@@ -140,3 +140,11 @@ writes and retain compatible readers. Prefer a forward correction. Export and
 reconcile new associations/history before approving a full restore: restoring a
 bookmark can discard unrelated changes made after that bookmark. There is no
 automatic rollback, bulk unlinking, re-keying, ownership change or token replay.
+
+## Production test-data clarification
+
+Existing production tracker data is confirmed disposable by its owner, but no
+reset is authorized or recommended for this additive migration. See the exact
+[reset impact assessment](reset-assessment.md) and
+[protected activation review contract](protected-activation.md). Future real
+customer history guards remain required. Cleanup is not a staging activation step.

@@ -25,6 +25,7 @@ jobs:
       - run: python -m unittest discover -s tests
       - run: python scripts/build_site.py
       - run: node scripts/customer_remediation_plan.mjs
+      - run: node scripts/customer_remediation_impact.mjs
       - run: node scripts/browser_smoke.mjs && node scripts/worker_release_smoke.mjs
       - run: node scripts/remediation_browser.mjs
       - run: node scripts/remediation_workflow_browser.mjs

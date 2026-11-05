@@ -1,0 +1,257 @@
+{
+  "schema_only": true,
+  "live_records_examined": false,
+  "reset_recommended": false,
+  "baseline_objects": 143,
+  "root_record_key": [
+    "user_id",
+    "cve_id"
+  ],
+  "cascade_tables": [
+    "remediation_assignment_events",
+    "remediation_assignment_fyi",
+    "remediation_assignment_metadata",
+    "remediation_assignment_notifications",
+    "remediation_assignment_requests",
+    "remediation_assignments",
+    "remediation_finding_links",
+    "remediation_link_audit",
+    "remediation_owner_comments",
+    "remediation_record_metadata",
+    "remediation_retired_records",
+    "remediation_review_access",
+    "remediation_review_activity",
+    "remediation_review_challenges",
+    "remediation_review_notifications",
+    "remediation_review_sessions",
+    "remediation_status_changes",
+    "remediation_status_notifications",
+    "remediations"
+  ],
+  "cascade_edges": [
+    {
+      "child": "remediation_assignment_events",
+      "parent": "remediation_assignment_requests",
+      "from": "assignment_id",
+      "to": "id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_assignment_fyi",
+      "parent": "remediation_assignment_requests",
+      "from": "assignment_id",
+      "to": "id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_assignment_metadata",
+      "parent": "remediation_assignment_requests",
+      "from": "assignment_id",
+      "to": "id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_assignment_notifications",
+      "parent": "remediation_assignment_fyi",
+      "from": "assignment_id",
+      "to": "assignment_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_assignment_notifications",
+      "parent": "remediation_assignment_fyi",
+      "from": "recipient_email",
+      "to": "recipient_email",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_assignment_requests",
+      "parent": "remediations",
+      "from": "user_id",
+      "to": "user_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_assignment_requests",
+      "parent": "remediations",
+      "from": "cve_id",
+      "to": "cve_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_assignments",
+      "parent": "remediations",
+      "from": "user_id",
+      "to": "user_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_assignments",
+      "parent": "remediations",
+      "from": "cve_id",
+      "to": "cve_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_finding_links",
+      "parent": "remediations",
+      "from": "user_id",
+      "to": "user_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_finding_links",
+      "parent": "remediations",
+      "from": "record_id",
+      "to": "cve_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_link_audit",
+      "parent": "remediations",
+      "from": "user_id",
+      "to": "user_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_link_audit",
+      "parent": "remediations",
+      "from": "record_id",
+      "to": "cve_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_owner_comments",
+      "parent": "remediations",
+      "from": "user_id",
+      "to": "user_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_owner_comments",
+      "parent": "remediations",
+      "from": "record_id",
+      "to": "cve_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_record_metadata",
+      "parent": "remediations",
+      "from": "user_id",
+      "to": "user_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_record_metadata",
+      "parent": "remediations",
+      "from": "cve_id",
+      "to": "cve_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_retired_records",
+      "parent": "remediations",
+      "from": "user_id",
+      "to": "user_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_retired_records",
+      "parent": "remediations",
+      "from": "canonical_id",
+      "to": "cve_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_review_access",
+      "parent": "remediation_assignment_requests",
+      "from": "assignment_id",
+      "to": "id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_review_activity",
+      "parent": "remediations",
+      "from": "user_id",
+      "to": "user_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_review_activity",
+      "parent": "remediations",
+      "from": "cve_id",
+      "to": "cve_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_review_activity",
+      "parent": "remediation_review_access",
+      "from": "assignment_id",
+      "to": "assignment_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_review_challenges",
+      "parent": "remediation_review_access",
+      "from": "assignment_id",
+      "to": "assignment_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_review_notifications",
+      "parent": "remediation_review_access",
+      "from": "assignment_id",
+      "to": "assignment_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_review_sessions",
+      "parent": "remediation_review_access",
+      "from": "assignment_id",
+      "to": "assignment_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_status_changes",
+      "parent": "remediations",
+      "from": "user_id",
+      "to": "user_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_status_changes",
+      "parent": "remediations",
+      "from": "cve_id",
+      "to": "cve_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "child": "remediation_status_notifications",
+      "parent": "remediation_status_changes",
+      "from": "change_id",
+      "to": "id",
+      "on_delete": "CASCADE"
+    }
+  ],
+  "remediation_tables_without_root_cascade": [
+    "remediation_assignment_limits",
+    "remediation_change_context",
+    "remediation_review_write_context"
+  ],
+  "delete_triggers": [
+    {
+      "name": "delete_asset_remediation",
+      "table": "inventory_assets",
+      "sql": "CREATE TRIGGER delete_asset_remediation BEFORE DELETE ON inventory_assets\nBEGIN DELETE FROM remediations WHERE user_id=OLD.user_id AND cve_id IN (SELECT record_id FROM remediation_finding_links WHERE user_id=OLD.user_id AND asset_id=OLD.id); END"
+    },
+    {
+      "name": "review_assignment_revoked",
+      "table": "remediation_assignment_requests",
+      "sql": "CREATE TRIGGER review_assignment_revoked AFTER UPDATE OF revoked_at ON remediation_assignment_requests\nWHEN OLD.revoked_at IS NULL AND NEW.revoked_at IS NOT NULL\nBEGIN\n DELETE FROM remediation_review_sessions WHERE assignment_id=NEW.id;\n DELETE FROM remediation_review_challenges WHERE assignment_id=NEW.id;\n UPDATE remediation_review_notifications SET state='cancelled',completed_at=NEW.revoked_at WHERE assignment_id=NEW.id AND state='queued';\nEND"
+    }
+  ],
+  "future_candidate_tables": [
+    "remediation_customer_scopes",
+    "remediation_customer_ticket_history"
+  ]
+}
