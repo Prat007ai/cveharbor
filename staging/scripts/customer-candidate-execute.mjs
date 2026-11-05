@@ -45,7 +45,7 @@ export async function executeCandidate(env,deps={}){
   const domains=await get('/workers/domains');assert.ok(domains.some(d=>d.hostname===new URL(TARGET.origin).hostname&&d.service===TARGET.site));
   const bucket=resourceManifest().intelligence_bucket;assert.equal((await get('/r2/buckets/'+bucket)).name,bucket);assert.equal((await get('/r2/buckets/'+bucket+'/domains/managed')).enabled,false);assert.deepEqual((await get('/r2/buckets/'+bucket+'/domains/custom')).domains,[]);
   stage='schema';let state=await schemaState(DB,a.profile);step('schema',{state:state.state});
-  if(action==='status'){report.completed=true;record();return report;}
+  if(action==='status'){step('candidate_configuration',{backend_matches_candidate:(await inspect(TARGET.api,cfg.api,get,{requireKey:true})).verified===true,frontend_matches_candidate:(await inspect(TARGET.site,cfg.site,get)).verified===true});report.completed=true;record();return report;}
   if(action==='migrate'){
    if(state.state==='baseline'){
     const bookmark=await get('/d1/database/'+resourceManifest().permanent_database.uuid+'/time_travel/bookmark');assert.ok(typeof bookmark?.bookmark==='string'&&bookmark.bookmark.length>5);step('recovery_available',{bookmark_sha256:hash(bookmark.bookmark)});
@@ -72,9 +72,11 @@ export async function executeCandidate(env,deps={}){
   }else{
    // A previous attempt may have uploaded this commit: use explicit resume instead.
    assert.equal((await inspect(TARGET.api,cfg.api,get,{requireKey:true})).verified,false,'Backend already matches; diagnose and explicitly resume');
+   assert.equal((await current(TARGET.api,cfg.api,ordinary.api)).version_id,api.version_id,'Backend changed before upload');
    upload('api',false);const exact=await inspect(TARGET.api,cfg.api,get,{requireKey:true});assert.ok(exact.verified);assert.match(exact.version_id||'',/^[a-f0-9-]{36}$/);step('backend_verified',{version:exact.version_id});
   }
   stage='backend_runtime';await waitBackend(env,transport,{probe,bootstrap:true,sleep:deps.sleep,now:deps.now,record:e=>{report.backend_runtime=e;record();}});step('backend_runtime');
+  assert.equal((await current(TARGET.site,cfg.site,ordinary.site)).version_id,site.version_id,'Frontend changed before upload');
   const siteExact=await inspect(TARGET.site,cfg.site,get);
   if(action==='resume-frontend'&&siteExact.verified)step('frontend_reused',{version:siteExact.version_id});else {upload('site',false);const exact=await inspect(TARGET.site,cfg.site,get);assert.ok(exact.verified);assert.match(exact.version_id||'',/^[a-f0-9-]{36}$/);step('frontend_verified',{version:exact.version_id});}
   assert.equal((await schemaState(DB,a.profile)).state,'candidate');stage='custom_runtime';await probe(env,transport);step('custom_runtime');
