@@ -47,6 +47,19 @@ test('propagation wait never repeats uploads and keeps frontend blocked until ex
   }finally{DB.close();}
  }
 });
+test('final Access failure retains the exact failed probe after both Worker readbacks',async()=>{
+ const DB=database(),calls=[];let saved;
+ try{
+  const d=dependencies(DB,calls,null);
+  d.probeAccess=async()=>({passed:false,method:'GET',application_sessions_used:false,checks:[{name:'application_session_required',passed:true,status:401},{name:'legacy_application_disabled',route:'/workspace/',authentication:'anonymous',passed:false,status:302}]});
+  d.record=r=>{saved=structuredClone(r);};
+  await assert.rejects(executeRelease(env,{inputs:{operation:'update'}},sha,d),error=>{
+   assert.deepEqual(safeFailure(error),{operation:'release.access_probes',category:'validation',check:'legacy_application_disabled',route:'/workspace/',authentication:'anonymous',http_status:302});return true;
+  });
+  assert.equal(saved.access_probes.checks[1].status,302);assert.equal(saved.completed,false);
+  assert.ok(saved.steps.some(s=>s.name==='frontend_verified'));assert.ok(saved.steps.some(s=>s.name==='custom_domain_runtime'));
+ }finally{DB.close();}
+});
 test('production activation is blocked until administrator enables it; approved code-only release cannot migrate',async()=>{
  const DB=database();let uploads=0;try{
   const deps={baseline,DB,get:()=>assert.fail('No recovery capture required'),deploy:async()=>{uploads++;return {completed:true};},initialize:()=>assert.fail('No migration'),runner:()=>assert.fail('No migration')};

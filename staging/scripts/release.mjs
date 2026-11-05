@@ -170,7 +170,10 @@ export async function executeRelease(env,event,checkout,deps={}){
     else{const after=await holdStatus(DB);assert.equal(after.revision,state.revision);assert.equal(after.write_hold,state.write_hold);assert.equal(after.database_frozen,state.database_frozen);}
    }
    if(action!=='recover-code'){
-    const access=await (deps.probeAccess||probeAccess)(env,transport);assert.ok(access.passed,'Access/application boundary verification failed');step('access_probes',{passed:true,checks:access.checks.length});
+    const access=await (deps.probeAccess||probeAccess)(env,transport);
+    report.access_probes=access;record(report);
+    if(!access.passed){const failed=access.checks.find(c=>!c.passed);throw failure('release.access_probes','validation',{check:failed?.name||'access_boundary',...(failed?.route?{route:failed.route}:{}),...(failed?.authentication?{authentication:failed.authentication}:{}),...(Number.isInteger(failed?.status)?{http_status:failed.status}:{})});}
+    step('access_probes',{passed:true,checks:access.checks.length});
    }
   }
   report.completed=true;record(report);return report;
