@@ -5,7 +5,7 @@ import { probeMaintenanceAccess } from '../scripts/probe-access.mjs';
 import { TARGET } from '../target.mjs';
 const env = { CF_STAGING_ACCOUNT_ID: TARGET.account, CF_STAGING_API_TOKEN: 'private-management-token', CF_STAGING_ACCESS_ISSUER: 'https://synthetic-stage.cloudflareaccess.com', CF_STAGING_ACCESS_AUD: 'a'.repeat(64), CF_STAGING_ACCESS_CLIENT_ID: 'private-service-client', CF_STAGING_ACCESS_CLIENT_SECRET: 'private-service-secret' };
 const sid = 'fac61562-fc31-426d-8032-550aba63b7f6';
-function fixture({ metadataDenied = false, bypass = false, emptyList = false, missingDetail = false, database = null, workers = [] } = {}) {
+function fixture({ metadataDenied = false, bypass = false, emptyList = false, missingDetail = false, database = null, workers = [], apps = null } = {}) {
   return async (url, init) => {
     assert.equal(init.method, 'GET'); assert.equal(init.redirect, 'manual');
     const u = new URL(url); let result;
@@ -24,7 +24,7 @@ function fixture({ metadataDenied = false, bypass = false, emptyList = false, mi
     } else if (route === '/workers/subdomain') result = { subdomain: 'cveharbor-staging' };
     else if (route === '/workers/scripts') result = workers;
     else if (route === '/d1/database') result = database ? [database] : [];
-    else if (route === '/access/apps') result = [{ id: sid, domain: new URL(TARGET.origin).hostname, aud: env.CF_STAGING_ACCESS_AUD, type: 'self_hosted', name: 'CVEHarbor Staging' }];
+    else if (route === '/access/apps') result = apps ?? [{ id: sid, domain: new URL(TARGET.origin).hostname, aud: env.CF_STAGING_ACCESS_AUD, type: 'self_hosted', name: 'CVEHarbor Staging' }];
     else if (route.endsWith('/policies')) result = [
       { name: 'CVEHarbor staging reviewers', decision: bypass ? 'bypass' : 'allow', include: [{ email: { email: 'private-reviewer@example.test' } }] },
       { name: 'CVEHarbor staging automated tests', decision: 'non_identity', include: [{ service_token: { token_id: sid } }] },
@@ -44,6 +44,27 @@ test('preflight is GET-only, reports safe evidence, and does not infer a valid s
   assert.equal(result.mutation_requests, 0); assert.equal(result.production_requests, 0);
   assert.equal(result.checks.find(c => c.name === 'access_cookie_jwt_observed').status, 'unverified');
   assert.doesNotMatch(JSON.stringify(result), /private-management-token|private-service-client|private-service-secret|private-reviewer/);
+});
+test('multi-domain Access app accepts exact staging host with the same AUD/type and policies', async () => {
+  const host = new URL(TARGET.origin).hostname;
+  const base = {id:sid,domain:'cveharbor-site-staging.cveharbor-staging.workers.dev',aud:env.CF_STAGING_ACCESS_AUD,type:'self_hosted'};
+  for (const patch of [{self_hosted_domains:[base.domain,host]}, {destinations:[{type:'public',hostname:base.domain},{type:'public',hostname:host}]}]) {
+    const report = await preflight(env, fixture({apps:[{...base,...patch}]}));
+    assert.equal(report.read_only_checks_passed,true);
+    const check = report.checks.find(c=>c.name==='exact_access_application');
+    assert.equal(check.primary_domain_matches,false);assert.equal(check.matching_application_count,1);
+    assert.equal(report.checks.find(c=>c.name==='service_auth_policy').status,'pass');
+  }
+  for (const patch of [{}, {self_hosted_domains:['*.'+host]}, {self_hosted_domains:[host+'/private']}, {self_hosted_domains:[host+'.evil.test']},
+    {destinations:[{type:'private',hostname:host}]}, {self_hosted_domains:[host],aud:'b'.repeat(64)}, {self_hosted_domains:[host],type:'saas'}]) {
+    const report = await preflight(env,fixture({apps:[{...base,...patch}]}));
+    assert.ok(report.blockers.includes('exact_access_application'));
+  }
+  const matching = {...base,self_hosted_domains:[host]};
+  const duplicate = await preflight(env,fixture({apps:[matching,{...matching,id:'abc-def'}]}));
+  assert.ok(duplicate.blockers.includes('exact_access_application'));
+  const bypass = await preflight(env,fixture({apps:[matching],bypass:true}));
+  assert.ok(bypass.blockers.includes('no_access_bypass_or_additional_allow'));
 });
 test('unreadable token metadata is not called a confirmed write grant or isolation proof', async () => {
   const result = await preflight(env, fixture({ metadataDenied: true }));
