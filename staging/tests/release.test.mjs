@@ -18,7 +18,7 @@ test('schema and backend runtime gates precede frontend upload; every failure st
  }finally{db.close();}}
 });
 test('runtime gate rejects old release, missing snapshot or wrong hold state',async()=>{
- const valid={ready:true,schema_ready:true,feed_version:'fixture',mail_capture:true,native_schedules:false,held:false,release:sha};
+ const valid={ready:true,schema_ready:true,feed_version:'f'.repeat(64),mail_capture:true,native_schedules:false,held:false,release:sha};
  for(const delta of [{release:'old'},{feed_version:null},{mail_capture:false},{held:true}])await assert.rejects(probeBackend(env,async()=>Response.json({...valid,...delta})));
  assert.equal((await probeBackend(env,async()=>Response.json(valid))).release,sha);
 });

@@ -7,6 +7,7 @@ import {executeRelease} from './release.mjs';import {holdStatus,setHold,installG
 import {d1Client} from '../../scripts/cloudflare_d1.mjs';import {forwardMigrations,migrationConfig} from '../../scripts/release_migrations.mjs';
 import {backendIdentity} from '../../scripts/build_release_identity.mjs';
 import {productionBaselinePlan,verifyProductionBaseline} from './production-baseline.mjs';
+import {runtimeDiagnostic} from './runtime-diagnostic.mjs';
 export function simpleAuthorization(env,baseline){
  assert.equal(env.GITHUB_REPOSITORY,'Prat007ai/cveharbor');assert.equal(env.GITHUB_REF,'refs/heads/main');
  assert.ok(['push','workflow_dispatch'].includes(env.GITHUB_EVENT_NAME));assert.equal(env.SIMPLE_STAGING_ENABLED,'true');
@@ -24,9 +25,17 @@ export async function simpleRelease(env,{baseline=JSON.parse(fs.readFileSync(pat
  const at=async(operation,fn)=>{stage=operation;report.current_operation=operation;persist();return await fn();};
  try{
  simpleAuthorization(env,baseline);
- const operation=env.SIMPLE_STAGING_OPERATION||'release';assert.ok(['release','initialize','resume','diagnose','publish-synthetic'].includes(operation));
+ const operation=env.SIMPLE_STAGING_OPERATION||'release';assert.ok(['release','initialize','resume','diagnose','publish-synthetic','readiness'].includes(operation));
  if(operation!=='release')assert.equal(env.GITHUB_EVENT_NAME,'workflow_dispatch','Initialization/recovery needs one explicit approval');
  const derived={...env,CF_STAGING_APPROVED_COMMIT:env.GITHUB_SHA};
+ if(operation==='readiness'){
+  report.operation=operation;
+  report.runtime=await at('release.read_only_runtime',()=>runtimeDiagnostic(derived,{...(get?{get}:{}),record:r=>{report.runtime=r;persist();}}));
+  report.status=report.runtime.ready?'diagnosed':'stopped';
+  report.workers_deployed=false;report.database_mutations=0;
+  if(report.runtime.failure)report.failure=report.runtime.failure;
+  return report;
+ }
  get??=management(derived);DB??=d1Client({database:env.CF_STAGING_D1_DATABASE_ID,readOnly:baseline.version===2&&['release','publish-synthetic'].includes(operation),fetcher:(...args)=>diagnosticTransport(stage)(...args),env:{CLOUDFLARE_ACCOUNT_ID:TARGET.account,CLOUDFLARE_API_TOKEN:env.CF_STAGING_API_TOKEN}});
  Object.assign(report,{version:1,status:'stopped',source_sha:env.GITHUB_SHA,operation,account:TARGET.account,database_id:env.CF_STAGING_D1_DATABASE_ID,started_at:clock(),baseline_source_sha:baseline.source_sha,production_mutations:0});
  const capture=(name,value)=>{if(name==='migration')report.baseline=structuredClone(value);else if(name==='migration-inventory')report.inventory=structuredClone(value);else if(name.startsWith('migration-access-'))report.access_check=structuredClone(value);persist();};
@@ -87,7 +96,7 @@ export async function simpleRelease(env,{baseline=JSON.parse(fs.readFileSync(pat
  report.status='passed';report.backend_identity=backendIdentity();report.native_migrations=migrations.map(({name,sha256})=>({name,sha256}));report.completed_at=clock();return report;
  }catch(error){
   const known=safeFailure(error);report.failure=known.category==='unknown'?{operation:stage,category:error?.code==='ERR_ASSERTION'?'validation':'unexpected_error'}:known;
-  report.status='stopped';report.next='Run diagnose only. Review the observed checkpoint before separately approving any migration retry.';
+  report.status='stopped';report.next=known.operation==='release.backend_runtime'?'Run readiness only to inspect the currently deployed pair. Do not retry release or upload either Worker without approval.':'Run diagnose only. Review the observed checkpoint before separately approving any migration retry.';
   throw error;
  }finally{report.completed_at=clock();persist();}
 }
@@ -108,6 +117,6 @@ export async function recordNativeChecksums(DB,files){
 }
 if(process.argv[1]===fileURLToPath(import.meta.url)){
  let latest;const record=report=>{latest=report;fs.mkdirSync('release/artifacts',{recursive:true});fs.writeFileSync('release/artifacts/staging-release.json',JSON.stringify(report,null,2)+'\n',{mode:0o600});};
- try{const report=await simpleRelease(process.env,{record});console.log('Staging operation completed: '+report.status);}
+ try{const report=await simpleRelease(process.env,{record});console.log('Staging operation completed: '+report.status);if(report.status==='stopped')process.exitCode=1;}
  catch(error){console.error('Staging release stopped: '+JSON.stringify(latest?.failure||safeFailure(error))+'. No automatic retry, restore or deployment.');process.exitCode=1;}
 }
