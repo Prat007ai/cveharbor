@@ -26,8 +26,9 @@ export function createStagingAPI(application){return {
    if(request.method!=='GET')return new Response('Method not allowed',{status:405});
    const schema=await (await stagingReadiness(safe)).json();let version=null;
    try{version=(await openIntelligenceSnapshot(safe)).version;}catch{}
-   const ready=schema.schema_ready&&!!version&&env.STAGING_EMAIL_CAPTURE_ENABLED==='true'&&typeof env.STAGING_TOTP_ENCRYPTION_KEY==='string'&&env.STAGING_TOTP_ENCRYPTION_KEY.length>=32&&!!env.STAGING_MONITOR_WEBHOOK_TOKEN;
-   return Response.json({ready,held:schema.held,schema_ready:schema.schema_ready,feed_version:version,release:env.STAGING_RELEASE||'unbuilt',application_profile:env.STAGING_APPLICATION_PROFILE||'candidate',mail_capture:env.STAGING_EMAIL_CAPTURE_ENABLED==='true',native_schedules:false},{status:ready?200:503,headers:{'Cache-Control':'private, no-store'}});
+   const mfa_configured=typeof env.STAGING_TOTP_ENCRYPTION_KEY==='string'&&env.STAGING_TOTP_ENCRYPTION_KEY.length>=32,monitor_webhook_configured=!!env.STAGING_MONITOR_WEBHOOK_TOKEN;
+   const ready=schema.schema_ready&&!!version&&env.STAGING_EMAIL_CAPTURE_ENABLED==='true'&&mfa_configured&&monitor_webhook_configured;
+   return Response.json({ready,held:schema.held,schema_ready:schema.schema_ready,feed_version:version,release:env.STAGING_RELEASE||'unbuilt',application_profile:env.STAGING_APPLICATION_PROFILE||'candidate',mail_capture:env.STAGING_EMAIL_CAPTURE_ENABLED==='true',mfa_configured,monitor_webhook_configured,native_schedules:false},{status:ready?200:503,headers:{'Cache-Control':'private, no-store'}});
   }
   return withStagingTransport(env,()=>new URL(request.url).pathname.startsWith('/__staging/')?adminRoute(request,env,application,safe):application.fetch(request,safe,ctx));
  },

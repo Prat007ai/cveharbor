@@ -18,6 +18,7 @@ import {d1Client} from '../../scripts/cloudflare_d1.mjs';
 import {diagnoseSchema,loadDiagnosticReference} from './schema-diagnostic.mjs';
 import {adoptSchema,loadAdoption} from './adopt-schema.mjs';
 import {failure,safeFailure} from './errors.mjs';
+import {ACCESS_FAILURE_CATEGORIES} from '../access.mjs';
 import {migrationRecoveryEvidence} from './migration-recovery.mjs';
 import {holdStatus,setHold,freezeHold} from '../../scripts/recovery_control.mjs';
 export const OPERATIONS=Object.freeze(['diagnose-schema','adopt-schema','publish-synthetic','verify','migrate','update','recover-code','hold','freeze','resume']);
@@ -55,10 +56,25 @@ export function preflightEvidence(report){
  const keys=['http_status','metadata_available','metadata_is_array','application_count','matching_application_count','primary_domain_matches','worker_count','database_count','policy_count','email_rule_count','listed_count','record_count','name_match_count','client_match_count','named_record_has_client_id','named_record_policy_linked','matching_client_policy_linked','matched_enabled','matched_unexpired'];
  return {checks:report.checks.map(c=>Object.fromEntries([['name',c.name],['status',c.status],...keys.filter(k=>Object.hasOwn(c,k)&& (c[k]===null||typeof c[k]==='boolean'||Number.isInteger(c[k])||k==='http_status'&&c[k]==='network_error')).map(k=>[k,c[k]])]))};
 }
-export async function probeBackend(env,transport=fetch,{held=false,bootstrap=false}={}){
- const response=await transport((bootstrap?LEGACY_ORIGIN:TARGET.origin)+'/v1/staging-readiness',{method:'GET',redirect:'manual',signal:AbortSignal.timeout(30000),headers:{'CF-Access-Client-Id':env.CF_STAGING_ACCESS_CLIENT_ID,'CF-Access-Client-Secret':env.CF_STAGING_ACCESS_CLIENT_SECRET}});
- const result=await response.json();assert.ok(response.status===200&&result.ready&&result.schema_ready&&result.feed_version&&result.mail_capture&&result.native_schedules===false&&result.held===held&&result.release===env.CF_STAGING_APPROVED_COMMIT,'Backend runtime is not ready for the reviewed release');
- return {release:result.release,feed_version:result.feed_version,held:result.held};
+export async function probeBackend(env,transport=fetch,{held=false,bootstrap=false,record=()=>{}}={}){
+ const evidence={route:bootstrap?'legacy':'custom_domain',http_status:null};
+ const stop=(check,category='validation')=>{record(evidence);throw failure('release.backend_runtime',category,{check,...evidence});};
+ let response;
+ try{response=await transport((bootstrap?LEGACY_ORIGIN:TARGET.origin)+'/v1/staging-readiness',{method:'GET',redirect:'manual',signal:AbortSignal.timeout(30000),headers:{'CF-Access-Client-Id':env.CF_STAGING_ACCESS_CLIENT_ID,'CF-Access-Client-Secret':env.CF_STAGING_ACCESS_CLIENT_SECRET}});}catch{stop('readiness_request','network');}
+ evidence.http_status=response.status;
+ const accessError=response.headers.get('X-Staging-Access-Error');
+ if(ACCESS_FAILURE_CATEGORIES.includes(accessError))evidence.access_error=accessError;
+ if(response.status!==200&&response.status!==503)stop('http_success');
+ let result;try{result=await response.json();}catch{stop(response.status===200||response.status===503?'response_json':'http_success');}
+ if(!result||typeof result!=='object'||Array.isArray(result))stop('response_shape');
+ // Never copy provider bodies, arbitrary fields, strings or error text. Older
+ // deployed wrappers lack the two configuration booleans: preserve unknown.
+ evidence.checks={schema_ready:result.schema_ready===true,intelligence_ready:typeof result.feed_version==='string'&&/^[a-f0-9]{64}$/.test(result.feed_version),mail_capture:result.mail_capture===true,
+  mfa_configured:typeof result.mfa_configured==='boolean'?result.mfa_configured:null,monitor_webhook_configured:typeof result.monitor_webhook_configured==='boolean'?result.monitor_webhook_configured:null,
+  schedules_disabled:result.native_schedules===false,hold_matches:result.held===held,release_matches:result.release===env.CF_STAGING_APPROVED_COMMIT,ready:result.ready===true,http_success:response.status===200};
+ record(evidence);
+ for(const [name,passed] of Object.entries(evidence.checks))if(passed===false)stop(name);
+ return {release:result.release,feed_version:result.feed_version,held:result.held,...evidence};
 }
 export async function executeRelease(env,event,checkout,deps={}){
  const action=authorize(env,event,checkout); // Before creating clients or touching credentials/network.
@@ -121,7 +137,7 @@ export async function executeRelease(env,event,checkout,deps={}){
     function deploy(name,dry){const r=runner('npx',['--yes','wrangler@4.156.0','deploy','--config',path.join(root,'.build',name+'.json'),...(dry?['--dry-run']:[])],{cwd:path.join(root,'.build'),env:childEnv,encoding:'utf8',maxBuffer:4*1024*1024,timeout:180000});assert.ok(!r.error&&r.status===0,'Staging package/upload failed; inspect approved runner');step(name+(dry?'_dry_run':'_upload'),{passed:true});}
     deploy('api',true);deploy('site',true);deploy('api',false);
     const api=await (deps.inspectWorker||inspectWorker)(TARGET.api,cfg.api,get,{requireKey:true});assert.ok(api.verified);step('backend_verified',{version_id:api.version_id});
-    step('backend_runtime',await (deps.probeBackend||probeBackend)(env,transport,{held:action==='recover-code',bootstrap:production}));
+    step('backend_runtime',await (deps.probeBackend||probeBackend)(env,transport,{held:action==='recover-code',bootstrap:production,record:e=>{report.backend_runtime=e;record(report);}}));
     // No frontend upload before schema, bindings and actual backend runtime verification.
     deploy('site',false);const site=await (deps.inspectWorker||inspectWorker)(TARGET.site,cfg.site,get);assert.ok(site.verified);step('frontend_verified',{version_id:site.version_id});
     if(production){await (deps.verifySchema||(db=>verifyProductionBaseline(db,baseline)))(DB);step('custom_domain_runtime',await (deps.probeBackend||probeBackend)(env,transport));}

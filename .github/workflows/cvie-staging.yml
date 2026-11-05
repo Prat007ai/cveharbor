@@ -8,7 +8,7 @@ on:
       simple_operation:
         description: Simplified staging operation after activation
         type: choice
-        options: [release, initialize, resume, diagnose, publish-synthetic]
+        options: [release, initialize, resume, diagnose, publish-synthetic, readiness]
         default: release
       hold_revision:
         description: Expected hold revision (recovery resume only)
