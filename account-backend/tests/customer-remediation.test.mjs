@@ -98,3 +98,46 @@ test('stale edits are rejected and explicit account deletion still cascades only
   assert.equal(f.DB.sql.prepare('SELECT count(*) n FROM remediation_customer_scopes').get().n,0);
  }finally{f.DB.sql.close();}
 });
+
+function snapshot(db){
+ const tables=db.prepare("SELECT name FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name").all();
+ return Object.fromEntries(tables.map(({name})=>[name,db.prepare('SELECT * FROM "'+name.replaceAll('"','""')+'"').all().map(r=>JSON.stringify(r)).sort()]));
+}
+test('populated migration preserves every existing row including acknowledged assignments and history',async()=>{
+ const f=await customerRemediationFixture({migration:false}),native=globalThis.fetch;globalThis.fetch=f.fetcher;
+ try{
+  assert.equal((await f.call('/remediations/'+fixtureCve+'/assign','POST',{email:'preserved@example.test',confirmed:true,expected_updated:'2026-11-01'})).status,200);
+  const url=f.emails[0].text_body.match(/https:\/\/[^\s]+\/acknowledge\/[a-f0-9]{64}/)[0],proof=createHash('sha256').update('confirm:'+url.split('/').pop()).digest('hex');
+  assert.equal((await worker.fetch(new Request(url,{method:'POST',headers:{Origin:new URL(url).origin,'Content-Type':'application/x-www-form-urlencoded'},body:'confirm=receipt&proof='+proof}),f.env,{})).status,200);
+  const row=(await list(f))[0];assert.equal((await f.call('/remediations/'+fixtureCve,'PUT',{...row,status:'Investigating',expected_updated:row.updated,status_change_reason:'Preserved fictional history'})).status,200);
+  const before=snapshot(f.DB.sql),changes=f.DB.sql.prepare('SELECT total_changes() n').get().n;
+  f.DB.sql.exec(fs.readFileSync(new URL('../../deployment/proposals/customer-remediation/schema.sql',import.meta.url),'utf8'));
+  const after=snapshot(f.DB.sql);for(const [table,rows] of Object.entries(before))assert.deepEqual(after[table],rows,table);
+  assert.equal(f.DB.sql.prepare('SELECT total_changes() n').get().n,changes);
+  assert.ok(f.DB.sql.prepare('SELECT acknowledged_at FROM remediation_assignment_requests').get().acknowledged_at);
+ }finally{globalThis.fetch=native;f.DB.sql.close();}
+});
+test('direct and replacement association deletion fails atomically; authenticated account deletion isolates tenants',async()=>{
+ const f=await customerRemediationFixture();try{
+  const a=await create(f,customerA),bResponse=await f.call('/customer-remediations','POST',data(customerOther),'b');assert.equal(bResponse.status,200);const b=(await bResponse.json()).id;
+  const before=snapshot(f.DB.sql);
+  // No ticket is present: the association itself must protect its history.
+  assert.throws(()=>f.DB.sql.prepare('DELETE FROM remediation_customer_scopes WHERE user_id=? AND record_id=?').run('a',a),/association must be retained/);
+  assert.throws(()=>f.DB.sql.exec('DELETE FROM remediation_customer_scopes'),/association must be retained/);
+  const original=f.DB.sql.prepare('SELECT * FROM remediation_customer_scopes WHERE user_id=? AND record_id=?').get('a',a);
+  assert.throws(()=>f.DB.sql.prepare('INSERT OR REPLACE INTO remediation_customer_scopes VALUES(?,?,?,?,?,?,?)').run(...Object.values(original)),/context mismatch/);
+  assert.throws(()=>f.DB.sql.prepare('DELETE FROM inventory_customers WHERE id=?').run(customerA),/FOREIGN KEY/);
+  assert.deepEqual(snapshot(f.DB.sql),before);
+  assert.equal((await worker.fetch(new Request('https://api.cveharbor.com/v1/account',{method:'DELETE',headers:{Origin:'https://cveharbor.com'}}),f.env,{})).status,401);
+  assert.equal((await f.call('/remediation-records/'+a,'GET',null,'b')).status,404);
+  assert.equal((await f.call('/remediation-records/'+b,'GET',null,'a')).status,404);
+  assert.equal((await f.call('/remediation-records/'+a+'/tickets','POST',{ticket_number:'PRESERVE-A'})).status,200);
+  assert.equal((await f.call('/remediation-records/'+b+'/tickets','POST',{ticket_number:'PRESERVE-B'},'b')).status,200);
+  const otherRecord=f.DB.sql.prepare("SELECT * FROM remediations WHERE user_id='b'").all(),otherScope=f.DB.sql.prepare("SELECT * FROM remediation_customer_scopes WHERE user_id='b'").all();
+  assert.equal((await f.call('/account','DELETE')).status,200);
+  for(const table of ['remediation_customer_scopes','remediation_customer_ticket_history','remediations'])assert.equal(f.DB.sql.prepare('SELECT count(*) n FROM '+table+" WHERE user_id='a'").get().n,0);
+  assert.deepEqual(f.DB.sql.prepare("SELECT * FROM remediations WHERE user_id='b'").all(),otherRecord);assert.deepEqual(f.DB.sql.prepare("SELECT * FROM remediation_customer_scopes WHERE user_id='b'").all(),otherScope);
+  assert.equal((await f.call('/remediation-records/'+b,'GET',null,'b')).status,200);
+  assert.equal((await f.call('/account','DELETE',null,'b')).status,200);assert.equal(f.DB.sql.prepare('SELECT count(*) n FROM pragma_foreign_key_check').get().n,0);
+ }finally{f.DB.sql.close();}
+});

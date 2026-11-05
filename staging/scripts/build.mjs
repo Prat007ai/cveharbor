@@ -9,7 +9,11 @@ import {backendIdentity} from '../../scripts/build_release_identity.mjs';
 import {expectedBaseline,schemaSQL} from '../../scripts/production_schema_baseline.mjs';
 import {canonicalDDL} from '../../scripts/sql_schema_tokens.mjs';
 import { TARGET } from '../target.mjs';
+import {verifyCandidateProfile} from './customer-remediation-profile.mjs';
 const { build } = await import(process.env.CVIE_ESBUILD_MODULE || 'esbuild');
+assert.ok([undefined,'production-baseline','customer-remediation-candidate'].includes(process.env.STAGING_BUILD_PROFILE),'Unknown staging build profile');
+const candidate=process.env.STAGING_BUILD_PROFILE==='customer-remediation-candidate';
+const candidateData=candidate?verifyCandidateProfile():null;
 const production=process.env.STAGING_BUILD_PROFILE==='production-baseline';
 const repository=path.resolve(root,'..');
 const baseline=JSON.parse(fs.readFileSync(path.join(repository,'release/baseline.json')));
@@ -33,7 +37,8 @@ if(production){
  }finally{db.close();}
 }
 
-const out = path.join(root, '.build');
+if(candidate)expected=candidateData.rows.map(r=>[r.type,r.name,r.tbl_name,canonicalDDL(r.sql)]);
+const out = path.join(root, '.build',...(candidate?['customer-remediation-candidate']:[]));
 fs.mkdirSync(out, { recursive: true });
 // Refuse newly introduced network mechanisms that bypass the injected fetch guard.
 for (const name of fs.readdirSync(backend).filter(n => n.endsWith('.js'))) {
@@ -43,24 +48,24 @@ for (const name of fs.readdirSync(backend).filter(n => n.endsWith('.js'))) {
 }
 await build({
   entryPoints: [path.join(root, 'api-entry.mjs')], bundle: true, format: 'esm', platform: 'browser',
-  define:production?{__STAGING_PRODUCTION_SCHEMA__:JSON.stringify(expected)}:{},
+  define:(production||candidate)?{__STAGING_PRODUCTION_SCHEMA__:JSON.stringify(expected),...(candidate?{__STAGING_CUSTOMER_PROFILE__:JSON.stringify(candidateData.profile)}:{})}:{},
   conditions: ['workerd', 'worker', 'browser'], external:['node:async_hooks'], outfile: path.join(out, 'api.mjs'),
   inject: [path.join(root, 'blocked-fetch.mjs')],
   plugins: [{ name: 'trusted-staging-origins', setup(b) {
-    if(production)b.onResolve({filter:/account-backend\/src\//},args=>{
+    if(production||candidate)b.onResolve({filter:/account-backend\/src\//},args=>{
       const suffix=args.path.split('account-backend/src/')[1];return {path:path.join(backend,suffix)};
     });
     b.onLoad({ filter: /account-backend\/src\/.*\.js$/ }, async args => ({
-      loader: 'js', contents: production&&path.basename(args.path)==='release-build.js'?`export const releaseIdentity=${JSON.stringify(backendIdentity(source))};`:path.basename(args.path) === 'monitor-approved-test.js'
+      loader: 'js', contents: (production||candidate)&&path.basename(args.path)==='release-build.js'?`export const releaseIdentity=${JSON.stringify(backendIdentity(source))};`:path.basename(args.path) === 'monitor-approved-test.js'
         ? 'export async function approvedTest() { return { inactive: true }; }'
         : fs.readFileSync(args.path, 'utf8').replace(/https:\/\/(?:api\.|confirm\.)?cveharbor\.com/g, TARGET.origin).replace("url.hostname==='confirm.cveharbor.com'", "(url.pathname.startsWith('/assignment/')||url.pathname.startsWith('/acknowledge/'))").replaceAll('confirm\\.cveharbor\\.com',new URL(TARGET.origin).hostname.replaceAll('.', '\\.')).replaceAll('api\\.cveharbor\\.com',new URL(TARGET.origin).hostname.replaceAll('.', '\\.')),
     }));
   } }],
 });
-const assets = spawnSync('python', [path.join(root, 'scripts/build-assets.py')], { stdio: 'inherit',env:{...process.env,STAGING_ASSET_SOURCE:frontend,STAGING_ASSET_ORIGIN:TARGET.origin} });
+const assets = spawnSync('python', [path.join(root, 'scripts/build-assets.py')], { stdio: 'inherit',env:{...process.env,STAGING_ASSET_SOURCE:frontend,STAGING_ASSET_ORIGIN:TARGET.origin,...(candidate?{STAGING_ASSET_OUTPUT:path.join(out,'public')}:{})} });
 if (assets.status !== 0) throw Error('Synthetic asset build failed');
 const manifest = { account: TARGET.account, api: TARGET.api, site: TARGET.site, origin: TARGET.origin, providers: 'synthetic-only', schedules: 'disabled',
-  application_profile:production?'production-baseline':'candidate',source_mode:releaseProfile.source_mode,backend_source_sha:production?(pinned?baseline.backend.source_sha:spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).stdout.trim()):null,frontend_source_sha:production?(pinned?baseline.frontend.source_sha:spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).stdout.trim()):null,backend_identity:backendIdentity(source),schema_sha256:production?baseline.schema_sha256:null,
+  application_profile:candidate?'customer-remediation-candidate':production?'production-baseline':'candidate',...(candidate?{candidate_profile:candidateData.profile,activation:'separate-approval-required'}:{}),source_mode:releaseProfile.source_mode,backend_source_sha:(production||candidate)?(pinned?baseline.backend.source_sha:spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).stdout.trim()):null,frontend_source_sha:(production||candidate)?(pinned?baseline.frontend.source_sha:spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).stdout.trim()):null,backend_identity:backendIdentity(source),schema_sha256:candidate?candidateData.profile.schema_sha256:production?baseline.schema_sha256:null,
   commit: spawnSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).stdout.trim(),
   api_sha256: createHash('sha256').update(fs.readFileSync(path.join(out, 'api.mjs'))).digest('hex') };
 fs.writeFileSync(path.join(out, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');

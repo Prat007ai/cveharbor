@@ -30,6 +30,11 @@ The backend validates all IDs by authenticated user and validates each parent
 relationship. Database triggers independently enforce ownership and immutable
 associations. Existing context deletion is refused while history is retained.
 Scoped records cannot be overwritten by legacy browser imports.
+Direct scope deletion is refused while its owning user exists, including records
+without tickets. Replacement inserts cannot delete an existing association through
+a uniqueness conflict. Deleting the authenticated user remains the sole existing
+account-removal path; cascades run after that user row has gone. SQL guards protect
+against mistakes through ordinary writes, not administrators who alter/drop guards.
 
 ## Approval and preflight
 
@@ -61,11 +66,52 @@ baseline build intentionally pins its old application sources and exact schema;
 ordinary `release` will **not** activate this candidate and may reject an extended
 schema. Do not edit baseline hashes or weaken readiness to bypass that boundary.
 
-Before any live feature validation, review a **separate staging candidate build
-and schema profile** pinned to the approved application commit plus this proposal's
-checksum and expected schema. Approval must include its deployment path; the
-existing automatic production-baseline lane must not run against the extended
-schema. This PR does not enable a new profile or deploy an unreviewed candidate.
+The separate inactive profile is now prepared in `candidate-profile.json`. It pins
+the backend identity, frontend input digest, staging adapter digest, SQL checksum
+and exact full schema digest. Build and verify it locally (no credentials):
+
+```sh
+node scripts/customer_remediation_plan.mjs
+node staging/scripts/customer-remediation-profile.mjs
+STAGING_BUILD_PROFILE=customer-remediation-candidate node staging/scripts/build.mjs
+node staging/scripts/check-customer-remediation-candidate.mjs
+```
+
+The output is isolated under `staging/.build/customer-remediation-candidate/`.
+The built bundle requires the exact candidate profile at runtime and retains
+Access routing, captured mail, MFA, monitoring, synthetic R2 and disabled native
+schedules. Exact schema equality and foreign-key checks include the new deletion
+guard; the old schema or a missing guard fails readiness. No deployment config
+is generated and no existing release operation accepts this candidate. CI builds
+and tests it without credentials. The current pinned profile and baseline are
+unchanged. Any input change requires regenerating and reviewing the inactive
+profile (`node staging/scripts/customer-remediation-profile.mjs --write`);
+regeneration is never an approval or automatic activation.
+
+### Exact live approval sequence (not performed by this PR)
+
+1. Review this draft PR, SQL, updated checksums, preservation tests and profile.
+   Do not merge yet: existing main workflows can deploy automatically.
+2. Review a candidate-specific, protected execution adapter before enabling any
+   live operation. It must pin the final approved commit and this profile, consume
+   only the isolated candidate paths, target the existing staging Workers/database,
+   preserve all Access/inventory/security/approval checks, audit the extended schema
+   with SELECT-only checks, and keep database application separate from uploads.
+   The current baseline-only release operation must continue rejecting this profile.
+   No such live adapter is enabled in this PR; do not dispatch ordinary release.
+3. Explicitly approve the staging-only migration checksum, database, backup,
+   paused-write window and recovery plan. Complete the preflight above, apply only
+   the approved additive SQL once, and verify original data/history plus empty new
+   tables and foreign-key integrity. Never initialize or rerun step 209.
+4. After reviewing migration evidence, explicitly approve deployment of the final
+   pinned candidate commit/profile through the reviewed protected adapter. Dry-run
+   both existing Workers, upload backend once, verify configuration/version and
+   authenticated readiness with expected release/profile/schema before uploading
+   frontend. Retain the bounded propagation retry only for a healthy stale release.
+   Fail closed on any security, schema or runtime error. No credential/policy change.
+5. Verify the custom domain and Access denials, then complete the fictional-data
+   acceptance below. Capture status/booleans only; no secrets or customer bodies.
+
 Without the tables, customer-only writes return 503 and capability is false;
 existing reads and asset/standalone work retain their compatibility.
 

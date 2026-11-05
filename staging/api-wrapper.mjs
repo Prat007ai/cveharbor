@@ -1,7 +1,7 @@
 import {TARGET,LEGACY_ORIGIN} from './target.mjs';
 import {withStagingTransport} from './transport.mjs';
 import {openIntelligenceSnapshot} from '../account-backend/src/intelligence-store.js';
-import {productionEnvironment,stagingReadiness} from './production-runtime.mjs';
+import {productionEnvironment,customerCandidateEnvironment,customerCandidateConfigured,stagingReadiness} from './production-runtime.mjs';
 import {adminRoute} from './admin.mjs';
 export function applicationEnvironment(env){
  const safe={DB:env.DB,ASSIGNMENT_ACK_RATE_LIMITER:env.ASSIGNMENT_ACK_RATE_LIMITER,TOTP_ENCRYPTION_KEY:env.STAGING_TOTP_ENCRYPTION_KEY,
@@ -15,12 +15,13 @@ export function applicationEnvironment(env){
  const capture=env.STAGING_EMAIL_CAPTURE_ENABLED==='true';
  for(const k of ['ASSIGNMENT_EMAIL_ENABLED','ALERT_DELIVERY_ENABLED','LIFECYCLE_DELIVERY_ENABLED','PRODUCT_MONITOR_DELIVERY_ENABLED'])safe[k]=String(capture);
  if(capture){safe.EMAIL_FROM='CVEHarbor Staging <no-reply@cveharbor.invalid>';safe.SMTP2GO_API_KEY='staging-capture-only';safe.ALERT_SMTP2GO_API_KEY='staging-capture-only';safe.ASSIGNMENT_SMTP2GO_API_KEY='staging-capture-only';}
- return env.STAGING_APPLICATION_PROFILE==='production-baseline'?productionEnvironment(safe):safe;
+ return env.STAGING_APPLICATION_PROFILE==='customer-remediation-candidate'?customerCandidateEnvironment(safe):env.STAGING_APPLICATION_PROFILE==='production-baseline'?productionEnvironment(safe):safe;
 }
 export function createStagingAPI(application){return {
  async fetch(request,env,ctx){
   const url=new URL(request.url);
   if((url.origin!==TARGET.origin&&!(url.origin===LEGACY_ORIGIN&&url.pathname==='/v1/staging-readiness'&&request.method==='GET'))||env.STAGING_MODE!=='true')return new Response('Invalid staging target',{status:403});
+  if(!customerCandidateConfigured(env))return new Response('Staging profile mismatch',{status:503});
   const safe=applicationEnvironment(env);
   if(new URL(request.url).pathname==='/v1/staging-readiness'){
    if(request.method!=='GET')return new Response('Method not allowed',{status:405});

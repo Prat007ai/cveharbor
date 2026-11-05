@@ -16,10 +16,14 @@ CREATE TRIGGER remediation_customer_owned BEFORE INSERT ON remediation_customer_
  OR (NEW.environment_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM inventory_environments e WHERE e.id=NEW.environment_id AND e.user_id=NEW.user_id AND e.customer_id=NEW.customer_id))
  OR EXISTS(SELECT 1 FROM remediation_finding_links WHERE user_id=NEW.user_id AND record_id=NEW.record_id)
  OR EXISTS(SELECT 1 FROM remediation_retired_records WHERE user_id=NEW.user_id AND record_id=NEW.record_id)
+ OR EXISTS(SELECT 1 FROM remediation_customer_scopes s WHERE s.user_id=NEW.user_id AND (s.record_id=NEW.record_id OR (s.customer_id=NEW.customer_id AND ifnull(s.environment_id,'')=ifnull(NEW.environment_id,'') AND s.cve_id=NEW.cve_id)))
  OR NEW.cve_id!=upper(NEW.cve_id) OR substr(NEW.record_id,1,length(NEW.cve_id))!=NEW.cve_id
  THEN RAISE(ABORT,'Customer remediation context mismatch') END;
 END;
 CREATE TRIGGER remediation_customer_scope_immutable BEFORE UPDATE ON remediation_customer_scopes BEGIN SELECT RAISE(ABORT,'Customer remediation scope is immutable'); END;
+CREATE TRIGGER remediation_customer_scope_retained BEFORE DELETE ON remediation_customer_scopes
+WHEN EXISTS(SELECT 1 FROM users WHERE id=OLD.user_id)
+BEGIN SELECT RAISE(ABORT,'Customer remediation association must be retained'); END;
 CREATE TRIGGER remediation_customer_history BEFORE DELETE ON remediations
 WHEN EXISTS(SELECT 1 FROM users WHERE id=OLD.user_id) AND EXISTS(SELECT 1 FROM remediation_customer_scopes WHERE user_id=OLD.user_id AND record_id=OLD.cve_id)
 BEGIN SELECT RAISE(ABORT,'Customer remediation history must be retained'); END;

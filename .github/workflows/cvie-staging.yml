@@ -56,6 +56,11 @@ jobs:
           node staging/scripts/production-browser.mjs
           node staging/scripts/check-build.mjs
           node staging/scripts/dry-run.mjs
+      - name: Build and verify inactive customer-remediation candidate locally
+        run: |
+          STAGING_BUILD_PROFILE=customer-remediation-candidate node staging/scripts/build.mjs
+          node staging/scripts/check-customer-remediation-candidate.mjs
+          STAGING_BROWSER_PROFILE=customer-remediation-candidate node staging/scripts/production-browser.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
