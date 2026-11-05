@@ -1,6 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {authorize,executeRelease,probeBackend} from '../scripts/release.mjs';
 import {FullDB} from './helpers/full-db.mjs';import {TARGET} from '../target.mjs';
+import {safeFailure} from '../scripts/errors.mjs';
 const sha='a'.repeat(40),env={PATH:process.env.PATH,GITHUB_REPOSITORY:'Prat007ai/cveharbor',GITHUB_REF:'refs/heads/codex/cvie-core-phase012',GITHUB_SHA:sha,GITHUB_EVENT_NAME:'workflow_dispatch',CF_STAGING_APPROVED_COMMIT:sha,CF_STAGING_PROVISION_ACTION:'update',CF_STAGING_ACCOUNT_ID:TARGET.account,CF_STAGING_D1_DATABASE_ID:'fac61562-fc31-426d-8032-550aba63b7f6',CF_STAGING_ADMIN_EMAILS:'admin@example.invalid',CF_STAGING_ACCESS_ISSUER:'https://synthetic.cloudflareaccess.com',CF_STAGING_ACCESS_AUD:'a'.repeat(64)};
 const event={inputs:{operation:'update'}};
 test('exact SHA, branch, operation and explicit dispatch/rerun required before credentials',()=>{
@@ -44,5 +45,23 @@ test('synthetic publication approval never deploys Workers or executes schema up
   d.runner=(command,args)=>{assert.equal(command,'python');assert.ok(args[0].endsWith('/publish-synthetic.py'));calls.push('publish');return {status:0};};
   const result=await executeRelease(e,{inputs:{operation:'publish-synthetic'}},sha,d);
   assert.equal(result.completed,true);assert.deepEqual(calls,['publish']);
+ }finally{db.close();}
+});
+test('preflight failure records the exact gate and scalar diagnostics before publication',async()=>{
+ const calls=[],db=new FullDB();try{
+  const e={...env,CF_STAGING_PROVISION_ACTION:'publish-synthetic'};
+  for(const check of ['exact_access_application','service_token_matches_policy_and_client']){
+   let saved;const d=deps(db,calls);
+   d.preflight=async()=>({account:TARGET.account,read_only_checks_passed:check!=='exact_access_application',blockers:check==='exact_access_application'?[check]:[],checks:[{name:check,status:check==='exact_access_application'?'fail':'unverified',http_status:200,matching_application_count:0,client_id:'private-client',email:'private-reviewer',reason:'private-provider-body',metadata_available:true}],raw:'private-secret'});
+   d.record=r=>{saved=structuredClone(r);};
+   d.diagnose=d.get=d.runner=async()=>assert.fail('No operation after failed preflight');
+   await assert.rejects(executeRelease(e,{inputs:{operation:'publish-synthetic'}},sha,d),error=>{
+    assert.deepEqual(safeFailure(error),{operation:'release.preflight',category:'validation',check});return true;
+   });
+   assert.deepEqual(saved.steps,[]);assert.equal(saved.error.check,check);
+   assert.equal(saved.preflight.checks[0].http_status,200);
+   assert.equal(saved.preflight.checks[0].matching_application_count,0);
+   assert.doesNotMatch(JSON.stringify(saved),/private-/);
+  }
  }finally{db.close();}
 });

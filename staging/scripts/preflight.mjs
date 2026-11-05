@@ -6,6 +6,15 @@ import { fileURLToPath } from 'node:url';
 import { TARGET, accessSettings, databaseId } from '../target.mjs';
 import { createAccessVerifier } from '../access.mjs';
 
+// Match an exact whole-host public destination; paths and wildcards do not
+// establish protection for the entire staging origin. Keep AUD/type checks.
+export function protectsStagingOrigin(app) {
+  const host = new URL(TARGET.origin).hostname;
+  return app.domain === host ||
+    Array.isArray(app.self_hosted_domains) && app.self_hosted_domains.includes(host) ||
+    Array.isArray(app.destinations) && app.destinations.some(d => d?.type === 'public' && d.hostname === host);
+}
+
 export async function preflight(env, transport = fetch, { existingDatabase = false, workerState = 'empty', maintenance = false } = {}) {
   if (!['empty', 'deployed'].includes(workerState) || workerState === 'deployed' && !existingDatabase) throw Error('Explicit inventory state and existing database required');
   if (maintenance && (env.CF_STAGING_PROVISION_ACTION !== 'migrate' || !existingDatabase || workerState !== 'deployed')) throw Error('Maintenance preflight is migration-only');
@@ -94,8 +103,12 @@ export async function preflight(env, transport = fetch, { existingDatabase = fal
   else add('approved_database_name_available', !!dbRows && !dbRows.some(d => d.name === TARGET.database), {});
   add('production_resources_absent', !!dbRows && !!workerRows && !dbRows.some(d => d.uuid === TARGET.productionDatabase || d.name === 'cveharbor-accounts') && !workerRows.some(w => ['cveharbor-accounts', 'cveharbor-site'].includes(w.id)), {});
   const apps = await cf('/access/apps?per_page=100', 'access_applications');
-  const app = apps.ok && Array.isArray(apps.result) && apps.result.length < 100 && apps.result.find(a => a.domain === new URL(TARGET.origin).hostname && a.aud === audience && a.type === 'self_hosted');
-  add('exact_access_application', !!app, { http_status: apps.status, name_matches_owner_label: app?.name === 'CVEHarbor Staging' });
+  const rows = apps.ok && Array.isArray(apps.result) && apps.result.length < 100 ? apps.result : [];
+  const matches = rows.filter(a => protectsStagingOrigin(a) && a.aud === audience && a.type === 'self_hosted');
+  const app = matches.length === 1 ? matches[0] : null;
+  add('exact_access_application', !!app, { http_status: apps.status, application_count: rows.length, matching_application_count: matches.length,
+    primary_domain_matches: !!app && app.domain === new URL(TARGET.origin).hostname,
+    name_matches_owner_label: app?.name === 'CVEHarbor Staging' });
   if (maintenance) add('single_maintenance_application', !!app && apps.result.length === 1, {});
   let servicePolicy;
   if (app && /^[a-f0-9-]+$/i.test(app.id)) {

@@ -36,13 +36,24 @@ export function authorize(env,event,checkout){
  return action;
 }
 export function acceptPreflight(report,{maintenance=false}={}){
- assert.equal(report.account,TARGET.account);assert.equal(report.read_only_checks_passed,true);assert.equal(report.blockers.length,0);
- if(maintenance){assert.equal(report.access_mode,'maintenance');assert.equal(report.checks.find(c=>c.name==='maintenance_associations_absent')?.status,'pass');assert.equal(report.checks.find(c=>c.name==='single_maintenance_application')?.status,'pass');}
- else assert.equal(report.checks.find(c=>c.name==='service_token_matches_policy_and_client')?.status,'pass');
+ const requireCheck=(passed,check)=>{if(!passed)throw failure('release.preflight','validation',{check});};
+ requireCheck(report.account===TARGET.account,'configured_account');
+ // Names originate in our preflight implementation; never serialize assertion
+ // actual/expected values or provider messages to identify a failed gate.
+ for(const check of report.checks)if(check.status==='fail')requireCheck(false,check.name);
+ requireCheck(report.read_only_checks_passed===true&&report.blockers.length===0,'read_only_checks_passed');
+ if(maintenance){requireCheck(report.access_mode==='maintenance','maintenance_mode');for(const name of ['maintenance_associations_absent','single_maintenance_application'])requireCheck(report.checks.find(c=>c.name===name)?.status==='pass',name);}
+ else requireCheck(report.checks.find(c=>c.name==='service_token_matches_policy_and_client')?.status==='pass','service_token_matches_policy_and_client');
  const grants=report.checks.find(c=>c.name==='token_permission_grants'),scope=report.checks.find(c=>c.name==='token_staging_only_scope');
  if(grants?.status==='pass'&&scope?.status==='pass')return;
  const a=JSON.parse(fs.readFileSync(path.join(root,'../docs/cvie-evidence/staging-owner-attestation.json'),'utf8'));
- assert.ok(a.evidence_type==='manual_account_owner_verification'&&a.account_id===TARGET.account&&a.scope_confirmed==='Restricted exclusively to the CVEHarbor Staging account'&&grants?.metadata_available===false&&grants.http_status===403&&scope?.metadata_available===false,'Token scope must be verified; conflicting scope is never accepted');
+ requireCheck(a.evidence_type==='manual_account_owner_verification'&&a.account_id===TARGET.account&&a.scope_confirmed==='Restricted exclusively to the CVEHarbor Staging account'&&grants?.metadata_available===false&&grants.http_status===403&&scope?.metadata_available===false,'token_scope_attestation');
+}
+// Explicit scalar allowlist: no credentials, identities, URLs, policy selectors,
+// provider payloads, exception text or child-process output enter the artifact.
+export function preflightEvidence(report){
+ const keys=['http_status','metadata_available','metadata_is_array','application_count','matching_application_count','primary_domain_matches','worker_count','database_count','policy_count','email_rule_count','listed_count','record_count','name_match_count','client_match_count','named_record_has_client_id','named_record_policy_linked','matching_client_policy_linked','matched_enabled','matched_unexpired'];
+ return {checks:report.checks.map(c=>Object.fromEntries([['name',c.name],['status',c.status],...keys.filter(k=>Object.hasOwn(c,k)&& (c[k]===null||typeof c[k]==='boolean'||Number.isInteger(c[k])||k==='http_status'&&c[k]==='network_error')).map(k=>[k,c[k]])]))};
 }
 export async function probeBackend(env,transport=fetch,{held=false,bootstrap=false}={}){
  const response=await transport((bootstrap?LEGACY_ORIGIN:TARGET.origin)+'/v1/staging-readiness',{method:'GET',redirect:'manual',signal:AbortSignal.timeout(30000),headers:{'CF-Access-Client-Id':env.CF_STAGING_ACCESS_CLIENT_ID,'CF-Access-Client-Secret':env.CF_STAGING_ACCESS_CLIENT_SECRET}});
@@ -64,7 +75,9 @@ export async function executeRelease(env,event,checkout,deps={}){
  const step=(name,evidence)=>{report.steps.push({name,...evidence});record(report);};
  try{
   if(recovery)step('migration_recovery',recovery);
-  const p=await (deps.preflight||preflight)(env,transport,{existingDatabase:true,workerState:'deployed',maintenance:action==='migrate'});acceptPreflight(p,{maintenance:action==='migrate'});step('access_and_inventory',{passed:true});
+  const p=await (deps.preflight||preflight)(env,transport,{existingDatabase:true,workerState:'deployed',maintenance:action==='migrate'});
+  report.preflight=preflightEvidence(p);record(report);
+  acceptPreflight(p,{maintenance:action==='migrate'});step('access_and_inventory',{passed:true});
   const initial=await (deps.diagnose||diagnose)(env,transport,()=>{},{allowLegacy:true});assert.ok(initial.verified);step('existing_workers',{workers:initial.workers.map(w=>({name:w.name,version_id:w.version_id,deployment_id:w.deployment_id,profile:w.profile}))});
   if(action!=='verify'&&!production){
    const bookmark=await get(`/d1/database/${resourceManifest().permanent_database.uuid}/time_travel/bookmark`);

@@ -3,6 +3,7 @@ import {FullDB} from './helpers/full-db.mjs';import {TARGET,LEGACY_ORIGIN} from 
 import {configs} from '../scripts/configure.mjs';import {productionEnvironment} from '../production-runtime.mjs';
 import {createFrontend} from '../frontend.mjs';import {executeRelease} from '../scripts/release.mjs';
 import {simpleRelease} from '../scripts/simple-release.mjs';
+import {safeFailure} from '../scripts/errors.mjs';
 const baseline=JSON.parse(fs.readFileSync('release/baseline.json'));
 const sha='a'.repeat(40),env={GITHUB_REPOSITORY:'Prat007ai/cveharbor',GITHUB_REF:'refs/heads/main',GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_SHA:sha,SIMPLE_STAGING_ENABLED:'true',STAGING_APPLICATION_ENABLED:'true',CF_STAGING_APPLICATION_PROFILE:'production-baseline',CF_STAGING_APPROVED_COMMIT:sha,CF_STAGING_PROVISION_ACTION:'update',CF_STAGING_ACCOUNT_ID:TARGET.account,CF_STAGING_D1_DATABASE_ID:'fac61562-fc31-426d-8032-550aba63b7f6',CF_STAGING_ACCESS_ISSUER:'https://synthetic.cloudflareaccess.com',CF_STAGING_ACCESS_AUD:'a'.repeat(64),CF_STAGING_ADMIN_EMAILS:'admin@example.invalid'};
 const database=()=>{const db=new FullDB({empty:true});db.sql.exec(fs.readFileSync('staging/schema.sql','utf8'));db.sql.prepare('INSERT INTO staging_schema_history(path,sha256,manifest_version) VALUES(?,?,1)').run('staging/schema.sql',JSON.parse(fs.readFileSync('staging/migrations.v1.json')).entries[0].sha256);for(const f of baseline.application_schema_files){db.sql.exec(fs.readFileSync(f.path,'utf8'));db.sql.prepare('INSERT INTO staging_schema_history(path,sha256,manifest_version) VALUES(?,?,1)').run(f.path,f.sha256);}return db;};
@@ -34,5 +35,21 @@ test('production activation is blocked until administrator enables it; approved 
   await assert.rejects(simpleRelease({...env,STAGING_APPLICATION_ENABLED:'false'},deps));assert.equal(uploads,0);
   assert.equal((await simpleRelease(env,deps)).status,'passed');assert.equal(uploads,1);
   DB.sql.exec('CREATE TABLE unreviewed(id TEXT)');await assert.rejects(simpleRelease(env,deps));assert.equal(uploads,1);
+ }finally{DB.close();}
+});
+test('synthetic preflight diagnostics survive the workflow wrapper without migrations or uploads',async()=>{
+ const DB=database();let saved;try{
+  const before=DB.sql.prepare('SELECT total_changes() n').get().n;
+  const deploy=async(e,event,commit,options)=>{
+   const d=dependencies(DB,[],null);
+   d.preflight=async()=>({account:TARGET.account,read_only_checks_passed:false,blockers:['exact_access_application'],checks:[{name:'exact_access_application',status:'fail',http_status:200,matching_application_count:0}]});
+   d.runner=d.get=d.diagnose=()=>assert.fail('No publication or mutations after validation failure');
+   return executeRelease(e,event,commit,{...d,...options});
+  };
+  await assert.rejects(simpleRelease({...env,SIMPLE_STAGING_OPERATION:'publish-synthetic'},{baseline,DB,deploy,get:()=>assert.fail('No recovery or mutation'),record:r=>{saved=structuredClone(r);}}),error=>safeFailure(error).check==='exact_access_application');
+  assert.equal(saved.failure.check,'exact_access_application');
+  assert.equal(saved.deployment.preflight.checks[0].matching_application_count,0);
+  assert.deepEqual(saved.deployment.steps,[]);
+  assert.equal(DB.sql.prepare('SELECT total_changes() n').get().n,before);
  }finally{DB.close();}
 });

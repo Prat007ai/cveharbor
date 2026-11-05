@@ -277,6 +277,19 @@ jobs:
           CF_STAGING_ADMIN_EMAILS: ${{ vars.CF_STAGING_ADMIN_EMAILS }}
           CF_STAGING_MANUAL_JOBS_ENABLED: ${{ vars.CF_STAGING_MANUAL_JOBS_ENABLED || 'false' }}
         run: node staging/scripts/simple-release.mjs
+      - name: Record sanitized validation failure in job summary
+        if: ${{ failure() }}
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const file = 'release/artifacts/staging-release.json';
+          if (fs.existsSync(file)) {
+            const report = JSON.parse(fs.readFileSync(file, 'utf8'));
+            const failure = report.failure || report.deployment?.error;
+            const safe = Object.fromEntries(['operation', 'category', 'check'].filter(k => typeof failure?.[k] === 'string' && /^[a-zA-Z0-9_.-]{1,100}$/.test(failure[k])).map(k => [k, failure[k]]));
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, 'Staging validation failure (sanitized):\n\n```json\n' + JSON.stringify(safe, null, 2) + '\n```\n\nSafe check statuses, counts and HTTP statuses are in the staging-tested artifact.\n');
+          }
+          JS
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: ${{ always() }}
         with:
