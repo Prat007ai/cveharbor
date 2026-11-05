@@ -4,6 +4,7 @@ import {TARGET} from '../target.mjs';import {configs,validate,root} from './conf
 import {management,inspectWorker} from './diagnose.mjs';import {preflight} from './preflight.mjs';import {acceptPreflight,probeBackend,waitBackend} from './release.mjs';import {probeAccess} from './probe-access.mjs';
 import {failure,safeFailure} from './errors.mjs';
 import {d1Client} from '../../scripts/cloudflare_d1.mjs';import {verifyArtifact,output,hash} from './customer-candidate-artifact.mjs';import {schemaState,counts,migrationBatch} from './customer-candidate-schema.mjs';
+import {applyCandidateMigration} from './customer-candidate-migrate.mjs';
 const actions=['status','migrate','deploy','resume-frontend'];
 export function authorizeCandidate(env,a){
  assert.equal(env.GITHUB_REPOSITORY,'Prat007ai/cveharbor');assert.equal(env.GITHUB_REF,'refs/heads/main');assert.equal(env.GITHUB_EVENT_NAME,'workflow_dispatch');assert.equal(env.GITHUB_RUN_ATTEMPT,'1','Dispatch a fresh reviewed operation; do not rerun a write job');
@@ -44,20 +45,18 @@ export async function executeCandidate(env,deps={}){
   const api=await current(TARGET.api,cfg.api,ordinary.api),site=await current(TARGET.site,cfg.site,ordinary.site);step('current_workers',{backend_version:api.version_id,frontend_version:site.version_id});
   const domains=await get('/workers/domains');assert.ok(domains.some(d=>d.hostname===new URL(TARGET.origin).hostname&&d.service===TARGET.site));
   const bucket=resourceManifest().intelligence_bucket;assert.equal((await get('/r2/buckets/'+bucket)).name,bucket);assert.equal((await get('/r2/buckets/'+bucket+'/domains/managed')).enabled,false);assert.deepEqual((await get('/r2/buckets/'+bucket+'/domains/custom')).domains,[]);
-  stage='schema';let state=await schemaState(DB,a.profile);step('schema',{state:state.state});
+  stage='schema';let state=await schemaState(DB,a.profile);step('schema',{state:state.state,journal:state.journal});
   if(action==='status'){step('candidate_configuration',{backend_matches_candidate:(await inspect(TARGET.api,cfg.api,get,{requireKey:true})).verified===true,frontend_matches_candidate:(await inspect(TARGET.site,cfg.site,get)).verified===true});report.completed=true;record();return report;}
   if(action==='migrate'){
    if(state.state==='baseline'){
     const bookmark=await get('/d1/database/'+resourceManifest().permanent_database.uuid+'/time_travel/bookmark');assert.ok(typeof bookmark?.bookmark==='string'&&bookmark.bookmark.length>5);step('recovery_available',{bookmark_sha256:hash(bookmark.bookmark)});
     const before=await counts(DB,state.rows);stage='migration_batch';step('migration_attempt');
     const batch=migrationBatch(state.rows,before,a.statements,a.profile);
-    if(deps.apply)await deps.apply(batch);else {
-     const r=await transport(`https://api.cloudflare.com/client/v4/accounts/${TARGET.account}/d1/database/${resourceManifest().permanent_database.uuid}/query`,{method:'POST',redirect:'error',signal:AbortSignal.timeout(60000),headers:{Authorization:'Bearer '+env.CF_STAGING_API_TOKEN,'Content-Type':'application/json'},body:JSON.stringify({batch})});
-     const result=await r.json();assert.ok(r.ok&&result.success&&Array.isArray(result.result)&&result.result.length===batch.length&&result.result.every(x=>x.success),'Migration outcome requires read-only reconciliation');
-    }
-    report.database_changed=true;state=await schemaState(DB,a.profile);assert.equal(state.state,'candidate');
+    report.database_changed=null;report.migration_outcome='unknown';record();
+    if(deps.apply)await deps.apply(batch);else applyCandidateMigration(env,batch,a.profile,deps.migrationRunner);
+    state=await schemaState(DB,a.profile);assert.equal(state.state,'candidate');
     const after=await counts(DB,state.rows);for(const [name,n] of Object.entries(before))assert.equal(after[name],n+(name==='staging_schema_history'?1:0),'Existing table count changed');
-    assert.equal(after.remediation_customer_scopes,0);assert.equal(after.remediation_customer_ticket_history,0);step('migration_verified',{existing_counts_unchanged:true,receipt_appended:true});
+    assert.equal(after.remediation_customer_scopes,0);assert.equal(after.remediation_customer_ticket_history,0);report.database_changed=true;report.migration_outcome='verified';step('migration_verified',{existing_counts_unchanged:true,receipt_appended:true,native_receipt_verified:true});
    }else step('migration_already_verified');
    report.completed=true;record();return report;
   }

@@ -1,7 +1,9 @@
 # Customer remediation protected execution adapter
 
 Implemented in `staging/scripts/customer-candidate-execute.mjs`, with credential-free
-artifact sealing, an exact-schema classifier and transactional migration guards.
+artifact sealing, an exact-schema classifier and guarded, single-file D1 migrations.
+See [the atomicity investigation](customer-candidate-atomicity.md) for the documented
+contract, its limits and the isolated native migration journal.
 The existing `cvie-staging.yml` now exposes **none/status/migrate/deploy/resume-frontend**.
 Nothing is enabled by default. Do not run an operation until separately authorized.
 
@@ -81,13 +83,26 @@ Set `CF_STAGING_CANDIDATE_WRITE_WINDOW=<commit>` and protected environment varia
 Dispatch a **new run** with `candidate_operation=migrate`, the same reviewed hashes,
 and `candidate_confirmation` equal to that full string; approve the protected job.
 The adapter rechecks Access/inventory, existing versions/domain/private bucket,
-exact original schema/receipts and FK integrity, then uses one D1 batch containing
-schema/count guards, the approved CREATE statements and one append-only receipt
-in existing `staging_schema_history` (manifest_version=267). It never initializes,
-resets, updates existing application rows or applies other migrations. It verifies
-all previous table counts, the extended schema, empty new tables and FK integrity.
-The SQL checksum from #267 stays unchanged; the execution receipt is additional
-staging metadata, not a change to the step-209 receipts or production baseline.
+exact original schema/receipts and FK integrity, then invokes pinned
+`wrangler@4.156.0 d1 migrations apply` against only the existing staging database.
+A temporary, isolated directory contains exactly one SQL migration: all schema/count
+guards, the approved CREATE statements and the append-only `staging_schema_history`
+receipt (manifest_version=267). No repository migration directory is scanned.
+Cloudflare documents rollback of a failed migration for this command; we do not
+rely on undocumented generic REST batch atomicity or local SQLite tests as proof.
+
+Wrangler also creates the isolated native journal `d1_customer_remediation_migrations`
+and appends the exact checksum-derived migration filename. Its initialization can
+precede the migration transaction, so an empty journal can survive failure. The
+adapter checks its exact schema and contents independently of application objects.
+It never initializes the application database, resets records, updates existing
+application rows or applies other migrations. Success requires the exact extended
+schema, both receipts, unchanged previous table counts, empty new application
+tables and FK integrity. An exit code alone is insufficient.
+
+The SQL checksum from #267 stays unchanged. These two execution receipts are staging
+metadata; the 143-object production baseline and step-209 receipts remain unchanged.
+No additional Worker, resource, credential, Access policy or approval is required.
 
 Clear the migration approval after success. Review `customer-candidate-execution`
 evidence before granting any deployment approval.
@@ -114,11 +129,21 @@ acceptance and keep the baseline lane disabled while the extended schema exists.
 Never choose GitHub “Re-run failed jobs” for a write: run_attempt > 1 is rejected.
 Use a fresh reviewed dispatch; no automatic upload, SQL retry or rollback occurs.
 
-- **Migration response lost:** dispatch `status`. Exact candidate schema plus its
-  matching receipt means the batch committed. A fresh authorized `migrate` detects
-  that state and performs no DDL. Exact baseline means the batch did not commit;
-  review evidence and reauthorize a fresh migrate. Unknown/partial schema, missing
-  receipt or FK failure stops for investigation; never drop objects/reinitialize.
+- **Migration fails, times out or loses its response:** the report marks
+  `database_changed=null` and `migration_outcome=unknown`, even if the command says
+  rollback occurred. Do not assume failure means no writes. Dispatch read-only
+  `status` after confirming the previous Cloudflare operation is no longer running.
+  Exact candidate schema plus both matching receipts identifies a completed
+  migration. A fresh authorized `migrate` detects that state and performs no DDL.
+  Exact baseline with original receipts and an absent or exact empty native journal
+  is consistent with no application migration committed. Review the failure and
+  status evidence, confirm the quiet window and obtain a fresh migration approval
+  before retrying. A single observation is not proof an in-flight request stopped.
+  Partial/unknown schema, missing or unexpected receipts, altered journal structure
+  or FK failure stops **all** migration/deployment paths for explicit investigation.
+  Preserve sanitized evidence; do not remove receipts, drop objects or reinitialize.
+  A partial-state repair or restore requires a separately reviewed recovery plan and
+  explicit authorization outside this adapter. There is no automatic repair.
 - **Backend upload/readiness interrupted:** dispatch `status` for current versions.
   If the backend matches the approved candidate, use `resume-frontend`, never
   another `deploy`. A fresh deploy refuses a backend already matching this commit.
