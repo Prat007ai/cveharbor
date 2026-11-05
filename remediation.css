@@ -111,3 +111,5 @@ body[data-page=remediation] .page-section-intro p:not(.eyebrow){font-size:15px;l
 @container tracker (max-width:1150px){.rt-main-grid{grid-template-columns:minmax(0,1fr)}.rt-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.rt-tools>.rt-panel-heading{grid-column:1/-1}.rt-tool{margin:0}}
 @container tracker (max-width:600px){.rt-tools{grid-template-columns:minmax(0,1fr)}.rt-form{grid-template-columns:minmax(0,1fr)}.rt-actions{align-items:stretch}.rt-actions>.ops-download{flex:1 1 160px}}
 @media(max-width:600px){.rt-records{padding:16px}.rt-records .rt-panel-heading>.ops-download{margin-left:0}.rt-stat{gap:10px}.rt-stat h2{font-size:13px}.rt-stat small{font-size:11px}}
+
+.rt-customer-filter{padding:18px;margin-bottom:18px}.rt-customer-filter label{display:grid;gap:6px;max-width:420px}.rt-customer-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px}.rt-customer-fields label{display:grid;gap:6px}.rt-customer-fields select{max-width:100%;min-width:0}.rt-customer-fields input[type=checkbox]{width:auto}.rt-customer-fields #remediationAssociateLabel{grid-column:1/-1}

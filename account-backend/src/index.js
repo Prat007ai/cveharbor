@@ -1,4 +1,5 @@
 import {recoveryProtected} from './recovery-control.js';
+import {saveCustomerRemediation,customerTicket} from './customer-remediation.js';
 import {releaseReadiness} from './release-readiness.js';
 import {canonicalRecord,integrityError} from './remediation-integrity.js';
 import {scheduleStatusMail} from './status-update-mail.js';
@@ -279,6 +280,8 @@ const application = {async fetch(req,env,ctx){
   if(path.startsWith('/v1/monitoring'))return await monitoringHandler(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/lifecycle'))return await lifecycleHandler(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
   if(path.startsWith('/v1/finding-tickets'))return await findingTicketRoute(req,env,user,path,req.method==='POST'?await body(req):{});
+  const customerTicketRoute=/^\/v1\/remediation-records\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)\/tickets$/.exec(path);
+  if(customerTicketRoute&&req.method==='POST')return await customerTicket(env,user,customerTicketRoute[1],await body(req));
   if(path==='/v1/finding-assignments'||path.startsWith('/v1/finding-remediations/')||path.startsWith('/v1/remediation-records/')){const result=await sharedRoute(req,env,user,path,req.method==='POST'?await body(req):{});if(result.ok&&req.method==='POST')scheduleStatusMail(env,ctx);return result;}
   if(path.startsWith('/v1/finding-statuses')){const result=await findingStatusRoute(req,env,user,path,req.method==='PUT'?await body(req):{});if(result.ok&&req.method==='PUT')scheduleStatusMail(env,ctx);return result;}
   if(path.startsWith('/v1/plugin-installation-status'))return await sourceRoute(req,env,user,path,req.method==='PUT'?await body(req):{});
@@ -335,7 +338,8 @@ const application = {async fetch(req,env,ctx){
    return response({saved:rows.length});
   }
   if(path==='/v1/remediations/features'&&req.method==='GET')return await capabilities(env);
-  if(path==='/v1/remediations'&&req.method==='GET')return await listRemediations(env,user);
+  if(path==='/v1/customer-remediations'&&req.method==='POST'){const result=await saveCustomerRemediation(env,user,await body(req));if(result.ok)scheduleStatusMail(env,ctx);return result;}
+  if(path==='/v1/remediations'&&req.method==='GET')return await listRemediations(env,user,url.searchParams.get('customer_id')||'all');
   if(path==='/v1/remediations'&&req.method==='PUT'){
    const data=await body(req);
    return await importLegacy(env,user,data.remediations);

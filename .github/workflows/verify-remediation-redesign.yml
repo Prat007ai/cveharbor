@@ -3,7 +3,7 @@ on:
   push:
     branches: [feat/remediation-dashboard-redesign, feat/tracker-readability]
   pull_request:
-    paths: ['index.html', 'remediation.css', 'operations.js', 'account-backend/src/remediation.js', 'account-backend/tests/remediation.test.mjs', 'scripts/remediation_*', 'scripts/build_site.py', '.github/workflows/verify-remediation-redesign.yml']
+    paths: ['index.html', 'remediation.css', 'operations.js', 'account-backend/src/remediation.js', 'account-backend/tests/remediation.test.mjs', 'scripts/remediation_*', 'scripts/customer_remediation*', 'customer-remediation-ui.js', 'account-backend/src/customer-remediation*.js', 'account-backend/tests/customer-remediation.test.mjs', 'deployment/proposals/customer-remediation/**', 'scripts/build_site.py', '.github/workflows/verify-remediation-redesign.yml']
 permissions:
   contents: read
 jobs:
@@ -24,9 +24,11 @@ jobs:
       - run: npm test --prefix account-backend
       - run: python -m unittest discover -s tests
       - run: python scripts/build_site.py
+      - run: node scripts/customer_remediation_plan.mjs
       - run: node scripts/browser_smoke.mjs && node scripts/worker_release_smoke.mjs
       - run: node scripts/remediation_browser.mjs
       - run: node scripts/remediation_workflow_browser.mjs
+      - run: node scripts/customer_remediation_browser.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:

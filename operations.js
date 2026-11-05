@@ -12,6 +12,7 @@ const valid=id=>/^CVE-\d{4}-\d{4,}$/i.test(String(id||''))&&String(id).length<=2
 const headerTools=document.querySelector('.rt-header-tools');
 if(headerTools&&/^\/remediation(?:\/|$)/.test(location.pathname))headerTools.hidden=false;
 const records=new Map();
+const customers=window.CVEHARBOR_CUSTOMER_REMEDIATION;let recordsEpoch=0;
 for(const x of [...(base.advisories||[]),...(src.advisories||[])])if(x?.id)records.set(x.id,x);
 function openAdvisory(id){
   if(!valid(id))return;
@@ -70,6 +71,7 @@ function editRecord(task){
   $('remediationDue').value=task.due||'';
   $('remediationNotes').value=task.notes||'';
   editing={id:task.id,updated:task.updated,status:task.status};$('remediationReason').value='';updateReason();
+  customers?.beginEdit(task);
   msg(task.id+' loaded for editing. Save to update this record.');
   $('remediationFormTitle').textContent='Edit Vulnerability Record';
   updateNotesCount();validateOwner(false);
@@ -82,7 +84,7 @@ function updateReason(){
  $('remediationReasonLabel').hidden=!changed;$('remediationReason').required=changed;
 }
 $('remediationStatus').addEventListener('change',updateReason);
-$('remediationCve').addEventListener('input',()=>{editing=null;updateReason();});
+$('remediationCve').addEventListener('input',()=>{if(editing)customers?.defaults();editing=null;updateReason();});
 function displayTime(value){
  if(!value)return 'Not recorded';
  if(/^\d{4}-\d{2}-\d{2}$/.test(value))return value+' · time not recorded';
@@ -118,7 +120,7 @@ function render(){
   $('remediationRecordsScope').textContent=loading?'Loading private records…':isPrivate?'Your latest private account records.':authenticated?'Unable to load private account records.':'Browser-only records · sign in for your private account tracker.';
   target.closest('table').setAttribute('aria-busy',String(loading));
   if(!tasks.length){
-    const row=elem('tr'),cell=elem('td','rt-empty');cell.colSpan=10;
+    const row=elem('tr'),cell=elem('td','rt-empty');cell.colSpan=customers?.active?11:10;
     cell.append(elem('strong','',loading?'Loading records…':authenticated&&!cloudMode?'Records unavailable':'No remediation records yet'),elem('span','',loading?'Retrieving your private account records.':authenticated&&!cloudMode?'Reload the page to retry.':cloudMode?'Add a CVE and its owner using the form above.':'Sign in to manage private account records, or add a browser-only record above.'));
     row.append(cell);target.append(row);uiMode();return;
   }
@@ -173,14 +175,15 @@ function render(){
       }else{
         tasks=tasks.filter(x=>x.id!==task.id);persistLegacy();render();msg(task.id+' removed from this browser.');
       }
-    });if(!task.scope)actions.append(remove);if(capabilities?.shared_records_available){const shared=elem('button','','View record');shared.type='button';shared.addEventListener('click',()=>window.CVEHARBOR_SHARED.open(task.id));actions.prepend(shared);}target.append(row);
+    });if(!task.scope)actions.append(remove);if(capabilities?.shared_records_available){const shared=elem('button','','View record');shared.type='button';shared.addEventListener('click',()=>window.CVEHARBOR_SHARED.open(task.id));actions.prepend(shared);}if(customers?.active)customers.decorate(row,task);target.append(row);
   }
   uiMode();
 }
 async function refreshRecords(epoch=accountEpoch){
   if(!cloudMode)return;
-  const data=await api('/remediations');
-  if(epoch!==accountEpoch||!authenticated)return;
+  const generation=++recordsEpoch;
+  const data=await api('/remediations'+(customers?.query()||''));
+  if(epoch!==accountEpoch||!authenticated||generation!==recordsEpoch)return;
   ackDataAvailable=data.acknowledgements_available===true;
   tasks=(data.remediations||[]).filter(x=>validWork(x.id)).slice(0,250);
   loading=false;render();renderRecentActivity();
@@ -194,6 +197,7 @@ async function accountState(data){
   $('remediationHistoryRows').replaceChildren();closeCvhDialog('remediationHistoryDialog');
   authenticated=!!data.authenticated;accountEmail=authenticated?(data.email||''):'';
   cloudMode=false;capabilities=null;imported=false;showAll=false;loading=authenticated;
+  customers?.clear();recordsEpoch++;
   // Clear the previous account immediately, including values loaded into the edit form.
   $('remediationForm').reset();$('remediationFormTitle').textContent='Add Vulnerability Record';
   updateNotesCount();updateReason();validateOwner(false);msg('');
@@ -206,6 +210,11 @@ async function accountState(data){
     if(epoch!==accountEpoch)return;
     if(features.storage!=='d1'||features.version!==2)throw Error('Updated cloud service is not available');
     capabilities=features;cloudMode=true;
+    if(customers)await customers.load(features,api,()=>{editing=null;$('remediationForm').reset();customers.defaults();tasks=[];loading=true;render();void refreshRecords().catch(error=>{loading=false;tasks=[];render();msg(error.message);});});
+    if(epoch!==accountEpoch){customers?.clear();return;}
+    const head=$('remediationRows').closest('table').querySelector('thead tr');
+    head.querySelector('[data-customer-column]')?.remove();
+    if(customers?.active){const th=elem('th','','Customer');th.scope='col';th.dataset.customerColumn='true';head.insertBefore(th,head.children[3]);}
     if(features.reviewer_updates_available)progressRefreshTimer=window.setInterval(refreshReviewerProgress,60000);
     await refreshRecords(epoch);
     if(epoch!==accountEpoch)return;
@@ -217,7 +226,7 @@ async function accountState(data){
     msg('Unable to load your cloud records. Reload this page to retry.');
   }
 }
-function renderRecentActivity(){let panel=$('remediationRecentActivity');if(!panel){panel=elem('section','rt-panel rt-recent-activity');panel.id='remediationRecentActivity';$('remediationTracker').append(panel);}panel.replaceChildren(elem('h2','','Recent activity'));const list=elem('ul');for(const t of [...tasks].sort((a,b)=>String(b.updated).localeCompare(String(a.updated))).slice(0,8)){const li=elem('li'),b=elem('button','',displayCve(t.id)+(t.scope?' · '+t.scope.asset_name:'')+' — '+(t.latest_status_change? t.latest_status_change.new_status:'Record updated')+' · '+displayTime(t.updated));b.type='button';b.addEventListener('click',()=>window.CVEHARBOR_SHARED.open(t.id));li.append(b);list.append(li);}panel.append(list);}
+function renderRecentActivity(){let panel=$('remediationRecentActivity');if(!panel){panel=elem('section','rt-panel rt-recent-activity');panel.id='remediationRecentActivity';$('remediationTracker').append(panel);}panel.replaceChildren(elem('h2','','Recent activity'));const list=elem('ul');for(const t of [...tasks].sort((a,b)=>String(b.updated).localeCompare(String(a.updated))).slice(0,8)){const li=elem('li'),b=elem('button','',displayCve(t.id)+(t.scope?' · '+scopeText(t.scope):'')+' — '+(t.latest_status_change? t.latest_status_change.new_status:'Record updated')+' · '+displayTime(t.updated));b.type='button';b.addEventListener('click',()=>window.CVEHARBOR_SHARED.open(t.id));li.append(b);list.append(li);}panel.append(list);}
 function scopeText(s){return s?[s.customer_name,s.environment_name,s.asset_name,s.technology,s.version].filter(Boolean).join(' · '):'';}
 function openAssign(id,scope){
   const cve=String(id||'').trim().toUpperCase();
@@ -255,7 +264,7 @@ window.addEventListener('cveharbor:remediation-changed',()=>{if(cloudMode)void r
 if(typeof BroadcastChannel==='function'){const channel=new BroadcastChannel('cveharbor-remediation-changed');channel.onmessage=()=>{if(cloudMode)void refreshRecords();};}
 window.addEventListener('cveharbor:assign-remediation',event=>openAssign(event.detail?.id));
 window.addEventListener('cveharbor:account-state',event=>{void accountState(event.detail||{});});
-$('remediationAssign').addEventListener('click',()=>openAssign($('remediationCve').value));
+$('remediationAssign').addEventListener('click',()=>{if(customers?.active){const row=customers.recordFor(tasks,$('remediationCve').value.trim().toUpperCase());if(!row){msg('Save the record first, then use Assign on the matching customer record in the work queue.');return;}openAssign(row.id,row.scope);return;}openAssign($('remediationCve').value);});
 $('closeRemediationAssign').addEventListener('click',()=>{
   const modal=$('remediationAssignDialog');
   if(typeof modal.close==='function')modal.close();else modal.removeAttribute('open');
@@ -343,7 +352,7 @@ $('remediationForm').addEventListener('submit',async event=>{
   const item={id,status:$('remediationStatus').value,owner:$('remediationOwner').value.trim().slice(0,100),
     due:$('remediationDue').value,notes:$('remediationNotes').value.trim().slice(0,1200),
     updated:new Date().toISOString()};
-  const previous=selectedRecord(),baseline=editing?.id===id?editing:previous;
+  const previous=selectedRecord(),baseline=customers?.active?(editing?.id===id?editing:null):(editing?.id===id?editing:previous);
   item.status_change_reason=$('remediationReason').value.trim();
   if(baseline&&baseline.status!==item.status&&!item.status_change_reason){updateReason();msg('Enter a reason for the status change.');$('remediationReason').focus();return;}
   if(cloudMode&&capabilities?.workflow_available)item.expected_updated=baseline?.updated||'';
@@ -351,8 +360,9 @@ $('remediationForm').addEventListener('submit',async event=>{
   const button=$('remediationSave');button.disabled=true;
   try{
     if(cloudMode){
-      await api('/remediations/'+id,'PUT',item);
+      const saved=customers?.active?await customers.save(item,editing):await api('/remediations/'+id,'PUT',item);
       if(epoch!==accountEpoch)return;await refreshRecords();msg(id+' saved to your private workspace.');
+      if(saved?.open_record)window.CVEHARBOR_SHARED?.open(saved.id);
     }else{
       item.status_changes=previous?.status_changes||[];
       if(previous&&previous.status!==item.status)item.status_changes=[{previous_status:previous.status,new_status:item.status,reason:item.status_change_reason,changed_by:'This browser',changed_at:item.updated},...item.status_changes];
@@ -360,7 +370,7 @@ $('remediationForm').addEventListener('submit',async event=>{
       tasks=[item,...tasks.filter(x=>x.id!==id)].slice(0,250);persistLegacy();render();
       msg(id+' saved in this browser. Sign in to save records to your private workspace.');
     }
-    editing=null;$('remediationReason').value='';updateReason();
+    editing=null;$('remediationReason').value='';updateReason();customers?.defaults();
   }catch(error){if(epoch===accountEpoch)msg('Unable to save: '+error.message)}
   finally{button.disabled=false;}
 });

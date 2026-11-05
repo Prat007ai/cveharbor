@@ -356,6 +356,7 @@ function filters(){
 }
 function environments(){
  const customer=$('customerDashFilter').value,previous=$('customerDashEnvironment').value;
+ let tracker=$('customerRemediationLink');if(!tracker){tracker=text('a','Open Remediation Tracker','ops-link');tracker.id='customerRemediationLink';$('customerDashFilter').parentElement.append(tracker);}tracker.href='/remediation/'+(customer?'?customer_id='+encodeURIComponent(customer):'');
  const select=$('customerDashEnvironment');select.replaceChildren();
  option(select,'All environments','');
  for(const env of inventory.environments.filter(e=>!customer||e.customer_id===customer)){

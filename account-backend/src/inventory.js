@@ -1,4 +1,5 @@
 import {integrityError} from './remediation-integrity.js';
+import {customerRecordsReady} from './customer-remediation-context.js';
 // Private, account-owned customer and environment inventory. All mutations
 // require an authenticated session, and every read is scoped by user ID.
 const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{
@@ -145,6 +146,10 @@ export async function inventoryRoute(req,env,user,path,data={}){
   if(match&&req.method==='DELETE'){
     const table={customers:'inventory_customers',environments:'inventory_environments',assets:'inventory_assets'}[match[1]];
     await owned(env,table,user.id,match[2]);
+    if(await customerRecordsReady(env)&&match[1]!=='assets'){
+      const field=match[1]==='customers'?'customer_id':'environment_id';
+      if(await env.DB.prepare('SELECT record_id FROM remediation_customer_scopes WHERE user_id=? AND '+field+'=? LIMIT 1').bind(user.id,match[2]).first())throw new InventoryError('This customer context has retained remediation history and cannot be deleted.',409);
+    }
     try{await env.DB.prepare('DELETE FROM '+table+' WHERE id=? AND user_id=?').bind(match[2],user.id).run();}catch(error){throw integrityError(error);}
     return json({removed:true});
   }
