@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {FullDB} from './helpers/full-db.mjs';import {TARGET,LEGACY_ORIGIN} from '../target.mjs';
 import {configs} from '../scripts/configure.mjs';import {productionEnvironment} from '../production-runtime.mjs';
-import {createFrontend} from '../frontend.mjs';import {executeRelease} from '../scripts/release.mjs';
+import {createFrontend} from '../frontend.mjs';import {executeRelease,probeBackend} from '../scripts/release.mjs';
 import {simpleRelease} from '../scripts/simple-release.mjs';
 import {safeFailure} from '../scripts/errors.mjs';
 const baseline=JSON.parse(fs.readFileSync('release/baseline.json'));
@@ -28,6 +28,24 @@ test('existing-Worker update uses exact production schema without recovery table
   if(fail){await assert.rejects(op);assert.ok(!calls.includes('site-upload'));}else{assert.equal((await op).completed,true);assert.deepEqual(calls,['api-dry','site-dry','api-upload','backend-bootstrap','site-upload','backend-custom']);}
   assert.equal(DB.sql.prepare('SELECT total_changes() n').get().n,before);assert.equal(DB.sql.prepare("SELECT name FROM sqlite_schema WHERE name='operations_control'").get(),undefined);
  }finally{DB.close();}}
+});
+test('propagation wait never repeats uploads and keeps frontend blocked until exact backend release is ready',async()=>{
+ for(const mode of ['propagates','stale','unsafe']){
+  const DB=database(),calls=[];let probes=0,time=0;
+  try{
+   const before=DB.sql.prepare('SELECT total_changes() n').get().n,d=dependencies(DB,calls,null);
+   d.probeBackend=probeBackend;d.readinessSleep=async ms=>{time+=ms;};d.readinessNow=()=>time;
+   d.transport=async(url,init)=>{assert.equal(init.method,'GET');assert.ok(String(url).endsWith('/v1/staging-readiness'));probes++;
+    const matches=mode==='propagates'&&probes>=3;
+    return Response.json({ready:true,schema_ready:true,feed_version:'f'.repeat(64),mail_capture:mode!=='unsafe',mfa_configured:true,monitor_webhook_configured:true,native_schedules:false,held:false,release:matches?sha:'c'.repeat(40)});
+   };
+   const op=executeRelease(env,{inputs:{operation:'update'}},sha,d);
+   if(mode==='propagates'){const report=await op;assert.equal(report.completed,true);assert.equal(report.steps.find(s=>s.name==='backend_runtime').attempts,3);assert.equal(calls.filter(c=>c==='site-upload').length,1);}
+   else{await assert.rejects(op);assert.ok(!calls.includes('site-upload'));assert.equal(probes,mode==='stale'?7:1);}
+   assert.equal(calls.filter(c=>c==='api-upload').length,1);
+   assert.equal(DB.sql.prepare('SELECT total_changes() n').get().n,before);
+  }finally{DB.close();}
+ }
 });
 test('production activation is blocked until administrator enables it; approved code-only release cannot migrate',async()=>{
  const DB=database();let uploads=0;try{

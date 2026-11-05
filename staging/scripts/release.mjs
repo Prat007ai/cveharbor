@@ -56,11 +56,11 @@ export function preflightEvidence(report){
  const keys=['http_status','metadata_available','metadata_is_array','application_count','matching_application_count','primary_domain_matches','worker_count','database_count','policy_count','email_rule_count','listed_count','record_count','name_match_count','client_match_count','named_record_has_client_id','named_record_policy_linked','matching_client_policy_linked','matched_enabled','matched_unexpired'];
  return {checks:report.checks.map(c=>Object.fromEntries([['name',c.name],['status',c.status],...keys.filter(k=>Object.hasOwn(c,k)&& (c[k]===null||typeof c[k]==='boolean'||Number.isInteger(c[k])||k==='http_status'&&c[k]==='network_error')).map(k=>[k,c[k]])]))};
 }
-export async function probeBackend(env,transport=fetch,{held=false,bootstrap=false,record=()=>{}}={}){
+export async function probeBackend(env,transport=fetch,{held=false,bootstrap=false,record=()=>{},timeoutMs=30000}={}){
  const evidence={route:bootstrap?'legacy':'custom_domain',http_status:null};
  const stop=(check,category='validation')=>{record(evidence);throw failure('release.backend_runtime',category,{check,...evidence});};
  let response;
- try{response=await transport((bootstrap?LEGACY_ORIGIN:TARGET.origin)+'/v1/staging-readiness',{method:'GET',redirect:'manual',signal:AbortSignal.timeout(30000),headers:{'CF-Access-Client-Id':env.CF_STAGING_ACCESS_CLIENT_ID,'CF-Access-Client-Secret':env.CF_STAGING_ACCESS_CLIENT_SECRET}});}catch{stop('readiness_request','network');}
+ try{response=await transport((bootstrap?LEGACY_ORIGIN:TARGET.origin)+'/v1/staging-readiness',{method:'GET',redirect:'manual',signal:AbortSignal.timeout(timeoutMs),headers:{'CF-Access-Client-Id':env.CF_STAGING_ACCESS_CLIENT_ID,'CF-Access-Client-Secret':env.CF_STAGING_ACCESS_CLIENT_SECRET}});}catch{stop('readiness_request','network');}
  evidence.http_status=response.status;
  const accessError=response.headers.get('X-Staging-Access-Error');
  if(ACCESS_FAILURE_CATEGORIES.includes(accessError))evidence.access_error=accessError;
@@ -75,6 +75,32 @@ export async function probeBackend(env,transport=fetch,{held=false,bootstrap=fal
  record(evidence);
  for(const [name,passed] of Object.entries(evidence.checks))if(passed===false)stop(name);
  return {release:result.release,feed_version:result.feed_version,held:result.held,...evidence};
+}
+// Only the post-upload gate waits for propagation. Diagnostics and subsequent
+// custom-domain verification remain single probes. Never repeat an upload.
+export async function waitBackend(env,transport=fetch,{probe=probeBackend,sleep=ms=>new Promise(r=>setTimeout(r,ms)),now=()=>performance.now(),record=()=>{},...options}={}){
+ const started=now(),windowMs=60000,maxAttempts=7,delayMs=5000;
+ let last;
+ const exhausted=attempt=>{const {operation,category,...details}=safeFailure(last);return failure('release.backend_runtime','validation',{...details,check:details.check||'readiness_deadline',retry_exhausted:true,attempts:attempt,retry_window_ms:windowMs});};
+ for(let attempt=1;attempt<=maxAttempts;attempt++){
+  const remaining=Math.floor(windowMs-(now()-started));
+  if(remaining<=0)throw exhausted(attempt-1);
+  try{
+   const result=await probe(env,transport,{...options,timeoutMs:Math.min(30000,remaining),record:e=>record({...e,attempt,max_attempts:maxAttempts,retry_window_ms:windowMs})});
+   if(now()-started>=windowMs)throw exhausted(attempt);
+   return {...result,attempts:attempt};
+  }catch(error){
+   const f=safeFailure(error);
+   // Older wrappers omit the two diagnostic configuration flags. Preserve the
+   // existing compatibility: their ready=true aggregate still requires both.
+   // Explicit false flags, any other failed gate, and non-200 responses stop.
+   const onlyRelease=f.operation==='release.backend_runtime'&&f.category==='validation'&&f.check==='release_matches'&&f.http_status===200&&f.checks?.release_matches===false&&f.checks.ready===true&&Object.entries(f.checks).every(([name,passed])=>name==='release_matches'||passed===true||passed===null&&['mfa_configured','monitor_webhook_configured'].includes(name));
+   if(!onlyRelease||f.retry_exhausted)throw error;
+   last=error;
+   if(attempt===maxAttempts||now()-started+delayMs>=windowMs)throw exhausted(attempt);
+   await sleep(delayMs);
+  }
+ }
 }
 export async function executeRelease(env,event,checkout,deps={}){
  const action=authorize(env,event,checkout); // Before creating clients or touching credentials/network.
@@ -137,7 +163,7 @@ export async function executeRelease(env,event,checkout,deps={}){
     function deploy(name,dry){const r=runner('npx',['--yes','wrangler@4.156.0','deploy','--config',path.join(root,'.build',name+'.json'),...(dry?['--dry-run']:[])],{cwd:path.join(root,'.build'),env:childEnv,encoding:'utf8',maxBuffer:4*1024*1024,timeout:180000});assert.ok(!r.error&&r.status===0,'Staging package/upload failed; inspect approved runner');step(name+(dry?'_dry_run':'_upload'),{passed:true});}
     deploy('api',true);deploy('site',true);deploy('api',false);
     const api=await (deps.inspectWorker||inspectWorker)(TARGET.api,cfg.api,get,{requireKey:true});assert.ok(api.verified);step('backend_verified',{version_id:api.version_id});
-    step('backend_runtime',await (deps.probeBackend||probeBackend)(env,transport,{held:action==='recover-code',bootstrap:production,record:e=>{report.backend_runtime=e;record(report);}}));
+    step('backend_runtime',await waitBackend(env,transport,{probe:deps.probeBackend||probeBackend,sleep:deps.readinessSleep,now:deps.readinessNow,held:action==='recover-code',bootstrap:production,record:e=>{report.backend_runtime=e;record(report);}}));
     // No frontend upload before schema, bindings and actual backend runtime verification.
     deploy('site',false);const site=await (deps.inspectWorker||inspectWorker)(TARGET.site,cfg.site,get);assert.ok(site.verified);step('frontend_verified',{version_id:site.version_id});
     if(production){await (deps.verifySchema||(db=>verifyProductionBaseline(db,baseline)))(DB);step('custom_domain_runtime',await (deps.probeBackend||probeBackend)(env,transport));}
