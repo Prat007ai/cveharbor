@@ -19,7 +19,8 @@ STAGING_RELEASE = "github.repository == 'Prat007ai/cveharbor' && github.ref == '
 RECOVERY_SELECTOR = "((github.event_name == 'workflow_dispatch' && startsWith(inputs.operation, 'recovery-')) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[staging-recovery]')))"
 STAGING_RECOVERY = STAGING_RELEASE + " && " + RECOVERY_SELECTOR
 STAGING_NORMAL = STAGING_RELEASE + " && !" + RECOVERY_SELECTOR
-SIMPLE_STAGING = MAIN + " && vars.SIMPLE_STAGING_ENABLED == 'true' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')"
+SIMPLE_STAGING = 'github.repository == \'Prat007ai/cveharbor\' && github.ref == \'refs/heads/main\' && github.event_name == \'workflow_dispatch\' && vars.SIMPLE_STAGING_ENABLED == \'true\' && inputs.candidate_operation == \'none\' && contains(fromJSON(\'["diagnose","readiness"]\'), inputs.simple_operation)'
+CANDIDATE_STAGING = "github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && vars.CF_STAGING_CANDIDATE_ENABLED == 'true' && vars.SIMPLE_STAGING_ENABLED == 'false' && inputs.candidate_operation != 'none'"
 ENVIRONMENTS = {'cloudflare-cvie-staging','cloudflare-worker-production', 'cloudflare-site-production', 'github-pages',
                 'cloudflare-production-audit', 'cloudflare-notifications-production', 'cloudflare-phase1-staging', 'cloudflare-intelligence-data'}
 SECRET_BOUNDARIES = {
@@ -92,14 +93,20 @@ def validate(doc, filename):
             require(env in ENVIRONMENTS, label + ': unknown or dynamic environment')
             requested = {m.group().split('.', 1)[1] for m in SENSITIVE.finditer(raw)}
             require(requested <= SECRET_BOUNDARIES.get(env, set()), label + ': credential is outside the environment boundary')
-            prefix = (SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) if env == 'cloudflare-cvie-staging' else MANUAL if filename == 'recovery-write-hold.yml' and name == 'control' else MAIN + " && vars.FEED_PUBLICATION_ENABLED == 'true'" if env == 'cloudflare-intelligence-data' else MANUAL if env in {'cloudflare-production-audit','cloudflare-notifications-production','cloudflare-phase1-staging'} else RELEASE
+            prefix = (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) if env == 'cloudflare-cvie-staging' else MANUAL if filename == 'recovery-write-hold.yml' and name == 'control' else MAIN + " && vars.FEED_PUBLICATION_ENABLED == 'true'" if env == 'cloudflare-intelligence-data' else MANUAL if env in {'cloudflare-production-audit','cloudflare-notifications-production','cloudflare-phase1-staging'} else RELEASE
             require(condition == prefix or condition.startswith(prefix + ' && '), label + ': explicit main/event/release guard required')
             # The only extra ORs allowed are bootstrap's grouped event allowlist.
-            require('||' not in condition or env == 'cloudflare-cvie-staging' and filename == 'cvie-staging.yml' and name in {'release','recovery','automatic-staging'} and condition == (SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) or filename == 'bootstrap.yml' and name == 'sync' and condition == RELEASE + " && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true))", label + ': guard may not be bypassed with OR')
+            require('||' not in condition or env == 'cloudflare-cvie-staging' and filename == 'cvie-staging.yml' and name in {'release','recovery','automatic-staging','customer-candidate'} and condition == (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) or filename == 'bootstrap.yml' and name == 'sync' and condition == RELEASE + " && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true))", label + ': guard may not be bypassed with OR')
         if env == 'cloudflare-cvie-staging':
-            require(filename == 'cvie-staging.yml' and name in {'release','recovery','automatic-staging'} and condition == (SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL), label + ': only reviewed staging release caller is permitted')
+            require(filename == 'cvie-staging.yml' and name in {'release','recovery','automatic-staging','customer-candidate'} and condition == (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL), label + ': only reviewed staging release caller is permitted')
             require(job.get('needs') == 'prepare', label + ': credential-free preparation required first')
             require('scripts/provision.mjs' not in raw and 'create-database' not in raw, label + ': initial provisioning is retired')
+            if name == 'customer-candidate':
+                require(job.get('concurrency') == {'group':'cveharbor-permanent-staging','cancel-in-progress':False}, label + ': serialize candidate operations')
+                require(sum(s.get('run') == 'node staging/scripts/customer-candidate-execute.mjs' for s in job.get('steps',[])) == 1, label + ': one candidate entrypoint')
+                for step in job.get('steps',[]):
+                    if step.get('run') != 'node staging/scripts/customer-candidate-execute.mjs':
+                        require(not SENSITIVE.search(json.dumps(step)), label + ': build without credentials')
             if name == 'automatic-staging':
                 require(condition == SIMPLE_STAGING, label + ': automatic staging must be trusted main and opt-in')
                 require(job.get('concurrency') == {'group':'cveharbor-permanent-staging','cancel-in-progress':False}, label + ': serialize staging writes')
