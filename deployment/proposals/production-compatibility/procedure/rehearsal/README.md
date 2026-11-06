@@ -1,4 +1,11 @@
-# Isolated D1 rehearsal — prepared, not authorized or executed
+# Isolated D1 rehearsal — Approval A complete; Approval B pending
+
+The eight databases and two encrypted backup packages now exist under completed
+Approval A. Preserve them; do not allocate, export or download again. The actual
+UUIDs, retained hashes, read-only evidence and remaining owner decisions are in
+[Approval B prerequisites](approval-b-prerequisites.md). No import or rehearsal
+SQL write has been authorized or executed. The procedure below describes later
+approved execution, not permission to run it.
 
 This operator-run adapter is separate from the fixed production executor. It has
 no create/export/import/delete/reset/deploy/resume API. No GitHub workflow invokes
@@ -9,7 +16,8 @@ unchanged. Plan Z is never read, moved, overwritten, restored or deleted.
 ## Targets and approval sequence
 
 Use account **`9706b4d98ad72884e67fd1eb875c8a61`** only. Each case needs a newly
-created, independently approved UUID; no UUID is assigned by this PR. Never reuse
+created, independently approved UUID; use the existing exact UUIDs in the linked
+prerequisite record. Never substitute
 production `46710e51-7ca4-4571-b89c-921b9969de0b` or permanent staging
 `fac61562-fc31-426d-8032-550aba63b7f6`. Both are hard denied, including under a
 mislabelled account. All eight approved UUIDs must differ; metadata must match the
@@ -50,7 +58,8 @@ to the success UUID, initialization of the seven synthetic UUIDs, and the exact
 case operations below. Bind the approved UUIDs and hashes in the private approval
 JSON. No placeholders or “any database” authorization is accepted. The owner need
 not assemble these inputs; the operator prepares them for review. This separation
-is necessary because UUIDs and real recovery evidence do not yet exist.
+preserves the distinction between completed capture/allocation and still-pending
+restore verification and rehearsal authority.
 
 Both approvals exclude production repair/resume/rollback, staging deployment,
 customer-only remediation activation, security or environment changes and cleanup.
@@ -192,6 +201,34 @@ The production target file/executor are untouched. Rehearsal claims are clearly
 marked and bind the isolated UUID; they cannot serve as production receipts.
 
 ## Isolation, receipts, failure and evidence limits
+
+Pages inventory uses `GET /pages/projects` first, then `?page=N`, leaving page size
+to that endpoint. Workers retains its separate listing convention. Every Pages
+response must contain an array and complete integer pagination metadata; page,
+size, count, total count and total pages must agree. Totals/size must stay stable,
+names must be unique, all declared pages must be read, and the final count must
+match. Missing metadata, short intermediate pages, duplicates, drift, more than
+100 pages or any provider error stop inventory. The request allowlist permits
+only this Pages route and positive page numbers, not arbitrary queries or writes.
+An empty list alone never proves completeness. Both production and preview
+configurations of every project, including later pages, are checked for bindings.
+
+November 6 diagnosis: `page=1&per_page=100` and `page=1&per_page=20` returned HTTP
+400/code 8000024 (invalid list options). Independent GETs with no parameters,
+`page=1`, `page=2`, `per_page=10` and `page=1&per_page=10` returned 200. This isolates
+the observed parameter rejection; it does not establish a universal maximum size.
+The current [Pages reference](https://developers.cloudflare.com/api/resources/pages/subresources/projects/methods/list/)
+documents optional page/per_page and response metadata, but no numeric size range;
+its example size 20 did not work here. No automatic fallback after an error is used.
+See [sanitized comparison and corrected adapter evidence](pages-inventory-evidence.json).
+
+Live validation covered the actual empty Pages account and all eight targets,
+using the existing unextended read-only token. Multi-page inventories, later-page
+bindings and failures were tested locally with fictional provider responses.
+Metadata checks detect incomplete results and count/size drift, but pagination is
+not a transactional snapshot: same-count concurrent changes can evade it. Repeat
+inventory before each phase and retain the separate external-writer attestation;
+absence of bindings does not prove absence of other account credentials or clients.
 
 Before every phase the adapter checks exact DB name/UUID/size, paginated Workers
 settings and active deployed versions, and Pages production/preview configurations.

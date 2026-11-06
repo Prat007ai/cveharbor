@@ -1,4 +1,10 @@
-# Recovery preparation — local preparation authorized; cloud actions pending
+# Recovery preparation — capture complete; restore and rehearsal pending
+
+November 6 status: Approval A completed under `6255b12d`; eight existing isolated
+UUIDs and both encrypted packages are retained. No import or rehearsal SQL has run.
+The original preparation proposal below is historical, not a repeat-execution
+instruction. Current inputs and outstanding decisions are in
+[Approval B prerequisites](rehearsal/approval-b-prerequisites.md).
 
 The old backup is Plan Z. It is not evidence for the new repair and will not be
 restored, overwritten, deleted or moved. Production test data must be preserved.
@@ -7,7 +13,7 @@ The [isolated rehearsal runbook](rehearsal/README.md) now makes this proposal
 concrete: one restored-copy database plus seven separately named fictional-case
 databases, with no between-case cleanup. Its Approval A covers allocation/capture;
 Approval B requires the resulting exact UUIDs, recovery evidence and final source
-pins before import or test writes. Neither approval has been granted or executed.
+pins before import or test writes. Approval B has not been granted or executed.
 The US$5/1 GB/one-million-write ceilings below apply to the combined eight targets,
 not independently to each. Production executor targets and its manifest are unchanged.
 

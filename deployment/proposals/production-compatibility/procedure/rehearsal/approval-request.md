@@ -1,5 +1,13 @@
 # Proposed isolated rehearsal approvals
 
+**Current status, November 6:** Approval A was explicitly granted and completed at
+`6255b12d89b355f8b4bb203fa1af214abe93edcc`. The original request below is retained
+for scope/history; it must not be executed again. [Approval B prerequisites](approval-b-prerequisites.md)
+records the existing UUIDs/packages, corrected inventory evidence and three pending
+decisions (external writers, temporary write credential and signing identity).
+Approval B and all production operations remain unauthorized. Source changes here
+require fresh independent review of the rehearsal manifest, not repeated allocation.
+
 Cloud allocation/capture is proposed for owner review only. The owner authorized
 local software/folder/certificate preparation and the two narrow exceptions in
 [host-preparation.md](host-preparation.md). No cloud resource, export, import,

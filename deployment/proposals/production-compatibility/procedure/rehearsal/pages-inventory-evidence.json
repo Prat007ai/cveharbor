@@ -1,0 +1,371 @@
+{
+  "started_at": "2026-11-06T19:16:38.945Z",
+  "finished_at": "2026-11-06T19:16:57.768Z",
+  "account": "9706b4d98ad72884e67fd1eb875c8a61",
+  "reviewed_base": "6255b12d89b355f8b4bb203fa1af214abe93edcc",
+  "rehearsal_manifest_sha256": "3e1cd5ee644ec79b9aff07d5ee1dfada9048315dcf6fcfbd90a135382a2a211d",
+  "production_manifest_sha256": "4dd094b957dc21421a0daf35f6e99b28cfac42ae60b26dee15bf2b6b12e5b42c",
+  "resources": {
+    "success": {
+      "uuid": "84dab6e9-9344-4e0f-a79a-4f0b43395754",
+      "name": "cveharbor-prod-repair-restore-pr270",
+      "created_at": "2026-11-06T17:58:39.183Z",
+      "file_size": 12288,
+      "creation_receipt_sha256": "34c78ed5a56cab10f998a6a2d89c3da534c2b1a32aaac1192ef9451b0a1da720"
+    },
+    "schema": {
+      "uuid": "9f106efd-f5ae-4401-8c50-a4c80c53b90e",
+      "name": "cveharbor-pr270-rehearsal-schema",
+      "created_at": "2026-11-06T18:00:44.555Z",
+      "file_size": 12288,
+      "creation_receipt_sha256": "acd9ef076f190846823ae36f8c232f6af234bc377e2a0ddfa70766f25659dff7"
+    },
+    "count": {
+      "uuid": "5d2e6500-350c-4228-9fe4-48c37f755e7d",
+      "name": "cveharbor-pr270-rehearsal-count",
+      "created_at": "2026-11-06T18:01:22.407Z",
+      "file_size": 12288,
+      "creation_receipt_sha256": "781fb49b7c27416984a7527bb356d68cd5ec23f62523743fb74e4adb97fe6107"
+    },
+    "expiry": {
+      "uuid": "39adff8b-b689-45f6-ba3a-c6005ec86b3f",
+      "name": "cveharbor-pr270-rehearsal-expiry",
+      "created_at": "2026-11-06T18:02:05.334Z",
+      "file_size": 12288,
+      "creation_receipt_sha256": "042ec9f55f69f6c4f1a99485645ab44b21b38e71ed1ee6818b34929dbc14e695"
+    },
+    "race": {
+      "uuid": "b098f98c-bb9f-4e50-95fc-177ac7c2582f",
+      "name": "cveharbor-pr270-rehearsal-race",
+      "created_at": "2026-11-06T18:02:36.647Z",
+      "file_size": 12288,
+      "creation_receipt_sha256": "00f18a03126b41ff7c189682e5686547a9a3dc8c7cc1f62e7dea16a41892753f"
+    },
+    "rejected": {
+      "uuid": "3ddd25d0-b5c7-4597-9a4c-02bb9ba1c697",
+      "name": "cveharbor-pr270-rehearsal-rejected",
+      "created_at": "2026-11-06T18:03:07.407Z",
+      "file_size": 12288,
+      "creation_receipt_sha256": "05f01fedc380390d9095963802fa489f8dea4081acd49256344bf239b8ce061c"
+    },
+    "interrupt": {
+      "uuid": "477cb173-2f84-4786-baa1-6bba51fd7937",
+      "name": "cveharbor-pr270-rehearsal-interrupt",
+      "created_at": "2026-11-06T18:03:25.655Z",
+      "file_size": 12288,
+      "creation_receipt_sha256": "367b266b2f7657119deaca2d4082e1b443fcfcf93a8ecd7663102147112007e0"
+    },
+    "lost": {
+      "uuid": "d7eb48ca-2023-420d-a5d3-c9cc0360b49c",
+      "name": "cveharbor-pr270-rehearsal-lost",
+      "created_at": "2026-11-06T18:03:57.164Z",
+      "file_size": 12288,
+      "creation_receipt_sha256": "cd313284440f86947452186d99f1542ffabebe058d04c801aaa620bf8168311d"
+    }
+  },
+  "results": [
+    {
+      "scenario": "success",
+      "uuid": "84dab6e9-9344-4e0f-a79a-4f0b43395754",
+      "name": "cveharbor-prod-repair-restore-pr270",
+      "isolation_sha256": "8543e3bca0a9388107cf785dc2ab63572404fc20792c74c942f6e2ffaec0e4df"
+    },
+    {
+      "scenario": "schema",
+      "uuid": "9f106efd-f5ae-4401-8c50-a4c80c53b90e",
+      "name": "cveharbor-pr270-rehearsal-schema",
+      "isolation_sha256": "8543e3bca0a9388107cf785dc2ab63572404fc20792c74c942f6e2ffaec0e4df"
+    },
+    {
+      "scenario": "count",
+      "uuid": "5d2e6500-350c-4228-9fe4-48c37f755e7d",
+      "name": "cveharbor-pr270-rehearsal-count",
+      "isolation_sha256": "8543e3bca0a9388107cf785dc2ab63572404fc20792c74c942f6e2ffaec0e4df"
+    },
+    {
+      "scenario": "expiry",
+      "uuid": "39adff8b-b689-45f6-ba3a-c6005ec86b3f",
+      "name": "cveharbor-pr270-rehearsal-expiry",
+      "isolation_sha256": "8543e3bca0a9388107cf785dc2ab63572404fc20792c74c942f6e2ffaec0e4df"
+    },
+    {
+      "scenario": "race",
+      "uuid": "b098f98c-bb9f-4e50-95fc-177ac7c2582f",
+      "name": "cveharbor-pr270-rehearsal-race",
+      "isolation_sha256": "8543e3bca0a9388107cf785dc2ab63572404fc20792c74c942f6e2ffaec0e4df"
+    },
+    {
+      "scenario": "rejected",
+      "uuid": "3ddd25d0-b5c7-4597-9a4c-02bb9ba1c697",
+      "name": "cveharbor-pr270-rehearsal-rejected",
+      "isolation_sha256": "8543e3bca0a9388107cf785dc2ab63572404fc20792c74c942f6e2ffaec0e4df"
+    },
+    {
+      "scenario": "interrupt",
+      "uuid": "477cb173-2f84-4786-baa1-6bba51fd7937",
+      "name": "cveharbor-pr270-rehearsal-interrupt",
+      "isolation_sha256": "8543e3bca0a9388107cf785dc2ab63572404fc20792c74c942f6e2ffaec0e4df"
+    },
+    {
+      "scenario": "lost",
+      "uuid": "d7eb48ca-2023-420d-a5d3-c9cc0360b49c",
+      "name": "cveharbor-pr270-rehearsal-lost",
+      "isolation_sha256": "8543e3bca0a9388107cf785dc2ab63572404fc20792c74c942f6e2ffaec0e4df"
+    }
+  ],
+  "token": {
+    "active_at_verification": true,
+    "expires_on": "2026-11-06T22:30:00Z",
+    "permissions_unchanged": true
+  },
+  "adapter_client_isolation_passed": true,
+  "full_authorization_passed": false,
+  "external_writers_excluded": false,
+  "limitations": [
+    "Remote Pages account is empty; multiple-page and failure behavior tested locally with fictional responses.",
+    "Inventory is not a transactional snapshot; other credential holders/CI writers require operator attestation.",
+    "Workers for Platforms namespace inventory previously rejected with 403/10121 (product access unavailable)."
+  ],
+  "preserved": {
+    "original_files_rehashed": 68,
+    "all_match": true,
+    "primary_package_sha256": "168875f114d0dbf745ae5c5bce53b18ed08540a7ea6cfcecfdd024cd75388eea",
+    "retained_package_sha256": "16b8ca2e958c6b5bfec96af76839cf1463842aeb81d6fcb97b83625fe01b0987",
+    "export_sha256": "f6cc1bf56d48986aad95f890a2fdefdcd1fb5199e215c001598087ac503d92a8"
+  },
+  "sql_requests": 0,
+  "remote_database_mutations": 0,
+  "pagination_comparison": {
+    "results": [
+      {
+        "at": "2026-11-06T19:12:35.757Z",
+        "route": "/accounts/9706b4d98ad72884e67fd1eb875c8a61/pages/projects",
+        "http": 200,
+        "success": true,
+        "result_info": {
+          "page": 1,
+          "per_page": 10,
+          "count": 0,
+          "total_count": 0,
+          "total_pages": 0
+        },
+        "result_length": 0,
+        "errors": []
+      },
+      {
+        "at": "2026-11-06T19:12:36.011Z",
+        "route": "/accounts/9706b4d98ad72884e67fd1eb875c8a61/pages/projects?page=1",
+        "http": 200,
+        "success": true,
+        "result_info": {
+          "page": 1,
+          "per_page": 10,
+          "count": 0,
+          "total_count": 0,
+          "total_pages": 0
+        },
+        "result_length": 0,
+        "errors": []
+      },
+      {
+        "at": "2026-11-06T19:12:36.181Z",
+        "route": "/accounts/9706b4d98ad72884e67fd1eb875c8a61/pages/projects?page=2",
+        "http": 200,
+        "success": true,
+        "result_info": {
+          "page": 2,
+          "per_page": 10,
+          "count": 0,
+          "total_count": 0,
+          "total_pages": 0
+        },
+        "result_length": 0,
+        "errors": []
+      },
+      {
+        "at": "2026-11-06T19:12:36.470Z",
+        "route": "/accounts/9706b4d98ad72884e67fd1eb875c8a61/pages/projects?per_page=10",
+        "http": 200,
+        "success": true,
+        "result_info": {
+          "page": 1,
+          "per_page": 10,
+          "count": 0,
+          "total_count": 0,
+          "total_pages": 0
+        },
+        "result_length": 0,
+        "errors": []
+      },
+      {
+        "at": "2026-11-06T19:12:36.624Z",
+        "route": "/accounts/9706b4d98ad72884e67fd1eb875c8a61/pages/projects?page=1&per_page=10",
+        "http": 200,
+        "success": true,
+        "result_info": {
+          "page": 1,
+          "per_page": 10,
+          "count": 0,
+          "total_count": 0,
+          "total_pages": 0
+        },
+        "result_length": 0,
+        "errors": []
+      }
+    ],
+    "method": "GET only; vary one pagination parameter at a time; no SQL or mutations"
+  },
+  "prior_rejections": [
+    {
+      "at": "2026-11-06T19:02:42.861Z",
+      "route": "/accounts/9706b4d98ad72884e67fd1eb875c8a61/pages/projects?page=1&per_page=100",
+      "http": 400,
+      "success": false,
+      "errors": [
+        {
+          "code": 8000024,
+          "message": "Invalid list options provided. Review the `page` or `per_page` parameter."
+        }
+      ],
+      "no_mutation": true
+    },
+    {
+      "at": "2026-11-06T19:04:01.778Z",
+      "route": "/pages/projects?page=1&per_page=20",
+      "http": 400,
+      "success": false,
+      "error_codes": [
+        8000024
+      ],
+      "cf_ray": "a5665c9189a1ebbd-YYZ",
+      "response_result_sha256": null
+    }
+  ],
+  "GET_requests": 73,
+  "pages_responses": [
+    {
+      "at": "2026-11-06T19:16:41.977Z",
+      "route": "/client/v4/accounts/9706b4d98ad72884e67fd1eb875c8a61/pages/projects",
+      "http": 200,
+      "success": true,
+      "error_codes": [],
+      "result_info": {
+        "page": 1,
+        "per_page": 10,
+        "count": 0,
+        "total_count": 0,
+        "total_pages": 0
+      },
+      "project_names": []
+    },
+    {
+      "at": "2026-11-06T19:16:44.125Z",
+      "route": "/client/v4/accounts/9706b4d98ad72884e67fd1eb875c8a61/pages/projects",
+      "http": 200,
+      "success": true,
+      "error_codes": [],
+      "result_info": {
+        "page": 1,
+        "per_page": 10,
+        "count": 0,
+        "total_count": 0,
+        "total_pages": 0
+      },
+      "project_names": []
+    },
+    {
+      "at": "2026-11-06T19:16:46.686Z",
+      "route": "/client/v4/accounts/9706b4d98ad72884e67fd1eb875c8a61/pages/projects",
+      "http": 200,
+      "success": true,
+      "error_codes": [],
+      "result_info": {
+        "page": 1,
+        "per_page": 10,
+        "count": 0,
+        "total_count": 0,
+        "total_pages": 0
+      },
+      "project_names": []
+    },
+    {
+      "at": "2026-11-06T19:16:48.624Z",
+      "route": "/client/v4/accounts/9706b4d98ad72884e67fd1eb875c8a61/pages/projects",
+      "http": 200,
+      "success": true,
+      "error_codes": [],
+      "result_info": {
+        "page": 1,
+        "per_page": 10,
+        "count": 0,
+        "total_count": 0,
+        "total_pages": 0
+      },
+      "project_names": []
+    },
+    {
+      "at": "2026-11-06T19:16:50.475Z",
+      "route": "/client/v4/accounts/9706b4d98ad72884e67fd1eb875c8a61/pages/projects",
+      "http": 200,
+      "success": true,
+      "error_codes": [],
+      "result_info": {
+        "page": 1,
+        "per_page": 10,
+        "count": 0,
+        "total_count": 0,
+        "total_pages": 0
+      },
+      "project_names": []
+    },
+    {
+      "at": "2026-11-06T19:16:53.208Z",
+      "route": "/client/v4/accounts/9706b4d98ad72884e67fd1eb875c8a61/pages/projects",
+      "http": 200,
+      "success": true,
+      "error_codes": [],
+      "result_info": {
+        "page": 1,
+        "per_page": 10,
+        "count": 0,
+        "total_count": 0,
+        "total_pages": 0
+      },
+      "project_names": []
+    },
+    {
+      "at": "2026-11-06T19:16:55.134Z",
+      "route": "/client/v4/accounts/9706b4d98ad72884e67fd1eb875c8a61/pages/projects",
+      "http": 200,
+      "success": true,
+      "error_codes": [],
+      "result_info": {
+        "page": 1,
+        "per_page": 10,
+        "count": 0,
+        "total_count": 0,
+        "total_pages": 0
+      },
+      "project_names": []
+    },
+    {
+      "at": "2026-11-06T19:16:57.540Z",
+      "route": "/client/v4/accounts/9706b4d98ad72884e67fd1eb875c8a61/pages/projects",
+      "http": 200,
+      "success": true,
+      "error_codes": [],
+      "result_info": {
+        "page": 1,
+        "per_page": 10,
+        "count": 0,
+        "total_count": 0,
+        "total_pages": 0
+      },
+      "project_names": []
+    }
+  ],
+  "worker_names": [
+    "cveharbor-accounts-staging",
+    "cveharbor-site-staging"
+  ]
+}

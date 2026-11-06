@@ -26,7 +26,7 @@ function fixture(t,scenario='success'){
   f.requests.push({url,options});assert.ok(url.startsWith('https://api.cloudflare.com/client/v4/accounts/'+account+'/'));
   assert.equal(options.redirect,'error');let result;
   if(options.method==='GET'){
-   if(url.includes('/workers/scripts?')||url.includes('/pages/projects?'))result=[];
+   if(url.includes('/workers/scripts?')||url.includes('/pages/projects'))result=[];
    else result={uuid:resources[scenario].uuid,name:resources[scenario].name,created_at:'2026-11-06T00:00:00Z',file_size:4096};
    if(f.failure==='wrong-name'&&!Array.isArray(result))result.name='cveharbor-accounts-staging';
   }else{
@@ -40,7 +40,7 @@ function fixture(t,scenario='success'){
     else{if(params.length)db.prepare(sql).run(...params);else db.exec(sql);result=[{success:true,meta:{rows_written:1},results:[]}];}
    }catch{return new Response(JSON.stringify({success:false,errors:[{message:'fictional-sensitive-record'}]}),{status:400,headers:{'cf-ray':'fictional-ray'}});}
   }
-  return new Response(JSON.stringify({success:true,result}),{headers:{'cf-ray':'fictional-ray'}});
+  return new Response(JSON.stringify({success:true,result,...(url.includes('/pages/projects')?{result_info:{page:1,per_page:10,count:0,total_count:0,total_pages:0}}:{})}),{headers:{'cf-ray':'fictional-ray'}});
  };
  f.call=phase=>run(env,p,scenario,phase,{fetcher:f.fetcher,journal:f.journal});
  f.repin=()=>env.REHEARSAL_APPROVAL_SHA256=digest(p);
@@ -88,13 +88,90 @@ test('Worker or Pages bindings and incomplete inventories reject before mutation
    else if(url.endsWith('/settings'))result={bindings:kind==='version'?[]:[{type:'d1',name:'DB',id}]};
    else if(url.endsWith('/deployments'))result={deployments:kind==='version'?[{versions:[{version_id:'33333333-3333-4333-8333-333333333333'}]}]:[]};
    else if(url.includes('/versions/'))result={id:'33333333-3333-4333-8333-333333333333',resources:{}};
-   else if(kind==='pages'&&url.includes('/pages/projects?'))result=[{name:'fictional-pages',deployment_configs:{production:{d1_databases:{DB:{id}}},preview:{}}}];
+   else if(kind==='pages'&&url.includes('/pages/projects'))result=[{name:'fictional-pages',deployment_configs:{production:{d1_databases:{DB:{id}}},preview:{}}}];
    else return original(url,options);
-   return new Response(JSON.stringify({success:true,result}));
+   return new Response(JSON.stringify({success:true,result,...(kind==='pages'?{result_info:{page:1,per_page:10,count:1,total_count:1,total_pages:1}}:{})}));
   };
   await assert.rejects(()=>f.call('claim'));assert.equal(f.writes(),0);
  }
 });
+// The account currently has no Pages projects. Multi-page responses below are
+// fictional contract tests, not claims about a remote multi-page observation.
+const project=name=>({name,deployment_configs:{production:{},preview:{}}});
+function pagesFixture(f,responses){
+ const original=f.fetcher,seen=[];
+ f.fetcher=async(url,options)=>{
+  if(!url.includes('/pages/projects'))return original(url,options);
+  seen.push(new URL(url).pathname+new URL(url).search);assert.equal(options.method,'GET');
+  assert.equal(new URL(url).search,seen.length===1?'':'?page='+seen.length);
+  const response=responses[seen.length-1];assert.ok(response,'Unexpected Pages retry or extra request');
+  return new Response(JSON.stringify(response.body??response),{status:response.status??200});
+ };
+ return seen;
+}
+const pageBody=(page,results,total=3,size=2)=>({success:true,result:results,result_info:{page,per_page:size,count:results.length,total_count:total,total_pages:Math.ceil(total/size)}});
+
+test('Pages observed 400 rejection is never treated as empty or retried with different parameters',async t=>{
+ for(const status of [400,200]){
+  const f=fixture(t),seen=pagesFixture(f,[{status,body:{success:false,result:[],errors:[{code:8000024,message:'Invalid list options provided. Review the page or per_page parameter.'}]}}]);
+  await assert.rejects(()=>f.call('inventory'),/Provider rejected request/);assert.equal(seen.length,1);assert.equal(f.writes(),0);
+ }
+ const f=fixture(t);pagesFixture(f,[{status:400,body:pageBody(1,[],0)}]);
+ await assert.rejects(()=>f.call('inventory'),/Provider rejected request/);assert.equal(f.writes(),0);
+});
+
+test('Pages verified empty inventory accepts provider default metadata without per_page override',async t=>{
+ for(const totalPages of [0,1]){
+  const f=fixture(t),body=pageBody(1,[],0,10);body.result_info.total_pages=totalPages;
+  const seen=pagesFixture(f,[body]);assert.equal((await f.call('inventory')).isolation_sha256,iso);
+  assert.equal(seen.length,1);assert.ok(seen[0].endsWith('/pages/projects'));assert.equal(f.writes(),0);
+ }
+});
+
+test('Pages inventory collects every page using the provider size and includes later projects in its digest',async t=>{
+ const f=fixture(t),projects=['alpha','beta','gamma'].map(project);
+ const seen=pagesFixture(f,[pageBody(1,projects.slice(0,2)),pageBody(2,projects.slice(2))]);
+ assert.equal((await f.call('inventory')).isolation_sha256,digest({workers:[],pages:projects}));
+ assert.equal(seen.length,2);assert.ok(seen[1].endsWith('?page=2'));assert.equal(f.writes(),0);
+});
+
+test('Pages missing, inconsistent, duplicate or drifting pagination rejects completeness',async t=>{
+ const a=project('a'),b=project('b'),c=project('c');
+ const cases=[
+  [{success:true,result:[]}],
+  [{...pageBody(1,[],0),result_info:{page:1,per_page:10}}],
+  [{...pageBody(1,[],0),result_info:{page:1,per_page:0,count:0,total_count:0,total_pages:0}}],
+  [pageBody(2,[],0)],
+  [pageBody(1,[a],3)], // short first page with undisclosed remaining items
+  [{...pageBody(1,[a,b]),result_info:{page:1,per_page:2,count:1,total_count:3,total_pages:2}}],
+  [pageBody(1,[a,b]),pageBody(2,[])],
+  [pageBody(1,[a,b]),pageBody(1,[a,b])],
+  [pageBody(1,[a,b]),pageBody(2,[a])], // duplicate replaces unseen project
+  [pageBody(1,[a,b]),pageBody(2,[c],4)],
+  [pageBody(1,[a,b]),pageBody(2,[],3,3)],
+  [{...pageBody(1,[a,b]),result_info:{page:1,per_page:2,count:2,total_count:3,total_pages:1}}],
+  [pageBody(1,[a],101,1)],
+  [pageBody(1,[{deployment_configs:{production:{},preview:{}}}],1,1)]
+ ];
+ for(const responses of cases){const f=fixture(t);pagesFixture(f,responses);await assert.rejects(()=>f.call('inventory'));assert.equal(f.writes(),0);}
+});
+
+test('Pages error on a later page does not return the earlier partial inventory',async t=>{
+ const f=fixture(t),seen=pagesFixture(f,[pageBody(1,[project('a'),project('b')]),{status:400,body:{success:false,errors:[{code:8000024}]}}]);
+ await assert.rejects(()=>f.call('inventory'),/Provider rejected request/);assert.equal(seen.length,2);assert.equal(f.writes(),0);
+});
+
+test('Pages prohibited binding or missing deployment configuration on a later page prevents writes',async t=>{
+ for(const kind of ['production','preview','missing']){
+  const f=fixture(t),later=project('later');
+  if(kind==='missing')delete later.deployment_configs.preview;
+  else later.deployment_configs[kind].d1_databases={DB:{id:f.p.resources.success.uuid}};
+  const seen=pagesFixture(f,[pageBody(1,[project('first')],2,1),pageBody(2,[later],2,1)]);
+  await assert.rejects(()=>f.call('claim'),kind==='missing'?/Incomplete Pages isolation evidence/:/Pages binding detected/);
+  assert.equal(seen.length,2);assert.equal(f.writes(),0);assert.equal(f.claims.size,0);
+ }
+});
+
 test('successful batch remains byte-identical, frozen, data preserving and never resumes',async t=>{
  const f=fixture(t);f.p.expires_at=f.p.not_before+600;f.repin();await f.call('claim');
  assert.equal(JSON.parse(f.db.prepare("SELECT payload FROM d1_cveharbor_repair_receipts WHERE id='install-started'").get().payload).expires_at,f.p.expires_at,'DB window cannot outlive owner approval');

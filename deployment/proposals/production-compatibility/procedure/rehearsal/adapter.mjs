@@ -40,7 +40,7 @@ export function client(env,p,scenario,{fetcher=fetch,log=()=>{},clock=Date.now}=
  assert.ok(env.CLOUDFLARE_API_TOKEN);assert.equal(p.account,account);assert.equal(env.CLOUDFLARE_ACCOUNT_ID,account);
  assert.ok(!denied.includes(resource.uuid));uuid(resource.uuid);assert.equal(resource.name,names[scenario]);
  async function request(route,{query,mode}={}){
-  assert.ok(query?route===db+'/query':route===db||/^\/workers\/scripts(?:\?page=\d+&per_page=100|\/[^/?]+\/(?:settings|deployments|versions\/[a-f0-9-]+))$/.test(route)||/^\/pages\/projects\?page=\d+&per_page=100$/.test(route));
+  assert.ok(query?route===db+'/query':route===db||/^\/workers\/scripts(?:\?page=\d+&per_page=100|\/[^/?]+\/(?:settings|deployments|versions\/[a-f0-9-]+))$/.test(route)||/^\/pages\/projects(?:\?page=[1-9]\d*)?$/.test(route));
   const started=clock();log({kind:'request',at:new Date(started).toISOString(),method:query?'POST':'GET',route,sql_sha256:query?digest(query.sql):null,simulation:mode||null});
   const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),mode==='interrupt'?1:60000);
   let response,body;try{
@@ -57,6 +57,31 @@ export function client(env,p,scenario,{fetcher=fetch,log=()=>{},clock=Date.now}=
  }
  async function select(text,params=[]){assert.ok(/^SELECT\b/.test(text)&&!text.includes(';'));const b=await request(db+'/query',{query:{sql:text,params}});assert.equal(b.result.length,1);assert.equal(b.result[0].meta?.rows_written,0);return b.result[0].results;}
  async function list(route){const all=[];for(let page=1;page<=100;page++){const b=await request(route+'?page='+page+'&per_page=100');assert.ok(Array.isArray(b.result));all.push(...b.result);if(b.result_info?.total_pages){if(page===b.result_info.total_pages)return all;}else if(b.result.length<100)return all;}throw Error('Incomplete isolation inventory');}
+ // Pages has its own pagination contract. Use the provider default size, not
+ // Workers' per_page=100. A short/empty result without complete metadata is not
+ // evidence of completeness. API errors propagate; there is no fallback/retry.
+ async function pages(){
+  const all=[],seen=new Set();let expected;
+  for(let page=1;page<=100;page++){
+   const b=await request('/pages/projects'+(page===1?'':'?page='+page)),i=b.result_info;
+   assert.ok(Array.isArray(b.result)&&i,'Incomplete Pages pagination');
+   for(const key of ['page','per_page','count','total_count','total_pages'])assert.ok(Number.isSafeInteger(i[key])&&i[key]>=0,'Incomplete Pages pagination');
+   assert.equal(i.page,page,'Unexpected Pages page');assert.ok(i.per_page>0);
+   assert.equal(i.count,b.result.length,'Pages count mismatch');
+   assert.ok(i.total_pages<=100,'Incomplete Pages inventory: page limit');
+   if(i.total_count===0)assert.ok(i.total_pages===0||i.total_pages===1,'Invalid empty Pages pagination');
+   else assert.equal(i.total_pages,Math.ceil(i.total_count/i.per_page),'Inconsistent Pages totals');
+   const totals={per_page:i.per_page,total_count:i.total_count,total_pages:i.total_pages};
+   if(expected)assert.deepEqual(totals,expected,'Pages pagination drift');else expected=totals;
+   assert.equal(b.result.length,Math.min(i.per_page,i.total_count-all.length),'Incomplete Pages page');
+   for(const project of b.result){
+    assert.ok(typeof project.name==='string'&&project.name.length>0,'Missing Pages identity');
+    assert.ok(!seen.has(project.name),'Duplicate Pages project');seen.add(project.name);all.push(project);
+   }
+   if(page>=i.total_pages){assert.equal(all.length,i.total_count,'Incomplete Pages inventory');return all;}
+  }
+  throw Error('Incomplete Pages inventory');
+ }
  async function isolation(){
   const metadata=(await request(db)).result;assert.equal(metadata.uuid,resource.uuid);assert.equal(metadata.name,resource.name);
   assert.ok(Number.isFinite(Date.parse(metadata.created_at)),'Creation metadata unavailable');
@@ -71,7 +96,7 @@ export function client(env,p,scenario,{fetcher=fetch,log=()=>{},clock=Date.now}=
    const versions=[];for(const v of active?.versions||[]){uuid(v.version_id);const version=(await request(route+'/versions/'+v.version_id)).result;assert.equal(version.id,v.version_id);assert.ok(Array.isArray(version.resources?.bindings),'Incomplete active version bindings');versions.push(version);}
    assert.ok(!JSON.stringify({settings,versions}).includes(resource.uuid),'Worker binding detected');observations.push({id:w.id,settings,versions});
   }
-  const projects=(await list('/pages/projects')).sort((a,b)=>a.name.localeCompare(b.name));
+  const projects=(await pages()).sort((a,b)=>a.name.localeCompare(b.name));
   for(const project of projects){assert.ok(project.deployment_configs&&['production','preview'].every(k=>project.deployment_configs[k]&&typeof project.deployment_configs[k]==='object'&&!Array.isArray(project.deployment_configs[k])),'Incomplete Pages isolation evidence');assert.ok(!JSON.stringify(project.deployment_configs).includes(resource.uuid),'Pages binding detected');}
   return {uuid:metadata.uuid,name:metadata.name,isolation_sha256:digest({workers:observations,pages:projects.map(x=>({name:x.name,deployment_configs:x.deployment_configs}))})};
  }
