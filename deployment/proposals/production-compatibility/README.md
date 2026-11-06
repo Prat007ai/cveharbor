@@ -2,8 +2,14 @@
 
 **Draft for review. Not ready for production execution.** No live configuration,
 database, hold, deployment, rollback or application record was changed. Staging
-deployment remains paused. This PR contains an inactive SQL proposal, a local-only
-rehearsal and tests; it adds no workflow, remote executor or application behavior.
+deployment remains paused. The original inactive SQL proposal and local rehearsal
+are now accompanied by a [protected procedure](procedure/README.md), manual-only
+workflow and local/mocked tests. No live operation is enabled or authorized.
+
+**Newly verified blocker:** both existing production GitHub environments currently
+lack required reviewers and branch restrictions and permit administrator bypass.
+The new executor rejects those settings. Separate security-configuration approval,
+fresh recovery preparation and each production operation's approval remain required.
 
 ## Recommendation
 
@@ -31,8 +37,9 @@ in [`live-evidence.json`](live-evidence.json); raw customer data is not part of 
   `cveharbor-accounts`; bound D1 `46710e51-7ca4-4571-b89c-921b9969de0b`.
 - Dashboard rechecked November 6: active version prefix `07055fe8`, source
   Cloudflare Builds/main at that commit. Builds disabled. Worker Logs/Traces
-  disabled. Full immutable active-version ID still requires a supported metadata
-  capture before execution; a displayed prefix is not an execution pin.
+  disabled. A later read-only dashboard inspection resolved the full active version
+  to `07055fe8-f1ab-463f-97b2-372b458b6056`; the procedure pins it and rechecks its
+  deployment percentage, configuration and database binding before execution.
 - Complete live schema SELECT at 14:41 UTC returned all 143 application objects:
   70 tables, 48 explicit indexes, 24 triggers, one view. Every definition was
   token-normalized with `scripts/sql_schema_tokens.mjs`'s algorithm. Combined hash
@@ -167,7 +174,8 @@ and approved design; the existing single hold does not provide that split.
 
 ## Execution prerequisites and interruption handling
 
-This PR is a repair **plan**, not an executable production release. Before execution:
+The [implemented procedure](procedure/README.md) is reviewable but **not ready for
+production execution**. The following prerequisites still require actual evidence:
 
 1. Review the final source/SQL/metadata hashes and immutable live Worker ID, account,
    D1 identity, complete schema and all eight aggregate integrity checks again.
@@ -179,31 +187,32 @@ This PR is a repair **plan**, not an executable production release. Before execu
    a restore rehearsal in a separately authorized isolated environment. No raw
    bookmark/customer export goes into this public PR or CI. Recovery availability
    alone is insufficient; a restore could discard later legitimate changes.
-3. Implement/review a dedicated protected, exact-target repair executor. Existing
+3. Review the dedicated protected, exact-target repair executor. Existing
    baseline/ordinary/forward/staging workflows are not this executor: baseline
    paths replay unrelated initialization, forward migration checks require an
    existing open control state, and code-only gates require valid recovery state.
    Do not change those gates or use the staging migration adapter against production.
-4. The executor must fail closed before any write on baseline/flag/version drift;
-   bind exact SQL hash, approved quiet window and private recovery evidence. Use an
-   isolated single native migration/journal, never the repository history directory.
-   Add reviewable precondition/receipt handling and reconcile native metadata
-   independently. These executor/receipt statements are **not yet implemented**;
-   the final executable migration hash will require a fresh approval.
-5. Cloudflare documents rollback of an errored individual native migration:
-   [Wrangler D1 commands](https://developers.cloudflare.com/d1/wrangler-commands/).
-   This does not establish the outcome of a disconnected/timed-out client or atomicity
-   of several independent calls. Local `BEGIN/COMMIT` tests make no provider claim.
+4. The executor now binds exact source/manifest/SQL hashes, target/Worker version,
+   observed schema/configuration/counts, a quiet window, signed recovery evidence and
+   a unique approval/run. It uses a dedicated immutable receipt journal and fixed
+   REST requests. Conditional claims are separate successful requests before writes.
+   This replaces the tentative native-runner design; it never replays a migration
+   directory. Review the [final executable checksums](procedure/manifest.json).
+5. This procedure does not claim native migration rollback or REST multi-statement
+   atomicity. Partial execution remains possible and blocks further writes. Local
+   SQLite tests and mocked failures make no provider guarantee. Review the
+   [interruption rules](procedure/README.md#durable-receipts-and-interruption).
    D1 recovery retention is plan-dependent:
    [Time Travel](https://developers.cloudflare.com/d1/reference/time-travel/).
 6. After installation, service stays held/frozen. Independently verify all original
    definitions and privately approved row-count/digest checks, new empty context and
-   lease tables, exact 370-object schema, complete guard coverage, native receipt,
+   lease tables, exact 370-object application schema plus four journal objects,
+   complete guard coverage and matching immutable receipts,
    hold revision, all integrity predicates and FK integrity. Do not mark service
    restored because migration exited successfully or readiness reports `held=true`.
 7. On interruption, perform SELECT-only reconciliation. Baseline/no receipt means
    investigate before a new approval; exact proposed schema + matching receipt +
-   frozen control is a completed install; partial/unknown state blocks all further
+   frozen control and successful verification establish installation; partial/unknown state blocks all further
    writes. Never expire leases, rerun a write job, delete receipts, auto-roll back,
    or execute the whole historical migration directory. A recovery correction or
    restore requires its own reviewed plan and approval.
@@ -227,12 +236,16 @@ No production approval is requested with this draft. Required later decisions ar
   Worker workflow's trigger: reverify disabled production gates and Cloudflare
   Builds before any eventual merge, without changing them. PR CI has no authority
   to deploy the proposal.
+- **Protection configuration:** separately approve the missing owner reviewer,
+  main-only branch restriction and disabled administrator bypass on the two existing
+  production environments, plus the precise protected procedure configuration.
+  No such setting is changed by this PR or by its executor.
 - **Recovery preparation:** exact private export/restore-test scope and destination,
   resource/account, retention, any spend and separately isolated test target.
 - **Production schema repair:** account/D1 above, final executable SQL checksum,
   approved current source/profile/Worker ID, private recovery evidence hashes,
   quiet window and protected reviewer gate. Scope includes creation of the held
-  operational row and native journal; explicitly excludes resume/deploy/data repair.
+  operational row and dedicated receipt journal; explicitly excludes resume/deploy/data repair.
 - **Production resume:** exact installed schema/receipt and control revision,
   zero active leases, integrity/FK success, reviewed queue effects and acceptance.
   This authorizes the state transition and subsequent normal traffic/scheduled work;

@@ -1,0 +1,26 @@
+{
+  "observed_date_utc": "2026-11-06",
+  "method": "Read-only GitHub REST API using the existing authorized connection",
+  "repository": "Prat007ai/cveharbor",
+  "main_commit": "1532e732b771f960b6ae7791a9bd2205e1d59390",
+  "environments": {
+    "cloudflare-worker-production": {
+      "can_admins_bypass": true,
+      "deployment_branch_policy": null,
+      "protection_rules": [],
+      "branch_policy_http_status": 404
+    },
+    "cloudflare-production-audit": {
+      "can_admins_bypass": true,
+      "deployment_branch_policy": null,
+      "protection_rules": [],
+      "branch_policy_http_status": 404
+    }
+  },
+  "repository_variable_lookup": {
+    "PRODUCTION_DEPLOYMENTS_ENABLED": 404,
+    "PRODUCTION_COMPATIBILITY_REPAIR_ENABLED": 404
+  },
+  "interpretation": "Required reviewers and branch restrictions are absent; administrator bypass is allowed. Both feature variables are unset. The new procedure must reject current protection state. Read-only observation is not a security-setting approval.",
+  "settings_changed": false
+}
