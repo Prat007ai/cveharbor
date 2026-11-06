@@ -1,0 +1,1051 @@
+{
+  "status": "LOCAL REHEARSAL ONLY; NOT READY FOR PRODUCTION EXECUTION",
+  "base_commit": "1532e732b771f960b6ae7791a9bd2205e1d59390",
+  "baseline_schema_sha256": "327bab011a4ffe3654aab618f859a8cdaef14aa7d4bbd03c0db96d4f7b0a225d",
+  "baseline_objects": 143,
+  "proposed_sql_sha256": "0e4f4f2f2a2a50da6ae7a4b899c1546b90a61bdcb0cc9f4ec6f3ebe92425e628",
+  "proposed_schema_sha256": "788c155c8c1c388986651730371f17e90d7a675ef9110155870acf03ea10803f",
+  "proposed_objects": 370,
+  "added_objects": [
+    {
+      "type": "table",
+      "name": "operations_control"
+    },
+    {
+      "type": "table",
+      "name": "operations_events"
+    },
+    {
+      "type": "table",
+      "name": "operations_leases"
+    },
+    {
+      "type": "table",
+      "name": "remediation_finding_write_context"
+    },
+    {
+      "type": "trigger",
+      "name": "finding_link_identity"
+    },
+    {
+      "type": "trigger",
+      "name": "finding_link_immutable"
+    },
+    {
+      "type": "trigger",
+      "name": "linked_finding_status_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "linked_finding_status_update"
+    },
+    {
+      "type": "trigger",
+      "name": "operations_control_history"
+    },
+    {
+      "type": "trigger",
+      "name": "preserve_asset_finding_history"
+    },
+    {
+      "type": "trigger",
+      "name": "preserve_remediation_history"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_alert_delivery_items_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_alert_delivery_items_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_alert_delivery_items_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_alert_digest_runs_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_alert_digest_runs_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_alert_digest_runs_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_alert_optins_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_alert_optins_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_alert_optins_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_alert_preferences_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_alert_preferences_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_alert_preferences_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_auth_rate_limits_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_auth_rate_limits_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_auth_rate_limits_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_customer_finding_statuses_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_customer_finding_statuses_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_customer_finding_statuses_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_customer_finding_ticket_history_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_customer_finding_ticket_history_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_customer_finding_ticket_history_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_customer_finding_tickets_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_customer_finding_tickets_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_customer_finding_tickets_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_customer_security_score_snapshots_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_customer_security_score_snapshots_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_customer_security_score_snapshots_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_advisories_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_advisories_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_advisories_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_disclosure_products_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_disclosure_products_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_disclosure_products_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_disclosure_queue_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_disclosure_queue_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_disclosure_queue_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_disclosures_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_disclosures_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_disclosures_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_kev_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_kev_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_kev_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_maintenance_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_maintenance_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_maintenance_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_product_scopes_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_product_scopes_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_product_scopes_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_products_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_products_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_products_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_provider_budget_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_provider_budget_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_provider_budget_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_shared_advisories_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_shared_advisories_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_shared_advisories_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_shared_scopes_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_shared_scopes_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_shared_scopes_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_shared_seeds_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_shared_seeds_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_shared_seeds_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_sources_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_sources_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_sources_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_subscriptions_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_subscriptions_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_cvie_subscriptions_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_inventory_assets_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_inventory_assets_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_inventory_assets_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_inventory_customers_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_inventory_customers_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_inventory_customers_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_inventory_environments_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_inventory_environments_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_inventory_environments_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_inventory_packages_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_inventory_packages_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_inventory_packages_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_inventory_software_history_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_inventory_software_history_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_inventory_software_history_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_lifecycle_delivery_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_lifecycle_delivery_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_lifecycle_delivery_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_lifecycle_preferences_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_lifecycle_preferences_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_lifecycle_preferences_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_lifecycle_watches_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_lifecycle_watches_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_lifecycle_watches_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_login_challenges_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_login_challenges_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_login_challenges_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_new_lease"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_plugin_installation_status_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_plugin_installation_status_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_plugin_installation_status_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_plugin_monitor_checks_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_plugin_monitor_checks_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_plugin_monitor_checks_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_plugin_monitor_history_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_plugin_monitor_history_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_plugin_monitor_history_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_plugin_release_checks_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_plugin_release_checks_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_plugin_release_checks_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_plugin_source_mappings_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_plugin_source_mappings_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_plugin_source_mappings_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_events_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_events_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_events_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_fyi_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_fyi_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_fyi_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_limits_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_limits_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_limits_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_metadata_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_metadata_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_metadata_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_notifications_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_notifications_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_notifications_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_requests_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_requests_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignment_requests_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignments_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignments_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_assignments_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_change_context_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_change_context_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_change_context_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_finding_links_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_finding_links_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_finding_links_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_finding_write_context_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_finding_write_context_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_finding_write_context_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_link_audit_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_link_audit_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_link_audit_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_owner_comments_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_owner_comments_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_owner_comments_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_record_metadata_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_record_metadata_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_record_metadata_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_retired_records_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_retired_records_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_retired_records_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_access_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_access_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_access_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_activity_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_activity_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_activity_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_challenges_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_challenges_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_challenges_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_notifications_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_notifications_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_notifications_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_sessions_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_sessions_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_sessions_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_write_context_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_write_context_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_review_write_context_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_status_changes_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_status_changes_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_status_changes_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_status_notifications_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_status_notifications_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediation_status_notifications_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediations_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediations_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_remediations_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_sessions_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_sessions_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_sessions_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_totp_login_challenges_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_totp_login_challenges_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_totp_login_challenges_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_totp_recovery_codes_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_totp_recovery_codes_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_totp_recovery_codes_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_user_stack_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_user_stack_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_user_stack_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_user_technology_catalogue_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_user_technology_catalogue_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_user_technology_catalogue_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_user_totp_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_user_totp_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_user_totp_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_users_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_users_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_users_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_web_risk_account_usage_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_web_risk_account_usage_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_web_risk_account_usage_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_web_risk_usage_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_web_risk_usage_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_web_risk_usage_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_website_monitor_checks_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_website_monitor_checks_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_website_monitor_checks_update"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_website_monitors_delete"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_website_monitors_insert"
+    },
+    {
+      "type": "trigger",
+      "name": "recovery_hold_website_monitors_update"
+    },
+    {
+      "type": "trigger",
+      "name": "retired_remediation_read_only"
+    },
+    {
+      "type": "trigger",
+      "name": "validate_finding_write"
+    }
+  ],
+  "preserved_baseline_objects": 143,
+  "control": {
+    "write_hold": 1,
+    "database_frozen": 1,
+    "revision": 0
+  },
+  "input_files": [
+    {
+      "path": "account-backend/schema.sql",
+      "sha256": "b89e3589c3df611f2e9cb1c6f6bc6e49fa928329deb2ba3a2c6c9fae675f0e07"
+    },
+    {
+      "path": "account-backend/totp-schema.sql",
+      "sha256": "6fba840946258875cf4de95768540efd9df26e9b2bc76a94aa31077e7f337fcf"
+    },
+    {
+      "path": "account-backend/alert-schema.sql",
+      "sha256": "bf541a4e0f99bbd8e2122c1a5ed602d855dd9854ee15013d6fcf42f41f3670c0"
+    },
+    {
+      "path": "account-backend/inventory-schema.sql",
+      "sha256": "074a5b34f5ea7edecf116bec940a0080cd49ed37cba81e465fff373abd9430c8"
+    },
+    {
+      "path": "account-backend/remediation-schema.sql",
+      "sha256": "fb529eb8fd69d4c2249fbbda28f04067680cebd329f96cb9a97291bd2ac1ffc4"
+    },
+    {
+      "path": "account-backend/lifecycle-schema.sql",
+      "sha256": "9e2d4bd7e6e78f0b4cc1a074ec321814d571f27d594e8c715e5dbdb7b9adb92f"
+    },
+    {
+      "path": "account-backend/finding-status-schema.sql",
+      "sha256": "ea031537bee4af1fb2223412c3c038487feefdcd7aab16df5404ed5d90b46535"
+    },
+    {
+      "path": "account-backend/finding-ticket-schema.sql",
+      "sha256": "300aa4ea766b654096713ab274091cf7993fa2159ae6cf4ed3a16a198005b229"
+    },
+    {
+      "path": "account-backend/finding-ticket-history-schema.sql",
+      "sha256": "02418a2ad67a19d9febf72a4bfbe893f35a3ccc8bbc6b108edace730f5ce8f24"
+    },
+    {
+      "path": "account-backend/customer-score-schema.sql",
+      "sha256": "668ba20857612e8473b627bd8193767ba62b4177f474a6fabf86f65c5ae90be0"
+    },
+    {
+      "path": "account-backend/package-inventory-schema.sql",
+      "sha256": "1c4adcad66bb4ca29261c3c871ebfbaa47a00a72061533f81ee23555be110b7c"
+    },
+    {
+      "path": "account-backend/software-upgrade-history-schema.sql",
+      "sha256": "a116f0134034f4f2708eac5fa68efda3d7663aaa7dfb2459b7f47c38ed3c1f15"
+    },
+    {
+      "path": "account-backend/plugin-monitor-schema.sql",
+      "sha256": "7ae3144c33fb3c20cd2569007a5f048661cced413be6cd4c50844e63723ee72e"
+    },
+    {
+      "path": "account-backend/plugin-release-schema.sql",
+      "sha256": "11c18e7e69a6626e14d7ca6cbdbccfec5d37bfa0e7d74ed860d1eb095f05c4a1"
+    },
+    {
+      "path": "account-backend/plugin-source-schema.sql",
+      "sha256": "2761783300ea01d064c57bd6bb0a0ef0ce474fbd58b685cda6d35727d72bbae3"
+    },
+    {
+      "path": "account-backend/migrations/0016_website_monitor.sql",
+      "sha256": "cbe8f5802f393357af4954502b4d33f494d37c687666eadc783deb299da9a0c2"
+    },
+    {
+      "path": "account-backend/migrations/0017_web_risk_quota.sql",
+      "sha256": "8181159af943ac82a30bce24593e78c8335b315c4c90bc9ec4fa3bb0fdd29d9e"
+    },
+    {
+      "path": "account-backend/migrations/0018_technology_catalogue.sql",
+      "sha256": "22b6e5c8cf090f2f4911331b1a6fc9bb4fa2351bac000a82e0700fbdc2ecaaae"
+    },
+    {
+      "path": "account-backend/migrations/0019_cvie.sql",
+      "sha256": "628f04d2fd77f476e6015fc1ebb0e7154ca86b7f1f2710fb0336a16e10bef6f0"
+    },
+    {
+      "path": "account-backend/migrations/0020_cvie_evidence.sql",
+      "sha256": "25593f521858cd4f8578cb63aa51d10fb0e819133a419f66c7a3a359c886c2d8"
+    },
+    {
+      "path": "account-backend/migrations/0021_cvie_audit_refresh.sql",
+      "sha256": "7190f9715a136933d1d903b425d14fa73159ced8c8201b92f9c56249f38a0088"
+    },
+    {
+      "path": "account-backend/migrations/0022_cvie_shared_scans.sql",
+      "sha256": "a655d4c0f8d83a84a8252c6f3c1d700efa52cc986b1a030fe8c87fa22dc89292"
+    },
+    {
+      "path": "account-backend/migrations/0024_assignment_acknowledgements.sql",
+      "sha256": "3bc409ea7b0ea4053d636ecf62f1485172438c55eba4cb5b4453dab9581e820b"
+    },
+    {
+      "path": "account-backend/migrations/0025_assignment_fyi.sql",
+      "sha256": "585bb54b434f5c45a1de18ba42f162a77ba42246972ebe62cbdf886eba82a70a"
+    },
+    {
+      "path": "account-backend/migrations/0026_remediation_workflow.sql",
+      "sha256": "64bfd6ab1a5e57ae89007eeb122714af17b77071c74f6554604c8553ae0db6e8"
+    },
+    {
+      "path": "account-backend/migrations/0027_assignment_progress.sql",
+      "sha256": "cd35e1265abb1bb1585cb656ea2ae473ee5d83d29e6d1c3ec0fa8da6f5d6f902"
+    },
+    {
+      "path": "account-backend/migrations/0028_unified_findings.sql",
+      "sha256": "3059a57cd3a4c2ecfae04af0bf4ec908ff2c6be06cb11c603bedc80391a8f9ed"
+    },
+    {
+      "path": "account-backend/migrations/0029_finding_assignment_links.sql",
+      "sha256": "f416db8e1eafb71f0d986203fc68a6ca12764ee57a73e47cb698368ff6387004"
+    },
+    {
+      "path": "account-backend/migrations/0030_status_update_notifications.sql",
+      "sha256": "20eef5d962b9aee92c0f4a634bc49750087f1d151ed4c41d4db18d1c56f8fa4e"
+    },
+    {
+      "path": "account-backend/migrations/0031_remediation_integrity.sql",
+      "sha256": "816eb1e6deb528340af37284c72fe2d3585d7c1aec883ca6a1788c8b868eea46"
+    },
+    {
+      "path": "account-backend/migrations/0032_recovery_control.sql",
+      "sha256": "77e56e139153505ec2433c9c2dec5ea1f84d0142ffcee2db7dac53434420a4fd"
+    }
+  ]
+}
