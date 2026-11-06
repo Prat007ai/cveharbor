@@ -2,11 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import {DatabaseSync} from 'node:sqlite';
 import {baselineDB} from '../../deployment/proposals/production-compatibility/rehearsal.mjs';
 import {artifacts,account,cases,names,denied,marker,syntheticCounts,syntheticSQL} from '../../deployment/proposals/production-compatibility/procedure/rehearsal/artifacts.mjs';
 import {authorize,run} from '../../deployment/proposals/production-compatibility/procedure/rehearsal/adapter.mjs';
 import {target,folder,verifyFiles} from '../../deployment/proposals/production-compatibility/procedure/build.mjs';
-import {digest} from '../../scripts/production_schema_baseline.mjs';
+import {digest,canonical,schemaSQL} from '../../scripts/production_schema_baseline.mjs';
 const install=fs.readFileSync(path.join(folder,'install.sql'),'utf8');
 const iso=digest({workers:[],pages:[]});
 function fixture(t,scenario='success'){
@@ -46,6 +47,7 @@ function fixture(t,scenario='success'){
 test('isolated artifact pins retain exact reviewed production batch and synthetic baseline',()=>{
  const a=artifacts();assert.equal(a.manifest.production_manifest_sha256,'4dd094b957dc21421a0daf35f6e99b28cfac42ae60b26dee15bf2b6b12e5b42c');
  assert.equal(digest(install),'2932acfd414c14e850d994b5aa31cc098aea6145ced7f32188c8b9edd18e7c46');assert.equal(digest(syntheticSQL()),a.manifest.synthetic_sql_sha256);
+ const db=new DatabaseSync(':memory:');try{db.exec(syntheticSQL());assert.equal(digest(canonical(db.prepare(schemaSQL).all())),target.baseline_schema_sha256);assert.equal(db.prepare('SELECT COUNT(*) n FROM users').get().n,1);}finally{db.close();}
 });
 test('wrong/unapproved targets, duplicate UUIDs, stale approval, missing recovery and disabled runtime reject before network',async t=>{
  for(const mutate of [f=>f.p.account=target.account,...denied.map(id=>f=>f.p.resources.success.uuid=id),f=>f.p.resources.success.name='unknown',f=>f.p.resources.success.uuid=null,f=>f.p.resources.success.uuid=f.p.resources.schema.uuid,f=>{f.p.not_before-=100;f.p.expires_at=f.p.not_before+1;},f=>delete f.p.recovery_evidence_sha256,f=>f.env.REHEARSAL_ENABLED='false',f=>f.p.source_sha='b'.repeat(40),f=>f.p.manifest_sha256='0'.repeat(64)]){
