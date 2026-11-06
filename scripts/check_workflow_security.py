@@ -13,7 +13,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 MAIN = "github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main'"
 MANUAL = MAIN + " && github.event_name == 'workflow_dispatch'"
-REPAIR_WRITE = MANUAL + " && vars.PRODUCTION_COMPATIBILITY_REPAIR_ENABLED == 'true' && contains(fromJSON('[\"install\",\"resume\"]'), inputs.operation)"
+REPAIR_WRITE = MANUAL + " && contains(fromJSON('[\"install\",\"resume\"]'), inputs.operation)"
 REPAIR_READ = MANUAL + " && contains(fromJSON('[\"preflight\",\"verify\",\"reconcile\"]'), inputs.operation)"
 RELEASE = MAIN + " && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true'"
 PHASE1 = 'd791cb8e84f85f980926dd1e1acfd0b369c64b46'
@@ -204,6 +204,9 @@ def validate(doc, filename):
             require(job.get('permissions')=={'contents':'read','actions':'read'},'repair: environment inspection uses read-only permissions')
             steps=job.get('steps',[])
             require(len(steps)==3 and steps[-1].get('run')=='node deployment/proposals/production-compatibility/procedure/execute.mjs','repair: single reviewed entrypoint')
+            if name=='change':
+                require(steps[-1].get('env',{}).get('PRODUCTION_COMPATIBILITY_REPAIR_ENABLED')=='${{ vars.PRODUCTION_COMPATIBILITY_REPAIR_ENABLED }}','repair: environment enable flag must reach runtime authorization')
+                require('if' not in steps[-1] and not steps[-1].get('continue-on-error',False),'repair: disabled runtime must fail, not skip or ignore authorization')
             for step in steps[:-1]:require(not SENSITIVE.search(json.dumps(step)),'repair: setup must be credential-free')
             require(not re.search(r'upload-artifact|actions/cache|continue-on-error|wrangler|restore|deploy', '\n'.join(s.get('run', '')+s.get('uses','') for s in steps).replace('deployment/proposals/','proposal/')), 'repair: no public private-data artifacts, retry or deployment tools')
     return errors

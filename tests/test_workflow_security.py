@@ -63,6 +63,17 @@ class ProductionRepairSecurityTests(unittest.TestCase):
  def doc(self):return policy.load_workflow((ROOT/'.github/workflows/production-compatibility-repair.yml').read_text())
  def test_repair_keeps_exact_manual_environment_and_concurrency_gates(self):
   self.assertEqual(policy.validate(self.doc(),'production-compatibility-repair.yml'),[])
+ def test_repair_environment_flag_is_only_evaluated_after_job_selection(self):
+  job=self.doc()['jobs']['change']
+  self.assertNotIn('vars.',job['if'])
+  self.assertEqual(job['steps'][-1]['env']['PRODUCTION_COMPATIBILITY_REPAIR_ENABLED'],'${{ vars.PRODUCTION_COMPATIBILITY_REPAIR_ENABLED }}')
+  for change in [
+   lambda j:j.update({'if':policy.REPAIR_WRITE+" && vars.PRODUCTION_COMPATIBILITY_REPAIR_ENABLED == 'true'"}),
+   lambda j:j['steps'][-1]['env'].pop('PRODUCTION_COMPATIBILITY_REPAIR_ENABLED'),
+   lambda j:j['steps'][-1]['env'].update(PRODUCTION_COMPATIBILITY_REPAIR_ENABLED='true'),
+   lambda j:j['steps'][-1].update({'if':"vars.PRODUCTION_COMPATIBILITY_REPAIR_ENABLED == 'true'"}),
+  ]:
+   doc=self.doc();change(doc['jobs']['change']);self.assertTrue(policy.validate(doc,'production-compatibility-repair.yml'))
  def test_repair_rejects_bypassed_gates_public_artifacts_and_extra_entrypoints(self):
   mutations=[
    lambda d:d['on'].update(push={}),

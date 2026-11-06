@@ -19,13 +19,13 @@
   },
   "files": {
     "deployment/proposals/production-compatibility/rehearsal.mjs": "2f7defa7535aa711a2b8a11b6141ee52d8e1f1aa5b063035761c27f1fdc1d53c",
-    "deployment/proposals/production-compatibility/procedure/build.mjs": "272583b9b530d48cd4cd576c98d36c87cc3a79463a6351ac1531137236703677",
+    "deployment/proposals/production-compatibility/procedure/build.mjs": "0323c239a0b72fac71fbfa380e22e596eafe843b391bf20f1c0ae49d57d85c30",
     "deployment/proposals/production-compatibility/procedure/target.json": "40ae42e527584bb9cdc2e7671bb3513db01ad15ace61c26a6915693d6996929b",
-    "deployment/proposals/production-compatibility/procedure/execute.mjs": "3410b0bac418c4c50b68fa2df50647dd4e5933946fe1dd42344ede3af9bb2dfa",
+    "deployment/proposals/production-compatibility/procedure/execute.mjs": "e4b03f947308b45184e1ef11fd285de21ee1550908129471272803f94bb9f5b6",
     "deployment/proposals/production-compatibility/procedure/transport.mjs": "d769d723cb6e719696e4e33ee92da225923c5e0d45d23f6be827325e5fdafdd2",
     "deployment/proposals/production-compatibility/procedure/bootstrap.sql": "01e3ef913b44194b26aecf0e103b077ca5a144ea84a09db8c1f227a0501ef98c",
     "deployment/proposals/production-compatibility/procedure/install-start.sql": "707fa60b4d59d8eac3636068d06cf7ba6b8652014837a1134d37dc7a028b4450",
-    "deployment/proposals/production-compatibility/procedure/install.sql": "45de3bc54828bd0daa24c4232d19411a5f5edba6abd93cf2e7f9330ca4d5c8a8",
+    "deployment/proposals/production-compatibility/procedure/install.sql": "2932acfd414c14e850d994b5aa31cc098aea6145ced7f32188c8b9edd18e7c46",
     "deployment/proposals/production-compatibility/procedure/resume-start.sql": "704f5e1847c936efa0fa5f5ddb4b8f2c859e7b46bc29156bf164fddb4af96345",
     "deployment/proposals/production-compatibility/procedure/resume.sql": "ccff1c5e01edb6dfbf68555c27f6cc90a938ba8bbd29942ca0f30e380e4d58d1",
     "scripts/production_schema_baseline.mjs": "39b653ccc5f736dc4204da4cb58a3e1568bde0fc6d5a3e95133f853b17412a1c",
@@ -36,13 +36,13 @@
     "account-backend/migrations/0032_recovery_control.sql": "77e56e139153505ec2433c9c2dec5ea1f84d0142ffcee2db7dac53434420a4fd",
     "account-backend/src/recovery-schema.js": "6e491e5dc3de5a5d79883471cbd8808f1f9a5023e943ae056188a754c5b89ae6",
     "account-backend/src/release-integrity-checks.js": "61ee92bf900c823ee1467724e8845bd68e308e6930b989f1400c90607e8d36ca",
-    ".github/workflows/production-compatibility-repair.yml": "80266e8933584370d461b3ab6907dc5e45cde4b729c8a68f687990a8ff5fc8d1",
-    "scripts/check_workflow_security.py": "97344023221a234f44c881125abc577414b05dcaffa52729aee5c968008abc2e"
+    ".github/workflows/production-compatibility-repair.yml": "14e17f158397cd62e96e1d00cf6239e107f8cfc5655a4c0859353bd8f213cf62",
+    "scripts/check_workflow_security.py": "5eb5dbe46aa12d800c5d748cae28e417c60a79129ef5045f267a1af2f407af0d"
   },
   "sql_sha256": {
     "bootstrap.sql": "01e3ef913b44194b26aecf0e103b077ca5a144ea84a09db8c1f227a0501ef98c",
     "install-start.sql": "707fa60b4d59d8eac3636068d06cf7ba6b8652014837a1134d37dc7a028b4450",
-    "install.sql": "45de3bc54828bd0daa24c4232d19411a5f5edba6abd93cf2e7f9330ca4d5c8a8",
+    "install.sql": "2932acfd414c14e850d994b5aa31cc098aea6145ced7f32188c8b9edd18e7c46",
     "resume-start.sql": "704f5e1847c936efa0fa5f5ddb4b8f2c859e7b46bc29156bf164fddb4af96345",
     "resume.sql": "ccff1c5e01edb6dfbf68555c27f6cc90a938ba8bbd29942ca0f30e380e4d58d1"
   },

@@ -37,6 +37,80 @@ async function fixture(t){
  };return f;
 }
 const blocked=async(f,operation)=>{await assert.rejects(()=>f.run(operation));assert.equal(f.writes.length,0);};
+const sqlFile=name=>fs.readFileSync(path.join(folder,name+'.sql'),'utf8');
+async function claimedInstallation(t){
+ const f=await fixture(t),{s,p}=await f.approve();
+ f.db.exec(sqlFile('bootstrap'));
+ const payload=JSON.stringify({...p,authorization_sha256:digest(p),schema_rows:s.schema_rows,counts:s.counts});
+ f.db.prepare(`INSERT INTO ${receiptTable}(id,payload) VALUES('install-intent',?)`).run(payload);
+ f.db.exec(sqlFile('install-start'));return {...f,approval:p};
+}
+test('installation boundary rejects schema and count drift after the durable start claim without repair mutations',async t=>{
+ for(const change of [db=>db.exec('CREATE TABLE unexpected_after_claim(id TEXT)'),db=>db.exec("INSERT INTO remediations(user_id,cve_id,status,updated_at) VALUES('a','CVE-2026-999999','Open','2026-11-06')")]){
+  const f=await claimedInstallation(t);change(f.db);
+  const before=plain(f.db.prepare('SELECT type,name,tbl_name,sql FROM sqlite_schema ORDER BY name').all());
+  assert.throws(()=>f.db.exec(sqlFile('install')));
+  assert.deepEqual(plain(f.db.prepare('SELECT type,name,tbl_name,sql FROM sqlite_schema ORDER BY name').all()),before);
+  assert.deepEqual(f.db.prepare(`SELECT id FROM ${receiptTable} ORDER BY id`).all().map(r=>r.id),['install-intent','install-started']);
+ }
+});
+test('database clock rejects approval that expires after claim but before installation, independently of runner clock',async t=>{
+ const f=await claimedInstallation(t);f.db.function('strftime',(_format,_value)=>String(f.approval.expires_at+1));
+ assert.throws(()=>f.db.exec(sqlFile('install')));
+ assert.equal(f.db.prepare("SELECT COUNT(*) n FROM sqlite_schema WHERE name='operations_control'").get().n,0);
+ assert.equal(f.db.prepare(`SELECT COUNT(*) n FROM ${receiptTable}`).get().n,2);
+});
+test('interruption before or after the in-batch assertion leaves the durable claim and never retries',async t=>{
+ for(const point of ['before-check','after-check']){
+  const f=await fixture(t);await f.approve();const native=f.client.writeOnce;
+  f.client.writeOnce=async(sql,params)=>{
+   if(sql===sqlFile('install')){
+    f.writes.push({sql,params});
+    // Fault injection only: the real adapter must never split this batch.
+    if(point==='after-check')f.db.exec(sql.split('-- END INSTALLATION PRECONDITION')[0]);
+    throw Error('Fictional interruption');
+   }
+   return native(sql,params);
+  };
+  await assert.rejects(()=>f.run('install'));
+  assert.equal(f.db.prepare("SELECT COUNT(*) n FROM sqlite_schema WHERE name='operations_control'").get().n,0);
+  assert.equal((await f.run('reconcile')).state,'uncertain-install');
+  await assert.rejects(()=>f.run('install'));assert.equal(f.writes.length,4);
+  assert.deepEqual(f.db.prepare(`SELECT id FROM ${receiptTable} ORDER BY id`).all().map(r=>r.id),['install-intent','install-started']);
+ }
+});
+test('executor sends assertion, repair and receipt in one unmodified REST batch and never retries a rejected boundary',async t=>{
+ const f=await fixture(t);await f.approve();const native=f.client.writeOnce,calls=[];
+ const remote=transport({...f.env,CLOUDFLARE_API_TOKEN:'fictional-only'},{fetcher:async(url,options)=>{
+  const body=JSON.parse(options.body);calls.push({url,body});
+  assert.equal(body.sql,sqlFile('install'));assert.deepEqual(body.params,[]);
+  assert.ok(body.sql.indexOf('AS installation_precondition;')<body.sql.indexOf('CREATE '));
+  // The provider-boundary simulation introduces drift AFTER the start claim.
+  f.db.exec('CREATE TABLE unexpected_after_claim(id TEXT)');
+  assert.throws(()=>f.db.exec(body.sql));
+  return new Response(JSON.stringify({success:false,result:[]}),{status:400});
+ }});
+ f.client.writeOnce=async(sql,params)=>{
+  if(sql===sqlFile('install')){f.writes.push({sql,params});return remote.writeOnce(sql,params);}
+  return native(sql,params);
+ };
+ await assert.rejects(()=>f.run('install'));assert.equal(calls.length,1);
+ assert.equal(f.db.prepare("SELECT COUNT(*) n FROM sqlite_schema WHERE name='operations_control'").get().n,0);
+ assert.equal((await f.run('reconcile')).state,'uncertain-install');
+ await assert.rejects(()=>f.run('install'));assert.equal(calls.length,1);assert.equal(f.writes.length,4);
+});
+test('an absent start claim fails the scalar installation assertion instead of selecting zero rows',async t=>{
+ const f=await fixture(t);f.db.exec(sqlFile('bootstrap'));
+ assert.throws(()=>f.db.exec(sqlFile('install')));
+ assert.equal(f.db.prepare("SELECT COUNT(*) n FROM sqlite_schema WHERE name='operations_control'").get().n,0);
+});
+test('missing or false environment enable flag rejects writes before provider access',async t=>{
+ for(const flag of [undefined,'','false']){
+  const f=await fixture(t);await f.approve();f.env.PRODUCTION_COMPATIBILITY_REPAIR_ENABLED=flag;
+  f.client.protection=async()=>assert.fail('Runtime authorization must precede provider access');
+  await blocked(f,'install');
+ }
+});
 test('procedure files reproduce exact SQL and an independently fingerprinted immutable journal',()=>{
  assert.equal(a.manifest.sql_sha256['install.sql'],digest(fs.readFileSync(path.join(folder,'install.sql'),'utf8')));assert.equal(journalObjects().length,4);
 });

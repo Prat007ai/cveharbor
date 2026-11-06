@@ -82,7 +82,7 @@ chain, real control row, empty leases/context, integrity results and expected
 readiness response must agree. A changed binding, partial deployment split,
 configuration digest, schema, row count, receipt, queue snapshot or source rejects
 the preceding approval. Raw schema comparisons are repeated inside D1 receipt
-triggers; the final resume UPDATE repeats schema/count/integrity/expiry checks and
+triggers and at the installation boundary; the final resume UPDATE repeats schema/count/integrity/expiry checks and
 the expected held/frozen revision atomically within that statement.
 
 ## Durable receipts and interruption
@@ -104,13 +104,32 @@ verification failure stops. It never sends another mutation to log a failure.
 
 This deliberately replaces the original plan's tentative native-migration runner
 with a narrowly scoped, direct [D1 query API](https://developers.cloudflare.com/api/resources/d1/subresources/database/methods/query/)
-procedure and its own durable journal. It does **not** claim native migration
-rollback semantics or REST multi-statement atomicity. Bootstrap and installation
-can be partial; tests explicitly exercise that model. The application remains
+procedure and its own durable journal. The API documents semicolon-separated SQL
+as one batch. `install.sql` now starts with a scalar database assertion checking
+exactly the two matching intent/start receipts, operation, database-clock approval
+window, raw application schema definitions, all 70 original table counts, eight
+integrity predicates and FK integrity. A false or NULL result deliberately raises
+a malformed-JSON SQL error; returning false or zero rows would not stop installation.
+It is the first statement in the **same request** as all repair DDL and the final
+installed receipt. The executor never pre-executes, splits or retries this batch.
+Thus the earlier start claim is not treated as sufficient authorization to mutate.
+
+[D1 documents implicit transactions](https://developers.cloudflare.com/d1/sql-api/foreign-keys/),
+and [binding batches document failure rollback](https://developers.cloudflare.com/d1/worker-api/d1-database/#batch).
+The latter is specifically the binding API; these sources do not establish a tested
+REST DDL isolation guarantee on our target. No explicit `BEGIN`, `COMMIT`, native
+migration rollback, or local SQLite transaction is used as proof of remote safety.
+The local tests execute without a transaction wrapper and also simulate partial
+execution. The application remains
 fail-closed while recovery control is absent, and the newly inserted control row
 is held/frozen. A receipt's presence alone never proves successful installation or
-resume. Provider execution order/DDL behavior and constraints still need an isolated
-remote rehearsal before production authorization. No transparent retry is permitted.
+resume. **Production execution remains blocked pending an independently approved
+isolated remote rehearsal** of this exact REST batch: precondition errors must stop
+all repair DDL/receipt creation; schema/count drift and expiry after claim must reject;
+concurrent writes and interruption must demonstrate the actual isolation/commit
+behavior. If that contract cannot be established, stop and revise the execution
+mechanism for review. Do not silently substitute another API, split the batch or
+assume a partial failure is safe to retry. No transparent retry is permitted.
 
 | Observed after interruption | Decision |
 | --- | --- |
@@ -127,6 +146,12 @@ automation system. The approval must attest a quiet window excluding these write
 and competing Builds. Worker metadata is rechecked before mutations. Cross-service
 configuration changes cannot be made atomic with D1; unexpected drift stops further
 work. The code never changes Cloudflare settings to manufacture quiescence.
+The new assertion closes the observed claim-to-install drift gap; it does not
+create an advisory lock against privileged external writers. Until remote batch
+isolation is established, exclusion of all such writers remains a required
+operational precondition, not something local tests prove. Snapshot checks are
+schema/count/integrity checks, not row-content hashes: same-count updates satisfying
+integrity predicates are not detected. The quiet window must exclude those too.
 
 ## Approval and evidence formats
 
@@ -138,6 +163,15 @@ protected-environment configuration, **not values configured by this PR**:
   merged workflow SHA; `PRODUCTION_REPAIR_MANIFEST_SHA256` = verified manifest digest.
 - Worker environment only: `PRODUCTION_COMPATIBILITY_REPAIR_ENABLED=true` for the
   separately approved maintenance scope. Do not enable `PRODUCTION_DEPLOYMENTS_ENABLED`.
+  This is a **GitHub Actions configuration variable in `cloudflare-worker-production`**,
+  not a Cloudflare Worker binding and not a repository/organization variable.
+  Do not create a same-name repository/organization fallback. The job condition
+  selects only the repository, main branch, manual event and install/resume operation;
+  it deliberately does not read this environment variable. After the required
+  reviewer gate releases the job, the execution step resolves `vars` and the
+  runtime rejects unset/false values before provider access. A disabled invocation
+  fails closed rather than being silently skipped. This follows
+  [GitHub's environment-variable availability](https://docs.github.com/en/actions/reference/workflows-and-actions/variables#configuration-variable-precedence).
 - Worker environment secrets: `CVEHARBOR_PROD_REPAIR_AUTHORIZATION` and
   `CVEHARBOR_PROD_REPAIR_EVIDENCE`. Existing Cloudflare credentials retain their
   present scope; if insufficient, stop for a separate permission decision.

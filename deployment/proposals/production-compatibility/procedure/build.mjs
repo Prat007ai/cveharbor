@@ -33,7 +33,24 @@ export function sqlFiles(){
  ),0) THEN RAISE(ABORT,'Repair approval expired or database drifted') END;
 END;\n`;
  const installStart=`INSERT INTO ${table}(id,payload) SELECT 'install-started',payload FROM ${table} WHERE id='install-intent';\n`;
- const install=`-- Exactly one submission after a durable install-started claim. Never retry.\n${proposedSQL()}\nINSERT INTO ${table}(id,payload) SELECT 'installed',payload FROM ${table} WHERE id='install-started';\n`;
+ const installPayload=`(SELECT payload FROM ${table} WHERE id='install-started')`;
+ // A SELECT returning zero/false would NOT stop D1. Deliberately evaluate invalid
+ // JSON on a failed predicate so the database raises an error before any DDL.
+ // The scalar expression also fails when a claim is absent (never zero rows).
+ // Keep this and all installation statements in ONE documented REST SQL batch.
+ // Do not send BEGIN/COMMIT or infer remote guarantees from the SQLite tests.
+ const install=`-- Exactly one submission after a durable install-started claim. Never retry.
+-- This database-side assertion must remain first in the SAME SQL batch as DDL.
+SELECT json_extract(CASE WHEN COALESCE((
+ (SELECT COUNT(*) FROM ${table})=2
+ AND ${installPayload}=(SELECT payload FROM ${table} WHERE id='install-intent')
+ AND json_extract(${installPayload},'$.operation')='install'
+ AND CAST(strftime('%s','now') AS INTEGER) BETWEEN json_extract(${installPayload},'$.not_before') AND json_extract(${installPayload},'$.expires_at')
+ AND ${snapshotPredicate(installPayload)}
+),0) THEN 'true' ELSE 'Repair installation boundary rejected' END,'$') AS installation_precondition;
+-- END INSTALLATION PRECONDITION
+${proposedSQL()}
+INSERT INTO ${table}(id,payload) SELECT 'installed',payload FROM ${table} WHERE id='install-started';\n`;
  const resumeStart=`INSERT INTO ${table}(id,payload) SELECT 'resume-started',payload FROM ${table} WHERE id='resume-intent';\n`;
  const resumePayload=`(SELECT payload FROM ${table} WHERE id='resume-started')`;
  const resume=`-- Separate approved operation. A lost response requires SELECT-only reconciliation.

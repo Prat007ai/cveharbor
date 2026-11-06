@@ -52,7 +52,9 @@ jobs:
           REPAIR_GITHUB_TOKEN: ${{ github.token }}
         run: node deployment/proposals/production-compatibility/procedure/execute.mjs
   change:
-    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && vars.PRODUCTION_COMPATIBILITY_REPAIR_ENABLED == 'true' && contains(fromJSON('["install","resume"]'), inputs.operation)
+    # Environment variables exist only after this protected job starts.
+    # execute.mjs rejects an unset/false enable flag before any provider access.
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && contains(fromJSON('["install","resume"]'), inputs.operation)
     needs: validate
     environment: cloudflare-worker-production
     permissions:

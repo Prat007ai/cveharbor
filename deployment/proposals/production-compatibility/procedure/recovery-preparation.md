@@ -66,6 +66,18 @@ counts hashes, recovery key-custody confirmation, independent restore receipt/ha
 verification time and the signature expected by `verifyRecovery`. Capture and
 verification must be completed within the executor's 24-hour freshness requirement.
 
+The separately approved isolated rehearsal must also validate the final installation
+batch through the same REST query interface: inject schema and row-count drift after
+the start claim, advance past approval expiry before submission, interrupt around
+the first assertion and final receipt, and attempt concurrent writes. Record the
+observed ordering, failure propagation and DDL isolation/commit behavior. Confirm
+that a rejected first assertion creates no repair objects or installed receipt.
+Local SQLite tests (including simulated partial writes) do not meet this requirement.
+If the remote contract is not established, production stays blocked and the adapter
+must be revised for review; do not retry an uncertain write. Do not point this fixed
+production executor at the isolated target by changing live inputs: any rehearsal
+adapter/target pins need their own review and scoped approval first.
+
 **No approval is requested now.** A later request must name the private destination,
 source/restore account and exact new resource, export/transfer/restore scope,
 retention, budget and operator/key custody. Creating the test target or restoring

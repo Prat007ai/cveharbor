@@ -152,6 +152,9 @@ export async function execute(env,{client,artifact,now=()=>Math.floor(Date.now()
    stage='install-start';await write(fs.readFileSync(path.join(folder,'install-start.sql'),'utf8'));
    const claimed=await client.select(`SELECT payload FROM ${receiptTable} WHERE id='install-started'`);assert.equal(claimed.length,1);assert.equal(claimed[0].payload,params[0]);
    windowCheck(approval,now(),1800);
+   // The start claim is durable intent, not authorization for later drift.
+   // Submit the generated DB assertion AND DDL in one request, never split,
+   // pre-execute the assertion, or retry even if the provider reports failure.
    stage='schema-install';await write(fs.readFileSync(path.join(folder,'install.sql'),'utf8'));
    stage='installation-verification';const after=await inspect(client,a,{mode:'verify'});assert.deepEqual(after.counts,before.counts);
    report.status='installed-frozen';capture(after);
