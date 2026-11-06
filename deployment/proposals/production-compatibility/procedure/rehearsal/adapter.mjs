@@ -7,6 +7,7 @@ import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {artifacts,account,cases,names,denied,marker,markerSQL,driftSQL,syntheticCounts} from './artifacts.mjs';
 import {privateLog} from './private-log.mjs';
+import {verifyStorage} from './storage-policy.mjs';
 import {folder as productionFolder,target,receiptTable,originalTables,quote,verifyFiles} from '../build.mjs';
 import {digest,canonical,schemaSQL} from '../../../../../scripts/production_schema_baseline.mjs';
 import {integrityChecks} from '../../../../../account-backend/src/release-integrity-checks.js';
@@ -27,6 +28,7 @@ export function authorize(env,p,scenario,phase,now=Date.now()){
  assert.equal(new Set(ids).size,cases.length,'One fresh database per case');
  for(const key of ['private_storage_verified','no_bindings_or_delivery_credentials','external_writers_excluded','cost_and_quota_checked'])assert.equal(p[key],true);
  assert.equal(p.private_destination,target.private_destination);assert.equal(p.max_incremental_usd,5);assert.equal(p.max_total_bytes,1000000000);assert.equal(p.max_rows_written,1000000);
+ verifyStorage(p.storage_evidence,target.private_destination);
  if(!['inventory','reconcile'].includes(phase)){
   assert.equal(env.REHEARSAL_ENABLED,'true');hash(p.resources[scenario].counts_sha256);hash(p.resources[scenario].isolation_sha256);hash(p.recovery_evidence_sha256);
   if(scenario!=='success'){assert.equal(p.resources[scenario].counts_sha256,digest(syntheticCounts()));assert.equal(p.resources[scenario].fixture_sql_sha256,artifacts().manifest.synthetic_sql_sha256);}

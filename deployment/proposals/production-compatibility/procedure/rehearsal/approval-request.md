@@ -1,10 +1,21 @@
 # Proposed isolated rehearsal approvals
 
-Prepared for owner review only. No resource, export, import, remote test, cleanup,
-setting change, merge or deployment has been performed. The current authorization
-covers source preparation and local fictional tests only.
+Cloud allocation/capture is proposed for owner review only. The owner authorized
+local software/folder/certificate preparation and the two narrow exceptions in
+[host-preparation.md](host-preparation.md). No cloud resource, export, import,
+remote test, cleanup, merge or deployment is authorized by that local preparation.
 
 ## Approval A — allocate and capture, then stop
+
+Local preparation is verified in the host record. Approve only the final reviewed
+PR #270 commit and rehearsal manifest digest presented with this request; earlier
+rehearsal approvals are stale. Recipient certificate SHA-256 is
+`a6683aca09909c3e38cc8d2f277499b27df54784db09eb007b07d629f0291807`.
+Retained host evidence SHA-256 is
+`20a6902714929c42533d051e6e499b37a5e363b7c10c810d8e29937cc2d8dfb9`.
+Run within four hours of explicit Approval A, recording the exact UTC start/expiry
+before the first cloud operation. Recheck source, quota, storage/certificate and
+isolation prerequisites first; changed evidence requires reconciliation/reapproval.
 
 Approve creation in account `9706b4d98ad72884e67fd1eb875c8a61` of these eight **new**
 databases, subject to verified existing quota and the combined limits below:
@@ -27,10 +38,20 @@ invalidate the capture plan.
 
 Approve private capture to
 `C:\CVEHarbor-Recovery\production\pr270\<capture-uuid>\`, only after verifying
-disk encryption, owner-only ACLs, no sync/sharing, sufficient capacity and offline
-RSA recovery-key custody. Use the existing authenticated CMS encryption helper,
+owner-only ACLs, verified sync/ordinary-sharing exclusions, trusted administrative
+access, sufficient capacity and the approved passphrase-encrypted RSA key custody
+at `D:\CVEHarbor-Recovery-Keys\pr270`. Disk encryption remains **unverified**;
+the owner explicitly waived it for this PC/test-data rehearsal on November 6.
+The separately approved D: custody exception is online/same-PC, not independent
+or offline recovery. Preserve both facts in the approved storage evidence.
+Use the existing authenticated CMS encryption helper,
 an approved RSA >=3072-bit certificate fingerprint and trusted OpenSSL tooling.
-The required OpenSSL executable is currently unavailable on this host's PATH.
+Use the signature/hash-verified private OpenSSL installation described in the host
+record; prepend its bin directory only in the operator process, not system PATH.
+The public certificate fingerprint and successful fictional decryption receipt
+must be verified before this request is executable. A pending owner prompt is not
+key-custody verification. Inventory temporary plaintext and request exact-file
+cleanup later; do not claim ACLs or deletion protect against raw-disk access.
 No plaintext, credentials or raw bookmark may enter chat, the repository or CI.
 
 Keep every new database unbound to Workers/Pages and free of cron, queue, email,

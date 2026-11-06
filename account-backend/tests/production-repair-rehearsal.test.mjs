@@ -8,14 +8,17 @@ import {artifacts,account,cases,names,denied,marker,syntheticCounts,syntheticSQL
 import {authorize,run} from '../../deployment/proposals/production-compatibility/procedure/rehearsal/adapter.mjs';
 import {target,folder,verifyFiles} from '../../deployment/proposals/production-compatibility/procedure/build.mjs';
 import {digest,canonical,schemaSQL} from '../../scripts/production_schema_baseline.mjs';
+import {verifyStorage,diskException,custodyException} from '../../deployment/proposals/production-compatibility/procedure/rehearsal/storage-policy.mjs';
 const install=fs.readFileSync(path.join(folder,'install.sql'),'utf8');
 const iso=digest({workers:[],pages:[]});
+function storageEvidence(){return {version:1,destination:target.private_destination,scope:'pr270-test-data-rehearsal-on-owner-pc',disk_encryption_status:'unverified',disk_encryption_owner_exception:diskException,key_custody_owner_exception:custodyException,key_directory:'D:\\CVEHarbor-Recovery-Keys\\pr270',key_custody:'passphrase-encrypted-online-same-pc',offline_key_custody_verified:false,independent_custody_copy_verified:false,...Object.fromEntries(['owner_only_acl_verified','sync_exclusion_verified','ordinary_sharing_exclusion_verified','trusted_administrative_access_confirmed','capacity_verified','encrypted_packages_required','temporary_plaintext_inventory_required','key_acl_verified','key_sync_and_sharing_exclusion_verified','passphrase_separate_custody_confirmed','recipient_roundtrip_verified'].map(k=>[k,true])),recipient_fingerprint_sha256:'3'.repeat(64),private_evidence_sha256:'4'.repeat(64)};}
 function fixture(t,scenario='success'){
  const db=baselineDB();db.exec("INSERT INTO users(id,email) VALUES('pr270-fictional','pr270-fictional@example.invalid')");t.after(()=>db.close());
  const time=Math.floor(Date.now()/1000),a=artifacts();
  const resources=Object.fromEntries(cases.map((c,n)=>[c,{name:names[c],uuid:`11111111-1111-4111-8111-${String(n+1).padStart(12,'0')}`,creation_receipt_sha256:'1'.repeat(64),counts_sha256:digest(syntheticCounts()),isolation_sha256:iso,fixture_sql_sha256:a.manifest.synthetic_sql_sha256}]));
  for(const r of Object.values(resources))r.creation_receipt_sha256=digest({account,uuid:r.uuid,name:r.name,created_at:'2026-11-06T00:00:00Z'});
  const p={version:1,approval_id:'22222222-2222-4222-8222-222222222222',source_sha:'a'.repeat(40),account,manifest_sha256:a.sha256,production_manifest_sha256:verifyFiles().sha256,not_before:time-1,expires_at:time+3600,resources,private_storage_verified:true,no_bindings_or_delivery_credentials:true,external_writers_excluded:true,cost_and_quota_checked:true,private_destination:target.private_destination,max_incremental_usd:5,max_total_bytes:1000000000,max_rows_written:1000000,recovery_evidence_sha256:'2'.repeat(64)};
+ p.storage_evidence=storageEvidence();
  const env={CLOUDFLARE_ACCOUNT_ID:account,CLOUDFLARE_API_TOKEN:'fictional-token',REHEARSAL_ENABLED:'true',REHEARSAL_SOURCE_SHA:p.source_sha,REHEARSAL_APPROVAL_SHA256:digest(p)};
  const f={db,p,env,events:[],requests:[],claims:new Set(),failure:null};
  f.journal={append:e=>f.events.push(structuredClone(e)),claim:phase=>{assert.ok(!f.claims.has(phase),'local attempt exists');f.claims.add(phase);}};
@@ -48,6 +51,17 @@ test('isolated artifact pins retain exact reviewed production batch and syntheti
  const a=artifacts();assert.equal(a.manifest.production_manifest_sha256,'4dd094b957dc21421a0daf35f6e99b28cfac42ae60b26dee15bf2b6b12e5b42c');
  assert.equal(digest(install),'2932acfd414c14e850d994b5aa31cc098aea6145ced7f32188c8b9edd18e7c46');assert.equal(digest(syntheticSQL()),a.manifest.synthetic_sql_sha256);
  const db=new DatabaseSync(':memory:');try{db.exec(syntheticSQL());assert.equal(digest(canonical(db.prepare(schemaSQL).all())),target.baseline_schema_sha256);assert.equal(db.prepare('SELECT COUNT(*) n FROM users').get().n,1);}finally{db.close();}
+});
+test('owner exceptions never assert full disk encryption or independent offline custody',()=>{
+ assert.doesNotThrow(()=>verifyStorage(storageEvidence(),target.private_destination));
+ for(const [key,value] of [['disk_encryption_status','verified'],['disk_encryption_owner_exception',null],['scope','production'],['key_custody_owner_exception',null],['key_directory','C:\\other'],['offline_key_custody_verified',true],['independent_custody_copy_verified',true]]){
+  assert.throws(()=>verifyStorage({...storageEvidence(),[key]:value},target.private_destination));
+ }
+ for(const [key,value] of Object.entries(storageEvidence()))if(value===true)assert.throws(()=>verifyStorage({...storageEvidence(),[key]:false},target.private_destination));
+});
+test('missing private storage evidence rejects before any network request',async t=>{
+ const f=fixture(t);delete f.p.storage_evidence;f.repin();await assert.rejects(()=>f.call('inventory'));assert.equal(f.requests.length,0);
+ const g=fixture(t);g.p.storage_evidence.recipient_roundtrip_verified=false;g.repin();await assert.rejects(()=>g.call('claim'));assert.equal(g.requests.length,0);
 });
 test('wrong/unapproved targets, duplicate UUIDs, stale approval, missing recovery and disabled runtime reject before network',async t=>{
  for(const mutate of [f=>f.p.account=target.account,...denied.map(id=>f=>f.p.resources.success.uuid=id),f=>f.p.resources.success.name='unknown',f=>f.p.resources.success.uuid=null,f=>f.p.resources.success.uuid=f.p.resources.schema.uuid,f=>{f.p.not_before-=100;f.p.expires_at=f.p.not_before+1;},f=>delete f.p.recovery_evidence_sha256,f=>f.env.REHEARSAL_ENABLED='false',f=>f.p.source_sha='b'.repeat(40),f=>f.p.manifest_sha256='0'.repeat(64)]){

@@ -58,11 +58,16 @@ customer-only remediation activation, security or environment changes and cleanu
 ## Backup, encryption and restore procedure
 
 Private destination: **`C:\CVEHarbor-Recovery\production\pr270\<capture-uuid>\`**.
-Verify owner-only Windows ACLs, disk encryption, non-synced/non-shared storage,
-capacity and offline recovery-key custody before creating a package. POSIX chmod
-is not proof of Windows ACLs. No such directory, certificate or resource was created
-here. OpenSSL is not available on this Windows host's PATH; use an approved trusted
-OpenSSL installation/operator host before capture. Do not invent custom encryption
+Verify owner-only Windows ACLs, sync/ordinary-sharing exclusions, trusted admin
+access, capacity and passphrase-encrypted key custody before creating a package.
+The owner explicitly waived full disk encryption for this PC/test data on November
+6: record `disk_encryption_status: unverified`, never `verified`. A separate owner
+exception permits online/same-PC key custody at `D:\CVEHarbor-Recovery-Keys\pr270`,
+with a separately held passphrase; this is not independent/offline recovery.
+See [the exact exceptions, residual risks and local evidence](host-preparation.md).
+POSIX chmod is not proof of Windows ACLs. A signed official OpenSSL installation
+is available at `C:\CVEHarbor-Recovery\tools\OpenSSL-4.1.0\bin`; use process-local
+PATH only. Do not invent custom encryption
 or put a private key/passphrase into chat, CI or environment variables.
 
 1. With Approval A, record a fresh Time Travel bookmark and schema/count/integrity
@@ -77,17 +82,19 @@ or put a private key/passphrase into chat, CI or environment variables.
 3. Encrypt with `package.mjs`, which reuses the existing
    `staging/recovery/crypto.mjs` CMS AES-256-GCM / RSA-OAEP SHA-256 implementation.
    It validates an approved RSA >=3072-bit certificate fingerprint and refuses an
-   existing output. The private key stays offline. Example, after approval only:
+   existing output. The private key stays encrypted in the approved D: folder.
+   Example, after approval only:
 
    ```text
-   node deployment/proposals/production-compatibility/procedure/rehearsal/package.mjs <private-package> <new-private-package.cms> <public-certificate.pem> <approved-fingerprint>
+   node deployment/proposals/production-compatibility/procedure/rehearsal/package.mjs <private-package> <new-private-package.cms> <public-certificate.pem> <approved-fingerprint> <private-storage-evidence.json>
    ```
 
    The operator must explicitly confirm `REHEARSAL_PRIVATE_STORAGE_VERIFIED=true`.
    The wrapper does not delete plaintext. Record/read back ciphertext SHA-256, move
-   a separately encrypted custody copy through the approved private channel, then
-   retrieve that retained copy for the restore test. Decrypt with established
-   OpenSSL CMS tooling on the owner-controlled encrypted device, prompting locally
+   a separately encrypted retained copy through the approved private channel, then
+   retrieve that retained copy for the restore test. A same-PC copy is not independent
+   disaster recovery. Decrypt with established OpenSSL CMS tooling on this explicitly
+   excepted owner-controlled PC, prompting locally
    for the key password. Compare the recovered export hash to the approved original.
    A locally generated fresh SQL file is not evidence of backup recovery.
 4. Under Approval B only, inspect the success target's empty schema and isolation,
@@ -136,6 +143,7 @@ resources: one entry for EACH case listed above, containing:
 recovery_evidence_sha256: independently verified private restore receipt hash
 private_destination: C:\CVEHarbor-Recovery\production\pr270
 private_storage_verified / no_bindings_or_delivery_credentials: true
+storage_evidence: complete approved object described in host-preparation.md
 external_writers_excluded / cost_and_quota_checked: true
 max_incremental_usd: 5; max_total_bytes: 1000000000; max_rows_written: 1000000
 ```

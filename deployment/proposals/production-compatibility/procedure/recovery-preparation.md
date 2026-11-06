@@ -1,4 +1,4 @@
-# Recovery preparation proposal — not authorized or executed
+# Recovery preparation — local preparation authorized; cloud actions pending
 
 The old backup is Plan Z. It is not evidence for the new repair and will not be
 restored, overwritten, deleted or moved. Production test data must be preserved.
@@ -18,14 +18,19 @@ not independently to each. Production executor targets and its manifest are unch
   Capture only after an approved quiet window and read-only identity/integrity checks.
 - **Private destination:** owner-controlled administrator machine,
   `C:\CVEHarbor-Recovery\production\pr270\<capture-uuid>\`. This is outside the
-  repository and synced Documents folder. The directory has **not** been created
-  or certified. Before use verify disk encryption, owner-only ACLs, exclusion from
-  sync/public sharing/indexing, enough capacity and a separate encrypted custody copy.
-  If these conditions cannot be demonstrated, stop and revise the destination proposal.
+  repository and observed OneDrive root. Local folder creation and tooling were
+  authorized on November 6. See [host preparation evidence and owner exceptions](rehearsal/host-preparation.md).
+  Full disk encryption is **unverified and explicitly waived by the owner** for
+  this test-data rehearsal on this PC; it is not a verified control. Owner-only
+  ACLs, sync/ordinary-sharing exclusions, trusted administrative access, capacity,
+  encrypted packages and a temporary-plaintext inventory remain mandatory.
 - **Package:** fresh Time Travel bookmark and full schema/data export, private
   metadata/aggregate checks and a manifest. Encrypt to an owner-held RSA >=3072-bit
-  recovery certificate using authenticated CMS AES-256-GCM/RSA-OAEP; keep private
-  keys/passphrases offline. Use a separately controlled Ed25519 attestation key for
+  recovery certificate using authenticated CMS AES-256-GCM/RSA-OAEP. The owner
+  separately authorized passphrase-encrypted key custody at
+  `D:\CVEHarbor-Recovery-Keys\pr270`; this is online, on the same PC, and is **not**
+  an independent/offline copy. Keep the passphrase separately under owner control.
+  Use a separately controlled Ed25519 attestation key for
   the restore result; its public fingerprint must be approved for the protected
   environment. No keys, plaintext, raw bookmarks, signed download URLs or production
   exports enter GitHub artifacts, this repository, chat or public cloud storage.
