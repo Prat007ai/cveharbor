@@ -3,8 +3,8 @@
 import assert from 'node:assert/strict';
 export const developmentException=Object.freeze({
  id:'pr270-disposable-test-data-20261107',
- not_before:Date.parse('2026-11-07T00:00:00Z')/1000,
- expires_at:Date.parse('2026-11-07T04:00:00Z')/1000,
+ not_before:Date.parse('2026-11-06T23:25:00Z')/1000,
+ expires_at:Date.parse('2026-11-07T03:25:00Z')/1000,
  resources:Object.freeze({
   success:'84dab6e9-9344-4e0f-a79a-4f0b43395754',
   schema:'9f106efd-f5ae-4401-8c50-a4c80c53b90e',

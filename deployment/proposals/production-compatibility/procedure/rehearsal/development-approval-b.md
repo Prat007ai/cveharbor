@@ -10,8 +10,11 @@ SQL, recovery-evidence verifier and reviewer/runtime protections are unchanged.
 
 ## Exact proposed scope and window
 
-The earlier window started before this preparation could complete. Propose
-**November 7, 2026, 00:00–04:00 UTC** (November 6, **7–11 p.m. Toronto**).
+The owner approved the 7–11 p.m. Toronto window, then requested an earlier start.
+This timing-only amendment proposes **November 6, 2026, 23:25 UTC through
+November 7, 03:25 UTC** (November 6, **6:25–10:25 p.m. Toronto**).
+The amended source/window need their own exact Approval B timing confirmation;
+the earlier approval and execution records are retained, not silently rewritten.
 Approval is requested to update only the existing rehearsal token's validity to
 these exact times, preserving its secret, isolated account and permissions. No
 change has been made. If the provider cannot preserve it with that validity, stop

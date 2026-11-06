@@ -164,8 +164,8 @@ external_writers_excluded: true (normal policy), OR the exact exception below
 max_incremental_usd: 5; max_total_bytes: 1000000000; max_rows_written: 1000000
 ```
 
-Only for the eight retained PR270 UUIDs and the proposed November 7,
-00:00–04:00 UTC window, an owner-approved payload may instead contain:
+Only for the eight retained PR270 UUIDs and the proposed November 6,
+23:25 UTC–November 7, 03:25 UTC window, an owner-approved payload may instead contain:
 
 ```text
 external_writers_excluded: false
