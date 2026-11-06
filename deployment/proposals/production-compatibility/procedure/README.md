@@ -5,6 +5,10 @@ restored. PR #270 must remain draft.** This procedure supersedes the original
 plan's missing-executor section. It does not deploy code or activate customer-only
 remediation. The original backup remains Plan Z, never an automatic restore source.
 
+The separate [isolated rehearsal adapter and approval procedure](rehearsal/README.md)
+is now prepared for review. It uses its own manifest and explicitly approved new
+UUIDs. It cannot retarget this production executor. No remote rehearsal has run.
+
 ## Verified execution blockers
 
 On November 6, read-only GitHub REST inspection found both

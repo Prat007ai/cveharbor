@@ -3,6 +3,14 @@
 The old backup is Plan Z. It is not evidence for the new repair and will not be
 restored, overwritten, deleted or moved. Production test data must be preserved.
 
+The [isolated rehearsal runbook](rehearsal/README.md) now makes this proposal
+concrete: one restored-copy database plus seven separately named fictional-case
+databases, with no between-case cleanup. Its Approval A covers allocation/capture;
+Approval B requires the resulting exact UUIDs, recovery evidence and final source
+pins before import or test writes. Neither approval has been granted or executed.
+The US$5/1 GB/one-million-write ceilings below apply to the combined eight targets,
+not independently to each. Production executor targets and its manifest are unchanged.
+
 ## Concrete proposed scope
 
 - **Source:** account `aa99b9b15e0492302e4f6484b8d27bc2`, D1
@@ -78,7 +86,7 @@ must be revised for review; do not retry an uncertain write. Do not point this f
 production executor at the isolated target by changing live inputs: any rehearsal
 adapter/target pins need their own review and scoped approval first.
 
-**No approval is requested now.** A later request must name the private destination,
+**The exact proposed approval is in the linked runbook; nothing is executed here.** It names the private destination,
 source/restore account and exact new resource, export/transfer/restore scope,
 retention, budget and operator/key custody. Creating the test target or restoring
 production into it is distinct from production SQL installation, resume and any

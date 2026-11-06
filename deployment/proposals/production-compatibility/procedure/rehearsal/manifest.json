@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "production_manifest_sha256": "4dd094b957dc21421a0daf35f6e99b28cfac42ae60b26dee15bf2b6b12e5b42c",
+  "account": "9706b4d98ad72884e67fd1eb875c8a61",
+  "names": {
+    "success": "cveharbor-prod-repair-restore-pr270",
+    "schema": "cveharbor-pr270-rehearsal-schema",
+    "count": "cveharbor-pr270-rehearsal-count",
+    "expiry": "cveharbor-pr270-rehearsal-expiry",
+    "race": "cveharbor-pr270-rehearsal-race",
+    "rejected": "cveharbor-pr270-rehearsal-rejected",
+    "interrupt": "cveharbor-pr270-rehearsal-interrupt",
+    "lost": "cveharbor-pr270-rehearsal-lost"
+  },
+  "denied": [
+    "46710e51-7ca4-4571-b89c-921b9969de0b",
+    "fac61562-fc31-426d-8032-550aba63b7f6"
+  ],
+  "synthetic_sql_sha256": "f667831723fcec98f18ea29c0364b7291ab9d67050ab6bc445a7a27153eec234",
+  "marker_sql_sha256": "c40bdaaa0bfda021b23dcb179478735f61fddc0cd9de6c57a037a5d3a0ce3ffd",
+  "drift_sql_sha256": {
+    "schema": "ef747b4aeb8f5b5fd8d023643e78a0206953f3412bf450b4a3a5703ebc1f4d62",
+    "count": "123ddfca5b493b6494122f8a12c150502fc70f216b64c720af6abea04f9d2aa2"
+  },
+  "files": {
+    "deployment/proposals/production-compatibility/procedure/rehearsal/artifacts.mjs": "f8c79b68b41a392ecb1ecd1c888f3e166fa0e587b357990d43d0a26441d60a10",
+    "deployment/proposals/production-compatibility/procedure/rehearsal/adapter.mjs": "dcd1bd0d5e24c52c05ef43415002f9e768b4f5f5ec4fc1fc01e51a799b2f9294",
+    "deployment/proposals/production-compatibility/procedure/rehearsal/private-log.mjs": "c3a1715c95718b170239810469d106c9253251d7195245c20e5d999af6c41908",
+    "deployment/proposals/production-compatibility/procedure/rehearsal/package.mjs": "68613b472e48d1e3fc3e612c17c4c3cf2a4a16b91b6b67ae39a148652697a6d6",
+    "staging/recovery/crypto.mjs": "c0a2f68bedd1b4ce699f6aa48389bad1cf140d32f08b93c07465dada45418426"
+  }
+}
