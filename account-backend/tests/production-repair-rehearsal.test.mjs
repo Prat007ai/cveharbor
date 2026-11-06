@@ -9,6 +9,7 @@ import {authorize,run} from '../../deployment/proposals/production-compatibility
 import {target,folder,verifyFiles} from '../../deployment/proposals/production-compatibility/procedure/build.mjs';
 import {digest,canonical,schemaSQL} from '../../scripts/production_schema_baseline.mjs';
 import {verifyStorage,diskException,custodyException} from '../../deployment/proposals/production-compatibility/procedure/rehearsal/storage-policy.mjs';
+import {developmentException} from '../../deployment/proposals/production-compatibility/procedure/rehearsal/development-exception.mjs';
 const install=fs.readFileSync(path.join(folder,'install.sql'),'utf8');
 const iso=digest({workers:[],pages:[]});
 function storageEvidence(){return {version:1,destination:target.private_destination,scope:'pr270-test-data-rehearsal-on-owner-pc',disk_encryption_status:'unverified',disk_encryption_owner_exception:diskException,key_custody_owner_exception:custodyException,key_directory:'D:\\CVEHarbor-Recovery-Keys\\pr270',key_custody:'passphrase-encrypted-online-same-pc',offline_key_custody_verified:false,independent_custody_copy_verified:false,...Object.fromEntries(['owner_only_acl_verified','sync_exclusion_verified','ordinary_sharing_exclusion_verified','trusted_administrative_access_confirmed','capacity_verified','encrypted_packages_required','temporary_plaintext_inventory_required','key_acl_verified','key_sync_and_sharing_exclusion_verified','passphrase_separate_custody_confirmed','recipient_roundtrip_verified'].map(k=>[k,true])),recipient_fingerprint_sha256:'3'.repeat(64),private_evidence_sha256:'4'.repeat(64)};}
@@ -42,11 +43,78 @@ function fixture(t,scenario='success'){
   }
   return new Response(JSON.stringify({success:true,result,...(url.includes('/pages/projects')?{result_info:{page:1,per_page:10,count:0,total_count:0,total_pages:0}}:{})}),{headers:{'cf-ray':'fictional-ray'}});
  };
- f.call=phase=>run(env,p,scenario,phase,{fetcher:f.fetcher,journal:f.journal});
+ f.call=phase=>run(env,p,scenario,phase,{fetcher:f.fetcher,journal:f.journal,clock:()=>f.now??Date.now()});
  f.repin=()=>env.REHEARSAL_APPROVAL_SHA256=digest(p);
  f.writes=()=>f.events.filter(e=>e.kind==='write-intent').length;
  return f;
 }
+// Exact exception identifiers exercised only against fictional in-memory SQLite
+// and the mocked fetcher above. No Cloudflare credential or network is used.
+function developmentFixture(t,scenario='success'){
+ const f=fixture(t,scenario),p=f.p;
+ for(const [c,id]of Object.entries(developmentException.resources)){
+  p.resources[c].uuid=id;
+  p.resources[c].creation_receipt_sha256=digest({account,uuid:id,name:names[c],created_at:'2026-11-06T00:00:00Z'});
+ }
+ p.not_before=developmentException.not_before;p.expires_at=developmentException.expires_at;
+ p.external_writers_excluded=false;
+ p.external_writer_exception={id:developmentException.id,accepted_uncertainty:true,inspected_workflows_do_not_target:true,assessment_sha256:'5'.repeat(64)};
+ f.now=(p.not_before+60)*1000;
+ f.db.function('strftime',(_format,_now)=>String(Math.floor(f.now/1000)));
+ f.repin();return f;
+}
+
+test('development exception records accepted uncertainty and preserves the exact successful batch',async t=>{
+ const f=developmentFixture(t);
+ await f.call('claim');await f.call('install');
+ const r=await f.call('reconcile');assert.equal(r.installed_schema_match,true);assert.equal(r.baseline_counts_match,true);
+ assert.deepEqual(r.control,[{write_hold:1,database_frozen:1,revision:0}]);
+ assert.equal(f.p.external_writers_excluded,false);
+ assert.ok(f.events.some(e=>e.kind==='accepted-external-writer-uncertainty'&&e.external_writers_excluded===false&&e.id===developmentException.id));
+ assert.equal(f.requests.filter(r=>r.options.body&&JSON.parse(r.options.body).sql===install).length,1);
+});
+
+test('development exception rejects missing acceptance, retargeting, window changes and stale authorization before network',async t=>{
+ for(const change of [
+  f=>delete f.p.external_writer_exception,
+  f=>f.p.external_writers_excluded=true,
+  f=>f.p.external_writer_exception.accepted_uncertainty=false,
+  f=>f.p.external_writer_exception.inspected_workflows_do_not_target=false,
+  f=>f.p.external_writer_exception.id='other-rehearsal',
+  f=>delete f.p.external_writer_exception.assessment_sha256,
+  f=>f.p.resources.lost.uuid='11111111-1111-4111-8111-111111111111',
+  f=>{const r=f.p.resources;[r.schema.uuid,r.count.uuid]=[r.count.uuid,r.schema.uuid];},
+  ...denied.map(id=>f=>f.p.resources.success.uuid=id),
+  f=>f.p.account=target.account,
+  f=>f.p.not_before++,f=>f.p.expires_at--,
+  f=>f.now=(f.p.not_before-1)*1000,f=>f.now=(f.p.expires_at+1)*1000,
+  f=>f.p.cost_and_quota_checked=false,f=>f.p.max_rows_written++,
+  f=>f.env.REHEARSAL_ENABLED='false',f=>delete f.p.recovery_evidence_sha256,
+  f=>f.p.no_bindings_or_delivery_credentials=false,f=>f.p.private_storage_verified=false,
+  f=>f.p.source_sha='b'.repeat(40),f=>f.p.manifest_sha256='0'.repeat(64)
+ ]){
+  const f=developmentFixture(t);change(f);f.repin();await assert.rejects(()=>f.call('claim'));assert.equal(f.requests.length,0);
+ }
+ const f=developmentFixture(t);f.p.external_writer_exception.assessment_sha256='6'.repeat(64);
+ await assert.rejects(()=>f.call('claim'));assert.equal(f.requests.length,0,'changed exception invalidates approval pin');
+});
+
+test('development exception still stops on live bindings, snapshot changes and ambiguous writes',async t=>{
+ for(const kind of ['binding','counts','schema']){
+  const f=developmentFixture(t);
+  if(kind==='binding'){
+   const original=f.fetcher;
+   f.fetcher=async(url,options)=>url.includes('/pages/projects')?new Response(JSON.stringify({success:true,result:[{name:'unexpected',deployment_configs:{production:{d1_databases:{DB:{id:f.p.resources.success.uuid}}},preview:{}}}],result_info:{page:1,per_page:10,count:1,total_count:1,total_pages:1}})):original(url,options);
+  }else if(kind==='counts')f.db.exec("INSERT INTO users(id,email) VALUES('unexpected','unexpected@example.invalid')");
+  else f.db.exec('CREATE TABLE unexpected(id TEXT)');
+  await assert.rejects(()=>f.call('claim'));assert.equal(f.writes(),0);
+ }
+ const f=developmentFixture(t,'lost');await f.call('claim');await assert.rejects(()=>f.call('install'));
+ const n=f.writes();f.claims.clear();await assert.rejects(()=>f.call('install'));assert.equal(f.writes(),n);
+ f.now=(f.p.expires_at+1)*1000;
+ assert.equal((await f.call('reconcile')).installed_schema_match,true,'read-only reconciliation remains available after expiry');
+ assert.equal(f.writes(),n);
+});
 test('isolated artifact pins retain exact reviewed production batch and synthetic baseline',()=>{
  const a=artifacts();assert.equal(a.manifest.production_manifest_sha256,'4dd094b957dc21421a0daf35f6e99b28cfac42ae60b26dee15bf2b6b12e5b42c');
  assert.equal(digest(install),'2932acfd414c14e850d994b5aa31cc098aea6145ced7f32188c8b9edd18e7c46');assert.equal(digest(syntheticSQL()),a.manifest.synthetic_sql_sha256);

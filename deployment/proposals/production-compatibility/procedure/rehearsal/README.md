@@ -7,6 +7,12 @@ UUIDs, retained hashes, read-only evidence and remaining owner decisions are in
 SQL write has been authorized or executed. The procedure below describes later
 approved execution, not permission to run it.
 
+The [revised development Approval B request](development-approval-b.md) supersedes
+the earlier demand for exhaustive external-credential exclusion for this one
+disposable-test-data rehearsal. The owner accepts that uncertainty; it is never
+recorded as verified exclusion. The exact replacement window and token change
+remain proposed, and execution still requires separate Approval B.
+
 This operator-run adapter is separate from the fixed production executor. It has
 no create/export/import/delete/reset/deploy/resume API. No GitHub workflow invokes
 it. Preparing this source and running local fictional tests does not authorize a
@@ -153,9 +159,29 @@ recovery_evidence_sha256: independently verified private restore receipt hash
 private_destination: C:\CVEHarbor-Recovery\production\pr270
 private_storage_verified / no_bindings_or_delivery_credentials: true
 storage_evidence: complete approved object described in host-preparation.md
-external_writers_excluded / cost_and_quota_checked: true
+cost_and_quota_checked: true
+external_writers_excluded: true (normal policy), OR the exact exception below
 max_incremental_usd: 5; max_total_bytes: 1000000000; max_rows_written: 1000000
 ```
+
+Only for the eight retained PR270 UUIDs and the proposed November 7,
+00:00–04:00 UTC window, an owner-approved payload may instead contain:
+
+```text
+external_writers_excluded: false
+external_writer_exception:
+  id: pr270-disposable-test-data-20261107
+  accepted_uncertainty: true
+  inspected_workflows_do_not_target: true
+  assessment_sha256: SHA-256 of the actual reviewed private operator assessment
+```
+
+`development-exception.mjs` checks the exact case-to-UUID mapping and window;
+the existing approval digest covers this object and assessment hash. It does not
+grant approval, alter production policy, or waive any other check. Missing or
+mis-scoped exceptions fail before network access. Every exception phase records
+accepted uncertainty with `external_writers_excluded:false` in the private journal.
+Read-only reconciliation remains available after expiry, as under normal policy.
 
 For inventory-only approval, counts/isolation/recovery hashes may be absent;
 UUIDs, creation receipts, source and all other boundaries are still mandatory.
@@ -227,17 +253,23 @@ using the existing unextended read-only token. Multi-page inventories, later-pag
 bindings and failures were tested locally with fictional provider responses.
 Metadata checks detect incomplete results and count/size drift, but pagination is
 not a transactional snapshot: same-count concurrent changes can evade it. Repeat
-inventory before each phase and retain the separate external-writer attestation;
+inventory before each phase and retain the separate external-writer attestation
+or this exact owner-approved development exception;
 absence of bindings does not prove absence of other account credentials or clients.
 
 Before every phase the adapter checks exact DB name/UUID/size, paginated Workers
 settings and active deployed versions, and Pages production/preview configurations.
 Any binding to the target, incomplete inventory or changed approved isolation hash
-blocks mutation. Also independently verify no platform-dispatch scripts, indirect
+blocks mutation. Under the normal policy, also independently verify no platform-dispatch scripts, indirect
 writers, integration tokens, queues, scheduled jobs, restore automation or external
 API clients can mutate it. The API inventory is not proof of credential absence or
 a distributed lock; these exclusions are explicit operator attestations. Do not
 change settings to achieve them without separate approval.
+For the scoped development exception, unidentified credential consumers and the
+unavailable dispatch inventory remain accepted uncertainties, not verified absences.
+Inspected workflows must not target these eight UUIDs, and all live binding and
+unexpected-change checks remain mandatory. A new known writer or unexpected change
+stops work for reconciliation; no service is disabled without approval.
 
 The private append-only JSONL records source approval/case/phase, request times,
 SQL/parameter hashes, HTTP status, CF-Ray and provider usage, plus sanitized schema,

@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url';
 import {artifacts,account,cases,names,denied,marker,markerSQL,driftSQL,syntheticCounts} from './artifacts.mjs';
 import {privateLog} from './private-log.mjs';
 import {verifyStorage} from './storage-policy.mjs';
+import {verifyExternalWriterPolicy} from './development-exception.mjs';
 import {folder as productionFolder,target,receiptTable,originalTables,quote,verifyFiles} from '../build.mjs';
 import {digest,canonical,schemaSQL} from '../../../../../scripts/production_schema_baseline.mjs';
 import {integrityChecks} from '../../../../../account-backend/src/release-integrity-checks.js';
@@ -26,7 +27,8 @@ export function authorize(env,p,scenario,phase,now=Date.now()){
  assert.deepEqual(Object.keys(p.resources).sort(),[...cases].sort());
  const ids=[];for(const c of cases){const r=p.resources[c];uuid(r.uuid);assert.ok(!denied.includes(r.uuid));ids.push(r.uuid);assert.equal(r.name,names[c]);hash(r.creation_receipt_sha256);}
  assert.equal(new Set(ids).size,cases.length,'One fresh database per case');
- for(const key of ['private_storage_verified','no_bindings_or_delivery_credentials','external_writers_excluded','cost_and_quota_checked'])assert.equal(p[key],true);
+ for(const key of ['private_storage_verified','no_bindings_or_delivery_credentials','cost_and_quota_checked'])assert.equal(p[key],true);
+ verifyExternalWriterPolicy(p);
  assert.equal(p.private_destination,target.private_destination);assert.equal(p.max_incremental_usd,5);assert.equal(p.max_total_bytes,1000000000);assert.equal(p.max_rows_written,1000000);
  verifyStorage(p.storage_evidence,target.private_destination);
  if(!['inventory','reconcile'].includes(phase)){
@@ -113,6 +115,7 @@ export async function snapshot(c){
 export async function run(env,p,scenario,phase,{fetcher,clock=Date.now,journal}={}){
  const r=authorize(env,p,scenario,phase,clock());assert.ok(journal?.append&&journal?.claim,'Durable private log required');
  const log=e=>journal.append({approval_id:p.approval_id,scenario,phase,...e});
+ if(p.external_writer_exception)log({kind:'accepted-external-writer-uncertainty',external_writers_excluded:false,...p.external_writer_exception});
  const c=client(env,p,scenario,{fetcher,clock,log});
  const i=await c.isolation();log({kind:'isolation',...i});
  if(phase==='inventory')return i;

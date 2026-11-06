@@ -1,5 +1,11 @@
 # Approval B prerequisites — decisions pending, no execution authority
 
+Historical preparation record. The [revised development request](development-approval-b.md)
+supersedes pending credential/signing setup and exhaustive writer-exclusion
+requirements below. Credential and signing preparation completed; the owner now
+accepts unidentified-consumer uncertainty for these eight test databases. The
+replacement window/token change and Approval B execution remain unapproved.
+
 Approval A completed under reviewed commit `6255b12d89b355f8b4bb203fa1af214abe93edcc`.
 Allocation, export and download must not be repeated. This source update does not
 invalidate the completed A record or replace its UUIDs/packages. It does require

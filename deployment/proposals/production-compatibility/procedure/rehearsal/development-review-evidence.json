@@ -1,0 +1,97 @@
+{
+  "at": "2026-11-06T22:49:00.587Z",
+  "source_parent": "c37362bfc0e46895dd3c2b216393750108553706",
+  "rehearsal_manifest_sha256": "2b03e3d627bccb8f6a1b0a1270e843597e7e1cd1a22d1ce1a015c72a28121614",
+  "production_manifest_sha256": "4dd094b957dc21421a0daf35f6e99b28cfac42ae60b26dee15bf2b6b12e5b42c",
+  "installation_sql_sha256": "2932acfd414c14e850d994b5aa31cc098aea6145ced7f32188c8b9edd18e7c46",
+  "focused_exception_tests": 3,
+  "local_rehearsal_and_production_tests": 55,
+  "failed": 0,
+  "skipped": 0,
+  "test_evidence_sha256": "95dc7bc2a9309418a5243c1e479d47de6dee9fcbba756343d44d6dd2a9e70469",
+  "focused_github_job_check": {
+    "checked_at": "2026-11-06T22:42:00Z",
+    "time_precision": "approximate",
+    "source": "https://api.github.com/repos/Prat007ai/cveharbor/actions/runs?status=in_progress&per_page=100",
+    "result": {
+      "total_count": 0,
+      "workflow_runs": []
+    },
+    "assessment": "No current in-progress run returned by connected GitHub read. Earlier total_count=1 with no details cannot be attributed retrospectively. No active rehearsal-affecting job identified. This is one focused check, not exhaustive historical proof.",
+    "accepted_uncertainty": true,
+    "external_writers_excluded": false
+  },
+  "cost": {
+    "version": 1,
+    "at": "2026-11-06T22:45:18.646Z",
+    "scope": "One retained success import plus seven fictional fixtures and reviewed case matrix; no imports performed",
+    "export_sha256": "f6cc1bf56d48986aad95f890a2fdefdcd1fb5199e215c001598087ac503d92a8",
+    "export_bytes": 45755487,
+    "application_rows": 68419,
+    "application_table_and_index_write_model": 192497,
+    "extra_export_insert_statements": 8,
+    "possible_autoincrement_sequence_updates": 35,
+    "fixture_table_and_index_write_model": 21,
+    "existing_triggers": 24,
+    "trigger_definitions_after_all_export_inserts": true,
+    "trigger_cost_note": "Export creates baseline triggers after all INSERT statements, so those triggers cannot amplify preceding restored-row writes. Synthetic user INSERT has no mutating user trigger. Later case DDL/receipt/trigger work is covered by the separate allowance.",
+    "new_indexes_on_existing_rows": 0,
+    "empty_baseline_schema_bytes": 868352,
+    "empty_installed_schema_bytes": 978944,
+    "planning_allowances": {
+      "combined_billable_rows_written": 500000,
+      "combined_rows_read": 100000000,
+      "combined_remote_bytes": 200000000,
+      "ddl_receipt_and_case_write_reserve": 307439
+    },
+    "storage_estimate_method": "4 × retained SQL bytes + 8 × installed empty schema size, rounded up to 200 MB; conservative planning estimate, not measured D1 allocation.",
+    "storage_estimate_unrounded": 190853500,
+    "pricing": {
+      "source": "https://developers.cloudflare.com/d1/platform/pricing/",
+      "checked_date_utc": "2026-11-06",
+      "usd_per_million_writes": 1,
+      "usd_per_million_reads": 0.001,
+      "usd_per_gb_month": 0.75,
+      "egress_usd": 0,
+      "additional_databases": 0
+    },
+    "gross_estimate_usd_without_included_allowance": 0.75,
+    "gross_at_existing_write_storage_caps_and_read_allowance_usd": 1.85,
+    "expected_incremental_usd_with_last_observed_allowance": 0,
+    "last_usage_observation": "2026-11-06 approximately 19:58 UTC: 1.65k/50M writes, 385.31k/25B reads, 1.14MB/5GB; existing nine databases; not a fresh execution check",
+    "existing_caps": {
+      "usd": 5,
+      "bytes": 1000000000,
+      "billable_rows_written": 1000000
+    },
+    "limitations": [
+      "D1 DDL/import/internal-index billing is estimated; only provider receipts/metrics establish actual billable counts.",
+      "The 200MB model is not a storage guarantee. Check actual target sizes and aggregate usage after import and before each next phase.",
+      "Recheck included allowance at execution. Account usage can change through unrelated permanent staging activity.",
+      "Stop before the next operation if projected total exceeds caps; uncertain write/import outcomes stop for read-only reconciliation without resubmission.",
+      "Storage estimate includes one full month at gross rates; retention beyond one month needs continued cost review, not automatic cleanup."
+    ]
+  },
+  "external_writers_excluded": false,
+  "accepted_uncertainty": true,
+  "exception": {
+    "id": "pr270-disposable-test-data-20261107",
+    "not_before": 1794009600,
+    "expires_at": 1794024000,
+    "resources": {
+      "success": "84dab6e9-9344-4e0f-a79a-4f0b43395754",
+      "schema": "9f106efd-f5ae-4401-8c50-a4c80c53b90e",
+      "count": "5d2e6500-350c-4228-9fe4-48c37f755e7d",
+      "expiry": "39adff8b-b689-45f6-ba3a-c6005ec86b3f",
+      "race": "b098f98c-bb9f-4e50-95fc-177ac7c2582f",
+      "rejected": "3ddd25d0-b5c7-4597-9a4c-02bb9ba1c697",
+      "interrupt": "477cb173-2f84-4786-baa1-6bba51fd7937",
+      "lost": "d7eb48ca-2023-420d-a5d3-c9cc0360b49c"
+    }
+  },
+  "remote_sql_requests": 0,
+  "token_changed": false,
+  "imports": false,
+  "production_changes": false,
+  "approval_B_granted": false
+}
