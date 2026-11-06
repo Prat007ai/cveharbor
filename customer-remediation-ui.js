@@ -13,9 +13,9 @@ function dependent(){
 function assets(){options($('remediationAsset'),['','No specific asset'],inventory.assets.filter(a=>a.environment_id===$('remediationEnvironment').value).map(a=>[a.id,a.name+' · '+a.technology+' '+(a.version||'')]));}
 function defaults(){if(!active)return;const filter=$('remediationCustomerFilter').value;$('remediationCustomer').value=filter==='all'?'':filter;delete $('remediationCustomer').dataset.existing;$('remediationAssociate').checked=false;dependent();}
 function clear(){generation++;active=false;inventory={customers:[],environments:[],assets:[]};$('remediationCustomerPanel')?.remove();$('remediationCustomerFields')?.remove();document.querySelector('[data-customer-column]')?.remove();}
-async function load(features,request,onChange){
+async function load(features,request,onChange,write=request){
  clear();if(!features.shared_records_available)return;
- const token=generation,data=await request('/inventory');if(token!==generation)return;inventory=data;api=request;changed=onChange;active=true;
+ const token=generation,data=await request('/inventory');if(token!==generation)return;inventory=data;api=write;changed=onChange;active=true;
  const panel=make('section');panel.id='remediationCustomerPanel';panel.className='rt-panel rt-customer-filter';
  const filter=select('remediationCustomerFilter','Customer');options(filter.input,['all','All Records'],[...data.customers.map(c=>[c.id,c.name]),['unassigned','Unassigned Records']]);panel.append(filter.wrap);
  $('remediationTracker').prepend(panel);
