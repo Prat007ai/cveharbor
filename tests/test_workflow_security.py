@@ -191,6 +191,26 @@ class SimplifiedReleaseSecurityTests(unittest.TestCase):
    doc=policy.load_workflow((ROOT/'.github/workflows'/filename).read_text())
    next(s for s in doc['jobs']['staging-ready']['steps'] if s.get('run')=='node scripts/require_staging_release.mjs')['if']='false'
    self.assertTrue(policy.validate(doc,filename))
+ def test_each_accounts_upload_requires_live_d1_preflight(self):
+  publishers = [('deploy-worker-code.yml', 'deploy'), ('deploy-account-worker.yml', 'deploy'), ('activate-confirmation-domain.yml', 'activate')]
+  for filename, job in publishers:
+   with self.subTest(filename=filename):
+    doc = policy.load_workflow((ROOT/'.github/workflows'/filename).read_text())
+    steps = doc['jobs'][job]['steps']
+    uploads = [i for i, s in enumerate(steps) if ' deploy' in s.get('run', '') and 'wrangler@' in s['run']]
+    self.assertEqual(len(uploads), 1)
+    index = uploads[0]
+    self.assertGreater(index, 0)
+    guard, upload = steps[index-1:index+1]
+    self.assertEqual(guard['run'], 'node scripts/production_worker_preflight.mjs')
+    self.assertNotIn('if', guard)
+    self.assertNotIn('continue-on-error', guard)
+    self.assertNotIn('if', upload)
+    self.assertIn('--config wrangler.toml', upload['run'])
+    self.assertEqual(upload['working-directory'], 'account-backend')
+    for key in ['CLOUDFLARE_API_TOKEN', 'CLOUDFLARE_ACCOUNT_ID']:
+     self.assertEqual(guard['env'][key], upload['env'][key])
+
  def test_automatic_staging_cannot_gain_production_or_manual_recovery_credentials(self):
   for secret in ['CVEHARBOR_PROD_WORKER_TOKEN','CF_STAGING_RECOVERY_EVIDENCE','CF_STAGING_APPROVED_COMMIT']:
    doc=policy.load_workflow((ROOT/'.github/workflows/cvie-staging.yml').read_text())
