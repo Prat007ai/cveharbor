@@ -6,10 +6,16 @@ import {failure,safeFailure} from './errors.mjs';
 import {d1Client} from '../../scripts/cloudflare_d1.mjs';import {verifyArtifact,output,hash} from './customer-candidate-artifact.mjs';import {schemaState,counts,migrationBatch} from './customer-candidate-schema.mjs';
 import {applyCandidateMigration} from './customer-candidate-migrate.mjs';
 import {verifyLiveApplication} from './routine-live.mjs';
+import {catalogueRelease} from './catalogue-release.mjs';
 const actions=['status','migrate','deploy','resume-frontend'];
 export function authorizeCandidate(env,a){
  assert.equal(env.GITHUB_REPOSITORY,'Prat007ai/cveharbor');assert.equal(env.GITHUB_REF,'refs/heads/main');assert.equal(env.GITHUB_EVENT_NAME,'workflow_dispatch');assert.equal(env.GITHUB_RUN_ATTEMPT,'1','Dispatch a fresh reviewed operation; do not rerun a write job');
  assert.equal(env.CF_STAGING_CANDIDATE_ENABLED,'true');assert.equal(env.SIMPLE_STAGING_ENABLED,'false','Baseline release lane must be disabled');
+ if(env.CANDIDATE_SCOPE==='catalogue-only'){
+  assert.ok(['status','deploy','resume-frontend'].includes(env.CANDIDATE_OPERATION),'Catalogue release does not change the schema');
+  assert.deepEqual(a.catalogueRelease,catalogueRelease,'Missing catalogue release manifest');
+  assert.equal(a.seal.frontend_sha256,catalogueRelease.assets,'Unexpected catalogue asset set');
+ }else assert.equal(a.catalogueRelease,undefined,'Scoped package requires an explicit catalogue deployment');
  if(env.CANDIDATE_OPERATION==='routine-deploy'){
   assert.equal(env.ROUTINE_STAGING_DELIVERY_ENABLED,'true');
   assert.equal(env.GITHUB_WORKFLOW_REF,'Prat007ai/cveharbor/.github/workflows/cvie-staging.yml@refs/heads/main');
@@ -54,6 +60,15 @@ export async function executeCandidate(env,deps={}){
   const inspect=deps.inspect||inspectWorker;
   async function current(name,config,fallback){let r=await inspect(name,config,get,{allowLegacy:true,requireKey:true});if(!r.verified&&fallback)r=await inspect(name,fallback,get,{allowLegacy:true,requireKey:true});assert.ok(r.verified,'Unknown current Worker configuration');assert.match(r.version_id||'',/^[a-f0-9-]{36}$/);return r;}
   const api=await current(TARGET.api,cfg.api,ordinary.api),site=await current(TARGET.site,cfg.site,ordinary.site);step('current_workers',{backend_version:api.version_id,frontend_version:site.version_id});
+  if(a.catalogueRelease && action==='deploy'){
+   stage='catalogue_baseline';
+   assert.equal(api.version_id,catalogueRelease.backendVersion,'Staging backend moved');
+   assert.equal(site.version_id,catalogueRelease.frontendVersion,'Staging frontend moved');
+   step('catalogue_baseline',{commit:catalogueRelease.baseline});
+  }
+  if(a.catalogueRelease && action==='resume-frontend' && site.version_id!==catalogueRelease.frontendVersion){
+   assert.ok((await inspect(TARGET.site,cfg.site,get)).verified,'Staging frontend moved outside the catalogue release');
+  }
   if(routine){
    stage='previous_staging_release';
    for(const [name,config] of [[TARGET.api,cfg.api],[TARGET.site,cfg.site]]){
@@ -106,7 +121,7 @@ export async function executeCandidate(env,deps={}){
    throw Error('Access checks failed'); // GET probe names, fixed routes and HTTP status only; never headers or body.
   }
   step('access_probes');
-  if(routine){stage='live_health';await (deps.live||verifyLiveApplication)(env,transport,step);}
+  if(routine||a.catalogueRelease){stage='live_health';await (deps.live||verifyLiveApplication)(env,transport,step);}
   report.completed=true;record();return report;
  }catch(error){report.failed_check=stage;const safe=safeFailure(error);if(/^[a-z_]{1,80}$/.test(safe.check||''))report.failed_validation=safe.check;report.recovery='dispatch_status_then_review';record();throw Error('Candidate stopped at '+stage+'; no automatic retry or rollback');}
 }
