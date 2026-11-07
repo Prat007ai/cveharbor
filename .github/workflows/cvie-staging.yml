@@ -10,6 +10,11 @@ on:
         type: choice
         options: [none, status, migrate, deploy, resume-frontend, routine-deploy]
         default: none
+      candidate_scope:
+        description: Candidate package to prepare or deploy
+        type: choice
+        options: [standard, catalogue-only]
+        default: standard
       routine_pr:
         description: Merged application PR number (routine-deploy only)
         type: string
@@ -122,8 +127,11 @@ jobs:
           node staging/scripts/dry-run.mjs
       - name: Build and verify inactive customer-remediation candidate locally
         if: inputs.candidate_operation != 'routine-deploy'
+        env:
+          CANDIDATE_SCOPE: ${{ inputs.candidate_scope }}
         run: |
           STAGING_BUILD_PROFILE=customer-remediation-candidate node staging/scripts/build.mjs
+          if [ "$CANDIDATE_SCOPE" = "catalogue-only" ]; then node staging/scripts/catalogue-release.mjs; fi
           node staging/scripts/check-customer-remediation-candidate.mjs
           STAGING_BROWSER_PROFILE=customer-remediation-candidate node staging/scripts/production-browser.mjs
       - name: Seal tested candidate artifacts without credentials
@@ -429,9 +437,12 @@ jobs:
         run: python staging/scripts/routine_review.py
       - name: Reproduce the exact tested candidate without cloud credentials
         if: inputs.candidate_operation != 'routine-deploy'
+        env:
+          CANDIDATE_SCOPE: ${{ inputs.candidate_scope }}
         run: |
           npm install --prefix staging --ignore-scripts --no-package-lock
           STAGING_BUILD_PROFILE=customer-remediation-candidate node staging/scripts/build.mjs
+          if [ "$CANDIDATE_SCOPE" = "catalogue-only" ]; then node staging/scripts/catalogue-release.mjs; fi
           node staging/scripts/customer-candidate-artifact.mjs
       - name: Execute one separately approved operation
         env:
@@ -444,6 +455,7 @@ jobs:
           ROUTINE_STAGING_DELIVERY_ENABLED: ${{ vars.ROUTINE_STAGING_DELIVERY_ENABLED }}
           ROUTINE_PARENT: ${{ fromJSON(needs.prepare.outputs.routine_review || '{}').parent }}
           CANDIDATE_OPERATION: ${{ inputs.candidate_operation }}
+          CANDIDATE_SCOPE: ${{ inputs.candidate_scope }}
           CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
           CANDIDATE_SQL_SHA256: ${{ inputs.candidate_sql_sha256 }}
           CANDIDATE_PROFILE_SHA256: ${{ inputs.candidate_profile_sha256 }}

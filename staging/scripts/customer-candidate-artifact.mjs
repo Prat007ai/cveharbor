@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';import {execFileSync} from 'node:child_pr
 import {verifyCandidateProfile,repository,profilePath} from './customer-remediation-profile.mjs';
 export const output=path.join(repository,'staging/.build/customer-remediation-candidate');
 export const hash=x=>createHash('sha256').update(x).digest('hex');
-export function directoryHash(dir){const items=[];function walk(folder){for(const e of fs.readdirSync(folder,{withFileTypes:true})){assert.ok(!e.isSymbolicLink(),'No artifact symlinks');const f=path.join(folder,e.name);if(e.isDirectory())walk(f);else {assert.ok(e.isFile());items.push(path.relative(dir,f));}}}walk(dir);const h=createHash('sha256');for(const name of items.sort()){h.update(name+'\0');h.update(fs.readFileSync(path.join(dir,name)));h.update('\0');}return h.digest('hex');}
+export function directoryHash(dir){const items=[];function walk(folder){for(const e of fs.readdirSync(folder,{withFileTypes:true})){assert.ok(!e.isSymbolicLink(),'No artifact symlinks');const f=path.join(folder,e.name);if(e.isDirectory())walk(f);else {assert.ok(e.isFile());items.push(path.relative(dir,f).split(path.sep).join('/'));}}}walk(dir);const h=createHash('sha256');for(const name of items.sort()){h.update(name+'\0');h.update(fs.readFileSync(path.join(dir,name)));h.update('\0');}return h.digest('hex');}
 export function artifact(){
  assert.equal(execFileSync('git',['diff','--name-only','HEAD'],{cwd:repository,encoding:'utf8'}).trim(),'','Seal only a clean reviewed checkout');
  const {profile,rows}=verifyCandidateProfile();const manifest=JSON.parse(fs.readFileSync(path.join(output,'manifest.json')));
@@ -24,7 +24,7 @@ assert not pending.strip()
 print(json.dumps(statements))`,],{input:sql,encoding:'utf8'}));
  assert.match(statements.shift(),/PRAGMA foreign_keys=ON;/);assert.ok(statements.every(s=>/^\s*CREATE (TABLE|UNIQUE INDEX|TRIGGER)\b/.test(s)));
  const seal={version:2,site_sha256:hash(fs.readFileSync(path.join(output,'site.mjs'))),commit,profile_sha256:hash(fs.readFileSync(profilePath)),sql_sha256:profile.migration_sha256,schema_sha256:profile.schema_sha256,api_sha256:api,frontend_sha256:directoryHash(path.join(output,'public')),manifest_sha256:hash(fs.readFileSync(path.join(output,'manifest.json')))};
- return {seal,profile,rows,statements,seal_sha256:hash(JSON.stringify(seal))};
+ return {seal,profile,rows,statements,catalogueRelease:manifest.catalogue_release,seal_sha256:hash(JSON.stringify(seal))};
 }
 export function verifyArtifact(){const a=artifact();assert.deepEqual(JSON.parse(fs.readFileSync(path.join(output,'seal.json'))),a.seal);return a;}
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){const a=artifact();fs.writeFileSync(path.join(output,'seal.json'),JSON.stringify(a.seal,null,2)+'\n');console.log(JSON.stringify({commit:a.seal.commit,artifact_sha256:a.seal_sha256,profile_sha256:a.seal.profile_sha256,sql_sha256:a.seal.sql_sha256}));}

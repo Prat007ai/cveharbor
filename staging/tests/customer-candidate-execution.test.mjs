@@ -1,6 +1,7 @@
 import path from 'node:path';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {execFileSync} from 'node:child_process';
 import {resourceManifest} from '../scripts/inventory.mjs';
+import {catalogueRelease} from '../scripts/catalogue-release.mjs';
 import {executeCandidate,authorizeCandidate,candidateConfigs,strictCandidateProbe} from '../scripts/customer-candidate-execute.mjs';
 import {FullDB} from './helpers/full-db.mjs';import {TARGET} from '../target.mjs';import {schemaState,journalDDL,journalTable,migrationName} from '../scripts/customer-candidate-schema.mjs';
 const profile=JSON.parse(fs.readFileSync('deployment/proposals/customer-remediation/candidate-profile.json'));
@@ -118,4 +119,18 @@ test('routine delivery uses only the verified modules and stops before a backlog
    else{await assert.rejects(result);assert.deepEqual(uploads,[]);}
   }finally{f.DB.close();}
  }
+});
+test('catalogue scope binds the package, operation and deployed baseline before upload',async()=>{
+ const env={...envFor('deploy'),CANDIDATE_SCOPE:'catalogue-only'};
+ const scoped={...a,catalogueRelease,seal:{...a.seal,frontend_sha256:catalogueRelease.assets}};
+ assert.equal(authorizeCandidate(env,scoped),'deploy');
+ assert.throws(()=>authorizeCandidate(env,a));
+ assert.throws(()=>authorizeCandidate(envFor('deploy'),scoped));
+ assert.throws(()=>authorizeCandidate({...env,CANDIDATE_OPERATION:'migrate'},scoped));
+ assert.throws(()=>authorizeCandidate(env,{...scoped,seal:{...scoped.seal,frontend_sha256:'0'.repeat(64)}}));
+ const f=fixture();
+ try{
+  await assert.rejects(executeCandidate(env,{...f.deps,artifact:()=>scoped}),/catalogue_baseline/);
+  assert.deepEqual(f.calls,[]);
+ }finally{f.DB.close();}
 });
