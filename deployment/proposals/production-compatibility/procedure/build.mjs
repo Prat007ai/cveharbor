@@ -21,13 +21,12 @@ export function allOf(conditions){
  return `(${allOf(conditions.slice(0,middle))} AND ${allOf(conditions.slice(middle))})`;
 }
 export const noViolations=()=>allOf([...Object.values(integrityChecks),'SELECT COUNT(*) n FROM pragma_foreign_key_check'].map(sql=>`(${sql})=0`));
-export function snapshotPredicate(payload){
+export function snapshotPredicate(payload, countsAlias){
  const schema=`json_array_length(json_extract(${payload},'$.schema_rows'))=(SELECT COUNT(*) FROM (${schemaSQL})) AND NOT EXISTS(SELECT 1 FROM json_each(${payload},'$.schema_rows') e WHERE NOT EXISTS(SELECT 1 FROM sqlite_schema s WHERE s.type=json_extract(e.value,'$.type') AND s.name=json_extract(e.value,'$.name') AND s.tbl_name=json_extract(e.value,'$.tbl_name') AND s.sql=json_extract(e.value,'$.sql')))`;
- return allOf([schema,...originalTables().map(t=>`(SELECT COUNT(*) FROM ${quote(t)})=json_extract(${payload},'$.counts.${t}')`),noViolations()]);
+ return allOf([schema,...originalTables().map(t=>`(SELECT COUNT(*) FROM ${quote(t)})=${countsAlias ? `(${countsAlias}->>${literal(t)})` : `json_extract(${payload},'$.counts.${t}')`}`),noViolations()]);
 }
-// Install receipts with version 2 are bound to the reviewed run instead of a clock.
-// The trigger passes the receipt ID check so a resume receipt cannot use this path.
-function installApprovalTiming(payload, installPhase) {
+// Each caller supplies the allowed version 2 operation at this write boundary.
+function approvalTiming(payload, allowedPhase) {
  const field = key => `json_extract(${payload},'$.${key}')`;
  const type = key => `json_type(${payload},'$.${key}')`;
  return `CASE
@@ -39,12 +38,25 @@ function installApprovalTiming(payload, installPhase) {
   AND CAST(strftime('%s','now') AS INTEGER) BETWEEN ${field('not_before')} AND ${field('expires_at')}
  )
  WHEN ${field('version')}=2 THEN (
-  ${installPhase} AND ${field('operation')}='install'
+  ${allowedPhase}
   AND json_type(${payload},'$.not_before') IS NULL AND json_type(${payload},'$.expires_at') IS NULL
   AND json_type(${payload},'$.run_id')='text' AND length(${field('run_id')})>0 AND ${field('run_id')} NOT GLOB '*[^0-9]*'
   AND json_type(${payload},'$.source_sha')='text' AND length(${field('source_sha')})=40 AND ${field('source_sha')} NOT GLOB '*[^0-9a-f]*'
   AND ${field('database')}=${literal(target.database)}
  ) ELSE 0 END`;
+}
+function resumeBinding(payload) {
+ const field = key => `json_extract(${payload},'$.${key}')`;
+ const installed = key => `(SELECT json_extract(payload,'$.${key}') FROM ${receiptTable} WHERE id='installed')`;
+ const hex = key => `(json_type(${payload},'$.${key}')='text' AND length(${field(key)})=64 AND ${field(key)} NOT GLOB '*[^0-9a-f]*')`;
+ return allOf([
+  `${field('operation')}='resume'`, `${field('account')}=${literal(target.account)}`,
+  `${field('run_id')}!=${installed('run_id')}`, `${field('approval_id')}!=${installed('approval_id')}`,
+  `json_type(${payload},'$.expected_revision')='integer' AND ${field('expected_revision')}=0`,
+  `json_type(${payload},'$.resume_scheduled_work_and_eligible_email')='true'`,
+  hex('install_receipt_sha256'), hex('verification_sha256'), hex('sql_sha256'),
+  `${field('verification_sha256')}=${field('preflight_sha256')}`
+ ]);
 }
 export function sqlFiles(){
  const table=receiptTable;
@@ -57,7 +69,7 @@ export function sqlFiles(){
  (NEW.id='resume-started' AND (SELECT COUNT(*) FROM ${table})=4 AND NEW.payload=(SELECT payload FROM ${table} WHERE id='resume-intent'))
  ) THEN RAISE(ABORT,'Repair sequence or receipt mismatch') END;
  SELECT CASE WHEN NEW.id IN('install-intent','install-started','resume-intent','resume-started') AND NOT COALESCE((
- ${installApprovalTiming('NEW.payload', "NEW.id IN('install-intent','install-started')")} AND
+ ${approvalTiming('NEW.payload', `((NEW.id IN('install-intent','install-started') AND json_extract(NEW.payload,'$.operation')='install') OR (NEW.id IN('resume-intent','resume-started') AND ${resumeBinding('NEW.payload')}))`)} AND
  ${snapshotPredicate('NEW.payload')}
  ),0) THEN RAISE(ABORT,'Repair approval expired or database drifted') END;
 END;\n`;
@@ -74,7 +86,7 @@ SELECT json_extract(CASE WHEN COALESCE((
  (SELECT COUNT(*) FROM ${table})=2
  AND ${installPayload}=(SELECT payload FROM ${table} WHERE id='install-intent')
  AND json_extract(${installPayload},'$.operation')='install'
- AND ${installApprovalTiming(installPayload, "1")}
+ AND ${approvalTiming(installPayload, `1 AND json_extract(${installPayload},'$.operation')='install'`)}
  AND ${snapshotPredicate(installPayload)}
 ),0) THEN 'true' ELSE 'Repair installation boundary rejected' END,'$') AS installation_precondition;
 -- END INSTALLATION PRECONDITION
@@ -88,7 +100,11 @@ UPDATE operations_control SET write_hold=0,database_frozen=0,revision=revision+1
  WHERE id=1 AND write_hold=1 AND database_frozen=1
  AND revision=json_extract((SELECT payload FROM ${table} WHERE id='resume-intent'),'$.expected_revision')
  AND NOT EXISTS(SELECT 1 FROM operations_leases) AND NOT EXISTS(SELECT 1 FROM remediation_finding_write_context)
- AND CAST(strftime('%s','now') AS INTEGER) BETWEEN json_extract(${resumePayload},'$.not_before') AND json_extract(${resumePayload},'$.expires_at')
+ AND (SELECT COUNT(*) FROM ${table})=5
+ AND ${resumePayload}=(SELECT payload FROM ${table} WHERE id='resume-intent')
+ AND (json_extract(${resumePayload},'$.version')=1 OR ${resumePayload}=?1)
+ AND json_extract(${resumePayload},'$.operation')='resume'
+ AND ${approvalTiming(resumePayload, resumeBinding(resumePayload))}
  AND ${snapshotPredicate(resumePayload)};\n`;
  assert.equal(digest(proposedSQL()),target.proposal_sha256);
  return {'bootstrap.sql':bootstrap,'install-start.sql':installStart,'install.sql':install,'resume-start.sql':resumeStart,'resume.sql':resume};
@@ -96,7 +112,7 @@ UPDATE operations_control SET write_hold=0,database_frozen=0,revision=revision+1
 export function journalObjects(){const db=baselineDB();try{db.exec(sqlFiles()['bootstrap.sql']);return canonical(db.prepare("SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE name GLOB 'd1_*' AND sql IS NOT NULL").all());}finally{db.close();}}
 export const sourceFiles=[
  'deployment/proposals/production-compatibility/rehearsal.mjs',
- ...['build.mjs','target.json','execute.mjs','transport.mjs','bootstrap.sql','install-start.sql','install.sql','resume-start.sql','resume.sql'].map(n=>'deployment/proposals/production-compatibility/procedure/'+n),
+ ...['build.mjs','target.json','execute.mjs','transport.mjs','bootstrap.sql','install-start.sql','install.sql','resume-start.sql','resume.sql','pr272-installed-bootstrap.sql','pr272-transition.mjs'].map(n=>'deployment/proposals/production-compatibility/procedure/'+n),
  'scripts/production_schema_baseline.mjs','scripts/sql_schema_tokens.mjs','scripts/build_release_identity.mjs',
  'release/baseline.json','account-backend/migrations/0031_remediation_integrity.sql','account-backend/migrations/0032_recovery_control.sql',
  'account-backend/src/recovery-schema.js','account-backend/src/release-integrity-checks.js',

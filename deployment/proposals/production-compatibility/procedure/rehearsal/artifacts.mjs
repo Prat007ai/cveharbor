@@ -41,13 +41,13 @@ export function journalCorrectionSQL(payload){
   `CAST(strftime('%s','now') AS INTEGER) BETWEEN json_extract(${p},'$.not_before') AND json_extract(${p},'$.expires_at')`,
   `json_array_length(json_extract(${p},'$.previous_journal_rows'))=(SELECT COUNT(*) FROM (${defs}))`,
   `NOT EXISTS(SELECT 1 FROM json_each(${p},'$.previous_journal_rows') e WHERE NOT EXISTS(SELECT 1 FROM sqlite_schema s WHERE s.type=json_extract(e.value,'$.type') AND s.name=json_extract(e.value,'$.name') AND s.tbl_name=json_extract(e.value,'$.tbl_name') AND s.sql=json_extract(e.value,'$.sql')))`,
-  snapshotPredicate(p)
+  snapshotPredicate(p,'a.c')
  ]);
  const bootstrap=sqlFiles()['bootstrap.sql'],start=bootstrap.indexOf(`CREATE TRIGGER ${receiptTable}_sequence `);assert.ok(start>0);
  // Embed the one fully quoted, approved JSON input once. The REST batch uses no
  // parameters shared across statements. Never interpolate unescaped input.
  const input=payload===undefined?'?1':literal(JSON.stringify(payload));
- const result=`-- Success-only correction of the exact empty journal. One submission; reconcile on uncertainty.\nSELECT json_extract(CASE WHEN COALESCE(${checks},0) THEN 'true' ELSE 'Preserved journal correction rejected' END,'$') AS journal_correction_precondition FROM (SELECT ${input} AS p) AS a;\nDROP TRIGGER ${receiptTable}_sequence;\n${bootstrap.slice(start)}`;
+ const result=`-- Success-only correction of the exact empty journal. One submission; reconcile on uncertainty.\nSELECT json_extract(CASE WHEN COALESCE(${checks},0) THEN 'true' ELSE 'Preserved journal correction rejected' END,'$') AS journal_correction_precondition FROM (SELECT p,json_extract(p,'$.counts') AS c FROM (SELECT ${input} AS p)) AS a;\nDROP TRIGGER ${receiptTable}_sequence;\n${bootstrap.slice(start)}`;
  assert.ok(Buffer.byteLength(result)<=100000,'Journal correction request exceeds conservative SQL request bound');
  if(payload!==undefined)assert.ok(Buffer.byteLength(JSON.stringify({sql:result,params:[]}))<=100000,'Serialized correction exceeds conservative request bound');return result;
 }

@@ -147,8 +147,8 @@ assume a partial failure is safe to retry. No transparent retry is permitted.
 | Baseline and no journal | No completed intent demonstrated. Investigate the original attempt; a new approval is required before considering another attempt. |
 | Partial/empty journal, or intent/start without installed receipt | Stop. Unknown/partial installation. No retry or journal deletion tool exists. |
 | Exact installed schema, complete installation receipts, original counts, held/frozen state and all checks pass | Installation verified; service remains held. A lost successful response does not require another write. |
-| Resume intent/start exists but control/history/readiness do not match | Stop. Resume outcome uncertain or incomplete. No automatic retry, receipt completion or re-hold. |
-| Resume start plus matching next revision, recorded reason and healthy readiness | Resume observed. Later normal writes are expected; do not compare them to pre-resume row counts or replay mail. |
+| Resume intent with or without start; held and frozen at revision 0, no control event, and frozen readiness | Report the observed receipt IDs, flags, revision and absence of an event. Release was not observed. Stop; never replay the claim or release. |
+| All five receipts, both flags cleared at revision 1, one matching control event for this approval, and healthy readiness | Resume observed. Later normal writes are expected; do not compare them to pre-resume row counts or replay mail. |
 | Any other schema/receipt/configuration/integrity mismatch | Block all further writes; prepare a specific correction plan. |
 
 GitHub concurrency and journal uniqueness prevent competing copies of this
@@ -194,18 +194,50 @@ protected-environment configuration, **not values configured by this PR**:
 `worker_version`, `application_commit`, `sql_sha256` for that phase,
 `baseline_schema_sha256`, `preflight_sha256`, `recovery_sha256`, and all three attestations:
 `quiet_window_confirmed`, `independent_writers_excluded`, `no_competing_cloudflare_builds`.
-For a new install use `version:2` and omit both `not_before` and `expires_at`.
+For a new install or separate resume use `version:2` and omit both `not_before` and `expires_at`.
 The owner may release the exact pending run when ready; there is no scheduled start
-or 30-minute installation deadline. Keep independent writers and builds inactive
+or 30-minute owner approval deadline. Keep independent writers and builds inactive
 through verification. Provider credential validity and the recovery freshness check
 still apply. A rerun or different commit or database requires fresh authorization.
 Version 1 remains bounded: integer UTC epoch `not_before` and `expires_at` are
-required and at most 30 minutes apart. A resume requires its own version 1 approval.
+required and at most 30 minutes apart. Never reuse the installation approval for resume.
 Resume additionally requires `install_receipt_sha256`, `verification_sha256`,
 `expected_revision`, and explicit `resume_scheduled_work_and_eligible_email:true`.
 The latter covers ordinary eligible work under existing settings, not resending
 uncertain mail. The secret must be prepared for the actual run while its environment
 review is pending; inspect the prepared operation before owner approval.
+
+**Transition from the installation already in production.** [Audit 42337113564](https://github.com/Prat007ai/cveharbor/actions/runs/42337113564) verified the installation from run 42336705578: held, frozen, revision 0. The three original receipt payloads have SHA-256
+`96979b3da359e11184780ed56604ce8fbc2251b9619173b06c89974677105c9d`
+and retain their original procedure manifest, `23b78685f453e0719ffc87cbcbba0f087d8ac85d4e9467041e22297ac9b08b6d`.
+Only these exact historical payloads are accepted under that manifest, and only in the three install slots.
+
+1. Obtain separate owner approval for a **trigger-only change**, for production database
+   `46710e51-7ca4-4571-b89c-921b9969de0b` in account `aa99b9b15e0492302e4f6484b8d27bc2`.
+   The deployed sequence trigger rejects untimed resume. Generate the exact batch offline with
+   `node pr272-transition.mjs <private-exact-installed-payload-file> <new-private-sql-file>`.
+   The reviewed batch is 95,837 UTF-8 bytes, SHA-256
+   `2fb4fefcc68b1027418579fbbb0e9cf9c51eb041ef0a92a287f36036f1eaf92e`.
+   It checks the old journal definitions, original receipt bytes, original table counts, integrity,
+   idle leases and frozen revision. Only after that assertion does it drop and recreate
+   `d1_cveharbor_repair_receipts_sequence`. No table, receipt, other trigger, hold or schedule is changed.
+   Verify target, credentials, inactive independent writers/builds and the full installed state before submission.
+   Submit the whole reviewed batch once. If its outcome is unclear, inspect read-only; do not replay or roll back.
+   No workflow dispatch applies this change automatically.
+2. Independently verify the resulting journal, unchanged installation receipts, schema, counts, integrity,
+   and both hold flags at revision 0. Refresh the queue summary. The journal is part of the fingerprint:
+   never reuse the original audit fingerprint to authorize release. Recheck actual credential expiry
+   and sign fresh recovery evidence for the new manifest with the true capture and restore times.
+3. Request **separate personal GitHub approval** for the first attempt of the exact resume run, commit,
+   database, SQL digest, original installed receipt, new verification fingerprint, revision and release effects.
+   The final conditional UPDATE requires the live run's authorized payload to equal both persisted
+   claims. It releases the two flags and records revision 1; normal schedules do not change.
+   At audit time 12 disclosures and 2 sources were due on the minute schedule; 9 shared scopes on the
+   five-minute schedule. Plugin monitoring runs hourly at :05. Mail had 4 status, 6 FYI and 4 progress
+   entries already sent, with no pending mail or due reminders. Newly eligible deliveries can run at
+   their normal cadence; previously sent mail is not replayed. Stop for fresh review on drift.
+   After release verify the revision and control event, production readiness, API health and ordinary
+   sign-in using an authorized test account; do not replay sends or release again on an ambiguous response.
 
 Recovery secret format: `{ "payload": "<exact JSON string>", "signature": "<base64>" }`.
 The signature is Ed25519 over the exact UTF-8 payload bytes, and `recovery_sha256`

@@ -194,7 +194,7 @@ test('development exception still stops on live bindings, snapshot changes and a
  assert.equal(f.writes(),n);
 });
 test('isolated artifact pins retain exact reviewed production batch and synthetic baseline',()=>{
- const a=artifacts();assert.equal(a.manifest.production_manifest_sha256,'23b78685f453e0719ffc87cbcbba0f087d8ac85d4e9467041e22297ac9b08b6d');
+ const a=artifacts();assert.equal(a.manifest.production_manifest_sha256,'a6684672785bd30ae869258a934908a60d0944eac088d419881c9526878aef6e');
  assert.equal(digest(install),'0342629e85f763837f63332e09b98bf448211a00ce06dc0cfe2f292bf604f8ac');assert.equal(digest(syntheticSQL()),a.manifest.synthetic_sql_sha256);
  const db=new DatabaseSync(':memory:');try{db.exec(syntheticSQL());assert.equal(digest(canonical(db.prepare(schemaSQL).all())),target.baseline_schema_sha256);assert.equal(db.prepare('SELECT COUNT(*) n FROM users').get().n,1);}finally{db.close();}
 });

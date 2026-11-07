@@ -19,15 +19,17 @@
   },
   "files": {
     "deployment/proposals/production-compatibility/rehearsal.mjs": "2f7defa7535aa711a2b8a11b6141ee52d8e1f1aa5b063035761c27f1fdc1d53c",
-    "deployment/proposals/production-compatibility/procedure/build.mjs": "1347d1b263f22f437e3e9a35cac69a843fa1b4a6f512f42f5cbf71d3f1bba295",
+    "deployment/proposals/production-compatibility/procedure/build.mjs": "f418921d7add8d990650560c51a0fb5154b20275a504b6ee7f5c3bce82ace216",
     "deployment/proposals/production-compatibility/procedure/target.json": "40ae42e527584bb9cdc2e7671bb3513db01ad15ace61c26a6915693d6996929b",
-    "deployment/proposals/production-compatibility/procedure/execute.mjs": "67ec936bac844eb7dbb7fd32856bc176f3851b4f24db608cdc90bd421ba599e9",
+    "deployment/proposals/production-compatibility/procedure/execute.mjs": "9b38fa8de188c632d8de4c606f4a22993a2c4ac6dbc5410cd37e95788a87f92a",
     "deployment/proposals/production-compatibility/procedure/transport.mjs": "d769d723cb6e719696e4e33ee92da225923c5e0d45d23f6be827325e5fdafdd2",
-    "deployment/proposals/production-compatibility/procedure/bootstrap.sql": "842fe63920cb55bed339623ca55efeb2508eefb1ea5ce97a6ca80f373038dd91",
+    "deployment/proposals/production-compatibility/procedure/bootstrap.sql": "ef98b09f1e6e68fe5449af77a12246191a28911da20015988353231208bb6708",
     "deployment/proposals/production-compatibility/procedure/install-start.sql": "707fa60b4d59d8eac3636068d06cf7ba6b8652014837a1134d37dc7a028b4450",
     "deployment/proposals/production-compatibility/procedure/install.sql": "0342629e85f763837f63332e09b98bf448211a00ce06dc0cfe2f292bf604f8ac",
     "deployment/proposals/production-compatibility/procedure/resume-start.sql": "704f5e1847c936efa0fa5f5ddb4b8f2c859e7b46bc29156bf164fddb4af96345",
-    "deployment/proposals/production-compatibility/procedure/resume.sql": "e916f8b39ad2ecc93d92507ce7d4cd8a51343ea481aa80a98f70a4dda98a87e1",
+    "deployment/proposals/production-compatibility/procedure/resume.sql": "d829bbd1f8b8466ef387033ef6fc3070ae0ba826bd29e8c071fc7acb1d2d772d",
+    "deployment/proposals/production-compatibility/procedure/pr272-installed-bootstrap.sql": "842fe63920cb55bed339623ca55efeb2508eefb1ea5ce97a6ca80f373038dd91",
+    "deployment/proposals/production-compatibility/procedure/pr272-transition.mjs": "7883603407d0c219c34a263c4fcacf4bf9e6c3817a4c3cd00f0d9e1a479e091b",
     "scripts/production_schema_baseline.mjs": "39b653ccc5f736dc4204da4cb58a3e1568bde0fc6d5a3e95133f853b17412a1c",
     "scripts/sql_schema_tokens.mjs": "c370da6d4de33f6aec062964febb3ee606543e9a2efb826d9b6d3792720265d9",
     "scripts/build_release_identity.mjs": "0d093e1f70470b44043b2ab8630115ba51723ee8e62bb36baac1679a85703cd5",
@@ -40,11 +42,11 @@
     "scripts/check_workflow_security.py": "5eb5dbe46aa12d800c5d748cae28e417c60a79129ef5045f267a1af2f407af0d"
   },
   "sql_sha256": {
-    "bootstrap.sql": "842fe63920cb55bed339623ca55efeb2508eefb1ea5ce97a6ca80f373038dd91",
+    "bootstrap.sql": "ef98b09f1e6e68fe5449af77a12246191a28911da20015988353231208bb6708",
     "install-start.sql": "707fa60b4d59d8eac3636068d06cf7ba6b8652014837a1134d37dc7a028b4450",
     "install.sql": "0342629e85f763837f63332e09b98bf448211a00ce06dc0cfe2f292bf604f8ac",
     "resume-start.sql": "704f5e1847c936efa0fa5f5ddb4b8f2c859e7b46bc29156bf164fddb4af96345",
-    "resume.sql": "e916f8b39ad2ecc93d92507ce7d4cd8a51343ea481aa80a98f70a4dda98a87e1"
+    "resume.sql": "d829bbd1f8b8466ef387033ef6fc3070ae0ba826bd29e8c071fc7acb1d2d772d"
   },
-  "journal_schema_sha256": "5c24bd2d306ea5d63787ffbf805af2bac09ce78aee16c7ccee7c41d5738d4891"
+  "journal_schema_sha256": "b4fa921842087a94217c7720b185361547ae7c7b37228bf79314424e2bb67220"
 }
