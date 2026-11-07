@@ -83,8 +83,9 @@ export async function executeCandidate(env,deps={}){
   assert.equal(state.state,'candidate','Separate migration must complete first');
   const probe=deps.probe||strictCandidateProbe,runner=deps.runner||spawnSync;
   fs.mkdirSync(output,{recursive:true});for(const [name,c] of Object.entries(cfg))fs.writeFileSync(path.join(output,name+'.json'),JSON.stringify(c,null,2)+'\n');
-  function upload(name,dry){stage=name+(dry?'_dry_run':'_upload');step(stage+'_attempt');
-   const r=runner('npx',['--yes','wrangler@4.156.0','deploy','--config',path.join(output,name+'.json'),...(routine?['--no-bundle']:[]),...(dry?['--dry-run']:[])],{cwd:output,encoding:'utf8',timeout:180000,maxBuffer:4*1024*1024,env:{PATH:env.PATH,CI:'true',CLOUDFLARE_ACCOUNT_ID:TARGET.account,CLOUDFLARE_API_TOKEN:env.CF_STAGING_API_TOKEN,CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV:'false',WRANGLER_SEND_METRICS:'false',XDG_CONFIG_HOME:path.join(output,'wrangler-state'),...Object.fromEntries(['HTTPS_PROXY','HTTP_PROXY','NODE_EXTRA_CA_CERTS'].filter(k=>env[k]).map(k=>[k,env[k]]))}});assert.ok(!r.error&&r.status===0,'Upload outcome requires read-only reconciliation');if(!dry)report[name==='api'?'backend_uploaded':'frontend_uploaded']=true;step(stage);}
+  function upload(name,dry){stage=name+(dry?'_dry_run':'_upload');if(!dry)report[name==='api'?'backend_uploaded':'frontend_uploaded']=null;
+   step(stage+'_attempt');
+   const r=runner('npx',['--yes','wrangler@4.156.0','deploy','--config',path.join(output,name+'.json'),...(routine?['--no-bundle']:[]),...(dry?['--dry-run']:[])],{cwd:output,encoding:'utf8',timeout:180000,maxBuffer:4*1024*1024,env:{PATH:env.PATH,CI:'true',CLOUDFLARE_ACCOUNT_ID:TARGET.account,CLOUDFLARE_API_TOKEN:env.CF_STAGING_API_TOKEN,CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV:'false',WRANGLER_SEND_METRICS:'false',XDG_CONFIG_HOME:path.join(output,'wrangler-state'),...Object.fromEntries(['HTTPS_PROXY','HTTP_PROXY','NODE_EXTRA_CA_CERTS'].filter(k=>env[k]).map(k=>[k,env[k]]))}});assert.ok(!r.error&&r.status===0,'Upload outcome requires read-only reconciliation');step(stage);}
   upload('api',true);upload('site',true);
   if(action==='resume-frontend'){
    assert.equal(api.version_id,env.CANDIDATE_BACKEND_VERSION);assert.equal(site.version_id,env.CANDIDATE_FRONTEND_VERSION);const exact=await inspect(TARGET.api,cfg.api,get,{requireKey:true});assert.ok(exact.verified);assert.equal(exact.version_id,env.CANDIDATE_BACKEND_VERSION);step('backend_reused',{version:exact.version_id});
@@ -92,12 +93,12 @@ export async function executeCandidate(env,deps={}){
    // A previous attempt may have uploaded this commit: use explicit resume instead.
    assert.equal((await inspect(TARGET.api,cfg.api,get,{requireKey:true})).verified,false,'Backend already matches; diagnose and explicitly resume');
    assert.equal((await current(TARGET.api,cfg.api,ordinary.api)).version_id,api.version_id,'Backend changed before upload');
-   upload('api',false);const exact=await inspect(TARGET.api,cfg.api,get,{requireKey:true});assert.ok(exact.verified);assert.match(exact.version_id||'',/^[a-f0-9-]{36}$/);step('backend_verified',{version:exact.version_id});
+   upload('api',false);const exact=await inspect(TARGET.api,cfg.api,get,{requireKey:true});assert.ok(exact.verified);assert.match(exact.version_id||'',/^[a-f0-9-]{36}$/);report.backend_uploaded=true;step('backend_verified',{version:exact.version_id});
   }
   stage='backend_runtime';await waitBackend(env,transport,{probe,bootstrap:true,sleep:deps.sleep,now:deps.now,record:e=>{report.backend_runtime=e;record();}});step('backend_runtime');
   assert.equal((await current(TARGET.site,cfg.site,ordinary.site)).version_id,site.version_id,'Frontend changed before upload');
   const siteExact=await inspect(TARGET.site,cfg.site,get);
-  if(action==='resume-frontend'&&siteExact.verified)step('frontend_reused',{version:siteExact.version_id});else {upload('site',false);const exact=await inspect(TARGET.site,cfg.site,get);assert.ok(exact.verified);assert.match(exact.version_id||'',/^[a-f0-9-]{36}$/);step('frontend_verified',{version:exact.version_id});}
+  if(action==='resume-frontend'&&siteExact.verified)step('frontend_reused',{version:siteExact.version_id});else {upload('site',false);const exact=await inspect(TARGET.site,cfg.site,get);assert.ok(exact.verified);assert.match(exact.version_id||'',/^[a-f0-9-]{36}$/);report.frontend_uploaded=true;step('frontend_verified',{version:exact.version_id});}
   assert.equal((await schemaState(DB,a.profile)).state,'candidate');stage='custom_runtime';await probe(env,transport);step('custom_runtime');
   stage='access_probes';const access=await (deps.access||probeAccess)(env,transport);
   if(!access.passed){

@@ -1,4 +1,5 @@
 """Read GitHub release evidence. No workflow dispatch, Cloudflare access or writes."""
+from datetime import datetime
 import hashlib
 import json
 import os
@@ -6,6 +7,7 @@ from pathlib import Path
 import re
 import subprocess
 import tempfile
+from urllib.parse import urlencode
 import zipfile
 
 REPO = 'Prat007ai/cveharbor'
@@ -35,7 +37,30 @@ def pages(route):
     return [r for page in json.loads(subprocess.check_output(
         ['gh', 'api', '--paginate', '--slurp', f'repos/{REPO}/{route}'])) for r in page]
 
-def check_review(pr, reviews, sha):
+def review_participants(pr, commits, activity):
+    head = pr['head']
+    need((head.get('repo') or {}).get('full_name') == REPO, 'Routine review requires a same-repository branch')
+    need(len(commits) == pr['commits'] and commits and commits[-1]['sha'] == head['sha'],
+         'Missing commit attribution for the reviewed PR')
+    participants = {pr['user']['id']}
+    for commit in commits:
+        for role in ('author', 'committer'):
+            identity = (commit.get(role) or {}).get('id')
+            need(isinstance(identity, int) and identity > 0, 'Commit identity unavailable for independent review')
+            participants.add(identity)
+    ref = 'refs/heads/' + head['ref']
+    pushes = [item for item in activity if item['ref'] == ref and item['after'] == head['sha']
+              and item['activity_type'] in {'push', 'force_push', 'branch_creation', 'pr_merge', 'merge_queue_merge'}
+              and datetime.fromisoformat(item['timestamp']) <= datetime.fromisoformat(pr['merged_at'])]
+    need(len(pushes) == 1, 'Missing or ambiguous GitHub activity for the reviewed head')
+    push = pushes[0]
+    actor = (push.get('actor') or {}).get('id')
+    need(isinstance(actor, int) and actor > 0, 'GitHub push identity unavailable')
+    participants.add(actor)
+    return participants, datetime.fromisoformat(push['timestamp'])
+
+
+def check_review(pr, reviews, sha, participants, pushed_at):
     need(pr['merged'] and pr['base']['ref'] == 'main' and pr['merge_commit_sha'] == sha
          and pr['base']['repo']['full_name'] == REPO, 'PR is not the exact merged main release')
     latest = {}
@@ -45,9 +70,9 @@ def check_review(pr, reviews, sha):
     need(not any(r['state'] == 'CHANGES_REQUESTED' for r in latest.values()), 'Outstanding changes requested')
     for r in latest.values():
         if (r['state'] == 'APPROVED' and r['commit_id'] == pr['head']['sha']
-            and r['user']['id'] != pr['user']['id'] and r['user']['type'] == 'User'
+            and r['user']['id'] not in participants and r['user']['type'] == 'User'
             and r['author_association'] in {'OWNER', 'MEMBER', 'COLLABORATOR'}
-            and r['submitted_at'] <= pr['merged_at'] and 'Routine staging: approved' in r['body'].splitlines()):
+            and pushed_at <= datetime.fromisoformat(r['submitted_at']) <= datetime.fromisoformat(pr['merged_at']) and 'Routine staging: approved' in r['body'].splitlines()):
             return r['id']
     raise ValueError('No independent routine approval on the merged PR head before merge')
 
@@ -81,7 +106,10 @@ def review():
     need(re.fullmatch(r'[1-9][0-9]{0,8}', n) and re.fullmatch(r'[a-f0-9]{40}', sha), 'Invalid task reference')
     need(api('commits/main')['sha'] == git('rev-parse', 'HEAD') == sha, 'main moved; review the new release')
     pr = api('pulls/' + n)
-    rid = check_review(pr, pages(f'pulls/{n}/reviews?per_page=100'), sha)
+    activity_query = urlencode({'ref': 'refs/heads/' + pr['head']['ref'], 'per_page': 100})
+    participants, pushed_at = review_participants(pr, pages(f'pulls/{n}/commits?per_page=100'),
+                                                  pages('activity?' + activity_query))
+    rid = check_review(pr, pages(f'pulls/{n}/reviews?per_page=100'), sha, participants, pushed_at)
     parents = git('show', '-s', '--format=%P', sha).split()
     need(len(parents) == 2 and parents[1] == pr['head']['sha'] and
          git('rev-parse', sha+'^{tree}') == git('rev-parse', parents[1]+'^{tree}'), 'Merge tree differs from reviewed head')
