@@ -21,6 +21,8 @@ OLD_VERSION = "e22850fa-851d-453f-8336-5e78d96babdd"
 OLD_DEPLOYMENT = "ec3d1d8c-dae1-4745-b866-ce0eed620db6"
 BACKEND = "80b709c7559a4277d3c791fc0a853aa874104f180ac26c9e5754379f9087f05f"
 ORIGIN = "https://cveharbor.com/"
+# Exact Cloudflare Web Analytics tag observed in the live production page source.
+BEACON_SHA256 = "2283a484de746444a7bb10584615a2435c0c8a5a33b4d68236ad34191078c58d"
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -135,8 +137,19 @@ def await_read(check, timeout=100):
             time.sleep(4)
 
 
+def origin_bytes(path, live):
+    """Remove only the pinned edge-injected script at the final closing body tag."""
+    if path.endswith(".html"):
+        head, body_end, tail = live.rpartition(b"</body>")
+        prefix, start, tag_tail = head.removesuffix(b"\n").rpartition(b"<script")
+        if body_end and start and digest(start + tag_tail) == BEACON_SHA256:
+            return prefix + body_end + tail
+    return live
+
+
 def verify_asset(path, auth, expected):
-    require(digest(protected_asset(path, auth)) == expected, "Post-deployment bytes differ: " + path)
+    live = origin_bytes(path, protected_asset(path, auth))
+    require(digest(live) == expected, "Post-deployment bytes differ: " + path)
 
 
 def publish(out):
@@ -153,9 +166,11 @@ def publish(out):
     paths = sorted(files(before) | LIVE_ONLY)
     hashes = {}
     for path in paths:
-        live = protected_asset(path, auth)
-        if path in CHANGED:
-            require(live == (before / path).read_bytes(), "Live catalogue baseline differs: " + path)
+        live = origin_bytes(path, protected_asset(path, auth))
+        if path in CHANGED or path.endswith(".html"):
+            baseline = (before / path).read_bytes()
+            require(live == baseline, f"Live catalogue baseline differs: {path} "
+                    f"(expected {digest(baseline)}, received {digest(live)})")
         else:
             (after / path).write_bytes(live)
         hashes[path] = digest((after / path).read_bytes())

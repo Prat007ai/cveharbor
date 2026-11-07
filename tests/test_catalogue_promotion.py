@@ -33,14 +33,17 @@ class CataloguePromotionTests(unittest.TestCase):
                     return (root / "after" / path).read_bytes()
                 if path in release.CHANGED:
                     return b"unexpected" if drift else b"before"
+                if path.endswith(".html"):
+                    return b"historical"
                 return b"current live bytes"
 
             def upload(command, check, env):
                 self.assertEqual(command[1:3], ["versions", "upload"])
                 self.assertNotIn("SITE_GATE_PASSWORD", env)
                 self.assertNotIn("routes", json.loads(config.read_text()))
-                for name in paths - release.CHANGED:
+                for name in paths - release.CHANGED - {"workspace/index.html"}:
                     self.assertEqual((root / "after" / name).read_bytes(), b"current live bytes")
+                self.assertEqual((root / "after/workspace/index.html").read_bytes(), b"historical")
                 uploads.append(version)
                 Path(env["WRANGLER_OUTPUT_FILE_PATH"]).write_text(json.dumps({
                     "type": "version-upload", "worker_name": "cveharbor-site", "version": 1, "version_id": version}))
@@ -76,6 +79,18 @@ class CataloguePromotionTests(unittest.TestCase):
 
     def test_changed_baseline_stops_before_upload(self):
         self.assertEqual(self.rehearsal(drift=True), (0, 0))
+
+    def test_only_exact_edge_tag_before_closing_body_is_removed(self):
+        tag = b'<script src="https://analytics.example.test/immutable.js"></script>'
+        page = b"<html><body>Catalogue</body></html>\n"
+        observed = page.replace(b"</body>", tag + b"\n</body>")
+        with patch.object(release, "BEACON_SHA256", release.digest(tag)):
+            self.assertEqual(release.origin_bytes("admin-tools/index.html", observed), page)
+            self.assertEqual(release.origin_bytes("data.js", observed), observed)
+            self.assertEqual(release.origin_bytes("index.html", page), page)
+            for other in (observed.replace(b"immutable", b"other"), page.replace(b"Catalogue", tag + b"Catalogue"),
+                          observed.replace(b"Catalogue", b"Other"), observed.replace(tag, tag + tag)):
+                self.assertNotEqual(release.origin_bytes("index.html", other), page)
 
     def test_only_the_owner_can_approve_the_current_catalogue_run(self):
         for identity, environment, state, allowed in (
