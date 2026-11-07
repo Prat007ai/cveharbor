@@ -194,8 +194,8 @@ test('development exception still stops on live bindings, snapshot changes and a
  assert.equal(f.writes(),n);
 });
 test('isolated artifact pins retain exact reviewed production batch and synthetic baseline',()=>{
- const a=artifacts();assert.equal(a.manifest.production_manifest_sha256,'5313b48ed377c164cc92f5344b26e392e3b8124e0c547da985dc00902d8f7bcc');
- assert.equal(digest(install),'e27b60099e019429c486d61bad2b3baec75ff5632729e52fc6e16ae68d4124ed');assert.equal(digest(syntheticSQL()),a.manifest.synthetic_sql_sha256);
+ const a=artifacts();assert.equal(a.manifest.production_manifest_sha256,'23b78685f453e0719ffc87cbcbba0f087d8ac85d4e9467041e22297ac9b08b6d');
+ assert.equal(digest(install),'0342629e85f763837f63332e09b98bf448211a00ce06dc0cfe2f292bf604f8ac');assert.equal(digest(syntheticSQL()),a.manifest.synthetic_sql_sha256);
  const db=new DatabaseSync(':memory:');try{db.exec(syntheticSQL());assert.equal(digest(canonical(db.prepare(schemaSQL).all())),target.baseline_schema_sha256);assert.equal(db.prepare('SELECT COUNT(*) n FROM users').get().n,1);}finally{db.close();}
 });
 test('owner exceptions never assert full disk encryption or independent offline custody',()=>{

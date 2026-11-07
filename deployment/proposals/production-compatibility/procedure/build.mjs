@@ -29,13 +29,22 @@ export function snapshotPredicate(payload){
 // The trigger passes the receipt ID check so a resume receipt cannot use this path.
 function installApprovalTiming(payload, installPhase) {
  const field = key => `json_extract(${payload},'$.${key}')`;
- return `CASE WHEN ${field('version')}=2 THEN (
+ const type = key => `json_type(${payload},'$.${key}')`;
+ return `CASE
+ WHEN ${type('version')} IS NOT 'integer' THEN 0
+ WHEN EXISTS(SELECT 1 FROM json_each(${payload}) WHERE key IN('version','not_before','expires_at') GROUP BY key HAVING COUNT(*)>1) THEN 0
+ WHEN ${field('version')}=1 THEN (
+  ${type('not_before')}='integer' AND ${type('expires_at')}='integer'
+  AND ${field('expires_at')} - ${field('not_before')} BETWEEN 0 AND 1800
+  AND CAST(strftime('%s','now') AS INTEGER) BETWEEN ${field('not_before')} AND ${field('expires_at')}
+ )
+ WHEN ${field('version')}=2 THEN (
   ${installPhase} AND ${field('operation')}='install'
   AND json_type(${payload},'$.not_before') IS NULL AND json_type(${payload},'$.expires_at') IS NULL
   AND json_type(${payload},'$.run_id')='text' AND length(${field('run_id')})>0 AND ${field('run_id')} NOT GLOB '*[^0-9]*'
   AND json_type(${payload},'$.source_sha')='text' AND length(${field('source_sha')})=40 AND ${field('source_sha')} NOT GLOB '*[^0-9a-f]*'
   AND ${field('database')}=${literal(target.database)}
- ) ELSE CAST(strftime('%s','now') AS INTEGER) BETWEEN ${field('not_before')} AND ${field('expires_at')} END`;
+ ) ELSE 0 END`;
 }
 export function sqlFiles(){
  const table=receiptTable;
