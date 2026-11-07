@@ -1,17 +1,20 @@
-# Isolated D1 rehearsal — Approval A complete; Approval B pending
+# Isolated D1 rehearsal — first import stopped; correction pending approval
 
 The eight databases and two encrypted backup packages now exist under completed
 Approval A. Preserve them; do not allocate, export or download again. The actual
-UUIDs, retained hashes, read-only evidence and remaining owner decisions are in
-[Approval B prerequisites](approval-b-prerequisites.md). No import or rehearsal
-SQL write has been authorized or executed. The procedure below describes later
-approved execution, not permission to run it.
+UUIDs, retained hashes and custody evidence are in
+[Approval B prerequisites](approval-b-prerequisites.md). Approval B was granted
+for the earlier window; its single success import returned SQLITE_TOOBIG and
+read-only reconciliation found an empty target. No case was run. The focused
+[lossless correction and revised request](lossless-import-review.md) records the
+failure, new input checksums, complete local validation and nonzero cost reserve.
+No second remote attempt is authorized by preparing this correction.
 
 The [revised development Approval B request](development-approval-b.md) supersedes
 the earlier demand for exhaustive external-credential exclusion for this one
 disposable-test-data rehearsal. The owner accepts that uncertainty; it is never
-recorded as verified exclusion. The exact replacement window and token change
-remain proposed, and execution still requires separate Approval B.
+recorded as verified exclusion. The existing token's approved 6:25–10:25 p.m.
+Toronto validity is retained; the corrected source/import needs a new Approval B.
 
 This operator-run adapter is separate from the fixed production executor. It has
 no create/export/import/delete/reset/deploy/resume API. No GitHub workflow invokes

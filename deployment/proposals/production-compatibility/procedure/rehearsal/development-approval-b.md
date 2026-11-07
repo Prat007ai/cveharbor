@@ -1,5 +1,13 @@
 # Revised Approval B — development rehearsal only, pending approval
 
+**Current status:** the earlier window was approved and its one success import
+failed with SQLITE_TOOBIG. Read-only reconciliation found no application objects
+or rows. No other imports or cases ran. The [lossless import correction](lossless-import-review.md)
+supersedes the import representation, cost accounting and next approval request
+below; exact targets, remaining operations and production exclusions remain.
+The existing token already matches 6:25–10:25 p.m. Toronto. No token change or
+second remote attempt is authorized by this correction.
+
 The owner states that production holds disposable test data and accepts uncertainty
 about unidentified consumers of existing account credentials for the eight isolated
 rehearsal databases, provided inspected workflows and bindings do not target them.
