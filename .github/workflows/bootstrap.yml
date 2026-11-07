@@ -65,6 +65,8 @@ on:
       - scripts/update_threats.py
   pull_request:
     paths:
+      - scripts/catalogue_package.py
+      - scripts/catalogue_promotion.py
       - .github/workflows/bootstrap.yml
       - site-gate/**
       - cvie.js
@@ -118,6 +120,10 @@ on:
       - inventory-matching.js
   workflow_dispatch:
     inputs:
+      catalogue_commit:
+        description: 'Catalogue only (staging 42411365289). Enter the reviewed main SHA and leave general deploy off.'
+        required: false
+        type: string
       deploy:
         description: 'Publish approved application code now'
         required: false
@@ -154,9 +160,81 @@ jobs:
       - name: Exercise site interactions
         run: node scripts/browser_smoke.mjs && node scripts/threat_health_smoke.mjs && node scripts/customer_security_smoke.mjs && node scripts/customer_score_smoke.mjs && node scripts/cvie_client_smoke.mjs && node scripts/cvie_polling_smoke.mjs && node scripts/product_monitoring_smoke.mjs
 
+  catalogue-check:
+    name: Verify catalogue scope and staging receipt
+    if: (github.event_name == 'pull_request' && github.head_ref == 'release/catalogue-production-publisher' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.catalogue_commit != '')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      issues: read
+      deployments: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify catalogue-only production package
+        run: python scripts/catalogue_package.py "$RUNNER_TEMP/catalogue"
+      - name: Verify signed-in staging acceptance
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/catalogue_promotion.py evidence
+      - name: Check production environment before requesting deployment approval
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CATALOGUE_COMMIT: ${{ inputs.catalogue_commit }}
+          GENERAL_RELEASE: ${{ inputs.deploy }}
+          GLOBAL_PUBLICATION: ${{ vars.PRODUCTION_DEPLOYMENTS_ENABLED }}
+        run: |
+          test "$CATALOGUE_COMMIT" = "$GITHUB_SHA"
+          test "$GENERAL_RELEASE" = false
+          test "$GLOBAL_PUBLICATION" != true
+          test "$GITHUB_RUN_ATTEMPT" = 1
+          python scripts/catalogue_promotion.py preflight
+
+  catalogue-publish:
+    name: Publish the reviewed catalogue to the production site
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.catalogue_commit == github.sha && inputs.deploy == false && github.run_attempt == 1 && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'
+    needs: catalogue-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    concurrency:
+      group: cveharbor-production-release
+      cancel-in-progress: false
+    environment: cloudflare-site-production
+    permissions:
+      contents: read
+      actions: read
+      issues: read
+      deployments: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify catalogue-only production package
+        run: python scripts/catalogue_package.py "$RUNNER_TEMP/catalogue"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Install the pinned site publisher
+        run: npm install --prefix "$RUNNER_TEMP/publisher" --no-audit --no-fund wrangler@4.156.0
+      - name: Publish and verify the production catalogue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WRANGLER: ${{ runner.temp }}/publisher/node_modules/.bin/wrangler
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_SITE_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
+          SITE_GATE_PASSWORD: ${{ secrets.CVEHARBOR_SITE_GATE_PASSWORD }}
+        run: python scripts/catalogue_promotion.py publish "$RUNNER_TEMP/catalogue"
+
   restore:
     name: Prepare restoration artifact for a reviewed pull request
-    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.deploy != true
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.deploy != true && !inputs.catalogue_commit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -238,7 +316,7 @@ jobs:
     name: Publish reviewed application code
     outputs:
       retire_pages_origin: ${{ steps.origin.outputs.retire_pages_origin }}
-    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true))
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true && !inputs.catalogue_commit))
     runs-on: ubuntu-latest
     environment:
       name: cloudflare-site-production

@@ -16,6 +16,7 @@ MANUAL = MAIN + " && github.event_name == 'workflow_dispatch'"
 REPAIR_WRITE = MANUAL + " && contains(fromJSON('[\"install\",\"resume\"]'), inputs.operation)"
 REPAIR_READ = MANUAL + " && contains(fromJSON('[\"preflight\",\"verify\",\"reconcile\"]'), inputs.operation)"
 RELEASE = MAIN + " && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true'"
+CATALOGUE = MANUAL + " && inputs.catalogue_commit == github.sha && inputs.deploy == false && github.run_attempt == 1 && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'"
 PHASE1 = 'd791cb8e84f85f980926dd1e1acfd0b369c64b46'
 STAGING_RELEASE = "github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/codex/cvie-core-phase012' && ((github.event_name == 'workflow_dispatch' && inputs.operation != 'none') || (github.event_name == 'push' && github.run_attempt > 1 && contains(github.event.head_commit.message, '[staging-release]')))"
 RECOVERY_SELECTOR = "((github.event_name == 'workflow_dispatch' && startsWith(inputs.operation, 'recovery-')) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[staging-recovery]')))"
@@ -96,11 +97,21 @@ def validate(doc, filename):
             requested = {m.group().split('.', 1)[1] for m in SENSITIVE.finditer(raw)}
             require(requested <= SECRET_BOUNDARIES.get(env, set()), label + ': credential is outside the environment boundary')
             prefix = REPAIR_WRITE if filename == 'production-compatibility-repair.yml' and name == 'change' else (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) if env == 'cloudflare-cvie-staging' else MANUAL if filename == 'recovery-write-hold.yml' and name == 'control' else MAIN + " && vars.FEED_PUBLICATION_ENABLED == 'true'" if env == 'cloudflare-intelligence-data' else MANUAL if env in {'cloudflare-production-audit','cloudflare-notifications-production','cloudflare-phase1-staging'} else RELEASE
+            if filename == 'bootstrap.yml' and name == 'catalogue-publish':
+                prefix = CATALOGUE
+                require(condition == CATALOGUE and env == 'cloudflare-site-production' and job.get('needs') == 'catalogue-check',
+                        label + ': exact manual catalogue gate and staging receipt required')
+                require(job.get('concurrency') == {'group': 'cveharbor-production-release', 'cancel-in-progress': False},
+                        label + ': shared production release lock required')
+                for step in job['steps']:
+                    if SENSITIVE.search(json.dumps(step)):
+                        require(step.get('run') == 'python scripts/catalogue_promotion.py publish "$RUNNER_TEMP/catalogue"',
+                                label + ': production secrets belong only to the catalogue publisher')
             if requested.intersection({'CVEHARBOR_PROD_REPAIR_AUTHORIZATION','CVEHARBOR_PROD_REPAIR_EVIDENCE'}):
                 require(filename == 'production-compatibility-repair.yml' and name == 'change', label + ': repair evidence is exclusive to the repair executor')
             require(condition == prefix or condition.startswith(prefix + ' && '), label + ': explicit main/event/release guard required')
             # The only extra ORs allowed are bootstrap's grouped event allowlist.
-            require('||' not in condition or env == 'cloudflare-cvie-staging' and filename == 'cvie-staging.yml' and name in {'release','recovery','automatic-staging','customer-candidate'} and condition == (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) or filename == 'bootstrap.yml' and name == 'sync' and condition == RELEASE + " && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true))", label + ': guard may not be bypassed with OR')
+            require('||' not in condition or env == 'cloudflare-cvie-staging' and filename == 'cvie-staging.yml' and name in {'release','recovery','automatic-staging','customer-candidate'} and condition == (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) or filename == 'bootstrap.yml' and name == 'sync' and condition == RELEASE + " && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true && !inputs.catalogue_commit))", label + ': guard may not be bypassed with OR')
         if env == 'cloudflare-cvie-staging':
             require(filename == 'cvie-staging.yml' and name in {'release','recovery','automatic-staging','customer-candidate'} and condition == (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL), label + ': only reviewed staging release caller is permitted')
             require(job.get('needs') == 'prepare', label + ': credential-free preparation required first')

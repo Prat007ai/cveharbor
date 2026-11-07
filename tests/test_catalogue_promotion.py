@@ -1,0 +1,85 @@
+"""Exercise publication ordering and preservation using a temporary site and a fake provider."""
+import json
+import os
+from pathlib import Path
+import sys
+import tempfile
+import unittest
+from contextlib import ExitStack
+from unittest.mock import patch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+import catalogue_promotion as release
+
+
+class CataloguePromotionTests(unittest.TestCase):
+    def rehearsal(self, drift=False):
+        version = "44444444-4444-4444-8444-444444444444"
+        uploads, activations = [], []
+        with tempfile.TemporaryDirectory() as tmp, ExitStack() as stack:
+            root = Path(tmp)
+            config = root / "source/site-gate/wrangler.json"
+            config.parent.mkdir(parents=True)
+            config.write_text(json.dumps({"assets": {}, "routes": []}))
+            paths = release.CHANGED | release.LIVE_ONLY | {"data.js", "workspace/index.html"}
+            for folder in ("before", "after"):
+                for name in paths - release.LIVE_ONLY:
+                    p = root / folder / name
+                    p.parent.mkdir(parents=True, exist_ok=True)
+                    p.write_bytes(folder.encode() if name in release.CHANGED else b"historical")
+
+            def origin(path, auth):
+                if activations:
+                    return (root / "after" / path).read_bytes()
+                if path in release.CHANGED:
+                    return b"unexpected" if drift else b"before"
+                return b"current live bytes"
+
+            def upload(command, check, env):
+                self.assertEqual(command[1:3], ["versions", "upload"])
+                self.assertNotIn("SITE_GATE_PASSWORD", env)
+                self.assertNotIn("routes", json.loads(config.read_text()))
+                for name in paths - release.CHANGED:
+                    self.assertEqual((root / "after" / name).read_bytes(), b"current live bytes")
+                uploads.append(version)
+                Path(env["WRANGLER_OUTPUT_FILE_PATH"]).write_text(json.dumps({
+                    "type": "version-upload", "worker_name": "cveharbor-site", "version": 1, "version_id": version}))
+
+            def provider(path, body=None):
+                if path.startswith("/versions?"):
+                    return {"items": [{"id": version if uploads else release.OLD_VERSION}]}
+                self.assertEqual(path, "/deployments")
+                if body:
+                    self.assertEqual(body["versions"], [{"version_id": version, "percentage": 100}])
+                    activations.append(version)
+                return {"deployments": [{"id": "new" if activations else release.OLD_DEPLOYMENT,
+                                         "versions": [{"version_id": version if activations else release.OLD_VERSION,
+                                                       "percentage": 100}]}]}
+
+            for check in ("approval", "policy", "evidence", "ready", "check_gate"):
+                stack.enter_context(patch.object(release, check))
+            stack.enter_context(patch.dict(os.environ, {"SITE_GATE_PASSWORD": "test-only-placeholder", "HOME": tmp,
+                                "CLOUDFLARE_ACCOUNT_ID": "test", "CLOUDFLARE_API_TOKEN": "test",
+                                "WRANGLER": "wrangler", "GITHUB_RUN_ID": "1"}))
+            stack.enter_context(patch.object(release, "provider", side_effect=provider))
+            stack.enter_context(patch.object(release, "protected_asset", side_effect=origin))
+            stack.enter_context(patch.object(release.subprocess, "run", side_effect=upload))
+            if drift:
+                with self.assertRaisesRegex(RuntimeError, "baseline differs"):
+                    release.publish(root)
+            else:
+                release.publish(root)
+        return len(uploads), len(activations)
+
+    def test_protects_live_feeds_and_activates_once(self):
+        self.assertEqual(self.rehearsal(), (1, 1))
+
+    def test_changed_baseline_stops_before_upload(self):
+        self.assertEqual(self.rehearsal(drift=True), (0, 0))
+
+    def test_deployment_requires_an_independent_approval(self):
+        with patch.dict(os.environ, {"GITHUB_ACTOR": "owner", "GITHUB_RUN_ID": "1"}):
+            for login, env in (("Owner", release.SITE_ENV), ("reviewer", "staging")):
+                review = {"state": "approved", "user": {"login": login}, "environments": [{"name": env}]}
+                with patch.object(release, "github", return_value=[review]), self.assertRaises(RuntimeError):
+                    release.approval()
