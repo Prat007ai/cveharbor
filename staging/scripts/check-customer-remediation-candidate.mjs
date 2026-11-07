@@ -8,6 +8,19 @@ import {verifyCandidateProfile} from './customer-remediation-profile.mjs';
 const {profile}=verifyCandidateProfile(),manifest=JSON.parse(fs.readFileSync('staging/.build/customer-remediation-candidate/manifest.json'));
 assert.deepEqual(manifest.candidate_profile,profile);assert.equal(manifest.schema_sha256,profile.schema_sha256);assert.equal(manifest.application_profile,profile.name);
 assert.equal(manifest.activation,'separate-approval-required');
+const assets='staging/.build/customer-remediation-candidate/public/';
+const cataloguePage=fs.readFileSync(assets+'vulnerabilities/index.html','utf8');
+for(const id of ['technologySelectAll','technologyUnselectAll','technologySelectedCount','technologySaveButton','technologyCustomizeStatus']){
+ assert.ok(cataloguePage.includes(`id="${id}"`),`Candidate catalogue page is missing ${id}`);
+}
+assert.match(cataloguePage,/<script\b[^>]*\bsrc="\/app\.js(?:\?[^"]*)?"/);
+assert.match(cataloguePage,/<link\b[^>]*\bhref="\/styles\.css(?:\?[^"]*)?"/);
+for(const file of ['app.js','styles.css']){
+ const source=fs.readFileSync(file,'utf8').replaceAll('\r\n','\n');
+ const expected=source.replace(/https:\/\/(?:api\.|confirm\.|www\.)?cveharbor\.com/g,TARGET.origin);
+ const generated=fs.readFileSync(assets+file,'utf8').replaceAll('\r\n','\n');
+ assert.ok(generated===expected,`Candidate catalogue must serve the reviewed ${file}`);
+}
 const DB=new FullDB({empty:true}),native=globalThis.fetch;let outbound=0;
 globalThis.fetch=async()=>{outbound++;throw Error('No network permitted');};
 try{

@@ -782,7 +782,8 @@
     $('technologyScanStatus').textContent='';
     if(revision===undefined){statusMessage('Unable to confirm the saved catalogue. Reload before editing.');return false}
     if(revision!==catalogueRevision){statusMessage(conflict);return false}
-    if(personalized&&comparableCatalogue(submission)===comparableCatalogue(personalized)){
+    // Revision "none" displays the defaults before the account has saved or registered them.
+    if(revision!=='none'&&personalized&&comparableCatalogue(submission)===comparableCatalogue(personalized)){
       statusMessage('No changes to save.');return true;
     }
     const submitted=JSON.parse(JSON.stringify(submission)),epoch=catalogueEpoch;

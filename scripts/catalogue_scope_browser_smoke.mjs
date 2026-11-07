@@ -60,6 +60,31 @@ try{
   await page.reload();await page.waitForSelector('.cvie-scope-summary');
   await page.locator('#technologyManageButton').click();
  }
+ const checkedNames=()=>editor.locator('#technologyDefaultChoices input:checked').evaluateAll(
+  inputs=>inputs.map(input=>input.labels[0].textContent).sort()
+ );
+ const defaults=await checkedNames();
+ assert.equal(defaults.length,38);
+ assert.equal(env.DB.sql.prepare("SELECT count(*) AS n FROM user_technology_catalogue WHERE user_id='a'").get().n,0);
+ const registrations=()=>env.DB.sql.prepare(
+  "SELECT p.name FROM cvie_subscriptions s JOIN cvie_products p ON p.id=s.product_id WHERE s.user_id='a' AND s.origin='catalogue'"
+ ).all().map(row=>row.name).sort();
+ assert.deepEqual(registrations(),[]);
+ const firstSaves=[];
+ const observeSave=response=>{
+  if(response.request().method()==='PUT'&&response.url().endsWith('/v1/technology-catalogue'))firstSaves.push(response.status());
+ };
+ page.on('response',observeSave);
+ await save.click();
+ await page.waitForFunction(()=>document.querySelector('#technologyCustomizeStatus').textContent && !document.querySelector('#technologySaveButton').disabled);
+ assert.equal(await status.innerText(),'Catalogue saved. 38 technologies selected.');
+ assert.match(await editor.locator('#technologyScanStatus').innerText(),/vulnerability checks/i);
+ assert.deepEqual(firstSaves,[200]);assert.equal(puts(),1);
+ assert.deepEqual(stored().defaults.slice().sort(),defaults);
+ assert.deepEqual(registrations(),defaults);
+ await reopen();assert.deepEqual(await checkedNames(),defaults);
+ await save.click();await waitStatus('No changes to save.');assert.equal(puts(),1);
+ page.off('response',observeSave);
  await php.uncheck();delaySave=true;await save.click();
  await waitStatus('Saving…');assert.equal(await save.isDisabled(),true);
  await holdSave();await waitStatus('Catalogue saved. 37 technologies selected.');
@@ -80,7 +105,6 @@ try{
  assert.equal(puts(),beforePHP+1);
  assert.equal(stored().defaults.length,37);assert.equal(await count.innerText(),'1 technology selected');
  assert.match(await status.innerText(),/Other selections are still unsaved/);
- assert.match(await editor.locator('#technologyScanStatus').innerText(),/vulnerability checks/i);
 
  await reopen();
  const [custom]=stored().products;assert.equal(custom.version,'8.4.26');
@@ -95,6 +119,8 @@ try{
  assert.equal(stored().products[0].enabled,undefined);
  await save.click();await waitStatus('Catalogue saved. 0 technologies selected.');
  await reopen();assert.equal(await count.innerText(),'0 technologies selected');
+ const afterEmptySave=puts();
+ await save.click();await waitStatus('No changes to save.');assert.equal(puts(),afterEmptySave);
  assert.deepEqual(stored().products,[{...custom,enabled:false}]);assert.equal(await monitorPHP.isChecked(),false);
  await editor.getByRole('button',{name:'Select all',exact:true}).click();
  assert.equal(await editor.locator('input:checked').count(),39);
