@@ -69,6 +69,22 @@ test('an on-demand install can start after a long review and ends frozen with re
  f.env.REPAIR_AUTHORIZATION = JSON.stringify(resume);
  await assert.rejects(() => f.run('resume'));
  assert.equal(f.writes.length, writes);
+ const onDemand = {...resume, version:2};
+ for (const invalid of [{run_id:'1234'}, {source_sha:'b'.repeat(40)}, {sql_sha256:'0'.repeat(64)},
+                        {install_receipt_sha256:'0'.repeat(64)}, {verification_sha256:'0'.repeat(64)},
+                        {expected_revision:1}, {resume_scheduled_work_and_eligible_email:false}, {expires_at:null}]) {
+   f.env.REPAIR_AUTHORIZATION = JSON.stringify({...onDemand,...invalid});
+   await assert.rejects(() => f.run('resume'));
+   assert.equal(f.writes.length,writes);
+ }
+ f.env.REPAIR_AUTHORIZATION = JSON.stringify(onDemand);
+ await assert.rejects(() => execute(f.env,{client:f.client,now:()=>now()+86401}), /recovery-capture-time/);
+ assert.equal(f.writes.length,writes);
+ assert.equal((await execute(f.env,{client:f.client,now:()=>later})).status,'resumed');
+ assert.deepEqual(f.db.prepare(`SELECT payload FROM ${receiptTable} WHERE id IN ('installed','install-started','install-intent') ORDER BY rowid`).all().map(r=>r.payload),receipts.map(r=>r.payload));
+ const completedWrites = f.writes.length;
+ await assert.rejects(() => f.run('resume'));
+ assert.equal(f.writes.length,completedWrites);
 });
 
 test('on-demand authorization rejects a different run, commit, database, or explicit time bound before writing', async t => {

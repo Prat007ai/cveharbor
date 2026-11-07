@@ -29,12 +29,13 @@ class RepairDepthTests(unittest.TestCase):
         script = """
 import {syntheticSQL,markerSQL,previousPlan,rehearsalJournalObjects,journalCorrectionSQL} from './deployment/proposals/production-compatibility/procedure/rehearsal/artifacts.mjs';
 import {sqlFiles,originalTables} from './deployment/proposals/production-compatibility/procedure/build.mjs';
+import {triggerUpgradeTemplate} from './deployment/proposals/production-compatibility/procedure/pr272-transition.mjs';
 import {schemaSQL} from './scripts/production_schema_baseline.mjs';
-console.log(JSON.stringify({baseline:syntheticSQL(),files:sqlFiles(),tables:originalTables(),schemaSQL,markerSQL,previousPlan:previousPlan(),previousJournalRows:rehearsalJournalObjects(true),correction:journalCorrectionSQL()}));
+console.log(JSON.stringify({upgrade:triggerUpgradeTemplate(),baseline:syntheticSQL(),files:sqlFiles(),tables:originalTables(),schemaSQL,markerSQL,previousPlan:previousPlan(),previousJournalRows:rehearsalJournalObjects(true),correction:journalCorrectionSQL()}));
 """
         cls.artifacts = json.loads(subprocess.check_output(['node', '--input-type=module', '-e', script], cwd=ROOT, encoding='utf-8'))
 
-    def database(self, old=False):
+    def database(self, old=False, installed_272=False):
         db = sqlite3.connect(':memory:', isolation_level=None)
         db.row_factory = sqlite3.Row
         self.addCleanup(db.close)
@@ -43,14 +44,17 @@ console.log(JSON.stringify({baseline:syntheticSQL(),files:sqlFiles(),tables:orig
             db.setlimit(getattr(sqlite3, 'SQLITE_LIMIT_' + name), limit)
             self.assertEqual(db.getlimit(getattr(sqlite3, 'SQLITE_LIMIT_' + name)), limit)
         sql = (PROCEDURE / 'rehearsal/previous-bootstrap.sql').read_text(encoding='utf-8') if old else self.artifacts['files']['bootstrap.sql']
+        if installed_272:
+            sql = (PROCEDURE / "pr272-installed-bootstrap.sql").read_text(encoding="utf-8")
         self.run_sql(db, sql)
         return db
 
-    def run_sql(self, db, sql):
+    def run_sql(self, db, sql, payload=None):
         # No wrapping transaction: a failing first assertion must stop before DDL.
         for statement in statements(sql):
             self.assertLessEqual(len(statement.encode()), 100000)
-            db.execute(statement)
+            # Version 2 requires the approved live run's payload at release.
+            db.execute(statement, (payload,) if '?1' in statement else ())
 
     def snapshot(self, db, operation='install'):
         now = int(time.time())
@@ -95,6 +99,48 @@ console.log(JSON.stringify({baseline:syntheticSQL(),files:sqlFiles(),tables:orig
         self.assertEqual(db.execute('SELECT COUNT(*) FROM operations_events').fetchone()[0], 1)
         self.assertEqual(db.execute('SELECT COUNT(*) FROM d1_cveharbor_repair_receipts').fetchone()[0], 5)
         self.assertEqual(list(db.execute('PRAGMA foreign_key_check')), [])
+
+    def test_upgrade_installed_272_then_release_only_exact_separate_run(self):
+        db = self.database(installed_272=True)
+        table = 'd1_cveharbor_repair_receipts'
+        install = dict(self.snapshot(db), run_id='90001')
+        self.claim(db, install)
+        self.run_sql(db, self.artifacts['files']['install.sql'])
+        raw = json.dumps(install)
+        rows = lambda: [tuple(r) for r in db.execute('SELECT rowid,* FROM '+table+' ORDER BY rowid')]
+        original = rows()
+        target = json.loads((PROCEDURE/'target.json').read_text())
+        resume = dict(self.snapshot(db, 'resume'), version=2, run_id='90002', approval_id='fictional-resume',
+                      database=target['database'], account=target['account'], source_sha='a'*40,
+                      verification_sha256='c'*64, preflight_sha256='c'*64,
+                      install_receipt_sha256=hashlib.sha256(raw.encode()).hexdigest(),
+                      sql_sha256=hashlib.sha256(self.artifacts['files']['resume.sql'].encode()).hexdigest(),
+                      resume_scheduled_work_and_eligible_email=True)
+        del resume['not_before'], resume['expires_at']
+        with self.assertRaises(sqlite3.IntegrityError):
+            self.insert(db, 'resume-intent', resume)
+        upgrade = self.artifacts['upgrade']
+        with self.assertRaises(sqlite3.OperationalError):
+            self.run_sql(db, upgrade, raw+' ')
+        self.assertEqual(rows(), original)
+        self.run_sql(db, upgrade, raw)
+        with self.assertRaises(sqlite3.OperationalError):
+            self.run_sql(db, upgrade, raw)
+        self.assertEqual(rows(), original)
+        self.frozen(db)
+        for change in (dict(run_id=install['run_id']), dict(expected_revision=1),
+                       dict(resume_scheduled_work_and_eligible_email=False), dict(expires_at=None)):
+            with self.subTest(change=change), self.assertRaises(sqlite3.IntegrityError):
+                self.insert(db, 'resume-intent', dict(resume, **change))
+        self.insert(db, 'resume-intent', resume)
+        self.run_sql(db, self.artifacts['files']['resume-start.sql'])
+        release = self.artifacts['files']['resume.sql']
+        self.run_sql(db, release, json.dumps(dict(resume, run_id='90003')))
+        self.frozen(db)
+        db.create_function('strftime', 2, lambda *_: str(install['expires_at'] + 7200))
+        self.run_sql(db, release, json.dumps(resume))
+        self.assertEqual(tuple(db.execute('SELECT write_hold,database_frozen,revision FROM operations_control').fetchone()), (0, 0, 1))
+        self.assertEqual(rows()[:3], original)
 
     def test_invalid_approval_formats_rejected_at_each_install_boundary(self):
         now = 1800000000

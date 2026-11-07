@@ -5,6 +5,7 @@ import {verify as verifySignature,createPublicKey} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {folder,target,receiptTable,quote,originalTables,verifyFiles,journalObjects} from './build.mjs';
 import {transport} from './transport.mjs';
+import {installed272} from './pr272-transition.mjs';
 import {canonical,digest,schemaSQL} from '../../../../scripts/production_schema_baseline.mjs';
 import {integrityChecks} from '../../../../account-backend/src/release-integrity-checks.js';
 import {backendIdentity} from '../../../../scripts/build_release_identity.mjs';
@@ -21,9 +22,9 @@ export function authorizeContext(env,a){
  return env.REPAIR_OPERATION;
 }
 function checkApprovalTiming(a, now) {
- // Version 2 is an installation approved for a single live GitHub run.
+ // Version 2 is approved for one operation in a single live GitHub run.
  // Reject ambiguous inputs rather than ignoring an explicit time restriction.
- if (a.version === 2 && a.operation === 'install') {
+ if (a.version === 2) {
    assert.ok(!Object.hasOwn(a, 'not_before') && !Object.hasOwn(a, 'expires_at'));
    return;
  }
@@ -95,7 +96,7 @@ export function verifyRecovery(env, approval, snapshot, now) {
 export function authorizeWrite(env, a, s, now) {
   requireCheck('authorization-missing', env.REPAIR_AUTHORIZATION);
   const p = checked('authorization-json', () => JSON.parse(env.REPAIR_AUTHORIZATION));
-  requireCheck('authorization-version', p?.version === 1 || (p?.version === 2 && env.REPAIR_OPERATION === 'install'));
+  requireCheck('authorization-version', p?.version === 1 || p?.version === 2);
   requireCheck('authorization-id', matches(uuidPattern, p.approval_id));
   requireCheck('authorization-operation', p.operation === env.REPAIR_OPERATION);
   requireCheck('authorization-source', p.source_sha === env.GITHUB_SHA);
@@ -114,6 +115,7 @@ export function authorizeWrite(env, a, s, now) {
   requireCheck('authorization-independent-writers', p.independent_writers_excluded === true);
   requireCheck('authorization-competing-builds', p.no_competing_cloudflare_builds === true);
   if (p.operation === 'resume') {
+    requireCheck('resume-journal-upgrade-required', !s.requires_trigger_upgrade);
     requireCheck('resume-state', s.state === 'installed-frozen');
     requireCheck('resume-install-receipt', p.install_receipt_sha256 === s.install_receipt_sha256);
     requireCheck('resume-revision', Object.is(p.expected_revision, s.control.revision));
@@ -144,7 +146,13 @@ function receiptSequence(rows,a){
  assert.ok(rows.length>=1&&rows.length<=5,'Empty/unknown receipt journal requires investigation');
  const ordered=ids.slice(0,rows.length).map(id=>rows.find(r=>r.id===id));assert.ok(ordered.every(Boolean),'Partial receipt sequence');
  const payloads=ordered.map(r=>JSON.parse(r.payload));
- for(const p of payloads){assert.equal(p.manifest_sha256,a.sha256);for(const k of ['account','database','worker_version','application_commit'])assert.equal(p[k],target[k]);hash(p.authorization_sha256);hash(p.recovery_sha256);hash(p.preflight_sha256);assert.match(p.source_sha,/^[a-f0-9]{40}$/);}
+ for(const [index,p] of payloads.entries()){
+  if(index<3 && p.manifest_sha256===installed272.manifest){
+   assert.equal(digest(ordered[index].payload),installed272.receipt,'Historical installation receipt changed');
+   assert.equal(p.source_sha,installed272.source);assert.equal(p.run_id,installed272.run);
+  }else assert.equal(p.manifest_sha256,a.sha256);
+  for(const k of ['account','database','worker_version','application_commit'])assert.equal(p[k],target[k]);hash(p.authorization_sha256);hash(p.recovery_sha256);hash(p.preflight_sha256);assert.match(p.source_sha,/^[a-f0-9]{40}$/);
+ }
  for(let i=1;i<Math.min(3,ordered.length);i++)assert.equal(ordered[i].payload,ordered[0].payload,'Installation receipt mismatch');
  if(ordered.length>=4)assert.equal(payloads[3].install_receipt_sha256,digest(ordered[2].payload),'Resume receipt not bound to installation');
  if(ordered.length===5)assert.equal(ordered[4].payload,ordered[3].payload,'Resume receipt mismatch');
@@ -156,10 +164,16 @@ export async function inspect(client,a,{mode='preflight'}={}){
  const journal=await client.select("SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE name GLOB 'd1_*' AND sql IS NOT NULL ORDER BY type,name");
  const dataCounts=await counts(client),checks=await integrity(client),queues=await queueSnapshot(client);
  let state='baseline',receipts=[],control=null,install_receipt_sha256=null,install_run_id=null,install_approval_id=null;
+ const journal_schema_sha256=digest(canonical(journal));
+ const requires_trigger_upgrade=journal_schema_sha256===installed272.journal;
  if(journal.length){
-  assert.deepEqual(canonical(journal),journalObjects(),'Unknown/partial operational journal');
+  if(!requires_trigger_upgrade)assert.deepEqual(canonical(journal),journalObjects(),'Unknown/partial operational journal');
   receipts=await client.select('SELECT id,payload FROM '+receiptTable+' ORDER BY id');const {ordered,payloads}=receiptSequence(receipts,a);
   install_run_id=payloads[0].run_id;install_approval_id=payloads[0].approval_id;
+  if(requires_trigger_upgrade){
+   assert.equal(ordered.length,3,'Unexpected receipt sequence for original production trigger');
+   assert.equal(digest(ordered[2].payload),installed272.receipt,'Unexpected installed receipt for original production trigger');
+  }
   if(receipts.length<3)state='uncertain-install';
   else{
    assert.equal(schema_sha256,target.installed_schema_sha256,'Installed schema drift/partial execution');
@@ -184,14 +198,14 @@ export async function inspect(client,a,{mode='preflight'}={}){
  if(state==='resumed')assert.deepEqual(readiness,{http:200,ready:true,held:false,schema_ready:true},'Resumed readiness verification failed');
  const after=await client.observe();assert.deepEqual(after,metadata,'Worker configuration drifted during inspection');
  if(mode==='verify')assert.equal(state,'installed-frozen','Verification requires a completed frozen installation');
- const report={state,metadata,schema_sha256,counts:dataCounts,integrity:checks,queues,control,install_receipt_sha256,install_run_id,install_approval_id,receipts_sha256:digest(receipts),readiness};
+ const report={state,metadata,schema_sha256,counts:dataCounts,integrity:checks,queues,control,install_receipt_sha256,install_run_id,install_approval_id,receipts_sha256:digest(receipts),readiness,...(journal.length?{journal_schema_sha256,requires_trigger_upgrade}:{})};
  return {...report,fingerprint:digest(report),schema_rows};
 }
 export async function execute(env,{client,artifact,now=()=>Math.floor(Date.now()/1000),record=()=>{}}={}){
  const a=artifact||verifyFiles(),operation=authorizeContext(env,a);client??=transport(env);
  const report={operation,status:'stopped',write_requests:0,automatic_retry:false,automatic_resume:false,automatic_rollback:false};
  const persist=()=>record(structuredClone(report));let stage='preflight';
- const capture=s=>Object.assign(report,{state:s.state,fingerprint:s.fingerprint,install_receipt_sha256:s.install_receipt_sha256,queues:s.queues,checked_at:new Date(now()*1000).toISOString(),metadata:s.metadata,schema_sha256:s.schema_sha256,counts_sha256:digest(s.counts),control:s.control});
+ const capture=s=>Object.assign(report,{state:s.state,fingerprint:s.fingerprint,install_receipt_sha256:s.install_receipt_sha256,queues:s.queues,checked_at:new Date(now()*1000).toISOString(),metadata:s.metadata,schema_sha256:s.schema_sha256,counts_sha256:digest(s.counts),control:s.control,journal_schema_sha256:s.journal_schema_sha256,requires_trigger_upgrade:s.requires_trigger_upgrade});
  // Any failure, including report persistence, halts. Never submit another write
  // to record a failure: a write response might have been lost after commit.
  const write=async(sql,params=[])=>{report.status='write-outcome-unknown';report.write_requests++;persist();return client.writeOnce(sql,params);};
@@ -236,12 +250,14 @@ export async function execute(env,{client,artifact,now=()=>Math.floor(Date.now()
    stage='installation-verification';const after=await inspect(client,a,{mode:'verify'});assert.deepEqual(after.counts,before.counts);
    report.status='installed-frozen';capture(after);
   }else{
+   stage='resume-recovery-freshness';verifyRecovery(env,approval,second,now());
    stage='resume-intent';await write(`INSERT INTO ${receiptTable}(id,payload) VALUES('resume-intent',?)`,params);
    assert.deepEqual(await client.observe(),before.metadata);checkApprovalTiming(approval,now());
    stage='resume-start';await write(fs.readFileSync(path.join(folder,'resume-start.sql'),'utf8'));
    const claimed=await client.select(`SELECT payload FROM ${receiptTable} WHERE id='resume-started'`);assert.equal(claimed.length,1);assert.equal(claimed[0].payload,params[0]);
    checkApprovalTiming(approval,now());
-   stage='resume';await write(fs.readFileSync(path.join(folder,'resume.sql'),'utf8'));
+   stage='resume-recovery-freshness';verifyRecovery(env,approval,second,now());
+   stage='resume';await write(fs.readFileSync(path.join(folder,'resume.sql'),'utf8'),params);
    stage='resume-verification';const after=await inspect(client,a);assert.equal(after.state,'resumed');report.status='resumed';capture(after);
   }
   persist();return report;
