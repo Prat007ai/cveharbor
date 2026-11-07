@@ -3,5 +3,15 @@
   "account_id": "9706b4d98ad72884e67fd1eb875c8a61",
   "permanent_database": {"name": "cveharbor-accounts-staging", "uuid": "fac61562-fc31-426d-8032-550aba63b7f6"},
   "disposable_databases": [],
+  "retained_rehearsal_databases": [
+    {"name": "cveharbor-prod-repair-restore-pr270", "uuid": "84dab6e9-9344-4e0f-a79a-4f0b43395754"},
+    {"name": "cveharbor-pr270-rehearsal-schema", "uuid": "9f106efd-f5ae-4401-8c50-a4c80c53b90e"},
+    {"name": "cveharbor-pr270-rehearsal-count", "uuid": "5d2e6500-350c-4228-9fe4-48c37f755e7d"},
+    {"name": "cveharbor-pr270-rehearsal-expiry", "uuid": "39adff8b-b689-45f6-ba3a-c6005ec86b3f"},
+    {"name": "cveharbor-pr270-rehearsal-race", "uuid": "b098f98c-bb9f-4e50-95fc-177ac7c2582f"},
+    {"name": "cveharbor-pr270-rehearsal-rejected", "uuid": "3ddd25d0-b5c7-4597-9a4c-02bb9ba1c697"},
+    {"name": "cveharbor-pr270-rehearsal-interrupt", "uuid": "477cb173-2f84-4786-baa1-6bba51fd7937"},
+    {"name": "cveharbor-pr270-rehearsal-lost", "uuid": "d7eb48ca-2023-420d-a5d3-c9cc0360b49c"}
+  ],
   "intelligence_bucket": "cveharbor-intelligence-staging"
 }

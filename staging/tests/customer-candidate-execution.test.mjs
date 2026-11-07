@@ -1,5 +1,6 @@
 import path from 'node:path';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {execFileSync} from 'node:child_process';
+import {resourceManifest} from '../scripts/inventory.mjs';
 import {executeCandidate,authorizeCandidate,candidateConfigs,strictCandidateProbe} from '../scripts/customer-candidate-execute.mjs';
 import {FullDB} from './helpers/full-db.mjs';import {TARGET} from '../target.mjs';import {schemaState,journalDDL,journalTable,migrationName} from '../scripts/customer-candidate-schema.mjs';
 const profile=JSON.parse(fs.readFileSync('deployment/proposals/customer-remediation/candidate-profile.json'));
@@ -14,6 +15,18 @@ function fixture(){const DB=new FullDB({empty:true});DB.sql.exec(fs.readFileSync
  const calls=[],reports=[];let api=false,site=false;
  const deps={DB,artifact:()=>a,record:r=>reports.push(r),preflight:async()=>({account:TARGET.account,read_only_checks_passed:true,blockers:[],checks:['service_token_matches_policy_and_client','token_permission_grants','token_staging_only_scope'].map(name=>({name,status:'pass'}))}),get:async route=>route==='/workers/domains'?[{hostname:'cveharborstage.com',service:TARGET.site}]:route.includes('bookmark')?{bookmark:'private-do-not-log'}:route.endsWith('/managed')?{enabled:false}:route.endsWith('/custom')?{domains:[]}:{name:'cveharbor-intelligence-staging'},inspect:async(name,config,get,options={})=>({verified:!!options.allowLegacy||(name===TARGET.api?api:site),version_id:name===TARGET.api?(api?backend:old):(site?frontend:old)}),apply:async batch=>{calls.push('migration');DB.sql.exec(journalDDL);DB.sql.exec('BEGIN');try{for(const s of batch)DB.sql.exec(s.sql);DB.sql.prepare('INSERT INTO '+journalTable+'(name) VALUES(?)').run(migrationName(profile));DB.sql.exec('COMMIT');}catch(e){DB.sql.exec('ROLLBACK');throw e;}},runner:(cmd,args)=>{const isAPI=args.some(v=>path.basename(v)==='api.json'),dry=args.includes('--dry-run');calls.push((isAPI?'api':'site')+(dry?'-dry':'-upload'));if(!dry){if(isAPI)api=true;else site=true;}return {status:0};},probe:async()=>{calls.push('ready');return {};},access:async()=>({passed:true})};
  return {DB,deps,calls,reports,setBackend:()=>{api=true;}};}
+test('retained rehearsal databases cannot be selected as a deployment target or Worker binding',()=>{
+ const env=envFor('deploy');
+ const {permanent_database,retained_rehearsal_databases}=resourceManifest();
+ const {api,site}=candidateConfigs(env);
+ assert.deepEqual(api.d1_databases.map(db=>[db.binding,db.database_name,db.database_id]),[['DB',permanent_database.name,permanent_database.uuid]]);
+ assert.equal(site.d1_databases,undefined);
+ for(const {uuid} of retained_rehearsal_databases){
+  const wrongTarget={...env,CF_STAGING_D1_DATABASE_ID:uuid};
+  assert.throws(()=>authorizeCandidate(wrongTarget,a),assert.AssertionError);
+  assert.throws(()=>candidateConfigs(wrongTarget),/Approved permanent account\/database required/);
+ }
+});
 test('explicit migration preserves records, appends one receipt, and reconciles success without repeating DDL',async()=>{const f=fixture();try{const before=f.DB.sql.prepare('SELECT * FROM remediations').all();await executeCandidate(envFor('migrate'),f.deps);assert.deepEqual(f.DB.sql.prepare('SELECT * FROM remediations').all(),before);assert.equal((await schemaState(f.DB,profile)).state,'candidate');await executeCandidate(envFor('migrate'),f.deps);assert.deepEqual(f.calls,['migration']);assert.ok(f.reports.at(-1).completed);}finally{f.DB.close();}});
 test('wrong approvals, source, checksums, reruns, automatic events and production targets fail before network',async()=>{for(const patch of [{GITHUB_EVENT_NAME:'push'},{GITHUB_RUN_ATTEMPT:'2'},{SIMPLE_STAGING_ENABLED:'true'},{CF_STAGING_CANDIDATE_ENABLED:'false'},{CF_STAGING_ACCOUNT_ID:'0'.repeat(32)},{CF_STAGING_D1_DATABASE_ID:TARGET.productionDatabase},{CANDIDATE_COMMIT:'c'.repeat(40)},{CANDIDATE_SQL_SHA256:'c'.repeat(64)},{CANDIDATE_PROFILE_SHA256:'c'.repeat(64)},{CANDIDATE_ARTIFACT_SHA256:'c'.repeat(64)},{CANDIDATE_PREPARED_SHA256:'c'.repeat(64)},{CF_STAGING_CANDIDATE_MIGRATION_APPROVAL:''},{CANDIDATE_CONFIRMATION:''},{CF_STAGING_CANDIDATE_WRITE_WINDOW:''}])await assert.rejects(executeCandidate({...envFor('migrate'),...patch},{artifact:()=>a,preflight:()=>assert.fail('No network before authorization')}));assert.throws(()=>authorizeCandidate({...envFor('deploy'),CF_STAGING_CANDIDATE_DEPLOYMENT_APPROVAL:envFor('migrate').CF_STAGING_CANDIDATE_MIGRATION_APPROVAL},a));});
 test('deployment requires separate migration then backend readiness before frontend upload',async()=>{const f=fixture();try{await assert.rejects(executeCandidate(envFor('deploy'),f.deps));assert.deepEqual(f.calls,[]);await executeCandidate(envFor('migrate'),f.deps);f.calls.length=0;await executeCandidate(envFor('deploy'),f.deps);assert.deepEqual(f.calls,['api-dry','site-dry','api-upload','ready','site-upload','ready']);assert.ok(f.reports.at(-1).completed);}finally{f.DB.close();}});
