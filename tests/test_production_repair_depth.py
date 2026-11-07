@@ -54,7 +54,7 @@ console.log(JSON.stringify({baseline:syntheticSQL(),files:sqlFiles(),tables:orig
 
     def snapshot(self, db, operation='install'):
         now = int(time.time())
-        return dict(operation=operation, not_before=now-1, expires_at=now+600,
+        return dict(version=1, operation=operation, not_before=now-1, expires_at=now+600,
                     schema_rows=[dict(r) for r in db.execute(self.artifacts['schemaSQL'])],
                     counts={t: db.execute('SELECT COUNT(*) FROM "'+t+'"').fetchone()[0] for t in self.artifacts['tables']},
                     approval_id='fictional-depth-test', expected_revision=0)
@@ -95,6 +95,72 @@ console.log(JSON.stringify({baseline:syntheticSQL(),files:sqlFiles(),tables:orig
         self.assertEqual(db.execute('SELECT COUNT(*) FROM operations_events').fetchone()[0], 1)
         self.assertEqual(db.execute('SELECT COUNT(*) FROM d1_cveharbor_repair_receipts').fetchone()[0], 5)
         self.assertEqual(list(db.execute('PRAGMA foreign_key_check')), [])
+
+    def test_invalid_approval_formats_rejected_at_each_install_boundary(self):
+        now = 1800000000
+        for boundary in ('receipt', 'install'):
+            db = self.database()
+            db.create_function('strftime', 2, lambda *_: str(now))
+            base = dict(self.snapshot(db), not_before=now-10, expires_at=now+10)
+            cases = {
+                'missing version': {k: v for k, v in base.items() if k != 'version'},
+                'version 3': dict(base, version=3),
+                '3610 seconds': dict(base, expires_at=now+3600),
+                '1801 seconds': dict(base, expires_at=now+1791),
+                'expired': dict(base, not_before=now-10, expires_at=now-1),
+                'future': dict(base, not_before=now+1),
+                'reversed': dict(base, not_before=now+1, expires_at=now-1),
+                'missing start': {k: v for k, v in base.items() if k != 'not_before'},
+                'null end': dict(base, expires_at=None),
+                'string end': dict(base, expires_at=str(now+10)),
+                'real start': dict(base, not_before=float(now-10)),
+            }
+            for label, value in [('null', None), ('string', '1'), ('real', 1.0), ('boolean', True),
+                                 ('array', [1]), ('object', {'version': 1})]:
+                cases[label + ' version'] = dict(base, version=value)
+            on_demand = {k: v for k, v in base.items() if k not in ('not_before', 'expires_at')}
+            on_demand.update(version=2, run_id='1234', source_sha='a'*40,
+                             database=json.loads((PROCEDURE/'target.json').read_text())['database'])
+            cases.update({'v2 with start': dict(on_demand, not_before=now),
+                          'v2 with null end': dict(on_demand, expires_at=None),
+                          'v2 real version': dict(on_demand, version=2.0)})
+            raw_cases = {label: json.dumps(payload) for label, payload in cases.items()}
+            for key, value in [('version', 3), ('not_before', 0), ('expires_at', 0)]:
+                raw_cases['duplicate ' + key] = json.dumps(base)[:-1] + f', "{key}": {value}}}'
+            table = 'd1_cveharbor_repair_receipts'
+            trigger = table + '_sequence'
+            trigger_sql = db.execute('SELECT sql FROM sqlite_schema WHERE name=?', (trigger,)).fetchone()[0]
+            insert = 'INSERT INTO '+table+'(id,payload) VALUES(?,?)'
+            for case, raw in raw_cases.items():
+                with self.subTest(boundary=boundary, case=case):
+                    db.execute('SAVEPOINT invalid_format')
+                    try:
+                        if boundary == 'receipt':
+                            with self.assertRaisesRegex(sqlite3.IntegrityError, 'Repair approval'):
+                                db.execute(insert, ('install-intent', raw))
+                            self.assertEqual(db.execute('SELECT COUNT(*) FROM '+table).fetchone()[0], 0)
+                        else:
+                            # Seed matching but invalid claims locally, restoring the actual trigger
+                            # before the batch so the second boundary is tested independently.
+                            db.execute('DROP TRIGGER '+trigger)
+                            db.executemany(insert, [('install-intent', raw), ('install-started', raw)])
+                            db.execute(trigger_sql)
+                            with self.assertRaisesRegex(sqlite3.OperationalError, 'malformed JSON'):
+                                self.run_sql(db, self.artifacts['files']['install.sql'])
+                            self.assertEqual(db.execute('SELECT COUNT(*) FROM '+table).fetchone()[0], 2)
+                            self.assertIsNone(db.execute("SELECT 1 FROM sqlite_schema WHERE name='operations_control'").fetchone())
+                    finally:
+                        db.execute('ROLLBACK TO invalid_format')
+                        db.execute('RELEASE invalid_format')
+
+    def test_exactly_1800_seconds_is_valid_at_both_window_endpoints(self):
+        for offset in (0, 1800):
+            db = self.database()
+            start = 1800000000
+            db.create_function('strftime', 2, lambda *_: str(start+offset))
+            self.claim(db, dict(self.snapshot(db), not_before=start, expires_at=start+1800))
+            self.run_sql(db, self.artifacts['files']['install.sql'])
+            self.frozen(db)
 
     def test_every_missing_or_null_count_rejected_by_receipt(self):
         db = self.database()

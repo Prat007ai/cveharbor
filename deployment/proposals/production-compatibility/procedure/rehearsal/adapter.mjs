@@ -169,7 +169,8 @@ export async function run(env,p,scenario,phase,{fetcher,clock=Date.now,journal}=
     await write(sql('bootstrap'));
    }
    const time=Number((await c.select("SELECT CAST(strftime('%s','now') AS INTEGER) n"))[0].n);assert.ok(Number.isSafeInteger(time));
-   const payload=JSON.stringify({operation:'install',not_before:Math.max(time-1,p.not_before),expires_at:Math.min(p.expires_at,time+(scenario==='expiry'?15:1800)),schema_rows:s.schema_rows,counts:s.counts,rehearsal:true,approval_id:p.approval_id,manifest_sha256:p.production_manifest_sha256,rehearsal_manifest_sha256:p.manifest_sha256,source_sha:p.source_sha,database:r.uuid,account,scenario,recovery_evidence_sha256:p.recovery_evidence_sha256,success_continuation:p.success_continuation});
+   const not_before=Math.max(time-1,p.not_before);
+   const payload=JSON.stringify({version:1,operation:'install',not_before,expires_at:Math.min(p.expires_at,scenario==='expiry'?time+15:not_before+1800),schema_rows:s.schema_rows,counts:s.counts,rehearsal:true,approval_id:p.approval_id,manifest_sha256:p.production_manifest_sha256,rehearsal_manifest_sha256:p.manifest_sha256,source_sha:p.source_sha,database:r.uuid,account,scenario,recovery_evidence_sha256:p.recovery_evidence_sha256,success_continuation:p.success_continuation});
    await write(`INSERT INTO ${receiptTable}(id,payload) VALUES('install-intent',?)`,[payload]);
    if(scenario!=='rejected')await write(sql('install-start'));
    log({kind:'claim-complete',counts_sha256:digest(s.counts)});return {status:'claimed'};

@@ -117,8 +117,8 @@ This deliberately replaces the original plan's tentative native-migration runner
 with a narrowly scoped, direct [D1 query API](https://developers.cloudflare.com/api/resources/d1/subresources/database/methods/query/)
 procedure and its own durable journal. The API documents semicolon-separated SQL
 as one batch. `install.sql` now starts with a scalar database assertion checking
-exactly the two matching intent/start receipts, operation, database-clock approval
-window, raw application schema definitions, all 70 original table counts, eight
+exactly the two matching intent/start receipts, operation, run-bound install approval
+(or database-clock validity for a bounded approval), raw application schema definitions, all 70 original table counts, eight
 integrity predicates and FK integrity. A false or NULL result deliberately raises
 a malformed-JSON SQL error; returning false or zero rows would not stop installation.
 It is the first statement in the **same request** as all repair DDL and the final
@@ -136,7 +136,7 @@ fail-closed while recovery control is absent, and the newly inserted control row
 is held/frozen. A receipt's presence alone never proves successful installation or
 resume. **Production execution remains blocked pending an independently approved
 isolated remote rehearsal** of this exact REST batch: precondition errors must stop
-all repair DDL/receipt creation; schema/count drift and expiry after claim must reject;
+all repair DDL/receipt creation; schema/count drift and expiry of a bounded approval after claim must reject;
 concurrent writes and interruption must demonstrate the actual isolation/commit
 behavior. If that contract cannot be established, stop and revise the execution
 mechanism for review. Do not silently substitute another API, split the batch or
@@ -189,12 +189,18 @@ protected-environment configuration, **not values configured by this PR**:
 - Worker environment public variable: `PRODUCTION_REPAIR_RECOVERY_PUBLIC_KEY`, an
   independently verified Ed25519 public key. Its private signing key stays offline.
 
-`REPAIR_AUTHORIZATION` is JSON with `version:1`, fresh UUID `approval_id`,
+`REPAIR_AUTHORIZATION` is JSON with a version, fresh UUID `approval_id`,
 `operation`, `source_sha`, `run_id`, `manifest_sha256`, `account`, `database`,
 `worker_version`, `application_commit`, `sql_sha256` for that phase,
-`baseline_schema_sha256`, `preflight_sha256`, `recovery_sha256`, integer UTC epoch
-`not_before`/`expires_at` (maximum 30-minute window), and all three attestations:
+`baseline_schema_sha256`, `preflight_sha256`, `recovery_sha256`, and all three attestations:
 `quiet_window_confirmed`, `independent_writers_excluded`, `no_competing_cloudflare_builds`.
+For a new install use `version:2` and omit both `not_before` and `expires_at`.
+The owner may release the exact pending run when ready; there is no scheduled start
+or 30-minute installation deadline. Keep independent writers and builds inactive
+through verification. Provider credential validity and the recovery freshness check
+still apply. A rerun or different commit or database requires fresh authorization.
+Version 1 remains bounded: integer UTC epoch `not_before` and `expires_at` are
+required and at most 30 minutes apart. A resume requires its own version 1 approval.
 Resume additionally requires `install_receipt_sha256`, `verification_sha256`,
 `expected_revision`, and explicit `resume_scheduled_work_and_eligible_email:true`.
 The latter covers ordinary eligible work under existing settings, not resending
@@ -216,8 +222,8 @@ storage by itself. The independent operator must actually download, decrypt, res
 and compare the package before signing. CI fixtures are never acceptable evidence.
 The executor does not read private backup files or raw bookmarks. The old backup,
 an unsigned JSON assertion, an untested export, or a stale package cannot satisfy
-the gate. If the window expires, stop for a fresh plan/approval; never edit timestamps
-to extend an old attestation.
+the gate. If evidence is stale or a bounded approval expires, stop and obtain fresh
+evidence or approval as applicable; never edit timestamps to extend an old attestation.
 
 ## Data preservation and test limits
 
@@ -259,7 +265,7 @@ python -m unittest discover -s tests -p test_workflow_security.py
    evidence. This is not production repair or production restore approval.
 4. Approve production installation: exact merged source, procedure manifest and
    install SQL digest, fixed Worker/account/DB/baseline, signed recovery hash,
-   preflight fingerprint, unique run/approval ID and UTC quiet window. Scope includes
+   preflight fingerprint, unique run/approval ID and writer exclusion through verification. Scope includes
    journal creation and installation held/frozen; excludes resume/deploy/reset.
 5. After independent read-only verification, separately approve resume against the
    exact receipt/fingerprint/revision and fresh queue snapshot, explicitly including
