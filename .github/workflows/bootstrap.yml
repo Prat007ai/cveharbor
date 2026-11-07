@@ -162,7 +162,7 @@ jobs:
 
   catalogue-check:
     name: Verify catalogue scope and staging receipt
-    if: (github.event_name == 'pull_request' && github.head_ref == 'release/catalogue-owner-approval' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.catalogue_commit != '')
+    if: (github.event_name == 'pull_request' && startsWith(github.head_ref, 'release/catalogue-') && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.catalogue_commit != '')
     runs-on: ubuntu-latest
     permissions:
       contents: read

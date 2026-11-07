@@ -23,6 +23,12 @@ The pinned production replica and the customer candidate are different artifacts
 block in [the last status check](https://github.com/Prat007ai/cveharbor/actions/runs/42402301955);
 never bypass inventory or claim the catalogue has passed live based on a preparation run.
 
+## Catalogue-only production releases
+
+When the sole owner asks Work to deploy an identified catalogue-only update, that request authorizes Work to submit the owner's GitHub deployment approval for that release. Work verifies the reviewed main commit, the signed-in staging save/reload result, the production baseline and the pending environment before approving. Use the owner's authorized GitHub identity and record the delegation, run ID and commit in the approval comment.
+
+For each release, pin its own candidate, staging evidence and production baseline in the reviewed release configuration. Use the protected catalogue publisher with owner review, main-only deployment and administrator bypass disabled. Send the live run link, monitor publication, verify the live assets and traffic, and record the result on the PR. A prior run's approval applies only to that run. Follow any later instruction that reserves the approval click for the owner.
+
 ## Proposed routine staging operation (inactive)
 
 **Adoption is a separate owner decision after review and merge.** Only then may a repository
