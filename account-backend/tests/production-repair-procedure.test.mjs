@@ -336,11 +336,12 @@ test('journal bootstrap loss, failed post-install verification and half-resume n
   if(kind==='bootstrap')f.client.writeOnce=async(sql,p)=>{await native(sql.split('CREATE TRIGGER')[0],p);throw Error('Lost bootstrap');};
   if(kind==='verification')f.client.writeOnce=async(sql,p)=>{await native(sql,p);if(sql.includes('-- Exactly one submission'))f.client.readiness=async()=>({http:503,ready:false,held:true,schema_ready:false});};
   if(kind==='half-resume'){
-   await f.run('install');await f.approve('resume');f.client.writeOnce=async(sql,p)=>{if(sql.includes('-- Separate approved')){await native(sql.slice(0,sql.indexOf('UPDATE operations_control')),p);throw Error('Interrupted before resume update');}return native(sql,p);};
+   await f.run('install');await f.approve('resume');f.client.writeOnce=async(sql,p)=>{if(sql.includes('-- Separate approved')){assert.match(sql,/UPDATE operations_control/);assert.equal(p.length,1);f.writes.push({sql,params:p});throw Error('Lost response before resume update executed');}return native(sql,p);};
   }
   await assert.rejects(()=>f.run(kind==='half-resume'?'resume':'install'));const n=f.writes.length;
   await assert.rejects(()=>f.run('reconcile'));await assert.rejects(()=>f.run('install'));assert.equal(f.writes.length,n);
   if(kind!=='bootstrap')assert.equal(f.db.prepare('SELECT write_hold FROM operations_control').get().write_hold,1);
+  if(kind==='half-resume'){assert.equal(f.db.prepare('SELECT revision FROM operations_control').get().revision,0);assert.equal(f.db.prepare('SELECT COUNT(*) n FROM '+receiptTable).get().n,5);}
  }
 });
 test('transport binds active deployment, both DB bindings and required recovery flag',async()=>{
