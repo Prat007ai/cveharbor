@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import {DatabaseSync} from 'node:sqlite';
 import {baselineDB} from '../../deployment/proposals/production-compatibility/rehearsal.mjs';
 import {artifacts,account,cases,names,denied,marker,markerSQL,syntheticCounts,syntheticSQL,successContinuation,previousPlan,rehearsalJournalObjects,journalCorrectionSQL} from '../../deployment/proposals/production-compatibility/procedure/rehearsal/artifacts.mjs';
@@ -10,6 +11,7 @@ import {target,folder,verifyFiles} from '../../deployment/proposals/production-c
 import {digest,canonical,schemaSQL} from '../../scripts/production_schema_baseline.mjs';
 import {verifyStorage,diskException,custodyException} from '../../deployment/proposals/production-compatibility/procedure/rehearsal/storage-policy.mjs';
 import {developmentException} from '../../deployment/proposals/production-compatibility/procedure/rehearsal/development-exception.mjs';
+import {privateLog} from '../../deployment/proposals/production-compatibility/procedure/rehearsal/private-log.mjs';
 const install=fs.readFileSync(path.join(folder,'install.sql'),'utf8');
 const iso=digest({workers:[],pages:[]});
 function storageEvidence(){return {version:1,destination:target.private_destination,scope:'pr270-test-data-rehearsal-on-owner-pc',disk_encryption_status:'unverified',disk_encryption_owner_exception:diskException,key_custody_owner_exception:custodyException,key_directory:'D:\\CVEHarbor-Recovery-Keys\\pr270',key_custody:'passphrase-encrypted-online-same-pc',offline_key_custody_verified:false,independent_custody_copy_verified:false,...Object.fromEntries(['owner_only_acl_verified','sync_exclusion_verified','ordinary_sharing_exclusion_verified','trusted_administrative_access_confirmed','capacity_verified','encrypted_packages_required','temporary_plaintext_inventory_required','key_acl_verified','key_sync_and_sharing_exclusion_verified','passphrase_separate_custody_confirmed','recipient_roundtrip_verified'].map(k=>[k,true])),recipient_fingerprint_sha256:'3'.repeat(64),private_evidence_sha256:'4'.repeat(64)};}
@@ -73,6 +75,42 @@ function continuationFixture(t){
  const payload={schema_rows:f.db.prepare(schemaSQL).all(),counts:syntheticCounts(),previous_journal_rows:rehearsalJournalObjects(true),previous_plan:previousPlan(),not_before:f.p.not_before,expires_at:f.p.expires_at};
  f.correction=journalCorrectionSQL(payload);f.p.journal_correction_sql_sha256=digest(f.correction);f.repin();return f;
 }
+
+function realPrivateJournal(t,f){
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'pr270-private-log-'));
+ const directory=path.join(root,'run');fs.mkdirSync(directory);
+ const realpath=fs.realpathSync;
+ t.mock.method(fs,'realpathSync',p=>p===target.private_destination?realpath(root):realpath(p));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ f.journal=privateLog(directory,f.p.approval_id,'success');
+ return directory;
+}
+
+test('real durable journal supports continuation phases and prevents their replay',async t=>{
+ const f=continuationFixture(t),directory=realPrivateJournal(t,f);
+ f.journal.claim('claim');
+ await f.call('correct-journal');await f.call('continue-claim');await f.call('install');
+ const result=await f.call('reconcile');assert.equal(result.installed_schema_match,true);
+ assert.deepEqual(result.control,[{write_hold:1,database_frozen:1,revision:0}]);
+ for(const phase of ['claim','correct-journal','continue-claim','install']){
+  const file=path.join(directory,f.p.approval_id+'-success-'+phase+'.claim');
+  const before=fs.readFileSync(file);assert.equal(JSON.parse(before).phase,phase);
+  assert.throws(()=>f.journal.claim(phase),{code:'EEXIST'});
+  assert.deepEqual(fs.readFileSync(file),before);
+ }
+ const before=fs.readdirSync(directory).sort();
+ for(const phase of ['../install','correct/journal','correct--journal','reconcile','inventory','resume','delete',''])assert.throws(()=>f.journal.claim(phase),/Unknown mutating rehearsal phase/);
+ assert.deepEqual(fs.readdirSync(directory).sort(),before);
+});
+
+test('real durable correction claim survives a lost response and prevents resubmission',async t=>{
+ const f=continuationFixture(t),directory=realPrivateJournal(t,f),fetcher=f.fetcher;let submitted=0;
+ f.fetcher=async(url,options)=>{const response=await fetcher(url,options);if(options.body&&JSON.parse(options.body).sql===f.correction){submitted++;throw Error('Fictional lost correction response');}return response;};
+ await assert.rejects(()=>f.call('correct-journal'));assert.equal(submitted,1);
+ assert.ok(fs.existsSync(path.join(directory,f.p.approval_id+'-success-correct-journal.claim')));
+ await assert.rejects(()=>f.call('correct-journal'));assert.equal(submitted,1);
+ const result=await f.call('reconcile');assert.deepEqual(result.receipt_ids,[]);assert.deepEqual(result.attempt_ids,['plan']);
+});
 
 test('preserved success journal replaces only sequence trigger, then continues claim and installation once',async t=>{
  const f=continuationFixture(t),before=f.db.prepare(`SELECT payload FROM ${marker} WHERE id='plan'`).get().payload;

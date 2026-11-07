@@ -9,6 +9,6 @@ export function privateLog(directory,approvalId,scenario){
  assert.match(approvalId,/^[a-f0-9-]{36}$/);assert.match(scenario,/^[a-z]+$/);
  const prefix=path.join(actual,approvalId+'-'+scenario);
  const append=event=>{const fd=fs.openSync(prefix+'.jsonl','a',0o600);try{fs.writeSync(fd,JSON.stringify(event)+'\n');fs.fsyncSync(fd);}finally{fs.closeSync(fd);}};
- const claim=phase=>{assert.match(phase,/^[a-z]+$/);const fd=fs.openSync(prefix+'-'+phase+'.claim','wx',0o600);try{fs.writeSync(fd,JSON.stringify({phase,at:new Date().toISOString()}));fs.fsyncSync(fd);}finally{fs.closeSync(fd);}};
+ const claim=phase=>{assert.ok(['claim','perturb','install','correct-journal','continue-claim'].includes(phase),'Unknown mutating rehearsal phase');const fd=fs.openSync(prefix+'-'+phase+'.claim','wx',0o600);try{fs.writeSync(fd,JSON.stringify({phase,at:new Date().toISOString()}));fs.fsyncSync(fd);}finally{fs.closeSync(fd);}};
  return {append,claim};
 }

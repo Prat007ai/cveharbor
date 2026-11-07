@@ -3,6 +3,35 @@
 Preparation only. No remote write, token change, import, reset or deletion is
 authorized by this document. The owner has deferred the seven other scenarios.
 
+## November 6 approved continuation stopped before mutation
+
+The owner approved source `45ef7c2e562b6a58c75b0ed0a7810cd4820b0993` and signed
+its pinned continuation inputs. At 8:50 p.m. Toronto the adapter stopped at its
+local durable claim: `privateLog.claim` accepted lowercase letters only, rejecting
+the new `correct-journal` phase. Offline replay of the saved reads reproduced
+this rejection after all preceding adapter checks passed. The earlier continuation
+tests used a mock journal and missed the real filesystem validator.
+
+All 431 saved query inputs were read-only; no write intent, claim file or mutation
+request was produced. Complete typed-content verification passed before the stop.
+Read-only reconciliation at 8:51 p.m. confirmed the original application schema,
+counts and integrity, exact original journal definitions, empty receipts and only
+the historical plan. No trigger replacement, intent/start insertion or installation
+was submitted. The original stopped claim and every attempt record remain intact.
+
+The focused correction permits only the five actual mutating rehearsal phases:
+`claim`, `perturb`, `install`, `correct-journal`, `continue-claim`. Exclusive file
+creation and fsync are unchanged. Real-filesystem regression tests cover the entire
+continuation, duplicate claim rejection, malformed/unknown phase rejection and a
+lost correction response without resubmission. Production code and all SQL bytes
+are unchanged; only the rehearsal source manifest changes.
+
+No remote retry follows this source correction. A new commit/phase-input approval
+is required before submission, with the same target, SQL, scope and stop time.
+Reported writes remain 193,195, with both reserves retained and 296,805 available.
+Reported reads including this verification/reconciliation are 1,087,909. No new
+unmetered mutation occurred. All production blockers listed below remain open.
+
 ## Correction and focused evidence
 
 The `install-intent` insertion at source
