@@ -24,38 +24,100 @@ function windowCheck(a,now,maxAge){
  assert.ok(Number.isSafeInteger(a.not_before)&&Number.isSafeInteger(a.expires_at));
  assert.ok(a.not_before<=now&&now<=a.expires_at&&a.expires_at-a.not_before<=maxAge,'Approval expired, future-dated or overlong');
 }
-export function verifyRecovery(env,approval,snapshot,now){
- const envelope=JSON.parse(env.REPAIR_RECOVERY_EVIDENCE||'null');assert.ok(envelope?.payload&&envelope.signature,'Missing signed private recovery evidence');
- const key=createPublicKey(env.REPAIR_RECOVERY_PUBLIC_KEY);assert.equal(key.asymmetricKeyType,'ed25519');
- assert.equal(verifySignature(null,Buffer.from(envelope.payload),key,Buffer.from(envelope.signature,'base64')),true,'Recovery signature invalid');
- assert.equal(digest(envelope.payload),approval.recovery_sha256,'Recovery evidence mismatch');
- const e=JSON.parse(envelope.payload);assert.equal(e.version,1);assert.equal(e.account,target.account);assert.equal(e.database,target.database);assert.equal(e.worker_version,target.worker_version);
- assert.equal(e.schema_sha256,target.baseline_schema_sha256);assert.equal(e.counts_sha256,digest(snapshot.counts));
- assert.equal(e.manifest_sha256,approval.manifest_sha256);assert.ok(Number.isSafeInteger(e.captured_at)&&e.captured_at<=now&&now-e.captured_at<=86400,'Recovery capture older than 24h');
- assert.ok(Number.isSafeInteger(e.verified_at)&&e.verified_at>=e.captured_at&&e.verified_at<=now);
- for(const value of [e.ciphertext_sha256,e.export_sha256,e.bookmark_sha256,e.restore_receipt_sha256])hash(value);
- assert.equal(e.private_destination,target.private_destination);assert.equal(e.key_custody_verified,true);
- assert.equal(e.restore.account,target.restore_account);assert.equal(e.restore.name,target.restore_name);
- assert.match(e.restore.database||'',/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/);
- assert.ok(![target.database,'fac61562-fc31-426d-8032-550aba63b7f6'].includes(e.restore.database));
- assert.equal(e.restore.schema_sha256,target.baseline_schema_sha256);assert.equal(e.restore.counts_sha256,e.counts_sha256);
- assert.equal(e.restore.foreign_key_violations,0);assert.equal(e.restore.integrity_check,'ok');assert.equal(e.restore.no_worker_bindings,true);assert.equal(e.restore.no_delivery_credentials,true);
- assert.equal(e.writer_quiescence_confirmed,true);return e;
+// Only this module constructs these failures, using literal codes. Never forward
+// parser, crypto, assertion or provider messages to the operator report.
+class CheckFailure extends Error {
+  constructor(code) {
+    super(code);
+    this.code = code;
+  }
 }
-export function authorizeWrite(env,a,s,now){
- const p=JSON.parse(env.REPAIR_AUTHORIZATION||'null');assert.ok(p,'Missing action-specific approval');
- assert.equal(p.version,1);assert.match(p.approval_id||'',/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/);assert.equal(p.operation,env.REPAIR_OPERATION);
- assert.equal(p.source_sha,env.GITHUB_SHA);assert.equal(p.run_id,env.GITHUB_RUN_ID);assert.equal(p.manifest_sha256,a.sha256);
- for(const key of ['account','database','worker_version','application_commit'])assert.equal(p[key],target[key]);
- assert.equal(p.sql_sha256,a.manifest.sql_sha256[p.operation+'.sql']);assert.equal(p.baseline_schema_sha256,target.baseline_schema_sha256);
- assert.equal(p.preflight_sha256,s.fingerprint,'Preflight/verification is stale');windowCheck(p,now,1800);hash(p.recovery_sha256);
- assert.equal(p.quiet_window_confirmed,true);assert.equal(p.independent_writers_excluded,true);assert.equal(p.no_competing_cloudflare_builds,true);
- if(p.operation==='resume'){
-  assert.equal(s.state,'installed-frozen');assert.equal(p.install_receipt_sha256,s.install_receipt_sha256);assert.equal(p.expected_revision,s.control.revision);
-  assert.equal(p.resume_scheduled_work_and_eligible_email,true);assert.equal(p.verification_sha256,s.fingerprint);
-  assert.notEqual(p.run_id,s.install_run_id,'Resume requires a separate dispatch');assert.notEqual(p.approval_id,s.install_approval_id,'Resume requires a separate approval');
- }
- verifyRecovery(env,p,s,now);return p;
+function requireCheck(code, condition) {
+  if (!condition) throw new CheckFailure(code);
+}
+function checked(code, read) {
+  try { return read(); } catch { throw new CheckFailure(code); }
+}
+const sha256Pattern = /^[a-f0-9]{64}$/;
+const uuidPattern = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
+function matches(pattern, value) {
+  return typeof value === 'string' && pattern.test(value);
+}
+
+export function verifyRecovery(env, approval, snapshot, now) {
+  requireCheck('recovery-envelope-missing', env.REPAIR_RECOVERY_EVIDENCE);
+  const envelope = checked('recovery-envelope-json', () => JSON.parse(env.REPAIR_RECOVERY_EVIDENCE));
+  requireCheck('recovery-envelope-payload', typeof envelope?.payload === 'string' && envelope.payload.length > 0);
+  requireCheck('recovery-envelope-signature', typeof envelope.signature === 'string' && envelope.signature.length > 0);
+  requireCheck('recovery-public-key-missing', env.REPAIR_RECOVERY_PUBLIC_KEY);
+  const key = checked('recovery-public-key', () => createPublicKey(env.REPAIR_RECOVERY_PUBLIC_KEY));
+  requireCheck('recovery-key-type', key.asymmetricKeyType === 'ed25519');
+  const valid = checked('recovery-signature', () => verifySignature(null, Buffer.from(envelope.payload), key, Buffer.from(envelope.signature, 'base64')));
+  requireCheck('recovery-signature', valid);
+  requireCheck('recovery-payload-digest', digest(envelope.payload) === approval.recovery_sha256);
+
+  const e = checked('recovery-payload-json', () => JSON.parse(envelope.payload));
+  requireCheck('recovery-version', e?.version === 1);
+  requireCheck('recovery-account', e.account === target.account);
+  requireCheck('recovery-database', e.database === target.database);
+  requireCheck('recovery-worker', e.worker_version === target.worker_version);
+  requireCheck('recovery-schema', e.schema_sha256 === target.baseline_schema_sha256);
+  requireCheck('recovery-counts', e.counts_sha256 === digest(snapshot.counts));
+  requireCheck('recovery-manifest', e.manifest_sha256 === approval.manifest_sha256);
+  requireCheck('recovery-capture-time', Number.isSafeInteger(e.captured_at) && e.captured_at <= now && now - e.captured_at <= 86400);
+  requireCheck('recovery-verification-time', Number.isSafeInteger(e.verified_at) && e.verified_at >= e.captured_at && e.verified_at <= now);
+  requireCheck('recovery-ciphertext-hash', matches(sha256Pattern, e.ciphertext_sha256));
+  requireCheck('recovery-export-hash', matches(sha256Pattern, e.export_sha256));
+  requireCheck('recovery-bookmark-hash', matches(sha256Pattern, e.bookmark_sha256));
+  requireCheck('recovery-receipt-hash', matches(sha256Pattern, e.restore_receipt_sha256));
+  requireCheck('recovery-destination', e.private_destination === target.private_destination);
+  requireCheck('recovery-key-custody', e.key_custody_verified === true);
+  requireCheck('restore-account', e.restore?.account === target.restore_account);
+  requireCheck('restore-name', e.restore.name === target.restore_name);
+  requireCheck('restore-database-id', matches(uuidPattern, e.restore.database));
+  requireCheck('restore-database-isolation', ![target.database, 'fac61562-fc31-426d-8032-550aba63b7f6'].includes(e.restore.database));
+  requireCheck('restore-schema', e.restore.schema_sha256 === target.baseline_schema_sha256);
+  requireCheck('restore-counts', e.restore.counts_sha256 === e.counts_sha256);
+  requireCheck('restore-foreign-keys', Object.is(e.restore.foreign_key_violations, 0));
+  requireCheck('restore-integrity', e.restore.integrity_check === 'ok');
+  requireCheck('restore-worker-bindings', e.restore.no_worker_bindings === true);
+  requireCheck('restore-delivery-credentials', e.restore.no_delivery_credentials === true);
+  requireCheck('recovery-writer-quiescence', e.writer_quiescence_confirmed === true);
+  return e;
+}
+
+export function authorizeWrite(env, a, s, now) {
+  requireCheck('authorization-missing', env.REPAIR_AUTHORIZATION);
+  const p = checked('authorization-json', () => JSON.parse(env.REPAIR_AUTHORIZATION));
+  requireCheck('authorization-version', p?.version === 1);
+  requireCheck('authorization-id', matches(uuidPattern, p.approval_id));
+  requireCheck('authorization-operation', p.operation === env.REPAIR_OPERATION);
+  requireCheck('authorization-source', p.source_sha === env.GITHUB_SHA);
+  requireCheck('authorization-run-id', p.run_id === env.GITHUB_RUN_ID);
+  requireCheck('authorization-manifest', p.manifest_sha256 === a.sha256);
+  requireCheck('authorization-account', p.account === target.account);
+  requireCheck('authorization-database', p.database === target.database);
+  requireCheck('authorization-worker', p.worker_version === target.worker_version);
+  requireCheck('authorization-application', p.application_commit === target.application_commit);
+  requireCheck('authorization-sql', p.sql_sha256 === a.manifest.sql_sha256[p.operation + '.sql']);
+  requireCheck('authorization-schema', p.baseline_schema_sha256 === target.baseline_schema_sha256);
+  requireCheck('authorization-fingerprint', p.preflight_sha256 === s.fingerprint);
+  checked('authorization-window', () => windowCheck(p, now, 1800));
+  requireCheck('authorization-recovery-hash', matches(sha256Pattern, p.recovery_sha256));
+  requireCheck('authorization-quiet-window', p.quiet_window_confirmed === true);
+  requireCheck('authorization-independent-writers', p.independent_writers_excluded === true);
+  requireCheck('authorization-competing-builds', p.no_competing_cloudflare_builds === true);
+  if (p.operation === 'resume') {
+    requireCheck('resume-state', s.state === 'installed-frozen');
+    requireCheck('resume-install-receipt', p.install_receipt_sha256 === s.install_receipt_sha256);
+    requireCheck('resume-revision', Object.is(p.expected_revision, s.control.revision));
+    requireCheck('resume-scheduled-work', p.resume_scheduled_work_and_eligible_email === true);
+    requireCheck('resume-verification', p.verification_sha256 === s.fingerprint);
+    requireCheck('resume-separate-run', p.run_id !== s.install_run_id);
+    requireCheck('resume-separate-approval', p.approval_id !== s.install_approval_id);
+  }
+  verifyRecovery(env, p, s, now);
+  return p;
 }
 async function counts(client){const result={};for(const table of originalTables()){const rows=await client.select('SELECT COUNT(*) n FROM '+quote(table));assert.equal(rows.length,1);result[table]=Number(rows[0].n);assert.ok(Number.isSafeInteger(result[table])&&result[table]>=0);}return result;}
 async function integrity(client){const result={};for(const [name,sql] of Object.entries(integrityChecks))result[name]=Number((await client.select(sql))[0].n);result.foreign_keys=Number((await client.select('SELECT COUNT(*) n FROM pragma_foreign_key_check'))[0].n);assert.ok(Object.values(result).every(n=>n===0),'Integrity verification unsuccessful');return result;}
@@ -135,13 +197,22 @@ export async function execute(env,{client,artifact,now=()=>Math.floor(Date.now()
   if(['preflight','verify','reconcile'].includes(operation)){
    report.status=before.state.startsWith('uncertain')?'reconciliation-required':operation==='verify'?'verified-frozen':'observed';persist();return report;
   }
+  stage='authorization';
   const approval=authorizeWrite(env,a,before,now());
+  stage='initial-write-state';
   assert.equal(before.state,operation==='install'?'baseline':'installed-frozen');
+  stage='prepare-receipt';
   const payload={...approval,authorization_sha256:digest(approval),schema_rows:before.schema_rows,counts:before.counts};
   const params=[JSON.stringify(payload)];
   // Repeat all observations immediately before the first write. SQL receipt
   // triggers additionally compare raw schema, counts, integrity and expiry in D1.
-  assert.equal((await inspect(client,a)).fingerprint,before.fingerprint,'State changed before execution');windowCheck(approval,now(),1800);
+  stage='second-inspection';
+  const second=await inspect(client,a);
+  stage='second-fingerprint';
+  assert.equal(second.fingerprint,before.fingerprint,'State changed before execution');
+  stage='pre-write-window';
+  windowCheck(approval,now(),1800);
+  stage='final-github-approval';
   await client.protection(operation);
   if(operation==='install'){
    stage='journal-create';await write(fs.readFileSync(path.join(folder,'bootstrap.sql'),'utf8'));
@@ -168,7 +239,8 @@ export async function execute(env,{client,artifact,now=()=>Math.floor(Date.now()
    stage='resume-verification';const after=await inspect(client,a);assert.equal(after.state,'resumed');report.status='resumed';capture(after);
   }
   persist();return report;
- }catch{
+ }catch(error){
+  if(stage==='authorization' && error instanceof CheckFailure)stage=error.code;
   report.status=report.write_requests?'reconciliation-required':'blocked';report.failed_stage=stage;persist();
   throw Error('Repair stopped at '+stage+'; use SELECT-only reconciliation. No automatic retry, resume or rollback.');
  }
