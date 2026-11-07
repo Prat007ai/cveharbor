@@ -15,7 +15,8 @@ from catalogue_package import CHANGED, LIVE_ONLY, digest, files, require
 REPO = "https://api.github.com/repos/Prat007ai/cveharbor"
 STAGE = "366a44bcf5dc2c877f59a3a800e08acead7d0871"
 STAGE_RUN = 42411365289
-SITE_ENV = "cloudflare-site-production"
+SITE_ENV = "cloudflare-catalogue-42411365289"
+OWNER_ID = 349078288
 OLD_VERSION = "e22850fa-851d-453f-8336-5e78d96babdd"
 OLD_DEPLOYMENT = "ec3d1d8c-dae1-4745-b866-ce0eed620db6"
 BACKEND = "80b709c7559a4277d3c791fc0a853aa874104f180ac26c9e5754379f9087f05f"
@@ -56,10 +57,11 @@ def evidence():
 
 def policy():
     env = github("/environments/" + SITE_ENV)
-    reviewers = [r for r in env["protection_rules"] if r["type"] == "required_reviewers"
-                 and r.get("prevent_self_review") and r.get("reviewers")]
-    require(reviewers and env.get("can_admins_bypass") is False,
-            "Configure an independent required reviewer, prevent self-review and disable administrator bypass.")
+    rules = [r for r in env["protection_rules"] if r["type"] == "required_reviewers"]
+    require(len(rules) == 1 and rules[0].get("prevent_self_review") is False
+            and [(r["type"], r["reviewer"]["id"]) for r in rules[0]["reviewers"]] == [("User", OWNER_ID)]
+            and env.get("can_admins_bypass") is False,
+            "Catalogue release requires an explicit owner review and disabled administrator bypass.")
     require((env.get("deployment_branch_policy") or {}).get("custom_branch_policies"),
             "Configure the production environment for the main branch only.")
     branches = github(f"/environments/{SITE_ENV}/deployment-branch-policies?per_page=100")
@@ -72,9 +74,9 @@ def policy():
 
 def approval():
     approvals = github("/actions/runs/" + os.environ["GITHUB_RUN_ID"] + "/approvals")
-    require(any(a["state"] == "approved" and a["user"]["login"].lower() != os.environ["GITHUB_ACTOR"].lower()
+    require(any(a["state"] == "approved" and a["user"]["id"] == OWNER_ID
                 and any(e["name"] == SITE_ENV for e in a["environments"]) for a in approvals),
-            "Independent GitHub approval for this production deployment is missing.")
+            "The owner must approve this catalogue deployment in GitHub.")
 
 
 def provider(path, body=None):

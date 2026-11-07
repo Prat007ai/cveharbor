@@ -24,13 +24,15 @@ STAGING_RECOVERY = STAGING_RELEASE + " && " + RECOVERY_SELECTOR
 STAGING_NORMAL = STAGING_RELEASE + " && !" + RECOVERY_SELECTOR
 SIMPLE_STAGING = 'github.repository == \'Prat007ai/cveharbor\' && github.ref == \'refs/heads/main\' && github.event_name == \'workflow_dispatch\' && vars.SIMPLE_STAGING_ENABLED == \'true\' && inputs.candidate_operation == \'none\' && contains(fromJSON(\'["diagnose","readiness"]\'), inputs.simple_operation)'
 CANDIDATE_STAGING = "github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && vars.CF_STAGING_CANDIDATE_ENABLED == 'true' && vars.SIMPLE_STAGING_ENABLED == 'false' && inputs.candidate_operation != 'none'"
-ENVIRONMENTS = {'cloudflare-cvie-staging','cloudflare-worker-production', 'cloudflare-site-production', 'github-pages',
+CATALOGUE_ENV = 'cloudflare-catalogue-42411365289'
+ENVIRONMENTS = {'cloudflare-cvie-staging','cloudflare-worker-production', 'cloudflare-site-production', CATALOGUE_ENV, 'github-pages',
                 'cloudflare-production-audit', 'cloudflare-notifications-production', 'cloudflare-phase1-staging', 'cloudflare-intelligence-data'}
 SECRET_BOUNDARIES = {
     'cloudflare-cvie-staging': {'CF_STAGING_RECOVERY_R2_ACCESS_KEY_ID','CF_STAGING_RECOVERY_R2_SECRET_ACCESS_KEY','CF_STAGING_RECOVERY_ISOLATION','CF_STAGING_RECOVERY_RESTORE_RECEIPT','CF_STAGING_RECOVERY_RESTORE_SIGNATURE','CF_STAGING_RECOVERY_EVIDENCE','CF_STAGING_R2_ACCESS_KEY_ID','CF_STAGING_R2_SECRET_ACCESS_KEY','CF_STAGING_API_TOKEN','CF_STAGING_ACCOUNT_ID','CF_STAGING_ACCESS_ISSUER','CF_STAGING_ACCESS_AUD','CF_STAGING_ACCESS_CLIENT_ID','CF_STAGING_ACCESS_CLIENT_SECRET'},
     'cloudflare-intelligence-data': {'FEED_R2_ACCESS_KEY_ID','FEED_R2_SECRET_ACCESS_KEY'},
     'cloudflare-worker-production': {'CVEHARBOR_PROD_WORKER_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID', 'CVEHARBOR_PROD_REPAIR_AUTHORIZATION', 'CVEHARBOR_PROD_REPAIR_EVIDENCE'},
     'cloudflare-site-production': {'CVEHARBOR_PROD_SITE_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID', 'CVEHARBOR_SITE_GATE_PASSWORD'},
+    CATALOGUE_ENV: {'CVEHARBOR_PROD_SITE_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID', 'CVEHARBOR_SITE_GATE_PASSWORD'},
     'github-pages': {'CVEHARBOR_SITE_GATE_PASSWORD'},
     'cloudflare-production-audit': {'CLOUDFLARE_AUDIT_API_TOKEN', 'CLOUDFLARE_AUDIT_ACCOUNT_ID', 'CVEHARBOR_SITE_GATE_PASSWORD'},
     'cloudflare-notifications-production': {'CVEHARBOR_PROD_SMTP2GO_API_KEY'},
@@ -92,14 +94,16 @@ def validate(doc, filename):
                         for key,value in permissions.items()), label + ': repository/Actions write permissions are forbidden')
         require(not re.search(r'git\s+push\b', raw), label + ': publish evidence as artifacts, never push repository code')
         if SENSITIVE.search(raw): require(env in ENVIRONMENTS, label + ': privileged secrets need an approved environment')
+        catalogue_job = filename == 'bootstrap.yml' and name == 'catalogue-publish'
+        require((env == CATALOGUE_ENV) == catalogue_job, label + ': one-time owner review is exclusive to the catalogue publisher')
         if env:
             require(env in ENVIRONMENTS, label + ': unknown or dynamic environment')
             requested = {m.group().split('.', 1)[1] for m in SENSITIVE.finditer(raw)}
             require(requested <= SECRET_BOUNDARIES.get(env, set()), label + ': credential is outside the environment boundary')
             prefix = REPAIR_WRITE if filename == 'production-compatibility-repair.yml' and name == 'change' else (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) if env == 'cloudflare-cvie-staging' else MANUAL if filename == 'recovery-write-hold.yml' and name == 'control' else MAIN + " && vars.FEED_PUBLICATION_ENABLED == 'true'" if env == 'cloudflare-intelligence-data' else MANUAL if env in {'cloudflare-production-audit','cloudflare-notifications-production','cloudflare-phase1-staging'} else RELEASE
-            if filename == 'bootstrap.yml' and name == 'catalogue-publish':
+            if catalogue_job:
                 prefix = CATALOGUE
-                require(condition == CATALOGUE and env == 'cloudflare-site-production' and job.get('needs') == 'catalogue-check',
+                require(condition == CATALOGUE and job.get('needs') == 'catalogue-check',
                         label + ': exact manual catalogue gate and staging receipt required')
                 require(job.get('concurrency') == {'group': 'cveharbor-production-release', 'cancel-in-progress': False},
                         label + ': shared production release lock required')
@@ -224,7 +228,7 @@ def validate(doc, filename):
 
 def main():
     errors = []
-    paths = sorted((ROOT/'.github/workflows').glob('*.yml'))
+    paths = sorted(p for p in (ROOT / '.github/workflows').iterdir() if p.suffix in {'.yaml', '.yml'})
     for path in paths:
         try: errors.extend(validate(load_workflow(path.read_text()), path.name))
         except (ValueError,yaml.YAMLError) as exc: errors.append(path.name + ': ' + str(exc))
