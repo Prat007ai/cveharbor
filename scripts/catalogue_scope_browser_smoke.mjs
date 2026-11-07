@@ -25,7 +25,7 @@ async function fetcher(url,options={}){
 const directory='work/catalogue-browser';fs.mkdirSync(directory,{recursive:true});
 // A disposable regular profile allows the browser's actual page zoom to be tested.
 const context=await chromium.launchPersistentContext('',{
- headless:true,executablePath:process.env.CVEHARBOR_CHROMIUM_PATH||undefined,args:['--no-sandbox'],
+ channel:'chromium',headless:true,executablePath:process.env.CVEHARBOR_CHROMIUM_PATH||undefined,args:['--no-sandbox'],
  viewport:{width:1440,height:1050},reducedMotion:'reduce',serviceWorkers:'block'
 });
 try{
