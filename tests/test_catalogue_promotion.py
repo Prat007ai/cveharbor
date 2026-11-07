@@ -77,9 +77,28 @@ class CataloguePromotionTests(unittest.TestCase):
     def test_changed_baseline_stops_before_upload(self):
         self.assertEqual(self.rehearsal(drift=True), (0, 0))
 
-    def test_deployment_requires_an_independent_approval(self):
-        with patch.dict(os.environ, {"GITHUB_ACTOR": "owner", "GITHUB_RUN_ID": "1"}):
-            for login, env in (("Owner", release.SITE_ENV), ("reviewer", "staging")):
-                review = {"state": "approved", "user": {"login": login}, "environments": [{"name": env}]}
-                with patch.object(release, "github", return_value=[review]), self.assertRaises(RuntimeError):
+    def test_only_the_owner_can_approve_the_current_catalogue_run(self):
+        for identity, environment, state, allowed in (
+            (release.OWNER_ID, release.SITE_ENV, "approved", True),
+            (1, release.SITE_ENV, "approved", False),
+            (release.OWNER_ID, "cloudflare-site-production", "approved", False),
+            (release.OWNER_ID, release.SITE_ENV, "rejected", False),
+        ):
+            review = {"state": state, "user": {"id": identity}, "environments": [{"name": environment}]}
+            with self.subTest(review=review), patch.dict(os.environ, {"GITHUB_RUN_ID": "123"}), \
+                    patch.object(release, "github", return_value=[review]) as api:
+                if allowed:
                     release.approval()
+                else:
+                    with self.assertRaises(RuntimeError):
+                        release.approval()
+                api.assert_called_once_with("/actions/runs/123/approvals")
+
+    def test_owner_environment_rejects_bypass_and_other_reviewers(self):
+        owner = {"type": "User", "reviewer": {"id": release.OWNER_ID}}
+        extra = {"type": "User", "reviewer": {"id": 2}}
+        for bypass, reviewers in ((True, [owner]), (False, []), (False, [extra]), (False, [owner, extra])):
+            env = {"can_admins_bypass": bypass, "protection_rules": [
+                {"type": "required_reviewers", "prevent_self_review": False, "reviewers": reviewers}]}
+            with self.subTest(env=env), patch.object(release, "github", return_value=env), self.assertRaises(RuntimeError):
+                release.policy()

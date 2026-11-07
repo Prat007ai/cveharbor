@@ -162,7 +162,7 @@ jobs:
 
   catalogue-check:
     name: Verify catalogue scope and staging receipt
-    if: (github.event_name == 'pull_request' && github.head_ref == 'release/catalogue-production-publisher' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.catalogue_commit != '')
+    if: (github.event_name == 'pull_request' && github.head_ref == 'release/catalogue-owner-approval' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.catalogue_commit != '')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -204,7 +204,7 @@ jobs:
     concurrency:
       group: cveharbor-production-release
       cancel-in-progress: false
-    environment: cloudflare-site-production
+    environment: cloudflare-catalogue-42411365289
     permissions:
       contents: read
       actions: read

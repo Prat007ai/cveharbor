@@ -17,12 +17,23 @@ class WorkflowSecurityTests(unittest.TestCase):
     def reject(self, mutate):
         doc=self.audit();mutate(doc);self.assertTrue(policy.validate(doc,'security-phase1-audit.yml'))
     def test_all_current_workflows(self):
-        for p in (ROOT/'.github/workflows').glob('*.yml'):
+        for p in (ROOT / '.github/workflows').iterdir():
+            if p.suffix not in {'.yaml', '.yml'}:
+                continue
             with self.subTest(path=p.name):self.assertEqual(policy.validate(policy.load_workflow(p.read_text()),p.name),[])
     def test_duplicate_yaml_is_rejected(self):
         with self.assertRaises(ValueError):policy.load_workflow('jobs:\n  audit:\n    if: guarded\n    if: true\n')
     def test_no_environment(self):self.reject(lambda d:d['jobs']['audit'].pop('environment'))
     def test_wrong_branch(self):self.reject(lambda d:d['jobs']['audit'].update({'if':policy.MANUAL.replace('refs/heads/main','refs/heads/feature')}))
+    def test_owner_review_environment_is_exclusive_to_the_scoped_release(self):
+        doc = policy.load_workflow((ROOT / '.github/workflows/bootstrap.yml').read_text())
+        for job, wrong_environment in [('sync', policy.CATALOGUE_ENV),
+                                       ('catalogue-publish', 'cloudflare-site-production')]:
+            changed = copy.deepcopy(doc)
+            changed['jobs'][job]['environment'] = wrong_environment
+            with self.subTest(job=job):
+                self.assertTrue(any('exclusive to the catalogue publisher' in e
+                                    for e in policy.validate(changed, 'bootstrap.yml')))
     def test_or_bypass(self):self.reject(lambda d:d['jobs']['audit'].update({'if':policy.MANUAL+' || true'}))
     def test_write_token(self):self.reject(lambda d:d.update(permissions={'contents':'write'}))
     def test_write_job_token(self):self.reject(lambda d:d['jobs']['audit'].update(permissions={'actions':'write'}))
