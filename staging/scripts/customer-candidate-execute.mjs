@@ -99,7 +99,12 @@ export async function executeCandidate(env,deps={}){
   const siteExact=await inspect(TARGET.site,cfg.site,get);
   if(action==='resume-frontend'&&siteExact.verified)step('frontend_reused',{version:siteExact.version_id});else {upload('site',false);const exact=await inspect(TARGET.site,cfg.site,get);assert.ok(exact.verified);assert.match(exact.version_id||'',/^[a-f0-9-]{36}$/);step('frontend_verified',{version:exact.version_id});}
   assert.equal((await schemaState(DB,a.profile)).state,'candidate');stage='custom_runtime';await probe(env,transport);step('custom_runtime');
-  stage='access_probes';assert.ok((await (deps.access||probeAccess)(env,transport)).passed);step('access_probes');
+  stage='access_probes';const access=await (deps.access||probeAccess)(env,transport);
+  if(!access.passed){
+   report.access_failures=(access.checks||[]).filter(c=>!c.passed).map(({name,route,status})=>({name,route,status}));
+   throw Error('Access checks failed'); // GET probe names, fixed routes and HTTP status only; never headers or body.
+  }
+  step('access_probes');
   if(routine){stage='live_health';await (deps.live||verifyLiveApplication)(env,transport,step);}
   report.completed=true;record();return report;
  }catch(error){report.failed_check=stage;const safe=safeFailure(error);if(/^[a-z_]{1,80}$/.test(safe.check||''))report.failed_validation=safe.check;report.recovery='dispatch_status_then_review';record();throw Error('Candidate stopped at '+stage+'; no automatic retry or rollback');}

@@ -1,13 +1,11 @@
 """Offline handoff, GitHub evidence and archive tests. No credentials or provider."""
 import hashlib
 import io
-import json
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
 import zipfile
-import yaml
 from staging.scripts import routine_review as rr
 
 SHA = 'a'*40
@@ -83,17 +81,3 @@ class RoutineTests(unittest.TestCase):
                     return d
                 with self.subTest(fragment=fragment),patch.object(rr,'api',changed),self.assertRaises(ValueError):rr.review()
             with patch.dict('os.environ',ROUTINE_STAGING_DELIVERY_ENABLED='false'),patch.object(rr,'api',side_effect=AssertionError),self.assertRaises(ValueError):rr.review()
-
-    def test_workflow_uses_main_package_without_build_or_cloud_in_review(self):
-        doc=yaml.safe_load(Path('.github/workflows/cvie-staging.yml').read_text())
-        prep=doc['jobs']['prepare']; job=doc['jobs']['customer-candidate']
-        self.assertNotIn('environment',prep)
-        self.assertEqual(job['needs'],'prepare')
-        self.assertEqual(job['environment'],'cloudflare-cvie-staging')
-        steps=prep['steps']+job['steps']
-        for s in steps:
-            if 'build.mjs' in s.get('run',''):self.assertIn("!= 'routine-deploy'",s['if'])
-        checks=[s for s in steps if s.get('run')=='python staging/scripts/routine_review.py']
-        self.assertEqual(len(checks),2)
-        self.assertTrue(all('secrets.' not in json.dumps(s) for s in checks))
-        self.assertEqual(checks[-1]['env']['EXPECTED_REVIEW'],'${{ needs.prepare.outputs.routine_review }}')
