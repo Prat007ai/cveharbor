@@ -37,6 +37,69 @@ async function fixture(t){
  };return f;
 }
 const blocked=async(f,operation)=>{await assert.rejects(()=>f.run(operation));assert.equal(f.writes.length,0);};
+test('pre-write failures report only a fixed code and never submit a write', async t => {
+  const privateDetail = 'fictional-private-diagnostic-marker';
+  const cases = [
+    ['authorization-missing', f => { delete f.env.REPAIR_AUTHORIZATION; }],
+    ['authorization-json', f => { f.env.REPAIR_AUTHORIZATION = privateDetail; }],
+    ['authorization-run-id', (_f, p) => { p.run_id = privateDetail; }],
+    ['authorization-fingerprint', (_f, p) => { p.preflight_sha256 = '0'.repeat(64); }],
+    ['authorization-window', (_f, p) => { p.not_before = p.expires_at; }],
+    ['recovery-envelope-json', f => { f.env.REPAIR_RECOVERY_EVIDENCE = privateDetail; }],
+    ['recovery-public-key', f => { f.env.REPAIR_RECOVERY_PUBLIC_KEY = privateDetail; }],
+    ['recovery-signature', f => {
+      const envelope = JSON.parse(f.env.REPAIR_RECOVERY_EVIDENCE);
+      envelope.signature = Buffer.alloc(64).toString('base64');
+      f.env.REPAIR_RECOVERY_EVIDENCE = JSON.stringify(envelope);
+    }],
+    ['recovery-payload-digest', (_f, p) => { p.recovery_sha256 = '0'.repeat(64); }],
+    ['second-inspection', (_f, _p, hooks) => {
+      hooks.secondObservation = () => { throw Error(privateDetail); };
+    }],
+    ['second-fingerprint', (_f, _p, hooks) => {
+      hooks.secondObservation = metadata => ({...metadata, deployment: 'other-deployment'});
+    }],
+    ['pre-write-window', (_f, p, hooks) => {
+      hooks.secondObservation = metadata => { hooks.time = p.expires_at + 1; return metadata; };
+    }],
+    ['final-github-approval', (f) => {
+      let reviews = 0;
+      const protection = f.client.protection;
+      f.client.protection = operation => {
+        if (++reviews === 2) throw Error(privateDetail);
+        return protection(operation);
+      };
+    }],
+  ];
+  for (const [code, fault] of cases) await t.test(code, async t => {
+    const f = await fixture(t);
+    const {p} = await f.approve();
+    const hooks = {time: now(), secondObservation: metadata => metadata};
+    // Each inspection observes the Worker both before and after the D1 reads.
+    const observe = f.client.observe;
+    let observations = 0;
+    f.client.observe = async () => {
+      const metadata = await observe();
+      return ++observations <= 2 ? metadata : hooks.secondObservation(metadata);
+    };
+    const original = f.env.REPAIR_AUTHORIZATION;
+    fault(f, p, hooks);
+    if (f.env.REPAIR_AUTHORIZATION === original) f.env.REPAIR_AUTHORIZATION = JSON.stringify(p);
+    await assert.rejects(
+      execute(f.env, {client: f.client, now: () => hooks.time, record: r => f.reports.push(r)}),
+      {message: 'Repair stopped at ' + code + '; use SELECT-only reconciliation. No automatic retry, resume or rollback.'}
+    );
+    const report = f.reports.at(-1);
+    assert.equal(report.failed_stage, code);
+    assert.equal(report.status, 'blocked');
+    assert.equal(report.write_requests, 0);
+    assert.equal(f.writes.length, 0);
+    const output = JSON.stringify(f.reports);
+    for (const sensitive of [privateDetail, p.approval_id, 'ciphertext_sha256', '"signature":']) {
+      assert.ok(!output.includes(sensitive));
+    }
+  });
+});
 const sqlFile=name=>fs.readFileSync(path.join(folder,name+'.sql'),'utf8');
 async function claimedInstallation(t){
  const f=await fixture(t),{s,p}=await f.approve();
