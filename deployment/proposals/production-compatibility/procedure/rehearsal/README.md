@@ -1,4 +1,11 @@
-# Isolated D1 rehearsal — first import stopped; correction pending approval
+# Isolated D1 rehearsal — content verification complete; continuation pending
+
+**Current status:** the corrected success import and first schema fixture import
+completed. Execution then stopped on bookmark inequality. The success copy has
+now passed complete read-only typed-content/rowid/sequence verification without
+using the export allowance. The [content-based correction and remaining scope](content-verification-review.md)
+supersede the earlier pending-import status below. Remote writes remain paused;
+no completed import may be repeated.
 
 The eight databases and two encrypted backup packages now exist under completed
 Approval A. Preserve them; do not allocate, export or download again. The actual
