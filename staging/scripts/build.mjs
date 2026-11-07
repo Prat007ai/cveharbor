@@ -62,6 +62,9 @@ await build({
     }));
   } }],
 });
+// The routine publisher uploads these two modules without bundling them again.
+if(candidate) await build({entryPoints:[path.join(root,'frontend.mjs')], bundle:true,
+  format:'esm', platform:'browser', conditions:['workerd','worker','browser'], outfile:path.join(out,'site.mjs')});
 const assets = spawnSync('python', [path.join(root, 'scripts/build-assets.py')], { stdio: 'inherit',env:{...process.env,STAGING_ASSET_SOURCE:frontend,STAGING_ASSET_ORIGIN:TARGET.origin,...(candidate?{STAGING_ASSET_OUTPUT:path.join(out,'public')}:{})} });
 if (assets.status !== 0) throw Error('Synthetic asset build failed');
 const manifest = { account: TARGET.account, api: TARGET.api, site: TARGET.site, origin: TARGET.origin, providers: 'synthetic-only', schedules: 'disabled',

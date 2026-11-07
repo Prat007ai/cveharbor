@@ -1,5 +1,5 @@
-import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {execFileSync} from 'node:child_process';
 import path from 'node:path';
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {execFileSync} from 'node:child_process';
 import {resourceManifest} from '../scripts/inventory.mjs';
 import {executeCandidate,authorizeCandidate,candidateConfigs,strictCandidateProbe} from '../scripts/customer-candidate-execute.mjs';
 import {FullDB} from './helpers/full-db.mjs';import {TARGET} from '../target.mjs';import {schemaState,journalDDL,journalTable,migrationName} from '../scripts/customer-candidate-schema.mjs';
@@ -34,10 +34,41 @@ test('interrupted migration rolls back or is reconciled by schema plus receipt, 
 test('partial schema or missing receipt blocks recovery and all uploads',async()=>{const f=fixture();try{f.DB.sql.exec(statements[0]);await assert.rejects(executeCandidate(envFor('migrate'),f.deps));assert.deepEqual(f.calls,[]);}finally{f.DB.close();}const g=fixture();try{g.DB.sql.exec(sql);await assert.rejects(executeCandidate(envFor('deploy'),g.deps));assert.deepEqual(g.calls,[]);}finally{g.DB.close();}});
 test('readiness failure stops frontend; explicit resume reuses only the exact backend version',async()=>{const f=fixture();try{await executeCandidate(envFor('migrate'),f.deps);const probe=f.deps.probe;f.deps.probe=async()=>{throw Error('not ready');};await assert.rejects(executeCandidate(envFor('deploy'),f.deps));assert.ok(!f.calls.includes('site-upload'));f.deps.probe=probe;await assert.rejects(executeCandidate({...envFor('resume-frontend'),CANDIDATE_BACKEND_VERSION:old},f.deps));f.calls.length=0;await executeCandidate(envFor('resume-frontend'),f.deps);assert.deepEqual(f.calls,['api-dry','site-dry','ready','site-upload','ready']);}finally{f.DB.close();}});
 test('unknown backend upload response stops and fresh deployment never reuploads matching backend',async()=>{const f=fixture();try{await executeCandidate(envFor('migrate'),f.deps);const run=f.deps.runner;f.deps.runner=(cmd,args)=>{const r=run(cmd,args);if(args.some(a=>path.basename(a)==='api.json')&&!args.includes('--dry-run'))throw Error('timeout');return r;};await assert.rejects(executeCandidate(envFor('deploy'),f.deps));assert.ok(!f.calls.includes('site-upload'));f.deps.runner=run;await assert.rejects(executeCandidate(envFor('deploy'),f.deps));assert.equal(f.calls.filter(x=>x==='api-upload').length,1);}finally{f.DB.close();}});
+test('an ambiguous live upload stays unknown until provider readback',async()=>{
+ for(const worker of ['api','site']){
+  for(const failure of ['timeout','readback']){
+   const f=fixture();
+   try{
+    await executeCandidate(envFor('migrate'),f.deps);
+    const run=f.deps.runner,inspect=f.deps.inspect;
+    let attempted=false;
+    f.deps.runner=(cmd,args)=>{
+     const result=run(cmd,args);
+     if(args.some(arg=>path.basename(arg)===worker+'.json')&&!args.includes('--dry-run')){
+      attempted=true;
+      if(failure==='timeout')return {status:null,error:{code:'ETIMEDOUT'}};
+     }
+     return result;
+    };
+    f.deps.inspect=(name,...args)=>{
+     if(attempted&&failure==='readback'&&name===TARGET[worker])throw Error('readback unavailable');
+     return inspect(name,...args);
+    };
+    await assert.rejects(executeCandidate(envFor('deploy'),f.deps));
+    const report=f.reports.at(-1);
+    assert.equal(report.backend_uploaded,worker==='api'?null:true);
+    assert.equal(report.frontend_uploaded,worker==='site'?null:false);
+    assert.equal(report.completed,false);
+    assert.equal(f.calls.filter(call=>call===worker+'-upload').length,1);
+    if(worker==='site')assert.equal(report.steps.find(s=>s.name==='backend_verified').version,backend);
+   }finally{f.DB.close();}
+  }
+ }
+});
 test('status is read-only; config targets and security bindings remain fixed',async()=>{const f=fixture();try{const before=f.DB.sql.prepare('SELECT total_changes() n').get().n;await executeCandidate(envFor('status'),f.deps);assert.equal(f.DB.sql.prepare('SELECT total_changes() n').get().n,before);assert.deepEqual(f.calls,[]);const cfg=candidateConfigs(envFor('deploy'));assert.equal(cfg.api.name,TARGET.api);assert.equal(cfg.api.workers_dev,false);assert.equal(cfg.site.assets.run_worker_first,true);assert.equal(cfg.api.vars.STAGING_APPLICATION_PROFILE,profile.name);assert.deepEqual(cfg.api.triggers.crons,[]);assert.throws(()=>candidateConfigs({...envFor('deploy'),CF_STAGING_ACCESS_AUD:'invalid'}));}finally{f.DB.close();}});
 test('candidate readiness requires explicit MFA, monitoring and profile markers',async()=>{const good={ready:true,schema_ready:true,feed_version:'a'.repeat(64),mail_capture:true,mfa_configured:true,monitor_webhook_configured:true,native_schedules:false,held:false,release:sha,application_profile:profile.name};for(const patch of [{application_profile:'production-baseline'},{mfa_configured:null},{monitor_webhook_configured:false},{schema_ready:false}])await assert.rejects(strictCandidateProbe(envFor('deploy'),async()=>Response.json({...good,...patch})));await strictCandidateProbe(envFor('deploy'),async()=>Response.json(good));});
 test('local transaction model rolls back a failure after DDL and preserves the baseline',async()=>{const f=fixture();try{const apply=f.deps.apply;f.deps.apply=async batch=>apply([...batch.slice(0,-1),{sql:'INSERT INTO missing_table VALUES(1)'},batch.at(-1)]);await assert.rejects(executeCandidate(envFor('migrate'),f.deps));assert.equal((await schemaState(f.DB,profile)).state,'baseline');f.deps.apply=apply;await executeCandidate(envFor('migrate'),f.deps);}finally{f.DB.close();}});
-test('failure after frontend upload can reconcile without uploading either Worker again',async()=>{const f=fixture();try{await executeCandidate(envFor('migrate'),f.deps);f.deps.access=async()=>({passed:false});await assert.rejects(executeCandidate(envFor('deploy'),f.deps));f.deps.access=async()=>({passed:true});f.calls.length=0;await executeCandidate({...envFor('resume-frontend'),CANDIDATE_FRONTEND_VERSION:frontend},f.deps);assert.deepEqual(f.calls,['api-dry','site-dry','ready','ready']);}finally{f.DB.close();}});
+test('failure after frontend upload can reconcile without uploading either Worker again',async()=>{const f=fixture();try{await executeCandidate(envFor('migrate'),f.deps);f.deps.access=async()=>({passed:false,checks:[{name:'service_static_asset',route:'/styles.css',status:403,passed:false}]});await assert.rejects(executeCandidate(envFor('deploy'),f.deps));assert.deepEqual(f.reports.at(-1).access_failures,[{name:'service_static_asset',route:'/styles.css',status:403}]);f.deps.access=async()=>({passed:true});f.calls.length=0;await executeCandidate({...envFor('resume-frontend'),CANDIDATE_FRONTEND_VERSION:frontend},f.deps);assert.deepEqual(f.calls,['api-dry','site-dry','ready','ready']);}finally{f.DB.close();}});
 test('migration runner invokes only the pinned documented command and one isolated SQL file',async()=>{const f=fixture();try{const apply=f.deps.apply;delete f.deps.apply;let commandCount=0;
  f.deps.migrationRunner=(cmd,args,options)=>{commandCount++;assert.equal(cmd,'npx');assert.deepEqual(args.slice(0,8),['--yes','wrangler@4.156.0','d1','migrations','apply',TARGET.database,'--remote','--config']);assert.equal(options.env.CLOUDFLARE_ACCOUNT_ID,TARGET.account);assert.equal(options.env.CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV,'false');
  const cfg=JSON.parse(fs.readFileSync(args[8]));const binding=cfg.d1_databases[0];assert.equal(binding.database_id,envFor('migrate').CF_STAGING_D1_DATABASE_ID);assert.equal(binding.migrations_table,journalTable);assert.deepEqual(fs.readdirSync(binding.migrations_dir),[migrationName(profile)]);const script=fs.readFileSync(binding.migrations_dir+'/'+migrationName(profile),'utf8');assert.match(script,/INSERT INTO staging_schema_history/);
@@ -59,3 +90,32 @@ test('native journal is checked even though the application schema excludes prov
  f.DB.sql.exec(journalDDL);assert.equal((await schemaState(f.DB,profile)).journal,'empty');f.DB.sql.prepare('INSERT INTO '+journalTable+'(name) VALUES(?)').run('unreviewed.sql');await assert.rejects(executeCandidate(envFor('migrate'),f.deps));assert.deepEqual(f.calls,[]);
  }finally{f.DB.close();}});
 test('success exit with partial changes is not success, and a process timeout never triggers a retry',async()=>{for(const timeout of [false,true]){const f=fixture();try{delete f.deps.apply;let attempts=0;f.deps.migrationRunner=()=>{attempts++;f.DB.sql.exec(journalDDL);f.DB.sql.exec(statements[0]);return timeout?{error:{code:'ETIMEDOUT'},status:null}:{status:0};};await assert.rejects(executeCandidate(envFor('migrate'),f.deps));assert.equal(attempts,1);assert.equal(f.reports.at(-1).database_changed,null);assert.ok(!f.calls.some(x=>x.includes('upload')));}finally{f.DB.close();}}});
+
+test('routine delivery uses only the verified modules and stops before a backlog or schema change',async()=>{
+ const parent='c'.repeat(40);
+ const env={...envFor('routine-deploy'),ROUTINE_PARENT:parent,ROUTINE_STAGING_DELIVERY_ENABLED:'true',
+   GITHUB_WORKFLOW_REF:'Prat007ai/cveharbor/.github/workflows/cvie-staging.yml@refs/heads/main'};
+ for(const scenario of ['disabled','schema','backlog','success']){
+  const f=fixture();
+  try{
+   if(scenario!=='schema')await executeCandidate(envFor('migrate'),f.deps); // private SQLite fixture only
+   const uploads=[];const prior=f.deps.inspect;
+   f.deps.inspect=async(name,cfg,...rest)=>cfg.vars.STAGING_RELEASE===parent?
+    {verified:scenario!=='backlog',version_id:old}:prior(name,cfg,...rest);
+   let apiSent=false,siteSent=false;
+   const inspect=f.deps.inspect;
+   f.deps.inspect=async(name,cfg,get,opts={})=>cfg.vars.STAGING_RELEASE===parent||opts.allowLegacy?
+    inspect(name,cfg,get,opts):{verified:name===TARGET.api?apiSent:siteSent,version_id:name===TARGET.api?backend:frontend};
+   f.deps.runner=(cmd,args)=>{
+    assert.ok(args.includes('--no-bundle'));const cfg=JSON.parse(fs.readFileSync(args[args.indexOf('--config')+1]));
+    assert.ok(cfg.main.endsWith(cfg.name===TARGET.api?'api.mjs':'site.mjs'));
+    if(!args.includes('--dry-run')){uploads.push(cfg.name);if(cfg.name===TARGET.api)apiSent=true;else siteSent=true;}
+    return {status:0};
+   };
+   f.deps.live=async()=>{f.calls.push('verified-live');};
+   const result=executeCandidate({...env,ROUTINE_STAGING_DELIVERY_ENABLED:String(scenario!=='disabled')},f.deps);
+   if(scenario==='success'){assert.equal((await result).completed,true);assert.deepEqual(uploads,[TARGET.api,TARGET.site]);assert.ok(f.calls.includes('verified-live'));}
+   else{await assert.rejects(result);assert.deepEqual(uploads,[]);}
+  }finally{f.DB.close();}
+ }
+});

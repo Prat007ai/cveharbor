@@ -1,6 +1,94 @@
 # Protected staging activation: execution review contract
 
-Status: prepared for review, not enabled or executed. No reset is included.
+## Current approvals (in force)
+
+Work owns delivery through [permanent staging](https://cveharborstage.com) and, for an implementation request, through verified production under the owner's standing authority. Honor an explicit scope limit. Select the supported workflow for each environment and verify all changes included in the release. Work supplies the manual candidate workflow's exact commit, operation pins and recovery evidence. GitHub still enforces its environment reviews.
+
+Verified via GitHub on 2026-11-07: active main ruleset 26584475 requires a PR, resolved
+threads and three GitHub Actions checks (application regression, workflow policy, `prepare`).
+It blocks deletion and force-push, has no bypass actors, and requires **zero** approving
+reviews. CI alone is not independent review. Staging allows only branch `main`, requires
+review by **Prat007ai**, permits self-review, and disallows administrator bypass. Work
+must not click using the owner's identity. Candidate mode is on; the older simple baseline
+lane is off. The review snapshot showed one collaborator (the owner), no enabled routine
+flag, and no independent reviewer identity we could verify. Protection settings can change:
+inspect them before relying on this process.
+
+Today Work sends the direct run link. The owner opens **Review deployments**, selects
+**cloudflare-cvie-staging**, then **Approve and deploy**. This also applies to separately
+dispatched protected status checks; use the preflight in the deploy job when appropriate.
+Today's manual release and recovery paths remain available under their existing approvals.
+The pinned production replica and the customer candidate are different artifacts.
+[PR #276](https://github.com/Prat007ai/cveharbor/pull/276) separately addresses the inventory
+block in [the last status check](https://github.com/Prat007ai/cveharbor/actions/runs/42402301955);
+never bypass inventory or claim the catalogue has passed live based on a preparation run.
+
+## Proposed routine staging operation (inactive)
+
+**Adoption is a separate owner decision after review and merge.** Only then may a repository
+administrator set `ROUTINE_STAGING_DELIVERY_ENABLED=true`. Do not set it for this PR.
+Leave the candidate mode enabled and simple baseline mode disabled. The first use requires
+a separately approved, reconciled baseline deployment at the new procedure's starting
+commit; this lane rejects bundled backlog. An expired artifact, rerun, moved main, or
+prior partial deployment is not a reason to rebuild or change a pin automatically.
+
+1. Work records the owner's requested outcome, permitted test actions and observable acceptance criteria on the task PR. This workflow handles only staging. After staging verification, follow the supported production procedure if the task includes production.
+
+2. A trusted GitHub reviewer independent of the PR opener, commit authors, committers and the final branch pusher reviews the implementation, entire diff, release
+   scope and tests. It submits a formal **Approve** review on the final head before merge
+   with a line exactly `Routine staging: approved`, explaining why the change is routine
+   and how each criterion will be verified. Work requests review directly on the PR;
+   no copying a review between chats. An author comment, two chats using the author's
+   login, a dismissed/stale review or a green test is insufficient. Missing GitHub attribution or an ambiguous final push blocks routine delivery. No available
+   independent reviewer means **blocked**, not self-approved. Work checks the review and
+   required checks before merging the exact reviewed head with a merge commit; update
+   the branch and obtain a new review if the merged tree would differ.
+3. Work waits for the **main push** runs, then dispatches existing **Permanent staging
+   preparation and approved updates** on main with only `candidate_operation=routine-deploy`
+   and `routine_pr=<task PR number>`. No per-release environment edits, copied hashes or
+   migrations. The gate checks the reviewed merge tree, outstanding reviews, allowed files,
+   and the exact three successful jobs from their expected main push workflows. It selects
+   the unexpired first-attempt main artifact by ID. The run summary links the review
+   and source build. Work gives the owner the direct run link for the single environment
+   review described above. The dispatcher rechecks evidence after that click.
+4. GitHub downloads the exact previously built package, checks its archive digest,
+   source, manifest, schema and asset seal. It checks both Workers are serving the
+   reviewed first parent, the permanent database already has the candidate schema, Access
+   is intact, and no schedules or external mail are enabled. It deploys the two prebuilt
+   Worker modules without rebundling, and the sealed assets, under the existing staging
+   lock. It checks the backend, the custom-domain readiness, positive and negative Access,
+   authenticated health, JavaScript/CSS bytes and catalogue controls. These last checks
+   prove the delivered assets, not a successful signed-in catalogue save.
+5. Work reads `customer-candidate-execution` and tests the task's acceptance criteria on
+   staging where feasible using the agreed fictional account. Link the specific review,
+   run, deployed commit, [staging site](https://cveharborstage.com), checks that passed,
+   specific failure or untested criteria in one result on the task. An operator may need
+   to complete an interactive Access/MFA step privately. **Keep the task open** until
+   acceptance passes. For a failed or uncertain upload, record the failing step and any
+   observed Worker versions, reconcile with read-only status, and do not retry or roll
+   back automatically. A green deployment does not close the task.
+
+The first routine lane admits only the application files named in
+[`routine_review.py`](../../../staging/scripts/routine_review.py), related tests, review
+evidence and the generated candidate profile. Unknown paths stop for separate review.
+Use the dedicated migration or production workflow for any authorized work outside this staging operation. Obtain an owner decision for a broader release, destructive change, material new cost or change to protections. Keep the routine file allowlist intact.
+
+**Removing the owner's Actions click:** enabling the routine flag does **not** remove it.
+The smallest option under GitHub's existing required-reviewer design is for the owner
+to explicitly delegate staging environment review to a named, trusted second reviewer.
+That reviewer, not Work acting as the owner, would click. This changes who can approve
+*every* operation using this environment, including recovery and migrations; do not grant
+that broader access just to automate routine releases. To delegate **routine delivery only**,
+separately approve a dedicated main-only staging environment with least-privilege deployment
+credentials and an independent reviewer (or an enforceable independent deployment protection
+rule). Keep today's environment/review on exceptional operations. Verify plan support,
+credential scope, reviewer availability, and fail-closed rules before switching. No such
+environment, reviewer, app, credentials or protection change is installed by this proposal.
+There is no verified zero-click arrangement today.
+
+## Historical candidate activation contract
+
+Status at original review: prepared for review, not enabled or executed. No reset is included.
 The build/schema profile and local readiness tests are implemented. The live
 workflow adapter remains a review item; this document does not make ordinary
 `release` capable of publishing the candidate.
