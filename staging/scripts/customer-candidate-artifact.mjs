@@ -23,7 +23,7 @@ for line in sql.splitlines(True):
 assert not pending.strip()
 print(json.dumps(statements))`,],{input:sql,encoding:'utf8'}));
  assert.match(statements.shift(),/PRAGMA foreign_keys=ON;/);assert.ok(statements.every(s=>/^\s*CREATE (TABLE|UNIQUE INDEX|TRIGGER)\b/.test(s)));
- const seal={version:1,commit,profile_sha256:hash(fs.readFileSync(profilePath)),sql_sha256:profile.migration_sha256,schema_sha256:profile.schema_sha256,api_sha256:api,frontend_sha256:directoryHash(path.join(output,'public')),manifest_sha256:hash(fs.readFileSync(path.join(output,'manifest.json')))};
+ const seal={version:2,site_sha256:hash(fs.readFileSync(path.join(output,'site.mjs'))),commit,profile_sha256:hash(fs.readFileSync(profilePath)),sql_sha256:profile.migration_sha256,schema_sha256:profile.schema_sha256,api_sha256:api,frontend_sha256:directoryHash(path.join(output,'public')),manifest_sha256:hash(fs.readFileSync(path.join(output,'manifest.json')))};
  return {seal,profile,rows,statements,seal_sha256:hash(JSON.stringify(seal))};
 }
 export function verifyArtifact(){const a=artifact();assert.deepEqual(JSON.parse(fs.readFileSync(path.join(output,'seal.json'))),a.seal);return a;}

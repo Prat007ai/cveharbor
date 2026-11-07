@@ -45,3 +45,32 @@ test('native journal is checked even though the application schema excludes prov
  f.DB.sql.exec(journalDDL);assert.equal((await schemaState(f.DB,profile)).journal,'empty');f.DB.sql.prepare('INSERT INTO '+journalTable+'(name) VALUES(?)').run('unreviewed.sql');await assert.rejects(executeCandidate(envFor('migrate'),f.deps));assert.deepEqual(f.calls,[]);
  }finally{f.DB.close();}});
 test('success exit with partial changes is not success, and a process timeout never triggers a retry',async()=>{for(const timeout of [false,true]){const f=fixture();try{delete f.deps.apply;let attempts=0;f.deps.migrationRunner=()=>{attempts++;f.DB.sql.exec(journalDDL);f.DB.sql.exec(statements[0]);return timeout?{error:{code:'ETIMEDOUT'},status:null}:{status:0};};await assert.rejects(executeCandidate(envFor('migrate'),f.deps));assert.equal(attempts,1);assert.equal(f.reports.at(-1).database_changed,null);assert.ok(!f.calls.some(x=>x.includes('upload')));}finally{f.DB.close();}}});
+
+test('routine delivery uses only the verified modules and stops before a backlog or schema change',async()=>{
+ const parent='c'.repeat(40);
+ const env={...envFor('routine-deploy'),ROUTINE_PARENT:parent,ROUTINE_STAGING_DELIVERY_ENABLED:'true',
+   GITHUB_WORKFLOW_REF:'Prat007ai/cveharbor/.github/workflows/cvie-staging.yml@refs/heads/main'};
+ for(const scenario of ['disabled','schema','backlog','success']){
+  const f=fixture();
+  try{
+   if(scenario!=='schema')await executeCandidate(envFor('migrate'),f.deps); // private SQLite fixture only
+   const uploads=[];const prior=f.deps.inspect;
+   f.deps.inspect=async(name,cfg,...rest)=>cfg.vars.STAGING_RELEASE===parent?
+    {verified:scenario!=='backlog',version_id:old}:prior(name,cfg,...rest);
+   let apiSent=false,siteSent=false;
+   const inspect=f.deps.inspect;
+   f.deps.inspect=async(name,cfg,get,opts={})=>cfg.vars.STAGING_RELEASE===parent||opts.allowLegacy?
+    inspect(name,cfg,get,opts):{verified:name===TARGET.api?apiSent:siteSent,version_id:name===TARGET.api?backend:frontend};
+   f.deps.runner=(cmd,args)=>{
+    assert.ok(args.includes('--no-bundle'));const cfg=JSON.parse(fs.readFileSync(args[args.indexOf('--config')+1]));
+    assert.ok(cfg.main.endsWith(cfg.name===TARGET.api?'api.mjs':'site.mjs'));
+    if(!args.includes('--dry-run')){uploads.push(cfg.name);if(cfg.name===TARGET.api)apiSent=true;else siteSent=true;}
+    return {status:0};
+   };
+   f.deps.live=async()=>{f.calls.push('verified-live');};
+   const result=executeCandidate({...env,ROUTINE_STAGING_DELIVERY_ENABLED:String(scenario!=='disabled')},f.deps);
+   if(scenario==='success'){assert.equal((await result).completed,true);assert.deepEqual(uploads,[TARGET.api,TARGET.site]);assert.ok(f.calls.includes('verified-live'));}
+   else{await assert.rejects(result);assert.deepEqual(uploads,[]);}
+  }finally{f.DB.close();}
+ }
+});
