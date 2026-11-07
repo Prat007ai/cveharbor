@@ -456,9 +456,9 @@
     };
     for(const [name,techs] of Object.entries(technologyGroups)){
       if(name===customGroup)continue;
-      const additional=new Map((personalized?.products||[]).filter(x=>x.enabled!==false).map(x=>[x.name.toLowerCase(),x]));
+      const additional=new Map((personalized?.products||[]).filter(x=>x.enabled!==false).map(x=>[catalogueKey(x.name),x]));
       // Inventory/watchlist registrations must never become catalogue selections.
-      const candidates=[...[...additional.values()].filter(x=>(x.category||inferProductCategory(x.name)||'applications')===name).map(x=>({...x,custom:true,icon:'＋'})),...techs.map(label=>categories.find(x=>x.name===label))];
+      const candidates=[...[...additional.values()].filter(x=>(x.category||inferProductCategory(x.name)||'applications')===name).map(x=>({...x,custom:true,icon:'＋'})),...techs.filter(label=>!additional.has(catalogueKey(label))).map(label=>categories.find(x=>x.name===label))];
       const matched=candidates.filter(x=>x&&matches(x)&&(x.custom||enabled(x)));
       groupCounts[name]=matched.length;
       if(!matched.length)continue;
@@ -701,8 +701,32 @@
   let draft=null,catalogueSaving=false,catalogueRevision,catalogueEpoch=0;
   const catalogueChanges=typeof BroadcastChannel==='function'?new BroadcastChannel('cveharbor-catalogue-changed'):null;
   const statusMessage=s=>{customizeStatus.textContent=s;$('technologyActionStatus').textContent=s;$('technologyActionStatus').hidden=!$('technologyCustomizer').hidden};
+  let draftRevision;
+  function catalogueKey(name){return name.normalize('NFKC').trim().toLowerCase().replace(/\s+/g,' ')}
+  function selectedSummary(catalogue){
+    const names=[...catalogue.defaults,...catalogue.products.filter(p=>p.enabled!==false).map(p=>p.name)];
+    const count=new Set(names.map(catalogueKey)).size;
+    return count+(count===1?' technology selected':' technologies selected');
+  }
+  function comparableCatalogue(catalogue){
+    return JSON.stringify({defaults:[...catalogue.defaults].sort(),products:catalogue.products.map(p=>({...p,enabled:p.enabled!==false}))});
+  }
+  function updateSelection(){
+    $('technologySelectedCount').textContent=selectedSummary(draft);
+    statusMessage('');
+    $('technologyScanStatus').textContent='';
+  }
+  function selectAll(enabled){
+    draft.defaults=enabled?[...defaultNames]:[];
+    for(const product of draft.products)product.enabled=enabled;
+    drawCustomizer();
+    updateSelection();
+  }
+  $('technologySelectAll').addEventListener('click',()=>selectAll(true));
+  $('technologyUnselectAll').addEventListener('click',()=>selectAll(false));
   function drawCustomizer(){
     if(!draft)return;
+    $('technologySelectedCount').textContent=selectedSummary(draft);
     const choices=$('technologyDefaultChoices');choices.replaceChildren();
     for(const [group,names] of Object.entries(technologyGroups)){
      if(group===customGroup)continue;
@@ -710,7 +734,7 @@
      for(const x of categories.filter(x=>names.includes(x.name))){
       const label=document.createElement('label'),input=document.createElement('input');
       input.type='checkbox';input.checked=draft.defaults.includes(x.name);
-      input.addEventListener('change',()=>{draft.defaults=input.checked?[...new Set([...draft.defaults,x.name])]:draft.defaults.filter(n=>n!==x.name)});
+      input.addEventListener('change',()=>{draft.defaults=input.checked?[...new Set([...draft.defaults,x.name])]:draft.defaults.filter(n=>n!==x.name);updateSelection()});
       label.append(input,text('span','',x.name));section.append(label);
      }
     }
@@ -718,50 +742,95 @@
     if(!draft.products.length)list.append(text('p','technology-editor-hint','No custom products added.'));
     for(const p of draft.products){
       const row=text('div','technology-custom-item','');
-      const selected=document.createElement('input');selected.type='checkbox';selected.checked=p.enabled!==false;selected.setAttribute('aria-label','Monitor '+p.name);selected.addEventListener('change',()=>{p.enabled=selected.checked});row.append(selected);
-      row.append(text('span','technology-custom-description',p.name+(p.version?' · '+p.version:'')+' · '+(customCategoryNames[p.category||inferProductCategory(p.name)||'applications'])+' · '+(window.CVEHARBOR_CVIE?.product(p.name)?window.CVEHARBOR_CVIE.statusFor(window.CVEHARBOR_CVIE.product(p.name)):'CVIE starts after saving')));
+      const label=document.createElement('label');row.append(label);
+      const selected=document.createElement('input');selected.type='checkbox';selected.checked=p.enabled!==false;selected.setAttribute('aria-label','Monitor '+p.name);selected.addEventListener('change',()=>{p.enabled=selected.checked;updateSelection()});label.append(selected);
+      const scan=window.CVEHARBOR_CVIE?.product(p.name);
+      const description=[p.name,p.version,customCategoryNames[p.category||inferProductCategory(p.name)||'applications']];
+      if(selected.checked&&scan)description.push(window.CVEHARBOR_CVIE.statusFor(scan));
+      label.append(text('span','technology-custom-description',description.filter(Boolean).join(' · ')));
       const remove=text('button','','Remove');remove.type='button';
-      remove.addEventListener('click',()=>{draft.products=draft.products.filter(x=>x.name!==p.name);drawCustomizer()});
+      remove.addEventListener('click',()=>{draft.products=draft.products.filter(x=>x.name!==p.name);drawCustomizer();updateSelection()});
       row.append(remove);list.append(row);
     }
   }
-  manageButton.addEventListener('click',()=>{if(!catalogueSignedIn){$('technologySignInDialog').showModal();return}draft=JSON.parse(JSON.stringify(personalized||{defaults:defaultNames,products:[]}));drawCustomizer();$('technologyCustomizer').hidden=false;$('technologyActionStatus').hidden=true;$('technologyCustomizer').scrollIntoView({block:'start',behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth'})});
+  manageButton.addEventListener('click',()=>{if(!catalogueSignedIn){$('technologySignInDialog').showModal();return}if(catalogueSaving)return;draft=JSON.parse(JSON.stringify(personalized||{defaults:defaultNames,products:[]}));draftRevision=catalogueRevision;updateSelection();drawCustomizer();$('technologyCustomizer').hidden=false;$('technologyActionStatus').hidden=true;$('technologyCustomizer').scrollIntoView({block:'start',behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth'})});
   $('technologySignInClose').addEventListener('click',()=>$('technologySignInDialog').close());
   $('technologySignInDialog').addEventListener('click',event=>{if(event.target===$('technologySignInDialog'))$('technologySignInDialog').close()});
   $('technologyManageClose').addEventListener('click',()=>{$('technologyCustomizer').hidden=true;$('technologyActionStatus').hidden=false});
-  $('technologyResetButton').addEventListener('click',()=>{draft={defaults:[...defaultNames],products:[]};drawCustomizer();statusMessage('Defaults restored in the editor. Save to apply.')});
+  $('technologyResetButton').addEventListener('click',()=>{draft={defaults:[...defaultNames],products:[]};drawCustomizer();updateSelection();statusMessage('Defaults restored in the editor. Save to apply.')});
+  customForm.addEventListener('reset',()=>queueMicrotask(()=>$('technologyAddName').dispatchEvent(new Event('input'))));
   customForm.addEventListener('submit',async e=>{e.preventDefault();const name=$('technologyAddName').value.trim(),version=$('technologyAddVersion').value.trim();if(!name||!draft||catalogueSaving)return;
-    if(draft.products.some(x=>x.name.toLowerCase()===name.toLowerCase())){statusMessage('Product already added.');return}
+    if(draft.products.some(x=>catalogueKey(x.name)===catalogueKey(name))){statusMessage('Product already added.');return}
     if(draft.products.length>=50){statusMessage('Maximum of 50 additional products.');return}
     const category=$('technologyAddCategory').value||inferProductCategory(name)||'applications';
     const vendor=$('technologyAddVendor')?.value.trim()||'',cpe=$('technologyAddCpe')?.value.trim()||'';
-    draft.products.push({name,version,category,vendor,cpe,...($('technologyAddName').dataset.cvieIdentity?{identity_id:$('technologyAddName').dataset.cvieIdentity}:{})});delete $('technologyAddName').dataset.cvieIdentity;customForm.reset();drawCustomizer();await saveCatalogue();
+    const product={name,version,category,vendor,cpe,...($('technologyAddName').dataset.cvieIdentity?{identity_id:$('technologyAddName').dataset.cvieIdentity}:{})};
+    draft.products.push(product);
+    customForm.reset();
+    drawCustomizer();
+    if(!personalized){statusMessage('Reload the saved catalogue before adding a product.');return}
+    // Register this product without committing other checkbox edits.
+    const products=personalized.products.filter(p=>catalogueKey(p.name)!==catalogueKey(name));
+    const added={defaults:personalized.defaults,products:[...products,product]};
+    if(await saveCatalogue(added,draftRevision)&&comparableCatalogue(draft)!==comparableCatalogue(added)){
+      statusMessage(customizeStatus.textContent+' Other selections are still unsaved.');
+    }
   });
-  async function saveCatalogue(submission=draft){if(!submission||catalogueSaving)return false;catalogueSaving=true;$('technologySaveButton').disabled=true;customForm.querySelector('button[type="submit"]').disabled=true;statusMessage('Saving catalogue...');const submitted=JSON.parse(JSON.stringify(submission)),epoch=catalogueEpoch;document.querySelectorAll('.technology-remove').forEach(el=>el.disabled=true);
-    $('technologyDefaultChoices').querySelectorAll('input').forEach(el=>el.disabled=true);$('technologyCustomList').querySelectorAll('input,button').forEach(el=>el.disabled=true);$('technologyResetButton').disabled=true;
-    try{const r=await fetch(catalogueAPI,{method:'PUT',credentials:'include',headers:{'content-type':'application/json'},body:JSON.stringify({...submitted,revision:catalogueRevision})});
-      const data=await r.json();if(epoch!==catalogueEpoch)return;if(!r.ok||data.saved!==true)throw Error(data.error||'Unable to confirm the catalogue save');
-      const before=new Set((personalized?.products||[]).map(p=>p.name.toLowerCase()));
-      const newest=submitted.products.find(p=>!before.has(p.name.toLowerCase()));
-      personalized=submitted;catalogueRevision=data.revision;addedHighlight=newest?.name||null;applyPersonalized();
-      window.CVEHARBOR_CVIE?.applyCatalogue?.(personalized);catalogueChanges?.postMessage({changed:true});
-      // The catalogue save already registers changed products on the server.
-      // applyCatalogue invalidates old responses before refreshing the saved scope.
-      if(newest){const category=newest.category||inferProductCategory(newest.name)||'applications';statusMessage(newest.name+' added under '+customCategoryNames[category]+'. '+(data.cvie?.ready?'The selected product is registered for CVIE checks.':data.cvie?.message||'CVIE service setup is pending; the product is safely saved.'));
-        const row=[...document.querySelectorAll('.technology-just-added')].find(x=>x.dataset.customProduct===newest.name);
-        row?.scrollIntoView({behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth',block:'center'});
-        setTimeout(()=>{addedHighlight=null;document.querySelectorAll('.technology-just-added').forEach(x=>x.classList.remove('technology-just-added'))},10000);
-      }else statusMessage(data.cvie?.status==='sync_required'?data.cvie.message:'Saved to your CVEHarbor account. '+(personalized.defaults.length+personalized.products.filter(p=>p.enabled!==false).length)+' technologies selected.');
+  async function saveCatalogue(submission=draft,revision=submission===draft?draftRevision:catalogueRevision){
+    if(!submission||catalogueSaving)return false;
+    const conflict='Another tab saved a newer catalogue. Your selections are still here. Compare them with the saved catalogue in a new tab, then reload and reapply your changes.';
+    $('technologyScanStatus').textContent='';
+    if(revision===undefined){statusMessage('Unable to confirm the saved catalogue. Reload before editing.');return false}
+    if(revision!==catalogueRevision){statusMessage(conflict);return false}
+    if(personalized&&comparableCatalogue(submission)===comparableCatalogue(personalized)){
+      statusMessage('No changes to save.');return true;
+    }
+    const submitted=JSON.parse(JSON.stringify(submission)),epoch=catalogueEpoch;
+    const controls=document.querySelectorAll('#technologyCustomizer input, #technologyCustomizer select, #technologyCustomizer button, .technology-remove');
+    catalogueSaving=true;
+    controls.forEach(el=>el.disabled=true);
+    statusMessage('Saving…');
+    try{
+      const r=await fetch(catalogueAPI,{method:'PUT',credentials:'include',headers:{'content-type':'application/json'},body:JSON.stringify({...submitted,revision})});
+      if(epoch!==catalogueEpoch)return false;
+      if(r.status===409){statusMessage(conflict);return false}
+      const data=await r.json();
+      if(epoch!==catalogueEpoch)return false;
+      if(!r.ok||data.saved!==true)throw Error(data.error||'The server did not confirm the save.');
+      const newest=submitted.products.find(p=>!personalized?.products.some(old=>catalogueKey(old.name)===catalogueKey(p.name)));
+      personalized=submitted;catalogueRevision=data.revision;
+      if(submission===draft||draftRevision===revision)draftRevision=data.revision;
+      addedHighlight=newest?.name||null;applyPersonalized();
+      window.CVEHARBOR_CVIE?.applyCatalogue?.(personalized);
+      catalogueChanges?.postMessage({changed:true});
+      statusMessage(data.unchanged?'No changes to save.':'Catalogue saved. '+selectedSummary(submitted)+'.');
+      if(data.cvie?.ready===false){
+        $('technologyScanStatus').textContent='Vulnerability checks are pending. See the intelligence panel for scan status.';
+      }else if(data.cvie?.queued>0){
+        $('technologyScanStatus').textContent='Products registered for vulnerability checks. See the intelligence panel for progress.';
+      }
+      if(newest)setTimeout(()=>{addedHighlight=null;document.querySelectorAll('.technology-just-added').forEach(x=>x.classList.remove('technology-just-added'))},10000);
       return true;
-    }catch(e){statusMessage('Unable to save: '+e.message);return false}
-    finally{catalogueSaving=false;$('technologySaveButton').disabled=false;customForm.querySelector('button[type="submit"]').disabled=false;$('technologyResetButton').disabled=false;drawCustomizer();renderCategories();}
+    }catch(e){
+      statusMessage('Unable to save: '+e.message+' Your selections are still here. Try Save my catalogue again.');
+      return false;
+    }finally{
+      catalogueSaving=false;controls.forEach(el=>el.disabled=false);drawCustomizer();renderCategories();
+    }
   }
   async function removeTechnology(name){
     if(!personalized||catalogueSaving)return;
-    const without=state=>({...state,defaults:state.defaults.filter(n=>n!==name),products:state.products.map(p=>p.name===name?{...p,enabled:false}:p)});
+    const key=catalogueKey(name);
+    const without=state=>({...state,defaults:state.defaults.filter(n=>catalogueKey(n)!==key),products:state.products.map(p=>catalogueKey(p.name)===key?{...p,enabled:false}:p)});
     if(await saveCatalogue(without(personalized))){if(draft){draft=without(draft);drawCustomizer()}statusMessage(name+' removed from your monitored catalogue.');manageButton.focus();}
   }
-  $('technologySaveButton').addEventListener('click',()=>void saveCatalogue());
+  $('technologySaveButton').addEventListener('click',()=>{
+    if([...customForm.querySelectorAll('input,select')].some(field=>field.value.trim())){
+      statusMessage('Your custom product form has entries. Use “Add and scan product” to save it, or “Clear form” before saving your catalogue.');
+      return;
+    }
+    void saveCatalogue();
+  });
   function applyPersonalized(){
     const allowed=new Set([...(personalized?.defaults||[]),...(personalized?.products||[]).filter(p=>p.enabled!==false).map(p=>p.name)].map(n=>n.toLowerCase()));
     items=(window.CVEHARBOR_CVIE?.merge(baseItems)||baseItems).filter(r=>!personalized||[...(r.categories||[]),...(r.cvie_products||[])].some(n=>allowed.has(n.toLowerCase())));
@@ -785,7 +854,7 @@
   if(typeof fetch==='function')void loadCatalogue();
   window.addEventListener('cveharbor:account-state',event=>{
     catalogueEpoch++;
-    if(!event.detail?.authenticated){catalogueSignedIn=false;personalized=null;draft=null;catalogueRevision=undefined;$('technologyCustomizer').hidden=true;applyPersonalized();}
+    if(!event.detail?.authenticated){catalogueSignedIn=false;personalized=null;draft=null;customForm.reset();catalogueRevision=undefined;$('technologyCustomizer').hidden=true;applyPersonalized();}
     else void loadCatalogue();
   });
   window.addEventListener('focus',()=>{if(!catalogueSaving)void loadCatalogue()});
