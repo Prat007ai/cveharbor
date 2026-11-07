@@ -21,9 +21,9 @@ export function allOf(conditions){
  return `(${allOf(conditions.slice(0,middle))} AND ${allOf(conditions.slice(middle))})`;
 }
 export const noViolations=()=>allOf([...Object.values(integrityChecks),'SELECT COUNT(*) n FROM pragma_foreign_key_check'].map(sql=>`(${sql})=0`));
-export function snapshotPredicate(payload){
+export function snapshotPredicate(payload, countsAlias){
  const schema=`json_array_length(json_extract(${payload},'$.schema_rows'))=(SELECT COUNT(*) FROM (${schemaSQL})) AND NOT EXISTS(SELECT 1 FROM json_each(${payload},'$.schema_rows') e WHERE NOT EXISTS(SELECT 1 FROM sqlite_schema s WHERE s.type=json_extract(e.value,'$.type') AND s.name=json_extract(e.value,'$.name') AND s.tbl_name=json_extract(e.value,'$.tbl_name') AND s.sql=json_extract(e.value,'$.sql')))`;
- return allOf([schema,...originalTables().map(t=>`(SELECT COUNT(*) FROM ${quote(t)})=json_extract(${payload},'$.counts.${t}')`),noViolations()]);
+ return allOf([schema,...originalTables().map(t=>`(SELECT COUNT(*) FROM ${quote(t)})=${countsAlias ? `(${countsAlias}->>${literal(t)})` : `json_extract(${payload},'$.counts.${t}')`}`),noViolations()]);
 }
 // Each caller supplies the allowed version 2 operation at this write boundary.
 function approvalTiming(payload, allowedPhase) {
