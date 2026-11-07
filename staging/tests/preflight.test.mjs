@@ -2,10 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { preflight } from '../scripts/preflight.mjs';
 import { probeMaintenanceAccess } from '../scripts/probe-access.mjs';
+import fs from 'node:fs';
 import { TARGET } from '../target.mjs';
 const env = { CF_STAGING_ACCOUNT_ID: TARGET.account, CF_STAGING_API_TOKEN: 'private-management-token', CF_STAGING_ACCESS_ISSUER: 'https://synthetic-stage.cloudflareaccess.com', CF_STAGING_ACCESS_AUD: 'a'.repeat(64), CF_STAGING_ACCESS_CLIENT_ID: 'private-service-client', CF_STAGING_ACCESS_CLIENT_SECRET: 'private-service-secret' };
 const sid = 'fac61562-fc31-426d-8032-550aba63b7f6';
-function fixture({ metadataDenied = false, bypass = false, emptyList = false, missingDetail = false, database = null, workers = [], apps = null } = {}) {
+const evidence=JSON.parse(fs.readFileSync(new URL('../../deployment/proposals/production-compatibility/procedure/rehearsal/pages-inventory-evidence.json',import.meta.url),'utf8'));
+const recordedDatabases=[{name:TARGET.database,uuid:sid},...Object.values(evidence.resources).map(({name,uuid})=>({name,uuid}))];
+function fixture({ metadataDenied = false, bypass = false, emptyList = false, missingDetail = false, databases = [], workers = [], apps = null } = {}) {
   return async (url, init) => {
     assert.equal(init.method, 'GET'); assert.equal(init.redirect, 'manual');
     const u = new URL(url); let result;
@@ -23,7 +26,7 @@ function fixture({ metadataDenied = false, bypass = false, emptyList = false, mi
       result = { policies: [{ effect: 'allow', resources: { ['com.cloudflare.api.account.' + TARGET.account]: '*' }, permission_groups: ['Workers Scripts Write','D1 Write','Account Settings Read','Access: Apps and Policies Read'].map(name => ({ name })) }] };
     } else if (route === '/workers/subdomain') result = { subdomain: 'cveharbor-staging' };
     else if (route === '/workers/scripts') result = workers;
-    else if (route === '/d1/database') result = database ? [database] : [];
+    else if (route === '/d1/database') result = databases;
     else if (route === '/access/apps') result = apps ?? [{ id: sid, domain: new URL(TARGET.origin).hostname, aud: env.CF_STAGING_ACCESS_AUD, type: 'self_hosted', name: 'CVEHarbor Staging' }];
     else if (route.endsWith('/policies')) result = [
       { name: 'CVEHarbor staging reviewers', decision: bypass ? 'bypass' : 'allow', include: [{ email: { email: 'private-reviewer@example.test' } }] },
@@ -87,30 +90,38 @@ test('empty token lists use only bounded policy references and distinguish missi
   assert.equal(missing.ready_for_creation, false);
 });
 
-test('deployment preflight accepts only the recorded staging DB and keeps diagnostics GET-only', async () => {
+test('deployment preflight requires all nine recorded name/UUID pairs irrespective of list order', async () => {
   const settings = { ...env, CF_STAGING_D1_DATABASE_ID: sid };
-  const result = await preflight(settings, fixture({ database: { name: TARGET.database, uuid: sid } }), { existingDatabase: true });
-  assert.equal(result.read_only_checks_passed, true);
-  assert.equal(result.checks.find(c => c.name === 'approved_database_identity').status, 'pass');
-  const wrong = await preflight(settings, fixture({ database: { name: TARGET.database, uuid: TARGET.productionDatabase } }), { existingDatabase: true });
-  assert.equal(wrong.read_only_checks_passed, false);
+  const check = async databases => {
+    const report = await preflight(settings, fixture({databases}), {existingDatabase:true});
+    return report.checks.find(check=>check.name==='approved_database_identity').status;
+  };
+  assert.equal(recordedDatabases.length,9);
+  assert.equal(await check([...recordedDatabases].reverse()),'pass');
+  for(const row of recordedDatabases){
+    assert.equal(await check(recordedDatabases.filter(other=>other!==row)),'fail',row.name);
+  }
+  const [permanent,first,second,...rest]=recordedDatabases;
+  assert.equal(await check([...recordedDatabases,{name:'unexpected',uuid:'11111111-2222-4333-8444-555555555555'}]),'fail');
+  assert.equal(await check([permanent,{...first,uuid:second.uuid},{...second,uuid:first.uuid},...rest]),'fail');
+  assert.equal(await check([permanent,first,first,...rest]),'fail');
+  assert.equal(await check([{...permanent,uuid:TARGET.productionDatabase},first,second,...rest]),'fail');
 });
-
 
 test('deployed diagnostic accepts only both expected Workers without weakening initial creation gates', async () => {
   const settings = { ...env, CF_STAGING_D1_DATABASE_ID: sid };
   const options = { existingDatabase: true, workerState: 'deployed' };
-  const database = { name: TARGET.database, uuid: sid };
+  const databases = recordedDatabases;
   const workers = [{ id: TARGET.api }, { id: TARGET.site }];
-  const good = await preflight(settings, fixture({ database, workers }), options);
+  const good = await preflight(settings, fixture({ databases, workers }), options);
   assert.equal(good.read_only_checks_passed, true);
   assert.equal(good.ready_for_creation, false);
   assert.equal(good.checks.find(c => c.name === 'expected_staging_workers_present').status, 'pass');
   for (const rows of [[], [workers[0]], [...workers, { id: 'unexpected' }], [workers[0], workers[0]]]) {
-    const bad = await preflight(settings, fixture({ database, workers: rows }), options);
+    const bad = await preflight(settings, fixture({ databases, workers: rows }), options);
     assert.ok(bad.blockers.includes('expected_staging_workers_present'));
   }
-  const initial = await preflight(settings, fixture({ database, workers }), { existingDatabase: true });
+  const initial = await preflight(settings, fixture({ databases, workers }), { existingDatabase: true });
   assert.ok(initial.blockers.includes('approved_worker_names_available'));
 });
 
@@ -118,7 +129,7 @@ test('deployed diagnostic accepts only both expected Workers without weakening i
 test('migration maintenance accepts a known zero-policy app; denied metadata is not an empty-policy proof', async () => {
   const settings = { ...env, CF_STAGING_D1_DATABASE_ID: sid, CF_STAGING_PROVISION_ACTION: 'migrate' };
   const options = { existingDatabase: true, workerState: 'deployed', maintenance: true };
-  const original = fixture({ database: { name: TARGET.database, uuid: sid }, workers: [{ id: TARGET.api }, { id: TARGET.site }] });
+  const original = fixture({ databases: recordedDatabases, workers: [{ id: TARGET.api }, { id: TARGET.site }] });
   for (const mode of ['blocked','allow','metadata_denied','other_app']) {
     const transport = async (url, init) => {
       if (String(url).endsWith('/policies')) return Response.json(mode === 'metadata_denied' ? {success:false} : {success:true,result:mode==='allow'?[{decision:'allow'}]:[]}, {status:mode==='metadata_denied'?403:200});

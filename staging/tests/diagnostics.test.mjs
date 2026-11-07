@@ -1,5 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {diagnose,inspectWorker,management} from '../scripts/diagnose.mjs';
+import {resourceManifest} from '../scripts/inventory.mjs';
 import {configs} from '../scripts/configure.mjs';
 import {TARGET} from '../target.mjs';
 const env={CF_STAGING_ACCOUNT_ID:TARGET.account,CF_STAGING_D1_DATABASE_ID:'fac61562-fc31-426d-8032-550aba63b7f6',CF_STAGING_API_TOKEN:'synthetic-secret',CF_STAGING_ACCESS_ISSUER:'https://synthetic.cloudflareaccess.com',CF_STAGING_ACCESS_AUD:'a'.repeat(64)};
@@ -12,7 +13,8 @@ test('permanent API metadata requires exact D1, private R2, variables and stagin
 });
 test('metadata is GET only and rejects wrong targets or unknown worker inventory without mutation',async()=>{
  assert.throws(()=>management({...env,CF_STAGING_ACCOUNT_ID:'production'},()=>assert.fail('No network')));
- const calls=[];const transport=async(url,init)=>{assert.equal(init.method,'GET');calls.push(url);let result=url.endsWith(TARGET.account)?{id:TARGET.account}:url.includes('?per_page')?[{name:TARGET.database,uuid:env.CF_STAGING_D1_DATABASE_ID}]:url.includes('/d1/database/')?{name:TARGET.database,uuid:env.CF_STAGING_D1_DATABASE_ID}:[];return Response.json({success:true,result});};
+ const {permanent_database,retained_rehearsal_databases}=resourceManifest();
+ const calls=[];const transport=async(url,init)=>{assert.equal(init.method,'GET');calls.push(url);let result=url.endsWith(TARGET.account)?{id:TARGET.account}:url.includes('?per_page')?[permanent_database,...retained_rehearsal_databases]:url.includes('/d1/database/')?{name:TARGET.database,uuid:env.CF_STAGING_D1_DATABASE_ID}:[];return Response.json({success:true,result});};
  await assert.rejects(diagnose(env,transport),/Unapproved Worker/);assert.ok(calls.every(u=>u.includes(TARGET.account)));
  await assert.rejects(management(env,async()=>Response.json({success:false,errors:[{message:'secret-value'}]},{status:403}))('/workers/scripts'),e=>!e.message.includes('secret-value'));
 });

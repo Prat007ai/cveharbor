@@ -24,7 +24,8 @@ test('nonempty untracked database and altered migration receipt fail before chan
 });
 test('approved disposable name and UUID accepted; unknown, swapped, duplicate and production IDs rejected',()=>{
  const m=structuredClone(resourceManifest()),d={name:'cveharbor-phase1-staging-test',uuid:'11111111-2222-4333-8444-555555555555'};m.disposable_databases.push(d);
- assert.ok(checkDatabases([m.permanent_database,d],{manifest:m,permanentId:m.permanent_database.uuid}));
- for(const rows of [[m.permanent_database,{...d,uuid:'22222222-2222-4333-8444-555555555555'}],[m.permanent_database,d,d],[m.permanent_database,{...d,name:'unknown'}]])assert.throws(()=>checkDatabases(rows,{manifest:m,permanentId:m.permanent_database.uuid}));
+ const known=[m.permanent_database,...m.retained_rehearsal_databases];
+ assert.ok(checkDatabases([...known,d],{manifest:m,permanentId:m.permanent_database.uuid}));
+ for(const rows of [[...known,{...d,uuid:'22222222-2222-4333-8444-555555555555'}],[...known,d,d],[...known,{...d,name:'unknown'}]])assert.throws(()=>checkDatabases(rows,{manifest:m,permanentId:m.permanent_database.uuid}));
  assert.throws(()=>validateResources({...m,disposable_databases:[{...d,uuid:'46710e51-7ca4-4571-b89c-921b9969de0b'}]}));
 });
