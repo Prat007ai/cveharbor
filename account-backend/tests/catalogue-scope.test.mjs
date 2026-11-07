@@ -48,6 +48,18 @@ test('catalogue scope cannot include inventory/watchlist or another user; saved 
  assert.equal((await q(e,'SELECT COUNT(*) n FROM inventory_assets').first()).n,1);assert.equal((await q(e,'SELECT COUNT(*) n FROM user_stack').first()).n,1);
  assert.equal((await worker.fetch(new Request('https://api.cveharbor.com/v1/technology-catalogue'),e,{})).status,401);
 });
+test('bulk changes preserve custom PHP details and keep a single catalogue registration',async()=>{
+ const {request,state}=await setup();
+ const php={name:'PHP',version:'8.4.26',vendor:'PHP',category:'applications'};
+ let saved=await request();
+ for(const enabled of [true,false,true]){
+  const product={...php,enabled};
+  saved=await request('PUT',{defaults:enabled?['PHP']:[],products:[product],revision:saved.revision});
+  assert.equal(saved.saved,true);
+  assert.deepEqual((await request()).products,[product]);
+  assert.deepEqual((await state()).products.map(p=>p.name),enabled?['PHP']:[]);
+ }
+});
 test('stale synchronization cannot restore removed catalogue jobs or erase a newer selection',async()=>{
  const {e,request,state}=await setup();await request('PUT',{defaults:['PHP'],products:[]});
  const old=(await q(e,'SELECT preferences_json FROM user_technology_catalogue WHERE user_id=?','a').first()).preferences_json;
