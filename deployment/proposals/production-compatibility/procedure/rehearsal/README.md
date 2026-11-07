@@ -1,4 +1,10 @@
-# Isolated D1 rehearsal — content verification complete; continuation pending
+# Isolated D1 rehearsal — depth correction; success continuation pending
+
+**Latest:** the success-only claim stopped at D1's expression-depth limit. The
+original data and partial journal have been reconciled. The [depth correction,
+exact trigger replacement and remaining production blockers](depth-continuation-review.md)
+supersede the historical pending scopes below. All remote writes remain paused;
+the other seven cases and fixture imports are deferred.
 
 **Current status:** the corrected success import and first schema fixture import
 completed. Execution then stopped on bookmark inequality. The success copy has

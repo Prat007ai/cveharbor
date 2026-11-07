@@ -13,8 +13,9 @@ function fixture(){
  return f;
 }
 test('missing failed-import billing consumes a reserve, never zero or an invented actual count',()=>{
- assert.deepEqual(checkRehearsalWrites(0),{failed_import_billable_writes:'unknown',failed_import_reserved_writes:500000,accounted_writes:500000,remaining_writes:500000});
- assert.equal(checkRehearsalWrites(200000,10000).remaining_writes,300000);
+ assert.deepEqual(checkRehearsalWrites(0),{failed_import_billable_writes:'unknown',failed_import_reserved_writes:500000,failed_claim_billable_writes:'unknown',failed_claim_reserved_writes:10000,accounted_writes:510000,remaining_writes:490000});
+ assert.equal(checkRehearsalWrites(193195,30000).remaining_writes,296805);
+ assert.equal(checkRehearsalWrites(200000,10000).remaining_writes,290000);
  assert.throws(()=>checkRehearsalWrites(499999,2));assert.throws(()=>checkRehearsalWrites(NaN));
 });
 test('single upload/ingest, polling only the known import; persisted attempt prevents replay',async()=>{

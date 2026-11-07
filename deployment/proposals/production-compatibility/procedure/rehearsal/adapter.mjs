@@ -5,7 +5,7 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {artifacts,account,cases,names,denied,marker,markerSQL,driftSQL,syntheticCounts} from './artifacts.mjs';
+import {artifacts,account,cases,names,denied,marker,markerSQL,driftSQL,syntheticCounts,successContinuation,previousPlan,rehearsalJournalObjects,journalCorrectionSQL} from './artifacts.mjs';
 import {privateLog} from './private-log.mjs';
 import {verifyStorage} from './storage-policy.mjs';
 import {verifyExternalWriterPolicy} from './development-exception.mjs';
@@ -15,9 +15,15 @@ import {integrityChecks} from '../../../../../account-backend/src/release-integr
 const uuid=x=>assert.match(x||'',/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/);
 const hash=x=>assert.match(x||'',/^[a-f0-9]{64}$/);
 const sql=name=>fs.readFileSync(path.join(productionFolder,name+'.sql'),'utf8');
-const phases=['inventory','claim','perturb','install','reconcile'];
+const phases=['inventory','claim','perturb','install','reconcile','correct-journal','continue-claim'];
 export function authorize(env,p,scenario,phase,now=Date.now()){
  assert.ok(cases.includes(scenario)&&phases.includes(phase));
+ if(p.success_continuation!==undefined){
+  assert.equal(scenario,'success');assert.deepEqual(p.allowed_scenarios,['success']);
+  assert.equal(p.resources?.success?.uuid,'84dab6e9-9344-4e0f-a79a-4f0b43395754');hash(p.journal_correction_sql_sha256);
+  assert.deepEqual(p.success_continuation,successContinuation);
+  assert.ok(['inventory','correct-journal','continue-claim','install','reconcile'].includes(phase),'Original claim cannot be replayed');
+ }else assert.ok(!['correct-journal','continue-claim'].includes(phase),'Explicit preserved-state continuation required');
  assert.equal(p.version,1);uuid(p.approval_id);assert.equal(digest(p),env.REHEARSAL_APPROVAL_SHA256);
  assert.match(p.source_sha||'',/^[a-f0-9]{40}$/);assert.equal(p.source_sha,env.REHEARSAL_SOURCE_SHA);
  assert.equal(p.account,account);assert.equal(env.CLOUDFLARE_ACCOUNT_ID,account);
@@ -125,7 +131,7 @@ export async function run(env,p,scenario,phase,{fetcher,clock=Date.now,journal}=
  const has=name=>definitions.some(x=>x.name===name&&x.type==='table');
  const receipts=has(receiptTable)?await c.select('SELECT id,payload FROM '+receiptTable+' ORDER BY id'):[];
  const attempts=has(marker)?await c.select('SELECT id,payload FROM '+marker+' ORDER BY id'):[];
- const plan=JSON.stringify({approval_sha256:digest(p),scenario,database:r.uuid,manifest_sha256:p.manifest_sha256});
+ const plan=p.success_continuation?previousPlan():JSON.stringify({approval_sha256:digest(p),scenario,database:r.uuid,manifest_sha256:p.manifest_sha256});
  if(phase==='reconcile'){
   const control=s.schema_rows.some(x=>x.name==='operations_control')?await c.select('SELECT write_hold,database_frozen,revision FROM operations_control WHERE id=1'):[];
   const leases=s.schema_rows.some(x=>x.name==='operations_leases')?Number((await c.select('SELECT COUNT(*) n FROM operations_leases'))[0].n):null;
@@ -140,14 +146,30 @@ export async function run(env,p,scenario,phase,{fetcher,clock=Date.now,journal}=
  const write=async(q,params=[],mode)=>{fresh();log({kind:'write-intent',sql_sha256:digest(q),params_sha256:digest(params)});return c.write(q,params,mode);};
  // Claim locally before any write, then permanently in D1. Never remove either.
  try{
-  if(phase==='claim'){
-   assert.equal(s.schema_sha256,target.baseline_schema_sha256);assert.equal(digest(s.counts),r.counts_sha256);assert.equal(definitions.length,0,'Not a fresh restored/fixture baseline');
+  if(p.success_continuation){
+   assert.equal(digest(canonical(definitions)),digest(canonical(rehearsalJournalObjects(phase==='correct-journal'))),'Unexpected journal definitions');
+   assert.equal(attempts.find(x=>x.id==='plan')?.payload,plan,'Preserved plan mismatch');
+  }
+  if(phase==='correct-journal'){
+   assert.equal(s.schema_sha256,target.baseline_schema_sha256);assert.equal(digest(s.counts),r.counts_sha256);
+   assert.deepEqual(receipts,[]);assert.deepEqual(attempts,[{id:'plan',payload:plan}]);
+   const correction=journalCorrectionSQL({schema_rows:s.schema_rows,counts:s.counts,previous_journal_rows:rehearsalJournalObjects(true),previous_plan:plan,not_before:p.not_before,expires_at:p.expires_at});
+   assert.equal(digest(correction),p.journal_correction_sql_sha256,'Correction request differs from approved bytes');
+   journal.claim(phase);await write(correction);
+   return {status:'journal-correction-acknowledged-verification-required'};
+  }
+  if(phase==='claim'||phase==='continue-claim'){
+   assert.equal(s.schema_sha256,target.baseline_schema_sha256);assert.equal(digest(s.counts),r.counts_sha256);
+   if(phase==='claim')assert.equal(definitions.length,0,'Not a fresh restored/fixture baseline');
+   else{assert.deepEqual(receipts,[]);assert.deepEqual(attempts,[{id:'plan',payload:plan}]);}
    if(scenario!=='success')assert.equal(Number((await c.select("SELECT COUNT(*) n FROM users WHERE id='pr270-fictional' AND email='pr270-fictional@example.invalid'"))[0].n),1);
    journal.claim(phase);
-   await write(markerSQL);await write(`INSERT INTO ${marker}(id,payload) VALUES('plan',?)`,[plan]);
-   await write(sql('bootstrap'));
+   if(phase==='claim'){
+    await write(markerSQL);await write(`INSERT INTO ${marker}(id,payload) VALUES('plan',?)`,[plan]);
+    await write(sql('bootstrap'));
+   }
    const time=Number((await c.select("SELECT CAST(strftime('%s','now') AS INTEGER) n"))[0].n);assert.ok(Number.isSafeInteger(time));
-   const payload=JSON.stringify({operation:'install',not_before:Math.max(time-1,p.not_before),expires_at:Math.min(p.expires_at,time+(scenario==='expiry'?15:1800)),schema_rows:s.schema_rows,counts:s.counts,rehearsal:true,approval_id:p.approval_id,manifest_sha256:p.production_manifest_sha256,rehearsal_manifest_sha256:p.manifest_sha256,source_sha:p.source_sha,database:r.uuid,account,scenario,recovery_evidence_sha256:p.recovery_evidence_sha256});
+   const payload=JSON.stringify({operation:'install',not_before:Math.max(time-1,p.not_before),expires_at:Math.min(p.expires_at,time+(scenario==='expiry'?15:1800)),schema_rows:s.schema_rows,counts:s.counts,rehearsal:true,approval_id:p.approval_id,manifest_sha256:p.production_manifest_sha256,rehearsal_manifest_sha256:p.manifest_sha256,source_sha:p.source_sha,database:r.uuid,account,scenario,recovery_evidence_sha256:p.recovery_evidence_sha256,success_continuation:p.success_continuation});
    await write(`INSERT INTO ${receiptTable}(id,payload) VALUES('install-intent',?)`,[payload]);
    if(scenario!=='rejected')await write(sql('install-start'));
    log({kind:'claim-complete',counts_sha256:digest(s.counts)});return {status:'claimed'};

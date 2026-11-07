@@ -12,10 +12,18 @@ export const receiptTable='d1_cveharbor_repair_receipts';
 export const quote=s=>'"'+s.replaceAll('"','""')+'"';
 export const literal=s=>"'"+s.replaceAll("'","''")+"'";
 export function originalTables(){const db=baselineDB();try{return db.prepare(schemaSQL).all().filter(r=>r.type==='table').map(r=>r.name).sort();}finally{db.close();}}
-export const noViolations=()=>[...Object.values(integrityChecks),'SELECT COUNT(*) n FROM pragma_foreign_key_check'].map(sql=>`(${sql})=0`).join(' AND ');
+// SQLite measures expression-tree depth, not just SQL length. Preserve SQL's
+// three-valued AND semantics while avoiding a left-deep chain of 70+ counts.
+export function allOf(conditions){
+ assert.ok(conditions.length>0);
+ if(conditions.length===1)return conditions[0];
+ const middle=Math.floor(conditions.length/2);
+ return `(${allOf(conditions.slice(0,middle))} AND ${allOf(conditions.slice(middle))})`;
+}
+export const noViolations=()=>allOf([...Object.values(integrityChecks),'SELECT COUNT(*) n FROM pragma_foreign_key_check'].map(sql=>`(${sql})=0`));
 export function snapshotPredicate(payload){
  const schema=`json_array_length(json_extract(${payload},'$.schema_rows'))=(SELECT COUNT(*) FROM (${schemaSQL})) AND NOT EXISTS(SELECT 1 FROM json_each(${payload},'$.schema_rows') e WHERE NOT EXISTS(SELECT 1 FROM sqlite_schema s WHERE s.type=json_extract(e.value,'$.type') AND s.name=json_extract(e.value,'$.name') AND s.tbl_name=json_extract(e.value,'$.tbl_name') AND s.sql=json_extract(e.value,'$.sql')))`;
- return schema+' AND '+originalTables().map(t=>`(SELECT COUNT(*) FROM ${quote(t)})=json_extract(${payload},'$.counts.${t}')`).join(' AND ')+' AND '+noViolations();
+ return allOf([schema,...originalTables().map(t=>`(SELECT COUNT(*) FROM ${quote(t)})=json_extract(${payload},'$.counts.${t}')`),noViolations()]);
 }
 export function sqlFiles(){
  const table=receiptTable;

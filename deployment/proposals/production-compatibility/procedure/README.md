@@ -5,6 +5,13 @@ restored. PR #270 must remain draft.** This procedure supersedes the original
 plan's missing-executor section. It does not deploy code or activate customer-only
 remediation. The original backup remains Plan Z, never an automatic restore source.
 
+**Current isolated-rehearsal status:** imports and full restored-copy verification
+completed, but the success claim hit D1's expression-depth limit before any repair
+installation. The [focused correction and preserved-state continuation](rehearsal/depth-continuation-review.md)
+record the latest evidence, exact approval scope and all remaining production
+gates. Historical statements below about missing preparation or no rehearsal
+must not be used as the current status. No production gate is waived here.
+
 The separate [isolated rehearsal adapter and approval procedure](rehearsal/README.md)
 is now prepared for review. It uses its own manifest and explicitly approved new
 UUIDs. It cannot retarget this production executor. No remote rehearsal has run.

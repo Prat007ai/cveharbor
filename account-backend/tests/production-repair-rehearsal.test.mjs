@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {DatabaseSync} from 'node:sqlite';
 import {baselineDB} from '../../deployment/proposals/production-compatibility/rehearsal.mjs';
-import {artifacts,account,cases,names,denied,marker,syntheticCounts,syntheticSQL} from '../../deployment/proposals/production-compatibility/procedure/rehearsal/artifacts.mjs';
+import {artifacts,account,cases,names,denied,marker,markerSQL,syntheticCounts,syntheticSQL,successContinuation,previousPlan,rehearsalJournalObjects,journalCorrectionSQL} from '../../deployment/proposals/production-compatibility/procedure/rehearsal/artifacts.mjs';
 import {authorize,run} from '../../deployment/proposals/production-compatibility/procedure/rehearsal/adapter.mjs';
 import {target,folder,verifyFiles} from '../../deployment/proposals/production-compatibility/procedure/build.mjs';
 import {digest,canonical,schemaSQL} from '../../scripts/production_schema_baseline.mjs';
@@ -64,6 +64,46 @@ function developmentFixture(t,scenario='success'){
  f.repin();return f;
 }
 
+function continuationFixture(t){
+ const f=developmentFixture(t);
+ f.db.exec(markerSQL);f.db.prepare(`INSERT INTO ${marker}(id,payload) VALUES('plan',?)`).run(previousPlan());
+ f.db.exec(fs.readFileSync(path.join(folder,'rehearsal/previous-bootstrap.sql'),'utf8'));
+ f.claims.add('claim'); // Preserve the consumed original claim; never clear it.
+ f.p.allowed_scenarios=['success'];f.p.success_continuation=successContinuation;
+ const payload={schema_rows:f.db.prepare(schemaSQL).all(),counts:syntheticCounts(),previous_journal_rows:rehearsalJournalObjects(true),previous_plan:previousPlan(),not_before:f.p.not_before,expires_at:f.p.expires_at};
+ f.correction=journalCorrectionSQL(payload);f.p.journal_correction_sql_sha256=digest(f.correction);f.repin();return f;
+}
+
+test('preserved success journal replaces only sequence trigger, then continues claim and installation once',async t=>{
+ const f=continuationFixture(t),before=f.db.prepare(`SELECT payload FROM ${marker} WHERE id='plan'`).get().payload;
+ await assert.rejects(()=>f.call('claim'));assert.equal(f.requests.length,0);
+ await assert.rejects(()=>f.call('continue-claim'));assert.equal(f.writes(),0);
+ assert.equal((await f.call('correct-journal')).status,'journal-correction-acknowledged-verification-required');
+ assert.equal(f.db.prepare(`SELECT payload FROM ${marker} WHERE id='plan'`).get().payload,before);
+ assert.equal(f.db.prepare('SELECT COUNT(*) n FROM d1_cveharbor_repair_receipts').get().n,0);
+ await f.call('continue-claim');await f.call('install');
+ const r=await f.call('reconcile');assert.equal(r.installed_schema_match,true);assert.equal(r.baseline_counts_match,true);assert.deepEqual(r.control,[{write_hold:1,database_frozen:1,revision:0}]);
+ assert.equal(f.writes(),5);assert.ok(f.claims.has('claim'));assert.ok(f.claims.has('continue-claim'));
+ const payload=JSON.parse(f.db.prepare("SELECT payload FROM d1_cveharbor_repair_receipts WHERE id='installed'").get().payload);
+ assert.equal(payload.source_sha,f.p.source_sha);assert.deepEqual(payload.success_continuation,successContinuation);
+ await assert.rejects(()=>f.call('install'));assert.equal(f.writes(),5);
+});
+
+test('success continuation rejects stale history, retargeting, missing authorization and changed correction bytes',async t=>{
+ for(const alter of [f=>f.p.success_continuation={...successContinuation,previous_source_sha:'b'.repeat(40)},f=>delete f.p.success_continuation,f=>f.p.allowed_scenarios=['success','schema'],f=>f.p.resources.success.uuid=f.p.resources.schema.uuid,f=>f.env.REHEARSAL_ENABLED='false']){
+  const f=continuationFixture(t);alter(f);f.repin();await assert.rejects(()=>f.call('correct-journal'));assert.equal(f.requests.length,0);
+ }
+ const f=continuationFixture(t);f.p.journal_correction_sql_sha256='0'.repeat(64);f.repin();await assert.rejects(()=>f.call('correct-journal'));assert.equal(f.writes(),0);
+});
+
+test('uncertain trigger correction preserves claim and reconciles without resubmitting',async t=>{
+ const f=continuationFixture(t),fetcher=f.fetcher;
+ f.fetcher=async(url,options)=>{const result=await fetcher(url,options);if(options.body&&JSON.parse(options.body).sql===f.correction)throw Error('lost correction reply');return result;};
+ await assert.rejects(()=>f.call('correct-journal'));assert.ok(f.claims.has('correct-journal'));assert.equal(f.writes(),1);
+ await assert.rejects(()=>f.call('correct-journal'));assert.equal(f.writes(),1);
+ const r=await f.call('reconcile');assert.equal(r.baseline_counts_match,true);assert.deepEqual(r.receipt_ids,[]);assert.deepEqual(r.attempt_ids,['plan']);
+});
+
 test('development exception records accepted uncertainty and preserves the exact successful batch',async t=>{
  const f=developmentFixture(t);
  await f.call('claim');await f.call('install');
@@ -116,8 +156,8 @@ test('development exception still stops on live bindings, snapshot changes and a
  assert.equal(f.writes(),n);
 });
 test('isolated artifact pins retain exact reviewed production batch and synthetic baseline',()=>{
- const a=artifacts();assert.equal(a.manifest.production_manifest_sha256,'4dd094b957dc21421a0daf35f6e99b28cfac42ae60b26dee15bf2b6b12e5b42c');
- assert.equal(digest(install),'2932acfd414c14e850d994b5aa31cc098aea6145ced7f32188c8b9edd18e7c46');assert.equal(digest(syntheticSQL()),a.manifest.synthetic_sql_sha256);
+ const a=artifacts();assert.equal(a.manifest.production_manifest_sha256,'6edd08bedf440f00e2d074746c02a7d85e826ec9d5619db43390a67981a75a5a');
+ assert.equal(digest(install),'ad42edc5c52d124550d1bfb0cf1a01fe3250eb7a27ccc358a3f10ff5f448bd3b');assert.equal(digest(syntheticSQL()),a.manifest.synthetic_sql_sha256);
  const db=new DatabaseSync(':memory:');try{db.exec(syntheticSQL());assert.equal(digest(canonical(db.prepare(schemaSQL).all())),target.baseline_schema_sha256);assert.equal(db.prepare('SELECT COUNT(*) n FROM users').get().n,1);}finally{db.close();}
 });
 test('owner exceptions never assert full disk encryption or independent offline custody',()=>{

@@ -1,0 +1,33 @@
+{
+  "local_only": true,
+  "passed": true,
+  "original_sql_sha256": "f6cc1bf56d48986aad95f890a2fdefdcd1fb5199e215c001598087ac503d92a8",
+  "expression_depth_limit": 100,
+  "function_argument_limit": 32,
+  "bound_parameter_limit": 100,
+  "sql_length_limit": 100000,
+  "value_length_limit": 2000000,
+  "column_limit": 100,
+  "application_rows_preserved": 68419,
+  "original_sequence_values_preserved": 8,
+  "held_after_install": true,
+  "separate_local_resume_verified": true,
+  "remote_resume_authorized": false,
+  "correction_request_bytes": 95171,
+  "sql_batch_bytes": {
+    "bootstrap.sql": 12725,
+    "install-start.sql": 147,
+    "install.sql": 79890,
+    "resume-start.sql": 145,
+    "resume.sql": 16305
+  },
+  "max_typed_query_bytes": 9070,
+  "local_phase_times": {
+    "journal_correction_seconds": 0.046999999998661224,
+    "claim_seconds": 0.01600000000325963,
+    "install_seconds": 0.046999999998661224,
+    "resume_seconds": 0.046999999998661224
+  },
+  "total_seconds": 1.8289999999979045,
+  "remote_duration_guarantee": false
+}
