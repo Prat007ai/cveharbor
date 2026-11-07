@@ -147,8 +147,8 @@ assume a partial failure is safe to retry. No transparent retry is permitted.
 | Baseline and no journal | No completed intent demonstrated. Investigate the original attempt; a new approval is required before considering another attempt. |
 | Partial/empty journal, or intent/start without installed receipt | Stop. Unknown/partial installation. No retry or journal deletion tool exists. |
 | Exact installed schema, complete installation receipts, original counts, held/frozen state and all checks pass | Installation verified; service remains held. A lost successful response does not require another write. |
-| Resume intent/start exists but control/history/readiness do not match | Stop. Resume outcome uncertain or incomplete. No automatic retry, receipt completion or re-hold. |
-| Resume start plus matching next revision, recorded reason and healthy readiness | Resume observed. Later normal writes are expected; do not compare them to pre-resume row counts or replay mail. |
+| Resume intent with or without start; held and frozen at revision 0, no control event, and frozen readiness | Report the observed receipt IDs, flags, revision and absence of an event. Release was not observed. Stop; never replay the claim or release. |
+| All five receipts, both flags cleared at revision 1, one matching control event for this approval, and healthy readiness | Resume observed. Later normal writes are expected; do not compare them to pre-resume row counts or replay mail. |
 | Any other schema/receipt/configuration/integrity mismatch | Block all further writes; prepare a specific correction plan. |
 
 GitHub concurrency and journal uniqueness prevent competing copies of this

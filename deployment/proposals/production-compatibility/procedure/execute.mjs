@@ -163,6 +163,7 @@ export async function inspect(client,a,{mode='preflight'}={}){
  const schema_rows=await client.select(schemaSQL),schema_sha256=digest(canonical(schema_rows));
  const journal=await client.select("SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE name GLOB 'd1_*' AND sql IS NOT NULL ORDER BY type,name");
  const dataCounts=await counts(client),checks=await integrity(client),queues=await queueSnapshot(client);
+ let resumeObservation;
  let state='baseline',receipts=[],control=null,install_receipt_sha256=null,install_run_id=null,install_approval_id=null;
  const journal_schema_sha256=digest(canonical(journal));
  const requires_trigger_upgrade=journal_schema_sha256===installed272.journal;
@@ -180,10 +181,25 @@ export async function inspect(client,a,{mode='preflight'}={}){
    control=(await client.select('SELECT write_hold,database_frozen,revision FROM operations_control WHERE id=1'))[0];assert.ok(control);
    install_receipt_sha256=digest(ordered[2].payload);
    if(receipts.length===3){assert.deepEqual(control,{write_hold:1,database_frozen:1,revision:0});state='installed-frozen';}
-   if(receipts.length===4)state='uncertain-resume';
-   if(receipts.length===5){
-    const p=payloads[3];assert.deepEqual(control,{write_hold:0,database_frozen:0,revision:p.expected_revision+1},'Resume receipt/control mismatch');
-    const history=await client.select('SELECT reason FROM operations_events WHERE revision=?',[control.revision]);assert.equal(history.length,1);assert.equal(history[0].reason,'PR270 resume '+p.approval_id);state='resumed';
+   if(receipts.length>=4){
+    const p=payloads[3];assert.equal(p.operation,'resume');assert.equal(p.expected_revision,0);
+    // A start receipt precedes the control UPDATE. Its presence proves a claim, not a release.
+    // The new control table starts at revision 0 with no events; its UPDATE trigger records
+    // the entire new control state in the same statement. A second event is contradictory.
+    const events=await client.select(`SELECT e.write_hold,e.database_frozen,e.revision,e.reason,
+     (e.reason=c.reason AND e.changed_at=c.changed_at) AS matches_control
+     FROM operations_events e JOIN operations_control c ON c.id=1 LIMIT 2`);
+    if(control.revision===0){
+     assert.deepEqual(control,{write_hold:1,database_frozen:1,revision:0},'Incomplete resume/control mismatch');
+     assert.equal(events.length,0,'Unexpected control event at frozen revision');
+     state='uncertain-resume';
+    }else{
+     assert.equal(receipts.length,5,'Resume start receipt missing');
+     assert.deepEqual(control,{write_hold:0,database_frozen:0,revision:1},'Resume receipt/control mismatch');
+     assert.deepEqual(events,[{...control,reason:'PR270 resume '+p.approval_id,matches_control:1}],'Resume control event mismatch');
+     state='resumed';
+    }
+    resumeObservation={receipt_ids:ordered.map(r=>r.id),control_event:events.length?'matched':'not-observed'};
    }
    if(state!=='resumed'){
     assert.deepEqual(dataCounts,payloads[0].counts,'Existing row counts changed');
@@ -194,18 +210,18 @@ export async function inspect(client,a,{mode='preflight'}={}){
  }else assert.equal(schema_sha256,target.baseline_schema_sha256,'Baseline schema drift');
  const readiness=await client.readiness();
  if(state==='baseline')assert.deepEqual(readiness,{http:503,ready:false,held:true,schema_ready:false});
- if(state==='installed-frozen')assert.deepEqual(readiness,{http:503,ready:false,held:true,schema_ready:true},'Frozen readiness verification failed');
+ if(state==='installed-frozen'||state==='uncertain-resume')assert.deepEqual(readiness,{http:503,ready:false,held:true,schema_ready:true},'Frozen readiness verification failed');
  if(state==='resumed')assert.deepEqual(readiness,{http:200,ready:true,held:false,schema_ready:true},'Resumed readiness verification failed');
  const after=await client.observe();assert.deepEqual(after,metadata,'Worker configuration drifted during inspection');
  if(mode==='verify')assert.equal(state,'installed-frozen','Verification requires a completed frozen installation');
- const report={state,metadata,schema_sha256,counts:dataCounts,integrity:checks,queues,control,install_receipt_sha256,install_run_id,install_approval_id,receipts_sha256:digest(receipts),readiness,...(journal.length?{journal_schema_sha256,requires_trigger_upgrade}:{})};
+ const report={state,metadata,schema_sha256,counts:dataCounts,integrity:checks,queues,control,install_receipt_sha256,install_run_id,install_approval_id,receipts_sha256:digest(receipts),readiness,...(resumeObservation?{resume_observation:resumeObservation}:{}),...(journal.length?{journal_schema_sha256,requires_trigger_upgrade}:{})};
  return {...report,fingerprint:digest(report),schema_rows};
 }
 export async function execute(env,{client,artifact,now=()=>Math.floor(Date.now()/1000),record=()=>{}}={}){
  const a=artifact||verifyFiles(),operation=authorizeContext(env,a);client??=transport(env);
  const report={operation,status:'stopped',write_requests:0,automatic_retry:false,automatic_resume:false,automatic_rollback:false};
  const persist=()=>record(structuredClone(report));let stage='preflight';
- const capture=s=>Object.assign(report,{state:s.state,fingerprint:s.fingerprint,install_receipt_sha256:s.install_receipt_sha256,queues:s.queues,checked_at:new Date(now()*1000).toISOString(),metadata:s.metadata,schema_sha256:s.schema_sha256,counts_sha256:digest(s.counts),control:s.control,journal_schema_sha256:s.journal_schema_sha256,requires_trigger_upgrade:s.requires_trigger_upgrade});
+ const capture=s=>Object.assign(report,{state:s.state,fingerprint:s.fingerprint,install_receipt_sha256:s.install_receipt_sha256,queues:s.queues,checked_at:new Date(now()*1000).toISOString(),metadata:s.metadata,schema_sha256:s.schema_sha256,counts_sha256:digest(s.counts),control:s.control,journal_schema_sha256:s.journal_schema_sha256,requires_trigger_upgrade:s.requires_trigger_upgrade,...(s.resume_observation?{resume_observation:s.resume_observation,readiness:s.readiness}:{})});
  // Any failure, including report persistence, halts. Never submit another write
  // to record a failure: a write response might have been lost after commit.
  const write=async(sql,params=[])=>{report.status='write-outcome-unknown';report.write_requests++;persist();return client.writeOnce(sql,params);};

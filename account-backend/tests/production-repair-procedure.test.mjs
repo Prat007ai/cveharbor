@@ -37,15 +37,15 @@ async function fixture(t){
  };return f;
 }
 const blocked=async(f,operation)=>{await assert.rejects(()=>f.run(operation));assert.equal(f.writes.length,0);};
-function onDemandInstall(approval) {
- const {not_before, expires_at, ...install} = approval;
- return {...install, version: 2};
+function onDemandApproval(approval) {
+ const {not_before, expires_at, ...untimed} = approval;
+ return {...untimed, version: 2};
 }
 
 test('an on-demand install can start after a long review and ends frozen with receipts for the exact run', async t => {
  const f = await fixture(t);
  const {p} = await f.approve();
- const approval = onDemandInstall(p);
+ const approval = onDemandApproval(p);
  f.env.REPAIR_AUTHORIZATION = JSON.stringify(approval);
  const later = now() + 2 * 3600;
  const report = await execute(f.env, {client: f.client, now: () => later});
@@ -92,7 +92,7 @@ test('on-demand authorization rejects a different run, commit, database, or expl
  const {p} = await f.approve();
  for (const invalid of [{run_id: '5678'}, {source_sha: 'b'.repeat(40)}, {database: '11111111-1111-4111-8111-111111111111'},
                        {not_before: now()}, {expires_at: null}]) {
-   f.env.REPAIR_AUTHORIZATION = JSON.stringify({...onDemandInstall(p), ...invalid});
+   f.env.REPAIR_AUTHORIZATION = JSON.stringify({...onDemandApproval(p), ...invalid});
    await blocked(f, 'install');
  }
 });
@@ -166,7 +166,7 @@ test('the database rejects incomplete or mixed on-demand evidence at the first i
  const insert = f.db.prepare(`INSERT INTO ${receiptTable}(id,payload) VALUES('install-intent',?)`);
  for (const patch of [{run_id: undefined}, {run_id: null}, {source_sha: null}, {database: 'other'},
                       {expires_at: null}, {operation: 'resume'}]) {
-   const approval = {...onDemandInstall(p), ...patch};
+   const approval = {...onDemandApproval(p), ...patch};
    assert.throws(() => insert.run(JSON.stringify({...approval, authorization_sha256: digest(approval),
      schema_rows: s.schema_rows, counts: s.counts})), /Repair approval expired or database drifted/);
  }
@@ -312,14 +312,29 @@ test('partial journal, mismatched receipt and unsuccessful verification block re
   await assert.rejects(()=>f.run('verify'));await assert.rejects(()=>f.run('resume'));assert.equal(f.writes.length,n);assert.equal(f.db.prepare('SELECT write_hold FROM operations_control').get().write_hold,1);
  }
 });
+const completeReceipts=['install-intent','install-started','installed','resume-intent','resume-started'];
 test('stale resume revision, omitted effects approval and interrupted resume cannot release again',async t=>{
- const f=await fixture(t);await f.approve();await f.run('install');const {p}=await f.approve('resume');
+ const f=await fixture(t);await f.approve();await f.run('install');const {p:timed}=await f.approve('resume');const p=onDemandApproval(timed);
  for(const patch of [{expected_revision:1},{resume_scheduled_work_and_eligible_email:false},{install_receipt_sha256:'f'.repeat(64)}]){
   f.env.REPAIR_AUTHORIZATION=JSON.stringify({...p,...patch});await assert.rejects(()=>f.run('resume'));assert.equal(f.writes.length,4);
  }
  f.env.REPAIR_AUTHORIZATION=JSON.stringify(p);const native=f.client.writeOnce;
  f.client.writeOnce=async(sql,params)=>{const result=await native(sql,params);if(sql.includes('-- Separate approved'))throw Error('Lost resume response');return result;};
- await assert.rejects(()=>f.run('resume'));assert.equal((await f.run('reconcile')).state,'resumed');await assert.rejects(()=>f.run('resume'));assert.equal(f.writes.length,7);
+ await assert.rejects(()=>f.run('resume'));
+ const observed=await f.run('reconcile');
+ assert.equal(observed.state,'resumed');assert.equal(observed.status,'observed');assert.equal(observed.write_requests,0);
+ assert.deepEqual(observed.control,{write_hold:0,database_frozen:0,revision:1});
+ assert.deepEqual(observed.resume_observation,{receipt_ids:completeReceipts,control_event:'matched'});
+ assert.deepEqual(observed.readiness,{http:200,ready:true,held:false,schema_ready:true});
+ await assert.rejects(()=>f.run('resume'));
+ // Neither the receipts nor a healthy endpoint can stand in for the matching event.
+ for(const sql of ["UPDATE operations_events SET write_hold=1","UPDATE operations_events SET reason='different run'","DELETE FROM operations_events"]){
+  f.db.exec('SAVEPOINT contradictory');f.db.exec(sql);
+  await assert.rejects(()=>f.run('reconcile'));assert.equal(f.reports.at(-1).status,'blocked');assert.equal(f.reports.at(-1).write_requests,0);
+  f.db.exec('ROLLBACK TO contradictory; RELEASE contradictory');
+ }
+ f.client.readiness=async()=>({http:503,ready:false,held:true,schema_ready:true});
+ await assert.rejects(()=>f.run('reconcile'));assert.equal(f.reports.at(-1).status,'blocked');assert.equal(f.writes.length,7);
 });
 test('two concurrent installations cannot consume the same approval twice',async t=>{
  const f=await fixture(t);await f.approve();const results=await Promise.allSettled([f.run('install'),f.run('install')]);
@@ -336,10 +351,20 @@ test('journal bootstrap loss, failed post-install verification and half-resume n
   if(kind==='bootstrap')f.client.writeOnce=async(sql,p)=>{await native(sql.split('CREATE TRIGGER')[0],p);throw Error('Lost bootstrap');};
   if(kind==='verification')f.client.writeOnce=async(sql,p)=>{await native(sql,p);if(sql.includes('-- Exactly one submission'))f.client.readiness=async()=>({http:503,ready:false,held:true,schema_ready:false});};
   if(kind==='half-resume'){
-   await f.run('install');await f.approve('resume');f.client.writeOnce=async(sql,p)=>{if(sql.includes('-- Separate approved')){assert.match(sql,/UPDATE operations_control/);assert.equal(p.length,1);f.writes.push({sql,params:p});throw Error('Lost response before resume update executed');}return native(sql,p);};
+   await f.run('install');const {p}=await f.approve('resume');f.env.REPAIR_AUTHORIZATION=JSON.stringify(onDemandApproval(p));f.client.writeOnce=async(sql,p)=>{if(sql.includes('-- Separate approved')){assert.match(sql,/UPDATE operations_control/);assert.equal(p.length,1);f.writes.push({sql,params:p});throw Error('Lost response before resume update executed');}return native(sql,p);};
   }
   await assert.rejects(()=>f.run(kind==='half-resume'?'resume':'install'));const n=f.writes.length;
-  await assert.rejects(()=>f.run('reconcile'));await assert.rejects(()=>f.run('install'));assert.equal(f.writes.length,n);
+  if(kind==='half-resume'){
+   const observed=await f.run('reconcile');
+   assert.equal(observed.state,'uncertain-resume');assert.equal(observed.status,'reconciliation-required');assert.equal(observed.write_requests,0);
+   assert.deepEqual(observed.control,{write_hold:1,database_frozen:1,revision:0});
+   assert.deepEqual(observed.resume_observation,{receipt_ids:completeReceipts,control_event:'not-observed'});
+   assert.deepEqual(observed.readiness,{http:503,ready:false,held:true,schema_ready:true});
+   await assert.rejects(()=>f.run('resume'));assert.equal(f.writes.length,n);
+   f.db.exec("INSERT INTO operations_events(write_hold,database_frozen,revision,reason,changed_at) VALUES(0,0,1,'contradicts frozen state',CURRENT_TIMESTAMP)");
+   await assert.rejects(()=>f.run('reconcile'));assert.equal(f.reports.at(-1).status,'blocked');assert.equal(f.reports.at(-1).write_requests,0);
+  }else await assert.rejects(()=>f.run('reconcile'));
+  await assert.rejects(()=>f.run('install'));assert.equal(f.writes.length,n);
   if(kind!=='bootstrap')assert.equal(f.db.prepare('SELECT write_hold FROM operations_control').get().write_hold,1);
   if(kind==='half-resume'){assert.equal(f.db.prepare('SELECT revision FROM operations_control').get().revision,0);assert.equal(f.db.prepare('SELECT COUNT(*) n FROM '+receiptTable).get().n,5);}
  }
