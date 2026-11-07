@@ -239,3 +239,19 @@ class CustomerCandidateWorkflowTests(unittest.TestCase):
   self.assertIn('diagnose',doc['jobs']['automatic-staging']['if'])
   bad=copy.deepcopy(doc);bad['jobs']['customer-candidate']['steps'][0]['env']={'TOKEN':'${{ secrets.CF_STAGING_API_TOKEN }}'}
   self.assertTrue(policy.validate(bad,'cvie-staging.yml'))
+
+
+class RoutineStagingWorkflowTests(unittest.TestCase):
+    def test_workflow_uses_main_package_without_build_or_cloud_in_review(self):
+        doc=policy.load_workflow((ROOT/'.github/workflows/cvie-staging.yml').read_text())
+        prep=doc['jobs']['prepare']; job=doc['jobs']['customer-candidate']
+        self.assertNotIn('environment',prep)
+        self.assertEqual(job['needs'],'prepare')
+        self.assertEqual(job['environment'],'cloudflare-cvie-staging')
+        steps=prep['steps']+job['steps']
+        for s in steps:
+            if 'build.mjs' in s.get('run',''):self.assertIn("!= 'routine-deploy'",s['if'])
+        checks=[s for s in steps if s.get('run')=='python staging/scripts/routine_review.py']
+        self.assertEqual(len(checks),2)
+        self.assertTrue(all('secrets.' not in str(s) for s in checks))
+        self.assertEqual(checks[-1]['env']['EXPECTED_REVIEW'],'${{ needs.prepare.outputs.routine_review }}')

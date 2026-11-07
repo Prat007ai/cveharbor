@@ -8,8 +8,12 @@ on:
       candidate_operation:
         description: Separately approved candidate operation (none performs no candidate execution)
         type: choice
-        options: [none, status, migrate, deploy, resume-frontend]
+        options: [none, status, migrate, deploy, resume-frontend, routine-deploy]
         default: none
+      routine_pr:
+        description: Merged application PR number (routine-deploy only)
+        type: string
+        required: false
       candidate_commit:
         description: Exact reviewed main commit
         type: string
@@ -60,7 +64,12 @@ permissions:
   contents: read
 jobs:
   prepare:
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
     outputs:
+      routine_review: ${{ steps.routine.outputs.routine_review }}
       candidate_artifact: ${{ steps.candidate-seal.outputs.artifact_sha256 }}
     runs-on: ubuntu-latest
     steps:
@@ -74,17 +83,37 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
+      - name: Resolve independently reviewed main artifact (no cloud credentials)
+        id: routine
+        if: inputs.candidate_operation == 'routine-deploy'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CF_STAGING_CANDIDATE_ENABLED: ${{ vars.CF_STAGING_CANDIDATE_ENABLED }}
+          SIMPLE_STAGING_ENABLED: ${{ vars.SIMPLE_STAGING_ENABLED }}
+          ROUTINE_PR: ${{ inputs.routine_pr }}
+          ROUTINE_STAGING_DELIVERY_ENABLED: ${{ vars.ROUTINE_STAGING_DELIVERY_ENABLED }}
+        run: python staging/scripts/routine_review.py
       - run: npm install --prefix staging --ignore-scripts --no-package-lock
+        if: inputs.candidate_operation != 'routine-deploy'
       - run: python staging/scripts/continuation-review.py
+        if: inputs.candidate_operation != 'routine-deploy'
       - run: node staging/scripts/prepare-adoption.mjs
+        if: inputs.candidate_operation != 'routine-deploy'
       - run: node staging/scripts/build.mjs
+        if: inputs.candidate_operation != 'routine-deploy'
       - name: Check out immutable baseline sources before baseline verification tests
+        if: inputs.candidate_operation != 'routine-deploy'
         run: python scripts/checkout_baseline_source.py
       - run: node --test staging/tests/*.test.mjs
+        if: inputs.candidate_operation != 'routine-deploy'
       - run: node staging/scripts/check-build.mjs
+        if: inputs.candidate_operation != 'routine-deploy'
       - run: node staging/scripts/check-access-runtime.mjs
+        if: inputs.candidate_operation != 'routine-deploy'
       - run: node staging/scripts/dry-run.mjs
+        if: inputs.candidate_operation != 'routine-deploy'
       - name: Build and test the pinned production replica without credentials
+        if: inputs.candidate_operation != 'routine-deploy'
         run: |
           STAGING_BUILD_PROFILE=production-baseline node staging/scripts/build.mjs
           node --test staging/tests/application.test.mjs staging/tests/production-activation.test.mjs
@@ -92,11 +121,13 @@ jobs:
           node staging/scripts/check-build.mjs
           node staging/scripts/dry-run.mjs
       - name: Build and verify inactive customer-remediation candidate locally
+        if: inputs.candidate_operation != 'routine-deploy'
         run: |
           STAGING_BUILD_PROFILE=customer-remediation-candidate node staging/scripts/build.mjs
           node staging/scripts/check-customer-remediation-candidate.mjs
           STAGING_BROWSER_PROFILE=customer-remediation-candidate node staging/scripts/production-browser.mjs
       - name: Seal tested candidate artifacts without credentials
+        if: inputs.candidate_operation != 'routine-deploy'
         id: candidate-seal
         run: |
           node staging/scripts/customer-candidate-artifact.mjs
@@ -107,16 +138,19 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'artifact_sha256='+verifyArtifact().seal_sha256+'\n');
           JS
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: inputs.candidate_operation != 'routine-deploy'
         with:
           name: customer-candidate-review
+          include-hidden-files: true
           path: |
             staging/.build/customer-remediation-candidate/api.mjs
+            staging/.build/customer-remediation-candidate/site.mjs
             staging/.build/customer-remediation-candidate/manifest.json
             staging/.build/customer-remediation-candidate/seal.json
             staging/.build/customer-remediation-candidate/public/
           retention-days: 14
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
+        if: always() && inputs.candidate_operation != 'routine-deploy'
         with:
           name: permanent-staging-preparation-${{ github.sha }}
           path: |
@@ -358,6 +392,10 @@ jobs:
           retention-days: 30
 
   customer-candidate:
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
     if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && vars.CF_STAGING_CANDIDATE_ENABLED == 'true' && vars.SIMPLE_STAGING_ENABLED == 'false' && inputs.candidate_operation != 'none'
     needs: prepare
     runs-on: ubuntu-latest
@@ -369,6 +407,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
+          fetch-depth: 0
           ref: ${{ github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -377,7 +416,19 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
+      - name: Recheck review and download the immutable main package
+        if: inputs.candidate_operation == 'routine-deploy'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ROUTINE_STAGING_DELIVERY_ENABLED: ${{ vars.ROUTINE_STAGING_DELIVERY_ENABLED }}
+          ROUTINE_PR: ${{ inputs.routine_pr }}
+          CF_STAGING_CANDIDATE_ENABLED: ${{ vars.CF_STAGING_CANDIDATE_ENABLED }}
+          SIMPLE_STAGING_ENABLED: ${{ vars.SIMPLE_STAGING_ENABLED }}
+          EXPECTED_REVIEW: ${{ needs.prepare.outputs.routine_review }}
+          ROUTINE_DOWNLOAD: 'true'
+        run: python staging/scripts/routine_review.py
       - name: Reproduce the exact tested candidate without cloud credentials
+        if: inputs.candidate_operation != 'routine-deploy'
         run: |
           npm install --prefix staging --ignore-scripts --no-package-lock
           STAGING_BUILD_PROFILE=customer-remediation-candidate node staging/scripts/build.mjs
@@ -390,6 +441,8 @@ jobs:
           CF_STAGING_CANDIDATE_MIGRATION_APPROVAL: ${{ vars.CF_STAGING_CANDIDATE_MIGRATION_APPROVAL }}
           CF_STAGING_CANDIDATE_DEPLOYMENT_APPROVAL: ${{ vars.CF_STAGING_CANDIDATE_DEPLOYMENT_APPROVAL }}
           CF_STAGING_CANDIDATE_WRITE_WINDOW: ${{ vars.CF_STAGING_CANDIDATE_WRITE_WINDOW }}
+          ROUTINE_STAGING_DELIVERY_ENABLED: ${{ vars.ROUTINE_STAGING_DELIVERY_ENABLED }}
+          ROUTINE_PARENT: ${{ fromJSON(needs.prepare.outputs.routine_review || '{}').parent }}
           CANDIDATE_OPERATION: ${{ inputs.candidate_operation }}
           CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
           CANDIDATE_SQL_SHA256: ${{ inputs.candidate_sql_sha256 }}
