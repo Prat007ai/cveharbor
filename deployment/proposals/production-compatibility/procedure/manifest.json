@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "target": {
+    "account": "aa99b9b15e0492302e4f6484b8d27bc2",
+    "worker": "cveharbor-accounts",
+    "worker_version": "07055fe8-f1ab-463f-97b2-372b458b6056",
+    "database": "46710e51-7ca4-4571-b89c-921b9969de0b",
+    "database_name": "cveharbor-accounts",
+    "application_commit": "1532e732b771f960b6ae7791a9bd2205e1d59390",
+    "backend_identity": "80b709c7559a4277d3c791fc0a853aa874104f180ac26c9e5754379f9087f05f",
+    "baseline_schema_sha256": "327bab011a4ffe3654aab618f859a8cdaef14aa7d4bbd03c0db96d4f7b0a225d",
+    "installed_schema_sha256": "788c155c8c1c388986651730371f17e90d7a675ef9110155870acf03ea10803f",
+    "proposal_sha256": "0e4f4f2f2a2a50da6ae7a4b899c1546b90a61bdcb0cc9f4ec6f3ebe92425e628",
+    "readiness_url": "https://api.cveharbor.com/v1/release-readiness",
+    "restore_account": "9706b4d98ad72884e67fd1eb875c8a61",
+    "restore_name": "cveharbor-prod-repair-restore-pr270",
+    "private_destination": "C:\\CVEHarbor-Recovery\\production\\pr270",
+    "worker_pin_evidence": "2026-11-06 Cloudflare active deployment 100%, PR269 source; View logs linked the full scriptVersion.id. Revalidate by API before every procedure."
+  },
+  "files": {
+    "deployment/proposals/production-compatibility/rehearsal.mjs": "2f7defa7535aa711a2b8a11b6141ee52d8e1f1aa5b063035761c27f1fdc1d53c",
+    "deployment/proposals/production-compatibility/procedure/build.mjs": "2c52816140fa6b6542b8ece4d66f68d9d7efd4bd2e5bf51916531a730409782a",
+    "deployment/proposals/production-compatibility/procedure/target.json": "40ae42e527584bb9cdc2e7671bb3513db01ad15ace61c26a6915693d6996929b",
+    "deployment/proposals/production-compatibility/procedure/execute.mjs": "e4b03f947308b45184e1ef11fd285de21ee1550908129471272803f94bb9f5b6",
+    "deployment/proposals/production-compatibility/procedure/transport.mjs": "d769d723cb6e719696e4e33ee92da225923c5e0d45d23f6be827325e5fdafdd2",
+    "deployment/proposals/production-compatibility/procedure/bootstrap.sql": "77d80725b072f88a134e7d460f0abec4fd55165cccc7c82f618024bf694a8d2e",
+    "deployment/proposals/production-compatibility/procedure/install-start.sql": "707fa60b4d59d8eac3636068d06cf7ba6b8652014837a1134d37dc7a028b4450",
+    "deployment/proposals/production-compatibility/procedure/install.sql": "ad42edc5c52d124550d1bfb0cf1a01fe3250eb7a27ccc358a3f10ff5f448bd3b",
+    "deployment/proposals/production-compatibility/procedure/resume-start.sql": "704f5e1847c936efa0fa5f5ddb4b8f2c859e7b46bc29156bf164fddb4af96345",
+    "deployment/proposals/production-compatibility/procedure/resume.sql": "e916f8b39ad2ecc93d92507ce7d4cd8a51343ea481aa80a98f70a4dda98a87e1",
+    "scripts/production_schema_baseline.mjs": "39b653ccc5f736dc4204da4cb58a3e1568bde0fc6d5a3e95133f853b17412a1c",
+    "scripts/sql_schema_tokens.mjs": "c370da6d4de33f6aec062964febb3ee606543e9a2efb826d9b6d3792720265d9",
+    "scripts/build_release_identity.mjs": "0d093e1f70470b44043b2ab8630115ba51723ee8e62bb36baac1679a85703cd5",
+    "release/baseline.json": "26e71bc5a84ef1efe538292554cee7b93f298c95cf2ee072269ac5a74eaec99b",
+    "account-backend/migrations/0031_remediation_integrity.sql": "816eb1e6deb528340af37284c72fe2d3585d7c1aec883ca6a1788c8b868eea46",
+    "account-backend/migrations/0032_recovery_control.sql": "77e56e139153505ec2433c9c2dec5ea1f84d0142ffcee2db7dac53434420a4fd",
+    "account-backend/src/recovery-schema.js": "6e491e5dc3de5a5d79883471cbd8808f1f9a5023e943ae056188a754c5b89ae6",
+    "account-backend/src/release-integrity-checks.js": "61ee92bf900c823ee1467724e8845bd68e308e6930b989f1400c90607e8d36ca",
+    ".github/workflows/production-compatibility-repair.yml": "14e17f158397cd62e96e1d00cf6239e107f8cfc5655a4c0859353bd8f213cf62",
+    "scripts/check_workflow_security.py": "5eb5dbe46aa12d800c5d748cae28e417c60a79129ef5045f267a1af2f407af0d"
+  },
+  "sql_sha256": {
+    "bootstrap.sql": "77d80725b072f88a134e7d460f0abec4fd55165cccc7c82f618024bf694a8d2e",
+    "install-start.sql": "707fa60b4d59d8eac3636068d06cf7ba6b8652014837a1134d37dc7a028b4450",
+    "install.sql": "ad42edc5c52d124550d1bfb0cf1a01fe3250eb7a27ccc358a3f10ff5f448bd3b",
+    "resume-start.sql": "704f5e1847c936efa0fa5f5ddb4b8f2c859e7b46bc29156bf164fddb4af96345",
+    "resume.sql": "e916f8b39ad2ecc93d92507ce7d4cd8a51343ea481aa80a98f70a4dda98a87e1"
+  },
+  "journal_schema_sha256": "faf8f45100f2c1227806d025853ab12285033c09efaa75a119884e3487a76075"
+}

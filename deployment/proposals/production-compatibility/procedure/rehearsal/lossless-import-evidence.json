@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "original_sha256": "f6cc1bf56d48986aad95f890a2fdefdcd1fb5199e215c001598087ac503d92a8",
+  "converted": {
+    "bytes": 45757901,
+    "statements": 68610,
+    "max_statement_bytes": 78610,
+    "sha256": "bd540fee93266d264bca0239b80f5a5c97772a91f1b64119d03244e44c278514"
+  },
+  "changes": [
+    {
+      "statement": 14563,
+      "original_sha256": "f7ccd68b836c534a911f42abda7d2ddf99062978643bda8209045137da4430f0",
+      "original_bytes": 148217,
+      "replacement_sha256": "0ebf6a20bbc087ac629420c46ab5bb8dd57c02e2c0445d53d1c1f1fc92bec4f8",
+      "replacement_bytes": 238,
+      "fragment_writes": 10
+    },
+    {
+      "statement": 14608,
+      "original_sha256": "e8037ca4683c429c972c93081c0944500b0498798fb7f9ded885da7079cc208c",
+      "original_bytes": 148619,
+      "replacement_sha256": "99950973acbff5c5be6add7f507b752dedb0000347301bab2017169861f96b62",
+      "replacement_bytes": 238,
+      "fragment_writes": 10
+    },
+    {
+      "statement": 61816,
+      "original_sha256": "f74054b9d2149f0e529b370fbc9d444e3e14aae744803ac00ac9922f00592b9d",
+      "original_bytes": 226502,
+      "replacement_sha256": "50f3294c3a730ef90fc7048ec53653e1ca8f2a63706ef164a89f80ca1804e5e2",
+      "replacement_bytes": 238,
+      "fragment_writes": 15
+    }
+  ],
+  "scratch_table": "__pr270_import_value_8c21b7",
+  "scratch_values": 3,
+  "added_statements": 37,
+  "method": "complete literal assembly before original target INSERT; unchanged order",
+  "validation": {
+    "schema_equal": true,
+    "counts_equal": true,
+    "types_and_full_content_equal": true,
+    "foreign_keys_enabled": true,
+    "foreign_key_check": "pass",
+    "integrity_check": "ok",
+    "tables": 71,
+    "rows": 68427,
+    "schema_sha256": "43bd728d9931633b506d883aa5f856e6bded054f258da66b48ac1ff3e963a0a8",
+    "typed_content_sha256": "32aa03d9a3309cb06427981526daeec4e465aec8a011acdefdbca6a2f4d3b922",
+    "coverage": {
+      "integer": 87013,
+      "text": 291693,
+      "unicode": 1455,
+      "quotes": 65343,
+      "newlines": 0,
+      "null": 505
+    },
+    "sqlite_version": "3.49.1",
+    "remote_atomicity_claimed": false
+  },
+  "validation_manifest_sha256": "0d5cb75c302ea986866405449c6d0322143dfcab80946fad727b0aa1333d0b80",
+  "original_retained_ciphertext_sha256": "16b8ca2e958c6b5bfec96af76839cf1463842aeb81d6fcb97b83625fe01b0987",
+  "prior_attempt": {
+    "reserved_writes": 500000,
+    "source_sha": "e76bc3476405d884da8cb5c1980573aa848f626f",
+    "terminal_status": "error",
+    "billable_writes": "unknown",
+    "reconciled_at": "2026-11-06T23:29:16.897Z",
+    "all_eight_bytes": 98304,
+    "import_submissions": 1,
+    "error": "statement too long: SQLITE_TOOBIG",
+    "application_objects": 0
+  },
+  "preparation_only": true,
+  "application_baseline": {
+    "tables": 70,
+    "rows": 68419,
+    "additional_sqlite_sequence_rows": 8
+  }
+}

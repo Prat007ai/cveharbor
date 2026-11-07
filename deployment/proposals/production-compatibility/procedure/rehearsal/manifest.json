@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "production_manifest_sha256": "6edd08bedf440f00e2d074746c02a7d85e826ec9d5619db43390a67981a75a5a",
+  "account": "9706b4d98ad72884e67fd1eb875c8a61",
+  "names": {
+    "success": "cveharbor-prod-repair-restore-pr270",
+    "schema": "cveharbor-pr270-rehearsal-schema",
+    "count": "cveharbor-pr270-rehearsal-count",
+    "expiry": "cveharbor-pr270-rehearsal-expiry",
+    "race": "cveharbor-pr270-rehearsal-race",
+    "rejected": "cveharbor-pr270-rehearsal-rejected",
+    "interrupt": "cveharbor-pr270-rehearsal-interrupt",
+    "lost": "cveharbor-pr270-rehearsal-lost"
+  },
+  "denied": [
+    "46710e51-7ca4-4571-b89c-921b9969de0b",
+    "fac61562-fc31-426d-8032-550aba63b7f6"
+  ],
+  "synthetic_sql_sha256": "1ebc87b41db5a6698cf40bcae258ba16c7beda3a2e6c8ffe308e4008f25dfcb6",
+  "marker_sql_sha256": "c40bdaaa0bfda021b23dcb179478735f61fddc0cd9de6c57a037a5d3a0ce3ffd",
+  "drift_sql_sha256": {
+    "schema": "ef747b4aeb8f5b5fd8d023643e78a0206953f3412bf450b4a3a5703ebc1f4d62",
+    "count": "123ddfca5b493b6494122f8a12c150502fc70f216b64c720af6abea04f9d2aa2"
+  },
+  "files": {
+    "deployment/proposals/production-compatibility/procedure/rehearsal/artifacts.mjs": "1ef810b1f0a0b2a1d20f6c779c7b55bb6b3e7d0fa6f84a21c48493d5d41c3fbe",
+    "deployment/proposals/production-compatibility/procedure/rehearsal/adapter.mjs": "b78811e2a5aea6e6c7dd2342f7282c282e60213b857ef2c0209e956fe8371b05",
+    "deployment/proposals/production-compatibility/procedure/rehearsal/development-exception.mjs": "a3129ecdb437f82af87b5716f5e410641e2ca6c5478e0e461cb1a9eca52f8f14",
+    "deployment/proposals/production-compatibility/procedure/rehearsal/private-log.mjs": "45a6cec7e3724d89f3036c7ffd92d35e1d211513aaf94fe22133b7ce3b5f0bda",
+    "deployment/proposals/production-compatibility/procedure/rehearsal/package.mjs": "39cb82001568f796d8261edee47268717bbb43a3a185fc232480717dff534e56",
+    "deployment/proposals/production-compatibility/procedure/rehearsal/storage-policy.mjs": "7c0a09d721273792bce7e443fece88e0f11a071f2be921965ff6266d7f89dfe7",
+    "deployment/proposals/production-compatibility/procedure/rehearsal/owner-key-setup.ps1": "83046c548efc8d5e391f134575b183bf7f8f67536f6b3414e5ab4b5374c8d32b",
+    "deployment/proposals/production-compatibility/procedure/rehearsal/lossless-import.py": "3428954f8ef40ec23d39744eb39ffe4f29372c76efbaf7f7d479ad3b41898194",
+    "deployment/proposals/production-compatibility/procedure/rehearsal/import-once.mjs": "371064e63e283d0f9d56b896e416aaf32d6bcab0e5d23a5f53eaf8d9d773e194",
+    "deployment/proposals/production-compatibility/procedure/rehearsal/import-cost.mjs": "42ce2b06c6d66d2aed8c5f49504c1c901476ee63c0f9ef36da96d585023f29f3",
+    "deployment/proposals/production-compatibility/procedure/rehearsal/lossless-import-evidence.json": "f749afaa6274fb54082b3177e36260bb3df398b244e3be07fa028b52b5d87cf3",
+    "deployment/proposals/production-compatibility/procedure/rehearsal/verify-content.mjs": "eb49776aa470369bce8012f3ce9a59d71a8bf1217677b4ab4756fe7ec2bc8053",
+    "deployment/proposals/production-compatibility/procedure/rehearsal/previous-bootstrap.sql": "01e3ef913b44194b26aecf0e103b077ca5a144ea84a09db8c1f227a0501ef98c",
+    "deployment/proposals/production-compatibility/procedure/rehearsal/journal-correction.sql": "8596cb23a7b0ab591d324799faa62a025585c8c3e9a1757b535735365dced304",
+    "staging/recovery/crypto.mjs": "c0a2f68bedd1b4ce699f6aa48389bad1cf140d32f08b93c07465dada45418426"
+  }
+}

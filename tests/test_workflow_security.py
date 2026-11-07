@@ -59,6 +59,37 @@ class WorkflowSecurityTests(unittest.TestCase):
 
 if __name__=='__main__':unittest.main()
 
+class ProductionRepairSecurityTests(unittest.TestCase):
+ def doc(self):return policy.load_workflow((ROOT/'.github/workflows/production-compatibility-repair.yml').read_text())
+ def test_repair_keeps_exact_manual_environment_and_concurrency_gates(self):
+  self.assertEqual(policy.validate(self.doc(),'production-compatibility-repair.yml'),[])
+ def test_repair_environment_flag_is_only_evaluated_after_job_selection(self):
+  job=self.doc()['jobs']['change']
+  self.assertNotIn('vars.',job['if'])
+  self.assertEqual(job['steps'][-1]['env']['PRODUCTION_COMPATIBILITY_REPAIR_ENABLED'],'${{ vars.PRODUCTION_COMPATIBILITY_REPAIR_ENABLED }}')
+  for change in [
+   lambda j:j.update({'if':policy.REPAIR_WRITE+" && vars.PRODUCTION_COMPATIBILITY_REPAIR_ENABLED == 'true'"}),
+   lambda j:j['steps'][-1]['env'].pop('PRODUCTION_COMPATIBILITY_REPAIR_ENABLED'),
+   lambda j:j['steps'][-1]['env'].update(PRODUCTION_COMPATIBILITY_REPAIR_ENABLED='true'),
+   lambda j:j['steps'][-1].update({'if':"vars.PRODUCTION_COMPATIBILITY_REPAIR_ENABLED == 'true'"}),
+  ]:
+   doc=self.doc();change(doc['jobs']['change']);self.assertTrue(policy.validate(doc,'production-compatibility-repair.yml'))
+ def test_repair_rejects_bypassed_gates_public_artifacts_and_extra_entrypoints(self):
+  mutations=[
+   lambda d:d['on'].update(push={}),
+   lambda d:d['concurrency'].update({'cancel-in-progress':True}),
+   lambda d:d['jobs']['change'].update({'if':policy.MANUAL}),
+   lambda d:d['jobs']['change'].pop('environment'),
+   lambda d:d['jobs']['change'].pop('needs'),
+   lambda d:d['jobs']['inspect'].update({'if':policy.MANUAL}),
+   lambda d:d['jobs']['change']['steps'].append({'run':'echo unsafe-extra-step'}),
+   lambda d:d['jobs']['change']['steps'].append({'uses':'actions/upload-artifact@'+'a'*40}),
+   lambda d:d['jobs']['change']['steps'][0]['with'].update({'ref':'unreviewed-branch'}),
+   lambda d:d['jobs']['inspect']['steps'][-1]['env'].update({'REPAIR_AUTHORIZATION':'${{ secrets.CVEHARBOR_PROD_REPAIR_AUTHORIZATION }}'}),
+  ]
+  for mutation in mutations:
+   d=self.doc();mutation(d);self.assertTrue(policy.validate(d,'production-compatibility-repair.yml'))
+
 class PermanentStagingSecurityTests(unittest.TestCase):
  def test_adoption_dispatch_and_credentials_are_isolated(self):
   source=ROOT/'.github/workflows/cvie-staging.yml'

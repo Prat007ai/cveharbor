@@ -1,0 +1,109 @@
+{
+  "classification": "Sanitized read-only observations; no customer rows, credentials or private recovery bookmarks",
+  "source_commit": "1532e732b771f960b6ae7791a9bd2205e1d59390",
+  "observation_date": "2026-11-06",
+  "method": "Authenticated Cloudflare dashboard metadata and D1 console SELECTs; GitHub historical audit; prior timestamped public GETs",
+  "schema": {
+    "observed_at_utc": "2026-11-06T14:41:24.036Z",
+    "query": "SELECT json_group_array(json_object('type',type,'name',name,'tbl_name',tbl_name,'sql',sql)) AS schema_metadata FROM (SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE sql IS NOT NULL AND name NOT LIKE 'sqlite_%' AND name NOT GLOB '_cf_*' AND name NOT GLOB 'd1_*' ORDER BY type,name);",
+    "normalization": "scripts/sql_schema_tokens.mjs, sorted canonical definitions as in scripts/production_schema_baseline.mjs",
+    "sha256": "327bab011a4ffe3654aab618f859a8cdaef14aa7d4bbd03c0db96d4f7b0a225d",
+    "matches_release_baseline": true,
+    "tables": 70,
+    "explicit_indexes": 48,
+    "triggers": 24,
+    "views": 1,
+    "recovery_hold_triggers": 0,
+    "migration_or_schema_history_tables": [],
+    "history_limitation": "No visible native journal. Matching definitions prove current structure, not every historical execution."
+  },
+  "integrity": {
+    "observation_window_utc": ["2026-11-06T14:44:01.431Z", "2026-11-06T14:46:40.214Z"],
+    "predicates": "account-backend/src/release-integrity-checks.js at source_commit",
+    "duplicate_findings": 0,
+    "invalid_links": 0,
+    "status_drift": 0,
+    "detached_asset_records": 0,
+    "invalid_retirements": 0,
+    "orphan_status_history": 0,
+    "orphan_assignments": 0,
+    "orphan_notifications": 0,
+    "foreign_key_violations": 0
+  },
+  "queues": {
+    "observation_window_utc": ["2026-11-06T14:44:01.431Z", "2026-11-06T14:44:26.032Z"],
+    "status_mail_by_state": {"sent": 4},
+    "fyi_mail_by_state": {"sent": 6},
+    "progress_mail_by_state": {"sent": 4},
+    "queued_sending_unconfirmed_in_these_three_tables": 0,
+    "due_reminder_assignments": 0,
+    "due_disclosure_items": 12,
+    "shared_scope_states": {"ready": 8, "scanning": 1},
+    "due_shared_scopes": 9,
+    "due_sources": 2,
+    "limitation": "Point-in-time aggregate eligibility; not a promise of immediate execution, inbox delivery or absence of later due work. No content, identifiers or recipients selected."
+  },
+  "worker": {
+    "settings_observation_utc_minute": "2026-11-06T14:48Z",
+    "account_id": "aa99b9b15e0492302e4f6484b8d27bc2",
+    "name": "cveharbor-accounts",
+    "active_version_display_prefix": "07055fe8",
+    "source": "Cloudflare Builds, main at source_commit",
+    "traffic_percent": 100,
+    "binding": "DB",
+    "database_id": "46710e51-7ca4-4571-b89c-921b9969de0b",
+    "database_name": "cveharbor-accounts",
+    "compatibility_date": "2026-10-28",
+    "RECOVERY_CONTROL_REQUIRED": "true",
+    "enabled_features": ["assignment email", "assignment acknowledgement", "FYI email", "progress email", "remediation workflow", "CVIE shared scans", "plugin monitoring", "manual website monitoring"],
+    "disabled_features": ["scheduled website monitoring"],
+    "unset_feature_flags": ["product monitor checks and delivery", "alert/lifecycle delivery", "CVIE identity registry", "CVIE fast evidence"],
+    "cron": ["* * * * *", "*/5 * * * *", "5 * * * *"],
+    "builds_disabled": true,
+    "logs_enabled": false,
+    "traces_enabled": false,
+    "encrypted_secret_bindings_present": ["SMTP2GO_API_KEY", "TOTP_ENCRYPTION_KEY"],
+    "secret_values_read": false,
+    "limitation": "Full immutable active Worker version ID must be captured again before any execution; prefix is observational evidence only."
+  },
+  "failure": {
+    "readiness": {
+      "timestamp_utc": "2026-11-06T14:31:01Z",
+      "url": "https://api.cveharbor.com/v1/release-readiness",
+      "http_status": 503,
+      "sanitized_response": {"ready": false, "held": true, "schema_ready": false, "release": "80b709c7559a4277d3c791fc0a853aa874104f180ac26c9e5754379f9087f05f", "schema": "phase1-integrity-recovery-v1"}
+    },
+    "other_gets": {"timestamp_utc": "2026-11-06T14:33:57Z", "paths": ["/v1/health", "/v1/me (unauthenticated)"], "http_status": 503, "sanitized_response_summary": "Maintenance unavailable"},
+    "failing_select": "SELECT write_hold,revision FROM operations_control WHERE id=1",
+    "sanitized_error": "no such table: operations_control: SQLITE_ERROR",
+    "actual_hold": "Not established: table absent; held=true is the readiness catch fallback."
+  },
+  "historical_audit": {
+    "url": "https://github.com/Prat007ai/cveharbor/actions/runs/41909431530",
+    "artifact_id": 13361372888,
+    "archive_sha256": "c6f4eac1c2fee433a30a887a521b433d9e36dfb54d6f3bb038f0706c5281c604",
+    "captured_at": "2026-11-04T20:44:39.489Z",
+    "source_commit": "6e05106ce7d5f4c8741261775f2e4e69c6eea719",
+    "worker_version": "89380b13-b600-4fef-82f4-69b8cc2f2c17",
+    "same_schema_and_required_control_mismatch": true,
+    "same_fail_closed_wrapper_verified": true,
+    "conclusion": "Mismatch predates PR269; continuous outage and exact onset not established."
+  },
+  "recovery": {
+    "time_travel_window_displayed": true,
+    "private_backup_created": false,
+    "restore_rehearsed": false,
+    "ready_for_production_repair": false
+  },
+  "staging": {
+    "deployment_paused": true,
+    "commit": "1532e732b771f960b6ae7791a9bd2205e1d59390",
+    "artifact_seal_sha256": "2ac05a2a08b6a46a8bb35539dd381439f01cf2fd2e300648210865d9d1e2e454",
+    "profile_sha256": "326b693ce22172bf8e41b8c5c6206ef005d39700188b75462d211937a37c9512",
+    "sql_sha256": "4cb409cd1ad836c3e71394e3f054168d99b7896817421d92d795d71235a8977a",
+    "backend_identity": "80b709c7559a4277d3c791fc0a853aa874104f180ac26c9e5754379f9087f05f",
+    "frontend_inputs_sha256": "48d28f8b2567b33250b1f6997768758c1f14d2e16d86b451b7cb66392b55431e",
+    "staging_adapter_sha256": "4c0e203c62bdef229c29684ca5fd4cc52e13d13c3678b88528416d434fafe0e5"
+  },
+  "live_mutations": 0
+}

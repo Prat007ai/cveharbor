@@ -1,0 +1,85 @@
+name: Protected production compatibility repair (manual only)
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        type: choice
+        options: [preflight, install, verify, reconcile, resume]
+        default: preflight
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: cveharbor-production-release
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - run: node deployment/proposals/production-compatibility/procedure/build.mjs
+      - run: node --test account-backend/tests/production-compatibility-plan.test.mjs account-backend/tests/production-repair-procedure.test.mjs
+  inspect:
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && contains(fromJSON('["preflight","verify","reconcile"]'), inputs.operation)
+    needs: validate
+    environment: cloudflare-production-audit
+    permissions:
+      contents: read
+      actions: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Run one read-only operation
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_AUDIT_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_AUDIT_ACCOUNT_ID }}
+          REPAIR_OPERATION: ${{ inputs.operation }}
+          REPAIR_APPROVED_SOURCE: ${{ vars.PRODUCTION_REPAIR_APPROVED_SOURCE }}
+          REPAIR_MANIFEST_SHA256: ${{ vars.PRODUCTION_REPAIR_MANIFEST_SHA256 }}
+          REPAIR_GITHUB_TOKEN: ${{ github.token }}
+        run: node deployment/proposals/production-compatibility/procedure/execute.mjs
+  change:
+    # Environment variables exist only after this protected job starts.
+    # execute.mjs rejects an unset/false enable flag before any provider access.
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && contains(fromJSON('["install","resume"]'), inputs.operation)
+    needs: validate
+    environment: cloudflare-worker-production
+    permissions:
+      contents: read
+      actions: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Execute only the separately approved operation
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
+          REPAIR_OPERATION: ${{ inputs.operation }}
+          PRODUCTION_COMPATIBILITY_REPAIR_ENABLED: ${{ vars.PRODUCTION_COMPATIBILITY_REPAIR_ENABLED }}
+          REPAIR_APPROVED_SOURCE: ${{ vars.PRODUCTION_REPAIR_APPROVED_SOURCE }}
+          REPAIR_MANIFEST_SHA256: ${{ vars.PRODUCTION_REPAIR_MANIFEST_SHA256 }}
+          REPAIR_AUTHORIZATION: ${{ secrets.CVEHARBOR_PROD_REPAIR_AUTHORIZATION }}
+          REPAIR_RECOVERY_EVIDENCE: ${{ secrets.CVEHARBOR_PROD_REPAIR_EVIDENCE }}
+          REPAIR_RECOVERY_PUBLIC_KEY: ${{ vars.PRODUCTION_REPAIR_RECOVERY_PUBLIC_KEY }}
+          REPAIR_GITHUB_TOKEN: ${{ github.token }}
+        run: node deployment/proposals/production-compatibility/procedure/execute.mjs

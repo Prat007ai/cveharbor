@@ -13,6 +13,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 MAIN = "github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main'"
 MANUAL = MAIN + " && github.event_name == 'workflow_dispatch'"
+REPAIR_WRITE = MANUAL + " && contains(fromJSON('[\"install\",\"resume\"]'), inputs.operation)"
+REPAIR_READ = MANUAL + " && contains(fromJSON('[\"preflight\",\"verify\",\"reconcile\"]'), inputs.operation)"
 RELEASE = MAIN + " && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true'"
 PHASE1 = 'd791cb8e84f85f980926dd1e1acfd0b369c64b46'
 STAGING_RELEASE = "github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/codex/cvie-core-phase012' && ((github.event_name == 'workflow_dispatch' && inputs.operation != 'none') || (github.event_name == 'push' && github.run_attempt > 1 && contains(github.event.head_commit.message, '[staging-release]')))"
@@ -26,7 +28,7 @@ ENVIRONMENTS = {'cloudflare-cvie-staging','cloudflare-worker-production', 'cloud
 SECRET_BOUNDARIES = {
     'cloudflare-cvie-staging': {'CF_STAGING_RECOVERY_R2_ACCESS_KEY_ID','CF_STAGING_RECOVERY_R2_SECRET_ACCESS_KEY','CF_STAGING_RECOVERY_ISOLATION','CF_STAGING_RECOVERY_RESTORE_RECEIPT','CF_STAGING_RECOVERY_RESTORE_SIGNATURE','CF_STAGING_RECOVERY_EVIDENCE','CF_STAGING_R2_ACCESS_KEY_ID','CF_STAGING_R2_SECRET_ACCESS_KEY','CF_STAGING_API_TOKEN','CF_STAGING_ACCOUNT_ID','CF_STAGING_ACCESS_ISSUER','CF_STAGING_ACCESS_AUD','CF_STAGING_ACCESS_CLIENT_ID','CF_STAGING_ACCESS_CLIENT_SECRET'},
     'cloudflare-intelligence-data': {'FEED_R2_ACCESS_KEY_ID','FEED_R2_SECRET_ACCESS_KEY'},
-    'cloudflare-worker-production': {'CVEHARBOR_PROD_WORKER_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID'},
+    'cloudflare-worker-production': {'CVEHARBOR_PROD_WORKER_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID', 'CVEHARBOR_PROD_REPAIR_AUTHORIZATION', 'CVEHARBOR_PROD_REPAIR_EVIDENCE'},
     'cloudflare-site-production': {'CVEHARBOR_PROD_SITE_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID', 'CVEHARBOR_SITE_GATE_PASSWORD'},
     'github-pages': {'CVEHARBOR_SITE_GATE_PASSWORD'},
     'cloudflare-production-audit': {'CLOUDFLARE_AUDIT_API_TOKEN', 'CLOUDFLARE_AUDIT_ACCOUNT_ID', 'CVEHARBOR_SITE_GATE_PASSWORD'},
@@ -93,7 +95,9 @@ def validate(doc, filename):
             require(env in ENVIRONMENTS, label + ': unknown or dynamic environment')
             requested = {m.group().split('.', 1)[1] for m in SENSITIVE.finditer(raw)}
             require(requested <= SECRET_BOUNDARIES.get(env, set()), label + ': credential is outside the environment boundary')
-            prefix = (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) if env == 'cloudflare-cvie-staging' else MANUAL if filename == 'recovery-write-hold.yml' and name == 'control' else MAIN + " && vars.FEED_PUBLICATION_ENABLED == 'true'" if env == 'cloudflare-intelligence-data' else MANUAL if env in {'cloudflare-production-audit','cloudflare-notifications-production','cloudflare-phase1-staging'} else RELEASE
+            prefix = REPAIR_WRITE if filename == 'production-compatibility-repair.yml' and name == 'change' else (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) if env == 'cloudflare-cvie-staging' else MANUAL if filename == 'recovery-write-hold.yml' and name == 'control' else MAIN + " && vars.FEED_PUBLICATION_ENABLED == 'true'" if env == 'cloudflare-intelligence-data' else MANUAL if env in {'cloudflare-production-audit','cloudflare-notifications-production','cloudflare-phase1-staging'} else RELEASE
+            if requested.intersection({'CVEHARBOR_PROD_REPAIR_AUTHORIZATION','CVEHARBOR_PROD_REPAIR_EVIDENCE'}):
+                require(filename == 'production-compatibility-repair.yml' and name == 'change', label + ': repair evidence is exclusive to the repair executor')
             require(condition == prefix or condition.startswith(prefix + ' && '), label + ': explicit main/event/release guard required')
             # The only extra ORs allowed are bootstrap's grouped event allowlist.
             require('||' not in condition or env == 'cloudflare-cvie-staging' and filename == 'cvie-staging.yml' and name in {'release','recovery','automatic-staging','customer-candidate'} and condition == (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) or filename == 'bootstrap.yml' and name == 'sync' and condition == RELEASE + " && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.deploy == true))", label + ': guard may not be bypassed with OR')
@@ -188,6 +192,23 @@ def validate(doc, filename):
                 require(opts.get('persist-credentials') is False, label + ': checkout must not persist token')
                 ref = opts.get('ref')
                 require(ref in (None, '${{ github.sha }}') or ref == PHASE1 and filename in {'security-phase1-audit.yml','security-phase1-staging.yml'}, label + ': do not check out mutable/arbitrary privileged source')
+    if filename == 'production-compatibility-repair.yml':
+        require(set(events)=={'workflow_dispatch'}, 'repair: manual dispatch only')
+        require(doc.get('concurrency')=={'group':'cveharbor-production-release','cancel-in-progress':False}, 'repair: shared production concurrency required')
+        jobs=doc.get('jobs',{})
+        require(set(jobs)=={'validate','inspect','change'}, 'repair: exact three jobs required')
+        for name,guard,environment in [('inspect',REPAIR_READ,'cloudflare-production-audit'),('change',REPAIR_WRITE,'cloudflare-worker-production')]:
+            job=jobs.get(name,{})
+            require(job.get('if')==guard and job.get('environment')==environment and job.get('needs')=='validate', 'repair: exact operation/approval boundary')
+            require(job.get('timeout-minutes')==15,'repair: bounded execution')
+            require(job.get('permissions')=={'contents':'read','actions':'read'},'repair: environment inspection uses read-only permissions')
+            steps=job.get('steps',[])
+            require(len(steps)==3 and steps[-1].get('run')=='node deployment/proposals/production-compatibility/procedure/execute.mjs','repair: single reviewed entrypoint')
+            if name=='change':
+                require(steps[-1].get('env',{}).get('PRODUCTION_COMPATIBILITY_REPAIR_ENABLED')=='${{ vars.PRODUCTION_COMPATIBILITY_REPAIR_ENABLED }}','repair: environment enable flag must reach runtime authorization')
+                require('if' not in steps[-1] and not steps[-1].get('continue-on-error',False),'repair: disabled runtime must fail, not skip or ignore authorization')
+            for step in steps[:-1]:require(not SENSITIVE.search(json.dumps(step)),'repair: setup must be credential-free')
+            require(not re.search(r'upload-artifact|actions/cache|continue-on-error|wrangler|restore|deploy', '\n'.join(s.get('run', '')+s.get('uses','') for s in steps).replace('deployment/proposals/','proposal/')), 'repair: no public private-data artifacts, retry or deployment tools')
     return errors
 
 def main():

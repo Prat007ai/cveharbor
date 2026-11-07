@@ -1,0 +1,363 @@
+{
+  "baseline_schema_sha256": "327bab011a4ffe3654aab618f859a8cdaef14aa7d4bbd03c0db96d4f7b0a225d",
+  "groups": [
+    {
+      "file": "account-backend/migrations/0023_lifecycle_monitoring.sql",
+      "sha256": "b57fb55692d6c75592639ca19d43d470a7e2fe5480f74c21194b3cbea454af31",
+      "added": [
+        {
+          "type": "index",
+          "name": "lifecycle_monitor_audit_owner"
+        },
+        {
+          "type": "index",
+          "name": "lifecycle_monitor_events_product"
+        },
+        {
+          "type": "index",
+          "name": "lifecycle_monitor_messages_due"
+        },
+        {
+          "type": "index",
+          "name": "lifecycle_monitor_notifications_due"
+        },
+        {
+          "type": "index",
+          "name": "lifecycle_monitor_notifications_owner"
+        },
+        {
+          "type": "index",
+          "name": "lifecycle_monitor_notifications_watch"
+        },
+        {
+          "type": "index",
+          "name": "lifecycle_monitor_provider_id"
+        },
+        {
+          "type": "index",
+          "name": "lifecycle_monitor_sources_due"
+        },
+        {
+          "type": "index",
+          "name": "lifecycle_watch_settings_product"
+        },
+        {
+          "type": "table",
+          "name": "lifecycle_monitor_accounts"
+        },
+        {
+          "type": "table",
+          "name": "lifecycle_monitor_audit"
+        },
+        {
+          "type": "table",
+          "name": "lifecycle_monitor_delivery_events"
+        },
+        {
+          "type": "table",
+          "name": "lifecycle_monitor_events"
+        },
+        {
+          "type": "table",
+          "name": "lifecycle_monitor_messages"
+        },
+        {
+          "type": "table",
+          "name": "lifecycle_monitor_notifications"
+        },
+        {
+          "type": "table",
+          "name": "lifecycle_monitor_preferences"
+        },
+        {
+          "type": "table",
+          "name": "lifecycle_monitor_products"
+        },
+        {
+          "type": "table",
+          "name": "lifecycle_monitor_runs"
+        },
+        {
+          "type": "table",
+          "name": "lifecycle_monitor_sources"
+        },
+        {
+          "type": "table",
+          "name": "lifecycle_monitor_state"
+        },
+        {
+          "type": "table",
+          "name": "lifecycle_monitor_suppressions"
+        },
+        {
+          "type": "table",
+          "name": "lifecycle_watch_settings"
+        }
+      ],
+      "changed": []
+    },
+    {
+      "file": "account-backend/migrations/0028_cvie_source_efficiency.sql",
+      "sha256": "a713d16f9621a724f0df2b8506f7267e216cc45bc6539ba5415c86e5c754551a",
+      "added": [
+        {
+          "type": "index",
+          "name": "cvie_disclosure_state"
+        },
+        {
+          "type": "table",
+          "name": "cvie_queue_observations"
+        },
+        {
+          "type": "table",
+          "name": "cvie_source_snapshots"
+        },
+        {
+          "type": "trigger",
+          "name": "cvie_queue_observed_attempt"
+        },
+        {
+          "type": "trigger",
+          "name": "cvie_queue_observed_insert"
+        }
+      ],
+      "changed": []
+    },
+    {
+      "file": "account-backend/migrations/0029_cvie_identity_registry.sql",
+      "sha256": "315b31b8d66ff745aa2478594cd0ef787d8ec0b8c2c3f3ad163bc94f52f1bef3",
+      "added": [
+        {
+          "type": "index",
+          "name": "cvie_identifier_identity"
+        },
+        {
+          "type": "index",
+          "name": "cvie_identity_evidence_cve"
+        },
+        {
+          "type": "index",
+          "name": "cvie_identity_evidence_page"
+        },
+        {
+          "type": "index",
+          "name": "cvie_identity_family_reverse"
+        },
+        {
+          "type": "index",
+          "name": "cvie_identity_index_due"
+        },
+        {
+          "type": "index",
+          "name": "cvie_scope_cpe"
+        },
+        {
+          "type": "table",
+          "name": "cvie_identities"
+        },
+        {
+          "type": "table",
+          "name": "cvie_identity_aliases"
+        },
+        {
+          "type": "table",
+          "name": "cvie_identity_evidence"
+        },
+        {
+          "type": "table",
+          "name": "cvie_identity_families"
+        },
+        {
+          "type": "table",
+          "name": "cvie_identity_identifiers"
+        },
+        {
+          "type": "table",
+          "name": "cvie_identity_index_jobs"
+        },
+        {
+          "type": "table",
+          "name": "cvie_identity_members"
+        },
+        {
+          "type": "table",
+          "name": "cvie_index_state"
+        },
+        {
+          "type": "table",
+          "name": "cvie_product_identities"
+        },
+        {
+          "type": "trigger",
+          "name": "cvie_fast_cna_delete"
+        },
+        {
+          "type": "trigger",
+          "name": "cvie_fast_cna_insert"
+        },
+        {
+          "type": "trigger",
+          "name": "cvie_fast_cna_update"
+        },
+        {
+          "type": "trigger",
+          "name": "cvie_fast_nvd_delete"
+        },
+        {
+          "type": "trigger",
+          "name": "cvie_fast_nvd_insert"
+        },
+        {
+          "type": "trigger",
+          "name": "cvie_fast_sort_disclosure_revision"
+        },
+        {
+          "type": "trigger",
+          "name": "cvie_fast_sort_kev_add"
+        },
+        {
+          "type": "trigger",
+          "name": "cvie_fast_sort_kev_remove"
+        },
+        {
+          "type": "trigger",
+          "name": "cvie_fast_sort_link_insert"
+        },
+        {
+          "type": "trigger",
+          "name": "cvie_fast_sort_link_update"
+        },
+        {
+          "type": "trigger",
+          "name": "cvie_fast_sort_nvd_date"
+        }
+      ],
+      "changed": []
+    },
+    {
+      "file": "account-backend/migrations/0031_remediation_integrity.sql",
+      "sha256": "816eb1e6deb528340af37284c72fe2d3585d7c1aec883ca6a1788c8b868eea46",
+      "added": [
+        {
+          "type": "table",
+          "name": "remediation_finding_write_context"
+        },
+        {
+          "type": "trigger",
+          "name": "finding_link_identity"
+        },
+        {
+          "type": "trigger",
+          "name": "finding_link_immutable"
+        },
+        {
+          "type": "trigger",
+          "name": "linked_finding_status_insert"
+        },
+        {
+          "type": "trigger",
+          "name": "linked_finding_status_update"
+        },
+        {
+          "type": "trigger",
+          "name": "preserve_asset_finding_history"
+        },
+        {
+          "type": "trigger",
+          "name": "preserve_remediation_history"
+        },
+        {
+          "type": "trigger",
+          "name": "retired_remediation_read_only"
+        },
+        {
+          "type": "trigger",
+          "name": "validate_finding_write"
+        }
+      ],
+      "changed": []
+    },
+    {
+      "file": "account-backend/migrations/0032_recovery_control.sql",
+      "sha256": "77e56e139153505ec2433c9c2dec5ea1f84d0142ffcee2db7dac53434420a4fd",
+      "added": [
+        {
+          "type": "table",
+          "name": "operations_control"
+        },
+        {
+          "type": "table",
+          "name": "operations_events"
+        },
+        {
+          "type": "table",
+          "name": "operations_leases"
+        },
+        {
+          "type": "trigger",
+          "name": "operations_control_history"
+        },
+        {
+          "type": "trigger",
+          "name": "recovery_hold_new_lease"
+        }
+      ],
+      "changed": []
+    },
+    {
+      "file": "deployment/proposals/customer-remediation/schema.sql",
+      "sha256": "4cb409cd1ad836c3e71394e3f054168d99b7896817421d92d795d71235a8977a",
+      "added": [
+        {
+          "type": "index",
+          "name": "remediation_customer_context_unique"
+        },
+        {
+          "type": "table",
+          "name": "remediation_customer_scopes"
+        },
+        {
+          "type": "table",
+          "name": "remediation_customer_ticket_history"
+        },
+        {
+          "type": "trigger",
+          "name": "remediation_customer_asset_exclusive"
+        },
+        {
+          "type": "trigger",
+          "name": "remediation_customer_environment_stable"
+        },
+        {
+          "type": "trigger",
+          "name": "remediation_customer_history"
+        },
+        {
+          "type": "trigger",
+          "name": "remediation_customer_owned"
+        },
+        {
+          "type": "trigger",
+          "name": "remediation_customer_owner_stable"
+        },
+        {
+          "type": "trigger",
+          "name": "remediation_customer_scope_immutable"
+        },
+        {
+          "type": "trigger",
+          "name": "remediation_customer_scope_retained"
+        },
+        {
+          "type": "trigger",
+          "name": "remediation_customer_ticket_immutable"
+        },
+        {
+          "type": "trigger",
+          "name": "remediation_customer_ticket_retained"
+        }
+      ],
+      "changed": []
+    }
+  ]
+}
