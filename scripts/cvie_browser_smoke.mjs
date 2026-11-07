@@ -13,7 +13,7 @@ assert.ok(all.length,'real NVD advisories are available for the interface review
 const now=Date.now(),recentHistory=all.filter(x=>Date.parse(x.published)>=monthsAgo(now,3)),yearHistory=all.filter(x=>Date.parse(x.published)>=monthsAgo(now,12));
 const windowRecords=n=>all.map(x=>({...x,retained_exploited:Boolean(x.known_exploited&&Date.parse(x.published)<monthsAgo(now,n))})).filter(x=>Date.parse(x.published)>=monthsAgo(now,n)||x.retained_exploited);
 const recent=windowRecords(3),history=windowRecords(12);
-let preferences={defaults:null,products:[]},phase='scanning',authenticated=true,sourceFailure=false,withdrawnIds=[];
+let preferences={defaults:null,products:[],revision:'none'},phase='scanning',authenticated=true,sourceFailure=false,withdrawnIds=[];
 let scanProgress={windows_complete:0,windows_total:5,records_checked:0,records_in_window:null};
 function sourceEvidence(){return {...(source.evidence||{}),sources:[{id:'nvd',label:'NVD product history',status:phase==='ready'?'current':'scanning',last_success_at:source.nvd_checked_at||Date.parse(source.checked_at)},...(source.evidence?.sources||[]).map(s=>sourceFailure&&s.id==='cisa_kev'?{...s,status:'unavailable',error:'Simulated source outage; last verified evidence retained'}:s)]};}
 const requests=[],errors=[];
@@ -46,7 +46,7 @@ try{
   if(!authenticated)return send({error:'Sign in required'},401);
   if(path==='/v1/me')return send({authenticated:true,email:'reviewer@example.test'});
   if(path==='/v1/technology-catalogue'){
-   if(request.method()==='PUT'){preferences=JSON.parse(request.postData());return send({saved:true,cvie:{ready:true,status:'queued'}});}
+   if(request.method()==='PUT'){preferences=JSON.parse(request.postData());preferences.revision='fixture-saved';return send({saved:true,revision:preferences.revision,cvie:{ready:true,queued:1}});}
    return send(preferences);
   }
   if(path==='/v1/cvie/sync')return send({ready:true,status:'queued'},202);
@@ -71,11 +71,12 @@ try{
  await page.goto(base+'/vulnerabilities/',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>window.CVEHARBOR_CVIE?.ready);
  await page.locator('#technologyManageButton').click();
+ await page.locator('.technology-add-details summary').click();
  await page.locator('#technologyAddName').fill(product.name);
  await page.locator('#technologyAddVendor').fill('Apache');
  await page.locator('#technologyAddVersion').fill('10.1.20');
  await page.getByRole('button',{name:'Add and scan product'}).click();
- await page.waitForFunction(()=>document.getElementById('technologyCustomizeStatus').textContent.includes('CVIE is scanning'));
+ await page.waitForFunction(()=>document.getElementById('technologyCustomizeStatus').textContent.startsWith('Catalogue saved.'));
  await page.waitForFunction(()=>window.CVEHARBOR_CVIE.products.length===1);
  assert.equal(preferences.products.length,1,'Add and scan saves immediately, without a second save');
  await page.locator('#technologyManageClose').click();

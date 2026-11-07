@@ -2468,3 +2468,36 @@ body.account-page #customerReports .customer-dash-toolbar{display:grid;grid-temp
 @media(hover:none){.technology-redesign .technology-remove{opacity:1;width:32px;height:32px}}
 @media(max-width:800px){.technology-choice-grid{grid-template-columns:1fr}.technology-add-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.technology-customizer{padding:15px}.technology-choice-group{grid-template-columns:1fr}.technology-add-form{grid-template-columns:1fr}.technology-custom-item{grid-template-columns:auto minmax(0,1fr)}.technology-custom-item button{grid-column:2;justify-self:start}}
+
+/* Personal catalogue editor */
+#technologyCustomizer :is(label, legend, input, select, button, summary, output, .technology-custom-description, .technology-editor-hint, #technologyCustomizeStatus, #technologyScanStatus) {
+  font-size: 1rem;
+  line-height: 1.45;
+}
+#technologyCustomizer legend { font-weight: 750; }
+#technologyCustomizer .technology-choice-group label,
+#technologyCustomizer .technology-custom-item label {
+  display: flex;
+  gap: .625rem;
+  padding: .5rem;
+  color: #edf8ff;
+  align-items: baseline;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+#technologyCustomizer input[type="checkbox"] { flex: none; accent-color: #70dfcc; }
+#technologyCustomizer :focus-visible { outline: 3px solid #87f4de; outline-offset: 2px; }
+#technologyCustomizer .technology-custom-item { grid-template-columns: minmax(0, 1fr) auto; }
+#technologyCustomizer .technology-custom-item button { align-self: center; }
+#technologyCustomizer .technology-selection-tools,
+#technologyCustomizer .technology-save-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem 1rem;
+}
+#technologyCustomizer .technology-selection-tools output { font-weight: 650; }
+#technologyCustomizer .technology-save-actions { margin-top: 1rem; }
+#technologyCustomizer #technologySaveButton { margin: 0; }
+#technologyCustomizer #technologyCustomizeStatus { flex: 1 1 14rem; margin: 0; color: #c4f4ed; }
+#technologyCustomizer #technologyScanStatus:empty { margin: 0; }
