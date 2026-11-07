@@ -37,6 +37,49 @@ async function fixture(t){
  };return f;
 }
 const blocked=async(f,operation)=>{await assert.rejects(()=>f.run(operation));assert.equal(f.writes.length,0);};
+function onDemandInstall(approval) {
+ const {not_before, expires_at, ...install} = approval;
+ return {...install, version: 2};
+}
+
+test('an on-demand install can start after a long review and ends frozen with receipts for the exact run', async t => {
+ const f = await fixture(t);
+ const {p} = await f.approve();
+ const approval = onDemandInstall(p);
+ f.env.REPAIR_AUTHORIZATION = JSON.stringify(approval);
+ const later = now() + 2 * 3600;
+ const report = await execute(f.env, {client: f.client, now: () => later});
+ assert.equal(report.status, 'installed-frozen');
+ assert.deepEqual(report.control, {write_hold: 1, database_frozen: 1, revision: 0});
+ const receipts = f.db.prepare(`SELECT id,payload FROM ${receiptTable} ORDER BY rowid`).all();
+ assert.deepEqual(receipts.map(r => r.id), ['install-intent', 'install-started', 'installed']);
+ for (const {payload} of receipts) {
+   const saved = JSON.parse(payload);
+   for (const key of ['run_id', 'source_sha', 'database', 'approval_id']) assert.equal(saved[key], approval[key]);
+   assert.equal(saved.authorization_sha256, digest(approval));
+   assert.ok(!Object.hasOwn(saved, 'not_before') && !Object.hasOwn(saved, 'expires_at'));
+ }
+ const writes = f.writes.length;
+ await assert.rejects(() => f.run('resume'));
+ const {p: resume} = await f.approve('resume');
+ f.env.REPAIR_AUTHORIZATION = JSON.stringify({...resume, version: 2});
+ await assert.rejects(() => f.run('resume'));
+ delete resume.not_before;
+ delete resume.expires_at;
+ f.env.REPAIR_AUTHORIZATION = JSON.stringify(resume);
+ await assert.rejects(() => f.run('resume'));
+ assert.equal(f.writes.length, writes);
+});
+
+test('on-demand authorization rejects a different run, commit, database, or explicit time bound before writing', async t => {
+ const f = await fixture(t);
+ const {p} = await f.approve();
+ for (const invalid of [{run_id: '5678'}, {source_sha: 'b'.repeat(40)}, {database: '11111111-1111-4111-8111-111111111111'},
+                       {not_before: now()}, {expires_at: null}]) {
+   f.env.REPAIR_AUTHORIZATION = JSON.stringify({...onDemandInstall(p), ...invalid});
+   await blocked(f, 'install');
+ }
+});
 test('pre-write failures report only a fixed code and never submit a write', async t => {
   const privateDetail = 'fictional-private-diagnostic-marker';
   const cases = [
@@ -101,6 +144,18 @@ test('pre-write failures report only a fixed code and never submit a write', asy
   });
 });
 const sqlFile=name=>fs.readFileSync(path.join(folder,name+'.sql'),'utf8');
+test('the database rejects incomplete or mixed on-demand evidence at the first install receipt', async t => {
+ const f = await fixture(t), {s, p} = await f.approve();
+ f.db.exec(sqlFile('bootstrap'));
+ const insert = f.db.prepare(`INSERT INTO ${receiptTable}(id,payload) VALUES('install-intent',?)`);
+ for (const patch of [{run_id: undefined}, {run_id: null}, {source_sha: null}, {database: 'other'},
+                      {expires_at: null}, {operation: 'resume'}]) {
+   const approval = {...onDemandInstall(p), ...patch};
+   assert.throws(() => insert.run(JSON.stringify({...approval, authorization_sha256: digest(approval),
+     schema_rows: s.schema_rows, counts: s.counts})), /Repair approval expired or database drifted/);
+ }
+ assert.equal(f.db.prepare(`SELECT COUNT(*) n FROM ${receiptTable}`).get().n, 0);
+});
 async function claimedInstallation(t){
  const f=await fixture(t),{s,p}=await f.approve();
  f.db.exec(sqlFile('bootstrap'));

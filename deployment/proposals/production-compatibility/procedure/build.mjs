@@ -25,6 +25,18 @@ export function snapshotPredicate(payload){
  const schema=`json_array_length(json_extract(${payload},'$.schema_rows'))=(SELECT COUNT(*) FROM (${schemaSQL})) AND NOT EXISTS(SELECT 1 FROM json_each(${payload},'$.schema_rows') e WHERE NOT EXISTS(SELECT 1 FROM sqlite_schema s WHERE s.type=json_extract(e.value,'$.type') AND s.name=json_extract(e.value,'$.name') AND s.tbl_name=json_extract(e.value,'$.tbl_name') AND s.sql=json_extract(e.value,'$.sql')))`;
  return allOf([schema,...originalTables().map(t=>`(SELECT COUNT(*) FROM ${quote(t)})=json_extract(${payload},'$.counts.${t}')`),noViolations()]);
 }
+// Install receipts with version 2 are bound to the reviewed run instead of a clock.
+// The trigger passes the receipt ID check so a resume receipt cannot use this path.
+function installApprovalTiming(payload, installPhase) {
+ const field = key => `json_extract(${payload},'$.${key}')`;
+ return `CASE WHEN ${field('version')}=2 THEN (
+  ${installPhase} AND ${field('operation')}='install'
+  AND json_type(${payload},'$.not_before') IS NULL AND json_type(${payload},'$.expires_at') IS NULL
+  AND json_type(${payload},'$.run_id')='text' AND length(${field('run_id')})>0 AND ${field('run_id')} NOT GLOB '*[^0-9]*'
+  AND json_type(${payload},'$.source_sha')='text' AND length(${field('source_sha')})=40 AND ${field('source_sha')} NOT GLOB '*[^0-9a-f]*'
+  AND ${field('database')}=${literal(target.database)}
+ ) ELSE CAST(strftime('%s','now') AS INTEGER) BETWEEN ${field('not_before')} AND ${field('expires_at')} END`;
+}
 export function sqlFiles(){
  const table=receiptTable;
  const bootstrap=`-- Separate operational journal; no IF NOT EXISTS, reset or deletion path.\nCREATE TABLE ${table}(id TEXT PRIMARY KEY CHECK(id IN('install-intent','install-started','installed','resume-intent','resume-started')),payload TEXT NOT NULL CHECK(json_valid(payload)),recorded_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);\nCREATE TRIGGER ${table}_immutable_update BEFORE UPDATE ON ${table} BEGIN SELECT RAISE(ABORT,'Repair receipts are immutable'); END;\nCREATE TRIGGER ${table}_immutable_delete BEFORE DELETE ON ${table} BEGIN SELECT RAISE(ABORT,'Repair receipts are immutable'); END;\nCREATE TRIGGER ${table}_sequence BEFORE INSERT ON ${table} BEGIN
@@ -36,7 +48,7 @@ export function sqlFiles(){
  (NEW.id='resume-started' AND (SELECT COUNT(*) FROM ${table})=4 AND NEW.payload=(SELECT payload FROM ${table} WHERE id='resume-intent'))
  ) THEN RAISE(ABORT,'Repair sequence or receipt mismatch') END;
  SELECT CASE WHEN NEW.id IN('install-intent','install-started','resume-intent','resume-started') AND NOT COALESCE((
- CAST(strftime('%s','now') AS INTEGER) BETWEEN json_extract(NEW.payload,'$.not_before') AND json_extract(NEW.payload,'$.expires_at') AND
+ ${installApprovalTiming('NEW.payload', "NEW.id IN('install-intent','install-started')")} AND
  ${snapshotPredicate('NEW.payload')}
  ),0) THEN RAISE(ABORT,'Repair approval expired or database drifted') END;
 END;\n`;
@@ -53,7 +65,7 @@ SELECT json_extract(CASE WHEN COALESCE((
  (SELECT COUNT(*) FROM ${table})=2
  AND ${installPayload}=(SELECT payload FROM ${table} WHERE id='install-intent')
  AND json_extract(${installPayload},'$.operation')='install'
- AND CAST(strftime('%s','now') AS INTEGER) BETWEEN json_extract(${installPayload},'$.not_before') AND json_extract(${installPayload},'$.expires_at')
+ AND ${installApprovalTiming(installPayload, "1")}
  AND ${snapshotPredicate(installPayload)}
 ),0) THEN 'true' ELSE 'Repair installation boundary rejected' END,'$') AS installation_precondition;
 -- END INSTALLATION PRECONDITION

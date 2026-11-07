@@ -20,9 +20,15 @@ export function authorizeContext(env,a){
  if(['install','resume'].includes(env.REPAIR_OPERATION))assert.equal(env.PRODUCTION_COMPATIBILITY_REPAIR_ENABLED,'true');
  return env.REPAIR_OPERATION;
 }
-function windowCheck(a,now,maxAge){
+function checkApprovalTiming(a, now) {
+ // Version 2 is an installation approved for a single live GitHub run.
+ // Reject ambiguous inputs rather than ignoring an explicit time restriction.
+ if (a.version === 2 && a.operation === 'install') {
+   assert.ok(!Object.hasOwn(a, 'not_before') && !Object.hasOwn(a, 'expires_at'));
+   return;
+ }
  assert.ok(Number.isSafeInteger(a.not_before)&&Number.isSafeInteger(a.expires_at));
- assert.ok(a.not_before<=now&&now<=a.expires_at&&a.expires_at-a.not_before<=maxAge,'Approval expired, future-dated or overlong');
+ assert.ok(a.not_before<=now&&now<=a.expires_at&&a.expires_at-a.not_before<=1800,'Approval expired, future-dated or overlong');
 }
 // Only this module constructs these failures, using literal codes. Never forward
 // parser, crypto, assertion or provider messages to the operator report.
@@ -89,7 +95,7 @@ export function verifyRecovery(env, approval, snapshot, now) {
 export function authorizeWrite(env, a, s, now) {
   requireCheck('authorization-missing', env.REPAIR_AUTHORIZATION);
   const p = checked('authorization-json', () => JSON.parse(env.REPAIR_AUTHORIZATION));
-  requireCheck('authorization-version', p?.version === 1);
+  requireCheck('authorization-version', p?.version === 1 || (p?.version === 2 && env.REPAIR_OPERATION === 'install'));
   requireCheck('authorization-id', matches(uuidPattern, p.approval_id));
   requireCheck('authorization-operation', p.operation === env.REPAIR_OPERATION);
   requireCheck('authorization-source', p.source_sha === env.GITHUB_SHA);
@@ -102,7 +108,7 @@ export function authorizeWrite(env, a, s, now) {
   requireCheck('authorization-sql', p.sql_sha256 === a.manifest.sql_sha256[p.operation + '.sql']);
   requireCheck('authorization-schema', p.baseline_schema_sha256 === target.baseline_schema_sha256);
   requireCheck('authorization-fingerprint', p.preflight_sha256 === s.fingerprint);
-  checked('authorization-window', () => windowCheck(p, now, 1800));
+  checked('authorization-window', () => checkApprovalTiming(p, now));
   requireCheck('authorization-recovery-hash', matches(sha256Pattern, p.recovery_sha256));
   requireCheck('authorization-quiet-window', p.quiet_window_confirmed === true);
   requireCheck('authorization-independent-writers', p.independent_writers_excluded === true);
@@ -211,7 +217,7 @@ export async function execute(env,{client,artifact,now=()=>Math.floor(Date.now()
   stage='second-fingerprint';
   assert.equal(second.fingerprint,before.fingerprint,'State changed before execution');
   stage='pre-write-window';
-  windowCheck(approval,now(),1800);
+  checkApprovalTiming(approval,now());
   stage='final-github-approval';
   await client.protection(operation);
   if(operation==='install'){
@@ -219,10 +225,10 @@ export async function execute(env,{client,artifact,now=()=>Math.floor(Date.now()
    stage='install-intent';await write(`INSERT INTO ${receiptTable}(id,payload) VALUES('install-intent',?)`,params);
    // Persisted intent must match before submitting schema SQL exactly once.
    const rows=await client.select(`SELECT payload FROM ${receiptTable} WHERE id='install-intent'`);assert.equal(rows.length,1);assert.equal(rows[0].payload,params[0]);
-   assert.deepEqual(await client.observe(),before.metadata);windowCheck(approval,now(),1800);
+   assert.deepEqual(await client.observe(),before.metadata);checkApprovalTiming(approval,now());
    stage='install-start';await write(fs.readFileSync(path.join(folder,'install-start.sql'),'utf8'));
    const claimed=await client.select(`SELECT payload FROM ${receiptTable} WHERE id='install-started'`);assert.equal(claimed.length,1);assert.equal(claimed[0].payload,params[0]);
-   windowCheck(approval,now(),1800);
+   checkApprovalTiming(approval,now());
    // The start claim is durable intent, not authorization for later drift.
    // Submit the generated DB assertion AND DDL in one request, never split,
    // pre-execute the assertion, or retry even if the provider reports failure.
@@ -231,10 +237,10 @@ export async function execute(env,{client,artifact,now=()=>Math.floor(Date.now()
    report.status='installed-frozen';capture(after);
   }else{
    stage='resume-intent';await write(`INSERT INTO ${receiptTable}(id,payload) VALUES('resume-intent',?)`,params);
-   assert.deepEqual(await client.observe(),before.metadata);windowCheck(approval,now(),1800);
+   assert.deepEqual(await client.observe(),before.metadata);checkApprovalTiming(approval,now());
    stage='resume-start';await write(fs.readFileSync(path.join(folder,'resume-start.sql'),'utf8'));
    const claimed=await client.select(`SELECT payload FROM ${receiptTable} WHERE id='resume-started'`);assert.equal(claimed.length,1);assert.equal(claimed[0].payload,params[0]);
-   windowCheck(approval,now(),1800);
+   checkApprovalTiming(approval,now());
    stage='resume';await write(fs.readFileSync(path.join(folder,'resume.sql'),'utf8'));
    stage='resume-verification';const after=await inspect(client,a);assert.equal(after.state,'resumed');report.status='resumed';capture(after);
   }
