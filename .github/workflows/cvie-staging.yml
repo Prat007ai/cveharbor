@@ -13,7 +13,7 @@ on:
       candidate_scope:
         description: Candidate package to prepare or deploy
         type: choice
-        options: [standard, catalogue-only]
+        options: [standard, catalogue-only, query-fix-287]
         default: standard
       routine_pr:
         description: Merged application PR number (routine-deploy only)

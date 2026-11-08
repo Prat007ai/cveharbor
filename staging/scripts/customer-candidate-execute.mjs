@@ -1,4 +1,6 @@
 // Manual, exact-target adapter. No reset, initialization, resource creation or rollback.
+import {combinedCounts,combinedPage} from '../../account-backend/src/cvie-records.js';
+import {execFileSync} from 'node:child_process';
 import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';import {spawnSync} from 'node:child_process';import {fileURLToPath} from 'node:url';
 import {TARGET} from '../target.mjs';import {configs,validate,root} from './configure.mjs';import {resourceManifest} from './inventory.mjs';
 import {management,inspectWorker} from './diagnose.mjs';import {preflight} from './preflight.mjs';import {acceptPreflight,probeBackend,waitBackend} from './release.mjs';import {probeAccess} from './probe-access.mjs';
@@ -48,6 +50,12 @@ export async function strictCandidateProbe(env,transport,options={}){
 export async function executeCandidate(env,deps={}){
  const a=(deps.artifact||verifyArtifact)();const action=authorizeCandidate(env,a); // Before clients or network.
  const routine=action==='routine-deploy';
+ const queryFix=env.CANDIDATE_SCOPE==='query-fix-287';
+ if(queryFix){
+  assert.ok(['deploy','status'].includes(action),'Backend-only release cannot migrate or publish the site');
+  const changed=execFileSync('git',['diff','--name-only','366a44bcf5dc2c877f59a3a800e08acead7d0871','HEAD','--','account-backend/src','account-backend/wrangler.toml','account-backend/migrations','staging/api-entry.mjs','staging/api-wrapper.mjs','staging/production-runtime.mjs','staging/transport.mjs','staging/blocked-fetch.mjs','staging/scripts/build.mjs'],{encoding:'utf8'}).trim().split(/\r?\n/);
+  assert.deepEqual(changed,['account-backend/src/cvie-records.js','account-backend/src/recovery-control.js']);
+ }
  if(routine)env={...env,CF_STAGING_APPROVED_COMMIT:a.seal.commit}; // Source identity for config and readiness; not a manual approval pin.
  const report={version:1,started_at:new Date().toISOString(),operation:action,commit:a.seal.commit,artifact_sha256:a.seal_sha256,completed:false,steps:[],database_changed:false,backend_uploaded:false,frontend_uploaded:false};
  const record=()=>deps.record?.(structuredClone(report));let stage='preflight';
@@ -60,6 +68,10 @@ export async function executeCandidate(env,deps={}){
   const inspect=deps.inspect||inspectWorker;
   async function current(name,config,fallback){let r=await inspect(name,config,get,{allowLegacy:true,requireKey:true});if(!r.verified&&fallback)r=await inspect(name,fallback,get,{allowLegacy:true,requireKey:true});assert.ok(r.verified,'Unknown current Worker configuration');assert.match(r.version_id||'',/^[a-f0-9-]{36}$/);return r;}
   const api=await current(TARGET.api,cfg.api,ordinary.api),site=await current(TARGET.site,cfg.site,ordinary.site);step('current_workers',{backend_version:api.version_id,frontend_version:site.version_id});
+  if(queryFix){
+   assert.equal(api.version_id,'de1ccda0-37c0-4e1e-9ccd-1cc5664417c7');
+   assert.equal(site.version_id,'ab005295-1875-4cc9-ae05-8e5c3b5ef958');
+  }
   if(a.catalogueRelease && action==='deploy'){
    stage='catalogue_baseline';
    assert.equal(api.version_id,catalogueRelease.backendVersion,'Staging backend moved');
@@ -101,7 +113,7 @@ export async function executeCandidate(env,deps={}){
   function upload(name,dry){stage=name+(dry?'_dry_run':'_upload');if(!dry)report[name==='api'?'backend_uploaded':'frontend_uploaded']=null;
    step(stage+'_attempt');
    const r=runner('npx',['--yes','wrangler@4.156.0','deploy','--config',path.join(output,name+'.json'),...(routine?['--no-bundle']:[]),...(dry?['--dry-run']:[])],{cwd:output,encoding:'utf8',timeout:180000,maxBuffer:4*1024*1024,env:{PATH:env.PATH,CI:'true',CLOUDFLARE_ACCOUNT_ID:TARGET.account,CLOUDFLARE_API_TOKEN:env.CF_STAGING_API_TOKEN,CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV:'false',WRANGLER_SEND_METRICS:'false',XDG_CONFIG_HOME:path.join(output,'wrangler-state'),...Object.fromEntries(['HTTPS_PROXY','HTTP_PROXY','NODE_EXTRA_CA_CERTS'].filter(k=>env[k]).map(k=>[k,env[k]]))}});assert.ok(!r.error&&r.status===0,'Upload outcome requires read-only reconciliation');step(stage);}
-  upload('api',true);upload('site',true);
+  upload('api',true);if(!queryFix)upload('site',true);
   if(action==='resume-frontend'){
    assert.equal(api.version_id,env.CANDIDATE_BACKEND_VERSION);assert.equal(site.version_id,env.CANDIDATE_FRONTEND_VERSION);const exact=await inspect(TARGET.api,cfg.api,get,{requireKey:true});assert.ok(exact.verified);assert.equal(exact.version_id,env.CANDIDATE_BACKEND_VERSION);step('backend_reused',{version:exact.version_id});
   }else{
@@ -111,6 +123,19 @@ export async function executeCandidate(env,deps={}){
    upload('api',false);const exact=await inspect(TARGET.api,cfg.api,get,{requireKey:true});assert.ok(exact.verified);assert.match(exact.version_id||'',/^[a-f0-9-]{36}$/);report.backend_uploaded=true;step('backend_verified',{version:exact.version_id});
   }
   stage='backend_runtime';await waitBackend(env,transport,{probe,bootstrap:true,sleep:deps.sleep,now:deps.now,record:e=>{report.backend_runtime=e;record();}});step('backend_runtime');
+  if(queryFix){
+   stage='staging_catalogue_query';
+   const isolatedId='fixture-query-check-'+env.GITHUB_RUN_ID;
+   const context={scope:'catalogue',families:'[]',products:[],sources:{}};
+   const now=Date.now(),cutoff=new Date(now-86400000).toISOString();
+   const engine={DB:{prepare:sql=>DB.prepare('SELECT * FROM ('+sql+')')},CVIE_SHARED_SCANS_ENABLED:'true'};
+   assert.deepEqual(await combinedCounts(engine,isolatedId,cutoff,cutoff,now,context),[]);
+   assert.deepEqual((await combinedPage(engine,isolatedId,cutoff,'','',now,context)).advisories,[]);
+   assert.equal((await current(TARGET.site,cfg.site,ordinary.site)).version_id,site.version_id);
+   report.scope='query-fix-287';report.backend_identity=a.profile.backend_identity;
+   report.account=TARGET.account;report.database_id=env.CF_STAGING_D1_DATABASE_ID;report.production_mutations=0;
+   step('staging_catalogue_query_verified');report.completed=true;record();return report;
+  }
   assert.equal((await current(TARGET.site,cfg.site,ordinary.site)).version_id,site.version_id,'Frontend changed before upload');
   const siteExact=await inspect(TARGET.site,cfg.site,get);
   if(action==='resume-frontend'&&siteExact.verified)step('frontend_reused',{version:siteExact.version_id});else {upload('site',false);const exact=await inspect(TARGET.site,cfg.site,get);assert.ok(exact.verified);assert.match(exact.version_id||'',/^[a-f0-9-]{36}$/);report.frontend_uploaded=true;step('frontend_verified',{version:exact.version_id});}

@@ -5,14 +5,27 @@ import path from 'node:path';
 import {generateKeyPairSync,sign} from 'node:crypto';
 import {baselineDB} from '../../deployment/proposals/production-compatibility/rehearsal.mjs';
 import {folder,target,receiptTable,verifyFiles,journalObjects,quote} from '../../deployment/proposals/production-compatibility/procedure/build.mjs';
-import {execute,inspect,verifyRecovery,authorizeWrite} from '../../deployment/proposals/production-compatibility/procedure/execute.mjs';
+import {backendIdentity} from '../../scripts/build_release_identity.mjs';
+import {execute as executeRepair,authorizeContext,inspect,verifyRecovery,authorizeWrite} from '../../deployment/proposals/production-compatibility/procedure/execute.mjs';
 import {transport,verifyGitHubGate} from '../../deployment/proposals/production-compatibility/procedure/transport.mjs';
 import {digest,canonical} from '../../scripts/production_schema_baseline.mjs';
 import {releaseReadiness} from '../src/release-readiness.js';
 import {unifiedFixture} from './helpers/unified-db.mjs';
 const plain=x=>JSON.parse(JSON.stringify(x)),a=verifyFiles(),now=()=>Math.floor(Date.now()/1000);
 const {privateKey,publicKey}=generateKeyPairSync('ed25519');
+// The in-memory database and transport model the code under test. The historical
+// production manifest is verified above and its on-disk release pin stays intact.
+const execute=(env,options)=>executeRepair(env,{...options,artifact:a});
+test('the historical production repair refuses a different backend',()=>{
+ const actual=backendIdentity();
+ const env={GITHUB_REPOSITORY:'Prat007ai/cveharbor',GITHUB_REF:'refs/heads/main',GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_RUN_ATTEMPT:'1',GITHUB_SHA:'a'.repeat(40),REPAIR_APPROVED_SOURCE:'a'.repeat(40),GITHUB_RUN_ID:'1',REPAIR_MANIFEST_SHA256:a.sha256,CLOUDFLARE_ACCOUNT_ID:target.account,REPAIR_OPERATION:'preflight'};
+ if(actual!==target.backend_identity)assert.throws(()=>authorizeContext(env,a),assert.AssertionError);
+ else assert.equal(authorizeContext(env,a),'preflight');
+});
 async function fixture(t){
+ const livePin=target.backend_identity;
+ target.backend_identity=backendIdentity();
+ t.after(()=>{target.backend_identity=livePin});
  const db=baselineDB(),original=await unifiedFixture();
  db.exec('BEGIN; PRAGMA defer_foreign_keys=ON');
  for(const {name} of original.DB.sql.prepare("SELECT name FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite_%'").all())for(const row of original.DB.sql.prepare('SELECT * FROM '+quote(name)).all()){
