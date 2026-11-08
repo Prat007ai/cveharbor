@@ -18,7 +18,7 @@ async function load(features,request,onChange,write=request){
  const token=generation,data=await request('/inventory');if(token!==generation)return;inventory=data;api=write;changed=onChange;active=true;
  const panel=make('section');panel.id='remediationCustomerPanel';panel.className='rt-panel rt-customer-filter';
  const filter=select('remediationCustomerFilter','Customer');options(filter.input,['all','All Records'],[...data.customers.map(c=>[c.id,c.name]),['unassigned','Unassigned Records']]);panel.append(filter.wrap);
- $('remediationTracker').prepend(panel);
+ $('remediationRecordsTitle').closest('header').after(panel);
  const fields=make('div');fields.id='remediationCustomerFields';fields.className='ops-span rt-customer-fields';
  const customer=select('remediationCustomer','Customer *');options(customer.input,['','Choose a customer or Unassigned'],[...data.customers.map(c=>[c.id,c.name]),['unassigned','Unassigned Records']]);customer.input.required=true;
  const environment=select('remediationEnvironment','Environment (optional)'),asset=select('remediationAsset','Asset (optional)');

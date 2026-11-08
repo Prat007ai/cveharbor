@@ -148,3 +148,12 @@ body[data-page=remediation] .page-section-intro p:not(.eyebrow){font-size:15px;l
 }
 #remediationAssignDialog{padding:0;font-family:"Segoe UI",Arial,sans-serif;}
 #remediationAssignForm{display:grid} #remediationAssignForm [hidden],#remediationAssignDialog [hidden]{display:none!important} #remediationAssignForm textarea{width:100%;resize:vertical} #remediationAssignNotesCount{font-size:11px} #remediationAssignDialog .envelope-art{isolation:isolate} #remediationAssignDialog .dispatch input{appearance:auto} #remediationAssignDialog .extra summary,#remediationAssignDialog .delivery summary{cursor:pointer}
+
+#remediationAssignDialog .assignment-customer-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(145px,100%),1fr));gap:12px;margin:15px 0}
+#remediationAssignDialog .assignment-customer-fields select{display:block;width:100%;margin-top:4px}
+.preview-audience{display:flex;gap:5px;margin:8px 0}.preview-audience button{padding:6px 10px;border:1px solid #8eb8a8;border-radius:6px;background:#e8f2eb;color:#254b40}.preview-audience button[aria-pressed=true]{color:white;background:#195a4f}
+.rt-records .rt-record-detail{background:#e1ebf3;border-left:3px solid #3c7284;padding:8px 12px;margin:9px 0;border-radius:5px}
+.rt-records .rt-record-detail summary,.rt-records .rt-record-detail p,.rt-records .rt-record-detail .remediation-assignee{color:#19374b;font:500 16px/1.5 "Segoe UI",sans-serif}
+.rt-records .rt-record-detail summary{font-weight:650}
+.queue-customer-filter,.rt-records .rt-customer-filter{display:block;padding:10px 0;background:none;color:#253f52}.queue-customer-filter[hidden]{display:none}
+.queue-customer-filter select,.rt-customer-filter select{display:block;max-width:100%;min-height:40px;padding:6px 9px;font-size:15px}

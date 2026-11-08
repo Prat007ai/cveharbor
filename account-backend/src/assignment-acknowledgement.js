@@ -1,3 +1,4 @@
+import {assignmentRecord} from './customer-remediation.js';
 import {activeRecords} from './remediation-integrity.js';
 import {publicCve,recordScope,scopeLabel} from './remediation-identity.js';
 import {progressReady,storedReminderPolicy,reminderInterval,reviewLink} from './assignment-progress-common.js';
@@ -52,6 +53,10 @@ export async function assignWithAcknowledgement(env,user,cve,recipient,notes,raw
  const fyi=normalizeFyi(raw.fyi_recipients,recipient),workflow=await workflowReady(env),progress=await progressReady(env);
  if(env.ASSIGNMENT_PROGRESS_ENABLED==='true'&&!progress)throw new AssignmentError('Reviewer updates are temporarily unavailable. No email was sent.',503);
  if(raw.assigned_severity!==undefined){assignedSeverity(raw.assigned_severity);if(!workflow)throw new AssignmentError('Assigned severity is temporarily unavailable. No email was sent.',503);}
+ if(raw.customer_id){
+  if(!await acknowledgementReady(env)||fyi.length&&!await fyiReady(env))throw new AssignmentError('Assignment delivery is unavailable.',503);
+  cve=await assignmentRecord(env,user,cve,recipient,raw);
+ }
  const existingMeta=workflow?await env.DB.prepare('SELECT assigned_severity FROM remediation_record_metadata WHERE user_id=? AND cve_id=?').bind(user.id,cve).first():null;
  const selectedSeverity=raw.assigned_severity===undefined?(existingMeta?.assigned_severity||''):raw.assigned_severity;
  if(fyi.length&&!await fyiReady(env))throw new AssignmentError('FYI notification setup is unavailable. No email was sent.',503);
@@ -72,12 +77,14 @@ export async function assignWithAcknowledgement(env,user,cve,recipient,notes,raw
  try{
   const advisory=publicSnapshot(publicCve(cve),await lookUpPublishedCve(publicCve(cve)));
   const scope=await recordScope(env,user.id,cve);
+  // Save only a fingerprint in the public snapshot. Resolve private names for the intended FYI separately.
+  if(scope&&raw.share_customer_context===true)advisory.context_fingerprint=await hashToken(JSON.stringify([scope.customer_id,scope.environment_id||'']));
   await env.DB.prepare("INSERT INTO remediation_assignment_requests(id,user_id,cve_id,recipient_email,requester_email,token_hash,delivery_status,public_advisory_json,created_at,expires_at) VALUES(?,?,?,?,?,?,'sending',?,?,?)").bind(id,user.id,cve,recipient,user.email,hash,JSON.stringify(advisory),time,expires).run();
   if(fyi.length)await env.DB.batch(fyi.map(email=>env.DB.prepare('INSERT INTO remediation_assignment_fyi(assignment_id,recipient_email,created_at) VALUES(?,?,?)').bind(id,email,time)));
   if(workflow)await env.DB.prepare('INSERT INTO remediation_assignment_metadata(assignment_id,assigned_severity) VALUES(?,?)').bind(id,selectedSeverity).run();
   const interval=reminderInterval(selectedSeverity||advisory.severity);
   if(progress)await env.DB.prepare('INSERT INTO remediation_review_access(assignment_id,expires_at,interval_seconds,last_progress_at) VALUES(?,?,?,?)').bind(id,time+2592000,storedReminderPolicy(selectedSeverity||advisory.severity),time).run();
-  const report=renderAssignmentNotice({advisory,manageUrl:progress?reviewLink(id):'',reminderHours:interval?interval/3600:null,assignedSeverity:selectedSeverity,requester:user.email,notes:[scope?('Assigned finding: '+scopeLabel(scope)):null,notes].filter(Boolean).join('\n'),due:record?.due||'',url:acknowledgementLink(env,token),expiresAt:expires});
+  const report=renderAssignmentNotice({advisory,scope,manageUrl:progress?reviewLink(id):'',reminderHours:interval?interval/3600:null,assignedSeverity:selectedSeverity,requester:user.email,notes:[scope?('Assigned finding: '+scopeLabel(scope)):null,notes].filter(Boolean).join('\n'),due:record?.due||'',url:acknowledgementLink(env,token),expiresAt:expires});
   const senderEnv={EMAIL_FROM:env.EMAIL_FROM,SMTP2GO_API_KEY:env.SMTP2GO_API_KEY,ALERT_SMTP2GO_API_KEY:env.ASSIGNMENT_SMTP2GO_API_KEY||env.SMTP2GO_API_KEY};
   const providerId=await sendEmail(senderEnv,recipient,report),sent=now();
   // Atomically publish the accepted email and invalidate earlier links for this recipient only.

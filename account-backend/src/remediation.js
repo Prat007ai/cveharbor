@@ -216,6 +216,7 @@ export async function assignRemediation(env,user,id,raw){
   if(!await isMigrated(env))throw new RemediationError('Email assignment is temporarily unavailable. Please try again later.',503);
   if(!assignmentReady(env))throw new RemediationError('Assignment email delivery is not enabled',503);
   const fyi=normalizeFyi(raw?.fyi_recipients,recipient);
+  if(raw?.customer_id&&env.ASSIGNMENT_ACK_ENABLED!=='true')throw new RemediationError('Customer assignments require the acknowledgement service.',503);
   if(fyi.length&&env.ASSIGNMENT_ACK_ENABLED!=='true')throw new RemediationError('FYI notifications require the acknowledgement service.',503);
   if(env.ASSIGNMENT_ACK_ENABLED==='true')return assignWithAcknowledgement(env,user,cve,recipient,reviewerNotes,raw||{});
   const prior=await env.DB.prepare(
