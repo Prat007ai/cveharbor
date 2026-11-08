@@ -112,20 +112,26 @@ export async function evidenceContext(env,userId,scope='all'){
  return {products,scope,families:JSON.stringify(families),sources:Object.fromEntries(sources.map(s=>[s.id,s]))};
 }
 // SQL keyset pagination limits both public evidence and private data to the requested page.
-function familiesCte(){return `WITH families AS (
+function familiesCte(pageOnly=false){
+ const disclosures=pageOnly?'page_disclosures':'cvie_disclosure_products';
+ // Page enrichment only needs affected rows for the CVEs returned by pagination.
+ const pageSource=pageOnly?`page_disclosures AS MATERIALIZED (
+  SELECT d.* FROM json_each(?) ids CROSS JOIN cvie_disclosure_products d ON d.cve_id=ids.value
+ ), `:'';
+ return `WITH ${pageSource}families AS MATERIALIZED (
  SELECT json_extract(value,'$.product_id') AS product_id,json_extract(value,'$.key') AS family_key,json_extract(value,'$.labels') AS labels,COALESCE(json_extract(value,'$.raw_labels'),'[]') AS raw_labels,COALESCE(json_extract(value,'$.scope'),'') AS scope FROM json_each(?)
-), verified_matches AS (
- SELECT DISTINCT f.product_id,d.cve_id,d.applicability,d.affected_json FROM families f JOIN cvie_disclosure_products d ON d.family_key=f.family_key
+), verified_matches AS MATERIALIZED (
+ SELECT DISTINCT f.product_id,d.cve_id,d.applicability,d.affected_json FROM families f CROSS JOIN ${disclosures} d ON d.family_key=f.family_key
  WHERE (substr(f.family_key,1,4)='cpe:' OR EXISTS(SELECT 1 FROM json_each(d.affected_json) a
   WHERE lower(replace(replace(json_extract(a.value,'$.product'),' ',''),'_','')) IN(SELECT value FROM json_each(f.labels))))
  AND (f.scope<>'windows_hyperv' OR EXISTS(SELECT 1 FROM cvie_disclosures c WHERE c.cve_id=d.cve_id AND ${hyperVStatementSql('c.record_json')}))
  UNION
- SELECT DISTINCT f.product_id,d.cve_id,d.applicability,d.affected_json FROM families f JOIN cvie_disclosure_products d
+ SELECT DISTINCT f.product_id,d.cve_id,d.applicability,d.affected_json FROM families f CROSS JOIN ${disclosures} d
   ON d.family_key>=f.family_key AND d.family_key<f.family_key||char(127)
  WHERE substr(f.family_key,1,5)='name:' AND EXISTS(SELECT 1 FROM json_each(d.affected_json) a WHERE ${versionedLabelSql('a.value','f.raw_labels')})
   AND (f.scope<>'windows_hyperv' OR EXISTS(SELECT 1 FROM cvie_disclosures c WHERE c.cve_id=d.cve_id AND ${hyperVStatementSql('c.record_json')}))
  ${cnaCoverageAdapters.map(adapter=>`UNION
- SELECT DISTINCT f.product_id,d.cve_id,d.applicability,d.affected_json FROM families f JOIN cvie_disclosure_products d
+ SELECT DISTINCT f.product_id,d.cve_id,d.applicability,d.affected_json FROM families f JOIN ${disclosures} d
   ON d.family_key LIKE 'name:microsoft:%'
  WHERE f.family_key='${adapter.key}' AND EXISTS(SELECT 1 FROM json_each(d.affected_json) a WHERE ${adapter.matchSql('a.value')})`).join('\n')}
 ) `;}
@@ -135,7 +141,7 @@ function unifiedCte(env,scope='all'){
   SELECT p.id AS product_id,a.cve_id,a.published,a.record_json FROM cvie_products p JOIN cvie_product_scopes m ON ${validScopeLink()}
   JOIN cvie_shared_advisories a ON a.scope_id=m.scope_id
   WHERE p.user_id=(SELECT user_id FROM owner) AND p.id IN(SELECT value FROM selected_products) AND ${activeSubscription('p',scope)}
- ), nvd_records AS (
+ ), nvd_records AS MATERIALIZED (
   SELECT * FROM shared_nvd UNION ALL
   SELECT a.product_id,a.cve_id,a.published,a.record_json FROM cvie_advisories a JOIN cvie_products p ON p.id=a.product_id
   WHERE p.user_id=(SELECT user_id FROM owner) AND p.id IN(SELECT value FROM selected_products) AND ${activeSubscription('p',scope)}
@@ -143,24 +149,28 @@ function unifiedCte(env,scope='all'){
   AND NOT EXISTS(SELECT 1 FROM cvie_product_scopes m JOIN cvie_shared_scopes j ON j.id=m.scope_id
    WHERE ${validScopeLink()} AND j.seed_state='complete' AND j.history_complete_at IS NOT NULL)
  )`:'';
- return familiesCte()+`, selected_products AS (SELECT value FROM json_each(?))`+sharedSource+`, links AS (
+ // One row per product and CVE retains the affected-over-unaffected rule without
+ // rescanning all matching disclosures for every advisory in the catalogue.
+ return familiesCte()+`, verdicts AS MATERIALIZED (
+  SELECT product_id,cve_id,MAX(applicability='affected') AS affected,MAX(applicability='unaffected') AS unaffected
+  FROM verified_matches GROUP BY product_id,cve_id
+ ), selected_products AS (SELECT value FROM json_each(?))`+sharedSource+`, links AS (
  SELECT a.product_id,a.cve_id FROM ${source} a JOIN cvie_products p ON p.id=a.product_id
  WHERE p.user_id=${shared?'(SELECT user_id FROM owner)':'?'} AND p.id IN(SELECT value FROM selected_products) AND ${activeSubscription('p',scope)}
  AND (NOT EXISTS(SELECT 1 FROM families f WHERE f.product_id=p.id AND f.scope='windows_hyperv')
   OR (EXISTS(SELECT 1 FROM families f WHERE f.product_id=p.id AND f.family_key='cpe:'||p.cpe) AND ${hyperVStatementSql('a.record_json')}
    AND NOT EXISTS(SELECT 1 FROM cvie_disclosures c WHERE c.cve_id=a.cve_id AND c.state='PUBLISHED' AND NOT ${hyperVStatementSql('c.record_json')})))
- UNION SELECT product_id,cve_id FROM verified_matches
+ UNION SELECT product_id,cve_id FROM verdicts
 ), unified AS (
- SELECT l.product_id,l.cve_id,COALESCE(CASE WHEN EXISTS(SELECT 1 FROM verified_matches m
-  WHERE m.product_id=l.product_id AND m.cve_id=l.cve_id) THEN d.published END,a.published) AS published,
- a.record_json AS nvd_json,CASE WHEN EXISTS(SELECT 1 FROM verified_matches m WHERE m.product_id=l.product_id AND m.cve_id=l.cve_id) THEN d.record_json END AS cna_json,
+ SELECT l.product_id,l.cve_id,COALESCE(CASE WHEN v.cve_id IS NOT NULL THEN d.published END,a.published) AS published,
+ a.record_json AS nvd_json,CASE WHEN v.cve_id IS NOT NULL THEN d.record_json END AS cna_json,
  d.checked_at AS cna_checked_at,k.record_json AS kev_json,j.cve_id AS queued_id
- FROM links l LEFT JOIN ${source} a ON a.product_id=l.product_id AND a.cve_id=l.cve_id
+ FROM links l LEFT JOIN verdicts v ON v.product_id=l.product_id AND v.cve_id=l.cve_id
+ LEFT JOIN ${source} a ON a.product_id=l.product_id AND a.cve_id=l.cve_id
  LEFT JOIN cvie_disclosures d ON d.cve_id=l.cve_id LEFT JOIN cvie_kev k ON k.cve_id=l.cve_id
  LEFT JOIN cvie_disclosure_queue j ON j.cve_id=l.cve_id
  WHERE COALESCE(d.state,'PUBLISHED')<>'REJECTED'
- AND NOT(EXISTS(SELECT 1 FROM verified_matches m WHERE m.product_id=l.product_id AND m.cve_id=l.cve_id AND m.applicability='unaffected')
-  AND NOT EXISTS(SELECT 1 FROM verified_matches m WHERE m.product_id=l.product_id AND m.cve_id=l.cve_id AND m.applicability='affected'))
+ AND (v.unaffected IS NOT 1 OR v.affected IS 1)
 ) `;}
 export async function combinedPage(env,userId,cutoff,after='',productId='',now=Date.now(),context=null){
  const ctx=context||await evidenceContext(env,userId);if(!ctx)return null;
@@ -178,8 +188,9 @@ export async function combinedPage(env,userId,cutoff,after='',productId='',now=D
  const args=ctx.digest?[cutoff,new Date(now).toISOString(),recent,recent,recent,recent,recent,after]:[cutoff,new Date(now).toISOString(),after,...(productId?[productId]:[])];
  const rows=(await q(env.DB,unifiedCte(env,ctx.scope)+ranked,ctx.families,JSON.stringify(ctx.products.map(p=>p.id)),userId,...args).all()).results||[];
  const page=rows.slice(0,100),keys=JSON.stringify(page.map(r=>r.product_id+'/'+r.cve_id));
- const matches=(await q(env.DB,familiesCte()+`SELECT product_id,cve_id,affected_json FROM verified_matches
-  WHERE (product_id||'/'||cve_id) IN(SELECT value FROM json_each(?)) AND applicability='affected'`,ctx.families,keys).all()).results||[];
+ const pageIds=JSON.stringify([...new Set(page.map(row=>row.cve_id))]);
+ const matches=page.length?(await q(env.DB,familiesCte(true)+`SELECT product_id,cve_id,affected_json FROM verified_matches
+  WHERE (product_id||'/'||cve_id) IN(SELECT value FROM json_each(?)) AND applicability='affected'`,pageIds,ctx.families,keys).all()).results||[]:[];
  const matched=new Map();
  for(const row of matches){const key=row.product_id+'/'+row.cve_id;if(!matched.has(key))matched.set(key,[]);matched.get(key).push(...JSON.parse(row.affected_json));}
  const records=page.map(row=>{
@@ -205,9 +216,9 @@ export async function withdrawnIds(env){
 }
 export async function excludedProductCves(env,userId,context=null){
  const ctx=context||await evidenceContext(env,userId);if(!ctx)return [];
- const rows=(await q(env.DB,familiesCte()+`SELECT DISTINCT m.product_id,m.cve_id FROM verified_matches m
-  WHERE m.applicability='unaffected' AND NOT EXISTS(SELECT 1 FROM verified_matches a
-   WHERE a.product_id=m.product_id AND a.cve_id=m.cve_id AND a.applicability='affected') ORDER BY m.cve_id,m.product_id`,ctx.families).all()).results||[];
+ const rows=(await q(env.DB,familiesCte()+`SELECT product_id,cve_id FROM verified_matches
+  GROUP BY product_id,cve_id HAVING MAX(applicability='unaffected')=1 AND MAX(applicability='affected')=0
+  ORDER BY cve_id,product_id`,ctx.families).all()).results||[];
  return rows.map(row=>({id:row.cve_id,product:ctx.products.find(p=>p.id===row.product_id).name}));
 }
 export function mergeDigestEvidence(base,extra,withdrawn=[],excluded=[],componentProducts=[]){
