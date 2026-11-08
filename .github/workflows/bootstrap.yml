@@ -121,7 +121,7 @@ on:
   workflow_dispatch:
     inputs:
       catalogue_commit:
-        description: 'Catalogue only (staging 42411365289). Enter the reviewed main SHA and leave general deploy off.'
+        description: 'Catalogue save fix only. Enter the reviewed main SHA and leave general deploy off.'
         required: false
         type: string
       deploy:
@@ -132,6 +132,7 @@ on:
 
 permissions:
   contents: read
+
 
 jobs:
   verify:
@@ -161,13 +162,13 @@ jobs:
         run: node scripts/browser_smoke.mjs && node scripts/threat_health_smoke.mjs && node scripts/customer_security_smoke.mjs && node scripts/customer_score_smoke.mjs && node scripts/cvie_client_smoke.mjs && node scripts/cvie_polling_smoke.mjs && node scripts/product_monitoring_smoke.mjs
 
   catalogue-check:
-    name: Verify catalogue scope and staging receipt
-    if: (github.event_name == 'pull_request' && startsWith(github.head_ref, 'release/catalogue-') && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.catalogue_commit != '')
+    name: Test the production catalogue package in Chrome
+    if: (github.event_name == 'pull_request' && github.head_ref == 'fix/catalogue-save-recovery' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.catalogue_commit != '')
     runs-on: ubuntu-latest
     permissions:
       contents: read
       actions: read
-      issues: read
+      pull-requests: read
       deployments: read
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -177,10 +178,16 @@ jobs:
           fetch-depth: 0
       - name: Verify catalogue-only production package
         run: python scripts/catalogue_package.py "$RUNNER_TEMP/catalogue"
-      - name: Verify signed-in staging acceptance
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Test interrupted saves and reloads in Chrome with fictional catalogue data
         env:
-          GH_TOKEN: ${{ github.token }}
-        run: python scripts/catalogue_promotion.py evidence
+          CVEHARBOR_CHROMIUM_PATH: /usr/bin/google-chrome
+          CVEHARBOR_PLAYWRIGHT_MODULE: ${{ github.workspace }}/staging/node_modules/playwright-core/index.mjs
+        run: |
+          npm install --prefix staging --ignore-scripts --no-package-lock
+          CVEHARBOR_CATALOGUE_PUBLIC="$RUNNER_TEMP/catalogue/after" node scripts/catalogue_scope_browser_smoke.mjs
       - name: Check production environment before requesting deployment approval
         if: github.event_name == 'workflow_dispatch'
         env:
@@ -208,7 +215,7 @@ jobs:
     permissions:
       contents: read
       actions: read
-      issues: read
+      pull-requests: read
       deployments: read
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262

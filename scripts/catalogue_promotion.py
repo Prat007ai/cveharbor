@@ -1,4 +1,4 @@
-"""One production frontend promotion tied to staging run 42411365289."""
+"""Promote only the catalogue save fix after testing the production package."""
 import base64
 import json
 import os
@@ -13,12 +13,10 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 from catalogue_package import CHANGED, LIVE_ONLY, digest, files, require
 
 REPO = "https://api.github.com/repos/Prat007ai/cveharbor"
-STAGE = "366a44bcf5dc2c877f59a3a800e08acead7d0871"
-STAGE_RUN = 42411365289
 SITE_ENV = "cloudflare-catalogue-42411365289"
 OWNER_ID = 349078288
-OLD_VERSION = "e22850fa-851d-453f-8336-5e78d96babdd"
-OLD_DEPLOYMENT = "ec3d1d8c-dae1-4745-b866-ce0eed620db6"
+OLD_VERSION = "a55d364b-2de4-4244-95c2-fec9f218008a"
+OLD_DEPLOYMENT = "ef4462cf-19dc-44f0-8ab0-3f30eaa0bcd1"
 BACKEND = "80b709c7559a4277d3c791fc0a853aa874104f180ac26c9e5754379f9087f05f"
 ORIGIN = "https://cveharbor.com/"
 # Exact Cloudflare Web Analytics tag observed in the live production page source.
@@ -43,18 +41,10 @@ def github(path):
 
 
 def evidence():
-    run = github(f"/actions/runs/{STAGE_RUN}")
-    require((run["conclusion"], run["head_branch"], run["head_sha"], run["run_attempt"], run["path"]) ==
-            ("success", "main", STAGE, 1, ".github/workflows/cvie-staging.yml"), "Wrong staging deployment")
-    artifact = github("/actions/artifacts/13589008759")
-    require(artifact["workflow_run"]["id"] == STAGE_RUN and artifact["name"] == "customer-candidate-execution"
-            and artifact["digest"] == "sha256:e65b13cf96d1022790c3301bdf0bb1df0b9390c3952686dfbb9870964ecf4956",
-            "Staging execution receipt differs")
-    comment = github("/issues/comments/6712763544")
-    require(comment["issue_url"] == REPO + "/issues/278" and comment["user"]["id"] == 349078288
-            and comment["updated_at"] == "2026-11-07T20:42:08Z"
-            and "Signed-in live acceptance passed" in comment["body"], "Staging acceptance differs")
-    print("Verified staging deployment 42411365289 and signed-in acceptance on PR 278.")
+    pr = github("/pulls/282")
+    require(pr["merged"] and pr["base"]["ref"] == "main" and
+            pr["merge_commit_sha"] == os.environ["GITHUB_SHA"],
+            "Production must use the exact merge of the reviewed catalogue save fix")
 
 
 def policy():

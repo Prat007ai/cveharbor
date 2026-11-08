@@ -13,6 +13,16 @@ import catalogue_promotion as release
 
 
 class CataloguePromotionTests(unittest.TestCase):
+    def test_only_the_merged_fix_can_be_published(self):
+        commit = "a" * 40
+        pr = {"merged": True, "base": {"ref": "main"}, "merge_commit_sha": commit}
+        with patch.dict(os.environ, {"GITHUB_SHA": commit}):
+            with patch.object(release, "github", return_value=pr):
+                release.evidence()
+            for changed in ({"merged": False}, {"merge_commit_sha": "b" * 40}, {"base": {"ref": "other"}}):
+                with patch.object(release, "github", return_value={**pr, **changed}), self.assertRaises(RuntimeError):
+                    release.evidence()
+
     def rehearsal(self, drift=False):
         version = "44444444-4444-4444-8444-444444444444"
         uploads, activations = [], []

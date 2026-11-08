@@ -25,9 +25,11 @@ never bypass inventory or claim the catalogue has passed live based on a prepara
 
 ## Catalogue-only production releases
 
-When the sole owner asks Work to deploy an identified catalogue-only update, that request authorizes Work to submit the owner's GitHub deployment approval for that release. Work verifies the reviewed main commit, the signed-in staging save/reload result, the production baseline and the pending environment before approving. Use the owner's authorized GitHub identity and record the delegation, run ID and commit in the approval comment.
+For a routine catalogue frontend fix, production can receive the first deployment. Build on the confirmed live site version, prove that only the reviewed assets changed, and run the signed-in save/reload browser tests against those production assets with fictional accounts. Verify the exact merged PR, readiness, prior live version, and protected environment. After publishing, confirm the live version and test the reported interaction through the production site. Keep the previous version for rollback. Staging may receive the same code later using its own bindings, credentials and test data.
 
-For each release, pin its own candidate, staging evidence and production baseline in the reviewed release configuration. Use the protected catalogue publisher with owner review, main-only deployment and administrator bypass disabled. Send the live run link, monitor publication, verify the live assets and traffic, and record the result on the PR. A prior run's approval applies only to that run. Follow any later instruction that reserves the approval click for the owner.
+For each release, pin its own candidate and production baseline. The publisher for PR #282 admits one changed production asset, `app.js`. Database, backend, security and infrastructure changes use their existing procedures. Copying production records into staging requires a separately reviewed data scope. Use synthetic fixtures for routine tests.
+
+Use the protected catalogue publisher with owner review, main-only deployment and administrator bypass disabled. When the sole owner requests an identified catalogue-only deployment, Work may submit the owner's GitHub deployment approval after checking the run, commit and production scope. Record the delegation in the approval comment and respect any request for the owner to approve personally. Send the run link, monitor publication, verify the live assets and traffic, and record the result on the PR.
 
 ## Proposed routine staging operation (inactive)
 
