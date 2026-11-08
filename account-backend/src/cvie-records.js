@@ -136,42 +136,40 @@ function familiesCte(pageOnly=false){
  WHERE f.family_key='${adapter.key}' AND EXISTS(SELECT 1 FROM json_each(d.affected_json) a WHERE ${adapter.matchSql('a.value')})`).join('\n')}
 ) `;}
 function unifiedCte(env,scope='all'){
- const shared=sharedScans(env),source=shared?'nvd_records':'cvie_advisories';
- const sharedSource=shared?`, owner AS(SELECT ? AS user_id), shared_nvd AS MATERIALIZED (
-  SELECT p.id AS product_id,a.cve_id,a.published,a.record_json FROM cvie_products p JOIN cvie_product_scopes m ON ${validScopeLink()}
-  JOIN cvie_shared_advisories a ON a.scope_id=m.scope_id
-  WHERE p.user_id=(SELECT user_id FROM owner) AND p.id IN(SELECT value FROM selected_products) AND ${activeSubscription('p',scope)}
- ), nvd_records AS MATERIALIZED (
-  SELECT * FROM shared_nvd UNION ALL
-  SELECT a.product_id,a.cve_id,a.published,a.record_json FROM cvie_advisories a JOIN cvie_products p ON p.id=a.product_id
-  WHERE p.user_id=(SELECT user_id FROM owner) AND p.id IN(SELECT value FROM selected_products) AND ${activeSubscription('p',scope)}
-  AND NOT EXISTS(SELECT 1 FROM shared_nvd n WHERE n.product_id=a.product_id AND n.cve_id=a.cve_id)
-  AND NOT EXISTS(SELECT 1 FROM cvie_product_scopes m JOIN cvie_shared_scopes j ON j.id=m.scope_id
-   WHERE ${validScopeLink()} AND j.seed_state='complete' AND j.history_complete_at IS NOT NULL)
- )`:'';
- // One row per product and CVE retains the affected-over-unaffected rule without
- // rescanning all matching disclosures for every advisory in the catalogue.
- return familiesCte()+`, verdicts AS MATERIALIZED (
+ const shared=sharedScans(env);
+ // Resolve ownership, subscription and the current shared mapping once. Keeping
+ // catalogue checks out of correlated lookups keeps the plan within D1 limits.
+ const ownership=shared?`LEFT JOIN cvie_product_scopes m ON ${validScopeLink()}
+  LEFT JOIN cvie_shared_scopes s ON s.id=m.scope_id`:'';
+ const sharedFields=shared?',m.scope_id,s.seed_state,s.history_complete_at':'';
+ const sharedRows=shared?`SELECT p.id AS product_id,a.cve_id,a.published,a.record_json,p.cpe
+  FROM owned p JOIN cvie_shared_advisories a ON a.scope_id=p.scope_id UNION ALL`:'';
+ const legacyFilter=shared?`WHERE (p.scope_id IS NULL OR p.seed_state IS NOT 'complete' OR p.history_complete_at IS NULL)
+  AND NOT EXISTS(SELECT 1 FROM cvie_shared_advisories s WHERE s.scope_id=p.scope_id AND s.cve_id=a.cve_id)`:'';
+ return familiesCte()+`, owned AS MATERIALIZED (
+  SELECT p.id,p.cpe${sharedFields} FROM json_each(?) ids JOIN cvie_products p ON p.id=ids.value
+  ${ownership} WHERE p.user_id=? AND ${activeSubscription('p',scope)}
+ ), nvd AS MATERIALIZED (
+  ${sharedRows}
+  SELECT p.id AS product_id,a.cve_id,a.published,a.record_json,p.cpe
+  FROM owned p JOIN cvie_advisories a ON a.product_id=p.id ${legacyFilter}
+ ), verdicts AS MATERIALIZED (
   SELECT product_id,cve_id,MAX(applicability='affected') AS affected,MAX(applicability='unaffected') AS unaffected
   FROM verified_matches GROUP BY product_id,cve_id
- ), selected_products AS (SELECT value FROM json_each(?))`+sharedSource+`, links AS (
- SELECT a.product_id,a.cve_id FROM ${source} a JOIN cvie_products p ON p.id=a.product_id
- WHERE p.user_id=${shared?'(SELECT user_id FROM owner)':'?'} AND p.id IN(SELECT value FROM selected_products) AND ${activeSubscription('p',scope)}
- AND (NOT EXISTS(SELECT 1 FROM families f WHERE f.product_id=p.id AND f.scope='windows_hyperv')
-  OR (EXISTS(SELECT 1 FROM families f WHERE f.product_id=p.id AND f.family_key='cpe:'||p.cpe) AND ${hyperVStatementSql('a.record_json')}
-   AND NOT EXISTS(SELECT 1 FROM cvie_disclosures c WHERE c.cve_id=a.cve_id AND c.state='PUBLISHED' AND NOT ${hyperVStatementSql('c.record_json')})))
- UNION SELECT product_id,cve_id FROM verdicts
-), unified AS (
- SELECT l.product_id,l.cve_id,COALESCE(CASE WHEN v.cve_id IS NOT NULL THEN d.published END,a.published) AS published,
- a.record_json AS nvd_json,CASE WHEN v.cve_id IS NOT NULL THEN d.record_json END AS cna_json,
- d.checked_at AS cna_checked_at,k.record_json AS kev_json,j.cve_id AS queued_id
- FROM links l LEFT JOIN verdicts v ON v.product_id=l.product_id AND v.cve_id=l.cve_id
- LEFT JOIN ${source} a ON a.product_id=l.product_id AND a.cve_id=l.cve_id
- LEFT JOIN cvie_disclosures d ON d.cve_id=l.cve_id LEFT JOIN cvie_kev k ON k.cve_id=l.cve_id
- LEFT JOIN cvie_disclosure_queue j ON j.cve_id=l.cve_id
- WHERE COALESCE(d.state,'PUBLISHED')<>'REJECTED'
- AND (v.unaffected IS NOT 1 OR v.affected IS 1)
-) `;}
+ ), unified AS (
+  SELECT COALESCE(a.product_id,v.product_id) AS product_id,COALESCE(a.cve_id,v.cve_id) AS cve_id,
+   COALESCE(CASE WHEN v.cve_id IS NOT NULL THEN d.published END,a.published) AS published,
+   a.record_json AS nvd_json,CASE WHEN v.cve_id IS NOT NULL THEN d.record_json END AS cna_json,
+   d.checked_at AS cna_checked_at,k.record_json AS kev_json,j.cve_id AS queued_id
+  FROM nvd a FULL OUTER JOIN verdicts v ON v.product_id=a.product_id AND v.cve_id=a.cve_id
+  LEFT JOIN cvie_disclosures d ON d.cve_id=COALESCE(a.cve_id,v.cve_id)
+  LEFT JOIN cvie_kev k ON k.cve_id=COALESCE(a.cve_id,v.cve_id)
+  LEFT JOIN cvie_disclosure_queue j ON j.cve_id=COALESCE(a.cve_id,v.cve_id)
+  WHERE COALESCE(d.state,'PUBLISHED')<>'REJECTED' AND (v.unaffected IS NOT 1 OR v.affected IS 1)
+  AND (v.cve_id IS NOT NULL OR NOT EXISTS(SELECT 1 FROM families f WHERE f.product_id=a.product_id AND f.scope='windows_hyperv')
+   OR (EXISTS(SELECT 1 FROM families f WHERE f.product_id=a.product_id AND f.family_key='cpe:'||a.cpe)
+    AND ${hyperVStatementSql('a.record_json')} AND (d.state IS NOT 'PUBLISHED' OR ${hyperVStatementSql('d.record_json')})))
+ ) `;}
 export async function combinedPage(env,userId,cutoff,after='',productId='',now=Date.now(),context=null){
  const ctx=context||await evidenceContext(env,userId);if(!ctx)return null;
  const recent=new Date(now-30*DAY).toISOString().slice(0,10);
