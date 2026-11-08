@@ -292,10 +292,10 @@ try{
  await page.locator('#technologyManageClose').click();
  for(const failure of ['session','catalogue']){
   sessionUnavailable=failure==='session';catalogueUnavailable=failure==='catalogue';
-  await manage.click();await actionStatus.getByText(/try again/).waitFor();
+  await manage.click();await actionStatus.getByText(/Reconnecting automatically/).waitFor();
   assert.equal(await editor.isVisible(),false);assert.equal(await dialog.isVisible(),false);
   sessionUnavailable=false;catalogueUnavailable=false;
-  await manage.click();await editor.waitFor({state:'visible'});
+  await editor.waitFor({state:'visible'});
   assert.deepEqual(await checkedNames(),['Fortinet']);
   await page.locator('#technologyManageClose').click();
  }
@@ -303,8 +303,10 @@ try{
  await manage.click();await editor.waitFor({state:'visible'});
  assert.deepEqual(await checkedNames(),['Fortinet']);
  await page.goto('http://127.0.0.1:8080/threats/');
- transientSessions=2;
+ sessionUnavailable=true;
  await page.goto('http://127.0.0.1:8080/account/');
+ await page.locator('#accountSecurityStatus').getByText(/Reconnecting automatically/).waitFor();
+ sessionUnavailable=false;
  await page.locator('#accountSecurityDashboard').waitFor({state:'visible'});
  assert.equal(await page.locator('#accountSecurityEmail').innerText(),'a@example.test');
  sessionUnavailable=true;
@@ -319,6 +321,26 @@ try{
  assert.equal(await guestForm.isVisible(),false);assert.equal(await loginTitle.isVisible(),false);
  signedIn=false;await page.reload();
  await guestForm.waitFor({state:'visible'});assert.equal(await loginTitle.isVisible(),true);
+ const fixtureEmail='a@example.test';
+ let authenticatorPosts=0;
+ await page.route('**/v1/auth/request',route=>route.fulfill({json:{challenge_id:'fixture',salt:'fixture'}}));
+ await page.route('**/v1/auth/verify',route=>route.fulfill({json:{mfa_required:true,mfa_challenge:'fixture-mfa'}}));
+ await page.route('**/v1/auth/totp/verify',async route=>{
+  authenticatorPosts++;signedIn=true;await route.abort('connectionreset');
+ });
+ await page.locator('#accountPageEmail').fill(fixtureEmail);
+ await page.locator('#accountPageSend').click();
+ await page.locator('#accountPageCode').fill('123456');
+ await page.locator('#accountPageConfirm').click();
+ await page.locator('#accountPageTotpCode').waitFor({state:'visible'});
+ assert.equal(await loginTitle.innerText(),'Verify your authenticator');
+ assert.equal(await page.locator('#accountPageRetryMessage').isVisible(),false);
+ await page.locator('#accountPageTotpCode').fill('234567');
+ await page.locator('#accountPageTotpVerify button[type=submit]').click();
+ await page.waitForFunction(()=>document.body.classList.contains('workspace-authenticated'));
+ assert.equal(authenticatorPosts,1);
+ assert.equal(await page.locator('#accountPageIdentity').textContent(),'Signed in as '+fixtureEmail);
+ signedIn=false;
  await page.goto('http://127.0.0.1:8080/vulnerabilities/');
  await manage.click();await dialog.waitFor({state:'visible'});
  assert.equal(await editor.isVisible(),false);

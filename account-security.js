@@ -33,11 +33,16 @@ $('accountSecurityRecoveryDone').addEventListener('click',()=>{$('accountSecurit
 $('accountSecuritySignOut').addEventListener('click',async()=>{
  try{await request('/auth/logout','POST');location.replace('/workspace/')}catch(e){status(e.message)}
 });
-(async()=>{
+let sessionPending=true,checkingSession=false,reconnectTimer,reconnectDelay=5000;
+async function checkSession(){
+ if(!sessionPending||checkingSession)return;
+ checkingSession=true;
+ clearTimeout(reconnectTimer);
  try{
   const me=await request('/me');
   if(me.authenticated===false){location.replace('/workspace/');return}
   if(me.authenticated!==true||!me.email)throw Error('Invalid session response');
+  sessionPending=false;
   $('accountSecurityEmail').textContent=me.email||'';
   $('accountSecurityDashboard').hidden=false;
   try{
@@ -53,8 +58,16 @@ $('accountSecuritySignOut').addEventListener('click',async()=>{
   }
  }catch(error){
   if(error.status===401){location.replace('/workspace/');return}
-  status('Could not verify your session. Please retry this page. Your account settings were not changed.');
- }
-})();
+  if(error instanceof TypeError||error.name==='TimeoutError'||[429,500,502,503,504].includes(error.status)){
+   status('The account service is temporarily unavailable. Reconnecting automatically…');
+   reconnectTimer=setTimeout(resumeSession,reconnectDelay);
+   reconnectDelay=Math.min(60000,reconnectDelay*2);
+  }else status('Could not verify your session. Please retry this page. Your account settings were not changed.');
+ }finally{checkingSession=false}
+}
+function resumeSession(){if(!document.hidden)void checkSession()}
+window.addEventListener('online',resumeSession);
+document.addEventListener('visibilitychange',resumeSession);
+void checkSession();
 window.addEventListener('pageshow',event=>{if(event.persisted)location.reload()});
 })();

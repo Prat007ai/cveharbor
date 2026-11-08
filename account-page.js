@@ -20,7 +20,10 @@ function cooldown(seconds){
  update();
  if(amount)retryTicker=window.setInterval(update,1000);
 }
-function authError(error){if(error.retry_after)cooldown(error.retry_after);message(error.message)}
+function authError(error){
+ if(error.retry_after)cooldown(error.retry_after);
+ message(error.interrupted?'The connection was interrupted before delivery could be confirmed. Request a new email code when you reconnect.':error.message);
+}
 
 const message=text=>{$('accountPageMessage').textContent=text;};
 function renderQr(id,uri){
@@ -30,10 +33,16 @@ function renderQr(id,uri){
  new QRCode(target,{text:uri,width:196,height:196,colorDark:'#071624',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
 }
 async function request(path,method='GET',payload){
- const response=await fetch(API+path,{method,credentials:'include',
-  headers:{'Content-Type':'application/json'},
-  body:payload===undefined?undefined:JSON.stringify(payload)});
- const result=await response.json().catch(()=>({}));
+ let response,result;
+ try{
+  response=await fetch(API+path,{method,credentials:'include',
+   headers:payload===undefined?{Accept:'application/json'}:{'Content-Type':'application/json'},
+   body:payload===undefined?undefined:JSON.stringify(payload)});
+  result=await response.json().catch(error=>{if(response.ok)throw error;return {}});
+ }catch{
+  const error=Error('The connection to CVEHarbor was interrupted. Please try again.');
+  error.interrupted=true;throw error;
+ }
  if(!response.ok){const error=Error(result.error||'Account service unavailable');error.retry_after=Number(result.retry_after||response.headers?.get?.('Retry-After')||0);error.status=response.status;throw error;}
  return result;
 }
@@ -56,7 +65,30 @@ function showLoginCopy(show){
  const explainer=document.querySelector('.account-login-explainer');
  if(explainer)explainer.hidden=!show;
 }
+function mfaCopy(title){
+ $('accountFormTitle').textContent=title;
+ const explainer=document.querySelector('.account-login-explainer');if(explainer)explainer.hidden=true;
+ $('accountPageRetryMessage').hidden=true;
+}
+async function verificationError(error,authenticator,activeChallenge){
+ const isCurrent=()=>Boolean(activeChallenge)&&activeChallenge===(authenticator?mfaChallenge:challenge);
+ if(!isCurrent())return;
+ if(!error.interrupted&&![502,503,504].includes(error.status)){message(error.message);return}
+ message('The connection was interrupted. Checking whether sign-in completed…');
+ const expected=$('accountPageEmail').value.trim().toLowerCase();
+ try{
+  const me=await window.CVEHarborAccountRead('/me');
+  if(!isCurrent())return;
+  if(expected&&me.authenticated===true&&me.email?.toLowerCase()===expected){
+   $('accountPageTotpVerify').hidden=true;$('accountPageTotpCode').value='';mfaChallenge='';signedIn(me.email);return;
+  }
+ }catch{/* Keep the current step available while the service reconnects. */}
+ if(!isCurrent())return;
+ message(authenticator?'Sign-in could not be confirmed. When connected, enter the current code from your authenticator app.':'Email verification could not be confirmed. When connected, request a new email code.');
+}
 function signedIn(email){
+ challenge='';salt='';mfaChallenge='';
+ $('accountPageCode').value='';$('accountPageTotpCode').value='';
  showLoginCopy(false);
  window.dispatchEvent(new CustomEvent('cveharbor-auth-change',{detail:{authenticated:true}}));
  $('accountPageSignedOut').hidden=true;
@@ -68,7 +100,8 @@ function signedIn(email){
  if(!document.body.classList.contains('workspace-redesign'))loadTotpStatus();
 }
 function signedOut(){
- showLoginCopy(true);
+ showLoginCopy(true);$('accountFormTitle').textContent=emailTitle;
+ $('accountPageRetryMessage').hidden=false;
  window.dispatchEvent(new CustomEvent('cveharbor-auth-change',{detail:{authenticated:false}}));
  mfaChallenge='';$('accountPageRequiredEnroll').hidden=true;$('accountPageTotpVerify').hidden=true;$('accountPageTotpCode').value='';
  $('accountPageSignedOut').hidden=false;
@@ -80,6 +113,7 @@ function signedOut(){
 const mode=new URLSearchParams(location.search).get('mode');
 if(mode==='register')$('accountFormTitle').textContent='Create your free CVEHarbor account';
 else if(mode==='login')$('accountFormTitle').textContent='Log in to CVEHarbor';
+const emailTitle=$('accountFormTitle').textContent;
 root.addEventListener('submit',async event=>{
  event.preventDefault();const button=$('accountPageSend');button.disabled=true;
  try{
@@ -105,22 +139,23 @@ if(resendButton)resendButton.addEventListener('click',async()=>{
  finally{resendButton.disabled=Date.now()<retryUntil}
 });
 $('accountPageVerify').addEventListener('submit',async event=>{
- event.preventDefault();const button=$('accountPageConfirm');button.disabled=true;
+ event.preventDefault();const button=$('accountPageConfirm'),attempt=challenge;button.disabled=true;
  try{
   const data=await request('/auth/verify','POST',{challenge_id:challenge,salt,code:$('accountPageCode').value});
+  if(attempt!==challenge)return;
   if(data.mfa_enrollment_required){
    mfaChallenge=data.mfa_challenge;
    $('accountPageSignedOut').hidden=true;
    $('accountPageRequiredSecret').textContent=data.secret;
    renderQr('accountPageRequiredQr',data.otpauth_url);
    $('accountPageRequiredEnroll').hidden=false;
-   message('Authenticator setup is required before accessing your workspace.');
+   mfaCopy('Set up your authenticator');message('Authenticator setup is required before accessing your workspace.');
    return;
   }
-  if(data.mfa_required){mfaChallenge=data.mfa_challenge;$('accountPageSignedOut').hidden=true;$('accountPageTotpVerify').hidden=false;message('Enter your authenticator code or a saved recovery code.');$('accountPageTotpCode').focus();return;}
+  if(data.mfa_required){mfaCopy('Verify your authenticator');mfaChallenge=data.mfa_challenge;$('accountPageSignedOut').hidden=true;$('accountPageTotpVerify').hidden=false;message('Enter your authenticator code or a saved recovery code.');$('accountPageTotpCode').focus();return;}
   if(!data.authenticated)throw Error('Could not confirm your account.');
   signedIn(data.email||$('accountPageEmail').value.trim());
- }catch(error){message(error.message)}
+ }catch(error){await verificationError(error,false,attempt)}
  finally{button.disabled=false}
 });
 $('accountPageBack').addEventListener('click',()=>{
@@ -163,10 +198,12 @@ async function loadTotpStatus(){
 }
 $('accountPageTotpVerify').addEventListener('submit',async event=>{
  event.preventDefault();const button=event.currentTarget.querySelector('button[type=submit]');button.disabled=true;
+ const attempt=mfaChallenge;
  try{const result=await request('/auth/totp/verify','POST',{mfa_challenge:mfaChallenge,code:$('accountPageTotpCode').value.trim()});
+  if(attempt!==mfaChallenge)return;
   if(!result.authenticated)throw Error('Authenticator verification failed.');
   $('accountPageTotpVerify').hidden=true;mfaChallenge='';signedIn(result.email||$('accountPageEmail').value.trim());
- }catch(e){message(e.message)}finally{button.disabled=false}
+ }catch(e){await verificationError(e,true,attempt)}finally{button.disabled=false}
 });
 $('accountPageTotpBack').addEventListener('click',()=>{signedOut();$('accountPageVerify').hidden=true;root.hidden=false;message('Request another email verification code.');});
 $('accountPageTotpSetup').addEventListener('click',async()=>{

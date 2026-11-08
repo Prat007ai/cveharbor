@@ -2,7 +2,7 @@
 
 ## Current approvals (in force)
 
-Work owns delivery through [permanent staging](https://cveharborstage.com) and, for an implementation request, through verified production under the owner's standing authority. Honor an explicit scope limit. Select the supported workflow for each environment and verify all changes included in the release. Work supplies the manual candidate workflow's exact commit, operation pins and recovery evidence. GitHub still enforces its environment reviews.
+Production at https://cveharbor.com/ is the standing delivery target. Procedures below that operate on staging require a new explicit owner request. Honor an explicit scope limit. Select the supported workflow for each environment and verify all changes included in the release. Work supplies the manual candidate workflow's exact commit, operation pins and recovery evidence. GitHub still enforces its environment reviews.
 
 Verified via GitHub on 2026-11-07: active main ruleset 26584475 requires a PR, resolved
 threads and three GitHub Actions checks (application regression, workflow policy, `prepare`).

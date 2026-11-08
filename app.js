@@ -766,7 +766,10 @@
       row.append(remove);list.append(row);
     }
   }
-  let catalogueLoad,openRequested=false;
+  let catalogueLoad,openRequested=false,reconnectTimer,reconnectDelay=5000;
+  function reconnectCatalogue(){
+    if(openRequested&&!document.hidden&&!catalogueSaving)void loadCatalogue();
+  }
   function openEditor(){
     const editor=$('technologyCustomizer');
     if(editor.hidden||!draft){
@@ -908,6 +911,7 @@
   }
   function loadCatalogue(){
     if(['threats','malware','lifecycle','admin-tools'].includes(document.body.dataset.page))return;
+    clearTimeout(reconnectTimer);
     if(catalogueLoad)return catalogueLoad;
     const epoch=++catalogueEpoch;
     catalogueLoad=readCatalogue(epoch).finally(()=>{if(epoch===catalogueEpoch)catalogueLoad=null});
@@ -934,13 +938,24 @@
       catalogueSignedIn=true;catalogueAccount=me.email;
       personalized={defaults:Array.isArray(data.defaults)?data.defaults:defaultNames,products:Array.isArray(data.products)?data.products:[]};catalogueRevision=data.revision;
       manageButton.hidden=false;applyPersonalized();window.CVEHARBOR_CVIE?.applyCatalogue?.(personalized);
+      reconnectDelay=5000;
       if(openRequested){openRequested=false;statusMessage('');openEditor()}
     }catch(error){
       if(epoch!==catalogueEpoch)return;
       if(error.status===401){signedOut();return}
-      if(openRequested){openRequested=false;statusMessage('Could not load your saved catalogue. Click Customize technologies to try again.')}
+      if(!openRequested)return;
+      if(error instanceof TypeError||error.name==='TimeoutError'||[429,500,502,503,504].includes(error.status)){
+        statusMessage('Your saved catalogue is temporarily unavailable. Reconnecting automatically…');
+        reconnectTimer=setTimeout(reconnectCatalogue,reconnectDelay);
+        reconnectDelay=Math.min(60000,reconnectDelay*2);
+      }else{
+        openRequested=false;
+        statusMessage('Could not load your saved catalogue. Click Customize technologies to try again.');
+      }
     }
   }
+  document.addEventListener('visibilitychange',reconnectCatalogue);
+  window.addEventListener('online',reconnectCatalogue);
   if(typeof fetch==='function')void loadCatalogue();
   window.addEventListener('cveharbor:account-state',event=>{
     if(!event.detail?.authenticated||event.detail.email!==catalogueAccount){
