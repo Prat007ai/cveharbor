@@ -292,10 +292,10 @@ try{
  await page.locator('#technologyManageClose').click();
  for(const failure of ['session','catalogue']){
   sessionUnavailable=failure==='session';catalogueUnavailable=failure==='catalogue';
-  await manage.click();await actionStatus.getByText(/try again/).waitFor();
+  await manage.click();await actionStatus.getByText(/Reconnecting automatically/).waitFor();
   assert.equal(await editor.isVisible(),false);assert.equal(await dialog.isVisible(),false);
   sessionUnavailable=false;catalogueUnavailable=false;
-  await manage.click();await editor.waitFor({state:'visible'});
+  await editor.waitFor({state:'visible'});
   assert.deepEqual(await checkedNames(),['Fortinet']);
   await page.locator('#technologyManageClose').click();
  }
@@ -303,8 +303,10 @@ try{
  await manage.click();await editor.waitFor({state:'visible'});
  assert.deepEqual(await checkedNames(),['Fortinet']);
  await page.goto('http://127.0.0.1:8080/threats/');
- transientSessions=2;
+ sessionUnavailable=true;
  await page.goto('http://127.0.0.1:8080/account/');
+ await page.locator('#accountSecurityStatus').getByText(/Reconnecting automatically/).waitFor();
+ sessionUnavailable=false;
  await page.locator('#accountSecurityDashboard').waitFor({state:'visible'});
  assert.equal(await page.locator('#accountSecurityEmail').innerText(),'a@example.test');
  sessionUnavailable=true;
