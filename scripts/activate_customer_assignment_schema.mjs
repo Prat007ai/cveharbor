@@ -11,7 +11,7 @@ const account='aa99b9b15e0492302e4f6484b8d27bc2';
 const schema=process.env.CUSTOMER_SCHEMA||'managed';
 assert.ok(['managed','manual'].includes(schema));
 const manual=schema==='manual';
-const identity=manual?'reminder-backend-identity.txt':'backend-identity.txt';
+const identity=manual?'manual-backend-identity.txt':'backend-identity.txt';
 const release=fs.readFileSync('release/customer-investigation/'+identity,'utf8').trim();
 const sql=fs.readFileSync('deployment/proposals/customer-remediation/'+(manual?'manual-scope.sql':'schema.sql'),'utf8').replaceAll('\r\n','\n');
 assert.equal(createHash('sha256').update(sql).digest('hex'),manual?'8bc72fce5ddb0ca44df71cdbd39abeacae8eae6af19f04a9a39112cb5d76f338':'4cb409cd1ad836c3e71394e3f054168d99b7896817421d92d795d71235a8977a');

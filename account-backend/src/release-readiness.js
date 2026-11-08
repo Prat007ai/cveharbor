@@ -1,5 +1,5 @@
 import {recoveryTablesSQL,recoveryGuardSQL,leaseGuardSQL,normalizedDDL} from './recovery-schema.js';
-import {integrityChecks} from './release-integrity-checks.js';
+import {installedIntegrityChecks} from './release-integrity-checks.js';
 import {releaseIdentity} from './release-build.js';
 import {recoveryState} from './recovery-control.js';
 export const integrityGuards=['validate_finding_write','finding_link_identity','finding_link_immutable','retired_remediation_read_only','preserve_remediation_history','preserve_asset_finding_history','linked_finding_status_insert','linked_finding_status_update'];
@@ -18,7 +18,7 @@ export async function releaseReadiness(env){
   const contexts=await env.DB.prepare('SELECT COUNT(*) n FROM remediation_finding_write_context').first();
   held=!!state.write_hold;
   schemaReady=integrityGuards.every(n=>names.includes(n))&&contexts.n===0&&await recoveryCoverage(env.DB);
-  if(schemaReady)for(const sql of Object.values(integrityChecks))if(Number((await env.DB.prepare(sql).first()).n)!==0)schemaReady=false;
+  if(schemaReady)for(const sql of Object.values(await installedIntegrityChecks(env.DB)))if(Number((await env.DB.prepare(sql).first()).n)!==0)schemaReady=false;
   ready=!held&&schemaReady;
  }catch{}
  return new Response(JSON.stringify({ready,held,schema_ready:schemaReady,release:releaseIdentity,schema:'phase1-integrity-recovery-v1'}),{status:ready?200:503,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});

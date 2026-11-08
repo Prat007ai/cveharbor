@@ -10,7 +10,7 @@ import catalogue_package as package
 import catalogue_promotion as promotion
 
 BASE = 'feab635843d76a42103055ba7bcf16921c6a5106'
-RUNTIME = ('assignment-acknowledgement.js','customer-remediation.js','remediation-identity.js','remediation.js','manual-assignment-context.js')
+RUNTIME = ('assignment-acknowledgement.js','customer-remediation.js','remediation-identity.js','remediation.js','manual-assignment-context.js','release-readiness.js','release-integrity-checks.js')
 CHANGED = {'operations.js', 'remediation.css'} | previous.previous.ROUTES
 PIN = Path('release/customer-investigation/manual-backend-identity.txt')
 
@@ -34,7 +34,7 @@ def site(out):
     shutil.copytree(out/'before',out/'after')
     for route in sorted(CHANGED):
         name = 'index.html' if route in previous.previous.ROUTES else route
-        patch = package.git('diff','--no-ext-diff','--no-color',BASE,'HEAD','--',name)
+        patch = package.git('diff','--unified=1','--no-ext-diff','--no-color',BASE,'HEAD','--',name)
         with tempfile.TemporaryDirectory(dir=out) as temp:
             path = Path(temp,name)
             target = out/'after'/route
@@ -43,10 +43,6 @@ def site(out):
                            env={**os.environ,'GIT_CEILING_DIRECTORIES':str(out)},check=True)
             target.write_bytes(path.read_bytes())
     package.require({f for f in package.files(out/'after') if (out/'after'/f).read_bytes()!=(out/'before'/f).read_bytes()}==CHANGED,'Incorrect website scope')
-
-
-def previous_ready():
-    promotion.ready(Path('release/customer-investigation/reminder-backend-identity.txt').read_text().strip())
 
 
 def ready():

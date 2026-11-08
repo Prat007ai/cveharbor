@@ -76,7 +76,7 @@ export async function assignmentRecord(env,user,cve,recipient,selection){
 }
 export async function customerTicket(env,user,id,data){
  const scope=await recordScope(env,user.id,id);
- if(!scope||scope.asset_id)throw new WorkflowError('Customer-level record not found.',404);
+ if(!scope||scope.asset_id||scope.manual)throw new WorkflowError('Customer-level record not found.',404);
  const ticket=typeof data.ticket_number==='string'?data.ticket_number.trim():'';
  if(!ticket||ticket.length>64||/[\x00-\x1f\x7f]/.test(ticket))throw new WorkflowError('Enter a ticket reference of 1–64 characters.');
  await env.DB.prepare('INSERT OR IGNORE INTO remediation_customer_ticket_history(user_id,record_id,ticket_number,created_at) VALUES(?,?,?,?)').bind(user.id,id,ticket,new Date().toISOString()).run();

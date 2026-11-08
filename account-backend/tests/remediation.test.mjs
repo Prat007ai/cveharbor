@@ -23,6 +23,7 @@ class MockD1{
   key(uid,cve){return uid+'|'+cve;}
   prepare(query){
     const db=this;
+    if(query.includes('FROM remediation_manual_scopes'))return {async first(){throw Error('no such table: remediation_manual_scopes')}};
     if(query.includes('FROM operations_control'))return {async first(){throw Error('no such table: operations_control')}};
     if(query.includes("name='operations_control'"))return {async first(){return null}};
     if(query.includes('SELECT user_id FROM remediation_assignments LIMIT 1')){
