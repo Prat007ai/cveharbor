@@ -47,6 +47,10 @@ on:
       - '.github/workflows/deploy-worker-code.yml'
   workflow_dispatch:
     inputs:
+      assignment_release:
+        description: Release only the staged reviewer email and reminder changes from PR 291
+        type: boolean
+        default: false
       query_fix_287:
         description: Release only the reviewed PR 287 backend after its verified staging run
         type: boolean
@@ -71,13 +75,18 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
+          fetch-depth: 0
           ref: ${{ github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '24'
+      - name: Assemble the reviewed assignment Worker
+        if: inputs.assignment_release == true
+        run: python scripts/assignment_release.py backend release/.build/investigation-backend
       - name: Require staging success for this exact commit before production approval
         env:
+          ASSIGNMENT_RELEASE: ${{ inputs.assignment_release }}
           SIMPLE_RELEASE_ENABLED: ${{ vars.SIMPLE_RELEASE_ENABLED }}
           GH_TOKEN: ${{ github.token }}
         run: node scripts/require_staging_release.mjs
@@ -106,6 +115,20 @@ jobs:
       - name: Verify account backend
         working-directory: account-backend
         run: npm test && node ../scripts/cvie_rest_batch.test.mjs && node --check src/index.js && node --check src/plugin-advisories.js
+      - name: Select and check the exact assignment Worker verified in staging
+        if: inputs.assignment_release == true
+        run: |
+          python scripts/assignment_release.py backend release/.build/investigation-backend
+          rsync --archive --delete release/.build/investigation-backend/account-backend/src/ account-backend/src/
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          import {backendIdentity} from './scripts/build_release_identity.mjs';
+          import {verifyService} from './scripts/production_service_health.mjs';
+          assert.equal(backendIdentity(),JSON.parse(fs.readFileSync('release/assignment-291.json')).backend_identity);
+          await verifyService({expectedRelease:'738b07a3eee67dc5a3d872dfb4ccbbe5ba2aab628b8c964e820b7b69aea63ce8'});
+          JS
+          node --test account-backend/tests/assignment-*.test.mjs
       - name: Confirm deployment credentials
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
@@ -214,7 +237,7 @@ jobs:
           npx --yes wrangler@4.156.0 d1 execute cveharbor-accounts --remote --file=migrations/0027_assignment_progress.sql
           node ../scripts/verify_assignment_progress_d1.mjs
       - name: Verify existing reviewer schema for notification code-only deployment
-        if: steps.mode.outputs.assignment_progress_code_only == 'true'
+        if: steps.mode.outputs.assignment_progress_code_only == 'true' || inputs.assignment_release == true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}

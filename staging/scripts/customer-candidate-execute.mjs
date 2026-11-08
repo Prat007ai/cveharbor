@@ -50,6 +50,8 @@ export async function strictCandidateProbe(env,transport,options={}){
 export async function executeCandidate(env,deps={}){
  const a=(deps.artifact||verifyArtifact)();const action=authorizeCandidate(env,a); // Before clients or network.
  const routine=action==='routine-deploy';
+ const assignment=env.CANDIDATE_SCOPE==='assignment-291';
+ if(assignment)assert.ok(['deploy','status'].includes(action),'Assignment release does not run migrations');
  const queryFix=env.CANDIDATE_SCOPE==='query-fix-287';
  if(queryFix){
   assert.ok(['deploy','status'].includes(action),'Backend-only release cannot migrate or publish the site');
@@ -113,7 +115,7 @@ export async function executeCandidate(env,deps={}){
   function upload(name,dry){stage=name+(dry?'_dry_run':'_upload');if(!dry)report[name==='api'?'backend_uploaded':'frontend_uploaded']=null;
    step(stage+'_attempt');
    const r=runner('npx',['--yes','wrangler@4.156.0','deploy','--config',path.join(output,name+'.json'),...(routine?['--no-bundle']:[]),...(dry?['--dry-run']:[])],{cwd:output,encoding:'utf8',timeout:180000,maxBuffer:4*1024*1024,env:{PATH:env.PATH,CI:'true',CLOUDFLARE_ACCOUNT_ID:TARGET.account,CLOUDFLARE_API_TOKEN:env.CF_STAGING_API_TOKEN,CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV:'false',WRANGLER_SEND_METRICS:'false',XDG_CONFIG_HOME:path.join(output,'wrangler-state'),...Object.fromEntries(['HTTPS_PROXY','HTTP_PROXY','NODE_EXTRA_CA_CERTS'].filter(k=>env[k]).map(k=>[k,env[k]]))}});assert.ok(!r.error&&r.status===0,'Upload outcome requires read-only reconciliation');step(stage);}
-  upload('api',true);if(!queryFix)upload('site',true);
+  upload('api',true);if(!queryFix&&!assignment)upload('site',true);
   if(action==='resume-frontend'){
    assert.equal(api.version_id,env.CANDIDATE_BACKEND_VERSION);assert.equal(site.version_id,env.CANDIDATE_FRONTEND_VERSION);const exact=await inspect(TARGET.api,cfg.api,get,{requireKey:true});assert.ok(exact.verified);assert.equal(exact.version_id,env.CANDIDATE_BACKEND_VERSION);step('backend_reused',{version:exact.version_id});
   }else{
@@ -123,6 +125,14 @@ export async function executeCandidate(env,deps={}){
    upload('api',false);const exact=await inspect(TARGET.api,cfg.api,get,{requireKey:true});assert.ok(exact.verified);assert.match(exact.version_id||'',/^[a-f0-9-]{36}$/);report.backend_uploaded=true;step('backend_verified',{version:exact.version_id});
   }
   stage='backend_runtime';await waitBackend(env,transport,{probe,bootstrap:true,sleep:deps.sleep,now:deps.now,record:e=>{report.backend_runtime=e;record();}});step('backend_runtime');
+  if(assignment){
+   const {verifyProgressSchema}=await import('../../scripts/verify_assignment_progress_d1.mjs');
+   await verifyProgressSchema(DB);
+   assert.equal((await current(TARGET.site,cfg.site,ordinary.site)).version_id,site.version_id);
+   report.scope='assignment-291';report.backend_identity=a.profile.backend_identity;
+   report.account=TARGET.account;report.database_id=env.CF_STAGING_D1_DATABASE_ID;report.production_mutations=0;
+   step('staging_assignment_schema_verified');report.completed=true;record();return report;
+  }
   if(queryFix){
    stage='staging_catalogue_query';
    const isolatedId='fixture-query-check-'+env.GITHUB_RUN_ID;

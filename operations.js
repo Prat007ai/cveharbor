@@ -83,7 +83,7 @@ function writesBlocked(){return loading||(authenticated&&(!cloudMode||loadFailed
 function writeControls(){
   const blocked=writesBlocked();
   for(const id of ['remediationSave','remediationAssign','remediationImport'])$(id).disabled=blocked;
-  if(blocked)for(const id of ['remediationSendAssignment','remediationConfirmSend'])$(id).disabled=true;
+  if(blocked)$('remediationSendAssignment').disabled=true;
 }
 function failedLoad(error,resource){
   // Log only metadata constructed here; arbitrary exceptions may contain private response data.
@@ -258,7 +258,7 @@ async function accountState(data){
   // Clear the previous account immediately, including values loaded into the edit form.
   $('remediationForm').reset();$('remediationFormTitle').textContent='Add Vulnerability Record';
   updateNotesCount();updateReason();validateOwner(false);msg('');
-  for(const id of ['remediationAssignDialog','remediationConfirmDialog','remediationSuccessDialog'])closeCvhDialog(id);
+  for(const id of ['remediationAssignDialog','remediationSuccessDialog'])closeCvhDialog(id);
   $('remediationAssignForm').reset();$('remediationSendAssignment').disabled=true;
   tasks=authenticated?[]:readLegacy();legacy=readLegacy();render();$('remediationRecentActivity')?.replaceChildren();
   if(!authenticated)return;
@@ -288,11 +288,15 @@ function scopeText(s){return s?[s.customer_name,s.environment_name,s.asset_name,
 function openAssign(id,scope){
   if(writesBlocked())return;
   const cve=String(id||'').trim().toUpperCase();
-  if(!validWork(cve)){msg('Enter a complete CVE ID before assigning.');return;}
+  if(cve&&!validWork(cve)){msg('Enter a complete CVE ID before assigning.');return;}
   const modal=$('remediationAssignDialog');
   if(!modal)return;
   assignmentKey=cve;assignmentScope=scope||tasks.find(x=>x.id===cve)?.scope||null;
   $('remediationAssignCve').value=displayCve(cve);
+  // Keep the scoped record key when assigning a customer finding.
+  $('remediationAssignCve').readOnly=!!assignmentScope||cve.includes('~');
+  $('changeCve').hidden=$('remediationAssignCve').readOnly;
+  $('extraOptions').open=true;$('deliveryRules').open=true;
   let context=$('remediationAssignScope');if(!context){context=elem('p');context.id='remediationAssignScope';$('remediationAssignForm').prepend(context);}context.textContent=scopeText(assignmentScope);
   $('remediationAssignConfirm').checked=false;
   $('remediationAssignResend').checked=false;
@@ -312,11 +316,30 @@ function openAssign(id,scope){
   else if(!capabilities?.assignments_available)status.textContent='Email assignments are temporarily unavailable. Please try again later.';
   else if(!capabilities?.assignment_email_enabled)status.textContent='Email assignments are currently unavailable. Please try again later.';
   else status.textContent=capabilities?.acknowledgements_available?'The recipient can acknowledge receipt without an account. This does not change remediation status. Up to 10 assignments per hour, subject to recipient limits.':'An external reviewer can receive the review email. You can send up to 10 assignments per hour, subject to recipient limits.';
+  updateAssignmentPreview();
   if(typeof modal.showModal==='function')modal.showModal();else modal.setAttribute('open','');
   $('remediationAssignEmail').focus();
 }
 $('remediationAssignFyi').addEventListener('input',()=>{$('remediationFyiError').textContent='';$('remediationAssignFyi').removeAttribute('aria-invalid');});
 $('remediationAssignNotes').addEventListener('input',()=>{$('remediationAssignNotesCount').textContent=$('remediationAssignNotes').value.length+'/1000 characters'});
+function updateAssignmentPreview(){
+ const id=$('remediationAssignCve').value.trim().toUpperCase(),email=$('remediationAssignEmail').value.trim().toLowerCase();
+ const fyi=[...new Set($('remediationAssignFyi').value.toLowerCase().split(/[,;\n]/).map(value=>value.trim()).filter(value=>value&&value!==email))];
+ $('previewCve').textContent=valid(id)?id:'Enter a complete CVE ID';
+ $('previewTo').textContent=email||'Reviewer email';
+ $('previewFyi').textContent=fyi.join(', ');$('previewFyi').hidden=$('fyiHeading').hidden=!fyi.length;
+ const assigned=$('remediationAssignSeverity').value,published=records.get(id)?.severity;
+ $('previewSeverity').textContent=assigned?severityLabel(assigned)+' · assigned':published?severityLabel(published)+' · published':'Published severity when available';
+ const notes=$('remediationAssignNotes').value.trim();$('previewNote').textContent=notes;
+ $('previewNote').hidden=$('noteHeading').hidden=!notes;
+ $('resendWarning').hidden=!$('remediationAssignResend').checked;
+}
+$('changeCve').onclick=()=>{$('remediationAssignCve').focus();$('remediationAssignCve').select();};
+$('remediationAssignCve').oninput=event=>{event.target.value=event.target.value.trim().toUpperCase();};
+$('remediationAssignForm').addEventListener('input',event=>{
+ if(event.target!==$('remediationAssignConfirm'))$('remediationAssignConfirm').checked=false;
+ updateAssignmentPreview();
+});
 window.CVEHARBOR_REMEDIATION={openAssign};
 window.addEventListener('cveharbor:remediation-changed',()=>{if(cloudMode)void refreshRecords();});
 if(typeof BroadcastChannel==='function'){const channel=new BroadcastChannel('cveharbor-remediation-changed');channel.onmessage=()=>{if(cloudMode)void refreshRecords();};}
@@ -340,31 +363,6 @@ function openCvhDialog(id){
  if(typeof dialog.showModal==='function'&&!dialog.open)dialog.showModal();
  else dialog.setAttribute('open','');
 }
-function confirmReviewRequest(cve,email,fyi=[],severity=''){
- cve=displayCve(cve)+(assignmentScope?' — '+scopeText(assignmentScope):'');
- return new Promise(resolve=>{
-  const dialog=$('remediationConfirmDialog');
-  $('remediationConfirmText').textContent='Send the '+cve+' vulnerability review request to '+email+'?'+(fyi.length?' Send separate FYI and receipt-update emails to: '+fyi.join(', ')+'.':'')+(severity?' Assigned severity: '+severityLabel(severity)+' (requester assessment).':'')+(capabilities?.reviewer_updates_available?' The reviewer can verify their email to post progress. Critical/High assignments receive one reminder after 24 hours without progress; Medium after 48 hours. Listed FYI recipients receive a separate manager notice at the same threshold.':'');
-  const send=$('remediationConfirmSend'),cancel=$('remediationConfirmCancel'),x=$('remediationConfirmX');
-  send.disabled=writesBlocked();
-  let settled=false;
-  function finish(value){
-   if(settled)return;settled=true;
-   send.removeEventListener('click',onSend);cancel.removeEventListener('click',onCancel);
-   x.removeEventListener('click',onCancel);dialog.removeEventListener('cancel',onCancel);
-   dialog.removeEventListener('close',onClose);
-   closeCvhDialog('remediationConfirmDialog');
-   resolve(value);
-  }
-  function onSend(){finish(true)}
-  function onCancel(event){if(event?.type==='cancel')event.preventDefault();finish(false)}
-  function onClose(){finish(false)}
-  send.addEventListener('click',onSend);cancel.addEventListener('click',onCancel);
-  x.addEventListener('click',onCancel);dialog.addEventListener('cancel',onCancel);
-  dialog.addEventListener('close',onClose);
-  openCvhDialog('remediationConfirmDialog');
- });
-}
 function showReviewSuccess(email,fyiCount=0){
  $('remediationSuccessText').textContent='Your request has been submitted to '+email+'.'+(fyiCount?' FYI notifications queued for '+fyiCount+' recipient(s). Delivery status is available in assignment history.':'');
  openCvhDialog('remediationSuccessDialog');
@@ -376,7 +374,10 @@ for(const id of ['remediationSuccessClose','remediationSuccessX'])
  });
 $('remediationAssignForm').addEventListener('submit',async event=>{
  event.preventDefault();
- const cve=assignmentKey||$('remediationAssignCve').value;
+ const entered=$('remediationAssignCve').value.trim().toUpperCase();
+ if(!valid(entered))return;
+ const cve=entered===displayCve(assignmentKey)?assignmentKey:entered;
+ if((assignmentScope||assignmentKey.includes('~'))&&cve!==assignmentKey)return;
  const email=$('remediationAssignEmail').value.trim().toLowerCase();
  const send=$('remediationSendAssignment'),status=$('remediationAssignMessage');
  if(writesBlocked()||!cloudMode||!capabilities?.assignments_available||!capabilities?.assignment_email_enabled){
@@ -384,15 +385,15 @@ $('remediationAssignForm').addEventListener('submit',async event=>{
  }
  if(!$('remediationAssignConfirm').checked){status.textContent='Confirm that this is an appropriate recipient.';return;}
  const fyi=[...new Set($('remediationAssignFyi').value.split(/[,;\n]/).map(x=>x.trim().toLowerCase()).filter(Boolean))].filter(x=>x!==email);
- if(fyi.length>5||fyi.some(x=>x.length>254||! /^[^\s<>@,;]{1,64}@[^\s<>@,;]{1,189}\.[^\s<>@,;]+$/.test(x))){$('remediationFyiError').textContent='Enter up to five valid FYI email addresses.';$('remediationAssignFyi').setAttribute('aria-invalid','true');$('remediationAssignFyi').focus();return;}
+ if(fyi.length>5||fyi.some(x=>x.length>254||! /^[^\s<>@,;]{1,64}@[^\s<>@,;]{1,189}\.[^\s<>@,;]+$/.test(x))){$('remediationFyiError').textContent='Enter up to five valid FYI email addresses.';$('remediationAssignFyi').setAttribute('aria-invalid','true');$('extraOptions').open=true;$('remediationAssignFyi').focus();return;}
  $('remediationFyiError').textContent='';$('remediationAssignFyi').removeAttribute('aria-invalid');
  const assigned=capabilities?.workflow_available?$('remediationAssignSeverity').value:undefined;
- const requestAccount=accountEpoch,requestRecords=recordsEpoch;
- if(!await confirmReviewRequest(cve,email,fyi,assigned))return;
- if(requestAccount!==accountEpoch||requestRecords!==recordsEpoch||writesBlocked())return;
+ const requestAccount=accountEpoch;
+ if(send.disabled)return;
  send.disabled=true;status.textContent='Submitting your review request...';
  try{
   const result=await api('/remediations/'+cve+'/assign','POST',{email,assigned_severity:assigned,fyi_recipients:fyi,reviewer_notes:$('remediationAssignNotes').value.trim().slice(0,1000),resend:$('remediationAssignResend').checked});
+  if(requestAccount!==accountEpoch)return;
   if(!result.assigned||!result.notified)throw Error('The request was not confirmed as sent.');
   try{await refreshRecords()}catch(_){}
   status.textContent=result.duplicate?result.message:'Request submitted successfully.';
@@ -401,7 +402,7 @@ $('remediationAssignForm').addEventListener('submit',async event=>{
  }catch(error){
   status.textContent='Request not sent: '+error.message;
   msg('Review request could not be completed. '+error.message);
- }finally{send.disabled=writesBlocked()}
+ }finally{if(requestAccount===accountEpoch)send.disabled=writesBlocked()||!cloudMode||!capabilities?.assignment_email_enabled}
 });
 
 $('remediationForm').addEventListener('submit',async event=>{

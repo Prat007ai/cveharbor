@@ -1,4 +1,4 @@
-name: Publish followed CVIE topics
+name: Publish reviewed production website
 on:
   pull_request:
     branches: [main]
@@ -13,6 +13,11 @@ on:
       - 'workspace/index.html'
   workflow_dispatch:
     inputs:
+      site_release:
+        description: Reviewed production package
+        type: choice
+        options: [followed-topics, assignment-291]
+        default: followed-topics
       reviewed_commit:
         description: 'Exact reviewed main commit for the CVIE topic release'
         required: true
@@ -21,6 +26,8 @@ permissions:
   contents: read
 jobs:
   check:
+    env:
+      CVEHARBOR_SITE_RELEASE: ${{ inputs.site_release || 'followed-topics' }}
     name: Test followed topics in the production package
     if: (github.event_name == 'pull_request' && github.head_ref == 'feature/cvie-topic-delivery' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
     runs-on: ubuntu-latest
@@ -46,7 +53,9 @@ jobs:
           CVEHARBOR_PLAYWRIGHT_MODULE: ${{ github.workspace }}/staging/node_modules/playwright-core/index.mjs
         run: |
           npm install --prefix staging --ignore-scripts --no-package-lock
-          CVEHARBOR_CATALOGUE_PUBLIC="$RUNNER_TEMP/catalogue/after" node scripts/catalogue_scope_browser_smoke.mjs
+          export CVEHARBOR_CATALOGUE_PUBLIC="$RUNNER_TEMP/catalogue/after"
+          node scripts/catalogue_scope_browser_smoke.mjs
+          if [ "$CVEHARBOR_SITE_RELEASE" = "assignment-291" ]; then node scripts/remediation_workflow_browser.mjs; fi
       - name: Check production environment before requesting deployment approval
         if: github.event_name == 'workflow_dispatch'
         env:
@@ -60,7 +69,9 @@ jobs:
           python scripts/session_navigation_release.py preflight
 
   publish:
-    name: Publish followed topics to production
+    env:
+      CVEHARBOR_SITE_RELEASE: ${{ inputs.site_release }}
+    name: Publish reviewed website to production
     if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.reviewed_commit == github.sha && github.run_attempt == 1 && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'
     needs: check
     runs-on: ubuntu-latest

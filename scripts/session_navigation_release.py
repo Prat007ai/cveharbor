@@ -117,7 +117,7 @@ def apply_topic_changes(live, base, candidate):
     return live
 
 
-def prepare(out):
+def prepare(out, reviewed_ref="HEAD"):
     prepare_signin(out)
     (out / "before").rename(out / "before_signin")
     (out / "after").rename(out / "before")
@@ -127,7 +127,7 @@ def prepare(out):
         for name in sorted(TOPICS_FILES):
             base.write_bytes(package.git("show", TOPICS_BASE + ":" + name))
             candidate.write_bytes(package.git("show", TOPICS_SOURCE + ":" + name))
-            package.require(candidate.read_bytes() == package.git("show", "HEAD:" + name),
+            package.require(candidate.read_bytes() == package.git("show", reviewed_ref + ":" + name),
                             "Unexpected topic source: " + name)
             prior = out / "before" / name
             merged = (apply_topic_changes(prior.read_bytes(), base.read_bytes(), candidate.read_bytes())
@@ -154,6 +154,11 @@ def readiness():
 
 
 if __name__ == "__main__":
+    if os.environ.get("CVEHARBOR_SITE_RELEASE") == "assignment-291":
+        import assignment_release
+        assignment_release.run(sys.argv[1].replace("prepare", "site"),
+                               Path(sys.argv[2]).resolve() if len(sys.argv) > 2 else None)
+        sys.exit(0)
     if sys.argv[1:2] == ["prepare"]:
         prepare(Path(sys.argv[2]).resolve())
     elif sys.argv[1:] == ["preflight"]:

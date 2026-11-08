@@ -6,7 +6,7 @@
   const isCVE = x => /^CVE-\d{4}-\d+$/i.test(x.id);
   let visibleCount = PAGE_SIZE;
   let tablePage = 0;
-  let listMode = 'cards';
+  let listMode = 'list';
   let metricScope = 'all';
   let chartPeriod = 'all';
   let chartShowAll = false;
@@ -246,6 +246,7 @@
       location.assign('/vulnerabilities/?'+params.toString()+'#advisories');
       return;
     }
+    if(topicBrowser)setCatalogueScope(false);
     $('advisories').scrollIntoView({behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth',block:'start'});
   }
   function openTechnologyAdvisories(technology,cveOnly=false,periodOverride=null){
@@ -410,14 +411,6 @@
       const insight=button.querySelector('.kpi-insight');insight.dataset.default=key==='technologies'?'By technology group':key==='indexed'?'Severity mix · indexed':'Daily disclosures · 30d';insight.textContent=insight.dataset.default;
     });
   }
-  function renderCategories(){
-    const main=$('categoryGrid'),q=$('technologySearch').value.trim().toLowerCase();
-    main.replaceChildren();
-    const matches=x=>!q||(x.name+' '+(x.description||'')).toLowerCase().includes(q);
-    const enabled=x=>!personalized||personalized.defaults.includes(x.name);
-    let visible=0;const groupCounts={microsoft:0,applications:0,infrastructure:0,data:0};
-    // Curated product mark lookup. Unknown customer products receive a neutral initial badge.
-    // Never construct image URLs from untrusted customer supplied names or domains.
     const productMarks=[
       [/windows server|windows 11|^windows$|hyper[\s-]?v/i,'windows11'],[/^azure|microsoft fabric/i,'microsoftazure'],
       [/microsoft 365|exchange|sharepoint|power platform|dynamics 365/i,'microsoft'],
@@ -464,6 +457,14 @@
       img.addEventListener('error',()=>{img.remove();node.textContent=name.slice(0,2).toUpperCase()||'◇'});
       node.append(img);return node;
     }
+  function renderCategories(){
+    const main=$('categoryGrid'),q=$('technologySearch').value.trim().toLowerCase();
+    main.replaceChildren();
+    const matches=x=>!q||(x.name+' '+(x.description||'')).toLowerCase().includes(q);
+    const enabled=x=>!personalized||personalized.defaults.includes(x.name);
+    let visible=0;const groupCounts={microsoft:0,applications:0,infrastructure:0,data:0};
+    // Curated product mark lookup. Unknown customer products receive a neutral initial badge.
+    // Never construct image URLs from untrusted customer supplied names or domains.
     // Topic cards reflect public membership even when a registered component narrows private evidence.
     const cardRecords=new Map();
     for(const record of baseItems){
@@ -607,17 +608,52 @@
     }
   }
   function filterItems(){
-    return items.filter(x=>{
+    return (topicBrowser?baseItems:items).filter(x=>{
+      if(window.CVEHARBOR_CVIE?.isWithdrawn?.(x.id)||String(x.status).toLowerCase()==='rejected')return false;
       const query=[x.id,x.title,x.summary,x.affected,x.remediation,x.action,...x.categories].join(' ').toLowerCase();
       const metricMatches=metricScope==='all'||(isCVE(x)&&(metricScope==='cves'||x.severity===metricScope));
       return periodMatches(x) && metricMatches && (state.group==='all'||(technologyGroups[state.group]||[]).some(t=>(x.categories||[]).includes(t))) && (state.tech==='all'||(x.categories||[]).includes(state.tech)) && (state.severity==='all'||x.severity===state.severity) && (!state.q||query.includes(state.q));
     });
   }
+  function advisoryRow(x,labels,context=''){
+    function detailButton(label){
+      const button=text('button','advisory-link',label);button.type='button';button.onclick=()=>showDetail(x);return button;
+    }
+    const row=document.createElement('tr');
+    const cell=(value,className='')=>{
+      const el=text('td',className,value);
+      const labels=['Advisory','Severity','Technology','Description','Published','Details'];
+      el.dataset.label=labels[row.children.length]||'';
+      row.append(el);return el;
+    };
+    const idCell=cell('','table-cve');
+    idCell.append(detailButton(x.id));
+    if(x.retained_exploited)idCell.append(text('span','kev-mark','Older · CISA KEV'));
+    const firstPublished=makeDisclosureBadge(x);
+    if(firstPublished) idCell.append(firstPublished);
+    const sev=cell('','table-severity');sev.append(text('span','advisory-level',severityText(x.severity)));
+    sev.dataset.level=x.severity;
+    const technologies=cell('','table-tech');
+    for(const name of labels){
+      const entry=text('span','table-product','');entry.append(productIcon({name}),text('span','',name));technologies.append(entry);
+    }
+    const description=cell('','table-description');
+    description.append(detailButton(x.title||x.summary||x.id));
+    if(context)description.append(text('small','match-context',context));
+    cell(fmtDate(x.published),'table-date');
+    const action=cell('','table-action');
+    const link=text('button','table-details','View ↗');
+    link.type='button';
+    link.setAttribute('aria-label','View details for '+x.id);
+    link.addEventListener('click',()=>showDetail(x));
+    action.append(link);
+    return row;
+  }
   function render(){
     const selected=filterItems();
     if(['published3m','published12m'].includes(state.period))selected.sort((a,b)=>Number(!!b.retained_exploited)-Number(!!a.retained_exploited)||Number(!!b.known_exploited)-Number(!!a.known_exploited)||String(b.published||'').localeCompare(String(a.published||'')));
     if(state.period==='updated7') selected.sort((a,b)=>String(b.updated||'').localeCompare(String(a.updated||'')));
-    $('resultCount').textContent=`${selected.length} of ${items.length} indexed advisories`;
+    $('resultCount').textContent=`${selected.length} of ${topicBrowser?baseItems.length:items.length} indexed advisories`;
     $('advisoryCards').replaceChildren();
     $('advisoryTableBody').replaceChildren();
     const full=listMode==='list';
@@ -638,28 +674,7 @@
     const pageStart=tablePage*TABLE_PAGE_SIZE;
     if(full){
       selected.slice(pageStart,pageStart+TABLE_PAGE_SIZE).forEach(x=>{
-        const row=document.createElement('tr');
-        const cell=(value,className='')=>{
-          const el=text('td',className,value);
-          const labels=['Advisory','Severity','Technology','Description','Published','Details'];
-          el.dataset.label=labels[row.children.length]||'';
-          row.append(el);return el;
-        };
-        const idCell=cell(x.id,'table-cve');
-        if(x.retained_exploited)idCell.append(text('span','kev-mark','Older · CISA KEV'));
-        const firstPublished=makeDisclosureBadge(x);
-        if(firstPublished) idCell.append(firstPublished);
-        const sev=cell(severityText(x.severity),'table-severity');
-        sev.dataset.level=x.severity;
-        cell(x.categories.join(' · '),'table-tech');
-        cell(x.title||x.summary||'See source advisory','table-description');
-        cell(fmtDate(x.published),'table-date');
-        const action=cell('','table-action');
-        const link=text('button','table-details','View ↗');
-        link.type='button';
-        link.setAttribute('aria-label','View details for '+x.id);
-        link.addEventListener('click',()=>showDetail(x));
-        action.append(link);
+        const row=advisoryRow(x,x.categories||[]);
         $('advisoryTableBody').append(row);
       });
       $('tablePageSummary').textContent='Showing '+(selected.length?pageStart+1:0)+'–'+Math.min(pageStart+TABLE_PAGE_SIZE,selected.length)+' of '+selected.length+' advisories';
@@ -962,29 +977,40 @@
     }
     void saveCatalogue();
   });
+  function setCatalogueScope(mine){
+    $('advisoryExplorer').open=true;
+    $('publicAdvisories').hidden=mine;$('catalogueAdvisories').hidden=!mine;
+    $('scopePublic').setAttribute('aria-pressed',String(!mine));$('scopeCatalogue').setAttribute('aria-pressed',String(mine));$('resultCount').hidden=mine;
+  }
   function showTopic(name){
-    if(!topicBrowser||topicBrowser.root.hidden||!featured.has(name))return false;
+    if(!topicBrowser||!personalized||!featured.has(name))return false;
+    setCatalogueScope(true);
     topicFilter=name;topicQuery='';topicPage=0;
     topicBrowser.filter.value=topicIds.get(name);topicBrowser.search.value='';
     renderTopicFeed();topicBrowser.root.scrollIntoView({block:'start'});topicBrowser.heading.focus();
     return true;
   }
   function mountTopicBrowser(){
-    const target=$('cvieExplorer');
+    const target=$('catalogueAdvisories');
     if(!target||!location.pathname.startsWith('/vulnerabilities/'))return;
-    const root=text('section','cvie-panel',''),heading=text('h2','','Followed technology advisories');
+    const root=text('section','cvie-panel',''),heading=text('h3','','My catalogue');
     heading.tabIndex=-1;root.setAttribute('aria-label',heading.textContent);
     const summary=text('p','cvie-caption',''),controls=text('div','cvie-panel-head','');
     function control(tag,name){
       const label=text('label','',name+' '),element=document.createElement(tag);
       element.setAttribute('aria-label',name);label.append(element);controls.append(label);return element;
     }
-    const filter=control('select','Technology'),period=control('select','Published'),order=control('select','Order');
+    const filter=control('select','Technology'),period=control('select','Published'),severityFilter=control('select','Severity'),order=control('select','Order');
     const search=control('input','Search advisories');search.type='search';
+    for(const opt of $('severity').options)severityFilter.add(new Option(opt.textContent,opt.value));
+    severityFilter.onchange=()=>{topicPage=0;renderTopicFeed()};
     period.add(new Option('Last 3 months','3'));period.add(new Option('Last 12 months','12'));
     period.add(new Option('Older known-exploited advisories','older'));
     order.add(new Option('Newest first','recent'));order.add(new Option('Known exploitation, then severity','priority'));
-    const list=document.createElement('ol'),count=text('p','cvie-caption','');
+    const wrap=$('advisoryTableWrap').cloneNode(true);wrap.removeAttribute('id');wrap.hidden=false;
+    const list=wrap.querySelector('tbody');list.removeAttribute('id');
+    wrap.querySelector('table').setAttribute('aria-label','My catalogue advisories');
+    const count=text('p','cvie-caption','');
     count.setAttribute('aria-live','polite');
     const prev=text('button','','Previous 50'),next=text('button','','Next 50');
     prev.type=next.type='button';prev.onclick=()=>{topicPage--;renderTopicFeed()};next.onclick=()=>{topicPage++;renderTopicFeed()};
@@ -1003,9 +1029,12 @@
     const packages=text('a','','Check an installed npm or PyPI package and version');packages.href='/admin-tools/#versionChecker';
     const more=text('button','','Load more shared disclosures');more.type='button';more.hidden=true;
     more.onclick=()=>void window.CVEHARBOR_CVIE?.loadHistoryPage();
-    root.append(heading,summary,controls,count,list,prev,next,more,exportButton,packages);
-    target.prepend(root);
-    topicBrowser={root,heading,summary,filter,search,list,count,prev,next,more};
+    const coverage=document.createElement('details');coverage.append(text('summary','','Source and coverage details'),summary);
+    root.append(heading,controls,count,wrap,prev,next,more,exportButton,packages,coverage);
+    target.append(root);
+    const signIn=text('p','catalogue-prompt','Sign in to view your catalogue. '),login=text('a','','My workspace');login.href='/workspace/';signIn.append(login);target.append(signIn);
+    $('scopePublic').onclick=()=>setCatalogueScope(false);$('scopeCatalogue').onclick=()=>setCatalogueScope(true);
+    topicBrowser={root,heading,summary,filter,severityFilter,search,list,count,prev,next,more};
   }
   function versionMatches(record,registered){
     const results=[];
@@ -1020,6 +1049,7 @@
     if(!topicBrowser)return;
     const {root,summary,filter,search,list,count,prev,next}=topicBrowser;
     root.hidden=!catalogueSignedIn||!personalized;
+    root.nextElementSibling.hidden=!root.hidden;
     if(root.hidden){topicBrowser.rows=[];list.replaceChildren();filter.replaceChildren();count.textContent='';topicFilter='';topicQuery='';search.value='';topicPage=0;return}
     const defaults=new Set(personalized.defaults),names=new Set([...defaults,...personalized.products.filter(p=>p.enabled!==false).map(p=>p.name)]);
     if(!names.has(topicFilter))topicFilter='';
@@ -1056,6 +1086,7 @@
       const exact=[...(verified.get(r.id)||[])].filter(n=>names.has(n));
       const labels=[...new Set([...broad,...exact])];
       if(!labels.length||topicFilter&&!labels.includes(topicFilter))continue;
+      if(topicBrowser.severityFilter.value&&topicBrowser.severityFilter.value!=='all'&&String(r.severity).toLowerCase()!==topicBrowser.severityFilter.value.toLowerCase())continue;
       if(topicQuery&&![r.id,r.title,...labels].join(' ').toLowerCase().includes(topicQuery))continue;
       rows.push({r,date,labels,exact});
     }
@@ -1067,25 +1098,25 @@
     topicBrowser.rows=rows;
     const fragment=document.createDocumentFragment();
     for(const {r,labels,exact} of rows.slice(offset,offset+50)){
-      const li=document.createElement('li'),detail=text('button','technology-name-action',r.id+' · '+(r.title||r.id));detail.type='button';detail.onclick=()=>showDetail(r);
+
       const affected=(r.topic_matches||[]).filter(m=>!topicFilter||m.topic===topicFilter).flatMap(m=>m.source_products);
       const versions=versionMatches(r,exact).map(m=>m.name+' '+m.version+' · '+m.evidence);
       const reason=exact.length?'Registered product: '+exact.join(', '):'Followed topic';
-      li.append(detail,text('p','cvie-caption',[fmtDate(r.published),...labels,reason,...versions,...new Set(affected),r.known_exploited?'Known exploited':''].filter(Boolean).join(' · ')));fragment.append(li);
+      fragment.append(advisoryRow(r,labels,[reason,...versions,...new Set(affected)].join(' · ')));
     }
     const descriptions=topicFilter&&categories.find(c=>c.name===topicFilter)?.description;
     if(indexed)summary.textContent+=' '+(indexed.error||((indexed.coverage==='indexing_stored_disclosures'?'Historical disclosures are being indexed. ':'')+(indexed.archiveDiscoveryComplete===false?'The shared 12-month backfill is in progress. ':'')+(indexed.next?'More stored disclosures are available. ':'')+(indexed.sourceStart?'Shared source coverage begins '+fmtDate(new Date(indexed.sourceStart).toISOString())+'.':'')));
     if(descriptions)summary.textContent+=' Topic coverage: '+descriptions+'.';
     if(rows.length)summary.textContent+=' Recorded publication dates in this view span '+fmtDate(new Date(rows.reduce((min,x)=>Math.min(min,x.date),Infinity)).toISOString())+' to '+fmtDate(new Date(rows.reduce((max,x)=>Math.max(max,x.date),0)).toISOString())+'.';
-    list.replaceChildren(fragment);list.start=offset+1;prev.disabled=topicPage===0;next.disabled=offset+50>=rows.length;
+    list.replaceChildren(fragment);prev.disabled=topicPage===0;next.disabled=offset+50>=rows.length;
   }
   mountTopicBrowser();renderTopicFeed();
   window.addEventListener('cvie:catalogue-page',renderTopicFeed);
   function applyPersonalized(){
     const allowed=new Set([...(personalized?.defaults||[]),...(personalized?.products||[]).filter(p=>p.enabled!==false).map(p=>p.name)].map(n=>n.toLowerCase()));
     items=(window.CVEHARBOR_CVIE?.merge(baseItems)||baseItems).filter(r=>!personalized||[...(r.categories||[]),...(r.cvie_products||[])].some(n=>allowed.has(n.toLowerCase())));
-    for(const option of $('technologyFilter').options){option.hidden=option.value!=='all'&&!!personalized&&!allowed.has(option.value.toLowerCase());option.disabled=option.hidden}
-    if(personalized&&state.tech!=='all'&&!allowed.has(state.tech.toLowerCase())){state.tech='all';$('technologyFilter').value='all'}
+    for(const option of $('technologyFilter').options){option.hidden=!topicBrowser&&option.value!=='all'&&!!personalized&&!allowed.has(option.value.toLowerCase());option.disabled=option.hidden}
+    if(!topicBrowser&&personalized&&state.tech!=='all'&&!allowed.has(state.tech.toLowerCase())){state.tech='all';$('technologyFilter').value='all'}
     renderTopicFeed();renderCategories();renderBars();renderFocus();render();
   }
   function clearCatalogue(){

@@ -1,6 +1,6 @@
 import {activeRecords} from './remediation-integrity.js';
 import {publicCve,recordScope,scopeLabel} from './remediation-identity.js';
-import {progressReady,reminderInterval,reviewLink} from './assignment-progress-common.js';
+import {progressReady,storedReminderPolicy,reminderInterval,reviewLink} from './assignment-progress-common.js';
 import {workflowReady,assignedSeverity} from './remediation-workflow.js';
 import {acknowledgementLink,confirmationRequest} from './confirmation-host.js';
 import {normalizeFyi,fyiReady,addFyiHistory,scheduleFyi} from './assignment-fyi.js';
@@ -76,7 +76,7 @@ export async function assignWithAcknowledgement(env,user,cve,recipient,notes,raw
   if(fyi.length)await env.DB.batch(fyi.map(email=>env.DB.prepare('INSERT INTO remediation_assignment_fyi(assignment_id,recipient_email,created_at) VALUES(?,?,?)').bind(id,email,time)));
   if(workflow)await env.DB.prepare('INSERT INTO remediation_assignment_metadata(assignment_id,assigned_severity) VALUES(?,?)').bind(id,selectedSeverity).run();
   const interval=reminderInterval(selectedSeverity||advisory.severity);
-  if(progress)await env.DB.prepare('INSERT INTO remediation_review_access(assignment_id,expires_at,interval_seconds,last_progress_at) VALUES(?,?,?,?)').bind(id,time+2592000,interval,time).run();
+  if(progress)await env.DB.prepare('INSERT INTO remediation_review_access(assignment_id,expires_at,interval_seconds,last_progress_at) VALUES(?,?,?,?)').bind(id,time+2592000,storedReminderPolicy(selectedSeverity||advisory.severity),time).run();
   const report=renderAssignmentNotice({advisory,manageUrl:progress?reviewLink(id):'',reminderHours:interval?interval/3600:null,assignedSeverity:selectedSeverity,requester:user.email,notes:[scope?('Assigned finding: '+scopeLabel(scope)):null,notes].filter(Boolean).join('\n'),due:record?.due||'',url:acknowledgementLink(env,token),expiresAt:expires});
   const senderEnv={EMAIL_FROM:env.EMAIL_FROM,SMTP2GO_API_KEY:env.SMTP2GO_API_KEY,ALERT_SMTP2GO_API_KEY:env.ASSIGNMENT_SMTP2GO_API_KEY||env.SMTP2GO_API_KEY};
   const providerId=await sendEmail(senderEnv,recipient,report),sent=now();

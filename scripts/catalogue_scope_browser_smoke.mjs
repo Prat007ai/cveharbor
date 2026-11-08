@@ -209,18 +209,31 @@ try{
  assert.deepEqual((await page.locator('#cvieExplorer .cvie-product-status > strong').allTextContents()).sort(),['.NET Core','Windows Server OS']);
  // A topic opens the public feed with one click even before a Windows edition is chosen.
  await page.getByRole('button',{name:'Windows Server OS',exact:true}).click();
- const topics=page.getByRole('region',{name:'Followed technology advisories'});
+ const topics=page.getByRole('region',{name:'My catalogue'});
  await topics.waitFor({state:'visible'});
  assert.equal(await topics.getByLabel('Technology',{exact:true}).inputValue(),'windows-server-os');
  assert.equal(await page.locator('.cvie-identity-dialog[open]').count(),0);
+ // Verify both advisory entry points open the same editable assignment preview.
+ for(const [scope,selector] of [['scopePublic','#publicAdvisories'],['scopeCatalogue','#catalogueAdvisories']]){
+  await page.locator('#'+scope).click();
+  if(scope==='scopePublic')await page.locator('#listViewBtn').click();
+  const row=page.locator(selector+' tbody tr').first();
+  const id=await row.locator('.table-cve button').innerText();
+  await row.locator(scope==='scopePublic'?'.table-cve button':'.table-description button').click();
+  await page.locator('#detailDialog').getByRole('button',{name:'Assign vulnerability by email'}).click();
+  await page.locator('#remediationAssignDialog').waitFor({state:'visible'});
+  assert.equal(await page.locator('#remediationAssignCve').inputValue(),id);
+  for(const section of ['extraOptions','deliveryRules'])assert.ok(await page.locator('#'+section).evaluate(el=>el.open));
+  await page.locator('#closeRemediationAssign').click();
+ }
  const query=topics.getByRole('searchbox');
- await query.fill('Topic fixture');assert.equal(await topics.locator('li').count(),50);
- await topics.getByRole('button',{name:'Next 50'}).click();assert.equal(await topics.locator('li').count(),1);
- await topics.getByLabel('Technology',{exact:true}).selectOption('');assert.equal(await topics.locator('li').count(),50);
+ await query.fill('Topic fixture');assert.equal(await topics.locator('tbody tr').count(),50);
+ await topics.getByRole('button',{name:'Next 50'}).click();assert.equal(await topics.locator('tbody tr').count(),1);
+ await topics.getByLabel('Technology',{exact:true}).selectOption('');assert.equal(await topics.locator('tbody tr').count(),50);
  await topics.getByLabel('Published',{exact:true}).selectOption('12');
- await topics.getByRole('button',{name:'Next 50'}).click();assert.equal(await topics.locator('li').count(),2);
+ await topics.getByRole('button',{name:'Next 50'}).click();assert.equal(await topics.locator('tbody tr').count(),2);
  await topics.getByLabel('Published',{exact:true}).selectOption('older');
- assert.equal(await topics.locator('li').count(),1);assert.match(await topics.locator('li').innerText(),/CVE-2099-40052/);
+ assert.equal(await topics.locator('tbody tr').count(),1);assert.match(await topics.locator('tbody tr').innerText(),/CVE-2099-40052/);
  await topics.getByLabel('Published',{exact:true}).selectOption('3');await query.fill('');
  // Actual API chooser and card removal, with synthetic provider-directory records.
  const family=name=>'cpe:2.3:o:microsoft:'+name+':*:*:*:*:*:*:*:*';

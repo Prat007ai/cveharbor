@@ -1,0 +1,46 @@
+name: Verify advisory and assignment production package
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/assignment-site.yml'
+      - 'scripts/assignment_release.py'
+      - 'app.js'
+      - 'operations.js'
+      - 'index.html'
+      - 'remediation.css'
+      - 'styles.css'
+      - 'release/assignment-site/**'
+      - 'scripts/catalogue_scope_browser_smoke.mjs'
+permissions:
+  contents: read
+jobs:
+  check:
+    name: Test advisory lists and assignment form in the production package
+    if: (github.event_name == 'pull_request' && github.head_ref == 'feature/shared-investigation-delivery' && github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+      deployments: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify the isolated production package
+        run: python scripts/assignment_release.py site "$RUNNER_TEMP/catalogue"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Check catalogue, account and workspace with fictional accounts
+        env:
+          CVEHARBOR_CHROMIUM_PATH: /usr/bin/google-chrome
+          CVEHARBOR_PLAYWRIGHT_MODULE: ${{ github.workspace }}/staging/node_modules/playwright-core/index.mjs
+        run: |
+          npm install --prefix staging --ignore-scripts --no-package-lock
+          export CVEHARBOR_CATALOGUE_PUBLIC="$RUNNER_TEMP/catalogue/after"
+          node scripts/catalogue_scope_browser_smoke.mjs
+          node scripts/remediation_workflow_browser.mjs
