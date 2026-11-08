@@ -1,8 +1,13 @@
 name: Permanent staging preparation and approved updates
 on:
   push:
-    branches: [codex/cvie-core-phase012, main]
+    branches: [codex/cvie-core-phase012]
   pull_request:
+    paths:
+      - 'staging/**'
+      - '.github/workflows/cvie-staging.yml'
+      - 'deployment/proposals/customer-remediation/**'
+      - 'scripts/checkout_baseline_source.py'
   workflow_dispatch:
     inputs:
       candidate_operation:

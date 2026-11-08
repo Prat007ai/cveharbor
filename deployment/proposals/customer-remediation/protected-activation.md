@@ -1,5 +1,9 @@
 # Protected staging activation: execution review contract
 
+## Production-first application releases
+
+For routine fixes and features, follow the production delivery policy in the root AGENTS.md. The production release jobs reuse the application regression and workflow security checks for the exact main commit before requesting production environment review. Staging refreshes run separately on the monthly schedule. The staging procedures below apply when operating on staging.
+
 ## Current approvals (in force)
 
 Production at https://cveharbor.com/ is the standing delivery target. Procedures below that operate on staging require a new explicit owner request. Honor an explicit scope limit. Select the supported workflow for each environment and verify all changes included in the release. Work supplies the manual candidate workflow's exact commit, operation pins and recovery evidence. GitHub still enforces its environment reviews.

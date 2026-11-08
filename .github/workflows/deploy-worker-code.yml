@@ -6,7 +6,7 @@ on:
       - 'release/**'
       - 'scripts/production_forward_migrations.mjs'
       - 'scripts/release_migrations.mjs'
-      - 'scripts/require_staging_release.mjs'
+      - 'scripts/production_release_checks.py'
       - 'account-backend/src/**'
       - 'data/lifecycle-products.json'
       - 'account-backend/tests/**'
@@ -66,7 +66,7 @@ permissions:
   contents: read
 
 jobs:
-  staging-ready:
+  release-ready:
     if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true'
     runs-on: ubuntu-latest
     permissions:
@@ -78,23 +78,15 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.sha }}
           persist-credentials: false
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: '24'
-      - name: Assemble the reviewed assignment Worker
-        if: inputs.assignment_release == true
-        run: python scripts/assignment_release.py backend release/.build/investigation-backend
-      - name: Require staging success for this exact commit before production approval
+      - name: Verify application and security checks for this production commit
         env:
-          ASSIGNMENT_RELEASE: ${{ inputs.assignment_release }}
-          SIMPLE_RELEASE_ENABLED: ${{ vars.SIMPLE_RELEASE_ENABLED }}
           GH_TOKEN: ${{ github.token }}
-        run: node scripts/require_staging_release.mjs
+        run: python scripts/production_release_checks.py
   deploy:
     concurrency:
       group: cveharbor-production-release
       cancel-in-progress: false
-    needs: staging-ready
+    needs: release-ready
     if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true'
     name: Validate and deploy account Worker
     runs-on: ubuntu-latest
@@ -107,6 +99,11 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
+      - name: Require the native migration switch for an explicit maintenance release
+        if: inputs.release_mode == 'cvie-maintenance'
+        env:
+          NATIVE_MIGRATIONS_ENABLED: ${{ vars.SIMPLE_RELEASE_ENABLED }}
+        run: test "$NATIVE_MIGRATIONS_ENABLED" = true
       - name: Determine code-only release scope
         id: mode
         env:
