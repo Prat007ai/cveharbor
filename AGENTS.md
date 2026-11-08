@@ -1,5 +1,7 @@
 # Delivering application changes
 
-Work owns implementation and release. An implementation request authorizes review, merge, staging verification and production promotion of the requested change under the owner's project instructions. Honor any narrower scope. Verify release contents and the target environment before every promotion.
+Work owns implementation and release. For bug fixes, features, enhancements and improvements, production is the first deployment by default. Start from the live version, isolate the requested scope, run automated tests on the production package with fictional data, follow the protected release workflow and verify the result on the live site. Keep the prior version available for recovery. Honor any narrower instruction from the owner. If a particular release has a mandatory gate, surface that exact requirement and complete all available preparation.
 
 Use the [staging delivery runbook](deployment/proposals/customer-remediation/protected-activation.md). Record the task criteria, review, release evidence and outstanding tests on its PR. The proposed routine staging operation requires separate adoption. Use the existing protected workflows until then. Preserve required platform reviews, independent identities and safeguards for migrations and recovery.
+
+Refresh staging as a separate operation at project completion or on a monthly cadence. Match its code and schema to the verified production release. Use fictional records or a reviewed, sanitized subset of production data, preserving staging-specific bindings and mail isolation. Keep authentication secrets, sessions and real contact details out of the copy. Review the data scope and any replacement of existing staging records before execution.
