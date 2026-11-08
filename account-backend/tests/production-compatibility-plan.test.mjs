@@ -130,6 +130,13 @@ test('optional customer schema needs freeze guards AND a customer-aware integrit
  assert.equal(response.status,200,JSON.stringify(await response.clone().json()));
  const record=await response.json();assert.ok(record.id.includes('~'));
  assert.equal(f.DB.sql.prepare(integrityChecks.detached_asset_records).get().n,1);
- assert.equal((await releaseReadiness(f.env)).status,503,'Valid customer-only records conflict with the current asset-only integrity predicate');
+ assert.equal((await releaseReadiness(f.env)).status,200,'Valid customer-owned records satisfy the current readiness check');
  assert.equal((await f.call('/remediation-records/'+record.id,'GET',null,'b')).status,404);
+ f.DB.sql.exec("DROP TRIGGER remediation_customer_scope_immutable");
+ f.DB.sql.prepare("UPDATE remediation_customer_scopes SET customer_id=? WHERE record_id=?").run('c-'+assetOther,record.id);
+ assert.equal((await releaseReadiness(f.env)).status,503,'A customer owned by another account blocks release');
+ f.DB.sql.exec('DROP TRIGGER remediation_customer_scope_retained');
+ f.DB.sql.prepare('DELETE FROM remediation_customer_scopes WHERE record_id=?').run(record.id);
+ assert.equal((await releaseReadiness(f.env)).status,503,'A genuinely detached investigation blocks release');
+
 });
