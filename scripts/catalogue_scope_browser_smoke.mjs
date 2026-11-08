@@ -272,10 +272,12 @@ try{
  await page.goBack({waitUntil:'domcontentloaded'});
  await manage.click();
  assert.equal(await dialog.isVisible(),false,'checking the session must not prompt for login');
+ assert.equal(await page.locator('#headerAccountActions').getByText('Log In',{exact:true}).count(),0);
  assert.equal(await editor.isVisible(),false,'wait for the stored revision');
  releaseSession();sessionGate=null;
  await editor.waitFor({state:'visible'});
  assert.deepEqual(await checkedNames(),['Fortinet']);
+ await page.locator('#headerAccountActions').getByText('My Workspace',{exact:true}).waitFor();
  await page.locator('#technologyManageClose').click();
  for(const failure of ['session','catalogue']){
   sessionUnavailable=failure==='session';catalogueUnavailable=failure==='catalogue';

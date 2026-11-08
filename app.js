@@ -907,6 +907,7 @@
   async function readCatalogue(epoch){
     const signedOut=()=>{
       clearCatalogue();
+      window.dispatchEvent(new CustomEvent('cveharbor:catalogue-session',{detail:{authenticated:false}}));
       statusMessage('');
       if(openRequested&&!$('technologySignInDialog').open)$('technologySignInDialog').showModal();
       openRequested=false;
@@ -921,6 +922,7 @@
       if(epoch!==catalogueEpoch)return;
       if(me.authenticated===false){signedOut();return}
       if(me.authenticated!==true||!me.email)throw Error();
+      window.dispatchEvent(new CustomEvent('cveharbor:catalogue-session',{detail:{authenticated:true,email:me.email}}));
       if(catalogueAccount&&catalogueAccount!==me.email)clearCatalogue();
       const r=await fetch(catalogueAPI,options);
       if(epoch!==catalogueEpoch)return;
