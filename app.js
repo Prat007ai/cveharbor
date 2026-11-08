@@ -996,14 +996,16 @@
     exportButton.onclick=()=>{
       const a=document.createElement('a');
       const payload={exported_at:new Date().toISOString(),public_snapshot:lastSuccess||null,period:topicPeriod,
-        scope:'Recorded matches in the available index',private_history_loaded:!!window.CVEHARBOR_CVIE?.historyLoaded,records:topicBrowser.rows.map(({r,labels,exact})=>({id:r.id,title:r.title,published:r.published,severity:r.severity,known_exploited:!!r.known_exploited,topics:labels,registered_product_matches:exact,sources:r.sources||[]}))};
+        scope:'Recorded matches in the available index',shared_disclosure_page_complete:window.CVEHARBOR_CVIE?.indexedHistory?(!window.CVEHARBOR_CVIE.indexedHistory.next&&!window.CVEHARBOR_CVIE.indexedHistory.error&&!window.CVEHARBOR_CVIE.indexedHistory.loading):null,private_history_loaded:!!window.CVEHARBOR_CVIE?.historyLoaded,records:topicBrowser.rows.map(({r,labels,exact})=>({id:r.id,title:r.title,published:r.published,severity:r.severity,known_exploited:!!r.known_exploited,topics:labels,registered_product_matches:exact,source_product_evidence:r.topic_matches||[],sources:r.sources||[]}))};
       const url=URL.createObjectURL(new Blob([JSON.stringify(payload)],{type:'application/json'}));
       a.href=url;a.download='cvie-followed-advisories.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
     };
     const packages=text('a','','Check an installed npm or PyPI package and version');packages.href='/admin-tools/#versionChecker';
-    root.append(heading,summary,controls,count,list,prev,next,exportButton,packages);
+    const more=text('button','','Load more shared disclosures');more.type='button';more.hidden=true;
+    more.onclick=()=>void window.CVEHARBOR_CVIE?.loadHistoryPage();
+    root.append(heading,summary,controls,count,list,prev,next,more,exportButton,packages);
     target.prepend(root);
-    topicBrowser={root,heading,summary,filter,search,list,count,prev,next};
+    topicBrowser={root,heading,summary,filter,search,list,count,prev,next,more};
   }
   function renderTopicFeed(){
     if(!topicBrowser)return;
@@ -1017,6 +1019,14 @@
     filter.replaceChildren(...options);filter.value=topicFilter?(topicIds.get(topicFilter)||'custom:'+topicFilter):'';
     const engine=window.CVEHARBOR_CVIE,privateRows=engine?.topicRecords||engine?.records||[];
     const combined=new Map(baseItems.filter(isCVE).map(r=>[r.id,r]));
+    const indexed=engine?.indexedHistory;
+    for(const r of indexed?.rows||[]){
+      const prior=combined.get(r.id),sources=new Map([...(prior?.sources||[]),...(r.sources||[])].filter(s=>s?.url).map(s=>[s.url,s]));
+      combined.set(r.id,{...prior,...r,sources:[...sources.values()]});
+    }
+    topicBrowser.more.hidden=!indexed||!indexed.next&&!indexed.error;
+    topicBrowser.more.disabled=!!indexed?.loading;
+    topicBrowser.more.textContent=indexed?.error?'Retry shared disclosures':'Load more shared disclosures';
     const verified=new Map();
     for(const r of privateRows){
       if(!isCVE(r))continue;
@@ -1033,7 +1043,7 @@
       if(engine?.isWithdrawn?.(r.id)||String(r.status).toLowerCase()==='rejected')continue;
       const date=Date.parse(r.published);
       if(!Number.isFinite(date)||date>now||(topicPeriod==='older'?date>=cutoff||!r.known_exploited:date<cutoff))continue;
-      const broad=(publicTopicsByCve.get(r.id)||[]).filter(n=>defaults.has(n));
+      const broad=[...(publicTopicsByCve.get(r.id)||[]),...(r.topic_matches||[]).map(m=>m.topic)].filter(n=>defaults.has(n));
       const exact=[...(verified.get(r.id)||[])].filter(n=>names.has(n));
       const labels=[...new Set([...broad,...exact])];
       if(!labels.length||topicFilter&&!labels.includes(topicFilter))continue;
@@ -1049,10 +1059,12 @@
     const fragment=document.createDocumentFragment();
     for(const {r,labels,exact} of rows.slice(offset,offset+50)){
       const li=document.createElement('li'),detail=text('button','technology-name-action',r.id+' · '+(r.title||r.id));detail.type='button';detail.onclick=()=>showDetail(r);
+      const affected=(r.topic_matches||[]).filter(m=>!topicFilter||m.topic===topicFilter).flatMap(m=>m.source_products);
       const reason=exact.length?'Registered product: '+exact.join(', '):'Followed topic';
-      li.append(detail,text('p','cvie-caption',[fmtDate(r.published),...labels,reason,r.known_exploited?'Known exploited':''].filter(Boolean).join(' · ')));fragment.append(li);
+      li.append(detail,text('p','cvie-caption',[fmtDate(r.published),...labels,reason,...new Set(affected),r.known_exploited?'Known exploited':''].filter(Boolean).join(' · ')));fragment.append(li);
     }
     const descriptions=topicFilter&&categories.find(c=>c.name===topicFilter)?.description;
+    if(indexed)summary.textContent+=' '+(indexed.error||((indexed.coverage==='indexing_stored_disclosures'?'Historical disclosures are being indexed. ':'')+(indexed.next?'More stored disclosures are available. ':'')+(indexed.sourceStart?'Shared source coverage begins '+fmtDate(new Date(indexed.sourceStart).toISOString())+'.':'')));
     if(descriptions)summary.textContent+=' Topic coverage: '+descriptions+'.';
     if(rows.length)summary.textContent+=' Recorded publication dates in this view span '+fmtDate(new Date(rows.reduce((min,x)=>Math.min(min,x.date),Infinity)).toISOString())+' to '+fmtDate(new Date(rows.reduce((max,x)=>Math.max(max,x.date),0)).toISOString())+'.';
     list.replaceChildren(fragment);list.start=offset+1;prev.disabled=topicPage===0;next.disabled=offset+50>=rows.length;

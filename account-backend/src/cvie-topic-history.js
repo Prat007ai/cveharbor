@@ -91,7 +91,7 @@ export async function catalogueHistory(env,userId,params,now,monthsAgo){
  if(token){
   try{const v=JSON.parse(atob(token));
    if(v.period!==period||v.topics!==JSON.stringify(topics)||!Array.isArray(v.cursor)||v.cursor.length!==2||typeof v.cursor[0]!=='string'||new Date(v.cursor[0]).toISOString()!==v.cursor[0]||!/^CVE-\d{4}-\d{4,}$/.test(v.cursor[1]))throw Error();
-   if(typeof v.end!=='string'||new Date(v.end).toISOString()!==v.end||Date.parse(v.end)>now||v.cursor[0]>v.end)throw Error();
+   if(typeof v.end!=='string'||new Date(v.end).toISOString()!==v.end||Date.parse(v.end)>now||now-Date.parse(v.end)>86400000||v.cursor[0]>v.end)throw Error();
    cursor=v.cursor;end=v.end;
   }catch{return {invalid:true};}
  }
@@ -99,11 +99,24 @@ export async function catalogueHistory(env,userId,params,now,monthsAgo){
  // Each indexed topic contributes at most 51 rows, even with a year of history.
  // Any globally top-51 disclosure must rank in the top 51 of a matching topic.
  const cutoff=new Date(monthsAgo(Date.parse(end),Number(period))).toISOString();
- const part="SELECT * FROM (SELECT m.cve_id,m.published FROM cvie_topic_matches m JOIN cvie_disclosures d ON d.cve_id=m.cve_id AND d.state='PUBLISHED' AND d.published=m.published WHERE m.topic=? AND m.published>=(SELECT first_date FROM bounds) AND m.published<=(SELECT last_date FROM bounds) AND (m.published,m.cve_id)<((SELECT cursor_date FROM bounds),(SELECT cursor_id FROM bounds)) AND NOT EXISTS(SELECT 1 FROM cvie_topic_pending q WHERE q.cve_id=m.cve_id) ORDER BY m.published DESC,m.cve_id DESC LIMIT 51)";
- const sql='WITH bounds(first_date,last_date,cursor_date,cursor_id) AS (VALUES(?,?,?,?)) SELECT DISTINCT published,cve_id FROM ('+topics.map(()=>part).join(' UNION ALL ')+') ORDER BY published DESC,cve_id DESC LIMIT 51';
+ const part=`SELECT * FROM (
+  SELECT m.cve_id,m.published FROM cvie_topic_matches m
+  JOIN cvie_disclosures d ON d.cve_id=m.cve_id AND d.state='PUBLISHED' AND d.published=m.published
+  WHERE m.topic=? AND m.published>=(SELECT first_date FROM bounds) AND m.published<=(SELECT last_date FROM bounds)
+  AND (m.published,m.cve_id)<((SELECT cursor_date FROM bounds),(SELECT cursor_id FROM bounds))
+  AND NOT EXISTS(SELECT 1 FROM cvie_topic_pending q WHERE q.cve_id=m.cve_id)
+  ORDER BY m.published DESC,m.cve_id DESC LIMIT 51)`;
+ const sql=`WITH bounds(first_date,last_date,cursor_date,cursor_id) AS (VALUES(?,?,?,?))
+  SELECT DISTINCT published,cve_id FROM (${topics.map(()=>part).join(' UNION ALL ')})
+  ORDER BY published DESC,cve_id DESC LIMIT 51`;
  const {results:page}=await db.prepare(sql).bind(cutoff,end,...cursor,...topics).all();
  const keys=JSON.stringify(page.slice(0,50).map(r=>r.cve_id));
- const {results:details}=await db.prepare("SELECT d.cve_id,d.record_json,m.topic,m.products_json,k.cve_id AS kev FROM json_each(?) ids JOIN cvie_disclosures d ON d.cve_id=ids.value JOIN cvie_topic_matches m ON m.cve_id=d.cve_id AND m.topic IN(SELECT value FROM json_each(?)) LEFT JOIN cvie_kev k ON k.cve_id=d.cve_id WHERE d.state='PUBLISHED' AND NOT EXISTS(SELECT 1 FROM cvie_topic_pending q WHERE q.cve_id=d.cve_id) ORDER BY CAST(ids.key AS INTEGER),m.topic").bind(keys,JSON.stringify(topics)).all();
+ const {results:details}=await db.prepare(`SELECT d.cve_id,d.record_json,m.topic,m.products_json,k.cve_id AS kev
+  FROM json_each(?) ids JOIN cvie_disclosures d ON d.cve_id=ids.value
+  JOIN cvie_topic_matches m ON m.cve_id=d.cve_id AND m.topic IN(SELECT value FROM json_each(?))
+  LEFT JOIN cvie_kev k ON k.cve_id=d.cve_id
+  WHERE d.state='PUBLISHED' AND NOT EXISTS(SELECT 1 FROM cvie_topic_pending q WHERE q.cve_id=d.cve_id)
+  ORDER BY CAST(ids.key AS INTEGER),m.topic`).bind(keys,JSON.stringify(topics)).all();
  const records=new Map();
  for(const r of details){
   if(!records.has(r.cve_id))records.set(r.cve_id,{...JSON.parse(r.record_json),known_exploited:!!r.kev,topic_matches:[]});
