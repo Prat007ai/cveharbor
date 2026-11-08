@@ -1,4 +1,4 @@
-"""Apply only the reviewed catalogue save fix to the recorded production frontend."""
+"""Build the catalogue navigation fix on the recorded production frontend."""
 import hashlib
 import os
 from pathlib import Path
@@ -7,8 +7,10 @@ import subprocess
 import sys
 
 BASE = "64b715e46819d68be389bd894558ca29afe5ac52"
-CANDIDATE = "49a7e29fc06cfe82f933004bd9432516e6ab722c"
-CHANGED = {"app.js"}
+PREVIOUS_FIX = "49a7e29fc06cfe82f933004bd9432516e6ab722c"
+REVIEW_BASE = "19f35785b9215d4190c28621f8dda22a21d1a618"
+CANDIDATE = "6cadad7e79016b7eb1f2a7d80fc72fa9ba9404e8"
+CHANGED = {"app.js", "accounts.js", "header-auth.js"}
 # These two feeds were generated immediately before the original upload.
 LIVE_ONLY = {"lifecycle.js", "patch-notes.js"}
 # Publication 41882606976, job 126758693492: 14 uploaded + 60 reused.
@@ -33,11 +35,14 @@ def git(*args):
 
 
 def prepare(out):
-    require(git("show", "HEAD:app.js") == git("show", CANDIDATE + ":app.js"), "Unreviewed catalogue code")
-    patch = git("diff", CANDIDATE + "^", CANDIDATE, "--", "app.js")
+    for source in CHANGED:
+        require(git("show", "HEAD:" + source) == git("show", CANDIDATE + ":" + source), "Unreviewed " + source)
+    patch = git("diff", REVIEW_BASE, CANDIDATE, "--", *sorted(CHANGED))
     out.mkdir()
     tree = out / "source"
     git("-c", "core.autocrlf=false", "worktree", "add", "--detach", str(tree), BASE)
+    prior_patch = git("diff", PREVIOUS_FIX + "^", PREVIOUS_FIX, "--", "app.js")
+    subprocess.run(["git", "apply", "-"], cwd=tree, input=prior_patch, check=True)
     for name in ("before", "after"):
         if name == "after":
             subprocess.run(["git", "apply", "-"], cwd=tree, input=patch, check=True)
@@ -51,7 +56,7 @@ def prepare(out):
             "Production inventory differs from the original 74 assets")
     changed = {p for p in paths if (before / p).read_bytes() != (after / p).read_bytes()}
     require(changed == CHANGED, "Unexpected built catalogue delta: " + str(changed))
-    print("Verified only app.js changes across the 74 production paths.")
+    print("Verified only the three reviewed catalogue and account scripts change across the 74 production paths.")
 
 
 if __name__ == "__main__":

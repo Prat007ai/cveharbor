@@ -62,8 +62,13 @@
   const baseItems=items.slice();
   const monthCutoff=months=>{const now=new Date(),day=now.getUTCDate();now.setUTCDate(1);now.setUTCMonth(now.getUTCMonth()-months);now.setUTCDate(Math.min(day,new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+1,0)).getUTCDate()));return now.getTime();};
   const inMonths=(record,months)=>{const date=Date.parse(record.published||'');return Number.isFinite(date)&&date>=monthCutoff(months)&&date<=Date.now();};
+  let cvieWasSignedIn=false;
   const handleCvieUpdate=event=>{
-    if(window.CVEHARBOR_CVIE.sessionKnown&&!window.CVEHARBOR_CVIE.signedIn){personalized=null;catalogueSignedIn=false;}
+    const cvie=window.CVEHARBOR_CVIE;
+    if(cvieWasSignedIn&&cvie.sessionKnown&&!cvie.signedIn&&catalogueSignedIn){
+      catalogueEpoch++;catalogueLoad=null;clearCatalogue();
+    }
+    cvieWasSignedIn=cvie.signedIn;
     items=window.CVEHARBOR_CVIE.merge(baseItems);
     if(personalized){const names=new Set([...personalized.defaults,...personalized.products.filter(p=>p.enabled!==false).map(p=>p.name)].map(n=>n.toLowerCase()));items=items.filter(r=>[...(r.categories||[]),...(r.cvie_products||[])].some(n=>names.has(n.toLowerCase())));}
     const names=(window.CVEHARBOR_CVIE.products||[]).map(p=>p.name);
@@ -753,7 +758,23 @@
       row.append(remove);list.append(row);
     }
   }
-  manageButton.addEventListener('click',()=>{if(!catalogueSignedIn){$('technologySignInDialog').showModal();return}if(catalogueSaving)return;draft=JSON.parse(JSON.stringify(personalized||{defaults:defaultNames,products:[]}));draftRevision=catalogueRevision;updateSelection();drawCustomizer();$('technologyCustomizer').hidden=false;$('technologyActionStatus').hidden=true;$('technologyCustomizer').scrollIntoView({block:'start',behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth'})});
+  let catalogueLoad,openRequested=false;
+  function openEditor(){
+    const editor=$('technologyCustomizer');
+    if(editor.hidden||!draft){
+      draft=JSON.parse(JSON.stringify(personalized));
+      draftRevision=catalogueRevision;
+      updateSelection();drawCustomizer();
+    }
+    editor.hidden=false;$('technologyActionStatus').hidden=true;
+    editor.scrollIntoView({block:'start',behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth'});
+  }
+  manageButton.addEventListener('click',()=>{
+    if(catalogueSaving)return;
+    openRequested=true;
+    statusMessage('Checking your saved catalogue…');
+    void loadCatalogue();
+  });
   $('technologySignInClose').addEventListener('click',()=>$('technologySignInDialog').close());
   $('technologySignInDialog').addEventListener('click',event=>{if(event.target===$('technologySignInDialog'))$('technologySignInDialog').close()});
   $('technologyManageClose').addEventListener('click',()=>{$('technologyCustomizer').hidden=true;$('technologyActionStatus').hidden=false});
@@ -872,25 +893,60 @@
     if(personalized&&state.tech!=='all'&&!allowed.has(state.tech.toLowerCase())){state.tech='all';$('technologyFilter').value='all'}
     renderCategories();renderBars();renderFocus();render();
   }
-  async function loadCatalogue(){
+  function clearCatalogue(){
+    catalogueSignedIn=false;catalogueAccount=undefined;personalized=null;draft=null;
+    catalogueRevision=undefined;draftRevision=undefined;
+    customForm.reset();$('technologyCustomizer').hidden=true;applyPersonalized();
+  }
+  function loadCatalogue(){
+    if(catalogueLoad)return catalogueLoad;
     const epoch=++catalogueEpoch;
+    catalogueLoad=readCatalogue(epoch).finally(()=>{if(epoch===catalogueEpoch)catalogueLoad=null});
+    return catalogueLoad;
+  }
+  async function readCatalogue(epoch){
+    const signedOut=()=>{
+      clearCatalogue();
+      window.dispatchEvent(new CustomEvent('cveharbor:catalogue-session',{detail:{authenticated:false}}));
+      statusMessage('');
+      if(openRequested&&!$('technologySignInDialog').open)$('technologySignInDialog').showModal();
+      openRequested=false;
+    };
     try{
-      const me=await fetch('https://api.cveharbor.com/v1/me',{credentials:'include'}).then(r=>r.ok?r.json():null);
+      const options={credentials:'include',cache:'no-store'};
+      const session=await fetch('https://api.cveharbor.com/v1/me',options);
       if(epoch!==catalogueEpoch)return;
-      if(!me?.authenticated){catalogueSignedIn=false;personalized=null;catalogueRevision=undefined;applyPersonalized();return}
-      catalogueSignedIn=true;catalogueAccount=me.email;
-      const r=await fetch(catalogueAPI,{credentials:'include'});if(!r.ok)throw Error('Unable to load your saved catalogue.');
+      if(session.status===401){signedOut();return}
+      if(!session.ok)throw Error();
+      const me=await session.json();
+      if(epoch!==catalogueEpoch)return;
+      if(me.authenticated===false){signedOut();return}
+      if(me.authenticated!==true||!me.email)throw Error();
+      window.dispatchEvent(new CustomEvent('cveharbor:catalogue-session',{detail:{authenticated:true,email:me.email}}));
+      if(catalogueAccount&&catalogueAccount!==me.email)clearCatalogue();
+      const r=await fetch(catalogueAPI,options);
+      if(epoch!==catalogueEpoch)return;
+      if(r.status===401){signedOut();return}
+      if(!r.ok)throw Error();
       const data=await r.json();if(epoch!==catalogueEpoch)return;
+      if(typeof data.revision!=='string'||!Array.isArray(data.products)||(data.defaults!==null&&!Array.isArray(data.defaults)))throw Error();
+      catalogueSignedIn=true;catalogueAccount=me.email;
       personalized={defaults:Array.isArray(data.defaults)?data.defaults:defaultNames,products:Array.isArray(data.products)?data.products:[]};catalogueRevision=data.revision;
       manageButton.hidden=false;applyPersonalized();window.CVEHARBOR_CVIE?.applyCatalogue?.(personalized);
-    }catch(e){if(epoch===catalogueEpoch)statusMessage(e.message)}
+      if(openRequested){openRequested=false;statusMessage('');openEditor()}
+    }catch{
+      if(epoch===catalogueEpoch){openRequested=false;statusMessage('Could not load your saved catalogue. Click Customize technologies to try again.')}
+    }
   }
   if(typeof fetch==='function')void loadCatalogue();
   window.addEventListener('cveharbor:account-state',event=>{
-    catalogueEpoch++;
-    if(!event.detail?.authenticated){catalogueSignedIn=false;personalized=null;draft=null;customForm.reset();catalogueRevision=undefined;$('technologyCustomizer').hidden=true;applyPersonalized();}
-    else void loadCatalogue();
+    if(!event.detail?.authenticated||event.detail.email!==catalogueAccount){
+      catalogueEpoch++;catalogueLoad=null;clearCatalogue();
+    }
+    if(event.detail?.authenticated)void loadCatalogue();
+    else openRequested=false;
   });
+  window.addEventListener('pageshow',event=>{if(event.persisted&&!catalogueSaving)void loadCatalogue()});
   window.addEventListener('focus',()=>{if(!catalogueSaving)void loadCatalogue()});
   if(catalogueChanges)catalogueChanges.onmessage=event=>{if(event.data?.changed&&!catalogueSaving)void loadCatalogue()};
   $('technologySearch').addEventListener('input',renderCategories);

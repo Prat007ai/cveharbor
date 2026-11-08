@@ -13,10 +13,16 @@ env.DB.sql.exec("INSERT INTO user_totp VALUES('a',1); INSERT INTO inventory_asse
 const data=JSON.parse(fs.readFileSync('data/demo-advisories.json','utf8'));
 let signedIn=true,failSave=false,holdSave=null,delaySave=false;
 let saveFault;
+let sessionGate,sessionUnavailable=false,catalogueUnavailable=false;
 const pending=[],seen=[];
 async function fetcher(url,options={}){
  const u=new URL(url);seen.push({path:u.pathname,scope:u.searchParams.get('scope'),method:options.method||'GET'});
- if(u.pathname==='/v1/me')return Response.json({authenticated:signedIn,email:signedIn?'a@example.test':undefined},{status:signedIn?200:401});
+ if(u.pathname==='/v1/me'){
+  if(sessionGate)await sessionGate;
+  if(sessionUnavailable)return Response.json({error:'Service temporarily unavailable'},{status:503});
+  return Response.json({authenticated:signedIn,email:signedIn?'a@example.test':undefined},{status:signedIn?200:401});
+ }
+ if(catalogueUnavailable&&u.pathname==='/v1/technology-catalogue'&&options.method==='GET')return new Response(null,{status:503});
  if(!u.pathname.startsWith('/v1/cvie')&&u.pathname!=='/v1/technology-catalogue')return Response.json({});
  if(failSave&&options.method==='PUT')return Response.json({error:'Synthetic save failure'},{status:503});
  const execute=()=>worker.fetch(new Request(url,{...options,headers:{...options.headers,Origin:'https://cveharbor.com',...(signedIn?{Cookie:'cvh_session='+token}:{})}}),env,{waitUntil:p=>pending.push(p)});
@@ -60,6 +66,7 @@ try{
  await page.waitForSelector('.cvie-scope-summary');await page.locator('#technologyManageButton').click();
  const choices=page.locator('#technologyDefaultChoices input');
  const editor=page.locator('#technologyCustomizer');
+ await editor.waitFor({state:'visible'});
  const save=editor.getByRole('button',{name:'Save my catalogue'});
  const status=editor.locator('#technologyCustomizeStatus');
  const count=editor.locator('#technologySelectedCount');
@@ -71,6 +78,7 @@ try{
  async function reopen(){
   await page.reload();await page.waitForSelector('.cvie-scope-summary');
   await page.locator('#technologyManageButton').click();
+  await editor.waitFor({state:'visible'});
  }
  const checkedNames=()=>editor.locator('#technologyDefaultChoices input:checked').evaluateAll(
   inputs=>inputs.map(input=>input.labels[0].textContent).sort()
@@ -256,5 +264,32 @@ try{
  assert.equal(puts()-beforeConflict,2,'only the test edit and the concurrent edit sent a PUT');
  assert.deepEqual(stored().defaults,['Fortinet']);
  assert.equal(await php.isChecked(),true);
+ const manage=page.locator('#technologyManageButton'),dialog=page.locator('#technologySignInDialog');
+ const actionStatus=page.locator('#technologyActionStatus');
+ await page.goto('http://127.0.0.1:8080/threats/');
+ let releaseSession;
+ sessionGate=new Promise(resolve=>{releaseSession=resolve});
+ await page.goBack({waitUntil:'domcontentloaded'});
+ await manage.click();
+ assert.equal(await dialog.isVisible(),false,'checking the session must not prompt for login');
+ assert.equal(await page.locator('#headerAccountActions').getByText('Log In',{exact:true}).count(),0);
+ assert.equal(await editor.isVisible(),false,'wait for the stored revision');
+ releaseSession();sessionGate=null;
+ await editor.waitFor({state:'visible'});
+ assert.deepEqual(await checkedNames(),['Fortinet']);
+ await page.locator('#headerAccountActions').getByText('My Workspace',{exact:true}).waitFor();
+ await page.locator('#technologyManageClose').click();
+ for(const failure of ['session','catalogue']){
+  sessionUnavailable=failure==='session';catalogueUnavailable=failure==='catalogue';
+  await manage.click();await actionStatus.getByText(/try again/).waitFor();
+  assert.equal(await editor.isVisible(),false);assert.equal(await dialog.isVisible(),false);
+  sessionUnavailable=false;catalogueUnavailable=false;
+  await manage.click();await editor.waitFor({state:'visible'});
+  assert.deepEqual(await checkedNames(),['Fortinet']);
+  await page.locator('#technologyManageClose').click();
+ }
+ signedIn=false;
+ await manage.click();await dialog.waitFor({state:'visible'});
+ assert.equal(await editor.isVisible(),false);
  assert.deepEqual(errors,[]);console.log('PASS Chromium catalogue selection, persisted refresh, removal, adding, failure, empty scope and responsive layout');
 }finally{await context.close();env.DB.sql.close()}

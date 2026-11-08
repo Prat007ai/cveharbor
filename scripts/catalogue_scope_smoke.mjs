@@ -29,22 +29,28 @@ async function page(){
 }
 let dom=await page(),w=dom.window,d=w.document;
 const selectedNames=()=>[...d.querySelectorAll('.technology-row .technology-name')].map(el=>el.textContent);
-const setDefaults=names=>{d.getElementById('technologyManageButton').click();for(const input of d.querySelectorAll('#technologyDefaultChoices input')){input.checked=names.includes(input.parentElement.textContent);input.dispatchEvent(new w.Event('change'))}};
+const setDefaults=async names=>{
+ const editor=d.getElementById('technologyCustomizer');
+ if(editor.hidden){
+  d.getElementById('technologyManageButton').click();
+  await until(()=>!editor.hidden);
+ }
+ for(const input of d.querySelectorAll('#technologyDefaultChoices input')){input.checked=names.includes(input.parentElement.textContent);input.dispatchEvent(new w.Event('change'))}};
 const save=async()=>{d.getElementById('technologySaveButton').click();await until(()=>!d.getElementById('technologySaveButton').disabled);await until(()=>!w.CVEHARBOR_CVIE.loading);await Promise.all(pending.splice(0))};
-setDefaults(['Windows Server OS','.NET Core']);await save();
+await setDefaults(['Windows Server OS','.NET Core']);await save();
 assert.equal(d.querySelectorAll('.technology-row').length,2);assert.equal(d.getElementById('technologyTotal').textContent,'2');
 assert.deepEqual([...w.CVEHARBOR_CVIE.products].map(p=>p.name).sort(),['.NET Core','Windows Server OS']);
 assert.doesNotMatch(d.getElementById('categoryGrid').textContent,/WordPress|Exchange|NGINX/);
 assert.match(d.querySelector('.cvie-scan-details summary').textContent,/Catalogue product scan status \(2\)/);
 // Failure retains saved display, while an in-flight draft cannot alter the saved request.
-setDefaults(['PHP']);failSave=true;await save();assert.match(d.getElementById('technologyCustomizeStatus').textContent,/Unable to save/);assert.equal(d.querySelectorAll('.technology-row').length,2);failSave=false;
-setDefaults(['.NET Core']);delaySave=true;d.getElementById('technologySaveButton').click();await until(()=>holdSave);assert.ok([...d.querySelectorAll('#technologyDefaultChoices input')].every(i=>i.disabled));await holdSave();await until(()=>!d.getElementById('technologySaveButton').disabled&&!w.CVEHARBOR_CVIE.loading);assert.equal(w.CVEHARBOR_CVIE.products.length,1);
+await setDefaults(['PHP']);failSave=true;await save();assert.match(d.getElementById('technologyCustomizeStatus').textContent,/Unable to save/);assert.equal(d.querySelectorAll('.technology-row').length,2);failSave=false;
+await setDefaults(['.NET Core']);delaySave=true;d.getElementById('technologySaveButton').click();await until(()=>holdSave);assert.ok([...d.querySelectorAll('#technologyDefaultChoices input')].every(i=>i.disabled));await holdSave();await until(()=>!d.getElementById('technologySaveButton').disabled&&!w.CVEHARBOR_CVIE.loading);assert.equal(w.CVEHARBOR_CVIE.products.length,1);
 // Reload and sign back in load the authoritative saved scope.
 dom.window.close();dom=await page();w=dom.window;d=w.document;assert.equal(d.querySelectorAll('.technology-row').length,1);
 signedIn=false;w.dispatchEvent(new w.CustomEvent('cveharbor:account-state',{detail:{authenticated:false}}));assert.equal(d.getElementById('technologyCustomizer').hidden,true);
 signedIn=true;w.dispatchEvent(new w.CustomEvent('cveharbor:account-state',{detail:{authenticated:true,email:'a@example.test'}}));await until(()=>d.querySelectorAll('.technology-row').length===1&&!w.CVEHARBOR_CVIE.loading);
-setDefaults(['.NET Core','WordPress / Plugins']);await save();assert.equal(d.querySelectorAll('.technology-row').length,2);
-setDefaults([]);await save();assert.equal(d.querySelectorAll('.technology-row').length,0);assert.equal(w.CVEHARBOR_CVIE.products.length,0);assert.match(d.getElementById('technologyEmpty').textContent,/No technologies selected/);
+await setDefaults(['.NET Core','WordPress / Plugins']);await save();assert.equal(d.querySelectorAll('.technology-row').length,2);
+await setDefaults([]);await save();assert.equal(d.querySelectorAll('.technology-row').length,0);assert.equal(w.CVEHARBOR_CVIE.products.length,0);assert.match(d.getElementById('technologyEmpty').textContent,/No technologies selected/);
 assert.ok(seen.filter(x=>x.path.startsWith('/v1/cvie')).every(x=>x.scope==='catalogue'));
 assert.equal(env.DB.sql.prepare('SELECT count(*) n FROM inventory_assets').get().n,1);assert.equal(env.DB.sql.prepare('SELECT count(*) n FROM user_stack').get().n,1);
 dom.window.close();env.DB.sql.close();console.log('PASS catalogue UI + actual backend: exact selection, failure, pending saves, refresh, sessions, adding and empty scope');

@@ -163,7 +163,7 @@ jobs:
 
   catalogue-check:
     name: Test the production catalogue package in Chrome
-    if: (github.event_name == 'pull_request' && github.head_ref == 'fix/catalogue-save-recovery' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.catalogue_commit != '')
+    if: (github.event_name == 'pull_request' && github.head_ref == 'fix/catalogue-navigation' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.catalogue_commit != '')
     runs-on: ubuntu-latest
     permissions:
       contents: read
