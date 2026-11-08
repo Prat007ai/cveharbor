@@ -1,6 +1,6 @@
 --- a/operations.js
 +++ b/operations.js
-@@ -118,12 +118,24 @@
+@@ -118,22 +118,37 @@
    const view=$('remediationViewAll');view.textContent=showAll?'Show recent records':'View all records →';view.setAttribute('aria-expanded',String(showAll));view.disabled=tasks.length<=5;
    $('remediationRecordsScope').textContent=loading?'Loading private records…':isPrivate?'Your latest private account records.':authenticated?'Unable to load private account records.':'Browser-only records · sign in for your private account tracker.';
    target.closest('table').setAttribute('aria-busy',String(loading));
@@ -14,28 +14,36 @@
 +   filter.closest('label').hidden=!isPrivate;
 +  }
    if(!tasks.length){
-     const row=elem('tr'),cell=elem('td','rt-empty');cell.colSpan=10;
+-    const row=elem('tr'),cell=elem('td','rt-empty');cell.colSpan=10;
++    const row=elem('tr'),cell=elem('td','rt-empty');cell.colSpan=11;
      cell.append(elem('strong','',loading?'Loading records…':authenticated&&!cloudMode?'Records unavailable':'No remediation records yet'),elem('span','',loading?'Retrieving your private account records.':authenticated&&!cloudMode?'Reload the page to retry.':cloudMode?'Add a CVE and its owner using the form above.':'Sign in to manage private account records, or add a browser-only record above.'));
      row.append(cell);target.append(row);uiMode();return;
    }
 -  const ordered=[...tasks].sort((a,b)=>String(b.updated||'').localeCompare(String(a.updated||'')));
 +  const queueFilter=$('queueCustomer');
 +  const visible=queueFilter&&queueFilter.value!=='all'?tasks.filter(t=>(t.scope?.customer_id||'unassigned')===queueFilter.value):tasks;
-+  if(!visible.length){const tr=elem('tr'),td=elem('td','rt-empty','No records for this customer.');td.colSpan=10;tr.append(td);target.append(tr);}
++  if(!visible.length){const tr=elem('tr'),td=elem('td','rt-empty','No records for this customer.');td.colSpan=11;tr.append(td);target.append(tr);}
++  view.disabled=visible.length<=5;
 +  const ordered=[...visible].sort((a,b)=>String(b.updated||'').localeCompare(String(a.updated||'')));
    for(const task of (showAll?ordered:ordered.slice(0,5))){
      const row=elem('tr');row.dataset.cve=task.id;row.setAttribute('role','row');
-     const labels=['Last updated','CVE ID','Title','Severity','Status','Owner','Target date','Acknowledgement','Latest status change','Actions'];
-@@ -133,7 +145,7 @@
+-    const labels=['Last updated','CVE ID','Title','Severity','Status','Owner','Target date','Acknowledgement','Latest status change','Actions'];
++    const labels=['Last updated','CVE ID','Title','Customer / environment','Severity','Status','Owner','Target date','Acknowledgement','Latest status change','Actions'];
+     const cell=(value)=>{const td=elem('td'),label=elem('span','rt-cell-label',labels[row.children.length]);label.setAttribute('aria-hidden','true');td.setAttribute('role','cell');td.append(label);if(value!==undefined)td.append(document.createTextNode(String(value)));row.append(td);return td;};
+     cell(displayTime(task.updated));
+     const link=elem('a','',displayCve(task.id));link.href='https://www.cve.org/CVERecord?id='+encodeURIComponent(displayCve(task.id));link.addEventListener('click',event=>{if(window.CVEHARBOR_ADVISORY_DETAILS){event.preventDefault();openAdvisory(displayCve(task.id));}});cell().append(link);
      const advisory=records.get(displayCve(task.id)),title=cell(advisory?.title||'Advisory details not available');
-     if(task.scope)title.append(elem('p','',scopeText(task.scope)));
+-    if(task.scope)title.append(elem('p','',scopeText(task.scope)));
++    const customerCell=cell(task.scope?.customer_name||'No customer assigned');
++    if(task.scope)customerCell.append(elem('small','',task.scope.environment_name||'Customer-wide'));
++    if(task.scope?.asset_name)title.append(elem('p','',[task.scope.asset_name,task.scope.technology,task.scope.version].filter(Boolean).join(' · ')));
      if(task.notes||task.assigned_to){
 -      const details=elem('details');details.append(elem('summary','','Record details'));
 +      const details=elem('details','rt-record-detail');details.append(elem('summary','','Record details'));
        if(task.notes)details.append(elem('p','',task.notes));
        if(task.assigned_to)details.append(elem('p','remediation-assignee','Assigned by email to: '+task.assigned_to+' · Notification: '+(task.assignment_status||'Unknown')));
        title.append(details);
-@@ -193,6 +205,8 @@
+@@ -193,6 +208,8 @@
    for(const id of ['remediationProgressRows','remediationProgressInvitations','remediationProgressNotifications'])$(id).replaceChildren();closeCvhDialog('remediationProgressDialog');editing=null;ackDataAvailable=false;
    $('remediationStatusHistoryRows').replaceChildren();closeCvhDialog('remediationStatusHistoryDialog');
    $('remediationHistoryRows').replaceChildren();closeCvhDialog('remediationHistoryDialog');
@@ -44,7 +52,7 @@
    authenticated=!!data.authenticated;accountEmail=authenticated?(data.email||''):'';
    cloudMode=false;capabilities=null;imported=false;showAll=false;loading=authenticated;
    // Clear the previous account immediately, including values loaded into the edit form.
-@@ -220,6 +234,37 @@
+@@ -220,6 +237,37 @@
  }
  function renderRecentActivity(){let panel=$('remediationRecentActivity');if(!panel){panel=elem('section','rt-panel rt-recent-activity');panel.id='remediationRecentActivity';$('remediationTracker').append(panel);}panel.replaceChildren(elem('h2','','Recent activity'));const list=elem('ul');for(const t of [...tasks].sort((a,b)=>String(b.updated).localeCompare(String(a.updated))).slice(0,8)){const li=elem('li'),b=elem('button','',displayCve(t.id)+(t.scope?' · '+t.scope.asset_name:'')+' — '+(t.latest_status_change? t.latest_status_change.new_status:'Record updated')+' · '+displayTime(t.updated));b.type='button';b.addEventListener('click',()=>window.CVEHARBOR_SHARED.open(t.id));li.append(b);list.append(li);}panel.append(list);}
  function scopeText(s){return s?[s.customer_name,s.environment_name,s.asset_name,s.technology,s.version].filter(Boolean).join(' · '):'';}
@@ -82,7 +90,7 @@
  function openAssign(id,scope){
    const cve=String(id||'').trim().toUpperCase();
    if(cve&&!validWork(cve)){msg('Enter a complete CVE ID before assigning.');return;}
-@@ -232,6 +277,7 @@
+@@ -232,6 +280,7 @@
    $('changeCve').hidden=$('remediationAssignCve').readOnly;
    $('extraOptions').open=true;$('deliveryRules').open=true;
    let context=$('remediationAssignScope');if(!context){context=elem('p');context.id='remediationAssignScope';$('remediationAssignForm').prepend(context);}context.textContent=scopeText(assignmentScope);
@@ -90,7 +98,7 @@
    $('remediationAssignConfirm').checked=false;
    $('remediationAssignResend').checked=false;
    $('remediationResendLabel').hidden=!capabilities?.acknowledgements_available;
-@@ -260,14 +306,23 @@
+@@ -260,14 +309,23 @@
   const id=$('remediationAssignCve').value.trim().toUpperCase(),email=$('remediationAssignEmail').value.trim().toLowerCase();
   const fyi=[...new Set($('remediationAssignFyi').value.toLowerCase().split(/[,;\n]/).map(value=>value.trim()).filter(value=>value&&value!==email))];
   $('previewCve').textContent=valid(id)?id:'Enter a complete CVE ID';
@@ -117,7 +125,7 @@
  $('changeCve').onclick=()=>{$('remediationAssignCve').focus();$('remediationAssignCve').select();};
  $('remediationAssignCve').oninput=event=>{event.target.value=event.target.value.trim().toUpperCase();};
  $('remediationAssignForm').addEventListener('input',event=>{
-@@ -326,7 +381,9 @@
+@@ -326,7 +384,9 @@
   if(send.disabled)return;
   send.disabled=true;status.textContent='Submitting your review request...';
   try{

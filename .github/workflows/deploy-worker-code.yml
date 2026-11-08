@@ -87,6 +87,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: python scripts/production_release_checks.py
   deploy:
+    permissions:
+      contents: read
+      pull-requests: read
     concurrency:
       group: cveharbor-production-release
       cancel-in-progress: false
