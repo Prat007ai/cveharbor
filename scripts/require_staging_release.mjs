@@ -38,7 +38,9 @@ export async function requireStaging(env,{transport=fetch,sleep=ms=>new Promise(
     const inputs=JSON.parse(fs.readFileSync(env.GITHUB_EVENT_PATH)).inputs;
     assert.equal(inputs.release_mode,'code-only');if(assignment){
      assert.equal(String(inputs.assignment_release),'true');
-     const pr=await get('/pulls/291');
+     const prResponse=await transport(base+'/pulls/291',{redirect:'error',signal:AbortSignal.timeout(20000)});
+     assert.ok(prResponse.ok,'Merged assignment pull request evidence unavailable');
+     const pr=await prResponse.json();
      assert.ok(pr.merged&&pr.base.ref==='main'&&pr.merge_commit_sha===env.GITHUB_SHA);
      const commit=await get('/git/commits/'+env.GITHUB_SHA);
      assert.equal(commit.parents[0].sha,'c5ff5ca432f2b0c07743743da42af3ad5778d861');

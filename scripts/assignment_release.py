@@ -26,8 +26,8 @@ CHANGED = SITE_FILES | ROUTES
 
 
 def backend(out):
-    paths = ["account-backend/src", "account-backend/migrations", "account-backend/wrangler.toml", "release/migrations"]
-    archive = package.git("-c", "core.autocrlf=false", "archive", "--format=tar", API_BASE, "account-backend", "release/migrations")
+    paths = ["data/lifecycle-products.json", "account-backend/data", "account-backend/src", "account-backend/migrations", "account-backend/wrangler.toml", "release/migrations"]
+    archive = package.git("-c", "core.autocrlf=false", "archive", "--format=tar", API_BASE, "account-backend", "data/lifecycle-products.json", "release/migrations")
     with tarfile.open(fileobj=io.BytesIO(archive)) as tree:
         for member in tree:
             name = member.name
@@ -53,11 +53,23 @@ def site(out):
     with tempfile.TemporaryDirectory(dir=out) as temp:
         original, edited = Path(temp) / "original", Path(temp) / "edited"
         for name in sorted(CHANGED):
+            patch = Path("release/assignment-site", name + ".patch")
+            if patch.is_file():
+                # Use an isolated directory outside the checkout for git apply.
+                with tempfile.TemporaryDirectory(dir=out) as scratch:
+                    target = Path(scratch, name)
+                    target.write_bytes((out / 'before' / name).read_bytes())
+                    subprocess.run(["git", "apply", "--whitespace=nowarn", str(patch.resolve())], cwd=scratch, check=True,
+                                   env={**os.environ, "GIT_CEILING_DIRECTORIES": str(out)})
+                    (out / "after" / name).write_bytes(target.read_bytes())
+                continue
             source = "index.html" if name in ROUTES else name
             original.write_bytes(package.git("show", MAIN_BASE + ":" + source))
             edited.write_bytes(package.git("show", "HEAD:" + source))
             live = out / "before" / name
-            assembled = package.git("merge-file", "-p", str(live), str(original), str(edited))
+            active = Path(temp, "active")
+            active.write_bytes(live.read_bytes().replace(b"\r\n", b"\n"))
+            assembled = package.git("merge-file", "-p", str(active), str(original), str(edited))
             (out / "after" / name).write_bytes(assembled)
     package.require({n for n in package.files(out / "after") if (out / "before" / n).read_bytes() != (out / "after" / n).read_bytes()} == CHANGED,
                     "Unexpected files in the production website package")

@@ -6,11 +6,12 @@ on:
       - '.github/workflows/assignment-site.yml'
       - 'scripts/assignment_release.py'
       - 'app.js'
-      - 'cvie.js'
-      - 'header-auth.js'
-      - 'account-page.js'
-      - 'account-security.js'
-      - 'workspace/index.html'
+      - 'operations.js'
+      - 'index.html'
+      - 'remediation.css'
+      - 'styles.css'
+      - 'release/assignment-site/**'
+      - 'scripts/catalogue_scope_browser_smoke.mjs'
   workflow_dispatch:
     inputs:
       reviewed_commit:

@@ -213,6 +213,19 @@ try{
  await topics.waitFor({state:'visible'});
  assert.equal(await topics.getByLabel('Technology',{exact:true}).inputValue(),'windows-server-os');
  assert.equal(await page.locator('.cvie-identity-dialog[open]').count(),0);
+ // Verify both advisory entry points open the same editable assignment preview.
+ for(const [scope,selector] of [['scopePublic','#publicAdvisories'],['scopeCatalogue','#catalogueAdvisories']]){
+  await page.locator('#'+scope).click();
+  if(scope==='scopePublic')await page.locator('#listViewBtn').click();
+  const row=page.locator(selector+' tbody tr').first();
+  const id=await row.locator('.table-cve button').innerText();
+  await row.locator(scope==='scopePublic'?'.table-cve button':'.table-description button').click();
+  await page.locator('#detailDialog').getByRole('button',{name:'Assign vulnerability by email'}).click();
+  await page.locator('#remediationAssignDialog').waitFor({state:'visible'});
+  assert.equal(await page.locator('#remediationAssignCve').inputValue(),id);
+  for(const section of ['extraOptions','deliveryRules'])assert.ok(await page.locator('#'+section).evaluate(el=>el.open));
+  await page.locator('#closeRemediationAssign').click();
+ }
  const query=topics.getByRole('searchbox');
  await query.fill('Topic fixture');assert.equal(await topics.locator('tbody tr').count(),50);
  await topics.getByRole('button',{name:'Next 50'}).click();assert.equal(await topics.locator('tbody tr').count(),1);
