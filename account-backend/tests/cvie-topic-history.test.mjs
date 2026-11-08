@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {DB} from './helpers/d1.mjs';
 import {updateTopicHistory,catalogueHistory} from '../src/cvie-topic-history.js';
 import {monthsAgo} from '../src/cvie.js';
-const migration=readFileSync(new URL('../migrations/0033_cvie_topic_history.sql',import.meta.url),'utf8');
+const migration=readFileSync(new URL('../../deployment/proposals/cvie-topic-history/0033_cvie_topic_history.sql',import.meta.url),'utf8');
 test('shared source history uses saved topics, stable pages and withdrawals across accounts',async()=>{
  const env={DB:new DB()},db=env.DB.sql,now=Date.now();
  try{

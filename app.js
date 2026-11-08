@@ -1054,7 +1054,7 @@
     rows.sort((a,b)=>(topicOrder==='priority'?(Number(!!b.r.known_exploited)-Number(!!a.r.known_exploited))||((severity[String(b.r.severity).toLowerCase()]||0)-(severity[String(a.r.severity).toLowerCase()]||0)):0)||b.date-a.date||a.r.id.localeCompare(b.r.id));
     topicPage=Math.max(0,Math.min(topicPage,Math.ceil(rows.length/50)-1));const offset=topicPage*50;
     summary.textContent='Topic matches use the shared public index'+(lastSuccess?' dated '+lastSuccess:'')+'. Registered product matches use saved CVIE evidence. Installation exposure depends on version and configuration.'+' The public index is bounded; older disclosures can be missing.';
-    count.textContent=rows.length?(offset+1)+'–'+Math.min(offset+50,rows.length)+' of '+rows.length+' recorded matches':'No recorded matches for this selection in the available index.';
+    count.textContent=rows.length?(offset+1)+'–'+Math.min(offset+50,rows.length)+' of '+rows.length+' recorded matches':engine?.loading?'Checking saved results. No matching records have loaded for this selection yet.':'No recorded matches for this selection in the available index.';
     topicBrowser.rows=rows;
     const fragment=document.createDocumentFragment();
     for(const {r,labels,exact} of rows.slice(offset,offset+50)){
