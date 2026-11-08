@@ -123,7 +123,7 @@ The table describes intended locations; it does not assert they already exist.
 | `cloudflare-cvie-staging` | Existing `CF_STAGING_API_TOKEN`, `CF_STAGING_ACCESS_CLIENT_ID`, `CF_STAGING_ACCESS_CLIENT_SECRET`; retain existing supported secret storage for account/Access IDs | `CF_STAGING_ACCOUNT_ID`, `CF_STAGING_D1_DATABASE_ID`, `CF_STAGING_ACCESS_ISSUER`, `CF_STAGING_ACCESS_AUD`, `CF_STAGING_APPROVED_COMMIT`, `CF_STAGING_PROVISION_ACTION` | Existing permanent staging; preserve reviewed `codex/cvie-core-phase012` restriction and current approval arrangement; details in architecture document |
 | `cloudflare-phase1-staging` | `CLOUDFLARE_STAGING_API_TOKEN`, `CLOUDFLARE_STAGING_ACCOUNT_ID` | `STAGING_DATABASE_ID`, `STAGING_DATABASE_NAME`, `STAGING_DISPOSABLE=true`, `PRODUCTION_ACCOUNT_ID` | Main-only, independent approval; disposable synthetic D1 in the existing staging account |
 | `cloudflare-production-audit` | `CLOUDFLARE_AUDIT_API_TOKEN`, `CLOUDFLARE_AUDIT_ACCOUNT_ID` | None for preflight | Main-only, independent approval; SELECT-only production audit |
-| `cloudflare-worker-production` | `CVEHARBOR_PROD_WORKER_TOKEN`, `CVEHARBOR_PROD_ACCOUNT_ID` | None newly required for Phase 1 | Main-only, independent approval; backend migrations/deployment and recovery |
+| `cloudflare-worker-production` | `CVEHARBOR_PROD_WORKER_TOKEN`, `CVEHARBOR_PROD_ACCOUNT_ID` | None newly required for Phase 1 | Main-only, named sole-owner review for routine backend releases and explicitly authorized additive migrations. Recovery retains separate review. Administrator bypass disabled. |
 | `cloudflare-site-production` | `CVEHARBOR_PROD_SITE_TOKEN`, `CVEHARBOR_PROD_ACCOUNT_ID`, `CVEHARBOR_SITE_GATE_PASSWORD` | Existing site configuration only | Main-only, named sole-owner review. Work may record delegated approval for a reviewed frontend release. Administrator bypass disabled. |
 | `cloudflare-catalogue-42411365289` | Same three site environment secret names | Catalogue candidate `64b715e` on production site version `e22850fa-851d-453f-8336-5e78d96babdd` | Main only. The sole owner may initiate and explicitly approve this catalogue publication. Administrator bypass is disabled. |
 | `cloudflare-intelligence-data` | `FEED_R2_ACCESS_KEY_ID`, `FEED_R2_SECRET_ACCESS_KEY`; existing feed-provider keys as needed | `FEED_R2_ACCOUNT_ID`, `FEED_R2_BUCKET=cveharbor-intelligence` | Main-only, **no per-run human review/wait timer**; bucket-only hourly data publication |
@@ -239,12 +239,12 @@ Protecting main before replacing that writer would break its updates.
   → Selected branches and tags → branch `main` only**. No tag/wildcard/PR-ref rule.
   “Protected branches only” is not equivalent while no branch is protected.
 - [ ] For all listed environments **except `cloudflare-intelligence-data`, `cloudflare-cvie-staging`
-  and `cloudflare-catalogue-42411365289`**, require
+  `cloudflare-site-production`, `cloudflare-worker-production`, and `cloudflare-catalogue-42411365289`**, require
   an independent reviewer, enable Prevent self-review, and disallow administrator
   bypass where supported. A reviewer list requires one listed approval, not all of
   them. Verify the saved controls, reject stale/old-SHA reruns, and review operation
   inputs before approving.
-- [ ] For `cloudflare-catalogue-42411365289`, require the owner as the sole reviewer,
+- [ ] For `cloudflare-site-production`, `cloudflare-worker-production`, and the scoped catalogue publisher `cloudflare-catalogue-42411365289`, require the owner as the sole reviewer,
   allow the owner to review their own run, and disable administrator bypass.
 - [ ] For `cloudflare-intelligence-data`, deliberately leave per-run reviewers and
   wait timers unset. Its main-only job has read-only repository access and only

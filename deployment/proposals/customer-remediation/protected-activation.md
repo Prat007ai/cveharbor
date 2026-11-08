@@ -35,9 +35,11 @@ For each release, pin its own candidate and production baseline. The publisher f
 
 Use the protected catalogue publisher with owner review, main-only deployment and administrator bypass disabled. When the sole owner requests an identified catalogue-only deployment, Work may submit the owner's GitHub deployment approval after checking the run, commit and production scope. Record the delegation in the approval comment and respect any request for the owner to approve personally. Send the run link, monitor publication, verify the live assets and traffic, and record the result on the PR.
 
-## Production website owner approval
+## Standing owner approval for production releases
 
-The owner authorizes Work to approve reviewed frontend releases on the owner's behalf in the protected production site environment. GitHub permits the sole owner to start and approve the same run. Keep the named reviewer, main-only branch policy, administrator bypass disabled, exact release scope, required CI, live readiness and version verification. Record the delegation and link the run on the feature PR. PR #284 is the first cross-page website fix using this policy. Independent approvals for backend, database, recovery and other infrastructure use their existing protected environments.
+For routine production website and backend releases, and for additive database changes the owner has specifically authorized, Work has standing authority to click **Approve and deploy** on the owner's behalf. Verify the reviewed commit, run inputs, release contents, required checks and target environment. Confirm GitHub lists the owner as an eligible reviewer, restricts deployments to main and disables administrator bypass. Record the delegation and scope in the GitHub approval, share the run link, and verify production. Request the owner's action if a separate reviewer or personal authentication is required, the requested scope changes, or the owner reserves the decision. Recovery, destructive changes, credential changes and changes to access controls retain their separate authorization and review procedures.
+
+Use the existing protected site or worker environment. An approval authorizes one identified run and environment. Verify the inputs and scope again for a retry. Record the result on the feature PR.
 
 ## Proposed routine staging operation (inactive)
 
