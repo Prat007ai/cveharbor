@@ -12,6 +12,7 @@ env.DB.sql.prepare('INSERT INTO sessions VALUES(?,?,?,?)').run('s','a',await cat
 env.DB.sql.exec("INSERT INTO user_totp VALUES('a',1); INSERT INTO inventory_assets VALUES('a','WordPress'); INSERT INTO user_stack VALUES('a','Exchange SE'); UPDATE cvie_provider_budget SET next_request_at=9999999999999;");
 const data=JSON.parse(fs.readFileSync('data/demo-advisories.json','utf8'));
 let signedIn=true,failSave=false,holdSave=null,delaySave=false;
+let saveFault;
 const pending=[],seen=[];
 async function fetcher(url,options={}){
  const u=new URL(url);seen.push({path:u.pathname,scope:u.searchParams.get('scope'),method:options.method||'GET'});
@@ -19,6 +20,16 @@ async function fetcher(url,options={}){
  if(!u.pathname.startsWith('/v1/cvie')&&u.pathname!=='/v1/technology-catalogue')return Response.json({});
  if(failSave&&options.method==='PUT')return Response.json({error:'Synthetic save failure'},{status:503});
  const execute=()=>worker.fetch(new Request(url,{...options,headers:{...options.headers,Origin:'https://cveharbor.com',...(signedIn?{Cookie:'cvh_session='+token}:{})}}),env,{waitUntil:p=>pending.push(p)});
+ if(saveFault&&options.method==='PUT'){
+  const fault=saveFault;
+  saveFault=null;
+  if(fault==='after')assert.equal((await execute()).status,200);
+  if(fault==='concurrent'){
+   const other=await fetcher(url,{method:'PUT',body:JSON.stringify({defaults:['Fortinet'],products:[]})});
+   assert.equal((await other.json()).saved,true);
+  }
+  return Response.json({error:'Unable to process request'},{status:500});
+ }
  if(delaySave&&options.method==='PUT'){delaySave=false;return new Promise(resolve=>{holdSave=async()=>resolve(await execute())})}
  return execute();
 }
@@ -219,5 +230,30 @@ try{
  failSave=true;await page.locator('#technologyCustomizer').getByLabel('.NET Core',{exact:true}).uncheck();await page.locator('#technologySaveButton').click();await page.waitForFunction(()=>document.getElementById('technologyCustomizeStatus').textContent.includes('Unable to save'));assert.equal(await page.locator('.technology-row').count(),2);failSave=false;
  for(const input of await choices.all())await input.uncheck();await page.locator('#technologySaveButton').click();await page.waitForFunction(()=>!window.CVEHARBOR_CVIE.products.length&&!window.CVEHARBOR_CVIE.loading);
  assert.equal(await page.locator('.technology-row').count(),0);assert.match(await page.locator('#technologyEmpty').innerText(),/No technologies selected/);
+ const mixedProducts=[{name:'Maria DB',version:'10.6.28-24',enabled:false},{name:'PHP',version:'8.4.26',enabled:true}];
+ const seed=await fetcher('https://api.cveharbor.com/v1/technology-catalogue',{method:'PUT',body:JSON.stringify({defaults:['Linux'],products:mixedProducts})});
+ assert.equal((await seed.json()).saved,true);
+ await reopen();
+ await editor.getByRole('button',{name:'Select all',exact:true}).click();
+ for(const fault of ['before','after']){
+  if(fault==='after')await php.uncheck();
+  const expected=await checkedNames();
+  const writesBefore=puts();
+  saveFault=fault;
+  await save.click();
+  await page.waitForFunction(()=>!document.querySelector('#technologySaveButton').disabled);
+  assert.match(await status.innerText(),/Catalogue saved/);
+  assert.equal(puts()-writesBefore,fault==='before'?2:1);
+  await reopen();
+  assert.deepEqual(await checkedNames(),expected);
+  assert.deepEqual(stored().products,mixedProducts.map(p=>({...p,enabled:true})));
+ }
+ await php.check();
+ const beforeConflict=puts();
+ saveFault='concurrent';
+ await save.click();await waitStatus('Another tab saved a newer catalogue');
+ assert.equal(puts()-beforeConflict,2,'only the test edit and the concurrent edit sent a PUT');
+ assert.deepEqual(stored().defaults,['Fortinet']);
+ assert.equal(await php.isChecked(),true);
  assert.deepEqual(errors,[]);console.log('PASS Chromium catalogue selection, persisted refresh, removal, adding, failure, empty scope and responsive layout');
 }finally{await context.close();env.DB.sql.close()}

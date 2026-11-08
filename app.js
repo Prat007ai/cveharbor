@@ -701,7 +701,7 @@
   let draft=null,catalogueSaving=false,catalogueRevision,catalogueEpoch=0;
   const catalogueChanges=typeof BroadcastChannel==='function'?new BroadcastChannel('cveharbor-catalogue-changed'):null;
   const statusMessage=s=>{customizeStatus.textContent=s;$('technologyActionStatus').textContent=s;$('technologyActionStatus').hidden=!$('technologyCustomizer').hidden};
-  let draftRevision;
+  let draftRevision,catalogueAccount;
   function catalogueKey(name){return name.normalize('NFKC').trim().toLowerCase().replace(/\s+/g,' ')}
   function selectedSummary(catalogue){
     const names=[...catalogue.defaults,...catalogue.products.filter(p=>p.enabled!==false).map(p=>p.name)];
@@ -776,6 +776,38 @@
       statusMessage(customizeStatus.textContent+' Other selections are still unsaved.');
     }
   });
+  async function sendCatalogue(submitted,revision,epoch){
+    const options={method:'PUT',credentials:'include',headers:{'content-type':'application/json'},body:JSON.stringify({...submitted,revision})};
+    const account=catalogueAccount;
+    let result;
+    try{
+      result=await fetch(catalogueAPI,options);
+      if(![409,500,502,504].includes(result.status)||result.headers.has('Retry-After'))return result;
+    }catch(error){
+      if(!(error instanceof TypeError))throw error;
+    }
+    // A lost reply can leave a committed write. Compare the account's saved copy before replaying.
+    if(account&&epoch===catalogueEpoch){
+      const session=await fetch('https://api.cveharbor.com/v1/me',{credentials:'include',cache:'no-store'});
+      const me=session.ok?await session.json():null;
+      if(!me?.authenticated||me.email!==account||epoch!==catalogueEpoch)throw Error('Your sign-in changed. Reopen the catalogue.');
+      const read=await fetch(catalogueAPI,{credentials:'include',cache:'no-store'});
+      if(read.ok){
+        const current=await read.json();
+        if(epoch!==catalogueEpoch)throw Error('Your session changed. Reopen the catalogue.');
+        if(typeof current.revision==='string'&&Array.isArray(current.defaults)&&Array.isArray(current.products)
+          &&comparableCatalogue(current)===comparableCatalogue(submitted)){
+          return Response.json({saved:true,revision:current.revision});
+        }
+        if(typeof current.revision==='string'){
+          if(current.revision!==revision)return new Response(null,{status:409});
+          if(result?.status!==409)return fetch(catalogueAPI,options);
+        }
+      }
+    }
+    if(result)return result;
+    throw Error('Could not confirm the save with the account service.');
+  }
   async function saveCatalogue(submission=draft,revision=submission===draft?draftRevision:catalogueRevision){
     if(!submission||catalogueSaving)return false;
     const conflict='Another tab saved a newer catalogue. Your selections are still here. Compare them with the saved catalogue in a new tab, then reload and reapply your changes.';
@@ -792,7 +824,7 @@
     controls.forEach(el=>el.disabled=true);
     statusMessage('Saving…');
     try{
-      const r=await fetch(catalogueAPI,{method:'PUT',credentials:'include',headers:{'content-type':'application/json'},body:JSON.stringify({...submitted,revision})});
+      const r=await sendCatalogue(submitted,revision,epoch);
       if(epoch!==catalogueEpoch)return false;
       if(r.status===409){statusMessage(conflict);return false}
       const data=await r.json();
@@ -813,6 +845,7 @@
       if(newest)setTimeout(()=>{addedHighlight=null;document.querySelectorAll('.technology-just-added').forEach(x=>x.classList.remove('technology-just-added'))},10000);
       return true;
     }catch(e){
+      if(epoch!==catalogueEpoch)return false;
       statusMessage('Unable to save: '+e.message+' Your selections are still here. Try Save my catalogue again.');
       return false;
     }finally{
@@ -845,7 +878,7 @@
       const me=await fetch('https://api.cveharbor.com/v1/me',{credentials:'include'}).then(r=>r.ok?r.json():null);
       if(epoch!==catalogueEpoch)return;
       if(!me?.authenticated){catalogueSignedIn=false;personalized=null;catalogueRevision=undefined;applyPersonalized();return}
-      catalogueSignedIn=true;
+      catalogueSignedIn=true;catalogueAccount=me.email;
       const r=await fetch(catalogueAPI,{credentials:'include'});if(!r.ok)throw Error('Unable to load your saved catalogue.');
       const data=await r.json();if(epoch!==catalogueEpoch)return;
       personalized={defaults:Array.isArray(data.defaults)?data.defaults:defaultNames,products:Array.isArray(data.products)?data.products:[]};catalogueRevision=data.revision;
