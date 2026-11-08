@@ -17,9 +17,10 @@
     assessment.append(text('small','advisory-kicker','ADVISORY ASSESSMENT'),text('h3','advisory-risk-title','Risk & evidence'));
     const sheet=text('div','advisory-risk-sheet'),art=text('div','advisory-evidence-art');
     art.setAttribute('aria-hidden','true');art.append(text('span','','✓'));sheet.append(art);assessment.append(sheet);
-    const markers=text('div','detail-labels');
-    if(options.disclosureBadge)markers.append(options.disclosureBadge);
-    markers.append(text('span','severity-badge '+x.severity,severityText(x.severity)));sheet.append(markers);
+    const detailMarkers=text('div','detail-labels');
+    const firstPublished=options.disclosureBadge;
+    if(firstPublished)detailMarkers.append(firstPublished);
+    detailMarkers.append(text('span','severity-badge '+x.severity,severityText(x.severity)));sheet.append(detailMarkers);
     if(options.context)reading.append(options.context);
     function metric(label,value,max,display){
       const field=rowSpec(label,display),n=Number(value);

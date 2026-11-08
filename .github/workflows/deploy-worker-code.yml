@@ -47,6 +47,10 @@ on:
       - '.github/workflows/deploy-worker-code.yml'
   workflow_dispatch:
     inputs:
+      customer_investigation:
+        description: Release only the reviewed customer investigation changes from PR 293
+        type: boolean
+        default: false
       assignment_release:
         description: Release only the staged reviewer email and reminder changes from PR 291
         type: boolean
@@ -126,6 +130,19 @@ jobs:
           await verifyService({expectedRelease:'738b07a3eee67dc5a3d872dfb4ccbbe5ba2aab628b8c964e820b7b69aea63ce8'});
           JS
           node --test account-backend/tests/assignment-*.test.mjs
+      - name: Assemble the customer investigation backend on its verified production baseline
+        if: inputs.customer_investigation == true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "${{ inputs.release_mode }}" = code-only
+          test "${{ inputs.assignment_release }}" != true
+          test "${{ inputs.query_fix_287 }}" != true
+          python -c "import sys; sys.path.insert(0,'scripts'); import catalogue_promotion as p; p.evidence(293); p.ready('bbfb519b4dd69fc9599909151bb55f1807e0f9addac632ea782d5c55f2f0f524')"
+          python scripts/customer_investigation_release.py backend release/.build/customer-investigation
+          rsync --archive --delete release/.build/customer-investigation/account-backend/src/ account-backend/src/
+          node --input-type=module -e "import {backendIdentity} from './scripts/build_release_identity.mjs'; import fs from 'node:fs'; import assert from 'node:assert/strict'; assert.equal(backendIdentity(),fs.readFileSync('release/customer-investigation/backend-identity.txt','utf8').trim())"
+          node --test account-backend/tests/customer-assignment-email.test.mjs
       - name: Confirm deployment credentials
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
