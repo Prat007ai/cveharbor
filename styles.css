@@ -2522,3 +2522,42 @@ body.account-page #customerReports .customer-dash-toolbar{display:grid;grid-temp
 @media(prefers-reduced-motion:no-preference){.table-severity:is([data-level=critical],[data-level=high],[data-level=medium],[data-level=low]) .advisory-level::before{animation:advisory-pulse 2.4s ease-out infinite}}
 @keyframes advisory-pulse{20%{box-shadow:0 0 0 1px color-mix(in srgb,var(--signal) 55%,transparent)}76%{box-shadow:0 0 0 5px transparent}}
 .catalogue-prompt{padding:18px}#catalogueAdvisories .cvie-panel{padding:16px}#catalogueAdvisories .cvie-panel-head{display:flex;align-items:end;flex-wrap:wrap;gap:12px}#catalogueAdvisories button{cursor:pointer}
+
+/* Published advisories and followed catalogue share the same low-glare reading surface. */
+#advisoryExplorer .advisory-table th{background:#20384c;color:#cfdee9}
+#advisoryExplorer .advisory-table td{background:#132638;color:#e6eef4;border-color:#30485a}
+#advisoryExplorer .advisory-table tr:nth-child(even) td{background:#192e40}
+#advisoryExplorer .advisory-link,#advisoryExplorer .table-product{color:#e6eef4}
+#advisoryExplorer .table-cve .advisory-link{color:#9eead9}
+#advisoryExplorer .match-context{color:#c1d3df}
+#advisoryExplorer .advisory-level{background:#2d4355;color:#edf5f8}
+#catalogueAdvisories .cvie-panel-head{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(145px,100%),1fr));align-items:end}
+#catalogueAdvisories .cvie-panel-head label{display:grid;gap:5px;font:600 14px/1.45 "Segoe UI",sans-serif;color:#cfdee8}
+#catalogueAdvisories .cvie-panel-head :is(select,input){color-scheme:dark;box-sizing:border-box;width:100%;min-width:0;min-height:43px;border:1px solid #516f80;border-radius:8px;background:#122739;color:#ecf3f7;padding:8px 10px;font:500 15px "Segoe UI",sans-serif}
+#catalogueAdvisories .cvie-panel-head :focus-visible{outline:2px solid #8de5d5;outline-offset:2px}
+dialog:has(.advisory-dossier){max-width:min(1040px,96vw);width:calc(100% - 28px);padding:0}
+.advisory-dossier{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);background:#fafcf9;color:#16353a}
+.advisory-reading,.advisory-assessment{min-width:0;padding:clamp(16px,3vw,32px);overflow-wrap:anywhere}
+.advisory-dossier .advisory-reading :is(h2,h3){color:#123b3b}
+.advisory-dossier .advisory-reading p{color:#3a575b}
+.advisory-reading a{color:#00695c}
+.advisory-reading .cat-badge{display:inline-block;margin-top:18px;background:#e3f1eb;color:#205f57;border-color:#aac9ba}
+.advisory-wordmark{display:flex;gap:8px;align-items:center;font-weight:700;color:#235953}
+.advisory-wordmark b{border-radius:7px;padding:3px 9px;background:#195e54;color:white}
+.advisory-record-id,.advisory-kicker{font:650 12px/1.5 monospace;letter-spacing:1px}
+.advisory-assessment{color:#eaf8f7;background:radial-gradient(ellipse at top right,#245759,transparent 55%),#123239}
+.advisory-dossier .advisory-assessment h3{color:#a2ebd9}
+.advisory-dossier .advisory-risk-title{font-size:27px;margin:5px 0 14px}
+.advisory-risk-sheet{background:#f5faf5;border:1px solid #a4c7ba;border-radius:12px;overflow:hidden;color:#193b40;padding-bottom:10px}
+.advisory-risk-sheet .detail-labels,.advisory-risk-sheet .spec,.advisory-risk-sheet .epss-note{margin:10px 16px}
+.advisory-dossier .spec{background:none;border:0;padding:0}
+.advisory-risk-sheet .spec :is(b,small),.advisory-risk-sheet p.epss-note{color:#345354}
+.advisory-risk-sheet .spec small,.advisory-risk-sheet .spec b,.advisory-timeline :is(b,small){display:block}
+.advisory-risk-sheet progress{display:block;width:100%;height:8px;margin:5px 0;accent-color:#218475}
+.advisory-risk-sheet progress[max="10"]{accent-color:#b94c65}
+.advisory-evidence-art{height:80px;background-color:#daeee4;background-image:radial-gradient(#a8cfc3 1px,transparent 1.3px);background-size:12px 12px;display:grid;place-items:center;position:relative}
+.advisory-evidence-art:before{content:"";position:absolute;width:130px;height:42px;border-radius:50%;border:1px solid #93c1ac;transform:rotate(-15deg)}
+.advisory-evidence-art span{position:relative;display:grid;place-items:center;width:45px;height:53px;color:white;background:linear-gradient(120deg,#6fbaa0,#167665);font-size:25px;clip-path:polygon(50% 0,95% 17%,88% 63%,72% 85%,50% 100%,27% 85%,12% 63%,5% 17%)}
+.advisory-timeline{border-left:2px solid #649689;padding-left:14px}.advisory-timeline .spec{margin:9px 0;color:#ecf6f0}.advisory-timeline small{color:#c2e1db}
+.advisory-assessment .remediation-detail-assign{width:100%;background:#9ae6d1;color:#153e35;margin-top:16px}
+@media(max-width:720px){.advisory-dossier{grid-template-columns:1fr}.advisory-assessment{padding-top:20px}}

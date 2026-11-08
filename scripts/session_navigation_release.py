@@ -154,6 +154,10 @@ def readiness():
 
 
 if __name__ == "__main__":
+    if os.environ.get("CVEHARBOR_SITE_RELEASE") == "customer-investigation":
+        import customer_investigation_release
+        customer_investigation_release.run(sys.argv[1], Path(sys.argv[2]).resolve() if len(sys.argv) > 2 else None)
+        sys.exit(0)
     if os.environ.get("CVEHARBOR_SITE_RELEASE") == "assignment-291":
         import assignment_release
         assignment_release.run(sys.argv[1].replace("prepare", "site"),

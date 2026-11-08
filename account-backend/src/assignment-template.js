@@ -19,10 +19,13 @@ export const publicDate=value=>/^\d{4}-\d{2}-\d{2}/.test(value||'')?value.slice(
 export function advisoryFields(a,due=''){
  return [['Severity',a.severity?a.severity.toUpperCase():'Not available'],...(a.cvss!==null&&a.cvss!==undefined?[['CVSS',String(a.cvss)]]:[]),...(publicDate(a.published)?[['Published',publicDate(a.published)]]:[]),...(publicDate(a.updated)?[['Last updated',publicDate(a.updated)]]:[]),...(a.affected?[['Affected products / versions',a.affected]]:[]),...(a.cwe?[['CWE',a.cwe]]:[]),...(publicDate(due)?[['Target date',publicDate(due)]]:[])];
 }
-export function renderAssignmentNotice({advisory:a,requester,notes='',due='',assignedSeverity='',manageUrl='',reminderHours=null,url,expiresAt}){
+export function customerEmailFields(scope){
+ return scope?.customer_name?[['Customer',scope.customer_name],['Environment',scope.environment_name||'Customer-wide']]:[];
+}
+export function renderAssignmentNotice({advisory:a,scope,requester,notes='',due='',assignedSeverity='',manageUrl='',reminderHours=null,url,expiresAt}){
  if(!/^https:\/\/(?:api\.cveharbor\.com\/v1|confirm\.cveharbor\.com)\/acknowledge\/[a-f0-9]{64}$/.test(url))throw Error('Invalid acknowledgement URL');
  if(manageUrl&&!/^https:\/\/confirm\.cveharbor\.com\/assignment\/[a-f0-9-]{36}$/.test(manageUrl))throw Error('Invalid reviewer URL');
- const e=escapeHtml,fields=[...(assignedSeverity?[['Assigned severity (requester assessment)',assignedSeverity.toUpperCase()]]:[]),...advisoryFields(a,due).map(([k,v])=>[assignedSeverity&&k==='Severity'?'Published severity':k,v])],refs=(a.references||[]).filter(r=>trustedReference(r.url));
+ const e=escapeHtml,fields=[...customerEmailFields(scope),...(assignedSeverity?[['Assigned severity (requester assessment)',assignedSeverity.toUpperCase()]]:[]),...advisoryFields(a,due).map(([k,v])=>[assignedSeverity&&k==='Severity'?'Published severity':k,v])],refs=(a.references||[]).filter(r=>trustedReference(r.url));
  const row=(content,padding='0 28px 20px',background='#ffffff')=>'<tr><td class="email-pad" bgcolor="'+background+'" style="padding:'+padding+';background-color:'+background+';font-family:Arial,Helvetica,sans-serif;color:#17364c;">'+content+'</td></tr>';
  const button=(label,href,primary)=>'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" bgcolor="'+(primary?'#078c80':'#ffffff')+'" style="padding:14px 10px;border:1px solid '+(primary?'#078c80':'#397b98')+';border-radius:6px;"><a href="'+e(href)+'" style="display:block;font-size:14px;font-weight:bold;color:'+(primary?'#ffffff':'#07527b')+';text-decoration:none;">'+label+'</a></td></tr></table>';
  const rating=assignedSeverity||a.severity,severity=rating?rating.toUpperCase():'NOT RATED',severityColor={critical:'#a71935',high:'#dc333b',medium:'#996408',low:'#087e87'}[rating]||'#526b7e';

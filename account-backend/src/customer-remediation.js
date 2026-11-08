@@ -38,6 +38,22 @@ export async function saveCustomerRemediation(env,user,data){
  try{await runWorkflowWrite(env,statements);}catch(error){if(/UNIQUE|Customer remediation/i.test(String(error.message)))throw new WorkflowError('Customer context changed or already has this CVE. Refresh before saving.',409);throw error;}
  return Response.json({saved:true,id},{headers:{'Cache-Control':'no-store'}});
 }
+// Reuse the exact account/customer/environment record without changing an existing ticket.
+export async function assignmentRecord(env,user,cve,recipient,selection){
+ const context=await customerContext(env,user,selection);
+ if(!context||context.asset||cve.includes('~'))throw new WorkflowError('Choose a customer and an optional environment for a new investigation.');
+ if(!await customerRecordsReady(env))throw new WorkflowError('Customer assignments are unavailable until the customer schema is ready.',503);
+ const find=()=>env.DB.prepare("SELECT record_id FROM remediation_customer_scopes WHERE user_id=? AND cve_id=? AND customer_id=? AND ifnull(environment_id,'')=?").bind(user.id,cve,context.customer,context.environment||'').first();
+ const prior=await find();
+ if(prior)return prior.record_id;
+ try{
+  const saved=await saveCustomerRemediation(env,user,{cve_id:cve,customer_id:context.customer,environment_id:context.environment,owner:recipient,status:'Open'});
+  return (await saved.json()).id;
+ }catch(error){
+  if(error.status===409){const concurrent=await find();if(concurrent)return concurrent.record_id;}
+  throw error;
+ }
+}
 export async function customerTicket(env,user,id,data){
  const scope=await recordScope(env,user.id,id);
  if(!scope||scope.asset_id)throw new WorkflowError('Customer-level record not found.',404);

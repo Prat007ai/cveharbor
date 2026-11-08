@@ -25,7 +25,7 @@ ROUTES = {"index.html"} | {section + "/index.html" for section in predecessor.SE
 CHANGED = SITE_FILES | ROUTES
 
 
-def backend(out):
+def backend(out, reviewed_ref="HEAD"):
     paths = ["data/lifecycle-products.json", "account-backend/data", "account-backend/src", "account-backend/migrations", "account-backend/wrangler.toml", "release/migrations"]
     archive = package.git("-c", "core.autocrlf=false", "archive", "--format=tar", API_BASE, "account-backend", "data/lifecycle-products.json", "release/migrations")
     with tarfile.open(fileobj=io.BytesIO(archive)) as tree:
@@ -38,14 +38,14 @@ def backend(out):
             if name.startswith("account-backend/src/") and Path(name).name in BACKEND:
                 package.require(package.git("show", MAIN_BASE + ":" + name) == content,
                                 "Assignment source diverged from production: " + name)
-                content = package.git("show", "HEAD:" + name)
+                content = package.git("show", reviewed_ref + ":" + name)
             f = out / name
             f.parent.mkdir(parents=True, exist_ok=True)
             f.write_bytes(content)
     return out
 
 
-def site(out):
+def site(out, reviewed_ref="HEAD"):
     predecessor.prepare(out, reviewed_ref=SITE_BASE)
     (out / "before").rename(out / "before_topics")
     (out / "after").rename(out / "before")
@@ -65,7 +65,7 @@ def site(out):
                 continue
             source = "index.html" if name in ROUTES else name
             original.write_bytes(package.git("show", MAIN_BASE + ":" + source))
-            edited.write_bytes(package.git("show", "HEAD:" + source))
+            edited.write_bytes(package.git("show", reviewed_ref + ":" + source))
             live = out / "before" / name
             active = Path(temp, "active")
             active.write_bytes(live.read_bytes().replace(b"\r\n", b"\n"))

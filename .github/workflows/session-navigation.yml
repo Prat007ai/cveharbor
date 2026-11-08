@@ -5,6 +5,8 @@ on:
     paths:
       - '.github/workflows/session-navigation.yml'
       - 'scripts/session_navigation_release.py'
+      - 'scripts/customer_investigation_release.py'
+      - 'release/customer-investigation/**'
       - 'app.js'
       - 'cvie.js'
       - 'header-auth.js'
@@ -16,7 +18,7 @@ on:
       site_release:
         description: Reviewed production package
         type: choice
-        options: [followed-topics, assignment-291]
+        options: [followed-topics, assignment-291, customer-investigation]
         default: followed-topics
       reviewed_commit:
         description: 'Exact reviewed main commit for the CVIE topic release'
@@ -27,9 +29,9 @@ permissions:
 jobs:
   check:
     env:
-      CVEHARBOR_SITE_RELEASE: ${{ inputs.site_release || 'followed-topics' }}
+      CVEHARBOR_SITE_RELEASE: ${{ inputs.site_release || (github.head_ref == 'feature/customer-advisory-review' && 'customer-investigation') || 'followed-topics' }}
     name: Test followed topics in the production package
-    if: (github.event_name == 'pull_request' && github.head_ref == 'feature/cvie-topic-delivery' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
+    if: (github.event_name == 'pull_request' && (github.head_ref == 'feature/cvie-topic-delivery' || github.head_ref == 'feature/customer-advisory-review') && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -55,7 +57,7 @@ jobs:
           npm install --prefix staging --ignore-scripts --no-package-lock
           export CVEHARBOR_CATALOGUE_PUBLIC="$RUNNER_TEMP/catalogue/after"
           node scripts/catalogue_scope_browser_smoke.mjs
-          if [ "$CVEHARBOR_SITE_RELEASE" = "assignment-291" ]; then node scripts/remediation_workflow_browser.mjs; fi
+          if [ "$CVEHARBOR_SITE_RELEASE" != "followed-topics" ]; then node scripts/remediation_workflow_browser.mjs; fi
       - name: Check production environment before requesting deployment approval
         if: github.event_name == 'workflow_dispatch'
         env:
