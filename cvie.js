@@ -62,8 +62,8 @@ async function readTopicPage(first=false){
 }
 function openStoredHistory(enabled){
  if(!enabled||scope!=='catalogue'||!location.pathname.startsWith('/vulnerabilities/')){indexedTopics=null;return;}
- if(activeHistory())return;
- indexedTopics={epoch:authEpoch,months,rows:[],next:null,loading:false,coverage:'loading'};
+ if(activeHistory()&&Date.now()-indexedTopics.openedAt<300000)return;
+ indexedTopics={epoch:authEpoch,months,openedAt:Date.now(),rows:[],next:null,loading:false,coverage:'loading'};
  void readTopicPage(true);
 }
 function statusFor(p){

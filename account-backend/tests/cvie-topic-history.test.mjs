@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {DB} from './helpers/d1.mjs';
 import {updateTopicHistory,catalogueHistory} from '../src/cvie-topic-history.js';
-import {monthsAgo} from '../src/cvie.js';
+import {monthsAgo,cvieRoute} from '../src/cvie.js';
 const migration=readFileSync(new URL('../../deployment/proposals/cvie-topic-history/0033_cvie_topic_history.sql',import.meta.url),'utf8');
 test('shared source history uses saved topics, stable pages and withdrawals across accounts',async()=>{
  const env={DB:new DB()},db=env.DB.sql,now=Date.now();
@@ -28,6 +28,11 @@ test('shared source history uses saved topics, stable pages and withdrawals acro
   assert.equal(new Set([...a.advisories,...b.advisories].map(r=>r.id)).size,78);
   assert.equal(b.next,null);assert.equal((await page('b',3)).advisories.length,0);
   assert.equal((await page('b',3,a.next)).invalid,true);assert.equal((await page('a',12,a.next)).invalid,true);
+  const route=(account,flag,query='months=3')=>cvieRoute(new Request('https://api.cveharbor.com/v1/cvie/catalogue-history?'+query),{...env,CVIE_TOPIC_HISTORY_ENABLED:flag},{id:account},{});
+  assert.equal((await (await route('a','false')).json()).enabled,false);
+  const live=await (await route('a','true')).json();assert.equal(live.account_id,'a');assert.equal(live.advisories.length,50);
+  assert.equal((await (await route('b','true')).json()).advisories.length,0);
+  await assert.rejects(route('a','true','months=3&after=broken'),/invalid/);
   const year=await page('a',12);assert.equal((await page('a',12,year.next)).advisories.length,29);
   db.prepare("UPDATE cvie_disclosures SET state='REJECTED' WHERE cve_id=?").run(id(77));
   assert.ok(!(await page('a',3)).advisories.some(r=>r.id===id(77)));
