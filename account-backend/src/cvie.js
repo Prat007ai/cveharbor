@@ -1,3 +1,4 @@
+import {catalogueHistory} from './cvie-topic-history.js';
 import {registryEnabled,resolveRegistry,searchRegistry,searchDirectory,registerVerifiedCpe} from './product-registry.js';
 import {bindProductIdentities,fastEvidenceEnabled,immediateEvidence} from './cvie-onboarding.js';
 import {catalogueProducts,activeSubscription} from './catalogue-selection.js';
@@ -200,6 +201,43 @@ async function requestNvd(env,path,params,fetcher){
  let data;try{data=JSON.parse(raw);}catch{throw new ProviderError('NVD returned an invalid response');}
  return data;
 }
+// Seed the preceding year once for everyone. Current-source updates and user scans have priority.
+export async function discoverTopicArchive(env,fetcher=fetch,now=Date.now()){
+ if(env.CVIE_TOPIC_HISTORY_ENABLED!=='true')return;
+ const db=env.DB;
+ // Keep the existing disclosure worker within its budget during long historical backfills.
+ const backlog=await db.prepare('SELECT COUNT(*) AS n FROM (SELECT 1 FROM cvie_disclosure_queue LIMIT 101)').first();
+ if(backlog.n>100)return;
+ const lease=now+120000;
+ const job=await query(db,`UPDATE cvie_topic_archive SET anchor=CASE WHEN anchor=0 THEN ? ELSE anchor END,lease=?
+  WHERE id=1 AND complete=0 AND lease<? AND retry_at<=? RETURNING *`,now,lease,now,now).first();
+ if(!job)return;
+ const windows=scanWindows(job.anchor),window=windows[job.window_no];
+ try{
+  const budget=await query(db,"UPDATE cvie_provider_budget SET next_request_at=? WHERE provider='nvd' AND next_request_at<=?",now+(env.NVD_API_KEY?1000:6500),now).run();
+  if(!budget.meta.changes){await query(db,'UPDATE cvie_topic_archive SET lease=0 WHERE id=1 AND lease=?',lease).run();return;}
+  const page=await requestNvd(env,'cves',{pubStartDate:iso(window.start),pubEndDate:iso(window.end),resultsPerPage:50,startIndex:job.offset_no},fetcher);
+  if(!Array.isArray(page.vulnerabilities)||page.vulnerabilities.length>50||!Number.isSafeInteger(page.totalResults)||page.totalResults<0||page.startIndex!==job.offset_no||!page.vulnerabilities.length&&job.offset_no<page.totalResults)throw new ProviderError('Incomplete public history page');
+  const ids=page.vulnerabilities.map(({cve})=>{
+   const published=Date.parse(cve?.published);
+   if(!/^CVE-\d{4}-\d{4,10}$/.test(cve?.id||'')||!Number.isFinite(published)||published<window.start||published>window.end)throw new ProviderError('Unexpected public history record');
+   return cve.id;
+  });
+  const next=job.offset_no+ids.length,done=next>=page.totalResults;
+  await db.batch([
+   query(db,`INSERT OR IGNORE INTO cvie_disclosure_queue(cve_id,revision,priority)
+    SELECT value,?,3 FROM json_each(?) WHERE EXISTS(SELECT 1 FROM cvie_topic_archive WHERE id=1 AND lease=?)
+    AND NOT EXISTS(SELECT 1 FROM cvie_disclosures d WHERE d.cve_id=value)`,iso(window.start),JSON.stringify(ids),lease),
+   query(db,`UPDATE cvie_topic_archive SET window_no=?,offset_no=?,complete=?,retry_at=?,lease=0 WHERE id=1 AND lease=?`,
+    job.window_no+Number(done),done?0:next,Number(done&&job.window_no+1===windows.length),now+300000,lease)
+  ]);
+ }catch(error){
+  const retry=now+Math.max(300000,error.delay||0);
+  await db.batch([query(db,'UPDATE cvie_topic_archive SET retry_at=?,lease=0 WHERE id=1 AND lease=?',retry,lease),
+   query(db,"UPDATE cvie_provider_budget SET next_request_at=MAX(next_request_at,?) WHERE provider='nvd'",now+(error.delay||60000))]);
+  throw error;
+ }
+}
 // One resumable page per invocation. Leases and provider slots survive restarts and concurrent pollers.
 export async function runCvieStep(env,fetcher=fetch,now=Date.now(),userId=null,scope='all',directoryProductId=null){
  if(!await cvieReady(env))return {ready:false};
@@ -376,6 +414,15 @@ export async function cvieRoute(req,env,user,ctx,data={}){
  if(!await cvieReady(env))return json({ready:false,error:'CVIE database setup is required. Your saved products and inventory are unchanged.'},503);
  const url=new URL(req.url),path=url.pathname,scope=url.searchParams.get('scope')||'all';
  if(!['all','catalogue','inventory','stack'].includes(scope))throw new CvieError('Invalid product scope');
+ if(path==='/v1/cvie/catalogue-history'&&req.method==='GET'){
+  if(env.CVIE_TOPIC_HISTORY_ENABLED!=='true')return json({enabled:false},200);
+  const months=Number(url.searchParams.get('months')||3);
+  if(![3,12].includes(months))throw new CvieError('Choose 3 or 12 months');
+  const now=Date.now();
+  const result=await catalogueHistory(env,user.id,url.searchParams,now,monthsAgo);
+  if(result.invalid)throw new CvieError('This history cursor is invalid for the current catalogue');
+  return json({...result,enabled:true,account_id:user.id});
+ }
  if(path==='/v1/cvie/directory'&&req.method==='GET')return json(registryEnabled(env)?await searchDirectory(env,{q:url.searchParams.get('q')||'',vendor:url.searchParams.get('vendor')||'',ecosystem:url.searchParams.get('ecosystem')||'',identifier:url.searchParams.get('identifier')||'',scheme:url.searchParams.get('scheme')||''}):{enabled:false,candidates:[]});
  const fast=/^\/v1\/cvie\/products\/([a-f0-9-]{36})\/evidence$/.exec(path);
  if(fast&&req.method==='GET'){
@@ -391,7 +438,7 @@ export async function cvieRoute(req,env,user,ctx,data={}){
   const now=Date.now();
  const rows=(await query(env.DB,ownedProductSql(env,'p.*',scope),user.id).all()).results||[];
   const products=rows.map(overlaySharedProduct).map(p=>savedProgress(p,now));
-  return json({ready:true,fast_evidence:fastEvidenceEnabled(env),account_id:user.id,products,...(fastEvidenceEnabled(env)?{withdrawn_ids:await withdrawnIds(env)}:{}),evidence:await productSourceHealth(env,products,now)});
+  return json({ready:true,fast_evidence:fastEvidenceEnabled(env),topic_history:env.CVIE_TOPIC_HISTORY_ENABLED==='true',account_id:user.id,products,...(fastEvidenceEnabled(env)?{withdrawn_ids:await withdrawnIds(env)}:{}),evidence:await productSourceHealth(env,products,now)});
  }
  const options=/^\/v1\/cvie\/products\/([a-f0-9-]{36})\/identity-options$/.exec(path);
  if(options&&['GET','POST'].includes(req.method)){
@@ -449,7 +496,7 @@ export async function cvieRoute(req,env,user,ctx,data={}){
     candidates:!p.cpe?JSON.parse(p.candidates_json):[]};
   });
   const evidence=await productSourceHealth(env,products,now),withdrawn=await withdrawnIds(env);
-  return json({ready:true,engine:'CVIE',account_id:user.id,products,evidence,withdrawn_ids:withdrawn,excluded_product_cves:await excludedProductCves(env,user.id,evidenceCtx),default_months:3});
+  return json({ready:true,engine:'CVIE',topic_history:env.CVIE_TOPIC_HISTORY_ENABLED==='true',account_id:user.id,products,evidence,withdrawn_ids:withdrawn,excluded_product_cves:await excludedProductCves(env,user.id,evidenceCtx),default_months:3});
  }
  if(path==='/v1/cvie/advisories'&&req.method==='GET'){
   const months=Number(url.searchParams.get('months')||3),after=url.searchParams.get('after')||'';

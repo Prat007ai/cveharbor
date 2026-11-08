@@ -37,11 +37,35 @@ function merge(base=[]){
   return {...record,cvie_excluded_products:names,categories:(record.categories||[]).filter(name=>!names.some(product=>normalize(product)===normalize(name)))};
  });
 }
-function clearPrivate(){fastQueue=[];fastMode=false;identityDialog?.close();catalogueNames=null;products=[];records=[];withdrawn=new Set();excluded=[];accountId='';evidence={sources:[]};ready=false;lastFullAt=0;recordsMonths=0;}
+function clearPrivate(){indexedTopics=null;partialTopicRecords=null;fastQueue=[];fastMode=false;identityDialog?.close();catalogueNames=null;products=[];records=[];withdrawn=new Set();excluded=[];accountId='';evidence={sources:[]};ready=false;lastFullAt=0;recordsMonths=0;}
 function followsTopic(p){
  return scope==='catalogue'&&(window.CVEHARBOR_CATALOG?.categories||[]).concat(window.CVEHARBOR_DATA?.categories||[]).some(c=>c.name===p.name);
 }
 let partialTopicRecords=null;
+let indexedTopics=null;
+function activeHistory(){
+ return indexedTopics?.epoch===authEpoch&&indexedTopics.months===months&&signedIn?indexedTopics:null;
+}
+async function readTopicPage(first=false){
+ const state=activeHistory();
+ if(!state||state.loading||(!first&&!state.next))return;
+ state.loading=true;state.error='';
+ window.dispatchEvent(new Event('cvie:catalogue-page'));
+ try{
+  const page=await request('/catalogue-history?months='+months+(state.next?'&after='+encodeURIComponent(state.next):''));
+  if(state!==activeHistory()||page.account_id!==accountId)return;
+  if(page.next&&page.next===state.next)throw Error('History pagination did not advance.');
+  state.rows.push(...page.advisories);state.next=page.next;state.coverage=page.coverage;state.sourceStart=page.source_start;state.archiveDiscoveryComplete=page.archive_discovery_complete;
+ }catch(e){
+  if(state===activeHistory()&&!(e instanceof SessionChanged))state.error='Shared disclosure history could not be loaded. Retry the history page.';
+ }finally{state.loading=false;window.dispatchEvent(new Event('cvie:catalogue-page'));}
+}
+function openStoredHistory(enabled){
+ if(!enabled||scope!=='catalogue'||!location.pathname.startsWith('/vulnerabilities/')){indexedTopics=null;return;}
+ if(activeHistory()&&Date.now()-indexedTopics.openedAt<300000)return;
+ indexedTopics={epoch:authEpoch,months,openedAt:Date.now(),rows:[],next:null,loading:false,coverage:'loading'};
+ void readTopicPage(true);
+}
 function statusFor(p){
  if(!p)return 'Waiting for CVIE registration';
  if(p.status==='needs_identity')return followsTopic(p)?'Following topic · optional product refinement':'Choose the exact product';
@@ -298,6 +322,7 @@ async function refresh(sync=false,progressOnly=false){
   fastMode=Boolean(state.fast_evidence);
   if(accountId&&accountId!==state.account_id){clearPrivate();notify();}accountId=state.account_id||'';
   products=scopedProducts(state.products||[]);ready=state.ready;evidence=state.evidence||{sources:[]};withdrawn=new Set(state.withdrawn_ids||[]);excluded=state.excluded_product_cves||[];error='';draw();
+  openStoredHistory(state.topic_history);
   if(fastMode){
    products=products.map(p=>({...p,coverage:{limited:true,notes:['Indexed evidence is partial. No matches do not establish safety.']}}));
    fastQueue=products.filter(p=>p.cpe).map(p=>({id:p.id,after:''}));await loadFastPage(true);return;
@@ -340,6 +365,8 @@ window.CVEHARBOR_CVIE={get sessionKnown(){return sessionKnown;},scope,applyCatal
  get historyLoaded(){return recordsMonths===months&&lastFullAt>0;},
  product:name=>products.find(p=>normalize(p.name)===normalize(name))};
 window.CVEHARBOR_CVIE.isWithdrawn=id=>withdrawn.has(id);
+Object.defineProperty(window.CVEHARBOR_CVIE,'indexedHistory',{get:activeHistory});
+window.CVEHARBOR_CVIE.loadHistoryPage=()=>readTopicPage(activeHistory()?.rows.length===0);
 Object.defineProperty(window.CVEHARBOR_CVIE,'topicRecords',{get(){
  if(partialTopicRecords&&partialTopicRecords.epoch===authEpoch&&partialTopicRecords.months===months)return partialTopicRecords.rows;
  return recordsMonths===months?records:[];
