@@ -1,6 +1,6 @@
 import {publicCve} from './remediation-identity.js';
 import {sendEmail} from './delivery.js';import {escapeHtml as e} from './assignment-template.js';
-import {reviewNow as now,reviewHash as hash,reviewQuota,progressReady,reviewLink,ReviewError} from './assignment-progress-common.js';
+import {reviewNow as now,reviewHash as hash,reviewQuota,effectiveIntervalSQL,progressReady,reviewLink,ReviewError} from './assignment-progress-common.js';
 const utc=n=>new Date(n*1000).toISOString().replace('T',' ').replace('.000Z',' UTC');
 const statusLabel=s=>s==='Investigating'?'In progress':s==='Remediated'?'Completed / Remediated':s;
 export function renderManagerReminder(row){
@@ -52,27 +52,30 @@ export function renderProgressNotice(row){
  return {subject:'[CVEHarbor] '+(reminder?'Update requested: ':'Progress update: ')+row.cve_id,html,text:['CVEHarbor',heading,'',summary,status,'',...(reminder?['View / Update Assignment: '+link,'Verify your email to make changes. No account required.','']:[]),note,'Contact the requester to change assignment or notification preferences.'].join('\n')};
 }
 export async function enqueueReminders(env){
- // Atomically enqueue the reviewer and each FYI once for the same new inactivity event.
- // Existing events are never expanded retroactively, including previously sent/uncertain ones.
+ // A single insert claims the interval for the reviewer and all FYIs. Missed
+ // hours produce one current notice, never a burst of catch-up messages.
+ const stamp=now();
  await env.DB.prepare(`WITH due AS MATERIALIZED (
-  SELECT a.id,a.recipient_email,r.status,p.progress_version,p.last_progress_at
+  SELECT a.id,a.recipient_email,r.status,p.progress_version
   FROM remediation_review_access p JOIN remediation_assignment_requests a ON a.id=p.assignment_id
   JOIN remediations r ON r.user_id=a.user_id AND r.cve_id=a.cve_id
-  WHERE p.interval_seconds IS NOT NULL AND p.last_progress_at+p.interval_seconds<=? AND p.expires_at>?
+  WHERE p.last_progress_at+(${effectiveIntervalSQL})<=? AND p.expires_at>?
   AND a.delivery_status='sent' AND a.revoked_at IS NULL AND r.status IN ('Open','Investigating')
-  AND NOT EXISTS(SELECT 1 FROM remediation_review_notifications n WHERE n.event_key='reminder:'||a.id||':'||p.progress_version)
+  AND NOT EXISTS(SELECT 1 FROM remediation_review_notifications n
+    WHERE n.assignment_id=a.id AND n.kind='reminder' AND n.cycle_version=p.progress_version
+    AND (p.interval_seconds=172800 OR n.created_at>?-3600))
   ORDER BY p.last_progress_at,a.id LIMIT 50
  ), recipients AS (
   SELECT id,recipient_email FROM due
   UNION SELECT d.id,f.recipient_email FROM due d JOIN remediation_assignment_fyi f ON f.assignment_id=d.id
  )
  INSERT OR IGNORE INTO remediation_review_notifications(event_key,assignment_id,kind,cycle_version,recipient_email,status_snapshot,created_at)
- SELECT 'reminder:'||d.id||':'||d.progress_version,d.id,'reminder',d.progress_version,x.recipient_email,d.status,?
- FROM due d JOIN recipients x ON x.id=d.id`).bind(now(),now(),now()).run();
+ SELECT 'reminder:'||d.id||':'||d.progress_version||':'||?,d.id,'reminder',d.progress_version,x.recipient_email,d.status,?
+ FROM due d JOIN recipients x ON x.id=d.id`).bind(stamp,stamp,stamp,stamp,stamp).run();
 }
-const rowQuery="SELECT n.*,a.user_id,a.cve_id,a.recipient_email AS assigned_recipient,a.requester_email,a.acknowledged_at,a.public_advisory_json,m.assigned_severity,a.revoked_at,a.delivery_status,p.expires_at,p.interval_seconds,p.last_progress_at,p.progress_version,r.status FROM remediation_review_notifications n JOIN remediation_review_access p ON p.assignment_id=n.assignment_id JOIN remediation_assignment_requests a ON a.id=p.assignment_id JOIN remediations r ON r.user_id=a.user_id AND r.cve_id=a.cve_id LEFT JOIN remediation_assignment_metadata m ON m.assignment_id=a.id WHERE n.id=?";
+const rowQuery="SELECT n.*,a.user_id,a.cve_id,a.recipient_email AS assigned_recipient,a.requester_email,a.acknowledged_at,a.public_advisory_json,m.assigned_severity,a.revoked_at,a.delivery_status,p.expires_at,"+effectiveIntervalSQL+" AS interval_seconds,p.last_progress_at,p.progress_version,r.status FROM remediation_review_notifications n JOIN remediation_review_access p ON p.assignment_id=n.assignment_id JOIN remediation_assignment_requests a ON a.id=p.assignment_id JOIN remediations r ON r.user_id=a.user_id AND r.cve_id=a.cve_id LEFT JOIN remediation_assignment_metadata m ON m.assignment_id=a.id WHERE n.id=?";
 
-const eligible=row=>row&&row.revoked_at===null&&row.delivery_status==='sent'&&row.expires_at>now()&&(row.kind==='progress'||(['Open','Investigating'].includes(row.status)&&row.cycle_version===row.progress_version&&row.interval_seconds&&row.last_progress_at+row.interval_seconds<=now()));
+const eligible=row=>row&&row.revoked_at===null&&row.delivery_status==='sent'&&row.expires_at>now()&&(row.kind==='progress'||(['Open','Investigating'].includes(row.status)&&row.cycle_version===row.progress_version&&row.interval_seconds&&(row.interval_seconds!==3600||row.created_at+3600>now())&&row.last_progress_at+row.interval_seconds<=now()));
 export async function dispatchProgress(env){
  if(env.ASSIGNMENT_EMAIL_ENABLED!=='true'||!env.EMAIL_FROM||!(env.ASSIGNMENT_SMTP2GO_API_KEY||env.SMTP2GO_API_KEY)||!await progressReady(env))return;
  await env.DB.prepare('DELETE FROM remediation_review_sessions WHERE expires_at<=?').bind(now()).run();

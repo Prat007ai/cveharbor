@@ -1,3 +1,4 @@
+import {effectiveIntervalSQL} from './assignment-progress-common.js';
 import {scheduleStatusMail} from './status-update-mail.js';
 import {recordScope,scopeLabel} from './remediation-identity.js';
 import {sendEmail} from './delivery.js';
@@ -71,7 +72,7 @@ export async function reviewActivity(env,user,cve,url){
  if(!await progressReady(env))return {available:false,activity:[],assignments:[],notifications:[],next:null};
  const before=url.searchParams.get('before');if(before!==null&&(!/^\d{1,16}$/.test(before)||!Number.isSafeInteger(Number(before))||Number(before)<1))throw new ReviewError('Invalid activity cursor.');
  const rows=await env.DB.prepare('SELECT id,assignment_id,author_email,previous_status,new_status,reason,comment,created_at FROM remediation_review_activity WHERE user_id=? AND cve_id=? AND id<? ORDER BY id DESC LIMIT 51').bind(user.id,cve,before?Number(before):Number.MAX_SAFE_INTEGER).all();
- const assignments=await env.DB.prepare("SELECT a.id,a.recipient_email,a.revoked_at,a.delivery_status,p.expires_at,p.last_progress_at,p.interval_seconds FROM remediation_review_access p JOIN remediation_assignment_requests a ON a.id=p.assignment_id WHERE a.user_id=? AND a.cve_id=? ORDER BY a.seq DESC LIMIT 50").bind(user.id,cve).all();
+ const assignments=await env.DB.prepare("SELECT a.id,a.recipient_email,a.revoked_at,a.delivery_status,p.expires_at,p.last_progress_at,"+effectiveIntervalSQL+" AS interval_seconds FROM remediation_review_access p JOIN remediation_assignment_requests a ON a.id=p.assignment_id WHERE a.user_id=? AND a.cve_id=? ORDER BY a.seq DESC LIMIT 50").bind(user.id,cve).all();
  const notifications=await env.DB.prepare("SELECT n.id,n.kind,CASE WHEN n.kind='reminder' AND n.recipient_email!=a.recipient_email THEN 'manager' ELSE 'reviewer' END AS audience,n.recipient_email,n.state,n.created_at,n.completed_at,n.attempts FROM remediation_review_notifications n JOIN remediation_assignment_requests a ON a.id=n.assignment_id WHERE a.user_id=? AND a.cve_id=? ORDER BY n.id DESC LIMIT 50").bind(user.id,cve).all();
  const activity=(rows.results||[]).slice(0,50);return {available:true,activity,next:(rows.results||[]).length>50?activity.at(-1).id:null,assignments:assignments.results||[],notifications:notifications.results||[]};
 }

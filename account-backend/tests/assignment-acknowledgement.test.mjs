@@ -10,7 +10,7 @@ const count=f=>f.DB.sql.prepare('SELECT total_changes() n').get().n;
 test('migration is repeatable and preserves records; verified public data and secure email replace placeholders',async t=>{
  const f=await setup(t);f.DB.sql.exec(fs.readFileSync(new URL('../migrations/0024_assignment_acknowledgements.sql',import.meta.url),'utf8'));
  const result=await assign(f);assert.equal(result.status,200);const mail=f.emails[0];assert.equal(mail.sender,'alerts@cveharbor.com');assert.equal(mail.subject,'[CVEHarbor] Action required: Review '+fixtureCve);
- for(const text of ['Acknowledgement requested','Vulnerability review assigned','8.8','CWE-79','2026-10-13','2026-11-20','sender@example.test','&lt;script&gt;'])assert.ok(mail.html_body.includes(text),text);
+ for(const text of ['Acknowledgement requested','Vulnerability review request','8.8','CWE-79','2026-10-13','2026-11-20','sender@example.test','&lt;script&gt;'])assert.ok(mail.html_body.includes(text),text);
  assert.doesNotMatch(mail.html_body,/<script|<svg|display:\s*(flex|grid)|untrusted\.example|Private customer note|\{\{/i);
  assert.match(mail.html_body,/\[if mso\]/);assert.match(mail.html_body,/width="620"/);assert.match(mail.text_body,/\nWhat you need to do\n/);assert.match(mail.text_body,/does not change remediation status/);
  const token=f.link().split('/').pop(),row=f.DB.sql.prepare('SELECT * FROM remediation_assignment_requests').get();assert.equal(token.length,64);assert.equal(row.token_hash,await hashToken(token));assert.ok(!JSON.stringify(row).includes(token));assert.equal(row.expires_at-row.created_at,604800);
