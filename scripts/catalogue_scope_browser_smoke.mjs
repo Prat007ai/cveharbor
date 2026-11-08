@@ -15,6 +15,7 @@ const data=JSON.parse(fs.readFileSync('data/demo-advisories.json','utf8'));
 const sample=(i,days)=>({id:'CVE-2099-'+(40000+i),title:'Topic fixture '+i,summary:'Synthetic disclosure',
  published:new Date(Date.now()-days*86400000).toISOString(),source_type:'vendor',severity:'high',
  categories:['Windows Server OS','.NET Core'],sources:[],known_exploited:i===52});
+data.advisories=[];
 data.advisories.push(...Array.from({length:51},(_,i)=>sample(i,2)),sample(51,170),sample(52,410));
 let signedIn=true,failSave=false,holdSave=null,delaySave=false;
 let saveFault;

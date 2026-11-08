@@ -10,7 +10,56 @@
   let metricScope = 'all';
   let chartPeriod = 'all';
   let chartShowAll = false;
-  const technologyGroups = {"microsoft":["Windows Server OS","Windows 11 OS","Azure","Microsoft 365","Exchange SE","SharePoint / SharePoint Server","Microsoft Power Platform","Dynamics 365","Microsoft Fabric / Power BI","Azure AI / AI SDK"],"applications":[".NET / ASP.NET",".NET Core","WordPress / Plugins","PHP","Python / PyPI","Angular","React / Next.js","JavaScript / TypeScript","Node.js / npm","Drupal / CMS"],"infrastructure":["Linux","Fortinet","Sophos Firewall","VMware","Veeam Backup & Replication","HyperV","Docker / Kubernetes","AWS","Windows"],"data":["SQL Server","MySQL / MariaDB","NoSQL / MongoDB","Progress Telerik","Sitefinity","Kendo UI","jQuery / Bootstrap","Application dependencies","iOS / Android"]};
+  // Stable topic identifiers are independent of display names and existing saved selections.
+  const builtInTopics = {
+    microsoft: [
+      ["windows-server-os", "Windows Server OS"],
+      ["windows-11-os", "Windows 11 OS"],
+      ["azure", "Azure"],
+      ["microsoft-365", "Microsoft 365"],
+      ["exchange-se", "Exchange SE"],
+      ["sharepoint-sharepoint-server", "SharePoint / SharePoint Server"],
+      ["microsoft-power-platform", "Microsoft Power Platform"],
+      ["dynamics-365", "Dynamics 365"],
+      ["microsoft-fabric-power-bi", "Microsoft Fabric / Power BI"],
+      ["azure-ai-ai-sdk", "Azure AI / AI SDK"],
+    ],
+    applications: [
+      ["net-asp-net", ".NET / ASP.NET"],
+      ["net-core", ".NET Core"],
+      ["wordpress-plugins", "WordPress / Plugins"],
+      ["php", "PHP"],
+      ["python-pypi", "Python / PyPI"],
+      ["angular", "Angular"],
+      ["react-next-js", "React / Next.js"],
+      ["javascript-typescript", "JavaScript / TypeScript"],
+      ["node-js-npm", "Node.js / npm"],
+      ["drupal-cms", "Drupal / CMS"],
+    ],
+    infrastructure: [
+      ["linux", "Linux"],
+      ["fortinet", "Fortinet"],
+      ["sophos-firewall", "Sophos Firewall"],
+      ["vmware", "VMware"],
+      ["veeam-backup-replication", "Veeam Backup & Replication"],
+      ["hyperv", "HyperV"],
+      ["docker-kubernetes", "Docker / Kubernetes"],
+      ["aws", "AWS"],
+      ["windows", "Windows"],
+    ],
+    data: [
+      ["sql-server", "SQL Server"],
+      ["mysql-mariadb", "MySQL / MariaDB"],
+      ["nosql-mongodb", "NoSQL / MongoDB"],
+      ["progress-telerik", "Progress Telerik"],
+      ["sitefinity", "Sitefinity"],
+      ["kendo-ui", "Kendo UI"],
+      ["jquery-bootstrap", "jQuery / Bootstrap"],
+      ["application-dependencies", "Application dependencies"],
+      ["ios-android", "iOS / Android"],
+    ],
+  };
+  const technologyGroups=Object.fromEntries(Object.entries(builtInTopics).map(([group,topics])=>[group,topics.map(([,name])=>name)]));
   const featured = new Set(Object.values(technologyGroups).flat());
   const groupTitles = {microsoft:'Microsoft & Cloud',applications:'Applications & Frameworks',infrastructure:'Infrastructure & Security',data:'Data, UI & Dependencies'};
   const info = window.CVEHARBOR_DATA || {categories:[],advisories:[],mode:'awaiting_first_sync'};
@@ -61,7 +110,7 @@
   const $ = id => document.getElementById(id);
   const baseItems=items.slice();
   let topicBrowser,topicFilter='',topicPage=0,topicPeriod=3,topicOrder='recent',topicQuery='';
-  const topicIds=new Map([...featured].map(name=>[name,name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')]));
+  const topicIds=new Map(Object.values(builtInTopics).flat().map(([id,name])=>[name,id]));
   const publicTopicsByCve=new Map(baseItems.filter(isCVE).map(record=>[record.id,record.categories||[]]));
   const monthCutoff=months=>{const now=new Date(),day=now.getUTCDate();now.setUTCDate(1);now.setUTCMonth(now.getUTCMonth()-months);now.setUTCDate(Math.min(day,new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+1,0)).getUTCDate()));return now.getTime();};
   const inMonths=(record,months)=>{const date=Date.parse(record.published||'');return Number.isFinite(date)&&date>=monthCutoff(months)&&date<=Date.now();};
@@ -415,9 +464,22 @@
       img.addEventListener('error',()=>{img.remove();node.textContent=name.slice(0,2).toUpperCase()||'◇'});
       node.append(img);return node;
     }
+    // Topic cards reflect public membership even when a registered component narrows private evidence.
+    const cardRecords=new Map();
+    for(const record of baseItems){
+      if(window.CVEHARBOR_CVIE?.isWithdrawn?.(record.id)||String(record.status).toLowerCase()==='rejected')continue;
+      for(const topic of record.categories||[]){
+        if(!cardRecords.has(topic))cardRecords.set(topic,new Map());
+        cardRecords.get(topic).set(record.id,record);
+      }
+    }
+    for(const record of items)for(const topic of record.cvie_products||[]){
+      if(!cardRecords.has(topic))cardRecords.set(topic,new Map());
+      cardRecords.get(topic).set(record.id,record);
+    }
     function makeRow(x){
       const horizon=window.CVEHARBOR_CVIE?.months||3;
-      const categoryRecords=(x.custom?customMatching(x.name):items.filter(a=>(a.categories||[]).includes(x.name))).filter(a=>inMonths(a,horizon));
+      const categoryRecords=(x.custom?customMatching(x.name):[...(cardRecords.get(x.name)?.values()||[])]).filter(a=>inMonths(a,horizon));
       const total=advisoryIDs(categoryRecords).length;
       const recent=advisoryIDs(categoryRecords.filter(a=>newlyPublished(a,30))).length;
       const ages={'TODAY':0,'YESTERDAY':0,'72 HOURS':0};
@@ -990,6 +1052,9 @@
       const reason=exact.length?'Registered product: '+exact.join(', '):'Followed topic';
       li.append(detail,text('p','cvie-caption',[fmtDate(r.published),...labels,reason,r.known_exploited?'Known exploited':''].filter(Boolean).join(' · ')));fragment.append(li);
     }
+    const descriptions=topicFilter&&categories.find(c=>c.name===topicFilter)?.description;
+    if(descriptions)summary.textContent+=' Topic coverage: '+descriptions+'.';
+    if(rows.length)summary.textContent+=' Recorded publication dates in this view span '+fmtDate(new Date(rows.reduce((min,x)=>Math.min(min,x.date),Infinity)).toISOString())+' to '+fmtDate(new Date(rows.reduce((max,x)=>Math.max(max,x.date),0)).toISOString())+'.';
     list.replaceChildren(fragment);list.start=offset+1;prev.disabled=topicPage===0;next.disabled=offset+50>=rows.length;
   }
   mountTopicBrowser();renderTopicFeed();
