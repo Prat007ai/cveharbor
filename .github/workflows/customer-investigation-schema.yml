@@ -2,6 +2,11 @@ name: Activate production customer assignment storage
 on:
   workflow_dispatch:
     inputs:
+      schema:
+        description: Customer assignment storage to activate
+        type: choice
+        options: [managed, manual]
+        default: managed
       reviewed_commit:
         description: Exact reviewed main commit
         type: string
@@ -26,6 +31,8 @@ jobs:
         with:
           node-version: '24'
       - run: node scripts/activate_customer_assignment_schema.mjs --rehearse
+        env:
+          CUSTOMER_SCHEMA: ${{ inputs.schema }}
   activate:
     if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.reviewed_commit == github.sha && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'
     needs: release-ready
@@ -44,5 +51,6 @@ jobs:
           node-version: '24'
       - run: node scripts/activate_customer_assignment_schema.mjs --apply
         env:
+          CUSTOMER_SCHEMA: ${{ inputs.schema }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_CUSTOMER_SCHEMA_TOKEN }}

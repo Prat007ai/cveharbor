@@ -6,6 +6,7 @@ on:
       - '.github/workflows/session-navigation.yml'
       - 'scripts/session_navigation_release.py'
       - 'scripts/customer_investigation_release.py'
+      - 'scripts/manual_customer_release.py'
       - 'release/customer-investigation/**'
       - 'app.js'
       - 'cvie.js'
@@ -18,7 +19,7 @@ on:
       site_release:
         description: Reviewed production package
         type: choice
-        options: [followed-topics, assignment-291, customer-investigation]
+        options: [followed-topics, assignment-291, customer-investigation, manual-customer]
         default: followed-topics
       reviewed_commit:
         description: 'Exact reviewed main commit for the CVIE topic release'
@@ -29,9 +30,9 @@ permissions:
 jobs:
   check:
     env:
-      CVEHARBOR_SITE_RELEASE: ${{ inputs.site_release || (github.head_ref == 'feature/customer-advisory-review' && 'customer-investigation') || 'followed-topics' }}
+      CVEHARBOR_SITE_RELEASE: ${{ inputs.site_release || (github.head_ref == 'feature/assignment-manual-customer' && 'manual-customer') || (github.head_ref == 'feature/customer-advisory-review' && 'customer-investigation') || 'followed-topics' }}
     name: Test followed topics in the production package
-    if: (github.event_name == 'pull_request' && (github.head_ref == 'feature/cvie-topic-delivery' || github.head_ref == 'feature/customer-advisory-review') && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
+    if: (github.event_name == 'pull_request' && (github.head_ref == 'feature/cvie-topic-delivery' || github.head_ref == 'feature/customer-advisory-review' || github.head_ref == 'feature/assignment-manual-customer') && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -28,7 +28,7 @@ def backend(out, reviewed_ref='HEAD'):
         target.write_bytes(package.git('show', reviewed_ref + ':' + path))
 
 
-def reminder_backend(out):
+def reminder_backend(out, reviewed_ref='HEAD'):
     baseline = 'fea290c4031cb600e86a84673212a3ae8f46853b'
     backend(out, reviewed_ref=baseline)
     identity = "import {backendIdentity} from './scripts/build_release_identity.mjs'; console.log(backendIdentity(process.argv[1]))"
@@ -41,11 +41,11 @@ def reminder_backend(out):
         target = out / path
         package.require(target.read_bytes() == package.git('show', baseline + ':' + path),
                         'Reminder source differs from production: ' + name)
-        target.write_bytes(package.git('show', 'HEAD:' + path))
+        target.write_bytes(package.git('show', reviewed_ref + ':' + path))
     verify_identity('release/customer-investigation/reminder-backend-identity.txt')
 
 
-def site(out):
+def site(out, reviewed_ref='HEAD'):
     previous.site(out, reviewed_ref=BASE)
     (out / 'before').rename(out / 'before_assignment')
     (out / 'after').rename(out / 'before')
@@ -63,7 +63,7 @@ def site(out):
                 target.write_bytes(candidate.read_bytes())
         else:
             baseline = package.git('show', BASE + ':' + source)
-            reviewed = package.git('show', 'HEAD:' + source)
+            reviewed = package.git('show', reviewed_ref + ':' + source)
             if source == 'remediation.css':
                 package.require(reviewed.startswith(baseline), 'Expected only assignment and record style additions')
                 target.write_bytes(target.read_bytes() + reviewed[len(baseline):])

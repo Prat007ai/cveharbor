@@ -1,3 +1,4 @@
+import {manualScopesReady,manualScopes} from './manual-assignment-context.js';
 import {activeRecords,integrityError} from './remediation-integrity.js';
 import {customerRecordsReady,customerScopes,ownedCustomer} from './customer-remediation-context.js';
 import {recordKey,publicCve,recordScope,linkedReady,scopeSQL} from './remediation-identity.js';
@@ -48,11 +49,12 @@ export function assignmentReady(env){
     !!(env.ASSIGNMENT_SMTP2GO_API_KEY||env.SMTP2GO_API_KEY);
 }
 export async function capabilities(env){
-  return reply({storage:'d1',version:2,customer_records_available:await customerRecordsReady(env),shared_records_available:await linkedReady(env),assignments_available:await isMigrated(env),
+  return reply({storage:'d1',version:2,manual_assignment_available:await manualScopesReady(env),customer_records_available:await customerRecordsReady(env),shared_records_available:await linkedReady(env),assignments_available:await isMigrated(env),
     assignment_email_enabled:assignmentReady(env),reviewer_updates_available:await progressReady(env),workflow_available:await workflowReady(env),fyi_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await fyiReady(env),acknowledgements_available:env.ASSIGNMENT_ACK_ENABLED==='true'&&await acknowledgementReady(env)});
 }
 export async function listRemediations(env,user,customer='all'){
-  if(!['all','unassigned'].includes(customer))await ownedCustomer(env,user.id,customer);
+  const external=await manualScopes(env,user.id);
+  if(!['all','unassigned'].includes(customer)&&!external.some(scope=>scope.customer_id===customer))await ownedCustomer(env,user.id,customer);
   const migrated=await isMigrated(env);
   const active=await activeRecords(env,'r'),plainActive=await activeRecords(env);
   const sql=migrated
@@ -67,6 +69,7 @@ export async function listRemediations(env,user,customer='all'){
   const scopes=await linkedReady(env)?await env.DB.prepare(scopeSQL).bind(user.id).all():{results:[]};
   const scopeMap=new Map(scopes.results.map(x=>[x.record_id,x]));
   for(const scope of await customerScopes(env,user.id))scopeMap.set(scope.record_id,scope);
+  for(const scope of external)scopeMap.set(scope.record_id,scope);
   rows.results=(rows.results||[]).filter(row=>customer==='all'||customer==='unassigned'&&!scopeMap.has(row.id)||scopeMap.get(row.id)?.customer_id===customer);
   const reviewProgress=new Map((reviewCounts.results||[]).map(r=>[r.cve_id,{total:r.total,latest:r.latest}]));
   return reply({workflow_available:workflowAvailable,remediations:(rows.results||[]).map(row=>({...row,cve_id:publicCve(row.id),scope:scopeMap.get(row.id)||null,review_progress:reviewProgress.get(row.id)||null,...(details.metadata.get(row.id)||{}),latest_status_change:details.changes.get(row.id)||null,acknowledgements:acknowledgements.get(row.id)||null})),assignments_available:migrated,acknowledgements_available:acknowledgementsAvailable});
@@ -216,7 +219,7 @@ export async function assignRemediation(env,user,id,raw){
   if(!await isMigrated(env))throw new RemediationError('Email assignment is temporarily unavailable. Please try again later.',503);
   if(!assignmentReady(env))throw new RemediationError('Assignment email delivery is not enabled',503);
   const fyi=normalizeFyi(raw?.fyi_recipients,recipient);
-  if(raw?.customer_id&&env.ASSIGNMENT_ACK_ENABLED!=='true')throw new RemediationError('Customer assignments require the acknowledgement service.',503);
+  if((raw?.customer_id||raw?.manual_customer!==undefined||raw?.manual_environment!==undefined)&&env.ASSIGNMENT_ACK_ENABLED!=='true')throw new RemediationError('Customer assignments require the acknowledgement service.',503);
   if(fyi.length&&env.ASSIGNMENT_ACK_ENABLED!=='true')throw new RemediationError('FYI notifications require the acknowledgement service.',503);
   if(env.ASSIGNMENT_ACK_ENABLED==='true')return assignWithAcknowledgement(env,user,cve,recipient,reviewerNotes,raw||{});
   const prior=await env.DB.prepare(

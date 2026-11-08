@@ -1,4 +1,4 @@
-import {assignmentRecord} from './customer-remediation.js';
+import {assignmentRecord,manualAssignmentRecord} from './customer-remediation.js';
 import {activeRecords} from './remediation-integrity.js';
 import {publicCve,recordScope,scopeLabel} from './remediation-identity.js';
 import {progressReady,storedReminderPolicy,reminderInterval,reviewLink} from './assignment-progress-common.js';
@@ -53,9 +53,10 @@ export async function assignWithAcknowledgement(env,user,cve,recipient,notes,raw
  const fyi=normalizeFyi(raw.fyi_recipients,recipient),workflow=await workflowReady(env),progress=await progressReady(env);
  if(env.ASSIGNMENT_PROGRESS_ENABLED==='true'&&!progress)throw new AssignmentError('Reviewer updates are temporarily unavailable. No email was sent.',503);
  if(raw.assigned_severity!==undefined){assignedSeverity(raw.assigned_severity);if(!workflow)throw new AssignmentError('Assigned severity is temporarily unavailable. No email was sent.',503);}
- if(raw.customer_id){
+ const manual=raw.manual_customer!==undefined||raw.manual_environment!==undefined;
+ if(raw.customer_id||manual){
   if(!await acknowledgementReady(env)||fyi.length&&!await fyiReady(env))throw new AssignmentError('Assignment delivery is unavailable.',503);
-  cve=await assignmentRecord(env,user,cve,recipient,raw);
+  cve=await (manual?manualAssignmentRecord:assignmentRecord)(env,user,cve,recipient,raw);
  }
  const existingMeta=workflow?await env.DB.prepare('SELECT assigned_severity FROM remediation_record_metadata WHERE user_id=? AND cve_id=?').bind(user.id,cve).first():null;
  const selectedSeverity=raw.assigned_severity===undefined?(existingMeta?.assigned_severity||''):raw.assigned_severity;

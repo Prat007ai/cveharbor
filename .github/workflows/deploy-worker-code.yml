@@ -47,6 +47,10 @@ on:
       - '.github/workflows/deploy-worker-code.yml'
   workflow_dispatch:
     inputs:
+      manual_customer:
+        description: Publish the manual customer assignment backend
+        type: boolean
+        default: false
       customer_reminders:
         description: Publish only customer and environment labels in reminder emails
         type: boolean
@@ -161,6 +165,18 @@ jobs:
           python -c "import sys; sys.path.insert(0,'scripts'); from customer_investigation_release import ready; ready()"
           python scripts/customer_investigation_release.py reminder-backend release/.build/customer-reminder
           rsync --archive --delete release/.build/customer-reminder/account-backend/src/ account-backend/src/
+          node --test account-backend/tests/customer-assignment-email.test.mjs
+      - name: Verify the isolated manual customer assignment release
+        if: inputs.manual_customer == true
+        env:
+          MODE: ${{ inputs.release_mode }}
+          OTHER_PACKAGE: ${{ inputs.customer_investigation || inputs.assignment_release || inputs.query_fix_287 || inputs.customer_reminders }}
+        run: |
+          test "$MODE" = code-only
+          test "$OTHER_PACKAGE" != true
+          python -c "import sys; sys.path.insert(0,'scripts'); import manual_customer_release as m; m.previous_ready()"
+          python scripts/manual_customer_release.py backend release/.build/manual-investigation
+          rsync --archive --delete release/.build/manual-investigation/account-backend/src/ account-backend/src/
           node --test account-backend/tests/customer-assignment-email.test.mjs
       - name: Confirm deployment credentials
         env:
