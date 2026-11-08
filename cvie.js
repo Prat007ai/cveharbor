@@ -38,9 +38,13 @@ function merge(base=[]){
  });
 }
 function clearPrivate(){fastQueue=[];fastMode=false;identityDialog?.close();catalogueNames=null;products=[];records=[];withdrawn=new Set();excluded=[];accountId='';evidence={sources:[]};ready=false;lastFullAt=0;recordsMonths=0;}
+function followsTopic(p){
+ return scope==='catalogue'&&(window.CVEHARBOR_CATALOG?.categories||[]).concat(window.CVEHARBOR_DATA?.categories||[]).some(c=>c.name===p.name);
+}
+let partialTopicRecords=null;
 function statusFor(p){
  if(!p)return 'Waiting for CVIE registration';
- if(p.status==='needs_identity')return 'Choose the exact product';
+ if(p.status==='needs_identity')return followsTopic(p)?'Following topic · optional product refinement':'Choose the exact product';
  if(p.status==='retrying')return 'Source unavailable · retry scheduled';
  if(p.status==='queued')return 'Queued · preparing vulnerability scan';
  if(p.status==='scanning'){
@@ -215,21 +219,21 @@ function draw(){
   if(sourceGrid.children.length)panel.append(sourceGrid);
   const active=products.filter(p=>['queued','scanning','retrying'].includes(p.status));
   const attention=(evidence.sources||[]).some(s=>['pending','stale','unavailable','rate_limited','setup_required','catching_up','verifying_products'].includes(s.status));
-  const message=error||(busy?(checkingProgress?'Updating scan status...':'Loading '+months+'-month results...'):!ready?'Preparing CVIE...':!products.length?(scope==='catalogue'?'No selected catalogue products. Save technologies to start personalized checks; shared sources continue independently.':'No inventory products registered for checking.'):products.some(p=>p.status==='needs_identity')?'Some products need an exact identity. Choose directly from a technology card or product status; saved results for resolved products remain available.':attention?'Shared sources are being verified or need attention. Saved results remain available; check each source status.':products.some(p=>p.status==='retrying')?'A source check is unavailable. Saved results remain available; CVIE will retry automatically.':products.some(p=>p.status==='ready'&&p.stale)?'Some source checks are overdue. Saved results remain available while CVIE refreshes them.':active.length?active.length+' product'+(active.length===1?' is':'s are')+' being prepared. Results appear as source pages finish.':'Product checks complete. Review the source and installed version before acting.');
+  const message=error||(busy?(checkingProgress?'Updating scan status...':'Loading '+months+'-month results...'):!ready?'Preparing CVIE...':!products.length?(scope==='catalogue'?'No selected catalogue products. Save technologies to start personalized checks; shared sources continue independently.':'No inventory products registered for checking.'):products.some(p=>p.status==='needs_identity'&&!followsTopic(p))?'Choose an identity for custom products to check their applicability.':attention?'Shared sources are being verified or need attention. Saved results remain available; check each source status.':products.some(p=>p.status==='retrying')?'A source check is unavailable. Saved results remain available; CVIE will retry automatically.':products.some(p=>p.status==='ready'&&p.stale)?'Some source checks are overdue. Saved results remain available while CVIE refreshes them.':active.length?active.length+' product'+(active.length===1?' is':'s are')+' being prepared. Results appear as source pages finish.':'Product checks complete. Review the source and installed version before acting.');
   const status=node('p',message,'cvie-status');status.setAttribute('role','status');panel.append(status);
   if(fastMode){
    panel.append(node('p','Showing bounded stored evidence. Product/version applicability and complete source coverage require review.','cvie-caption'));
    if(fastQueue.length){const more=node('button','Load more stored CVEs');more.type='button';more.disabled=busy;more.onclick=async()=>{if(busy)return;busy=true;more.disabled=true;try{await loadFastPage();}catch(e){if(!(e instanceof SessionChanged))error=e.message;notify();}finally{busy=false;draw();if(pending){const syncNext=pendingSync;pending=false;pendingSync=false;void refresh(syncNext);}}};panel.append(more);}
   }
-  const completed=products.filter(p=>p.status==='ready'&&!p.stale).length,failed=products.filter(p=>p.status==='retrying').length,verification=products.filter(p=>p.status==='needs_identity'||p.coverage?.limited).length;
-  if(scope==='catalogue'&&ready)panel.append(node('p',(scope==='catalogue'?'Selected catalogue products: ':'Inventory products: ')+products.length+' · Queued/checking: '+products.filter(p=>['queued','scanning'].includes(p.status)).length+' · History complete: '+completed+' · Review required: '+verification+' · Failed/retrying: '+failed,'cvie-scope-summary'));
+  const completed=products.filter(p=>p.status==='ready'&&!p.stale).length,failed=products.filter(p=>p.status==='retrying').length,verification=products.filter(p=>p.status==='needs_identity'&&!followsTopic(p)).length;
+  if(scope==='catalogue'&&ready)panel.append(node('p',(scope==='catalogue'?'Selected catalogue products: ':'Inventory products: ')+products.length+' · Queued/checking: '+products.filter(p=>['queued','scanning'].includes(p.status)).length+' · History complete: '+completed+' · Needs your input: '+verification+' · Coverage incomplete: '+products.filter(p=>p.coverage?.limited).length+' · Failed/retrying: '+failed,'cvie-scope-summary'));
   const list=node('div','','cvie-product-statuses');
   for(const p of products){
    const row=node('div','','cvie-product-status');
    row.append(node('strong',p.name),node('span',statusFor(p),'cvie-state '+p.status+(p.coverage?.limited?' coverage-limited':'')));
    const progress=scanProgress(p);if(progress)row.append(progress);
    if(p.last_success_at)row.append(node('small','Last successful source page: '+new Date(p.last_success_at).toLocaleString()));
-   if(p.error)row.append(node('small',p.error));
+   if(p.error&&!(p.status==='needs_identity'&&followsTopic(p)))row.append(node('small',p.error));
    if(p.identity_label)row.append(node('small','Checking: '+p.identity_label));
    if(p.coverage){
     const coverage=node('details','','cvie-coverage-details');
@@ -241,7 +245,7 @@ function draw(){
     coverage.append(description);row.append(coverage);
    }
    if(p.status==='needs_identity'||!p.cpe){
-    const choose=node('button','Choose exact product','cvie-choose-product');choose.type='button';choose.setAttribute('aria-label','Choose exact product for '+p.name);choose.addEventListener('click',()=>openIdentity(p.name));row.append(choose);
+    const choose=node('button',followsTopic(p)?'Refine for my environment':'Choose exact product','cvie-choose-product');choose.type='button';choose.setAttribute('aria-label','Choose exact product for '+p.name);choose.addEventListener('click',()=>openIdentity(p.name));row.append(choose);
    }
    list.append(row);
   }
@@ -303,11 +307,15 @@ async function refresh(sync=false,progressOnly=false){
    const page=await request('/advisories?months='+requestedMonths+(after?'&after='+encodeURIComponent(after):''));
    if(accountId&&page.account_id&&page.account_id!==accountId){authEpoch++;clearPrivate();pending=true;throw new SessionChanged();}
    incoming.push(...(page.advisories||[]));
+   if(scope==='catalogue'&&requestedMonths===months&&location.pathname.startsWith('/vulnerabilities/')){
+    partialTopicRecords={epoch:authEpoch,months:requestedMonths,rows:incoming};
+    if(!after)window.dispatchEvent(new CustomEvent('cvie:catalogue-page'));
+   }
    if(page.next&&visited.has(page.next))throw Error('CVIE pagination stalled. Saved results remain available.');
    if(page.next)visited.add(page.next);
    after=page.next||'';
   }while(after);
-  if(requestedMonths===months){records=incoming;recordsMonths=requestedMonths;lastFullAt=Date.now();notify();}else pending=true;
+  if(requestedMonths===months){partialTopicRecords=null;records=incoming;recordsMonths=requestedMonths;lastFullAt=Date.now();notify();}else pending=true;
  }catch(e){if(!(e instanceof SessionChanged)){error=e.name==='TypeError'?'The connection to CVIE was interrupted. Reconnecting to read saved results.':e.name==='TimeoutError'?'The CVIE request timed out. Saved results remain available; automatic retry is scheduled.':e.message;notify();}}
  finally{
   busy=false;checkingProgress=false;draw();
@@ -331,6 +339,11 @@ window.CVEHARBOR_CVIE={get sessionKnown(){return sessionKnown;},scope,applyCatal
  setMonths:value=>{if(![3,12].includes(Number(value)))throw Error('Select 3 or 12 months');months=Number(value);return refresh();},
  get historyLoaded(){return recordsMonths===months&&lastFullAt>0;},
  product:name=>products.find(p=>normalize(p.name)===normalize(name))};
+window.CVEHARBOR_CVIE.isWithdrawn=id=>withdrawn.has(id);
+Object.defineProperty(window.CVEHARBOR_CVIE,'topicRecords',{get(){
+ if(partialTopicRecords&&partialTopicRecords.epoch===authEpoch&&partialTopicRecords.months===months)return partialTopicRecords.rows;
+ return recordsMonths===months?records:[];
+}});
 function mountRegistryChoices(){
  for(const id of ['technologyAddName','inventoryTechnology']){
   const input=document.getElementById(id);if(!input||input.tagName!=='INPUT')continue;
