@@ -34,7 +34,10 @@ export async function requireStaging(env,{transport=fetch,sleep=ms=>new Promise(
     assert.equal(env.GITHUB_EVENT_NAME,'workflow_dispatch');
     const inputs=JSON.parse(fs.readFileSync(env.GITHUB_EVENT_PATH)).inputs;
     assert.equal(inputs.release_mode,'code-only');assert.equal(String(inputs.query_fix_287),'true');
-    const pr=await get('/pulls/287');assert.equal(pr.merged,true);assert.equal(pr.merge_commit_sha,env.GITHUB_SHA);
+    const merge=await get('/git/commits/'+env.GITHUB_SHA);
+    assert.equal(merge.parents.length,2);assert.equal(merge.parents[0].sha,'8808eca65768860a1b138d2fe7f9158d27566164');
+    assert.match(merge.message,/^Merge PR #287: Reduce CVIE catalogue query cost/);
+    assert.equal(backendIdentity(),'738b07a3eee67dc5a3d872dfb4ccbbe5ba2aab628b8c964e820b7b69aea63ce8');
     name='customer-candidate-execution';filename='customer-candidate-execution.json';
    }
    const job=candidate||jobs.jobs.find(j=>j.name==='automatic-staging');assert.ok(job,'Exact staging job missing');
