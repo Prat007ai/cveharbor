@@ -187,6 +187,19 @@ jobs:
           fetch-depth: 0
       - name: Verify catalogue-only production package
         run: python scripts/catalogue_package.py "$RUNNER_TEMP/catalogue"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        if: github.event_name == 'pull_request'
+        with:
+          node-version: '24'
+      - name: Test interrupted saves and reloads in Chrome with fictional catalogue data
+        if: github.event_name == 'pull_request'
+        env:
+          CVEHARBOR_CHROMIUM_PATH: /usr/bin/google-chrome
+          CVEHARBOR_PLAYWRIGHT_MODULE: ${{ github.workspace }}/staging/node_modules/playwright-core/index.mjs
+        run: |
+          npm install --prefix staging --ignore-scripts --no-package-lock
+          python scripts/build_site.py
+          node scripts/catalogue_scope_browser_smoke.mjs
       - name: Verify signed-in staging acceptance
         if: github.event_name == 'workflow_dispatch'
         env:
