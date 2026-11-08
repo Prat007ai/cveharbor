@@ -160,8 +160,7 @@ async function check(){
    try{await readCloudStack()}catch(_){note('Signed in, but the email watchlist could not be loaded. Refresh to retry.')}
   }else note('Sign in to synchronize data.');
  }catch(error){
-  state(false);
-  if(error.status===401){service('Account service available');note('Sign in to synchronize data.')}
+  if(error.status===401){state(false);service('Account service available');note('Sign in to synchronize data.')}
   else{service('Account service unavailable');note('Account service currently unavailable. Existing local tracking continues to work.')}
  }
 }
