@@ -59,10 +59,15 @@ const protectedLinks=Array.from(nav.querySelectorAll('[data-requires-auth="true"
 function setProtectedLinks(authenticated){for(const link of protectedLinks)link.hidden=!authenticated;}
 setProtectedLinks(false);
 window.addEventListener('cveharbor-auth-change',event=>setProtectedLinks(Boolean(event.detail?.authenticated)));
-fetch('https://api.cveharbor.com/v1/me',{credentials:'include',headers:{Accept:'application/json'},cache:'no-store'})
- .then(response=>response.ok?response.json():null)
- .then(info=>setProtectedLinks(Boolean(info?.authenticated)))
- .catch(()=>setProtectedLinks(false));
-window.addEventListener('pageshow',()=>fetch('https://api.cveharbor.com/v1/me',{credentials:'include',cache:'no-store'})
- .then(r=>r.ok?r.json():null).then(info=>setProtectedLinks(Boolean(info?.authenticated))).catch(()=>setProtectedLinks(false)));
+let checkNumber=0;
+async function refreshLinks(){
+ const current=++checkNumber;
+ try{
+  const info=window.CVEHarborAccountRead?await window.CVEHarborAccountRead('/me'):
+   await fetch('https://api.cveharbor.com/v1/me',{credentials:'include',cache:'no-store'}).then(r=>r.ok?r.json():null);
+  if(current===checkNumber)setProtectedLinks(Boolean(info?.authenticated));
+ }catch{if(current===checkNumber)setProtectedLinks(false)}
+}
+void refreshLinks();
+window.addEventListener('pageshow',event=>{if(event.persisted)void refreshLinks()});
 })();

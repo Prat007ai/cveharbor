@@ -913,29 +913,23 @@
       openRequested=false;
     };
     try{
-      const options={credentials:'include',cache:'no-store'};
-      const session=await fetch('https://api.cveharbor.com/v1/me',options);
-      if(epoch!==catalogueEpoch)return;
-      if(session.status===401){signedOut();return}
-      if(!session.ok)throw Error();
-      const me=await session.json();
+      const me=await window.CVEHarborAccountRead('/me');
       if(epoch!==catalogueEpoch)return;
       if(me.authenticated===false){signedOut();return}
       if(me.authenticated!==true||!me.email)throw Error();
       window.dispatchEvent(new CustomEvent('cveharbor:catalogue-session',{detail:{authenticated:true,email:me.email}}));
       if(catalogueAccount&&catalogueAccount!==me.email)clearCatalogue();
-      const r=await fetch(catalogueAPI,options);
+      const data=await window.CVEHarborAccountRead('/technology-catalogue');
       if(epoch!==catalogueEpoch)return;
-      if(r.status===401){signedOut();return}
-      if(!r.ok)throw Error();
-      const data=await r.json();if(epoch!==catalogueEpoch)return;
       if(typeof data.revision!=='string'||!Array.isArray(data.products)||(data.defaults!==null&&!Array.isArray(data.defaults)))throw Error();
       catalogueSignedIn=true;catalogueAccount=me.email;
       personalized={defaults:Array.isArray(data.defaults)?data.defaults:defaultNames,products:Array.isArray(data.products)?data.products:[]};catalogueRevision=data.revision;
       manageButton.hidden=false;applyPersonalized();window.CVEHARBOR_CVIE?.applyCatalogue?.(personalized);
       if(openRequested){openRequested=false;statusMessage('');openEditor()}
-    }catch{
-      if(epoch===catalogueEpoch){openRequested=false;statusMessage('Could not load your saved catalogue. Click Customize technologies to try again.')}
+    }catch(error){
+      if(epoch!==catalogueEpoch)return;
+      if(error.status===401){signedOut();return}
+      if(openRequested){openRequested=false;statusMessage('Could not load your saved catalogue. Click Customize technologies to try again.')}
     }
   }
   if(typeof fetch==='function')void loadCatalogue();

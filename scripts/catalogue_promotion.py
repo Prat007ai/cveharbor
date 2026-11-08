@@ -40,23 +40,23 @@ def github(path):
         return json.load(r)
 
 
-def evidence():
-    pr = github("/pulls/283")
+def evidence(pr_number=283):
+    pr = github(f"/pulls/{pr_number}")
     require(pr["merged"] and pr["base"]["ref"] == "main" and
             pr["merge_commit_sha"] == os.environ["GITHUB_SHA"],
             "Production must use the exact merge of the reviewed catalogue save fix")
 
 
-def policy():
-    env = github("/environments/" + SITE_ENV)
+def policy(site_env=SITE_ENV, independent=False):
+    env = github("/environments/" + site_env)
     rules = [r for r in env["protection_rules"] if r["type"] == "required_reviewers"]
-    require(len(rules) == 1 and rules[0].get("prevent_self_review") is False
+    require(len(rules) == 1 and rules[0].get("prevent_self_review") is independent
             and [(r["type"], r["reviewer"]["id"]) for r in rules[0]["reviewers"]] == [("User", OWNER_ID)]
             and env.get("can_admins_bypass") is False,
             "Catalogue release requires an explicit owner review and disabled administrator bypass.")
     require((env.get("deployment_branch_policy") or {}).get("custom_branch_policies"),
             "Configure the production environment for the main branch only.")
-    branches = github(f"/environments/{SITE_ENV}/deployment-branch-policies?per_page=100")
+    branches = github(f"/environments/{site_env}/deployment-branch-policies?per_page=100")
     require(branches["total_count"] == 1 and
             [(b["type"], b["name"]) for b in branches["branch_policies"]] == [("branch", "main")],
             "Production environment must accept only the main branch.")
@@ -64,10 +64,10 @@ def policy():
             "Main changed since this release was requested.")
 
 
-def approval():
+def approval(site_env=SITE_ENV):
     approvals = github("/actions/runs/" + os.environ["GITHUB_RUN_ID"] + "/approvals")
     require(any(a["state"] == "approved" and a["user"]["id"] == OWNER_ID
-                and any(e["name"] == SITE_ENV for e in a["environments"]) for a in approvals),
+                and any(e["name"] == site_env for e in a["environments"]) for a in approvals),
             "The owner must approve this catalogue deployment in GitHub.")
 
 
@@ -142,12 +142,15 @@ def verify_asset(path, auth, expected):
     require(digest(live) == expected, "Post-deployment bytes differ: " + path)
 
 
-def publish(out):
-    policy()
-    approval()
-    evidence()
-    ready()
-    active(OLD_VERSION, OLD_DEPLOYMENT)
+def publish(out, *, site_env=SITE_ENV, independent=False, pr_number=283, previous_version=OLD_VERSION,
+            previous_deployment=OLD_DEPLOYMENT, changed=CHANGED, readiness=None):
+    if readiness is None:
+        readiness = ready
+    policy(site_env, independent)
+    approval(site_env)
+    evidence(pr_number)
+    readiness()
+    active(previous_version, previous_deployment)
     check_gate()
     password = os.environ["SITE_GATE_PASSWORD"]
     require(len(password) >= 16, "Missing production site gate credential")
@@ -157,7 +160,7 @@ def publish(out):
     hashes = {}
     for path in paths:
         live = origin_bytes(path, protected_asset(path, auth))
-        if path in CHANGED or path.endswith(".html"):
+        if path in changed or path.endswith(".html"):
             baseline = (before / path).read_bytes()
             require(live == baseline, f"Live catalogue baseline differs: {path} "
                     f"(expected {digest(baseline)}, received {digest(live)})")
@@ -171,8 +174,8 @@ def publish(out):
     settings["assets"]["directory"] = str(after)
     config.write_text(json.dumps(settings))
     tag = "catalogue-" + os.environ["GITHUB_RUN_ID"]
-    active(OLD_VERSION, OLD_DEPLOYMENT)
-    require(provider("/versions?per_page=1")["items"][0]["id"] == OLD_VERSION,
+    active(previous_version, previous_deployment)
+    require(provider("/versions?per_page=1")["items"][0]["id"] == previous_version,
             "A newer unpublished version exists. Review before upload.")
     child = {k: os.environ[k] for k in ("PATH", "HOME", "CLOUDFLARE_ACCOUNT_ID", "CLOUDFLARE_API_TOKEN")}
     receipt = out / "upload.ndjson"
@@ -183,12 +186,12 @@ def publish(out):
     versions = [row["version_id"] for row in rows if row["type"] == "version-upload"
                 and row["worker_name"] == "cveharbor-site" and row["version"] == 1]
     require(len(versions) == 1 and re.fullmatch(r"[0-9a-f-]{36}", versions[0])
-            and versions[0] != OLD_VERSION and versions[0] == provider("/versions?per_page=1")["items"][0]["id"],
+            and versions[0] != previous_version and versions[0] == provider("/versions?per_page=1")["items"][0]["id"],
             "Uploaded version could not be identified")
-    policy()
-    approval()
-    ready()
-    active(OLD_VERSION, OLD_DEPLOYMENT)
+    policy(site_env, independent)
+    approval(site_env)
+    readiness()
+    active(previous_version, previous_deployment)
     version = versions[0]
     print("Activating catalogue site version", version, flush=True)
     provider("/deployments", {"strategy": "percentage", "versions": [{"version_id": version, "percentage": 100}]})
@@ -196,7 +199,7 @@ def publish(out):
     for path in paths:
         await_read(lambda: verify_asset(path, auth, hashes[path]))
     check_gate()
-    ready()
+    readiness()
     active(version, deployment)
     print(f"Verified site deployment {deployment}, version {version}, 100% traffic and all {len(paths)} assets.")
 

@@ -25,6 +25,8 @@ def account_auth_for_staging(text):
     # /v1/me returns 401 + authenticated:false, without an error message.
     old = "if(!/Sign in required/.test(error.message))message('Account service unavailable. You can still browse the public website.');"
     new = "if(error.status!==401)message('Account service unavailable. You can still browse the public website.');"
+    if "await window.CVEHarborAccountRead('/me')" in text and "if(error.status!==401)" in text:
+        return text
     assert text.count(old) == 1, 'Review changed account-page.js authentication handler'
     return text.replace(old, new, 1)
 

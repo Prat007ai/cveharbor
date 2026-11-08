@@ -416,7 +416,7 @@ assert.ok(html.includes('id="remediationForm"')&&html.includes('id="firewallCent
 assert.ok(html.includes('id="accountWorkspace"')&&html.includes('id="accountVerify"'),'account section and verification UI present');
 assert.ok(html.includes('href="/account/?mode=login"')&&html.includes('href="/account/?mode=register"'),
  'login and registration actions are visible in the global site header');
-assert.ok(html.includes('header-auth.js?v=account-navigation-1'),'header auth status is loaded');
+assert.ok(html.includes('header-auth.js?v=session-reads-1'),'header auth status is loaded');
 const accountHtml=fs.readFileSync('workspace/index.html','utf8');
 const workspaceHtml=fs.readFileSync('workspace/index.html','utf8');
 assert.match(accountHtml,/accountPageRequest/);
@@ -436,7 +436,8 @@ aw.fetch=async(url,options={})=>{
  if(path==='/v1/auth/logout')return {ok:true,json:async()=>({authenticated:false})};
  return {ok:false,status:404,json:async()=>({error:'Not found'})};
 };
-aw.eval(fs.readFileSync('account-page.js','utf8'));
+aw.eval(fs.readFileSync('header-auth.js','utf8'));
+  aw.eval(fs.readFileSync('account-page.js','utf8'));
 assert.match(ad.getElementById('accountFormTitle').textContent,/Create your free/);
 await new Promise(resolve=>setTimeout(resolve,0));
 ad.getElementById('accountPageEmail').value='member@example.org';
@@ -536,6 +537,7 @@ const makeSignedInWatchlist = async (local,cloud) => {
     return {ok:status<400,status,json:async()=>data};
   };
   w.eval(fs.readFileSync('workspace.js','utf8'));
+  w.eval(fs.readFileSync('header-auth.js','utf8'));
   w.eval(fs.readFileSync('accounts.js','utf8'));
   await new Promise(resolve=>setTimeout(resolve,70));
   return {w,d,writes};

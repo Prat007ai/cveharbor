@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en"><head><meta charset="utf-8"><script src="/header-auth.js?v=session-reads-1"></script><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>My Workspace | CVEHarbor</title><meta name="description" content="Sign in securely to manage customer security, vulnerability findings and reports.">
 <link rel="stylesheet" href="/styles.css?v=dropdown-contrast-1"><link rel="stylesheet" href="/workspace-dashboard.css?v=default-tabs-1"></head>
 <body class="account-page account-redesign workspace-redesign workspace-operations">
@@ -13,11 +13,12 @@
 <h1 id="accountPageHeading">My <span>Workspace</span></h1>
 <p class="account-hero-description">Manage your customer environments, assets, vulnerability intelligence, reports and remediation in one workspace.</p>
   <article class="account-new-login">
-   <h2 id="accountFormTitle">Continue with email</h2>
-   <p class="account-login-explainer">We’ll send you a secure verification code to sign in.</p>
-   <p id="accountPageMessage" class="account-login-message" role="status" aria-live="polite"></p>
+   <h2 hidden id="accountFormTitle">Continue with email</h2>
+   <p hidden class="account-login-explainer">We’ll send you a secure verification code to sign in.</p>
+   <p id="accountPageMessage" class="account-login-message" role="status" aria-live="polite">Checking your secure session…</p>
+   <button type="button" id="accountSessionRetry" hidden>Retry connection</button>
    <p id="accountPageRetryMessage" class="account-login-message" role="status" aria-live="polite"></p>
-   <div id="accountPageSignedOut">
+   <div id="accountPageSignedOut" hidden>
     <form id="accountPageRequest" class="account-entry-form">
      <label for="accountPageEmail">Email address</label>
      <input id="accountPageEmail" type="email" autocomplete="email" placeholder="you@company.com" maxlength="254" required>

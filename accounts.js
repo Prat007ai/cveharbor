@@ -6,6 +6,7 @@ let authenticated=false,email='';
 const note=(msg)=>{$('accountMessage').textContent=msg};
 const service=(msg)=>{const node=$('accountServiceStatus');if(node)node.textContent=msg};
 async function call(path,method='GET',payload){
+ if(path==='/me'&&method==='GET')return window.CVEHarborAccountRead(path);
  const res=await fetch(API+path,{method,credentials:'include',headers:{'Content-Type':'application/json'},body:payload===undefined?undefined:JSON.stringify(payload)});
  let body={};try{body=await res.json()}catch(_){}
  if(!res.ok){const error=Error(body.error||'Account API not available');error.status=res.status;throw error}
