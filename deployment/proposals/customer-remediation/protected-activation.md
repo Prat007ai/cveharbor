@@ -31,6 +31,10 @@ For each release, pin its own candidate and production baseline. The publisher f
 
 Use the protected catalogue publisher with owner review, main-only deployment and administrator bypass disabled. When the sole owner requests an identified catalogue-only deployment, Work may submit the owner's GitHub deployment approval after checking the run, commit and production scope. Record the delegation in the approval comment and respect any request for the owner to approve personally. Send the run link, monitor publication, verify the live assets and traffic, and record the result on the PR.
 
+## Production website owner approval
+
+The owner authorizes Work to approve reviewed frontend releases on the owner's behalf in the protected production site environment. GitHub permits the sole owner to start and approve the same run. Keep the named reviewer, main-only branch policy, administrator bypass disabled, exact release scope, required CI, live readiness and version verification. Record the delegation and link the run on the feature PR. PR #284 is the first cross-page website fix using this policy. Independent approvals for backend, database, recovery and other infrastructure use their existing protected environments.
+
 ## Proposed routine staging operation (inactive)
 
 **Adoption is a separate owner decision after review and merge.** Only then may a repository

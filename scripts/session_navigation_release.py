@@ -12,6 +12,8 @@ import catalogue_promotion as promotion
 
 BASE = "3406a3cf9bcaf554624040cff83b2a6874c47a01"
 CANDIDATE = "24ebc2d1d7dded28288d0f5c9ae9c2b77380d213"
+POLICY_PR = 285
+FEATURE_MERGE = "5f9ffec9fc02bac0cacf7d50256be89148ac07d5"
 ENVIRONMENT = "cloudflare-site-production"
 MODULES = {"app.js", "header-auth.js", "account-page.js", "account-security.js", "accounts.js", "command-center.js"}
 SOURCE = MODULES | {"index.html", "workspace/index.html", "account/index.html"}
@@ -42,6 +44,16 @@ def prepare(out):
     package.require(delta == CHANGED, "Unexpected session navigation changes: " + str(delta ^ CHANGED))
 
 
+def verify_release():
+    promotion.evidence(POLICY_PR)
+    merged = promotion.github("/pulls/284")
+    package.require(merged["merged"] and merged["merge_commit_sha"] == FEATURE_MERGE
+                    and merged["base"]["ref"] == "main", "Incorrect feature release")
+    commit = promotion.github("/git/commits/" + os.environ["GITHUB_SHA"])
+    package.require(commit["parents"][0]["sha"] == FEATURE_MERGE,
+                    "The release policy must follow the reviewed feature directly")
+
+
 def readiness():
     # A transient failure may clear. Every successful check must satisfy the original gate.
     for attempt in range(3):
@@ -57,12 +69,13 @@ if __name__ == "__main__":
     if sys.argv[1:2] == ["prepare"]:
         prepare(Path(sys.argv[2]).resolve())
     elif sys.argv[1:] == ["preflight"]:
-        promotion.evidence(284)
-        promotion.policy(ENVIRONMENT, independent=True)
+        verify_release()
+        promotion.policy(ENVIRONMENT)
         readiness()
     elif sys.argv[1:2] == ["publish"]:
-        promotion.publish(Path(sys.argv[2]).resolve(), site_env=ENVIRONMENT, independent=True,
-                          pr_number=284, previous_version="172de42d-2dc6-4eb4-866f-e995854f653d",
+        verify_release()
+        promotion.publish(Path(sys.argv[2]).resolve(), site_env=ENVIRONMENT,
+                          pr_number=POLICY_PR, previous_version="172de42d-2dc6-4eb4-866f-e995854f653d",
                           previous_deployment="df5851e1-84f5-4320-86e4-377d799c0d2f", changed=CHANGED,
                           readiness=readiness)
     else:
