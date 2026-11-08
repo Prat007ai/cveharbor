@@ -51,7 +51,13 @@ function showRecoveryCodes(id,codes){
   item.append(value,copy);list.append(item);
  }
 }
+function showLoginCopy(show){
+ $('accountFormTitle').hidden=!show;
+ const explainer=document.querySelector('.account-login-explainer');
+ if(explainer)explainer.hidden=!show;
+}
 function signedIn(email){
+ showLoginCopy(false);
  window.dispatchEvent(new CustomEvent('cveharbor-auth-change',{detail:{authenticated:true}}));
  $('accountPageSignedOut').hidden=true;
  $('accountPageSignedIn').hidden=false;
@@ -62,6 +68,7 @@ function signedIn(email){
  if(!document.body.classList.contains('workspace-redesign'))loadTotpStatus();
 }
 function signedOut(){
+ showLoginCopy(true);
  window.dispatchEvent(new CustomEvent('cveharbor-auth-change',{detail:{authenticated:false}}));
  mfaChallenge='';$('accountPageRequiredEnroll').hidden=true;$('accountPageTotpVerify').hidden=true;$('accountPageTotpCode').value='';
  $('accountPageSignedOut').hidden=false;
@@ -195,11 +202,24 @@ $('accountPageRecoveryRotateForm').addEventListener('submit',async event=>{
   message('All old recovery codes are invalid. Save the new numbered codes securely.');
  }catch(error){message(error.message)}finally{button.disabled=false}
 });
-request('/me').then(data=>{
- if(data.authenticated)signedIn(data.email||'');
- else signedOut();
-}).catch(error=>{
- signedOut();
- if(!/Sign in required/.test(error.message))message('Account service unavailable. You can still browse the public website.');
-});
+const retry=$('accountSessionRetry');
+async function checkSession(){
+ if(retry)retry.hidden=true;
+ message('Checking your secure session…');
+ try{
+  const me=await window.CVEHarborAccountRead('/me');
+  if(me.authenticated===true&&me.email){signedIn(me.email);return}
+  if(me.authenticated!==false)throw Error('Invalid session response');
+ }catch(error){
+  if(error.status!==401){
+   message('Your workspace could not be loaded. Please retry the connection.');
+   if(retry)retry.hidden=false;
+   return;
+  }
+ }
+ signedOut();message('');
+}
+retry?.addEventListener('click',checkSession);
+void checkSession();
+window.addEventListener('pageshow',event=>{if(event.persisted)location.reload()});
 })();

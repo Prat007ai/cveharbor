@@ -24,7 +24,7 @@ async function until(fn){for(let i=0;i<120;i++){if(fn())return;await new Promise
 async function page(){
  const dom=new JSDOM(fs.readFileSync('index.html','utf8'),{url:'https://cveharbor.com/vulnerabilities/',runScripts:'outside-only',pretendToBeVisual:true});
  const w=dom.window;w.fetch=fetcher;w.AbortSignal=globalThis.AbortSignal;w.CVEHARBOR_DATA=data;w.Element.prototype.scrollIntoView=function(){};
- for(const script of ['advisory-details.js','cvie.js','app.js'])w.eval(fs.readFileSync(script,'utf8'));
+ for(const script of ['header-auth.js','advisory-details.js','cvie.js','app.js'])w.eval(fs.readFileSync(script,'utf8'));
  await until(()=>w.document.querySelector('.cvie-scope-summary')&&!w.CVEHARBOR_CVIE.loading);return dom;
 }
 let dom=await page(),w=dom.window,d=w.document;

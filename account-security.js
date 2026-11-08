@@ -3,6 +3,7 @@ const $=id=>document.getElementById(id);
 const API='https://api.cveharbor.com/v1';
 const status=text=>$('accountSecurityStatus').textContent=text;
 async function request(path,method='GET',payload){
+ if(method==='GET')return window.CVEHarborAccountRead(path);
  const r=await fetch(API+path,{method,credentials:'include',cache:'no-store',headers:{'Content-Type':'application/json'},body:payload===undefined?undefined:JSON.stringify(payload)});
  const data=await r.json().catch(()=>({}));
  if(!r.ok)throw Error(data.error||'Account service unavailable');
@@ -35,7 +36,8 @@ $('accountSecuritySignOut').addEventListener('click',async()=>{
 (async()=>{
  try{
   const me=await request('/me');
-  if(!me.authenticated)throw Error('Sign in required');
+  if(me.authenticated===false){location.replace('/workspace/');return}
+  if(me.authenticated!==true||!me.email)throw Error('Invalid session response');
   $('accountSecurityEmail').textContent=me.email||'';
   $('accountSecurityDashboard').hidden=false;
   try{
@@ -50,8 +52,9 @@ $('accountSecuritySignOut').addEventListener('click',async()=>{
    status('Your account is signed in, but authenticator settings could not be refreshed. Try reloading this page.');
   }
  }catch(error){
-  if(/Sign in required|Unauthorized|MFA not enabled/.test(error.message)){location.replace('/workspace/');return}
+  if(error.status===401){location.replace('/workspace/');return}
   status('Could not verify your session. Please retry this page. Your account settings were not changed.');
  }
 })();
+window.addEventListener('pageshow',event=>{if(event.persisted)location.reload()});
 })();

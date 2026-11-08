@@ -14,14 +14,17 @@ const data=JSON.parse(fs.readFileSync('data/demo-advisories.json','utf8'));
 let signedIn=true,failSave=false,holdSave=null,delaySave=false;
 let saveFault;
 let sessionGate,sessionUnavailable=false,catalogueUnavailable=false;
+let transientSessions=0,transientCatalogues=0;
 const pending=[],seen=[];
 async function fetcher(url,options={}){
  const u=new URL(url);seen.push({path:u.pathname,scope:u.searchParams.get('scope'),method:options.method||'GET'});
  if(u.pathname==='/v1/me'){
   if(sessionGate)await sessionGate;
+  if(transientSessions>0){transientSessions--;return new Response(null,{status:503})}
   if(sessionUnavailable)return Response.json({error:'Service temporarily unavailable'},{status:503});
   return Response.json({authenticated:signedIn,email:signedIn?'a@example.test':undefined},{status:signedIn?200:401});
  }
+ if(transientCatalogues>0&&u.pathname==='/v1/technology-catalogue'&&options.method==='GET'){transientCatalogues--;return new Response(null,{status:503})}
  if(catalogueUnavailable&&u.pathname==='/v1/technology-catalogue'&&options.method==='GET')return new Response(null,{status:503});
  if(!u.pathname.startsWith('/v1/cvie')&&u.pathname!=='/v1/technology-catalogue')return Response.json({});
  if(failSave&&options.method==='PUT')return Response.json({error:'Synthetic save failure'},{status:503});
@@ -288,7 +291,27 @@ try{
   assert.deepEqual(await checkedNames(),['Fortinet']);
   await page.locator('#technologyManageClose').click();
  }
- signedIn=false;
+ transientSessions=1;transientCatalogues=1;
+ await manage.click();await editor.waitFor({state:'visible'});
+ assert.deepEqual(await checkedNames(),['Fortinet']);
+ await page.goto('http://127.0.0.1:8080/threats/');
+ transientSessions=2;
+ await page.goto('http://127.0.0.1:8080/account/');
+ await page.locator('#accountSecurityDashboard').waitFor({state:'visible'});
+ assert.equal(await page.locator('#accountSecurityEmail').innerText(),'a@example.test');
+ sessionUnavailable=true;
+ await page.goto('http://127.0.0.1:8080/workspace/');
+ const guestForm=page.locator('#accountPageSignedOut'),loginTitle=page.locator('#accountFormTitle');
+ assert.equal(await guestForm.isVisible(),false);assert.equal(await loginTitle.isVisible(),false);
+ await page.locator('#accountSessionRetry').waitFor({state:'visible'});
+ assert.equal(await guestForm.isVisible(),false);assert.equal(await loginTitle.isVisible(),false);
+ sessionUnavailable=false;transientSessions=1;
+ await page.locator('#accountSessionRetry').click();
+ await page.waitForFunction(()=>document.body.classList.contains('workspace-authenticated'));
+ assert.equal(await guestForm.isVisible(),false);assert.equal(await loginTitle.isVisible(),false);
+ signedIn=false;await page.reload();
+ await guestForm.waitFor({state:'visible'});assert.equal(await loginTitle.isVisible(),true);
+ await page.goto('http://127.0.0.1:8080/vulnerabilities/');
  await manage.click();await dialog.waitFor({state:'visible'});
  assert.equal(await editor.isVisible(),false);
  assert.deepEqual(errors,[]);console.log('PASS Chromium catalogue selection, persisted refresh, removal, adding, failure, empty scope and responsive layout');
