@@ -89,11 +89,11 @@ def active(version, deployment=None):
     return current["id"]
 
 
-def ready():
+def ready(expected_backend=BACKEND):
     with request("https://api.cveharbor.com/v1/release-readiness?catalogue=" + str(time.time_ns())) as r:
         state = json.load(r)
     require(state.get("ready") is True and state.get("schema") == "phase1-integrity-recovery-v1"
-            and state.get("release") == BACKEND, "Backend readiness or release identity changed")
+            and state.get("release") == expected_backend, "Backend readiness or release identity changed")
 
 
 def route(path):

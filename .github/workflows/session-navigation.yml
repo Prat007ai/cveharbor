@@ -1,4 +1,4 @@
-name: Restore CVIE and Workspace availability
+name: Recover interrupted workspace sign-in
 on:
   pull_request:
     branches: [main]
@@ -14,15 +14,15 @@ on:
   workflow_dispatch:
     inputs:
       reviewed_commit:
-        description: 'Exact reviewed main commit for CVIE and Workspace availability'
+        description: 'Exact reviewed main commit for the workspace sign-in fix'
         required: true
         type: string
 permissions:
   contents: read
 jobs:
   check:
-    name: Test CVIE and Workspace availability in the production package
-    if: (github.event_name == 'pull_request' && github.head_ref == 'fix/cvie-availability' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
+    name: Test workspace sign-in recovery in the production package
+    if: (github.event_name == 'pull_request' && github.head_ref == 'fix/signin-interrupted-response' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -60,7 +60,7 @@ jobs:
           python scripts/session_navigation_release.py preflight
 
   publish:
-    name: Publish the CVIE and Workspace fix to production
+    name: Publish the workspace sign-in fix to production
     if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.reviewed_commit == github.sha && github.run_attempt == 1 && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'
     needs: check
     runs-on: ubuntu-latest
