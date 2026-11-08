@@ -75,9 +75,7 @@ def site(out):
                     "Unexpected files in the production website package")
 
 
-if __name__ == "__main__":
-    action, directory = sys.argv[1:]
-    out = Path(directory).resolve()
+def run(action, out):
     if action == "backend":
         backend(out)
     elif action == "site":
@@ -93,3 +91,7 @@ if __name__ == "__main__":
                           changed=CHANGED, readiness=lambda: promotion.ready(json.loads(Path("release/assignment-291.json").read_text())["backend_identity"]))
     else:
         sys.exit("Expected backend, site or publish")
+
+
+if __name__ == "__main__":
+    run(sys.argv[1], Path(sys.argv[2]).resolve())

@@ -5,6 +5,7 @@ const {chromium}=await import(process.env.CVEHARBOR_PLAYWRIGHT_MODULE||'playwrig
 const f=await assignmentFixture(),originalFetch=globalThis.fetch;globalThis.fetch=f.fetcher;
 f.DB.sql.exec(fs.readFileSync('account-backend/migrations/0026_remediation_workflow.sql','utf8'));
 Object.assign(f.env,{REMEDIATION_WORKFLOW_ENABLED:'true',ASSIGNMENT_FYI_ENABLED:'true',ASSIGNMENT_CONFIRM_ORIGIN:'https://confirm.cveharbor.com'});
+const siteRoot=path.resolve(process.env.CVEHARBOR_CATALOGUE_PUBLIC||'public');
 const background=[],directory='work/workflow-review';fs.mkdirSync(directory,{recursive:true});
 const browser=await chromium.launch({headless:true,executablePath:process.env.CVEHARBOR_CHROMIUM_PATH||'/usr/bin/google-chrome',args:['--no-sandbox']});
 try{
@@ -18,7 +19,7 @@ try{
    const response=await worker.fetch(request,f.env,{waitUntil:task=>background.push(task)});return route.fulfill({status:response.status,body:await response.text(),headers:Object.fromEntries(response.headers)});
   }
   if(url.hostname!=='cveharbor.com')return route.abort();
-  const file=path.resolve('public','.'+url.pathname+(url.pathname.endsWith('/')?'index.html':''));if(!file.startsWith(path.resolve('public')+path.sep)||!fs.existsSync(file))return route.fulfill({status:404,body:''});
+  const file=path.resolve(siteRoot,'.'+url.pathname+(url.pathname.endsWith('/')?'index.html':''));if(!file.startsWith(siteRoot+path.sep)||!fs.existsSync(file))return route.fulfill({status:404,body:''});
   const contentType={'.html':'text/html','.js':'application/javascript','.json':'application/json','.css':'text/css','.svg':'image/svg+xml'}[path.extname(file)]||'application/octet-stream';return route.fulfill({contentType,body:fs.readFileSync(file)});
  });
  const tracker=await context.newPage(),errors=[];tracker.on('pageerror',e=>errors.push(e.message));await tracker.setViewportSize({width:1600,height:1100});await tracker.goto('https://cveharbor.com/remediation/');await tracker.waitForFunction(()=>document.getElementById('remediationTotal').textContent==='1');

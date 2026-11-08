@@ -154,6 +154,11 @@ def readiness():
 
 
 if __name__ == "__main__":
+    if os.environ.get("CVEHARBOR_SITE_RELEASE") == "assignment-291":
+        import assignment_release
+        assignment_release.run(sys.argv[1].replace("prepare", "site"),
+                               Path(sys.argv[2]).resolve() if len(sys.argv) > 2 else None)
+        sys.exit(0)
     if sys.argv[1:2] == ["prepare"]:
         prepare(Path(sys.argv[2]).resolve())
     elif sys.argv[1:] == ["preflight"]:
