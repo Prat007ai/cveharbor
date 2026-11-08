@@ -1,5 +1,5 @@
 import {recoveryTablesSQL,recoveryGuardSQL,leaseGuardSQL,normalizedDDL} from './recovery-schema.js';
-import {installedIntegrityChecks} from './release-integrity-checks.js';
+import {installedIntegrityChecks} from './customer-scope-integrity.js';
 import {releaseIdentity} from './release-build.js';
 import {recoveryState} from './recovery-control.js';
 export const integrityGuards=['validate_finding_write','finding_link_identity','finding_link_immutable','retired_remediation_read_only','preserve_remediation_history','preserve_asset_finding_history','linked_finding_status_insert','linked_finding_status_update'];

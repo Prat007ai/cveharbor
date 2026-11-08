@@ -10,7 +10,7 @@ import catalogue_package as package
 import catalogue_promotion as promotion
 
 BASE = 'feab635843d76a42103055ba7bcf16921c6a5106'
-RUNTIME = ('assignment-acknowledgement.js','customer-remediation.js','remediation-identity.js','remediation.js','manual-assignment-context.js','release-readiness.js','release-integrity-checks.js')
+RUNTIME = ('assignment-acknowledgement.js','customer-remediation.js','remediation-identity.js','remediation.js','manual-assignment-context.js','release-readiness.js','customer-scope-integrity.js')
 CHANGED = {'operations.js', 'remediation.css'} | previous.previous.ROUTES
 PIN = Path('release/customer-investigation/manual-backend-identity.txt')
 
@@ -20,7 +20,7 @@ def backend(out):
     for name in RUNTIME:
         path = 'account-backend/src/' + name
         target = out/path
-        if name == 'manual-assignment-context.js':
+        if name in ('manual-assignment-context.js','customer-scope-integrity.js'):
             package.require(not target.exists(), 'Unexpected production module')
         else:
             package.require(target.read_bytes() == package.git('show',BASE+':'+path), 'Unexpected live source for '+name)

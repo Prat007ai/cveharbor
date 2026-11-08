@@ -1,6 +1,7 @@
 // SELECT-only release audit. Report aggregate counts, never customer names/emails/tokens.
 import assert from 'node:assert/strict';
-import {installedIntegrityChecks,integrityChecks} from '../account-backend/src/release-integrity-checks.js';
+import {installedIntegrityChecks} from '../account-backend/src/customer-scope-integrity.js';
+import {integrityChecks} from '../account-backend/src/release-integrity-checks.js';
 export {integrityChecks};
 export async function verifyIntegrity(DB,{preflight=false}={}){
  const counts={};for(const [name,sql] of Object.entries(await installedIntegrityChecks(DB)))counts[name]=Number((await DB.prepare(sql).first()).n);
