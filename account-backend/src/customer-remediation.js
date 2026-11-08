@@ -1,3 +1,4 @@
+import {manualScopesReady,manualSelection} from './manual-assignment-context.js';
 import {WorkflowError,requireWorkflow,workflowWriteStatements,runWorkflowWrite} from './remediation-workflow.js';
 import {normalizeRecord,upsertRemediation} from './remediation.js';
 import {recordScope,recordKey} from './remediation-identity.js';
@@ -39,6 +40,25 @@ export async function saveCustomerRemediation(env,user,data){
  return Response.json({saved:true,id},{headers:{'Cache-Control':'no-store'}});
 }
 // Reuse the exact account/customer/environment record without changing an existing ticket.
+export async function manualAssignmentRecord(env,user,cve,recipient,selection){
+ if(cve.includes('~'))throw new WorkflowError('Open a new assignment to use a different customer.');
+ const {customer,environment,customerKey,environmentKey}=await manualSelection(selection);
+ if(!await manualScopesReady(env))throw new WorkflowError('Manual customer assignments are unavailable.',503);
+ await requireWorkflow(env);
+ const find=()=>env.DB.prepare('SELECT record_id FROM remediation_manual_scopes WHERE user_id=? AND customer_key=? AND environment_key=? AND cve_id=?')
+  .bind(user.id,customerKey,environmentKey,cve).first();
+ const prior=await find();
+ if(prior)return prior.record_id;
+ const count=await env.DB.prepare('SELECT COUNT(*) total FROM remediations WHERE user_id=?'+await activeRecords(env)).bind(user.id).first();
+ if(count.total>=250)throw new WorkflowError('The account has reached its 250 remediation record limit.',409);
+ const id=cve+'~'+crypto.randomUUID().toUpperCase(),data={owner:recipient,status:'Open'};
+ const batch=await workflowWriteStatements(env,user,normalizeRecord(id,data),data,new Date().toISOString());
+ batch.push(env.DB.prepare('INSERT INTO remediation_manual_scopes(user_id,record_id,cve_id,customer_key,environment_key,customer_name,environment_name) VALUES(?,?,?,?,?,?,?)')
+  .bind(user.id,id,cve,customerKey,environmentKey,customer,environment));
+ try { await runWorkflowWrite(env,batch); }
+ catch(error){const concurrent=await find();if(concurrent)return concurrent.record_id;throw error;}
+ return id;
+}
 export async function assignmentRecord(env,user,cve,recipient,selection){
  const context=await customerContext(env,user,selection);
  if(!context||context.asset||cve.includes('~'))throw new WorkflowError('Choose a customer and an optional environment for a new investigation.');
@@ -56,7 +76,7 @@ export async function assignmentRecord(env,user,cve,recipient,selection){
 }
 export async function customerTicket(env,user,id,data){
  const scope=await recordScope(env,user.id,id);
- if(!scope||scope.asset_id)throw new WorkflowError('Customer-level record not found.',404);
+ if(!scope||scope.asset_id||scope.manual)throw new WorkflowError('Customer-level record not found.',404);
  const ticket=typeof data.ticket_number==='string'?data.ticket_number.trim():'';
  if(!ticket||ticket.length>64||/[\x00-\x1f\x7f]/.test(ticket))throw new WorkflowError('Enter a ticket reference of 1–64 characters.');
  await env.DB.prepare('INSERT OR IGNORE INTO remediation_customer_ticket_history(user_id,record_id,ticket_number,created_at) VALUES(?,?,?,?)').bind(user.id,id,ticket,new Date().toISOString()).run();

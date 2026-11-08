@@ -157,3 +157,10 @@ body[data-page=remediation] .page-section-intro p:not(.eyebrow){font-size:15px;l
 .rt-records .rt-record-detail summary{font-weight:650}
 .queue-customer-filter,.rt-records .rt-customer-filter{display:block;padding:10px 0;background:none;color:#253f52}.queue-customer-filter[hidden]{display:none}
 .queue-customer-filter select,.rt-customer-filter select{display:block;max-width:100%;min-height:40px;padding:6px 9px;font-size:15px}
+
+#remediationAssignDialog #remediationSeverityLabel:not([hidden]){display:grid;grid-template-columns:minmax(0,1fr);gap:6px;align-items:start}
+#remediationAssignDialog #remediationAssignSeverity{box-sizing:border-box;width:100%;min-width:0;margin:0}
+#remediationAssignDialog #assignSeverityHelp{display:block;margin:0;line-height:1.45}
+#remediationAssignDialog .assignment-context-toggle{margin:8px 0 0;background:transparent;color:#09655f;border:0;padding:5px 0;text-decoration:underline;cursor:pointer}
+#remediationAssignDialog .assignment-customer-fields[hidden],#remediationAssignDialog .assignment-context-toggle[hidden]{display:none}
+#remediationAssignDialog .assignment-customer-fields input{display:block;width:100%;min-width:0;box-sizing:border-box;margin-top:4px}

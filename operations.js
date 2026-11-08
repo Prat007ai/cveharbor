@@ -288,9 +288,30 @@ async function accountState(data){
 function renderRecentActivity(){let panel=$('remediationRecentActivity');if(!panel){panel=elem('section','rt-panel rt-recent-activity');panel.id='remediationRecentActivity';$('remediationTracker').append(panel);}panel.replaceChildren(elem('h2','','Recent activity'));const list=elem('ul');for(const t of [...tasks].sort((a,b)=>String(b.updated).localeCompare(String(a.updated))).slice(0,8)){const li=elem('li'),b=elem('button','',displayCve(t.id)+(t.scope?' · '+scopeText(t.scope):'')+' — '+(t.latest_status_change? t.latest_status_change.new_status:'Record updated')+' · '+displayTime(t.updated));b.type='button';b.addEventListener('click',()=>window.CVEHARBOR_SHARED.open(t.id));li.append(b);list.append(li);}panel.append(list);}
 function scopeText(s){return s?[s.customer_name,s.environment_name,s.asset_name,s.technology,s.version].filter(Boolean).join(' · '):'';}
 let pickerVersion=0,previewAudience='reviewer';
+function manualMode(){return !$('assignManualFields').hidden;}
+function setManualMode(on){
+ $('assignManualFields').hidden=!on;
+ $('assignListedFields').hidden=on;
+ $('assignManualCustomer').disabled=!on;
+ $('assignManualCustomer').required=on;
+ $('assignManualEnvironment').disabled=!on;
+ $('assignManualToggle').setAttribute('aria-pressed',String(on));
+ $('assignManualToggle').textContent=on?'Choose from customer list':'Enter customer and environment manually';
+ $('remediationAssignConfirm').checked=false;
+ updateAssignmentPreview();
+}
+$('assignManualToggle').addEventListener('click',()=>{
+ const on=!manualMode();
+ setManualMode(on);
+ (on?$('assignManualCustomer'):$('assignCustomer')).focus();
+});
 async function loadAssignmentPicker(scope){
  const version=++pickerVersion,epoch=accountEpoch;
  const customer=$('assignCustomer'),environment=$('assignEnvironment'),hint=$('assignCustomerHint');
+ $('assignManualCustomer').value='';
+ $('assignManualEnvironment').value='';
+ $('assignManualToggle').hidden=!!scope||!cloudMode||!capabilities?.manual_assignment_available;
+ setManualMode(false);
  customer.replaceChildren(new Option('Unassigned / Internal',''));environment.replaceChildren(new Option('Customer-wide',''));
  customer.disabled=true;environment.disabled=true;customer.onchange=null;hint.textContent='';
  if(scope){
@@ -362,8 +383,8 @@ function updateAssignmentPreview(){
  $('previewCve').textContent=valid(id)?id:'Enter a complete CVE ID';
  const observer=previewAudience==='fyi';
  $('previewTo').textContent=observer?(fyi.join(', ')||'Add FYI recipients'):email||'Reviewer email';
- $('previewCustomer').textContent=$('assignCustomer').selectedOptions[0]?.textContent||'Unassigned / Internal';
- $('previewEnvironment').textContent=$('assignCustomer').value?($('assignEnvironment').selectedOptions[0]?.textContent||'Customer-wide'):'—';
+ $('previewCustomer').textContent=manualMode()?($('assignManualCustomer').value.trim()||'Enter customer name'):$('assignCustomer').selectedOptions[0]?.textContent||'Unassigned / Internal';
+ $('previewEnvironment').textContent=manualMode()?($('assignManualEnvironment').value.trim()||'Customer-wide'):$('assignCustomer').value?($('assignEnvironment').selectedOptions[0]?.textContent||'Customer-wide'):'—';
  $('previewMailTitle').textContent=observer?'FYI · Vulnerability review assigned':'Vulnerability review request';
  $('previewFyiTab').setAttribute('aria-pressed',String(observer));
  $('previewReviewerTab').setAttribute('aria-pressed',String(!observer));
@@ -436,8 +457,9 @@ $('remediationAssignForm').addEventListener('submit',async event=>{
  send.disabled=true;status.textContent='Submitting your review request...';
  try{
   const customer=$('assignCustomer').value,environment=$('assignEnvironment').value;
-  const selection=!assignmentScope&&customer?{customer_id:customer,environment_id:environment||null}:{};
-  const result=await api('/remediations/'+cve+'/assign','POST',{...selection,share_customer_context:!!(customer||assignmentScope),email,assigned_severity:assigned,fyi_recipients:fyi,reviewer_notes:$('remediationAssignNotes').value.trim().slice(0,1000),resend:$('remediationAssignResend').checked});
+  const manual=manualMode();
+  const selection=manual?{manual_customer:$('assignManualCustomer').value.trim(),manual_environment:$('assignManualEnvironment').value.trim()}:!assignmentScope&&customer?{customer_id:customer,environment_id:environment||null}:{};
+  const result=await api('/remediations/'+cve+'/assign','POST',{...selection,share_customer_context:!!(manual||customer||assignmentScope),email,assigned_severity:assigned,fyi_recipients:fyi,reviewer_notes:$('remediationAssignNotes').value.trim().slice(0,1000),resend:$('remediationAssignResend').checked});
   if(requestAccount!==accountEpoch)return;
   if(!result.assigned||!result.notified)throw Error('The request was not confirmed as sent.');
   try{await refreshRecords()}catch(_){}

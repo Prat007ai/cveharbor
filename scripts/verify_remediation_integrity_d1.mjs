@@ -1,9 +1,10 @@
 // SELECT-only release audit. Report aggregate counts, never customer names/emails/tokens.
 import assert from 'node:assert/strict';
+import {installedIntegrityChecks} from '../account-backend/src/customer-scope-integrity.js';
 import {integrityChecks} from '../account-backend/src/release-integrity-checks.js';
 export {integrityChecks};
 export async function verifyIntegrity(DB,{preflight=false}={}){
- const counts={};for(const [name,sql] of Object.entries(integrityChecks))counts[name]=Number((await DB.prepare(sql).first()).n);
+ const counts={};for(const [name,sql] of Object.entries(await installedIntegrityChecks(DB)))counts[name]=Number((await DB.prepare(sql).first()).n);
  if(!preflight){
   const guardNames=['validate_finding_write','finding_link_identity','finding_link_immutable','retired_remediation_read_only','preserve_remediation_history','preserve_asset_finding_history','linked_finding_status_insert','linked_finding_status_update'];
   const found=await DB.prepare("SELECT name FROM sqlite_master WHERE type='trigger'").all();assert.ok(guardNames.every(n=>found.results.some(x=>x.name===n)),'Phase 1 integrity guards missing');
