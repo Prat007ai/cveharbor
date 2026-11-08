@@ -27,7 +27,7 @@ CHANGED = SITE_FILES | ROUTES
 
 def backend(out):
     paths = ["account-backend/src", "account-backend/migrations", "account-backend/wrangler.toml", "release/migrations"]
-    archive = package.git("archive", "--format=tar", API_BASE, "account-backend", "release/migrations")
+    archive = package.git("-c", "core.autocrlf=false", "archive", "--format=tar", API_BASE, "account-backend", "release/migrations")
     with tarfile.open(fileobj=io.BytesIO(archive)) as tree:
         for member in tree:
             name = member.name

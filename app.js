@@ -1000,8 +1000,10 @@
       const label=text('label','',name+' '),element=document.createElement(tag);
       element.setAttribute('aria-label',name);label.append(element);controls.append(label);return element;
     }
-    const filter=control('select','Technology'),period=control('select','Published'),order=control('select','Order');
+    const filter=control('select','Technology'),period=control('select','Published'),severityFilter=control('select','Severity'),order=control('select','Order');
     const search=control('input','Search advisories');search.type='search';
+    for(const opt of $('severity').options)severityFilter.add(new Option(opt.textContent,opt.value));
+    severityFilter.onchange=()=>{topicPage=0;renderTopicFeed()};
     period.add(new Option('Last 3 months','3'));period.add(new Option('Last 12 months','12'));
     period.add(new Option('Older known-exploited advisories','older'));
     order.add(new Option('Newest first','recent'));order.add(new Option('Known exploitation, then severity','priority'));
@@ -1032,7 +1034,7 @@
     target.append(root);
     const signIn=text('p','catalogue-prompt','Sign in to view your catalogue. '),login=text('a','','My workspace');login.href='/workspace/';signIn.append(login);target.append(signIn);
     $('scopePublic').onclick=()=>setCatalogueScope(false);$('scopeCatalogue').onclick=()=>setCatalogueScope(true);
-    topicBrowser={root,heading,summary,filter,search,list,count,prev,next,more};
+    topicBrowser={root,heading,summary,filter,severityFilter,search,list,count,prev,next,more};
   }
   function versionMatches(record,registered){
     const results=[];
@@ -1084,6 +1086,7 @@
       const exact=[...(verified.get(r.id)||[])].filter(n=>names.has(n));
       const labels=[...new Set([...broad,...exact])];
       if(!labels.length||topicFilter&&!labels.includes(topicFilter))continue;
+      if(topicBrowser.severityFilter.value&&topicBrowser.severityFilter.value!=='all'&&String(r.severity).toLowerCase()!==topicBrowser.severityFilter.value.toLowerCase())continue;
       if(topicQuery&&![r.id,r.title,...labels].join(' ').toLowerCase().includes(topicQuery))continue;
       rows.push({r,date,labels,exact});
     }
