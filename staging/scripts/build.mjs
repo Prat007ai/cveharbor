@@ -9,7 +9,7 @@ import {backendIdentity} from '../../scripts/build_release_identity.mjs';
 import {expectedBaseline,schemaSQL} from '../../scripts/production_schema_baseline.mjs';
 import {canonicalDDL} from '../../scripts/sql_schema_tokens.mjs';
 import { TARGET } from '../target.mjs';
-import {verifyCandidateProfile} from './customer-remediation-profile.mjs';
+import {candidateBackend,verifyCandidateProfile} from './customer-remediation-profile.mjs';
 const { build } = await import(process.env.CVIE_ESBUILD_MODULE || 'esbuild');
 assert.ok([undefined,'production-baseline','customer-remediation-candidate'].includes(process.env.STAGING_BUILD_PROFILE),'Unknown staging build profile');
 const candidate=process.env.STAGING_BUILD_PROFILE==='customer-remediation-candidate';
@@ -21,7 +21,7 @@ const releaseProfile=JSON.parse(fs.readFileSync(path.join(root,'application-rele
 assert.ok(['production-baseline','reviewed-main'].includes(releaseProfile.source_mode));
 assert.equal(releaseProfile.schema_profile,'production-baseline-209');assert.equal(releaseProfile.origin,TARGET.origin);
 const pinned=production&&releaseProfile.source_mode==='production-baseline';
-const source=pinned?path.join(repository,'release/.build/production-source'):repository;
+const source=pinned?path.join(repository,'release/.build/production-source'):candidate?candidateBackend():repository;
 const frontend=pinned?path.join(repository,'release/.build/production-frontend'):repository;
 const backend=path.join(source,'account-backend/src');
 let expected=null;

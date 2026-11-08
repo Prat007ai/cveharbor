@@ -11,6 +11,9 @@ import {canonical,digest,schemaSQL} from '../../scripts/production_schema_baseli
 export const repository=fileURLToPath(new URL('../../',import.meta.url));
 export const profilePath=path.join(repository,'deployment/proposals/customer-remediation/candidate-profile.json');
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+export function candidateBackend(){
+ return process.env.CANDIDATE_SCOPE==='assignment-291'?path.join(repository,'release/.build/investigation-backend'):repository;
+}
 export function candidateProfile(){
  const base=JSON.parse(fs.readFileSync(path.join(repository,'release/baseline.json'))),proposal='deployment/proposals/customer-remediation/schema.sql';
  const files=execFileSync('git',['ls-files','-z'],{cwd:repository,encoding:'utf8'}).split('\0').filter(f=>f&&(
@@ -25,10 +28,14 @@ export function candidateProfile(){
   const before=db.prepare(schemaSQL).all();assert.equal(digest(canonical(before.filter(r=>!r.name.startsWith('staging_')))),base.schema_sha256);
   db.exec(fs.readFileSync(path.join(repository,proposal),'utf8'));
   const rows=db.prepare(schemaSQL).all();
-  return {profile:{version:1,name:'customer-remediation-candidate',origin:'https://cveharborstage.com',activation:'separate-approval-required',baseline_schema_sha256:base.schema_sha256,migration:proposal,migration_sha256:hash(fs.readFileSync(path.join(repository,proposal))),backend_identity:backendIdentity(repository),frontend_inputs_sha256:frontend.digest('hex'),staging_adapter_sha256:adapter.digest('hex'),schema_sha256:digest(canonical(rows)),schema_objects:rows.length},rows};
+  return {profile:{version:1,name:'customer-remediation-candidate',origin:'https://cveharborstage.com',activation:'separate-approval-required',baseline_schema_sha256:base.schema_sha256,migration:proposal,migration_sha256:hash(fs.readFileSync(path.join(repository,proposal))),backend_identity:backendIdentity(candidateBackend()),frontend_inputs_sha256:frontend.digest('hex'),staging_adapter_sha256:adapter.digest('hex'),schema_sha256:digest(canonical(rows)),schema_objects:rows.length},rows};
  }finally{db.close();}
 }
-export function verifyCandidateProfile(){const actual=candidateProfile();assert.deepEqual(actual.profile,JSON.parse(fs.readFileSync(profilePath)),'Candidate inputs changed; review and regenerate the inactive profile');return actual;}
+export function verifyCandidateProfile(){const actual=candidateProfile();const expected=JSON.parse(fs.readFileSync(profilePath));
+ if(process.env.CANDIDATE_SCOPE==='assignment-291'){
+  expected.backend_identity=JSON.parse(fs.readFileSync(path.join(repository,'release/assignment-291.json'))).backend_identity;
+ }
+ assert.deepEqual(actual.profile,expected,'Candidate inputs changed; review and regenerate the inactive profile');return actual;}
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  if(process.argv.includes('--write')){fs.writeFileSync(profilePath,JSON.stringify(candidateProfile().profile,null,2)+'\n');console.log('Inactive candidate profile written locally.');}
  else {verifyCandidateProfile();console.log('Candidate source/schema pins verified locally.');}

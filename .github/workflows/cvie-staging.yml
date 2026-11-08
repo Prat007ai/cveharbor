@@ -13,7 +13,7 @@ on:
       candidate_scope:
         description: Candidate package to prepare or deploy
         type: choice
-        options: [standard, catalogue-only, query-fix-287]
+        options: [standard, catalogue-only, query-fix-287, assignment-291]
         default: standard
       routine_pr:
         description: Merged application PR number (routine-deploy only)
@@ -130,6 +130,7 @@ jobs:
         env:
           CANDIDATE_SCOPE: ${{ inputs.candidate_scope }}
         run: |
+          if [ "$CANDIDATE_SCOPE" = "assignment-291" ]; then python scripts/assignment_release.py backend release/.build/investigation-backend; fi
           STAGING_BUILD_PROFILE=customer-remediation-candidate node staging/scripts/build.mjs
           if [ "$CANDIDATE_SCOPE" = "catalogue-only" ]; then node staging/scripts/catalogue-release.mjs; fi
           node staging/scripts/check-customer-remediation-candidate.mjs
@@ -137,6 +138,8 @@ jobs:
       - name: Seal tested candidate artifacts without credentials
         if: inputs.candidate_operation != 'routine-deploy'
         id: candidate-seal
+        env:
+          CANDIDATE_SCOPE: ${{ inputs.candidate_scope }}
         run: |
           node staging/scripts/customer-candidate-artifact.mjs
           node staging/scripts/check-customer-candidate-artifact.mjs
@@ -441,6 +444,7 @@ jobs:
           CANDIDATE_SCOPE: ${{ inputs.candidate_scope }}
         run: |
           npm install --prefix staging --ignore-scripts --no-package-lock
+          if [ "$CANDIDATE_SCOPE" = "assignment-291" ]; then python scripts/assignment_release.py backend release/.build/investigation-backend; fi
           STAGING_BUILD_PROFILE=customer-remediation-candidate node staging/scripts/build.mjs
           if [ "$CANDIDATE_SCOPE" = "catalogue-only" ]; then node staging/scripts/catalogue-release.mjs; fi
           node staging/scripts/customer-candidate-artifact.mjs
