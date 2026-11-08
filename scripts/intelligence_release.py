@@ -25,11 +25,11 @@ def backend(out):
         relative = 'account-backend/' + name
         target = out / relative
         pkg.require(target.read_bytes() == pkg.git('show', BASE + ':' + relative), 'Unexpected baseline: ' + name)
-        target.write_bytes(Path(relative).read_bytes())
+        target.write_bytes(pkg.git('show', 'HEAD:' + relative))
     path = 'account-backend/src/index.js'
     # index.js on main also contains held features. Apply only the reviewed error-handler change.
     patch = pkg.git('diff', '--unified=1', BASE, 'HEAD', '--', path)
-    subprocess.run(['git','apply','--whitespace=nowarn','-'], cwd=out, input=patch, check=True,
+    subprocess.run(['git','-c','core.autocrlf=false','apply','--whitespace=nowarn','-'], cwd=out, input=patch, check=True,
                    env={**os.environ, 'GIT_CEILING_DIRECTORIES': str(out.parent)})
     actual = subprocess.check_output(['node','--input-type=module','-e',
         "import {backendIdentity} from './scripts/build_release_identity.mjs';console.log(backendIdentity(process.argv[1]))",
