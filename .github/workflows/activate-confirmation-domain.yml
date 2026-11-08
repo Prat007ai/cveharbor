@@ -11,7 +11,7 @@ concurrency:
   group: cveharbor-production-release
   cancel-in-progress: false
 jobs:
-  staging-ready:
+  release-ready:
     if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true'
     runs-on: ubuntu-latest
     permissions:
@@ -22,14 +22,10 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: '24'
-      - name: Require staging success for this exact commit before production approval
+      - name: Verify application and security checks for this production commit
         env:
-          SIMPLE_RELEASE_ENABLED: ${{ vars.SIMPLE_RELEASE_ENABLED }}
           GH_TOKEN: ${{ github.token }}
-        run: node scripts/require_staging_release.mjs
+        run: python scripts/production_release_checks.py
   validate:
     runs-on: ubuntu-latest
     steps:
@@ -47,7 +43,7 @@ jobs:
         run: node scripts/verify_confirmation_domain.mjs
   activate:
     if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [validate, staging-ready]
+    needs: [validate, release-ready]
     runs-on: ubuntu-latest
     environment: cloudflare-worker-production
     steps:

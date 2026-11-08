@@ -1,6 +1,10 @@
 # Delivering application changes
 
-CVEHarbor work targets production at https://cveharbor.com/ only. Start from the verified live version, isolate the requested change, test the production package with fictional data, and verify the reported user flow on the live site. Keep the prior version available for recovery. Staging deployments, tests, refreshes and copies of production data require a new explicit owner request. If a protected release requires fresh staging evidence, report the gate and hold that step. Preserve required platform reviews and controls for authentication, live migrations and recovery.
+Deliver bug fixes, enhancements and new functionality directly to https://cveharbor.com/. Start from the verified live versions, isolate the requested change, and reuse the successful application and security checks on the exact main commit. Test the affected flow with fictional data and verify it on production after publishing. Keep the previous release for recovery. Follow the owner's narrower scope when given.
+
+Production releases proceed independently of staging. Retain the protected production environment reviews, authentication boundaries, migration checks, backups and recovery holds. If main contains held changes, use a reviewed scoped package based on live production.
+
+Refresh staging monthly from the versions actually serving production. Match application code, compatible schema and public reference data. Use staging-specific credentials, bindings, fictional accounts and isolated notification delivery. Keep private customer records, authentication material and live email recipients in production. Record the versions and any differences after each refresh.
 
 Record review, release evidence and outstanding tests on the change PR. Follow the protected release runbook for the target environment.
 

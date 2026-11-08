@@ -1,4 +1,4 @@
-// Runs only inside the existing approved production deployment job, after the staging gate.
+// Runs only inside the existing approved production deployment job, after exact-commit CI.
 import fs from 'node:fs';import assert from 'node:assert/strict';import {spawnSync} from 'node:child_process';
 import {forwardMigrations,migrationConfig} from './release_migrations.mjs';import {d1Client} from './cloudflare_d1.mjs';
 import {verifyNativeHistory,recordNativeChecksums} from '../staging/scripts/simple-release.mjs';

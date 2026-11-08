@@ -72,11 +72,11 @@ def validate(doc, filename):
     publishers = {'deploy-worker-code.yml':'deploy','deploy-account-worker.yml':'deploy','activate-confirmation-domain.yml':'activate','bootstrap.yml':'sync'}
     if filename in publishers:
         jobs=doc.get('jobs',{})
-        gate=jobs.get('staging-ready',{})
-        require(jobs.get(publishers[filename],{}).get('needs')=='staging-ready' or jobs.get(publishers[filename],{}).get('needs')==['validate','staging-ready'], filename+': production must depend on exact-commit staging success')
-        runners=[s for s in gate.get('steps',[]) if s.get('run')=='node scripts/require_staging_release.mjs']
-        require(len(runners)==1 and 'if' not in runners[0] and runners[0].get('env',{}).get('SIMPLE_RELEASE_ENABLED')=='${{ vars.SIMPLE_RELEASE_ENABLED }}', filename+': staging gate must not silently skip')
-        require(gate.get('permissions')=={'contents':'read','actions':'read'} and not gate.get('environment'), filename+': check staging before production credentials/approval')
+        gate=jobs.get('release-ready',{})
+        require(jobs.get(publishers[filename],{}).get('needs')=='release-ready' or jobs.get(publishers[filename],{}).get('needs')==['validate','release-ready'], filename+': production must depend on exact-commit application and security checks')
+        runners=[s for s in gate.get('steps',[]) if s.get('run')=='python scripts/production_release_checks.py']
+        require(len(runners)==1 and 'if' not in runners[0] and runners[0].get('env')=={'GH_TOKEN':'${{ github.token }}'} and not runners[0].get('continue-on-error'), filename+': production checks must run and succeed')
+        require(gate.get('permissions')=={'contents':'read','actions':'read'} and not gate.get('environment'), filename+': check CI before production credentials/approval')
     for name, job in doc.get('jobs', {}).items():
         label = filename + '/' + name
         raw = json.dumps(job)

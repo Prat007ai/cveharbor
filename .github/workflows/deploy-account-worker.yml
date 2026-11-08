@@ -22,7 +22,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  staging-ready:
+  release-ready:
     if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true'
     runs-on: ubuntu-latest
     permissions:
@@ -33,16 +33,12 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: '24'
-      - name: Require staging success for this exact commit before production approval
+      - name: Verify application and security checks for this production commit
         env:
-          SIMPLE_RELEASE_ENABLED: ${{ vars.SIMPLE_RELEASE_ENABLED }}
           GH_TOKEN: ${{ github.token }}
-        run: node scripts/require_staging_release.mjs
+        run: python scripts/production_release_checks.py
   deploy:
-    needs: staging-ready
+    needs: release-ready
     if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && vars.PRODUCTION_DEPLOYMENTS_ENABLED == 'true' && inputs.backup_confirmed == true && inputs.deploy_confirmed == true
     name: Migrate existing D1 and deploy authenticated Worker
     runs-on: ubuntu-latest

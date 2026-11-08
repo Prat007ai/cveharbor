@@ -193,14 +193,14 @@ class RecoveryIsolationTests(unittest.TestCase):
   self.assertTrue(policy.validate(doc,'cvie-staging.yml'))
 
 class SimplifiedReleaseSecurityTests(unittest.TestCase):
- def test_production_publishers_cannot_skip_exact_commit_staging_gate(self):
+ def test_production_publishers_cannot_skip_exact_commit_ci_gate(self):
   for filename,job in [('bootstrap.yml','sync'),('deploy-worker-code.yml','deploy'),('deploy-account-worker.yml','deploy'),('activate-confirmation-domain.yml','activate')]:
    doc=policy.load_workflow((ROOT/'.github/workflows'/filename).read_text())
    self.assertEqual(policy.validate(doc,filename),[])
    doc['jobs'][job].pop('needs')
    self.assertTrue(policy.validate(doc,filename))
    doc=policy.load_workflow((ROOT/'.github/workflows'/filename).read_text())
-   next(s for s in doc['jobs']['staging-ready']['steps'] if s.get('run')=='node scripts/require_staging_release.mjs')['if']='false'
+   next(s for s in doc['jobs']['release-ready']['steps'] if s.get('run')=='python scripts/production_release_checks.py')['if']='false'
    self.assertTrue(policy.validate(doc,filename))
  def test_each_accounts_upload_requires_live_d1_preflight(self):
   publishers = [('deploy-worker-code.yml', 'deploy'), ('deploy-account-worker.yml', 'deploy'), ('activate-confirmation-domain.yml', 'activate')]
@@ -231,9 +231,9 @@ class SimplifiedReleaseSecurityTests(unittest.TestCase):
   for filename,job in [('bootstrap.yml','sync'),('deploy-worker-code.yml','deploy')]:
    doc=policy.load_workflow((ROOT/'.github/workflows'/filename).read_text())
    self.assertNotIn('concurrency',doc)
-   self.assertNotIn('concurrency',doc['jobs']['staging-ready'])
+   self.assertNotIn('concurrency',doc['jobs']['release-ready'])
    self.assertEqual(doc['jobs'][job]['concurrency'],{'group':'cveharbor-production-release','cancel-in-progress':False})
-  self.assertTrue(any(s.get('run')=='node scripts/verify_frontend_backend.mjs --wait' for s in policy.load_workflow((ROOT/'.github/workflows/bootstrap.yml').read_text())['jobs']['staging-ready']['steps']))
+  self.assertTrue(any(s.get('run')=='node scripts/verify_frontend_backend.mjs --wait' for s in policy.load_workflow((ROOT/'.github/workflows/bootstrap.yml').read_text())['jobs']['release-ready']['steps']))
 
 class CustomerCandidateWorkflowTests(unittest.TestCase):
  def test_candidate_requires_manual_main_opt_in_and_baseline_lane_disabled(self):
