@@ -1,4 +1,4 @@
-"""Apply only the reviewed catalogue save fix to the recorded production frontend."""
+"""Build the catalogue navigation fix on the recorded production frontend."""
 import hashlib
 import os
 from pathlib import Path
@@ -7,8 +7,9 @@ import subprocess
 import sys
 
 BASE = "64b715e46819d68be389bd894558ca29afe5ac52"
-CANDIDATE = "49a7e29fc06cfe82f933004bd9432516e6ab722c"
-CHANGED = {"app.js"}
+PREVIOUS_FIX = "49a7e29fc06cfe82f933004bd9432516e6ab722c"
+CANDIDATE = "e4ffd7fdde0d09d873c6d47d0cf2ba97d7fb915a"
+CHANGED = {"app.js", "accounts.js"}
 # These two feeds were generated immediately before the original upload.
 LIVE_ONLY = {"lifecycle.js", "patch-notes.js"}
 # Publication 41882606976, job 126758693492: 14 uploaded + 60 reused.
@@ -33,11 +34,14 @@ def git(*args):
 
 
 def prepare(out):
-    require(git("show", "HEAD:app.js") == git("show", CANDIDATE + ":app.js"), "Unreviewed catalogue code")
-    patch = git("diff", CANDIDATE + "^", CANDIDATE, "--", "app.js")
+    for source in CHANGED:
+        require(git("show", "HEAD:" + source) == git("show", CANDIDATE + ":" + source), "Unreviewed " + source)
+    patch = git("diff", CANDIDATE + "^", CANDIDATE, "--", *sorted(CHANGED))
     out.mkdir()
     tree = out / "source"
     git("-c", "core.autocrlf=false", "worktree", "add", "--detach", str(tree), BASE)
+    prior_patch = git("diff", PREVIOUS_FIX + "^", PREVIOUS_FIX, "--", "app.js")
+    subprocess.run(["git", "apply", "-"], cwd=tree, input=prior_patch, check=True)
     for name in ("before", "after"):
         if name == "after":
             subprocess.run(["git", "apply", "-"], cwd=tree, input=patch, check=True)
@@ -51,7 +55,7 @@ def prepare(out):
             "Production inventory differs from the original 74 assets")
     changed = {p for p in paths if (before / p).read_bytes() != (after / p).read_bytes()}
     require(changed == CHANGED, "Unexpected built catalogue delta: " + str(changed))
-    print("Verified only app.js changes across the 74 production paths.")
+    print("Verified only app.js and accounts.js change across the 74 production paths.")
 
 
 if __name__ == "__main__":
