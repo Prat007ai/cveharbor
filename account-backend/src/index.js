@@ -20,7 +20,7 @@ import {catalogueProducts,catalogueRevision} from './catalogue-selection.js';
 import {newSecret,totp,verifyTotp,encryptSecret,decryptSecret,newRecoveryCodes,hashRecovery} from './totp.js';
 import { saveOptin, loadAlertSubscription, sendUserSample, dispatchDueDigests, unsubscribe } from './delivery.js';
 import { handlePublicCveLookup } from './cve-lookup.js';
-import {cvieRoute,subscribeProducts,syncAccountProducts,runCvieStep,dispatchCvie,CvieError} from './cvie.js';
+import {cvieRoute,subscribeProducts,syncAccountProducts,runCvieStep,dispatchCvie,discoverTopicArchive,CvieError} from './cvie.js';
 import {dispatchEvidence} from './cvie-evidence.js';
 import {productCpe,normalizeName} from './product-identity.js';
 import { handler as lifecycleHandler, LifecycleError, dispatchLifecycle } from './lifecycle.js';
@@ -396,7 +396,10 @@ const application = {async fetch(req,env,ctx){
  }catch(error){error=integrityError(error);if(error instanceof ReviewError||error instanceof WorkflowError||error instanceof FyiError||error instanceof AssignmentError||error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
-  if(_event.cron==='* * * * *'&&env.CVIE_TOPIC_HISTORY_ENABLED==='true')ctx.waitUntil(updateTopicHistory(env));
+  if(_event.cron==='* * * * *'&&env.CVIE_TOPIC_HISTORY_ENABLED==='true'){
+   ctx.waitUntil(updateTopicHistory(env));
+   if(Math.floor((_event.scheduledTime||Date.now())/60000)%5===2)ctx.waitUntil(discoverTopicArchive(env));
+  }
   if(_event.cron==='* * * * *'){scheduleStatusMail(env,ctx);scheduleProgress(env,ctx);scheduleFyi(env,ctx);ctx.waitUntil(approvedTest(env));ctx.waitUntil(observeCvie(env,'disclosure_dispatch',dispatchEvidence));if(env.PRODUCT_MONITOR_CHECKS_ENABLED==='true'&&env.PRODUCT_MONITOR_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchProductMonitorMail(env));return;}
   if(_event.cron==='*/5 * * * *'){ctx.waitUntil(observeCvie(env,'nvd_dispatch',dispatchCvie));return;}
   if(env.ALERT_DELIVERY_ENABLED==='true')ctx.waitUntil(dispatchDueDigests(env));

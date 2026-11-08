@@ -17,3 +17,11 @@ CREATE TRIGGER cvie_topic_changed AFTER UPDATE OF record_json, state, published 
 WHEN NEW.record_json IS NOT OLD.record_json OR NEW.state IS NOT OLD.state OR NEW.published IS NOT OLD.published BEGIN
   INSERT OR REPLACE INTO cvie_topic_pending VALUES(NEW.cve_id,hex(randomblob(16)));
 END;
+
+-- One publication-date discovery cursor shared across all users and all topics.
+CREATE TABLE cvie_topic_archive (
+ id INTEGER PRIMARY KEY CHECK(id=1), anchor INTEGER NOT NULL DEFAULT 0,
+ window_no INTEGER NOT NULL DEFAULT 0, offset_no INTEGER NOT NULL DEFAULT 0,
+ complete INTEGER NOT NULL DEFAULT 0, retry_at INTEGER NOT NULL DEFAULT 0, lease INTEGER NOT NULL DEFAULT 0
+);
+INSERT INTO cvie_topic_archive(id) VALUES(1);

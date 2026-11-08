@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {DB} from './helpers/d1.mjs';
 import {updateTopicHistory,catalogueHistory} from '../src/cvie-topic-history.js';
-import {monthsAgo,cvieRoute} from '../src/cvie.js';
+import {monthsAgo,cvieRoute,discoverTopicArchive} from '../src/cvie.js';
 const migration=readFileSync(new URL('../../deployment/proposals/cvie-topic-history/0033_cvie_topic_history.sql',import.meta.url),'utf8');
 test('shared source history uses saved topics, stable pages and withdrawals across accounts',async()=>{
  const env={DB:new DB()},db=env.DB.sql,now=Date.now();
@@ -38,5 +38,23 @@ test('shared source history uses saved topics, stable pages and withdrawals acro
   assert.ok(!(await page('a',3)).advisories.some(r=>r.id===id(77)));
   await updateTopicHistory(env);
   assert.equal(db.prepare('SELECT count(*) n FROM cvie_topic_matches WHERE cve_id=?').get(id(77)).n,0);
+ }finally{db.close();}
+});
+test('one shared archive cursor survives provider failure and feeds lower-priority public records',async()=>{
+ const env={DB:new DB(),CVIE_TOPIC_HISTORY_ENABLED:'true'},db=env.DB.sql,now=Date.now();
+ try{
+  db.exec(migration);
+  await assert.rejects(discoverTopicArchive(env,async()=>new Response('unavailable',{status:503}),now));
+  const prior=db.prepare('SELECT * FROM cvie_topic_archive').get();assert.equal(prior.window_no,0);assert.equal(prior.offset_no,0);
+  let calls=0;
+  const provider=async input=>{
+   calls++;const url=new URL(input);
+   assert.equal(url.hostname,'services.nvd.nist.gov');assert.equal(url.searchParams.get('startIndex'),'0');
+   return Response.json({startIndex:0,totalResults:1,vulnerabilities:[{cve:{id:'CVE-2026-12345',published:url.searchParams.get('pubStartDate')}}]});
+  };
+  await Promise.all([discoverTopicArchive(env,provider,prior.retry_at),discoverTopicArchive(env,provider,prior.retry_at)]);
+  assert.equal(calls,1);assert.equal(db.prepare('SELECT window_no FROM cvie_topic_archive').get().window_no,1);
+  const row=db.prepare('SELECT cve_id,priority FROM cvie_disclosure_queue').get();
+  assert.equal(row.cve_id,'CVE-2026-12345');assert.equal(row.priority,3);
  }finally{db.close();}
 });

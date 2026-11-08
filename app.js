@@ -996,7 +996,7 @@
     exportButton.onclick=()=>{
       const a=document.createElement('a');
       const payload={exported_at:new Date().toISOString(),public_snapshot:lastSuccess||null,period:topicPeriod,
-        scope:'Recorded matches in the available index',shared_disclosure_page_complete:window.CVEHARBOR_CVIE?.indexedHistory?(!window.CVEHARBOR_CVIE.indexedHistory.next&&!window.CVEHARBOR_CVIE.indexedHistory.error&&!window.CVEHARBOR_CVIE.indexedHistory.loading):null,private_history_loaded:!!window.CVEHARBOR_CVIE?.historyLoaded,records:topicBrowser.rows.map(({r,labels,exact})=>({id:r.id,title:r.title,published:r.published,severity:r.severity,known_exploited:!!r.known_exploited,topics:labels,registered_product_matches:exact,source_product_evidence:r.topic_matches||[],sources:r.sources||[]}))};
+        scope:'Recorded matches in the available index',shared_disclosure_page_complete:window.CVEHARBOR_CVIE?.indexedHistory?(!window.CVEHARBOR_CVIE.indexedHistory.next&&!window.CVEHARBOR_CVIE.indexedHistory.error&&!window.CVEHARBOR_CVIE.indexedHistory.loading):null,private_history_loaded:!!window.CVEHARBOR_CVIE?.historyLoaded,records:topicBrowser.rows.map(({r,labels,exact})=>({id:r.id,title:r.title,published:r.published,severity:r.severity,known_exploited:!!r.known_exploited,topics:labels,registered_product_matches:exact,version_evidence:versionMatches(r,exact),source_product_evidence:r.topic_matches||[],sources:r.sources||[]}))};
       const url=URL.createObjectURL(new Blob([JSON.stringify(payload)],{type:'application/json'}));
       a.href=url;a.download='cvie-followed-advisories.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
     };
@@ -1006,6 +1006,15 @@
     root.append(heading,summary,controls,count,list,prev,next,more,exportButton,packages);
     target.prepend(root);
     topicBrowser={root,heading,summary,filter,search,list,count,prev,next,more};
+  }
+  function versionMatches(record,registered){
+    const results=[];
+    for(const product of personalized?.products||[]){
+      if(product.enabled===false||!product.version||!registered.includes(product.name))continue;
+      const match=window.CVEHARBOR_INVENTORY_MATCH?.candidate({technology:product.name,version:product.version},record);
+      if(match?.level==='version_review')results.push({name:product.name,version:product.version,evidence:match.evidence});
+    }
+    return results;
   }
   function renderTopicFeed(){
     if(!topicBrowser)return;
@@ -1060,11 +1069,12 @@
     for(const {r,labels,exact} of rows.slice(offset,offset+50)){
       const li=document.createElement('li'),detail=text('button','technology-name-action',r.id+' · '+(r.title||r.id));detail.type='button';detail.onclick=()=>showDetail(r);
       const affected=(r.topic_matches||[]).filter(m=>!topicFilter||m.topic===topicFilter).flatMap(m=>m.source_products);
+      const versions=versionMatches(r,exact).map(m=>m.name+' '+m.version+' · '+m.evidence);
       const reason=exact.length?'Registered product: '+exact.join(', '):'Followed topic';
-      li.append(detail,text('p','cvie-caption',[fmtDate(r.published),...labels,reason,...new Set(affected),r.known_exploited?'Known exploited':''].filter(Boolean).join(' · ')));fragment.append(li);
+      li.append(detail,text('p','cvie-caption',[fmtDate(r.published),...labels,reason,...versions,...new Set(affected),r.known_exploited?'Known exploited':''].filter(Boolean).join(' · ')));fragment.append(li);
     }
     const descriptions=topicFilter&&categories.find(c=>c.name===topicFilter)?.description;
-    if(indexed)summary.textContent+=' '+(indexed.error||((indexed.coverage==='indexing_stored_disclosures'?'Historical disclosures are being indexed. ':'')+(indexed.next?'More stored disclosures are available. ':'')+(indexed.sourceStart?'Shared source coverage begins '+fmtDate(new Date(indexed.sourceStart).toISOString())+'.':'')));
+    if(indexed)summary.textContent+=' '+(indexed.error||((indexed.coverage==='indexing_stored_disclosures'?'Historical disclosures are being indexed. ':'')+(indexed.archiveDiscoveryComplete===false?'The shared 12-month backfill is in progress. ':'')+(indexed.next?'More stored disclosures are available. ':'')+(indexed.sourceStart?'Shared source coverage begins '+fmtDate(new Date(indexed.sourceStart).toISOString())+'.':'')));
     if(descriptions)summary.textContent+=' Topic coverage: '+descriptions+'.';
     if(rows.length)summary.textContent+=' Recorded publication dates in this view span '+fmtDate(new Date(rows.reduce((min,x)=>Math.min(min,x.date),Infinity)).toISOString())+' to '+fmtDate(new Date(rows.reduce((max,x)=>Math.max(max,x.date),0)).toISOString())+'.';
     list.replaceChildren(fragment);list.start=offset+1;prev.disabled=topicPage===0;next.disabled=offset+50>=rows.length;

@@ -122,6 +122,6 @@ export async function catalogueHistory(env,userId,params,now,monthsAgo){
   if(!records.has(r.cve_id))records.set(r.cve_id,{...JSON.parse(r.record_json),known_exploited:!!r.kev,topic_matches:[]});
   records.get(r.cve_id).topic_matches.push({topic:r.topic,source_products:JSON.parse(r.products_json)});
  }
- const coverage=await db.prepare("SELECT complete,EXISTS(SELECT 1 FROM cvie_topic_pending) AS pending,(SELECT coverage_start_at FROM cvie_sources WHERE id='cve_program') AS source_start FROM cvie_topic_backfill WHERE id=1").first();
- return {advisories:[...records.values()],next:page.length>50?btoa(JSON.stringify({period,end,topics:JSON.stringify(topics),cursor:[page[49].published,page[49].cve_id]})):null,coverage:coverage.complete&&!coverage.pending?'available_stored_disclosures':'indexing_stored_disclosures',source_start:coverage.source_start,from:cutoff,to:end};
+ const coverage=await db.prepare("SELECT complete,(SELECT complete FROM cvie_topic_archive WHERE id=1) AS history_discovered,EXISTS(SELECT 1 FROM cvie_topic_pending) AS pending,(SELECT coverage_start_at FROM cvie_sources WHERE id='cve_program') AS source_start FROM cvie_topic_backfill WHERE id=1").first();
+ return {advisories:[...records.values()],next:page.length>50?btoa(JSON.stringify({period,end,topics:JSON.stringify(topics),cursor:[page[49].published,page[49].cve_id]})):null,coverage:coverage.complete&&!coverage.pending?'available_stored_disclosures':'indexing_stored_disclosures',source_start:coverage.source_start,archive_discovery_complete:!!coverage.history_discovered,from:cutoff,to:end};
 }

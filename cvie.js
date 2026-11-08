@@ -55,7 +55,7 @@ async function readTopicPage(first=false){
   const page=await request('/catalogue-history?months='+months+(state.next?'&after='+encodeURIComponent(state.next):''));
   if(state!==activeHistory()||page.account_id!==accountId)return;
   if(page.next&&page.next===state.next)throw Error('History pagination did not advance.');
-  state.rows.push(...page.advisories);state.next=page.next;state.coverage=page.coverage;state.sourceStart=page.source_start;
+  state.rows.push(...page.advisories);state.next=page.next;state.coverage=page.coverage;state.sourceStart=page.source_start;state.archiveDiscoveryComplete=page.archive_discovery_complete;
  }catch(e){
   if(state===activeHistory()&&!(e instanceof SessionChanged))state.error='Shared disclosure history could not be loaded. Retry the history page.';
  }finally{state.loading=false;window.dispatchEvent(new Event('cvie:catalogue-page'));}
