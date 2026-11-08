@@ -143,7 +143,9 @@ def verify_asset(path, auth, expected):
 
 
 def publish(out, *, site_env=SITE_ENV, independent=False, pr_number=283, previous_version=OLD_VERSION,
-            previous_deployment=OLD_DEPLOYMENT, changed=CHANGED, readiness=ready):
+            previous_deployment=OLD_DEPLOYMENT, changed=CHANGED, readiness=None):
+    if readiness is None:
+        readiness = ready
     policy(site_env, independent)
     approval(site_env)
     evidence(pr_number)
