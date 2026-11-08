@@ -47,6 +47,10 @@ on:
       - '.github/workflows/deploy-worker-code.yml'
   workflow_dispatch:
     inputs:
+      customer_reminders:
+        description: Publish only customer and environment labels in reminder emails
+        type: boolean
+        default: false
       customer_investigation:
         description: Release only the reviewed customer investigation changes from PR 293
         type: boolean
@@ -145,6 +149,18 @@ jobs:
           python scripts/customer_investigation_release.py backend release/.build/customer-investigation
           rsync --archive --delete release/.build/customer-investigation/account-backend/src/ account-backend/src/
           node --input-type=module -e "import {backendIdentity} from './scripts/build_release_identity.mjs'; import fs from 'node:fs'; import assert from 'node:assert/strict'; assert.equal(backendIdentity(),fs.readFileSync('release/customer-investigation/backend-identity.txt','utf8').trim())"
+          node --test account-backend/tests/customer-assignment-email.test.mjs
+      - name: Assemble and verify the reminder-only production Worker
+        if: inputs.customer_reminders == true
+        env:
+          MODE: ${{ inputs.release_mode }}
+          OTHER_PACKAGE: ${{ inputs.customer_investigation || inputs.assignment_release || inputs.query_fix_287 }}
+        run: |
+          test "$MODE" = code-only
+          test "$OTHER_PACKAGE" != true
+          python -c "import sys; sys.path.insert(0,'scripts'); from customer_investigation_release import ready; ready()"
+          python scripts/customer_investigation_release.py reminder-backend release/.build/customer-reminder
+          rsync --archive --delete release/.build/customer-reminder/account-backend/src/ account-backend/src/
           node --test account-backend/tests/customer-assignment-email.test.mjs
       - name: Confirm deployment credentials
         env:

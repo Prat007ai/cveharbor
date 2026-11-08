@@ -18,14 +18,31 @@ BACKEND = {'assignment-acknowledgement.js', 'assignment-template.js', 'assignmen
            'customer-remediation.js', 'remediation.js'}
 
 
-def backend(out):
+def backend(out, reviewed_ref='HEAD'):
     previous.backend(out, reviewed_ref=BASE)
     for name in BACKEND:
         path = 'account-backend/src/' + name
         target = out / path
         package.require(target.read_bytes() == package.git('show', BASE + ':' + path),
                         'Production baseline differs for ' + path)
+        target.write_bytes(package.git('show', reviewed_ref + ':' + path))
+
+
+def reminder_backend(out):
+    baseline = 'fea290c4031cb600e86a84673212a3ae8f46853b'
+    backend(out, reviewed_ref=baseline)
+    identity = "import {backendIdentity} from './scripts/build_release_identity.mjs'; console.log(backendIdentity(process.argv[1]))"
+    def verify_identity(pin):
+        result = subprocess.check_output(['node', '--input-type=module', '-e', identity, str(out)], text=True)
+        package.require(result.strip() == Path(pin).read_text().strip(), 'Unexpected reminder Worker package')
+    verify_identity('release/customer-investigation/backend-identity.txt')
+    for name in ['assignment-fyi.js', 'assignment-progress-mail.js']:
+        path = 'account-backend/src/' + name
+        target = out / path
+        package.require(target.read_bytes() == package.git('show', baseline + ':' + path),
+                        'Reminder source differs from production: ' + name)
         target.write_bytes(package.git('show', 'HEAD:' + path))
+    verify_identity('release/customer-investigation/reminder-backend-identity.txt')
 
 
 def site(out):
@@ -66,6 +83,8 @@ def run(action, out=None):
         site(out)
     elif action == 'backend':
         backend(out)
+    elif action == 'reminder-backend':
+        reminder_backend(out)
     elif action == 'preflight':
         promotion.evidence(293)
         promotion.policy(ENVIRONMENT)

@@ -4,6 +4,14 @@ import {sendEmail} from './delivery.js';
 import {escapeHtml,advisoryFields,trustedReference,customerEmailFields} from './assignment-template.js';
 const now=()=>Math.floor(Date.now()/1000);
 const hash=async value=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value))),b=>b.toString(16).padStart(2,'0')).join('');
+export async function sharedAssignmentScope(env,row){
+ const fingerprint=JSON.parse(row.public_advisory_json||'{}').context_fingerprint;
+ if(!fingerprint)return null;
+ const scope=await recordScope(env,row.user_id,row.cve_id);
+ if(!scope)return null;
+ const current=await hash(JSON.stringify([scope.customer_id,scope.environment_id||'']));
+ return current===fingerprint?scope:null;
+}
 export class FyiError extends Error{constructor(message,status=400){super(message);this.status=status;}}
 export function normalizeFyi(value,assignee){
  if(value===undefined)return [];
@@ -49,13 +57,7 @@ export async function dispatchFyi(env){
   const lease=crypto.randomUUID();
   const claim=await env.DB.prepare("UPDATE remediation_assignment_notifications SET state='sending',claimed_at=?,claim_token=? WHERE id=? AND state='queued' AND EXISTS(SELECT 1 FROM remediation_assignment_requests a WHERE a.id=assignment_id AND a.revoked_at IS NULL)").bind(now(),lease,item.id).run();if(claim.meta?.changes!==1)continue;
   const row=await env.DB.prepare('SELECT n.*,a.user_id,a.cve_id,a.recipient_email AS assignee_email,a.requester_email,a.public_advisory_json FROM remediation_assignment_notifications n JOIN remediation_assignment_requests a ON a.id=n.assignment_id JOIN remediations r ON r.user_id=a.user_id AND r.cve_id=a.cve_id WHERE n.id=? AND a.revoked_at IS NULL').bind(item.id).first();
-  if(row){
-   const fingerprint=JSON.parse(row.public_advisory_json||'{}').context_fingerprint;
-   if(fingerprint){
-    const scope=await recordScope(env,row.user_id,row.cve_id);
-    if(scope&&await hash(JSON.stringify([scope.customer_id,scope.environment_id||'']))===fingerprint)row.scope=scope;
-   }
-  }
+  if(row)row.scope=await sharedAssignmentScope(env,row);
   if(row&&await workflowReady(env)){const meta=await env.DB.prepare('SELECT assigned_severity FROM remediation_assignment_metadata WHERE assignment_id=?').bind(row.assignment_id).first();row.assigned_severity=meta?.assigned_severity||'';}
   if(!row){await env.DB.prepare("UPDATE remediation_assignment_notifications SET state='cancelled',completed_at=? WHERE id=?").bind(now(),item.id).run();continue;}
   if(!await quota(env,'assignment-fyi-sender:'+row.user_id,3600,50)||!await quota(env,'assignment-target:'+await hash(row.recipient_email),86400,20)){
