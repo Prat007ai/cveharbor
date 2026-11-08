@@ -47,6 +47,10 @@ on:
       - '.github/workflows/deploy-worker-code.yml'
   workflow_dispatch:
     inputs:
+      query_fix_287:
+        description: Release only the reviewed PR 287 backend after its verified staging run
+        type: boolean
+        default: false
       release_mode:
         description: 'Explicit release operation; code-only never runs migrations or maintenance'
         type: choice
@@ -278,6 +282,12 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
         run: node scripts/production_forward_migrations.mjs
+      - name: Confirm the exact production predecessor for PR 287
+        if: inputs.query_fix_287 == true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
+        run: node scripts/verify_cvie_query_predecessor.mjs
       - name: Check candidate Worker against the live production database
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}

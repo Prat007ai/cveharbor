@@ -12,10 +12,12 @@ export async function recoveryState(env){
   return null;
  }
 }
-export const heldResponse=()=>new Response(JSON.stringify({error:'CVEHarbor is temporarily paused for maintenance. Please retry shortly. Your records and assignment links are retained.'}),{status:503,headers:{'Content-Type':'application/json','Cache-Control':'no-store','Retry-After':'60','Access-Control-Allow-Origin':'https://cveharbor.com','Access-Control-Allow-Credentials':'true'}});
+const unavailableResponse=error=>new Response(JSON.stringify({error}),{status:503,headers:{'Content-Type':'application/json','Cache-Control':'no-store','Retry-After':'60','Access-Control-Allow-Origin':'https://cveharbor.com','Access-Control-Allow-Credentials':'true'}});
+export const heldResponse=()=>unavailableResponse('CVEHarbor is temporarily paused for maintenance. Please retry shortly. Your records and assignment links are retained.');
+const busyResponse=()=>unavailableResponse('The account service is temporarily unavailable. Please retry shortly.');
 export function recoveryProtected(handler){
  async function execute(kind,input,env,ctx){
-  let state;try{state=await recoveryState(env);}catch{return kind==='fetch'?heldResponse():undefined;}
+  let state;try{state=await recoveryState(env);}catch{return kind==='fetch'?busyResponse():undefined;}
   if(state?.write_hold)return kind==='fetch'?heldResponse():undefined;
   if(!state)return handler[kind](input,env,ctx);
   // Guest receipt/reviewer GETs remain strictly read-only; they cannot send email.
@@ -23,7 +25,7 @@ export function recoveryProtected(handler){
   const guestRead=url&&['GET','HEAD'].includes(input.method)&&(/^(?:\/v1)?\/acknowledge\//.test(url.pathname)||url.hostname==='confirm.cveharbor.com'&&url.pathname.startsWith('/assignment/'));
   if(guestRead)return handler.fetch(input,env,ctx);
   const lease=crypto.randomUUID();
-  try{await env.DB.prepare('INSERT INTO operations_leases(id,kind) VALUES(?,?)').bind(lease,kind).run();}catch{return kind==='fetch'?heldResponse():undefined;}
+  try{await env.DB.prepare('INSERT INTO operations_leases(id,kind) VALUES(?,?)').bind(lease,kind).run();}catch{return kind==='fetch'?busyResponse():undefined;}
   const pending=[];const tracked={waitUntil:p=>{const settled=Promise.resolve(p).then(()=>undefined,()=>{console.warn('CVEHarbor background task failed; retained delivery state must be checked before retrying.');});pending.push(settled);}};
   const drain=async()=>{while(pending.length)await Promise.all(pending.splice(0));await env.DB.prepare('DELETE FROM operations_leases WHERE id=?').bind(lease).run();};
   try{return await handler[kind](input,env,tracked);}finally{
