@@ -64,7 +64,7 @@ export async function intelligenceResponse(request,env) {
   const data=JSON.parse(body);
   if(!data || typeof data!=='object' || Array.isArray(data)) throw Error('Invalid feed data');
   // Stored bytes can never select a global or become executable application code.
-  body='window.'+FEED_GLOBALS[name]+' = '+JSON.stringify(data).replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')+';\n';
+  body='window.'+FEED_GLOBALS[name]+' = '+body.replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')+';\n';
   type='application/javascript; charset=utf-8';
  } else if(name.endsWith('.json')) {JSON.parse(body);type='application/json; charset=utf-8';}
  else if(name.endsWith('.csv')) type='text/csv; charset=utf-8';

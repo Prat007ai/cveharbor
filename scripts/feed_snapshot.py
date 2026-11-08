@@ -212,5 +212,11 @@ def main():
   manifest=load_manifest(store,args.manifest);load_files(store,manifest)
   # Deliberately do not refresh timestamps or reset any email delivery state.
   store.compare_set('current.json',encoded({'schema':1,'manifest':args.manifest,'previous':p['manifest']}),etag);return
- result=collect(store,args.root);print(json.dumps(result));raise SystemExit(1 if result['degraded'] else 0)
+ result=collect(store,args.root)
+ # The website release verifies the exact immutable objects a data run published.
+ receipt=os.environ.get('FEED_RECEIPT_PATH')
+ if receipt:
+  manifest=load_manifest(store,result['current']['manifest'])
+  Path(receipt).write_bytes(encoded({'manifest':result['current']['manifest'],'files':manifest['files'],'collection':result['collection']}))
+ print(json.dumps(result));raise SystemExit(1 if result['degraded'] else 0)
 if __name__=='__main__':main()

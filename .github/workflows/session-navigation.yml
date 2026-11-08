@@ -19,8 +19,12 @@ on:
       site_release:
         description: Reviewed production package
         type: choice
-        options: [followed-topics, assignment-291, customer-investigation, manual-customer]
+        options: [followed-topics, assignment-291, customer-investigation, manual-customer, intelligence]
         default: followed-topics
+      feed_run_id:
+        description: Data run containing the verified intelligence receipt (intelligence release only)
+        type: string
+        required: false
       reviewed_commit:
         description: 'Exact reviewed main commit for the CVIE topic release'
         required: true
@@ -30,6 +34,8 @@ permissions:
 jobs:
   check:
     env:
+      FEED_RUN_ID: ${{ inputs.feed_run_id }}
+      FEED_RECEIPT: ${{ github.workspace }}/.feed-receipt/feed-receipt.json
       CVEHARBOR_SITE_RELEASE: ${{ inputs.site_release || (github.head_ref == 'feature/assignment-manual-customer' && 'manual-customer') || (github.head_ref == 'feature/customer-advisory-review' && 'customer-investigation') || 'followed-topics' }}
     name: Test followed topics in the production package
     if: (github.event_name == 'pull_request' && (github.head_ref == 'feature/cvie-topic-delivery' || github.head_ref == 'feature/customer-advisory-review' || github.head_ref == 'feature/assignment-manual-customer') && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
@@ -45,6 +51,14 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: false
           fetch-depth: 0
+      - name: Read the public data receipt from the selected data run
+        if: inputs.site_release == 'intelligence'
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: feed-receipt
+          path: .feed-receipt
+          run-id: ${{ inputs.feed_run_id }}
+          github-token: ${{ github.token }}
       - name: Verify the isolated production package
         run: python scripts/session_navigation_release.py prepare "$RUNNER_TEMP/catalogue"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -73,6 +87,8 @@ jobs:
 
   publish:
     env:
+      FEED_RUN_ID: ${{ inputs.feed_run_id }}
+      FEED_RECEIPT: ${{ github.workspace }}/.feed-receipt/feed-receipt.json
       CVEHARBOR_SITE_RELEASE: ${{ inputs.site_release }}
     name: Publish reviewed website to production
     if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.reviewed_commit == github.sha && github.run_attempt == 1 && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'
@@ -94,6 +110,14 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: false
           fetch-depth: 0
+      - name: Read the public data receipt from the selected data run
+        if: inputs.site_release == 'intelligence'
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: feed-receipt
+          path: .feed-receipt
+          run-id: ${{ inputs.feed_run_id }}
+          github-token: ${{ github.token }}
       - name: Verify the isolated production package
         run: python scripts/session_navigation_release.py prepare "$RUNNER_TEMP/catalogue"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020

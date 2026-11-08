@@ -102,13 +102,6 @@ def validate(doc, filename):
             requested = {m.group().split('.', 1)[1] for m in SENSITIVE.finditer(raw)}
             require(requested <= SECRET_BOUNDARIES.get(env, set()), label + ': credential is outside the environment boundary')
             prefix = REPAIR_WRITE if filename == 'production-compatibility-repair.yml' and name == 'change' else (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) if env == 'cloudflare-cvie-staging' else MANUAL if filename == 'recovery-write-hold.yml' and name == 'control' else MAIN + " && vars.FEED_PUBLICATION_ENABLED == 'true'" if env == 'cloudflare-intelligence-data' else MANUAL if env in {'cloudflare-production-audit','cloudflare-notifications-production','cloudflare-phase1-staging'} else RELEASE
-            initialize_feed = filename == 'publish-intelligence.yml' and name == 'initialize'
-            if initialize_feed:
-                prefix = MANUAL + " && inputs.initialize == true && vars.FEED_PUBLICATION_ENABLED != 'true'"
-                require(condition == prefix and env == 'cloudflare-intelligence-data', label + ': initialize only an empty main-only data environment')
-                for step in job['steps']:
-                    if SENSITIVE.search(json.dumps(step)):
-                        require(step.get('run') == 'python scripts/initialize_intelligence_feed.py', label + ': baseline verification must precede any pointer write')
             customer_schema = filename == 'customer-investigation-schema.yml' and name == 'activate'
             if 'CVEHARBOR_PROD_CUSTOMER_SCHEMA_TOKEN' in requested or customer_schema:
                 prefix = MANUAL + " && inputs.reviewed_commit == github.sha && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'"
@@ -203,7 +196,7 @@ def validate(doc, filename):
                         require(not SENSITIVE.search(json.dumps(step)), label + ': credential-free setup/cleanup required')
 
         if env == 'cloudflare-intelligence-data':
-            require(filename == 'publish-intelligence.yml' and name in {'collect', 'initialize'}, label + ': data credential caller not allowed')
+            require(filename == 'publish-intelligence.yml' and name == 'collect', label + ': data credential caller not allowed')
             require('PRODUCTION_DEPLOYMENTS_ENABLED' not in condition and 'needs' not in job, label + ': feed cannot depend on application release')
             require(not re.search(r'wrangler|deploy_site_gate|git push|d1 execute|SMTP2GO', raw), label + ': feed job cannot deploy, mutate D1 or send mail')
         if env == 'cloudflare-phase1-staging':

@@ -143,7 +143,7 @@ def verify_asset(path, auth, expected):
 
 
 def publish(out, *, site_env=SITE_ENV, independent=False, pr_number=283, previous_version=OLD_VERSION,
-            previous_deployment=OLD_DEPLOYMENT, changed=CHANGED, readiness=None):
+            previous_deployment=OLD_DEPLOYMENT, changed=CHANGED, readiness=None, verify_served=verify_asset):
     if readiness is None:
         readiness = ready
     policy(site_env, independent)
@@ -197,7 +197,7 @@ def publish(out, *, site_env=SITE_ENV, independent=False, pr_number=283, previou
     provider("/deployments", {"strategy": "percentage", "versions": [{"version_id": version, "percentage": 100}]})
     deployment = await_read(lambda: active(version))
     for path in paths:
-        await_read(lambda: verify_asset(path, auth, hashes[path]))
+        await_read(lambda: verify_served(path, auth, hashes[path]))
     check_gate()
     readiness()
     active(version, deployment)

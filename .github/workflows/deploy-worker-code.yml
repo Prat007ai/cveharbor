@@ -47,6 +47,10 @@ on:
       - '.github/workflows/deploy-worker-code.yml'
   workflow_dispatch:
     inputs:
+      intelligence:
+        description: Publish only the reviewed CVIE query repair and data reader
+        type: boolean
+        default: false
       manual_customer:
         description: Publish the manual customer assignment backend
         type: boolean
@@ -180,6 +184,22 @@ jobs:
           python scripts/manual_customer_release.py backend release/.build/manual-investigation
           rsync --archive --delete release/.build/manual-investigation/account-backend/src/ account-backend/src/
           node --test account-backend/tests/customer-assignment-email.test.mjs
+      - name: Assemble the production CVIE repair and verify the live catalogue query
+        if: inputs.intelligence == true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MODE: ${{ inputs.release_mode }}
+          OTHER_PACKAGE: ${{ inputs.manual_customer || inputs.customer_reminders || inputs.customer_investigation || inputs.assignment_release || inputs.query_fix_287 }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
+          CVIE_SHARED_SCANS_ENABLED: 'true'
+        run: |
+          test "$MODE" = code-only
+          test "$OTHER_PACKAGE" != true
+          python -c "import sys;sys.path.insert(0,'scripts'); import catalogue_promotion as p, manual_customer_release as m; p.evidence(298); m.ready()"
+          python scripts/intelligence_release.py backend release/.build/intelligence
+          rsync --archive --delete release/.build/intelligence/account-backend/src/ account-backend/src/
+          node scripts/verify_cvie_d1.mjs
       - name: Confirm deployment credentials
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
