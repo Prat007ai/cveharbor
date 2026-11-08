@@ -34,9 +34,9 @@ def git(*args):
     return subprocess.check_output(["git", *args])
 
 
-def prepare(out):
+def prepare(out, review_ref="HEAD"):
     for source in CHANGED:
-        require(git("show", "HEAD:" + source) == git("show", CANDIDATE + ":" + source), "Unreviewed " + source)
+        require(git("show", review_ref + ":" + source) == git("show", CANDIDATE + ":" + source), "Unreviewed " + source)
     patch = git("diff", REVIEW_BASE, CANDIDATE, "--", *sorted(CHANGED))
     out.mkdir()
     tree = out / "source"

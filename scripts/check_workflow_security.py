@@ -101,6 +101,16 @@ def validate(doc, filename):
             requested = {m.group().split('.', 1)[1] for m in SENSITIVE.finditer(raw)}
             require(requested <= SECRET_BOUNDARIES.get(env, set()), label + ': credential is outside the environment boundary')
             prefix = REPAIR_WRITE if filename == 'production-compatibility-repair.yml' and name == 'change' else (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) if env == 'cloudflare-cvie-staging' else MANUAL if filename == 'recovery-write-hold.yml' and name == 'control' else MAIN + " && vars.FEED_PUBLICATION_ENABLED == 'true'" if env == 'cloudflare-intelligence-data' else MANUAL if env in {'cloudflare-production-audit','cloudflare-notifications-production','cloudflare-phase1-staging'} else RELEASE
+            if filename == 'session-navigation.yml' and name == 'publish':
+                prefix = MANUAL + " && inputs.reviewed_commit == github.sha && github.run_attempt == 1 && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'"
+                require(condition == prefix and env == 'cloudflare-site-production' and job.get('needs') == 'check',
+                        label + ': reviewed SHA, production site environment and package checks required')
+                require(job.get('concurrency') == {'group':'cveharbor-production-release','cancel-in-progress':False},
+                        label + ': shared production release lock required')
+                for step in job['steps']:
+                    if SENSITIVE.search(json.dumps(step)):
+                        require(step.get('run') == 'python scripts/session_navigation_release.py publish "$RUNNER_TEMP/catalogue"',
+                                label + ': secrets restricted to the reviewed session publisher')
             if catalogue_job:
                 prefix = CATALOGUE
                 require(condition == CATALOGUE and job.get('needs') == 'catalogue-check',
