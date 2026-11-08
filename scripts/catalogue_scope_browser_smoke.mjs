@@ -201,6 +201,12 @@ try{
  await page.waitForFunction(()=>window.CVEHARBOR_CVIE.products.length===2&&!window.CVEHARBOR_CVIE.loading);
  assert.deepEqual((await page.locator('.technology-row-name').allTextContents()).sort(),['.NET Core','Windows Server OS']);
  assert.deepEqual((await page.locator('#cvieExplorer .cvie-product-status > strong').allTextContents()).sort(),['.NET Core','Windows Server OS']);
+ // A topic opens the public feed with one click even before a Windows edition is chosen.
+ await page.getByRole('button',{name:'Windows Server OS',exact:true}).click();
+ const topics=page.getByRole('region',{name:'Followed technology advisories'});
+ await topics.waitFor({state:'visible'});
+ assert.equal(await topics.getByLabel('Technology',{exact:true}).inputValue(),'windows-server-os');
+ assert.equal(await page.locator('.cvie-identity-dialog[open]').count(),0);
  // Actual API chooser and card removal, with synthetic provider-directory records.
  const family=name=>'cpe:2.3:o:microsoft:'+name+':*:*:*:*:*:*:*:*';
  const options=identityCandidates({products:['windows_server_2025','windows_server_2022','windows_server_2019'].map(name=>({cpe:{cpeName:family(name)}}))},{name:'Windows Server OS'});
@@ -211,7 +217,7 @@ try{
  let directoryCalls=0;
  globalThis.fetch=async url=>{const u=new URL(url);assert.ok(u.pathname.includes('/cpes/'),'chooser must not request vulnerability history');directoryCalls++;return Response.json({startIndex:0,totalResults:3,products:options.map(p=>({cpe:{cpeName:p.cpe}}))})};
  await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
- await page.locator('.technology-row').filter({hasText:'Windows Server OS'}).getByRole('button',{name:'Choose the exact product',exact:true}).click();
+ await page.locator('.technology-row').filter({hasText:'Windows Server OS'}).getByRole('button',{name:'Refine for my environment',exact:true}).click();
  await page.getByRole('searchbox',{name:'Search product identities'}).fill('windows server 2019');
  await page.waitForSelector('.cvie-identity-options input');
  assert.equal(directoryCalls,1);assert.match(await page.locator('.cvie-identity-options').innerText(),/2019/);

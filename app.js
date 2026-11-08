@@ -60,6 +60,9 @@
   }).sort((a,b)=>String(b.published||'').localeCompare(String(a.published||'')) || String(b.updated||'').localeCompare(String(a.updated||'')));
   const $ = id => document.getElementById(id);
   const baseItems=items.slice();
+  let topicBrowser,topicFilter='',topicPage=0,topicPeriod=3,topicOrder='recent',topicQuery='';
+  const topicIds=new Map([...featured].map(name=>[name,name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')]));
+  const publicTopicsByCve=new Map(baseItems.filter(isCVE).map(record=>[record.id,record.categories||[]]));
   const monthCutoff=months=>{const now=new Date(),day=now.getUTCDate();now.setUTCDate(1);now.setUTCMonth(now.getUTCMonth()-months);now.setUTCDate(Math.min(day,new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+1,0)).getUTCDate()));return now.getTime();};
   const inMonths=(record,months)=>{const date=Date.parse(record.published||'');return Number.isFinite(date)&&date>=monthCutoff(months)&&date<=Date.now();};
   let cvieWasSignedIn=false;
@@ -77,7 +80,7 @@
     if(state.period==='published3m'||state.period==='published12m'){state.period=window.CVEHARBOR_CVIE.months===12?'published12m':'published3m';$('dateRange').value=state.period;}
     if([...$('technologyFilter').options].some(o=>o.value===state.tech))$('technologyFilter').value=state.tech;else state.tech='all';
     renderCategories();
-    if(event.detail?.recordsChanged){renderBars();renderFocus();render();}
+    if(event.detail?.recordsChanged){renderTopicFeed();renderBars();renderFocus();render();}
   };
   window.addEventListener('cvie:updated',handleCvieUpdate);
   const cveIDs = rows => [...new Set(rows.filter(x => /^CVE-\d{4}-\d+$/i.test(x.id)).map(x => x.id))];
@@ -444,10 +447,10 @@
         freshness.append(text('span','technology-age-muted',latest?'Latest '+fmtDate(latest):missingCounts?'History unavailable':'No dated advisories'));
       }
       const nameLine=text('span','technology-name-line',''),nameButton=text('button','technology-row-name technology-name-action',x.name);nameButton.type='button';
-      nameButton.addEventListener('click',event=>{event.stopPropagation();const p=window.CVEHARBOR_CVIE?.product(x.name);if(p&&(p.status==='needs_identity'||!p.cpe))window.CVEHARBOR_CVIE.openIdentity(x.name);else openTechnologyAdvisories(x.name,false,horizon===12?'published12m':'published3m')});nameLine.append(nameButton);
+      nameButton.addEventListener('click',event=>{event.stopPropagation();if(!showTopic(x.name))openTechnologyAdvisories(x.name,false,horizon===12?'published12m':'published3m')});nameLine.append(nameButton);
       if(catalogueSignedIn&&personalized){const remove=text('button','technology-remove','×');remove.type='button';remove.title='Remove '+x.name+' from my catalogue';remove.setAttribute('aria-label',remove.title);remove.disabled=catalogueSaving;remove.addEventListener('click',event=>{event.stopPropagation();void removeTechnology(x.name)});nameLine.append(remove)}
       label.append(nameLine,freshness);
-      if(scan){const choosing=scan.status==='needs_identity'||!scan.cpe;const status=text(choosing?'button':'span','cvie-row-state '+scan.status,choosing?'Choose the exact product':window.CVEHARBOR_CVIE.statusFor(scan));if(choosing){status.type='button';status.classList.add('technology-choose');status.addEventListener('click',event=>{event.stopPropagation();window.CVEHARBOR_CVIE.openIdentity(x.name)})}label.append(status);button.setAttribute('aria-label',`View ${x.name}: ${window.CVEHARBOR_CVIE.statusFor(scan)}`);}
+      if(scan){const choosing=scan.status==='needs_identity'||!scan.cpe;const status=text(choosing?'button':'span','cvie-row-state '+scan.status,choosing?(featured.has(x.name)?'Refine for my environment':'Choose the exact product'):window.CVEHARBOR_CVIE.statusFor(scan));if(choosing){status.type='button';status.classList.add('technology-choose');status.addEventListener('click',event=>{event.stopPropagation();window.CVEHARBOR_CVIE.openIdentity(x.name)})}label.append(status);button.setAttribute('aria-label',`View ${x.name}: ${window.CVEHARBOR_CVIE.statusFor(scan)}`);}
       const counts=text('span','technology-row-counts','');
       counts.append(text('span','technology-count-new'+(recent?' has-new':''),missingCounts?'— new':`${recent} new`),
                     text('span','technology-count-all',`${missingCounts||scan&&!(horizon===12?scan.history_complete_at:scan.recent_complete_at)&&!total?'—':total} / ${horizon} months`));
@@ -456,7 +459,7 @@
       if(x.custom && addedHighlight===x.name){button.classList.add('technology-just-added');button.dataset.customProduct=x.name;}
       // Open the most recent disclosure day shown by this technology's badge.
       const openPeriod=horizon===12?'published12m':'published3m';
-      button.addEventListener('click',()=>openTechnologyAdvisories(scan?.name||x.name,false,openPeriod));
+      button.addEventListener('click',()=>{if(!showTopic(x.name))openTechnologyAdvisories(scan?.name||x.name,false,openPeriod)});
       return button;
     }
     const meta={
@@ -897,12 +900,104 @@
     }
     void saveCatalogue();
   });
+  function showTopic(name){
+    if(!topicBrowser||topicBrowser.root.hidden||!featured.has(name))return false;
+    topicFilter=name;topicQuery='';topicPage=0;
+    topicBrowser.filter.value=topicIds.get(name);topicBrowser.search.value='';
+    renderTopicFeed();topicBrowser.root.scrollIntoView({block:'start'});topicBrowser.heading.focus();
+    return true;
+  }
+  function mountTopicBrowser(){
+    const target=$('cvieExplorer');
+    if(!target||!location.pathname.startsWith('/vulnerabilities/'))return;
+    const root=text('section','cvie-panel',''),heading=text('h2','','Followed technology advisories');
+    heading.tabIndex=-1;root.setAttribute('aria-label',heading.textContent);
+    const summary=text('p','cvie-caption',''),controls=text('div','cvie-panel-head','');
+    function control(tag,name){
+      const label=text('label','',name+' '),element=document.createElement(tag);
+      label.append(element);controls.append(label);return element;
+    }
+    const filter=control('select','Technology'),period=control('select','Published'),order=control('select','Order');
+    const search=control('input','Search advisories');search.type='search';
+    period.add(new Option('Last 3 months','3'));period.add(new Option('Last 12 months','12'));
+    period.add(new Option('Older known-exploited advisories','older'));
+    order.add(new Option('Newest first','recent'));order.add(new Option('Known exploitation, then severity','priority'));
+    const list=document.createElement('ol'),count=text('p','cvie-caption','');
+    count.setAttribute('aria-live','polite');
+    const prev=text('button','','Previous 50'),next=text('button','','Next 50');
+    prev.type=next.type='button';prev.onclick=()=>{topicPage--;renderTopicFeed()};next.onclick=()=>{topicPage++;renderTopicFeed()};
+    filter.onchange=()=>{topicFilter=filter.selectedOptions[0]?.dataset.name||'';topicPage=0;renderTopicFeed()};
+    period.onchange=()=>{topicPeriod=period.value==='older'?'older':Number(period.value);topicPage=0;renderTopicFeed()};
+    order.onchange=()=>{topicOrder=order.value;topicPage=0;renderTopicFeed()};
+    search.oninput=()=>{topicQuery=search.value.trim().toLowerCase();topicPage=0;renderTopicFeed()};
+    const exportButton=text('button','','Export filtered matches');exportButton.type='button';
+    exportButton.onclick=()=>{
+      const a=document.createElement('a');
+      const payload={exported_at:new Date().toISOString(),public_snapshot:info.snapshotDate||null,period:topicPeriod,
+        scope:'Recorded topic and registered-product evidence; coverage may be partial',records:topicBrowser.exportRows};
+      const url=URL.createObjectURL(new Blob([JSON.stringify(payload)],{type:'application/json'}));
+      a.href=url;a.download='cvie-followed-advisories.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    };
+    const packages=text('a','','Check an installed npm or PyPI package and version');packages.href='/admin-tools/#versionChecker';
+    root.append(heading,summary,controls,count,list,prev,next,exportButton,packages);
+    target.prepend(root);
+    topicBrowser={root,heading,summary,filter,search,list,count,prev,next};
+  }
+  function renderTopicFeed(){
+    if(!topicBrowser)return;
+    const {root,summary,filter,search,list,count,prev,next}=topicBrowser;
+    root.hidden=!catalogueSignedIn||!personalized;
+    if(root.hidden){topicBrowser.exportRows=[];list.replaceChildren();filter.replaceChildren();count.textContent='';topicFilter='';topicQuery='';search.value='';topicPage=0;return}
+    const defaults=new Set(personalized.defaults),names=new Set([...defaults,...personalized.products.filter(p=>p.enabled!==false).map(p=>p.name)]);
+    if(!names.has(topicFilter))topicFilter='';
+    const options=[new Option('All followed technologies','')];
+    for(const name of names){const o=new Option(name,topicIds.get(name)||'custom:'+name);o.dataset.name=name;options.push(o)}
+    filter.replaceChildren(...options);filter.value=topicFilter?(topicIds.get(topicFilter)||'custom:'+topicFilter):'';
+    const engine=window.CVEHARBOR_CVIE,privateRows=engine?.topicRecords||engine?.records||[];
+    const combined=new Map(baseItems.filter(isCVE).map(r=>[r.id,r]));
+    const verified=new Map();
+    for(const r of privateRows){
+      if(!isCVE(r))continue;
+      combined.set(r.id,{...combined.get(r.id),...r});
+      const matches=verified.get(r.id)||new Set();
+      for(const name of r.cvie_products||[])matches.add(name);
+      verified.set(r.id,matches);
+    }
+    const cutoff=monthCutoff(topicPeriod==='older'?12:topicPeriod),now=Date.now();
+    const rows=[];
+    for(const r of combined.values()){
+      if(engine?.isWithdrawn?.(r.id)||String(r.status).toLowerCase()==='rejected')continue;
+      const date=Date.parse(r.published);
+      if(!Number.isFinite(date)||date>now||(topicPeriod==='older'?date>=cutoff||!r.known_exploited:date<cutoff))continue;
+      const broad=(publicTopicsByCve.get(r.id)||[]).filter(n=>defaults.has(n));
+      const exact=[...(verified.get(r.id)||[])].filter(n=>names.has(n));
+      const labels=[...new Set([...broad,...exact])];
+      if(!labels.length||topicFilter&&!labels.includes(topicFilter))continue;
+      if(topicQuery&&![r.id,r.title,...labels].join(' ').toLowerCase().includes(topicQuery))continue;
+      rows.push({r,date,labels,exact});
+    }
+    const severity={critical:4,high:3,medium:2,low:1};
+    rows.sort((a,b)=>(topicOrder==='priority'?(Number(!!b.r.known_exploited)-Number(!!a.r.known_exploited))||((severity[b.r.severity]||0)-(severity[a.r.severity]||0)):0)||b.date-a.date||a.r.id.localeCompare(b.r.id));
+    topicPage=Math.max(0,Math.min(topicPage,Math.ceil(rows.length/50)-1));const offset=topicPage*50;
+    summary.textContent='Topic matches use the shared public index'+(info.snapshotDate?' dated '+info.snapshotDate:'')+'. Registered product matches use saved CVIE evidence. Installation exposure depends on version and configuration.'+(info.coverage_limited?' The public index has limited coverage.':'');
+    count.textContent=rows.length?(offset+1)+'–'+Math.min(offset+50,rows.length)+' of '+rows.length+' recorded matches':'No recorded matches for this selection in the available index.';
+    topicBrowser.exportRows=rows.map(({r,labels,exact})=>({id:r.id,title:r.title,published:r.published,severity:r.severity,known_exploited:!!r.known_exploited,topics:labels,registered_product_matches:exact,sources:r.sources||[]}));
+    const fragment=document.createDocumentFragment();
+    for(const {r,labels,exact} of rows.slice(offset,offset+50)){
+      const li=document.createElement('li'),detail=text('button','technology-name-action',r.id+' · '+(r.title||r.id));detail.type='button';detail.onclick=()=>showDetail(r);
+      const reason=exact.length?'Registered product: '+exact.join(', '):'Followed topic';
+      li.append(detail,text('p','cvie-caption',[fmtDate(r.published),...labels,reason,r.known_exploited?'Known exploited':''].filter(Boolean).join(' · ')));fragment.append(li);
+    }
+    list.replaceChildren(fragment);list.start=offset+1;prev.disabled=topicPage===0;next.disabled=offset+50>=rows.length;
+  }
+  mountTopicBrowser();renderTopicFeed();
+  window.addEventListener('cvie:catalogue-page',renderTopicFeed);
   function applyPersonalized(){
     const allowed=new Set([...(personalized?.defaults||[]),...(personalized?.products||[]).filter(p=>p.enabled!==false).map(p=>p.name)].map(n=>n.toLowerCase()));
     items=(window.CVEHARBOR_CVIE?.merge(baseItems)||baseItems).filter(r=>!personalized||[...(r.categories||[]),...(r.cvie_products||[])].some(n=>allowed.has(n.toLowerCase())));
     for(const option of $('technologyFilter').options){option.hidden=option.value!=='all'&&!!personalized&&!allowed.has(option.value.toLowerCase());option.disabled=option.hidden}
     if(personalized&&state.tech!=='all'&&!allowed.has(state.tech.toLowerCase())){state.tech='all';$('technologyFilter').value='all'}
-    renderCategories();renderBars();renderFocus();render();
+    renderTopicFeed();renderCategories();renderBars();renderFocus();render();
   }
   function clearCatalogue(){
     catalogueSignedIn=false;catalogueAccount=undefined;personalized=null;draft=null;
