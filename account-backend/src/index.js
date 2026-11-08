@@ -291,7 +291,7 @@ const application = {async fetch(req,env,ctx){
   if(path.startsWith('/v1/website-monitor'))return await websiteMonitorRoute(req,env,user,path,req.method==='POST'&&path==='/v1/website-monitor'?await body(req):{});
   if(path.startsWith('/v1/plugin-monitor'))return await monitorRoute(req,env,user,path,req.method==='POST'?await body(req):{});
   if(path==='/v1/plugin-advisories'&&req.method==='GET')return await pluginAdvisoryRoute(req,env,user);
-  if(path.startsWith('/v1/cvie')){const data=req.method==='PUT'||req.method==='POST'?await body(req):{};return observeCvie(env,req.method!=='GET'?'onboard':path.endsWith('/progress')?'progress':path.includes('advisories')||path.includes('/evidence')?'evidence':path.includes('/directory')?'directory':'status',measured=>cvieRoute(req,measured,user,ctx,data));}
+  if(path.startsWith('/v1/cvie')){const data=req.method==='PUT'||req.method==='POST'?await body(req):{};return await observeCvie(env,req.method!=='GET'?'onboard':path.endsWith('/progress')?'progress':path.includes('advisories')||path.includes('/evidence')?'evidence':path.includes('/directory')?'directory':'status',measured=>cvieRoute(req,measured,user,ctx,data));}
   if(path.startsWith('/v1/inventory')){
    const result=await inventoryRoute(req,env,user,path,req.method==='POST'||req.method==='PUT'?await body(req):{});
    if(result.ok&&['POST','PUT','DELETE'].includes(req.method)&&(/\/assets(?:\/|$)/.test(path)||req.method==='DELETE')){

@@ -37,7 +37,7 @@ const DB={prepare(sql){
  },async first(){return (await statement.all()).results[0]||null;}};return statement;
 }};
 const env={DB,CVIE_SHARED_SCANS_ENABLED:process.env.CVIE_SHARED_SCANS_ENABLED||'false'},now=Date.now(),recent=new Date(now-92*864e5).toISOString(),history=new Date(now-366*864e5).toISOString();
-const ctx={products,families:JSON.stringify(families),sources:{}};
+const ctx={products,scope:'catalogue',families:JSON.stringify(families),sources:{}};
 const report={checked_at:new Date(now).toISOString(),read_only:true,synthetic_products:true,checks:[]};
 async function check(stage,fn){
  const before={queries,rowsRead,rowsWritten};let error;
@@ -60,7 +60,7 @@ const statusEnv={...env,DB:{prepare(sql){
  return DB.prepare(sql);
 }}};
 await check('status handler and all three engine cards',async()=>{
- const response=await cvieRoute(new Request('https://api.cveharbor.com/v1/cvie'),statusEnv,{id:userId});
+ const response=await cvieRoute(new Request('https://api.cveharbor.com/v1/cvie?scope=catalogue'),statusEnv,{id:userId});
  assert.equal(response.status,200);const state=await response.json();
  assert.equal(state.products.length,products.length);
  assert.deepEqual(state.evidence.sources.map(s=>s.id).sort(),['cisa_kev','cve_program','nvd']);

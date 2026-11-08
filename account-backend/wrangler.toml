@@ -4,6 +4,7 @@ compatibility_date = "2026-10-28"
 keep_vars = true
 
 [vars]
+INTELLIGENCE_SOURCE = "r2"
 RECOVERY_CONTROL_REQUIRED = "true"
 CVIE_SHARED_SCANS_ENABLED = "true"
 EMAIL_FROM = "alerts@cveharbor.com"
@@ -18,6 +19,10 @@ WEBSITE_MONITOR_MANUAL_ENABLED = "true"
 WEBSITE_MONITOR_ENABLED = "false"
 WEB_RISK_BILLING_ALERT_EMAIL = "pmahendran@whitecapcanada.com"
 WEB_RISK_ALERT_TEST_ENABLED = "true"
+
+[[r2_buckets]]
+binding = "INTELLIGENCE_BUCKET"
+bucket_name = "cveharbor-intelligence"
 
 [[d1_databases]]
 binding = "DB"
