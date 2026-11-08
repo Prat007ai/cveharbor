@@ -11,6 +11,11 @@ const env={DB:new DB(),CVIE_SHARED_SCANS_ENABLED:'true'},token='a'.repeat(64);
 env.DB.sql.prepare('INSERT INTO sessions VALUES(?,?,?,?)').run('s','a',await catalogueRevision(token),Date.now()/1000+3600);
 env.DB.sql.exec("INSERT INTO user_totp VALUES('a',1); INSERT INTO inventory_assets VALUES('a','WordPress'); INSERT INTO user_stack VALUES('a','Exchange SE'); UPDATE cvie_provider_budget SET next_request_at=9999999999999;");
 const data=JSON.parse(fs.readFileSync('data/demo-advisories.json','utf8'));
+// Overlapping topics exercise deduplication, paging and older KEV coverage.
+const sample=(i,days)=>({id:'CVE-2099-'+(40000+i),title:'Topic fixture '+i,summary:'Synthetic disclosure',
+ published:new Date(Date.now()-days*86400000).toISOString(),source_type:'vendor',severity:'high',
+ categories:['Windows Server OS','.NET Core'],sources:[],known_exploited:i===52});
+data.advisories.push(...Array.from({length:51},(_,i)=>sample(i,2)),sample(51,170),sample(52,410));
 let signedIn=true,failSave=false,holdSave=null,delaySave=false;
 let saveFault;
 let sessionGate,sessionUnavailable=false,catalogueUnavailable=false;
@@ -207,6 +212,15 @@ try{
  await topics.waitFor({state:'visible'});
  assert.equal(await topics.getByLabel('Technology',{exact:true}).inputValue(),'windows-server-os');
  assert.equal(await page.locator('.cvie-identity-dialog[open]').count(),0);
+ const query=topics.getByRole('searchbox');
+ await query.fill('Topic fixture');assert.equal(await topics.locator('li').count(),50);
+ await topics.getByRole('button',{name:'Next 50'}).click();assert.equal(await topics.locator('li').count(),1);
+ await topics.getByLabel('Technology',{exact:true}).selectOption('');assert.equal(await topics.locator('li').count(),50);
+ await topics.getByLabel('Published',{exact:true}).selectOption('12');
+ await topics.getByRole('button',{name:'Next 50'}).click();assert.equal(await topics.locator('li').count(),2);
+ await topics.getByLabel('Published',{exact:true}).selectOption('older');
+ assert.equal(await topics.locator('li').count(),1);assert.match(await topics.locator('li').innerText(),/CVE-2099-40052/);
+ await topics.getByLabel('Published',{exact:true}).selectOption('3');await query.fill('');
  // Actual API chooser and card removal, with synthetic provider-directory records.
  const family=name=>'cpe:2.3:o:microsoft:'+name+':*:*:*:*:*:*:*:*';
  const options=identityCandidates({products:['windows_server_2025','windows_server_2022','windows_server_2019'].map(name=>({cpe:{cpeName:family(name)}}))},{name:'Windows Server OS'});

@@ -915,7 +915,7 @@
     const summary=text('p','cvie-caption',''),controls=text('div','cvie-panel-head','');
     function control(tag,name){
       const label=text('label','',name+' '),element=document.createElement(tag);
-      label.append(element);controls.append(label);return element;
+      element.setAttribute('aria-label',name);label.append(element);controls.append(label);return element;
     }
     const filter=control('select','Technology'),period=control('select','Published'),order=control('select','Order');
     const search=control('input','Search advisories');search.type='search';
