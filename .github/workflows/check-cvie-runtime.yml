@@ -24,6 +24,7 @@ jobs:
           from verify_cvie_production import query
           from deploy_site_gate import cloudflare
           sources=query('SELECT id,status,last_attempt_at,last_success_at,publisher_at,checkpoint,error FROM cvie_sources ORDER BY id')
+          print('Public feed checkpoints:', json.dumps([{key: row.get(key) for key in ('id', 'status', 'last_attempt_at', 'last_success_at', 'publisher_at')} for row in sources]), flush=True)
           totals=query('SELECT (SELECT COUNT(*) FROM cvie_kev) AS kev_records, (SELECT COUNT(*) FROM cvie_disclosures) AS disclosures, (SELECT COUNT(*) FROM cvie_disclosure_queue) AS pending_records, (SELECT COUNT(*) FROM cvie_disclosure_queue WHERE attempts>0) AS retrying_records')[0]
           shared=query('SELECT status,seed_state,COUNT(*) AS scopes,MIN(last_success_at) AS oldest_success,MAX(last_success_at) AS newest_success FROM cvie_shared_scopes GROUP BY status,seed_state')
           queue=query('SELECT priority,COUNT(*) AS records,MIN(attempts) AS min_attempts,MAX(attempts) AS max_attempts,MIN(next_attempt_at) AS next_attempt_at FROM cvie_disclosure_queue GROUP BY priority')

@@ -4,7 +4,7 @@
 if(['threats','malware','lifecycle','admin-tools'].includes(document.body.dataset.page))return;
 const API='https://api.cveharbor.com/v1/cvie';
 const scope=/^\/(customer-dashboard|customer-reports|environments)(\/|$)/.test(location.pathname)?'inventory':'catalogue';
-let catalogueNames=null,sessionKnown=false;
+let catalogueNames=null,sessionKnown=false,lastCataloguePreferences='';
 let products=[],records=[],months=3,error='',ready=false,signedIn=false,timer=null,busy=false,pending=false,pendingSync=false;
 const panels=[];
 let lastSignature='';
@@ -318,7 +318,9 @@ async function refresh(sync=false,progressOnly=false){
 function applyCatalogue(preferences){
  if(scope!=='catalogue')return;
  const nextNames=new Set([...(preferences.defaults||[]),...(preferences.products||[]).filter(p=>p.enabled!==false).map(p=>p.name)].map(normalize));
- if(catalogueNames&&nextNames.size===catalogueNames.size&&[...nextNames].every(name=>catalogueNames.has(name)))return;
+ const signature=JSON.stringify(preferences);
+ if(catalogueNames&&signature===lastCataloguePreferences)return;
+ lastCataloguePreferences=signature;
  authEpoch++;lastFullAt=0;catalogueNames=nextNames;
  products=products.filter(p=>catalogueNames.has(normalize(p.name)));
  records=records.filter(r=>(r.cvie_products||r.categories||[]).some(name=>catalogueNames.has(normalize(name))));
