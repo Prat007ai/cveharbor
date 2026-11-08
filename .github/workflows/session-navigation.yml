@@ -20,7 +20,7 @@ permissions:
 jobs:
   check:
     name: Test signed-in navigation in the production package
-    if: (github.event_name == 'pull_request' && github.head_ref == 'fix/session-navigation' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
+    if: (github.event_name == 'pull_request' && github.head_ref == 'fix/site-owner-release' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
     runs-on: ubuntu-latest
     permissions:
       contents: read
