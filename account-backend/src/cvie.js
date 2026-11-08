@@ -1,3 +1,4 @@
+import {catalogueHistory} from './cvie-topic-history.js';
 import {registryEnabled,resolveRegistry,searchRegistry,searchDirectory,registerVerifiedCpe} from './product-registry.js';
 import {bindProductIdentities,fastEvidenceEnabled,immediateEvidence} from './cvie-onboarding.js';
 import {catalogueProducts,activeSubscription} from './catalogue-selection.js';
@@ -376,6 +377,15 @@ export async function cvieRoute(req,env,user,ctx,data={}){
  if(!await cvieReady(env))return json({ready:false,error:'CVIE database setup is required. Your saved products and inventory are unchanged.'},503);
  const url=new URL(req.url),path=url.pathname,scope=url.searchParams.get('scope')||'all';
  if(!['all','catalogue','inventory','stack'].includes(scope))throw new CvieError('Invalid product scope');
+ if(path==='/v1/cvie/catalogue-history'&&req.method==='GET'){
+  if(env.CVIE_TOPIC_HISTORY_ENABLED!=='true')return json({enabled:false},200);
+  const months=Number(url.searchParams.get('months')||3);
+  if(![3,12].includes(months))throw new CvieError('Choose 3 or 12 months');
+  const now=Date.now();
+  const result=await catalogueHistory(env,user.id,url.searchParams,now,monthsAgo);
+  if(result.invalid)throw new CvieError('This history cursor is invalid for the current catalogue');
+  return json({...result,enabled:true,account_id:user.id});
+ }
  if(path==='/v1/cvie/directory'&&req.method==='GET')return json(registryEnabled(env)?await searchDirectory(env,{q:url.searchParams.get('q')||'',vendor:url.searchParams.get('vendor')||'',ecosystem:url.searchParams.get('ecosystem')||'',identifier:url.searchParams.get('identifier')||'',scheme:url.searchParams.get('scheme')||''}):{enabled:false,candidates:[]});
  const fast=/^\/v1\/cvie\/products\/([a-f0-9-]{36})\/evidence$/.exec(path);
  if(fast&&req.method==='GET'){
@@ -391,7 +401,7 @@ export async function cvieRoute(req,env,user,ctx,data={}){
   const now=Date.now();
  const rows=(await query(env.DB,ownedProductSql(env,'p.*',scope),user.id).all()).results||[];
   const products=rows.map(overlaySharedProduct).map(p=>savedProgress(p,now));
-  return json({ready:true,fast_evidence:fastEvidenceEnabled(env),account_id:user.id,products,...(fastEvidenceEnabled(env)?{withdrawn_ids:await withdrawnIds(env)}:{}),evidence:await productSourceHealth(env,products,now)});
+  return json({ready:true,fast_evidence:fastEvidenceEnabled(env),topic_history:env.CVIE_TOPIC_HISTORY_ENABLED==='true',account_id:user.id,products,...(fastEvidenceEnabled(env)?{withdrawn_ids:await withdrawnIds(env)}:{}),evidence:await productSourceHealth(env,products,now)});
  }
  const options=/^\/v1\/cvie\/products\/([a-f0-9-]{36})\/identity-options$/.exec(path);
  if(options&&['GET','POST'].includes(req.method)){
@@ -449,7 +459,7 @@ export async function cvieRoute(req,env,user,ctx,data={}){
     candidates:!p.cpe?JSON.parse(p.candidates_json):[]};
   });
   const evidence=await productSourceHealth(env,products,now),withdrawn=await withdrawnIds(env);
-  return json({ready:true,engine:'CVIE',account_id:user.id,products,evidence,withdrawn_ids:withdrawn,excluded_product_cves:await excludedProductCves(env,user.id,evidenceCtx),default_months:3});
+  return json({ready:true,engine:'CVIE',topic_history:env.CVIE_TOPIC_HISTORY_ENABLED==='true',account_id:user.id,products,evidence,withdrawn_ids:withdrawn,excluded_product_cves:await excludedProductCves(env,user.id,evidenceCtx),default_months:3});
  }
  if(path==='/v1/cvie/advisories'&&req.method==='GET'){
   const months=Number(url.searchParams.get('months')||3),after=url.searchParams.get('after')||'';
