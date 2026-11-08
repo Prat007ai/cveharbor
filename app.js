@@ -927,14 +927,14 @@
     const prev=text('button','','Previous 50'),next=text('button','','Next 50');
     prev.type=next.type='button';prev.onclick=()=>{topicPage--;renderTopicFeed()};next.onclick=()=>{topicPage++;renderTopicFeed()};
     filter.onchange=()=>{topicFilter=filter.selectedOptions[0]?.dataset.name||'';topicPage=0;renderTopicFeed()};
-    period.onchange=()=>{topicPeriod=period.value==='older'?'older':Number(period.value);topicPage=0;renderTopicFeed()};
+    period.onchange=()=>{topicPeriod=period.value==='older'?'older':Number(period.value);topicPage=0;const months=topicPeriod==='older'?12:topicPeriod;const engine=window.CVEHARBOR_CVIE;if(engine&&engine.months!==months)void engine.setMonths(months);renderTopicFeed()};
     order.onchange=()=>{topicOrder=order.value;topicPage=0;renderTopicFeed()};
     search.oninput=()=>{topicQuery=search.value.trim().toLowerCase();topicPage=0;renderTopicFeed()};
     const exportButton=text('button','','Export filtered matches');exportButton.type='button';
     exportButton.onclick=()=>{
       const a=document.createElement('a');
-      const payload={exported_at:new Date().toISOString(),public_snapshot:info.snapshotDate||null,period:topicPeriod,
-        scope:'Recorded topic and registered-product evidence; coverage may be partial',records:topicBrowser.exportRows};
+      const payload={exported_at:new Date().toISOString(),public_snapshot:lastSuccess||null,period:topicPeriod,
+        scope:'Recorded matches in the available index',private_history_loaded:!!window.CVEHARBOR_CVIE?.historyLoaded,records:topicBrowser.rows.map(({r,labels,exact})=>({id:r.id,title:r.title,published:r.published,severity:r.severity,known_exploited:!!r.known_exploited,topics:labels,registered_product_matches:exact,sources:r.sources||[]}))};
       const url=URL.createObjectURL(new Blob([JSON.stringify(payload)],{type:'application/json'}));
       a.href=url;a.download='cvie-followed-advisories.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
     };
@@ -947,7 +947,7 @@
     if(!topicBrowser)return;
     const {root,summary,filter,search,list,count,prev,next}=topicBrowser;
     root.hidden=!catalogueSignedIn||!personalized;
-    if(root.hidden){topicBrowser.exportRows=[];list.replaceChildren();filter.replaceChildren();count.textContent='';topicFilter='';topicQuery='';search.value='';topicPage=0;return}
+    if(root.hidden){topicBrowser.rows=[];list.replaceChildren();filter.replaceChildren();count.textContent='';topicFilter='';topicQuery='';search.value='';topicPage=0;return}
     const defaults=new Set(personalized.defaults),names=new Set([...defaults,...personalized.products.filter(p=>p.enabled!==false).map(p=>p.name)]);
     if(!names.has(topicFilter))topicFilter='';
     const options=[new Option('All followed technologies','')];
@@ -958,7 +958,9 @@
     const verified=new Map();
     for(const r of privateRows){
       if(!isCVE(r))continue;
-      combined.set(r.id,{...combined.get(r.id),...r});
+      const prior=combined.get(r.id);
+      const sources=new Map([...(prior?.sources||[]),...(r.sources||[])].filter(s=>s?.url).map(s=>[s.url,s]));
+      combined.set(r.id,{...prior,...r,sources:[...sources.values()],known_exploited:r.kev_verified_at?!!r.known_exploited:!!(prior?.known_exploited||r.known_exploited)});
       const matches=verified.get(r.id)||new Set();
       for(const name of r.cvie_products||[])matches.add(name);
       verified.set(r.id,matches);
@@ -977,11 +979,11 @@
       rows.push({r,date,labels,exact});
     }
     const severity={critical:4,high:3,medium:2,low:1};
-    rows.sort((a,b)=>(topicOrder==='priority'?(Number(!!b.r.known_exploited)-Number(!!a.r.known_exploited))||((severity[b.r.severity]||0)-(severity[a.r.severity]||0)):0)||b.date-a.date||a.r.id.localeCompare(b.r.id));
+    rows.sort((a,b)=>(topicOrder==='priority'?(Number(!!b.r.known_exploited)-Number(!!a.r.known_exploited))||((severity[String(b.r.severity).toLowerCase()]||0)-(severity[String(a.r.severity).toLowerCase()]||0)):0)||b.date-a.date||a.r.id.localeCompare(b.r.id));
     topicPage=Math.max(0,Math.min(topicPage,Math.ceil(rows.length/50)-1));const offset=topicPage*50;
-    summary.textContent='Topic matches use the shared public index'+(info.snapshotDate?' dated '+info.snapshotDate:'')+'. Registered product matches use saved CVIE evidence. Installation exposure depends on version and configuration.'+(info.coverage_limited?' The public index has limited coverage.':'');
+    summary.textContent='Topic matches use the shared public index'+(lastSuccess?' dated '+lastSuccess:'')+'. Registered product matches use saved CVIE evidence. Installation exposure depends on version and configuration.'+' The public index is bounded; older disclosures can be missing.';
     count.textContent=rows.length?(offset+1)+'–'+Math.min(offset+50,rows.length)+' of '+rows.length+' recorded matches':'No recorded matches for this selection in the available index.';
-    topicBrowser.exportRows=rows.map(({r,labels,exact})=>({id:r.id,title:r.title,published:r.published,severity:r.severity,known_exploited:!!r.known_exploited,topics:labels,registered_product_matches:exact,sources:r.sources||[]}));
+    topicBrowser.rows=rows;
     const fragment=document.createDocumentFragment();
     for(const {r,labels,exact} of rows.slice(offset,offset+50)){
       const li=document.createElement('li'),detail=text('button','technology-name-action',r.id+' · '+(r.title||r.id));detail.type='button';detail.onclick=()=>showDetail(r);

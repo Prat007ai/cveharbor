@@ -39,7 +39,7 @@ function merge(base=[]){
 }
 function clearPrivate(){fastQueue=[];fastMode=false;identityDialog?.close();catalogueNames=null;products=[];records=[];withdrawn=new Set();excluded=[];accountId='';evidence={sources:[]};ready=false;lastFullAt=0;recordsMonths=0;}
 function followsTopic(p){
- return scope==='catalogue'&&((window.CVEHARBOR_CATALOG?.categories||window.CVEHARBOR_DATA?.categories||[]).some(c=>c.name===p.name));
+ return scope==='catalogue'&&(window.CVEHARBOR_CATALOG?.categories||[]).concat(window.CVEHARBOR_DATA?.categories||[]).some(c=>c.name===p.name);
 }
 let partialTopicRecords=null;
 function statusFor(p){
@@ -309,7 +309,7 @@ async function refresh(sync=false,progressOnly=false){
    incoming.push(...(page.advisories||[]));
    if(scope==='catalogue'&&requestedMonths===months&&location.pathname.startsWith('/vulnerabilities/')){
     partialTopicRecords={epoch:authEpoch,months:requestedMonths,rows:incoming};
-    window.dispatchEvent(new CustomEvent('cvie:catalogue-page'));
+    if(!after)window.dispatchEvent(new CustomEvent('cvie:catalogue-page'));
    }
    if(page.next&&visited.has(page.next))throw Error('CVIE pagination stalled. Saved results remain available.');
    if(page.next)visited.add(page.next);
