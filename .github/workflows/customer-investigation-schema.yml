@@ -1,0 +1,48 @@
+name: Activate production customer assignment storage
+on:
+  workflow_dispatch:
+    inputs:
+      reviewed_commit:
+        description: Exact reviewed main commit
+        type: string
+        required: true
+permissions:
+  contents: read
+jobs:
+  release-ready:
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.reviewed_commit == github.sha
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - run: python scripts/production_release_checks.py
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - run: node scripts/activate_customer_assignment_schema.mjs --rehearse
+  activate:
+    if: github.repository == 'Prat007ai/cveharbor' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.reviewed_commit == github.sha && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'
+    needs: release-ready
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: cloudflare-worker-production
+    concurrency:
+      group: cveharbor-production-release
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - run: node scripts/activate_customer_assignment_schema.mjs --apply
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CVEHARBOR_PROD_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_CUSTOMER_SCHEMA_TOKEN }}

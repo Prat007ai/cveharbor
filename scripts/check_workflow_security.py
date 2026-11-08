@@ -30,7 +30,7 @@ ENVIRONMENTS = {'cloudflare-cvie-staging','cloudflare-worker-production', 'cloud
 SECRET_BOUNDARIES = {
     'cloudflare-cvie-staging': {'CF_STAGING_RECOVERY_R2_ACCESS_KEY_ID','CF_STAGING_RECOVERY_R2_SECRET_ACCESS_KEY','CF_STAGING_RECOVERY_ISOLATION','CF_STAGING_RECOVERY_RESTORE_RECEIPT','CF_STAGING_RECOVERY_RESTORE_SIGNATURE','CF_STAGING_RECOVERY_EVIDENCE','CF_STAGING_R2_ACCESS_KEY_ID','CF_STAGING_R2_SECRET_ACCESS_KEY','CF_STAGING_API_TOKEN','CF_STAGING_ACCOUNT_ID','CF_STAGING_ACCESS_ISSUER','CF_STAGING_ACCESS_AUD','CF_STAGING_ACCESS_CLIENT_ID','CF_STAGING_ACCESS_CLIENT_SECRET'},
     'cloudflare-intelligence-data': {'FEED_R2_ACCESS_KEY_ID','FEED_R2_SECRET_ACCESS_KEY'},
-    'cloudflare-worker-production': {'CVEHARBOR_PROD_WORKER_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID', 'CVEHARBOR_PROD_REPAIR_AUTHORIZATION', 'CVEHARBOR_PROD_REPAIR_EVIDENCE'},
+    'cloudflare-worker-production': {'CVEHARBOR_PROD_WORKER_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID', 'CVEHARBOR_PROD_REPAIR_AUTHORIZATION', 'CVEHARBOR_PROD_REPAIR_EVIDENCE', 'CVEHARBOR_PROD_CUSTOMER_SCHEMA_TOKEN'},
     'cloudflare-site-production': {'CVEHARBOR_PROD_SITE_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID', 'CVEHARBOR_SITE_GATE_PASSWORD'},
     CATALOGUE_ENV: {'CVEHARBOR_PROD_SITE_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID', 'CVEHARBOR_SITE_GATE_PASSWORD'},
     'github-pages': {'CVEHARBOR_SITE_GATE_PASSWORD'},
@@ -70,6 +70,7 @@ def validate(doc, filename):
     require(doc.get('permissions') == {'contents':'read'}, 'workflow token must default to contents: read only')
     require(not SENSITIVE.search(json.dumps(doc.get('env', {}))), 'no workflow-wide production secrets')
     publishers = {'deploy-worker-code.yml':'deploy','deploy-account-worker.yml':'deploy','activate-confirmation-domain.yml':'activate','bootstrap.yml':'sync'}
+    publishers['customer-investigation-schema.yml'] = 'activate'
     if filename in publishers:
         jobs=doc.get('jobs',{})
         gate=jobs.get('release-ready',{})
@@ -101,6 +102,15 @@ def validate(doc, filename):
             requested = {m.group().split('.', 1)[1] for m in SENSITIVE.finditer(raw)}
             require(requested <= SECRET_BOUNDARIES.get(env, set()), label + ': credential is outside the environment boundary')
             prefix = REPAIR_WRITE if filename == 'production-compatibility-repair.yml' and name == 'change' else (CANDIDATE_STAGING if name == 'customer-candidate' else SIMPLE_STAGING if name == 'automatic-staging' else STAGING_RECOVERY if name == 'recovery' else STAGING_NORMAL) if env == 'cloudflare-cvie-staging' else MANUAL if filename == 'recovery-write-hold.yml' and name == 'control' else MAIN + " && vars.FEED_PUBLICATION_ENABLED == 'true'" if env == 'cloudflare-intelligence-data' else MANUAL if env in {'cloudflare-production-audit','cloudflare-notifications-production','cloudflare-phase1-staging'} else RELEASE
+            customer_schema = filename == 'customer-investigation-schema.yml' and name == 'activate'
+            if 'CVEHARBOR_PROD_CUSTOMER_SCHEMA_TOKEN' in requested or customer_schema:
+                prefix = MANUAL + " && inputs.reviewed_commit == github.sha && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'"
+                require(customer_schema and condition == prefix and env == 'cloudflare-worker-production' and job.get('needs') == 'release-ready', label + ': customer schema needs reviewed manual production approval')
+                require(requested == {'CVEHARBOR_PROD_CUSTOMER_SCHEMA_TOKEN', 'CVEHARBOR_PROD_ACCOUNT_ID'}, label + ': dedicated D1-only credentials required')
+                require(job.get('concurrency') == {'group':'cveharbor-production-release','cancel-in-progress':False}, label + ': shared release lock required')
+                for step in job['steps']:
+                    if SENSITIVE.search(json.dumps(step)):
+                        require(step.get('run') == 'node scripts/activate_customer_assignment_schema.mjs --apply', label + ': credentials restricted to customer schema activation')
             if filename == 'session-navigation.yml' and name == 'publish':
                 prefix = MANUAL + " && inputs.reviewed_commit == github.sha && github.run_attempt == 1 && vars.PRODUCTION_DEPLOYMENTS_ENABLED != 'true'"
                 require(condition == prefix and env == 'cloudflare-site-production' and job.get('needs') == 'check',
