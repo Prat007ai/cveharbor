@@ -386,7 +386,20 @@ class FeedTests(unittest.TestCase):
         self.assertIn('value="published3m"',html)
         self.assertIn('technology-row',js)
         self.assertIn('advisoryIDs',js)
-        groups=json.loads(js.split('const technologyGroups = ',1)[1].split(';',1)[0])
+        definition=js.split('const builtInTopics = {',1)[1].split('};',1)[0]
+        groups={}
+        identifiers=set()
+        for line in definition.splitlines():
+            line=line.strip()
+            if line.endswith(': ['):
+                group=line[:-3]
+                groups[group]=[]
+            elif line.startswith('['):
+                identifier,name=json.loads(line.rstrip(','))
+                self.assertRegex(identifier,r'^[a-z0-9]+(?:-[a-z0-9]+)*$')
+                self.assertNotIn(identifier,identifiers)
+                identifiers.add(identifier)
+                groups[group].append(name)
         self.assertEqual(set(groups),{'microsoft','applications','infrastructure','data'})
         names=[n for group in groups.values() for n in group]
         self.assertEqual(len(names),38)
