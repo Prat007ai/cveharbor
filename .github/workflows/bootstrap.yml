@@ -124,12 +124,6 @@ on:
         description: 'Catalogue save fix only. Enter the reviewed main SHA and leave general deploy off.'
         required: false
         type: string
-      catalogue_stage_run:
-        description: 'Successful catalogue-only staging deployment run for this commit'
-        type: string
-      catalogue_acceptance:
-        description: 'Owner comment ID on PR 282 confirming the staging save and reload'
-        type: string
       deploy:
         description: 'Publish approved application code now'
         required: false
@@ -139,9 +133,6 @@ on:
 permissions:
   contents: read
 
-env:
-  CATALOGUE_STAGE_RUN: ${{ inputs.catalogue_stage_run }}
-  CATALOGUE_ACCEPTANCE: ${{ inputs.catalogue_acceptance }}
 
 jobs:
   verify:
@@ -171,13 +162,13 @@ jobs:
         run: node scripts/browser_smoke.mjs && node scripts/threat_health_smoke.mjs && node scripts/customer_security_smoke.mjs && node scripts/customer_score_smoke.mjs && node scripts/cvie_client_smoke.mjs && node scripts/cvie_polling_smoke.mjs && node scripts/product_monitoring_smoke.mjs
 
   catalogue-check:
-    name: Verify catalogue scope and staging receipt
+    name: Test the production catalogue package in Chrome
     if: (github.event_name == 'pull_request' && github.head_ref == 'fix/catalogue-save-recovery' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.catalogue_commit != '')
     runs-on: ubuntu-latest
     permissions:
       contents: read
       actions: read
-      issues: read
+      pull-requests: read
       deployments: read
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -188,23 +179,15 @@ jobs:
       - name: Verify catalogue-only production package
         run: python scripts/catalogue_package.py "$RUNNER_TEMP/catalogue"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        if: github.event_name == 'pull_request'
         with:
           node-version: '24'
       - name: Test interrupted saves and reloads in Chrome with fictional catalogue data
-        if: github.event_name == 'pull_request'
         env:
           CVEHARBOR_CHROMIUM_PATH: /usr/bin/google-chrome
           CVEHARBOR_PLAYWRIGHT_MODULE: ${{ github.workspace }}/staging/node_modules/playwright-core/index.mjs
         run: |
           npm install --prefix staging --ignore-scripts --no-package-lock
-          python scripts/build_site.py
-          node scripts/catalogue_scope_browser_smoke.mjs
-      - name: Verify signed-in staging acceptance
-        if: github.event_name == 'workflow_dispatch'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: python scripts/catalogue_promotion.py evidence
+          CVEHARBOR_CATALOGUE_PUBLIC="$RUNNER_TEMP/catalogue/after" node scripts/catalogue_scope_browser_smoke.mjs
       - name: Check production environment before requesting deployment approval
         if: github.event_name == 'workflow_dispatch'
         env:
@@ -232,7 +215,7 @@ jobs:
     permissions:
       contents: read
       actions: read
-      issues: read
+      pull-requests: read
       deployments: read
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262

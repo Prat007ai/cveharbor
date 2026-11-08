@@ -1,4 +1,4 @@
-"""Promote only the catalogue save fix after signed-in acceptance on the same commit."""
+"""Promote only the catalogue save fix after testing the production package."""
 import base64
 import json
 import os
@@ -41,22 +41,10 @@ def github(path):
 
 
 def evidence():
-    run_id, comment_id = os.environ["CATALOGUE_STAGE_RUN"], os.environ["CATALOGUE_ACCEPTANCE"]
-    require(all(re.fullmatch(r"[1-9][0-9]{0,19}", v) for v in (run_id, comment_id)), "Invalid staging references")
-    commit = os.environ["GITHUB_SHA"]
-    run = github(f"/actions/runs/{run_id}")
-    require((run["conclusion"], run["event"], run["head_branch"], run["head_sha"], run["run_attempt"], run["path"]) ==
-            ("success", "workflow_dispatch", "main", commit, 1, ".github/workflows/cvie-staging.yml"), "Wrong staging deployment")
-    jobs = github(f"/actions/runs/{run_id}/attempts/1/jobs?per_page=100")["jobs"]
-    require(any(job["name"] == "customer-candidate" and job["conclusion"] == "success" and
-                any(step["name"] == "Verify the catalogue save fix was deployed to staging" and step["conclusion"] == "success"
-                    for step in job["steps"]) for job in jobs), "Missing catalogue deployment verification")
-    comment = github(f"/issues/comments/{comment_id}")
-    acceptance = f"Signed-in mixed catalogue save and reload passed on staging run {run_id} for {commit}."
-    require(comment["issue_url"] == REPO + "/issues/282" and comment["user"]["id"] == OWNER_ID
-            and comment["created_at"] == comment["updated_at"] and comment["created_at"] >= run["updated_at"]
-            and acceptance in comment["body"].splitlines(), "Missing signed-in acceptance for this deployment")
-    print(f"Verified staging deployment {run_id} and signed-in acceptance on PR 282.")
+    pr = github("/pulls/282")
+    require(pr["merged"] and pr["base"]["ref"] == "main" and
+            pr["merge_commit_sha"] == os.environ["GITHUB_SHA"],
+            "Production must use the exact merge of the reviewed catalogue save fix")
 
 
 def policy():

@@ -33,6 +33,7 @@ async function fetcher(url,options={}){
  if(delaySave&&options.method==='PUT'){delaySave=false;return new Promise(resolve=>{holdSave=async()=>resolve(await execute())})}
  return execute();
 }
+const assetRoot=path.resolve(process.env.CVEHARBOR_CATALOGUE_PUBLIC||'public');
 const directory='work/catalogue-browser';fs.mkdirSync(directory,{recursive:true});
 // A disposable regular profile allows the browser's actual page zoom to be tested.
 const context=await chromium.launchPersistentContext('',{
@@ -50,8 +51,8 @@ try{
   }
   if(url.hostname!=='127.0.0.1')return route.abort();
   if(url.pathname==='/data.js')return route.fulfill({contentType:'application/javascript',body:'window.CVEHARBOR_DATA='+JSON.stringify(data)});
-  const filename=path.resolve('public','.'+url.pathname+(url.pathname.endsWith('/')?'index.html':''));
-  if(!filename.startsWith(path.resolve('public')+path.sep)||!fs.existsSync(filename))return route.fulfill({status:404,body:''});
+  const filename=path.resolve(assetRoot,'.'+url.pathname+(url.pathname.endsWith('/')?'index.html':''));
+  if(!filename.startsWith(assetRoot+path.sep)||!fs.existsSync(filename))return route.fulfill({status:404,body:''});
   return route.fulfill({contentType:{'.html':'text/html','.js':'application/javascript','.css':'text/css','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp'}[path.extname(filename)]||'application/octet-stream',body:fs.readFileSync(filename)});
  });
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
