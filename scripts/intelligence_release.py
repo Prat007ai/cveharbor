@@ -6,12 +6,11 @@ import re
 import shutil
 import subprocess
 import sys
-import tempfile
 
 import catalogue_package as pkg
 import catalogue_promotion as prod
 import manual_customer_release as previous
-from feed_snapshot import check_manifest, decode, digest, validate_group
+from feed_snapshot import check_manifest, decode, digest
 
 BASE = 'f4d3ef9ba79294b5ccd19cf23b8cc92717357741'
 VERSION = '6c07c5e5-5301-454e-966a-e0625ec43a5b'

@@ -60,7 +60,7 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertFalse(any('update.py' in x.get('run','') for x in app['jobs']['sync']['steps']))
     def test_data_job_rejects_deployment_credentials(self):
         d=policy.load_workflow((ROOT/'.github/workflows/publish-intelligence.yml').read_text())
-        d['jobs']['collect']['steps'][-1]['env']['CLOUDFLARE_API_TOKEN']='${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}'
+        next(s for s in d['jobs']['collect']['steps'] if s.get('run') == 'python scripts/feed_snapshot.py collect')['env']['CLOUDFLARE_API_TOKEN']='${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}'
         self.assertTrue(policy.validate(d,'publish-intelligence.yml'))
     def test_restoration_only_prepares_reviewable_artifact(self):
         d=policy.load_workflow((ROOT/'.github/workflows/bootstrap.yml').read_text())
