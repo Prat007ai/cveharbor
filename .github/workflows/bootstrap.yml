@@ -121,8 +121,14 @@ on:
   workflow_dispatch:
     inputs:
       catalogue_commit:
-        description: 'Catalogue only (staging 42411365289). Enter the reviewed main SHA and leave general deploy off.'
+        description: 'Catalogue save fix only. Enter the reviewed main SHA and leave general deploy off.'
         required: false
+        type: string
+      catalogue_stage_run:
+        description: 'Successful catalogue-only staging deployment run for this commit'
+        type: string
+      catalogue_acceptance:
+        description: 'Owner comment ID on PR 282 confirming the staging save and reload'
         type: string
       deploy:
         description: 'Publish approved application code now'
@@ -132,6 +138,10 @@ on:
 
 permissions:
   contents: read
+
+env:
+  CATALOGUE_STAGE_RUN: ${{ inputs.catalogue_stage_run }}
+  CATALOGUE_ACCEPTANCE: ${{ inputs.catalogue_acceptance }}
 
 jobs:
   verify:
@@ -162,7 +172,7 @@ jobs:
 
   catalogue-check:
     name: Verify catalogue scope and staging receipt
-    if: (github.event_name == 'pull_request' && startsWith(github.head_ref, 'release/catalogue-') && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.catalogue_commit != '')
+    if: (github.event_name == 'pull_request' && github.head_ref == 'fix/catalogue-save-recovery' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.catalogue_commit != '')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -178,6 +188,7 @@ jobs:
       - name: Verify catalogue-only production package
         run: python scripts/catalogue_package.py "$RUNNER_TEMP/catalogue"
       - name: Verify signed-in staging acceptance
+        if: github.event_name == 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
         run: python scripts/catalogue_promotion.py evidence

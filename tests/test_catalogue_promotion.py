@@ -13,6 +13,29 @@ import catalogue_promotion as release
 
 
 class CataloguePromotionTests(unittest.TestCase):
+    def test_only_current_scoped_deployment_with_owner_acceptance(self):
+        commit = "a" * 40
+        timestamp = "2026-11-08T01:00:00Z"
+        run = dict(conclusion="success", event="workflow_dispatch", head_branch="main", head_sha=commit,
+                   run_attempt=1, path=".github/workflows/cvie-staging.yml", updated_at=timestamp)
+        step = dict(name="Verify the catalogue save fix was deployed to staging", conclusion="success")
+        job = dict(name="customer-candidate", conclusion="success", steps=[step])
+        comment = dict(issue_url=release.REPO + "/issues/282", user={"id": release.OWNER_ID},
+                       created_at=timestamp, updated_at=timestamp,
+                       body=f"Signed-in mixed catalogue save and reload passed on staging run 123 for {commit}.")
+        with patch.dict(os.environ, dict(GITHUB_SHA=commit, CATALOGUE_STAGE_RUN="123", CATALOGUE_ACCEPTANCE="456")):
+            for allowed, observed_run, observed_job, note in [
+                (True, run, job, comment), (False, {**run, "head_sha": "b" * 40}, job, comment),
+                (False, run, {**job, "steps": []}, comment), (False, run, job, {**comment, "user": {"id": 1}}),
+                (False, run, job, {**comment, "body": "Passed on an earlier run."}),
+            ]:
+                with patch.object(release, "github", side_effect=[observed_run, {"jobs": [observed_job]}, note]):
+                    if allowed:
+                        release.evidence()
+                    else:
+                        with self.assertRaises(RuntimeError):
+                            release.evidence()
+
     def rehearsal(self, drift=False):
         version = "44444444-4444-4444-8444-444444444444"
         uploads, activations = [], []

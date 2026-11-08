@@ -7,14 +7,13 @@ import {directoryHash, hash, output} from './customer-candidate-artifact.mjs';
 import {repository} from './customer-remediation-profile.mjs';
 import {TARGET} from '../target.mjs';
 
-// The sealed assets from runs 42146739057 (live baseline) and 42409289536
-// (catalogue candidate) were compared before preparing this one release.
+// The sealed catalogue from staging run 42411365289 differs only in public/app.js.
 export const catalogueRelease = Object.freeze({
-  baseline: 'df4f12e7a04346411535ab204dd3c87df5a577ca',
-  catalogue: '9d58ba4cd635cc4250efae6d58f8fb1eb885eb83',
-  backendVersion: '8de40d1b-b7ae-41ff-b547-43afef4da020',
-  frontendVersion: '795663c2-f609-4eb2-871a-d1dc0053f814',
-  assets: '543ee9a4aaef637148635911e4dda7117718e90f863775c661c6dc65937d081b',
+  baseline: '366a44bcf5dc2c877f59a3a800e08acead7d0871',
+  catalogue: '49a7e29fc06cfe82f933004bd9432516e6ab722c',
+  backendVersion: 'de1ccda0-37c0-4e1e-9ccd-1cc5664417c7',
+  frontendVersion: 'ab005295-1875-4cc9-ae05-8e5c3b5ef958',
+  assets: '5ef0df62ebbf24852c7ed6302ca2b69d5e26e885470fc8b2595ccdae1b58aa59',
 });
 
 export function prepareCatalogueRelease(directory = output) {
@@ -26,10 +25,10 @@ export function prepareCatalogueRelease(directory = output) {
   assert.equal(manifest.schema_sha256, '9db275d5b7baddbd372146eae2b6fd50e782776285c6bae98fbbedb599c0cf5a');
   assert.equal(hash(fs.readFileSync(path.join(directory, 'api.mjs'))), 'f8109baac6901c5458a015dc6dab7654060e7bb8c8b9a8ef569f92b3044eb799');
   assert.equal(hash(fs.readFileSync(path.join(directory, 'site.mjs'))), '2b7bf33e958af52e32058f63045a2c654c7f49b511c604eed5d58fd98d46baf9');
-  assert.equal(directoryHash(assets), 'c798d6942e8fc88ee6609f1326123b1bed30631bf953d9b0cd5bd9c128a646f5',
+  assert.equal(directoryHash(assets), 'f95c037e562d41c189750234b4f87a8aac34c79755675bcdf160f8e9157c5278',
     'The candidate no longer matches the reviewed package');
   for (const filename of ['customer-remediation-ui.js', 'operations.js']) {
-    const original = execFileSync('git', ['show', catalogueRelease.baseline + ':' + filename],
+    const original = execFileSync('git', ['show', 'df4f12e7a04346411535ab204dd3c87df5a577ca:' + filename],
       {cwd: repository, encoding: 'utf8'});
     const staged = original.replace(/https:\/\/(?:api\.|confirm\.|www\.)?cveharbor\.com/g, TARGET.origin);
     fs.writeFileSync(path.join(assets, filename), staged);

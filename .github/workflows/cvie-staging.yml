@@ -473,6 +473,18 @@ jobs:
           CF_STAGING_ACCESS_CLIENT_SECRET: ${{ secrets.CF_STAGING_ACCESS_CLIENT_SECRET }}
           CF_STAGING_ADMIN_EMAILS: ${{ vars.CF_STAGING_ADMIN_EMAILS }}
         run: node staging/scripts/customer-candidate-execute.mjs
+      - name: Verify the catalogue save fix was deployed to staging
+        if: inputs.candidate_operation == 'deploy' && inputs.candidate_scope == 'catalogue-only'
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          receipt = json.loads(Path('staging/artifacts/customer-candidate-execution.json').read_text())
+          assert receipt['commit'] == os.environ['GITHUB_SHA'] and receipt['completed'] and receipt['frontend_uploaded']
+          assert receipt['operation'] == 'deploy' and receipt['database_changed'] is False
+          steps = {step['name'] for step in receipt['steps']}
+          assert {'catalogue_baseline', 'frontend_verified', 'application_assets_verified'} <= steps
+          PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
