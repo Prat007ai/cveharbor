@@ -11,7 +11,7 @@ async function boot(source,status,payload,{network=false}={}){
  const document={readyState:'loading',addEventListener(){},querySelector:()=>null,getElementById:node,body:{classList:{contains:name=>name==='workspace-redesign',add(){},remove(){}}}};
  node('accountPageSignedOut').hidden=true;
  const modern=source.includes('window.CVEHarborAccountRead');
- const context=vm.createContext({document,setTimeout:fn=>setImmediate(fn),location:{search:''},URLSearchParams,CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail;}},window:{addEventListener(){},dispatchEvent:e=>events.push(e)},fetch:async(url,init)=>{requests++;assert.ok(url.endsWith('/v1/me'));assert.equal(init.method||'GET','GET');assert.equal(init.credentials,'include');if(network)throw Error('offline');return Response.json(payload,{status});},QRCode:undefined});
+ const context=vm.createContext({document,clearTimeout:clearImmediate,setTimeout:(fn,ms)=>ms<10000?setImmediate(fn):undefined,location:{search:''},URLSearchParams,CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail;}},window:{addEventListener(){},dispatchEvent:e=>events.push(e)},fetch:async(url,init)=>{requests++;assert.ok(url.endsWith('/v1/me'));assert.equal(init.method||'GET','GET');assert.equal(init.credentials,'include');if(network)throw Error('offline');return Response.json(payload,{status});},QRCode:undefined});
  if(modern)vm.runInContext(shared,context);
  vm.runInContext(source,context);
  for(let i=0;i<8;i++)await new Promise(setImmediate);

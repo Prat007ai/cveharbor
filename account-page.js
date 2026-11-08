@@ -203,7 +203,10 @@ $('accountPageRecoveryRotateForm').addEventListener('submit',async event=>{
  }catch(error){message(error.message)}finally{button.disabled=false}
 });
 const retry=$('accountSessionRetry');
+let reconnectTimer,checking=false,reconnectDelay=10000;
 async function checkSession(){
+ if(checking)return;
+ checking=true;clearTimeout(reconnectTimer);
  if(retry)retry.hidden=true;
  message('Checking your secure session…');
  try{
@@ -212,14 +215,19 @@ async function checkSession(){
   if(me.authenticated!==false)throw Error('Invalid session response');
  }catch(error){
   if(error.status!==401){
-   message('Your workspace could not be loaded. Please retry the connection.');
+   message('Your workspace could not be loaded. Reconnecting automatically…');
+   reconnectTimer=setTimeout(()=>{if(!document.hidden)void checkSession()},reconnectDelay);
+   reconnectDelay=Math.min(reconnectDelay*2,60000);
    if(retry)retry.hidden=false;
    return;
   }
- }
+ }finally{checking=false}
  signedOut();message('');
 }
 retry?.addEventListener('click',checkSession);
+function resumeConnection(){if(retry&&!retry.hidden&&!document.hidden)void checkSession()}
+window.addEventListener('online',resumeConnection);
+document.addEventListener('visibilitychange',resumeConnection);
 void checkSession();
 window.addEventListener('pageshow',event=>{if(event.persisted)location.reload()});
 })();

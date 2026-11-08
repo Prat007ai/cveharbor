@@ -312,7 +312,8 @@
     };
     const severities=['critical','high','medium','low','other'].map(key=>({key,label:key==='other'?'Other / unrated':severityText(key),value:unique.filter(x=>key==='other'?!['critical','high','medium','low'].includes(x.severity):x.severity===key).length}));
     const daily=series(recent),criticalDaily=series(recent.filter(x=>x.severity==='critical'));
-    const signature=JSON.stringify([groupCounts,totals,daily,criticalDaily,severities]);
+    const missingHistory=catalogueSignedIn&&totals.technologies>0&&!unique.length&&!window.CVEHARBOR_CVIE?.historyLoaded;
+    const signature=JSON.stringify([groupCounts,totals,daily,criticalDaily,severities,missingHistory]);
     if(signature===explorerMetricSignature)return;explorerMetricSignature=signature;
     const svgNode=(tag,attrs={},label='')=>{const el=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [key,value] of Object.entries(attrs))el.setAttribute(key,String(value));if(label)el.textContent=label;return el;};
     const chart=()=>svgNode('svg',{viewBox:'0 0 200 48',preserveAspectRatio:'none',focusable:'false'});
@@ -347,6 +348,11 @@
     const labels={technologies:'Browse '+totals.technologies+' technologies',recent:'View '+totals.recent+' advisories originally published in the last 30 days',indexed:'View all '+totals.indexed+' indexed advisories',critical:'View all '+totals.critical+' critical advisories'};
     document.querySelectorAll('[data-technology-metric]').forEach(button=>{
       const key=button.dataset.technologyMetric,host=button.querySelector('.kpi-chart');host.replaceChildren(charts[key]);
+      if(missingHistory&&key!=='technologies'){
+        host.replaceChildren();button.setAttribute('aria-label','Advisory history unavailable');button.title='Advisory history unavailable';
+        const insight=button.querySelector('.kpi-insight');insight.dataset.default='History unavailable';insight.textContent=insight.dataset.default;
+        return;
+      }
       button.setAttribute('aria-label',labels[key]);
       button.title=labels[key]+'. '+(key==='technologies'?'Chart shows technology groups.':key==='indexed'?'Chart shows current severity distribution.':'Chart shows daily original disclosures, not attack activity.');
       const insight=button.querySelector('.kpi-insight');insight.dataset.default=key==='technologies'?'By technology group':key==='indexed'?'Severity mix · indexed':'Daily disclosures · 30d';insight.textContent=insight.dataset.default;
@@ -420,9 +426,11 @@
       const dated=categoryRecords.filter(a=>a.source_type!=='cisa_kev' && /^\d{4}-\d{2}-\d{2}/.test(a.published||''))
         .map(a=>a.published.slice(0,10)).sort().reverse();
       const latest=dated[0]||'';
+      const scan=window.CVEHARBOR_CVIE?.product(x.name);
+      const missingCounts=catalogueSignedIn&&!total&&(!window.CVEHARBOR_CVIE?.historyLoaded||(scan&&!(horizon===12?scan.history_complete_at:scan.recent_complete_at)));
       const button=document.createElement('div');
       button.className='technology-row';
-      button.setAttribute('aria-label',`View ${x.name}: ${ages.TODAY} published today, ${ages.YESTERDAY} yesterday, ${ages['72 HOURS']} two days ago, ${recent} new in 30 days, ${total} total`);
+      button.setAttribute('aria-label',missingCounts?`View ${x.name}: History unavailable`:`View ${x.name}: ${ages.TODAY} published today, ${ages.YESTERDAY} yesterday, ${ages['72 HOURS']} two days ago, ${recent} new in 30 days, ${total} total`);
       const icon=productIcon(x);
       const label=text('span','technology-row-main','');
       const freshness=text('span','technology-row-fresh','');
@@ -433,17 +441,16 @@
         freshness.append(badge);
       }
       if(!freshness.children.length){
-        freshness.append(text('span','technology-age-muted',latest?'Latest '+fmtDate(latest):'No dated advisories'));
+        freshness.append(text('span','technology-age-muted',latest?'Latest '+fmtDate(latest):missingCounts?'History unavailable':'No dated advisories'));
       }
       const nameLine=text('span','technology-name-line',''),nameButton=text('button','technology-row-name technology-name-action',x.name);nameButton.type='button';
       nameButton.addEventListener('click',event=>{event.stopPropagation();const p=window.CVEHARBOR_CVIE?.product(x.name);if(p&&(p.status==='needs_identity'||!p.cpe))window.CVEHARBOR_CVIE.openIdentity(x.name);else openTechnologyAdvisories(x.name,false,horizon===12?'published12m':'published3m')});nameLine.append(nameButton);
       if(catalogueSignedIn&&personalized){const remove=text('button','technology-remove','×');remove.type='button';remove.title='Remove '+x.name+' from my catalogue';remove.setAttribute('aria-label',remove.title);remove.disabled=catalogueSaving;remove.addEventListener('click',event=>{event.stopPropagation();void removeTechnology(x.name)});nameLine.append(remove)}
       label.append(nameLine,freshness);
-      const scan=window.CVEHARBOR_CVIE?.product(x.name);
       if(scan){const choosing=scan.status==='needs_identity'||!scan.cpe;const status=text(choosing?'button':'span','cvie-row-state '+scan.status,choosing?'Choose the exact product':window.CVEHARBOR_CVIE.statusFor(scan));if(choosing){status.type='button';status.classList.add('technology-choose');status.addEventListener('click',event=>{event.stopPropagation();window.CVEHARBOR_CVIE.openIdentity(x.name)})}label.append(status);button.setAttribute('aria-label',`View ${x.name}: ${window.CVEHARBOR_CVIE.statusFor(scan)}`);}
       const counts=text('span','technology-row-counts','');
-      counts.append(text('span','technology-count-new'+(recent?' has-new':''),`${recent} new`),
-                    text('span','technology-count-all',`${scan&&!(horizon===12?scan.history_complete_at:scan.recent_complete_at)&&!total?'—':total} / ${horizon} months`));
+      counts.append(text('span','technology-count-new'+(recent?' has-new':''),missingCounts?'— new':`${recent} new`),
+                    text('span','technology-count-all',`${missingCounts||scan&&!(horizon===12?scan.history_complete_at:scan.recent_complete_at)&&!total?'—':total} / ${horizon} months`));
       const arrow=text('span','technology-arrow','›');arrow.setAttribute('aria-hidden','true');
       button.append(icon,label,counts,arrow);
       if(x.custom && addedHighlight===x.name){button.classList.add('technology-just-added');button.dataset.customProduct=x.name;}
@@ -488,10 +495,11 @@
     $('technologyEmpty').hidden=visible!==0;
     $('technologyEmpty').textContent=personalized&&!personalized.defaults.length&&!personalized.products.some(p=>p.enabled!==false)?'No technologies selected. Customize technologies to choose your catalogue. Shared sources and inventory monitoring continue independently.':'No matching technologies. Try another name or product.';
     main.setAttribute('aria-label',visible+' technologies by group');
+    const missingHistory=catalogueSignedIn&&visible>0&&!items.length&&!window.CVEHARBOR_CVIE?.historyLoaded;
     $('technologyTotal').textContent=String(visible);
-    $('technologyRecentMetric').textContent=String(advisoryIDs(items.filter(x=>newlyPublished(x,30))).length);
-    $('technologyIndexedMetric').textContent=String(advisoryIDs(items).length);
-    $('technologyCriticalMetric').textContent=String(advisoryIDs(items.filter(x=>x.severity==='critical')).length);
+    $('technologyRecentMetric').textContent=missingHistory?'—':String(advisoryIDs(items.filter(x=>newlyPublished(x,30))).length);
+    $('technologyIndexedMetric').textContent=missingHistory?'—':String(advisoryIDs(items).length);
+    $('technologyCriticalMetric').textContent=missingHistory?'—':String(advisoryIDs(items.filter(x=>x.severity==='critical')).length);
     renderExplorerMetrics(groupCounts);
     $('technologySearchSummary').textContent=q
       ? `${visible} of ${categories.length} technologies match your search`
@@ -899,6 +907,7 @@
     customForm.reset();$('technologyCustomizer').hidden=true;applyPersonalized();
   }
   function loadCatalogue(){
+    if(['threats','malware','lifecycle','admin-tools'].includes(document.body.dataset.page))return;
     if(catalogueLoad)return catalogueLoad;
     const epoch=++catalogueEpoch;
     catalogueLoad=readCatalogue(epoch).finally(()=>{if(epoch===catalogueEpoch)catalogueLoad=null});

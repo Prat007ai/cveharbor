@@ -14,7 +14,7 @@ const data=JSON.parse(fs.readFileSync('data/demo-advisories.json','utf8'));
 let signedIn=true,failSave=false,holdSave=null,delaySave=false;
 let saveFault;
 let sessionGate,sessionUnavailable=false,catalogueUnavailable=false;
-let transientSessions=0,transientCatalogues=0;
+let transientSessions=0,transientCatalogues=0,interruptedReads=0;
 const pending=[],seen=[];
 async function fetcher(url,options={}){
  const u=new URL(url);seen.push({path:u.pathname,scope:u.searchParams.get('scope'),method:options.method||'GET'});
@@ -27,6 +27,7 @@ async function fetcher(url,options={}){
  if(transientCatalogues>0&&u.pathname==='/v1/technology-catalogue'&&options.method==='GET'){transientCatalogues--;return new Response(null,{status:503})}
  if(catalogueUnavailable&&u.pathname==='/v1/technology-catalogue'&&options.method==='GET')return new Response(null,{status:503});
  if(!u.pathname.startsWith('/v1/cvie')&&u.pathname!=='/v1/technology-catalogue')return Response.json({});
+ if(interruptedReads&&u.pathname==='/v1/cvie/advisories'){interruptedReads--;return new Response(null,{status:503})}
  if(failSave&&options.method==='PUT')return Response.json({error:'Synthetic save failure'},{status:503});
  const execute=()=>worker.fetch(new Request(url,{...options,headers:{...options.headers,Origin:'https://cveharbor.com',...(signedIn?{Cookie:'cvh_session='+token}:{})}}),env,{waitUntil:p=>pending.push(p)});
  if(saveFault&&options.method==='PUT'){
@@ -269,7 +270,14 @@ try{
  assert.equal(await php.isChecked(),true);
  const manage=page.locator('#technologyManageButton'),dialog=page.locator('#technologySignInDialog');
  const actionStatus=page.locator('#technologyActionStatus');
+ interruptedReads=1;
+ await page.evaluate(()=>window.CVEHARBOR_CVIE.refresh());
+ assert.equal(interruptedReads,0);
+ assert.equal(await page.evaluate(()=>window.CVEHARBOR_CVIE.historyLoaded),true);
+ assert.doesNotMatch(await page.locator('#cvieExplorer .cvie-status').innerText(),/interrupted|failed to fetch/i);
+ const beforeNavigation=seen.filter(r=>r.path.startsWith('/v1/cvie')).length;
  await page.goto('http://127.0.0.1:8080/threats/');
+ assert.equal(seen.filter(r=>r.path.startsWith('/v1/cvie')).length,beforeNavigation,'public navigation must not start private scans');
  let releaseSession;
  sessionGate=new Promise(resolve=>{releaseSession=resolve});
  await page.goBack({waitUntil:'domcontentloaded'});
@@ -306,7 +314,7 @@ try{
  await page.locator('#accountSessionRetry').waitFor({state:'visible'});
  assert.equal(await guestForm.isVisible(),false);assert.equal(await loginTitle.isVisible(),false);
  sessionUnavailable=false;transientSessions=1;
- await page.locator('#accountSessionRetry').click();
+ // Wait for the workspace to reconnect on its own after the sustained outage clears.
  await page.waitForFunction(()=>document.body.classList.contains('workspace-authenticated'));
  assert.equal(await guestForm.isVisible(),false);assert.equal(await loginTitle.isVisible(),false);
  signedIn=false;await page.reload();

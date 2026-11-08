@@ -1,8 +1,10 @@
 (function(){
 'use strict';
+// Dedicated public routes share hidden explorer markup.
+if(['threats','malware','lifecycle','admin-tools'].includes(document.body.dataset.page))return;
 const API='https://api.cveharbor.com/v1/cvie';
 const scope=/^\/(customer-dashboard|customer-reports|environments)(\/|$)/.test(location.pathname)?'inventory':'catalogue';
-let catalogueNames=null,sessionKnown=false;
+let catalogueNames=null,sessionKnown=false,lastCataloguePreferences='';
 let products=[],records=[],months=3,error='',ready=false,signedIn=false,timer=null,busy=false,pending=false,pendingSync=false;
 const panels=[];
 let lastSignature='';
@@ -153,7 +155,18 @@ function openIdentity(name){
 function notify(){const signature=JSON.stringify([months,records,[...withdrawn].sort(),excluded]);const recordsChanged=signature!==lastSignature;lastSignature=signature;draw();drawIdentity();scheduleIdentityRead();window.dispatchEvent(new CustomEvent('cvie:updated',{detail:{recordsChanged}}));}
 async function request(path='',options={}){
  const epoch=authEpoch;
- const response=await fetch(API+path+(path.includes('?')?'&':'?')+'scope='+scope,{credentials:'include',...(globalThis.AbortSignal?.timeout?{signal:AbortSignal.timeout(20000)}:{}),headers:{Accept:'application/json',...(options.body?{'Content-Type':'application/json'}:{})},...options});
+ const read=()=>fetch(API+path+(path.includes('?')?'&':'?')+'scope='+scope,{credentials:'include',...(globalThis.AbortSignal?.timeout?{signal:AbortSignal.timeout(20000)}:{}),headers:{Accept:'application/json',...(options.body?{'Content-Type':'application/json'}:{})},...options});
+ let response;
+ const delays=[500,1500];
+ for(let attempt=0;;attempt++){
+  if(epoch!==authEpoch)throw new SessionChanged();
+  try{response=await read()}catch(e){
+   if(options.method||attempt===delays.length)throw e;
+  }
+  if(response&&(options.method||![502,503,504].includes(response.status)||attempt===delays.length))break;
+  await new Promise(resolve=>setTimeout(resolve,delays[attempt]));
+  response=null;
+ }
  if(epoch!==authEpoch)throw new SessionChanged();
  if(response.status===401){sessionKnown=true;authEpoch++;signedIn=false;clearPrivate();throw Error('Sign in to use private CVIE monitoring.');}
  const data=await response.json();
@@ -209,7 +222,7 @@ function draw(){
    if(fastQueue.length){const more=node('button','Load more stored CVEs');more.type='button';more.disabled=busy;more.onclick=async()=>{if(busy)return;busy=true;more.disabled=true;try{await loadFastPage();}catch(e){if(!(e instanceof SessionChanged))error=e.message;notify();}finally{busy=false;draw();if(pending){const syncNext=pendingSync;pending=false;pendingSync=false;void refresh(syncNext);}}};panel.append(more);}
   }
   const completed=products.filter(p=>p.status==='ready'&&!p.stale).length,failed=products.filter(p=>p.status==='retrying').length,verification=products.filter(p=>p.status==='needs_identity'||p.coverage?.limited).length;
-  if(scope==='catalogue')panel.append(node('p',(scope==='catalogue'?'Selected catalogue products: ':'Inventory products: ')+products.length+' · Queued/checking: '+products.filter(p=>['queued','scanning'].includes(p.status)).length+' · History complete: '+completed+' · Review required: '+verification+' · Failed/retrying: '+failed,'cvie-scope-summary'));
+  if(scope==='catalogue'&&ready)panel.append(node('p',(scope==='catalogue'?'Selected catalogue products: ':'Inventory products: ')+products.length+' · Queued/checking: '+products.filter(p=>['queued','scanning'].includes(p.status)).length+' · History complete: '+completed+' · Review required: '+verification+' · Failed/retrying: '+failed,'cvie-scope-summary'));
   const list=node('div','','cvie-product-statuses');
   for(const p of products){
    const row=node('div','','cvie-product-status');
@@ -261,7 +274,10 @@ async function refresh(sync=false,progressOnly=false){
  busy=true;checkingProgress=Boolean(lightweight);clearTimeout(timer);draw();
  const requestedMonths=months;
  try{
-  if(sync)await request('/sync',{method:'POST',body:'{}'});
+  if(sync){
+   try{await request('/sync',{method:'POST',body:'{}'})}
+   catch(e){if(e instanceof SessionChanged||sessionKnown&&!signedIn)throw e}
+  }
   if(lightweight){
    const recovering=Boolean(error);
    const state=await request('/progress');
@@ -292,17 +308,20 @@ async function refresh(sync=false,progressOnly=false){
    after=page.next||'';
   }while(after);
   if(requestedMonths===months){records=incoming;recordsMonths=requestedMonths;lastFullAt=Date.now();notify();}else pending=true;
- }catch(e){if(!(e instanceof SessionChanged)){error=e.name==='TimeoutError'?'The CVIE request timed out. Saved results remain available; automatic retry is scheduled.':e.message;notify();}}
+ }catch(e){if(!(e instanceof SessionChanged)){error=e.name==='TypeError'?'The connection to CVIE was interrupted. Reconnecting to read saved results.':e.name==='TimeoutError'?'The CVIE request timed out. Saved results remain available; automatic retry is scheduled.':e.message;notify();}}
  finally{
   busy=false;checkingProgress=false;draw();
   if(pending){const syncNext=pendingSync;pending=false;pendingSync=false;timer=setTimeout(()=>void refresh(syncNext),250);}
-  else if(signedIn&&document.visibilityState!=='hidden')timer=setTimeout(()=>void refresh(false,true),products.some(p=>['queued','scanning'].includes(p.status))?ACTIVE_POLL:IDLE_POLL);
+  else if((signedIn||error&&!sessionKnown)&&document.visibilityState!=='hidden')timer=setTimeout(()=>void refresh(false,true),error?15000:products.some(p=>['queued','scanning'].includes(p.status))?ACTIVE_POLL:IDLE_POLL);
  }
 }
 function applyCatalogue(preferences){
  if(scope!=='catalogue')return;
- authEpoch++;lastFullAt=0;
- catalogueNames=new Set([...(preferences.defaults||[]),...(preferences.products||[]).filter(p=>p.enabled!==false).map(p=>p.name)].map(normalize));
+ const nextNames=new Set([...(preferences.defaults||[]),...(preferences.products||[]).filter(p=>p.enabled!==false).map(p=>p.name)].map(normalize));
+ const signature=JSON.stringify(preferences);
+ if(catalogueNames&&signature===lastCataloguePreferences)return;
+ lastCataloguePreferences=signature;
+ authEpoch++;lastFullAt=0;catalogueNames=nextNames;
  products=products.filter(p=>catalogueNames.has(normalize(p.name)));
  records=records.filter(r=>(r.cvie_products||r.categories||[]).some(name=>catalogueNames.has(normalize(name))));
  notify();void refresh();
@@ -310,6 +329,7 @@ function applyCatalogue(preferences){
 const scopedProducts=rows=>catalogueNames&&scope==='catalogue'?rows.filter(p=>catalogueNames.has(normalize(p.name))):rows;
 window.CVEHARBOR_CVIE={get sessionKnown(){return sessionKnown;},scope,applyCatalogue,openIdentity,get coverageLimited(){return fastMode;},get hasMore(){return fastQueue.length>0;},get products(){return products;},get records(){return merge();},get evidence(){return evidence;},get months(){return months;},get ready(){return ready;},get signedIn(){return signedIn;},get loading(){return busy;},merge,refresh,statusFor,
  setMonths:value=>{if(![3,12].includes(Number(value)))throw Error('Select 3 or 12 months');months=Number(value);return refresh();},
+ get historyLoaded(){return recordsMonths===months&&lastFullAt>0;},
  product:name=>products.find(p=>normalize(p.name)===normalize(name))};
 function mountRegistryChoices(){
  for(const id of ['technologyAddName','inventoryTechnology']){

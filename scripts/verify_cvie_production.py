@@ -27,11 +27,31 @@ def query(sql):
         data=json.dumps({"sql": sql, "params": []}).encode(),
         headers={"Authorization": "Bearer " + os.environ["CLOUDFLARE_API_TOKEN"],
                  "Content-Type": "application/json"}, method="POST")
-    try:
-        with urllib.request.urlopen(request, timeout=30) as response:
-            payload = json.load(response)
-    except urllib.error.HTTPError as exc:
-        raise RuntimeError(f"Production schema verification returned HTTP {exc.code}") from None
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                payload = json.load(response)
+                break
+        except urllib.error.HTTPError as exc:
+            # Keep provider diagnostics free of customer rows, queries and credentials.
+            try:
+                errors = json.loads(exc.read(16384)).get("errors", [])
+            except (ValueError, AttributeError):
+                errors = []
+            codes = [str(e["code"]) for e in errors if isinstance(e, dict) and isinstance(e.get("code"), int)]
+            detail = " ".join(str(e.get("message", "")).lower() for e in errors if isinstance(e, dict))
+            category = next((kind for phrase, kind in (
+                ("daily row read", "daily read limit"), ("daily row write", "daily write limit"),
+                ("overloaded", "database overloaded"), ("too many requests", "rate limited"),
+                ("no such table", "table missing"), ("too many resources", "database resource limit")
+            ) if phrase in detail), "unspecified")
+            if attempt < 2 and sql.lstrip().upper().startswith("SELECT ") and exc.code in (429,502,503,504) and "daily" not in category:
+                retry_after = exc.headers.get("Retry-After", "")
+                delay = int(retry_after) if retry_after.isdigit() else 3 * (attempt + 1)
+                if delay <= 30:
+                    time.sleep(max(delay, 1))
+                    continue
+            raise RuntimeError(f"Production D1 read returned HTTP {exc.code}, provider codes {codes}, {category}") from None
     results = payload.get("result", [])
     if not payload.get("success") or not results or not all(r.get("success") for r in results):
         raise RuntimeError("Production database verification failed")
