@@ -31,7 +31,19 @@ def query(sql):
         with urllib.request.urlopen(request, timeout=30) as response:
             payload = json.load(response)
     except urllib.error.HTTPError as exc:
-        raise RuntimeError(f"Production schema verification returned HTTP {exc.code}") from None
+        # Keep provider diagnostics free of customer rows, queries and credentials.
+        try:
+            errors = json.loads(exc.read(16384)).get("errors", [])
+        except (ValueError, AttributeError):
+            errors = []
+        codes = [str(e["code"]) for e in errors if isinstance(e, dict) and isinstance(e.get("code"), int)]
+        detail = " ".join(str(e.get("message", "")).lower() for e in errors if isinstance(e, dict))
+        category = next((kind for phrase, kind in (
+            ("daily row read", "daily read limit"), ("daily row write", "daily write limit"),
+            ("overloaded", "database overloaded"), ("too many requests", "rate limited"),
+            ("no such table", "table missing"), ("too many resources", "database resource limit")
+        ) if phrase in detail), "unspecified")
+        raise RuntimeError(f"Production D1 read returned HTTP {exc.code}, provider codes {codes}, {category}") from None
     results = payload.get("result", [])
     if not payload.get("success") or not results or not all(r.get("success") for r in results):
         raise RuntimeError("Production database verification failed")
