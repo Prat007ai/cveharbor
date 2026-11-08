@@ -15,7 +15,8 @@ BASE = "3406a3cf9bcaf554624040cff83b2a6874c47a01"
 CANDIDATE = "24ebc2d1d7dded28288d0f5c9ae9c2b77380d213"
 SIGNIN_PR = 288
 SIGNIN_BASE = "4db5c5ae88e2994cbf1637a4777b803ffd28fdd7"
-SIGNIN_SOURCE = "5a81c69266bb12b76478b1362d7803131c29394d"
+SIGNIN_SOURCE = "b509a67f7d4fe469f351da49f4e7224c925c0953"
+SIGNIN_FILES = {"account-page.js", "account-security.js", "app.js"}
 SIGNIN_BACKEND = "738b07a3eee67dc5a3d872dfb4ccbbe5ba2aab628b8c964e820b7b69aea63ce8"
 LIVE_SOURCE = "de0980596e2dd0e5f0bd4546b8fedd2fa0fee25e"
 AVAILABILITY_FIX = "cabddea0b40b77c02d63c1de8b4eeddfd194bbd9"
@@ -78,13 +79,16 @@ def prepare(out):
     (out / "before").rename(out / "before_availability_fix")
     (out / "after").rename(out / "before")
     shutil.copytree(out / "before", out / "after")
-    name = "account-page.js"
-    base = package.git("show", SIGNIN_BASE + ":" + name)
-    candidate = package.git("show", SIGNIN_SOURCE + ":" + name)
-    package.require((out / "before" / name).read_bytes() == base, "Unexpected sign-in baseline")
-    package.require(candidate != base and candidate == package.git("show", "HEAD:" + name),
-                    "Unexpected sign-in source")
-    (out / "after" / name).write_bytes(candidate)
+    with tempfile.TemporaryDirectory(dir=out) as temp:
+        base, candidate = Path(temp) / "base", Path(temp) / "candidate"
+        for name in sorted(SIGNIN_FILES):
+            base.write_bytes(package.git("show", SIGNIN_BASE + ":" + name))
+            candidate.write_bytes(package.git("show", SIGNIN_SOURCE + ":" + name))
+            package.require(candidate.read_bytes() == package.git("show", "HEAD:" + name),
+                            "Unexpected account recovery source: " + name)
+            updated = package.git("merge-file", "-p", str(out / "before" / name), str(base), str(candidate))
+            package.require(updated != (out / "before" / name).read_bytes(), "Missing recovery change: " + name)
+            (out / "after" / name).write_bytes(updated)
 
 
 def verify_release():
@@ -116,7 +120,7 @@ if __name__ == "__main__":
         verify_release()
         promotion.publish(Path(sys.argv[2]).resolve(), site_env=ENVIRONMENT,
                           pr_number=SIGNIN_PR, previous_version="97b73ce9-b765-4f45-950b-82b766a8c832",
-                          previous_deployment="ffc6cb62-df60-4ad7-9566-1362a08794a0", changed={"account-page.js"},
+                          previous_deployment="ffc6cb62-df60-4ad7-9566-1362a08794a0", changed=SIGNIN_FILES,
                           readiness=readiness)
     else:
         sys.exit("Expected prepare, preflight or publish")
