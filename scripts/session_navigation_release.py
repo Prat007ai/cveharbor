@@ -1,4 +1,6 @@
 """Publish the reviewed sign-in fix on the verified production site."""
+from difflib import SequenceMatcher
+from hashlib import sha256
 import os
 import shutil
 import tempfile
@@ -13,7 +15,10 @@ import catalogue_promotion as promotion
 
 BASE = "3406a3cf9bcaf554624040cff83b2a6874c47a01"
 CANDIDATE = "24ebc2d1d7dded28288d0f5c9ae9c2b77380d213"
-SIGNIN_PR = 288
+TOPICS_PR = 289
+TOPICS_BASE = "6f6004a69b0de766caf7ab6d526e1414aa18536f"
+TOPICS_SOURCE = "b2065bd11e0b6d52ecd0e2429ec96930ec73d7f5"
+TOPICS_FILES = {"app.js", "cvie.js"}
 SIGNIN_BASE = "4db5c5ae88e2994cbf1637a4777b803ffd28fdd7"
 SIGNIN_SOURCE = "b509a67f7d4fe469f351da49f4e7224c925c0953"
 SIGNIN_FILES = {"account-page.js", "account-security.js", "app.js"}
@@ -74,7 +79,7 @@ def prepare_availability(out):
     package.require(delta == AVAILABILITY_FILES, "Unexpected availability package changes")
 
 
-def prepare(out):
+def prepare_signin(out):
     prepare_availability(out)
     (out / "before").rename(out / "before_availability_fix")
     (out / "after").rename(out / "before")
@@ -84,17 +89,56 @@ def prepare(out):
         for name in sorted(SIGNIN_FILES):
             base.write_bytes(package.git("show", SIGNIN_BASE + ":" + name))
             candidate.write_bytes(package.git("show", SIGNIN_SOURCE + ":" + name))
-            package.require(candidate.read_bytes() == package.git("show", "HEAD:" + name),
+            package.require(candidate.read_bytes() == package.git("show", TOPICS_BASE + ":" + name),
                             "Unexpected account recovery source: " + name)
             updated = package.git("merge-file", "-p", str(out / "before" / name), str(base), str(candidate))
             package.require(updated != (out / "before" / name).read_bytes(), "Missing recovery change: " + name)
             (out / "after" / name).write_bytes(updated)
 
 
+def apply_topic_changes(live, base, candidate):
+    # Main also contains an inactive product registry. Only transplant exact, unique
+    # source edits, preserving the production version of every unrelated line.
+    before, after = base.splitlines(True), candidate.splitlines(True)
+    for mode, start, end, new_start, new_end in SequenceMatcher(None, before, after, autojunk=False).get_opcodes():
+        if mode == "equal":
+            continue
+        for left, right in ((0, 0), (2, 0), (0, 2), (1, 1)):
+            prefix = before[max(0, start-left):start]
+            suffix = before[end:end+right]
+            old = b"".join(prefix + before[start:end] + suffix)
+            if old and live.count(old) == 1:
+                live = live.replace(old, b"".join(prefix + after[new_start:new_end] + suffix))
+                break
+        else:
+            raise ValueError("Cannot isolate reviewed CVIE change")
+    package.require(sha256(live).hexdigest() == "e00d0ad3e6c598dfbc63c76dae9f64325d504fb4a8b171256cd8b6e6d4ed79f1",
+                    "Unexpected production CVIE script")
+    return live
+
+
+def prepare(out):
+    prepare_signin(out)
+    (out / "before").rename(out / "before_signin")
+    (out / "after").rename(out / "before")
+    shutil.copytree(out / "before", out / "after")
+    with tempfile.TemporaryDirectory(dir=out) as temp:
+        base, candidate = Path(temp) / "base", Path(temp) / "candidate"
+        for name in sorted(TOPICS_FILES):
+            base.write_bytes(package.git("show", TOPICS_BASE + ":" + name))
+            candidate.write_bytes(package.git("show", TOPICS_SOURCE + ":" + name))
+            package.require(candidate.read_bytes() == package.git("show", "HEAD:" + name),
+                            "Unexpected topic source: " + name)
+            prior = out / "before" / name
+            merged = (apply_topic_changes(prior.read_bytes(), base.read_bytes(), candidate.read_bytes())
+                      if name == "cvie.js" else package.git("merge-file", "-p", str(prior), str(base), str(candidate)))
+            (out / "after" / name).write_bytes(merged)
+
+
 def verify_release():
-    promotion.evidence(SIGNIN_PR)
+    promotion.evidence(TOPICS_PR)
     commit = promotion.github("/git/commits/" + os.environ["GITHUB_SHA"])
-    package.require(commit["parents"][0]["sha"] == SIGNIN_BASE,
+    package.require(commit["parents"][0]["sha"] == TOPICS_BASE,
                     "The sign-in fix must follow the verified production release")
 
 
@@ -119,8 +163,8 @@ if __name__ == "__main__":
     elif sys.argv[1:2] == ["publish"]:
         verify_release()
         promotion.publish(Path(sys.argv[2]).resolve(), site_env=ENVIRONMENT,
-                          pr_number=SIGNIN_PR, previous_version="97b73ce9-b765-4f45-950b-82b766a8c832",
-                          previous_deployment="ffc6cb62-df60-4ad7-9566-1362a08794a0", changed=SIGNIN_FILES,
+                          pr_number=TOPICS_PR, previous_version="1984c456-71f1-477a-abb4-84fe849e46dd",
+                          previous_deployment="632c8c7c-4443-4e46-9db4-9357c14308b8", changed=TOPICS_FILES,
                           readiness=readiness)
     else:
         sys.exit("Expected prepare, preflight or publish")
