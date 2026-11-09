@@ -3,11 +3,28 @@ import {scheduleStatusMail} from './status-update-mail.js';
 import {recordScope,scopeLabel} from './remediation-identity.js';
 import {sendEmail} from './delivery.js';
 import {reviewPage} from './assignment-progress-page.js';
-import {REVIEW_ORIGIN,reviewNow as now,reviewHash as hash,reviewToken,reviewQuota,progressReady,activeReviewSQL,ReviewError} from './assignment-progress-common.js';
+import {REVIEW_ORIGIN,reviewNow as now,reviewHash as hash,reviewToken,progressReady,activeReviewSQL,ReviewError} from './assignment-progress-common.js';
 const cookieName='__Host-cvh_review';
 const cookie=(value,age=1800)=>cookieName+'='+value+'; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age='+age;
 const sessionToken=req=>(req.headers.get('Cookie')||'').split(';').map(x=>x.trim()).find(x=>x.startsWith(cookieName+'='))?.slice(cookieName.length+1)||'';
 const sender=env=>({EMAIL_FROM:env.EMAIL_FROM,SMTP2GO_API_KEY:env.SMTP2GO_API_KEY,ALERT_SMTP2GO_API_KEY:env.ASSIGNMENT_SMTP2GO_API_KEY||env.SMTP2GO_API_KEY});
+function activeChallenge(db,id){
+ return db.prepare('SELECT id,created_at FROM remediation_review_challenges WHERE assignment_id=? AND used_at IS NULL AND attempts<5 AND expires_at>? ORDER BY created_at DESC,id DESC LIMIT 1').bind(id,now()).first();
+}
+async function reserveCode(db,id,email){
+ const stamp=now(),invitation='review-code:'+id,recipient='review-verification:'+await hash(email.trim().toLowerCase());
+ const limits='WITH limits(key,seconds,maximum) AS (VALUES(?,3600,3),(?,86400,6))';
+ const blocked='SELECT l.window_start+b.seconds+1 AS retry_at FROM limits b JOIN remediation_assignment_limits l ON l.key=b.key WHERE l.window_start+b.seconds>=? AND l.count>=b.maximum';
+ // Reserve both limits in one statement. A denied request consumes neither.
+ const result=await db.prepare(limits+', blocked AS MATERIALIZED ('+blocked+') '+
+  'INSERT INTO remediation_assignment_limits(key,window_start,count) SELECT key,?,1 FROM limits WHERE NOT EXISTS(SELECT 1 FROM blocked) '+
+  'ON CONFLICT(key) DO UPDATE SET count=CASE WHEN window_start+(SELECT seconds FROM limits WHERE key=excluded.key)<excluded.window_start THEN 1 ELSE count+1 END,'+
+  'window_start=CASE WHEN window_start+(SELECT seconds FROM limits WHERE key=excluded.key)<excluded.window_start THEN excluded.window_start ELSE window_start END')
+  .bind(invitation,recipient,stamp,stamp).run();
+ if(result.meta?.changes===2)return 0;
+ const row=await db.prepare(limits+' SELECT MAX(retry_at) AS retry_at FROM ('+blocked+')').bind(invitation,recipient,stamp).first();
+ return Math.max(1,(row?.retry_at||stamp+60)-stamp);
+}
 export async function reviewSession(req,env,id){const raw=sessionToken(req);if(!/^[a-f0-9]{64}$/.test(raw))return null;const tokenHash=await hash(raw),row=await env.DB.prepare('SELECT token_hash FROM remediation_review_sessions WHERE token_hash=? AND assignment_id=? AND expires_at>?').bind(tokenHash,id,now()).first();return row?{tokenHash,proof:await hash('review-csrf:'+raw)}:null;}
 export async function saveReviewerProgress(env,row,session,data){
  const status=data.status,reason=String(data.reason||'').trim(),comment=String(data.comment||'').trim();
@@ -42,10 +59,17 @@ export async function reviewerRoute(req,env,ctx){
    const raw=await req.text();if(raw.length>18000)throw new ReviewError('The update is too long.');const form=new URLSearchParams(raw),action=form.get('action');
    if(action==='send_code'){
     if(env.ASSIGNMENT_EMAIL_ENABLED!=='true'||!env.EMAIL_FROM||!(env.ASSIGNMENT_SMTP2GO_API_KEY||env.SMTP2GO_API_KEY))throw new ReviewError('Email verification is temporarily unavailable.',503);
-    if(!await reviewQuota(env,'review-code:'+id,3600,3)||!await reviewQuota(env,'assignment-target:'+await hash(row.recipient_email),86400,20))throw new ReviewError('Verification email limit reached. Please try again later.',429);
+    const active=await activeChallenge(env.DB,id);
+    if(active){
+     challenge=active.id;
+     if(form.get('replace_challenge')!==challenge||now()-active.created_at<60)
+      return reviewPage({challenge,message:'Enter the code from your latest verification email. You can request a replacement after one minute.'});
+    }
+    const retry=await reserveCode(env.DB,id,row.recipient_email);
+    if(retry)return reviewPage({challenge,message:'Verification email limit reached. You can request another code after '+new Date((now()+retry)*1000).toUTCString()+'.'},429,{'Retry-After':String(retry)});
     challenge=crypto.randomUUID();let n;do{n=crypto.getRandomValues(new Uint32Array(1))[0];}while(n>=4294000000);const code=String(n%1000000).padStart(6,'0'),stamp=now();
     await env.DB.batch([env.DB.prepare('UPDATE remediation_review_challenges SET used_at=? WHERE assignment_id=? AND used_at IS NULL').bind(stamp,id),env.DB.prepare('INSERT INTO remediation_review_challenges(id,assignment_id,code_hash,created_at,expires_at) VALUES(?,?,?,?,?)').bind(challenge,id,await hash(challenge+':'+code),stamp,stamp+600)]);
-    try{await sendEmail(sender(env),row.recipient_email,{subject:'[CVEHarbor] Your assignment verification code',text:'Your CVEHarbor assignment verification code is '+code+'.\n\nIt expires in 10 minutes and can be used once. Do not share this code. If you did not request it, ignore this email.',html:'<p>Your CVEHarbor assignment verification code:</p><p style="font-size:28px;font-weight:bold">'+code+'</p><p>Expires in 10 minutes. Do not share this code. If you did not request it, ignore this email.</p>'});}catch{await env.DB.prepare('UPDATE remediation_review_challenges SET used_at=? WHERE id=?').bind(now(),challenge).run();throw new ReviewError('Verification email could not be confirmed as sent. Please try again later.',502);}
+    try{await sendEmail(sender(env),row.recipient_email,{subject:'[CVEHarbor] Your assignment verification code',text:'Your CVEHarbor assignment verification code is '+code+'.\n\nIt expires in 10 minutes and can be used once. Do not share this code. If you did not request it, ignore this email.',html:'<p>Your CVEHarbor assignment verification code:</p><p style="font-size:28px;font-weight:bold">'+code+'</p><p>Expires in 10 minutes. Do not share this code. If you did not request it, ignore this email.</p>'});}catch{await env.DB.prepare('UPDATE remediation_review_challenges SET used_at=? WHERE id=?').bind(now(),challenge).run();challenge='';throw new ReviewError('Verification email could not be confirmed as sent. Please try again later.',502);}
     return reviewPage({challenge,message:'A verification code has been sent to the assigned reviewer.'});
    }
    if(action==='verify'){
@@ -61,7 +85,7 @@ export async function reviewerRoute(req,env,ctx){
    await saveReviewerProgress(env,row,session,Object.fromEntries(form));scheduleStatusMail(env,ctx);return reviewPage({},303,{'Location':url.pathname+'?saved=1'});
   }
   if(req.method==='HEAD'){const page=reviewPage();return new Response(null,{status:200,headers:page.headers});}
-  if(!session)return reviewPage();
+  if(!session)return reviewPage({challenge:(await activeChallenge(env.DB,id))?.id||''});
   const before=url.searchParams.get('before');if(before!==null&&(!/^\d{1,16}$/.test(before)||!Number.isSafeInteger(Number(before))||Number(before)<1))throw new ReviewError('Invalid activity cursor.');
   const activities=await env.DB.prepare('SELECT id,previous_status,new_status,reason,comment,created_at FROM remediation_review_activity WHERE assignment_id=? AND id<? ORDER BY id DESC LIMIT 21').bind(id,before?Number(before):Number.MAX_SAFE_INTEGER).all(),activity=(activities.results||[]).slice(0,20);
   row.scope_label=scopeLabel(await recordScope(env,row.user_id,row.cve_id));

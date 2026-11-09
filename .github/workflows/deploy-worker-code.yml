@@ -196,7 +196,7 @@ jobs:
         run: |
           test "$MODE" = code-only
           test "$OTHER_PACKAGE" != true
-          python -c "import sys;sys.path.insert(0,'scripts'); import catalogue_promotion as p, manual_customer_release as m; p.evidence(299); m.ready()"
+          python -c "import sys;sys.path.insert(0,'scripts'); import catalogue_promotion as p, manual_customer_release as m; p.evidence(300); m.ready()"
           python scripts/intelligence_release.py backend release/.build/intelligence
           rsync --archive --delete release/.build/intelligence/account-backend/src/ account-backend/src/
           node scripts/verify_cvie_d1.mjs

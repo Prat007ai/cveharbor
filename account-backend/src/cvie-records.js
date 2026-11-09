@@ -132,7 +132,7 @@ function familiesCte(pageOnly=false){
   AND (f.scope<>'windows_hyperv' OR EXISTS(SELECT 1 FROM cvie_disclosures c WHERE c.cve_id=d.cve_id AND ${hyperVStatementSql('c.record_json')}))
  ${cnaCoverageAdapters.map(adapter=>`UNION
  SELECT DISTINCT f.product_id,d.cve_id,d.applicability,d.affected_json FROM families f JOIN ${disclosures} d
-  ON d.family_key LIKE 'name:microsoft:%'
+  ON ${adapter.candidateSql}
  WHERE f.family_key='${adapter.key}' AND EXISTS(SELECT 1 FROM json_each(d.affected_json) a WHERE ${adapter.matchSql('a.value')})`).join('\n')}
 ) `;}
 function unifiedCte(env,scope='all'){

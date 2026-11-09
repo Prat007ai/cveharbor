@@ -21,7 +21,8 @@ PIN = Path('release/intelligence-baseline/backend-identity.txt')
 
 def backend(out):
     previous.run('backend', out)
-    for name in ('src/cvie-records.js', 'src/intelligence-store.js', 'wrangler.toml'):
+    for name in ('src/cvie-records.js', 'src/intelligence-store.js', 'src/product-coverage.js',
+                 'src/assignment-progress.js', 'src/assignment-progress-page.js', 'wrangler.toml'):
         relative = 'account-backend/' + name
         target = out / relative
         pkg.require(target.read_bytes() == pkg.git('show', BASE + ':' + relative), 'Unexpected baseline: ' + name)
