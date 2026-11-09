@@ -31,18 +31,46 @@ export async function openPicker(card,context) {
   const saved=ids.find(id=>context.saved(directory.products[id].name));
   if(saved)select.value=saved;
   field('Installed product',select);
+  const line=element('select');const lineField=field('Release line',line);
   const releases=element('select');field('Release',releases);
   const input=element('input');input.maxLength=48;input.autocomplete='off';const manual=field('Installed version',input);
   const guidance=element('p');guidance.className='cvie-caption';const source=element('a','Release source');source.target='_blank';source.rel='noopener noreferrer';
   const action=element('button','Save and scan last 3 months'),more=element('button','Find more vulnerabilities · last 12 months');
   const retry=element('button','Retry unfinished check');retry.hidden=true;
   const actions=element('div');actions.className='cvie-identity-actions';actions.append(action,more,retry);
-  const resultStatus=element('p');resultStatus.setAttribute('role','status');const results=element('ul');
+  const resultStatus=element('p');resultStatus.setAttribute('role','status');const results=element('section');
+  results.className='version-results';results.setAttribute('aria-label','Scan results');
+  const pageSize=15;
+  let resultPage=0;
+  function drawResults(){
+    results.replaceChildren();
+    if(!state?.records.length)return;
+    const start=resultPage*pageSize;
+    const list=element('ul');
+    for(const row of state.records.slice(start,start+pageSize)){
+      const li=element('li'), open=element('button');
+      open.type='button';open.className='version-result';
+      const id=element('strong',row.id),title=element('span',row.title||row.id);
+      title.className='version-result-title';
+      const meta=element('small',[row.severity?.toUpperCase(),row.published?.slice(0,10),row.evidence].filter(Boolean).join(' · '));
+      open.append(id,title,meta);open.onclick=()=>context.detail(row,directory.products[state.id],state.version);
+      li.append(open);list.append(li);
+    }
+    results.append(element('h3','CVEHarbor advisories'),list);
+    if(state.records.length<=pageSize)return;
+    const nav=element('nav');nav.setAttribute('aria-label','Scan result pages');
+    const prev=element('button','Previous'),next=element('button','Next');
+    prev.disabled=resultPage===0;next.disabled=start+pageSize>=state.records.length;
+    prev.onclick=()=>{resultPage--;drawResults();};
+    next.onclick=()=>{resultPage++;drawResults();};
+    nav.append(prev,element('span',(start+1)+'–'+Math.min(start+pageSize,state.records.length)+' of '+state.records.length),next);
+    results.append(nav);
+  }
   panel.append(guidance,source,actions,resultStatus,results);
   let state;
   function reset(){
     generation++;scanController?.abort();state=null;retry.hidden=true;more.hidden=true;
-    results.replaceChildren();resultStatus.textContent='';input.setCustomValidity('');
+    resultPage=0;results.replaceChildren();resultStatus.textContent='';input.setCustomValidity('');
   }
   function mode(){
     reset();manual.hidden=releases.value!=='manual';
@@ -51,14 +79,29 @@ export async function openPicker(card,context) {
   }
   function update(){
     const p=directory.products[select.value], feed=directory.releases[select.value];
-    const existing=context.saved(p.name);
+    line.replaceChildren(new Option('Recent releases','recent'));
+    if(feed?.supported?.length)line.add(new Option('Supported release lines','supported'));
+    const names=Object.keys(feed?.lines||{}).sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
+    for(const name of names)line.add(new Option(name,'line:'+name));
+    lineField.hidden=!names.length&&!feed?.supported?.length;
+    const saved=context.saved(p.name);
+    if(saved&&!feed?.versions.some(v=>v.version===saved)){
+      const found=names.find(name=>feed.lines[name].some(v=>v.version===saved));
+      if(found)line.value='line:'+found;
+    }
+    populate(saved);
+  }
+  function populate(existing=''){
+    const p=directory.products[select.value], feed=directory.releases[select.value];
+    const entries=(line.value==='supported'?feed?.supported:line.value.startsWith('line:')?feed?.lines[line.value.slice(5)]:feed?.versions)||[];
     releases.replaceChildren(new Option('Choose an installed release',''));
-    for(const entry of feed?.versions||[])releases.add(new Option(entry.version+(entry.date?' · '+entry.date:''),entry.version));
+    for(const entry of entries)releases.add(new Option([entry.version,entry.support,entry.date].filter(Boolean).join(' · '),entry.version));
     releases.add(new Option('Enter a version manually…','manual'));
     input.value=existing||'';input.placeholder=p.example;
-    releases.value=existing&&!(feed?.versions||[]).some(v=>v.version===existing)?'manual':existing||'';
+    releases.value=existing&&!entries.some(v=>v.version===existing)?'manual':existing||'';
     source.hidden=!feed;if(feed)source.href=feed.url;
     message.textContent=feed?'Release list checked '+feed.checked.slice(0,10)+(feed.order==='version'?' · ordered by version.':'.'):'Release list unavailable. Enter the installed version manually.';
+    if(p.supportNote)message.textContent+=' '+p.supportNote;
     mode();
   }
   async function run(){
@@ -72,9 +115,9 @@ export async function openPicker(card,context) {
         if(ticket!==generation||!panel.open)return;
         for(const row of page.rows){
           if(s.seen.has(row.id))continue;s.seen.add(row.id);
-          const li=element('li'),link=element('a',row.id);link.href=row.url;link.target='_blank';link.rel='noopener noreferrer';
-          li.append(link,document.createTextNode(' · '+row.published.slice(0,10)+' · '+row.evidence),element('p',row.title));results.append(li);
+          s.records.push(row);
         }
+        drawResults();
         const marker=s.q+':'+s.cursor;s.visited.add(marker);
         if(page.next)s.cursor=page.next;
         else if(page.nextQuarter!==null){s.q=page.nextQuarter;s.cursor='';}
@@ -93,18 +136,18 @@ export async function openPicker(card,context) {
       resultStatus.textContent='Enter a valid '+p.name+' version, for example '+p.example+'.';
       (manual.hidden?releases:input).focus();return;
     }
-    reset();locked=true;action.disabled=select.disabled=releases.disabled=input.disabled=true;
+    reset();locked=true;action.disabled=select.disabled=line.disabled=releases.disabled=input.disabled=true;
     resultStatus.textContent='Saving installed version…';
     try{
       await context.save(p,version);
       if(!panel.open)return;
-      state={id,version,months:3,q:0,cursor:'',day:new Date().toISOString().slice(0,10),seen:new Set(),visited:new Set()};
+      state={id,version,months:3,q:0,cursor:'',day:new Date().toISOString().slice(0,10),seen:new Set(),visited:new Set(),records:[]};
       await run();
     }catch(e){if(panel.open)resultStatus.textContent=e.message;}
-    finally{locked=false;action.disabled=select.disabled=releases.disabled=input.disabled=false;}
+    finally{locked=false;action.disabled=select.disabled=line.disabled=releases.disabled=input.disabled=false;}
   };
   more.onclick=()=>{if(!state)return;const isPackage=directory.products[state.id].match.startsWith('osv:');
     state.months=12;state.q=isPackage?0:1;state.cursor='';state.visited.clear();void run();};
   retry.onclick=()=>void run();
-  select.onchange=update;releases.onchange=mode;input.oninput=reset;update();
+  line.onchange=()=>populate();select.onchange=update;releases.onchange=mode;input.oninput=reset;update();
 }

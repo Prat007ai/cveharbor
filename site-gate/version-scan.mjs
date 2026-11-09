@@ -3,6 +3,10 @@ import seed from './version-releases.json' with {type:'json'};
 
 const patterns = {
   maria: /^\d+\.\d+\.\d+(?:-[A-Za-z0-9][A-Za-z0-9.~+-]{0,25})?$/, sql2022: /^16\.0\.\d+\.\d+$/,
+  sql2025: /^17\.0\.\d+\.\d+$/, sql2019: /^15\.0\.\d+\.\d+$/, sql2017: /^14\.0\.\d+\.\d+$/,
+  sql2016: /^13\.0\.\d+\.\d+$/, sql2014: /^12\.0\.\d+\.\d+$/,
+  ubuntu: /^\d{2}\.(?:04|10)(?:\.\d+)?$/, osPoint: /^\d+(?:\.\d+)?$/, integer: /^\d+$/,
+  amazon: /^(?:2|20\d{2})(?:\.\d+\.\d{8}\.\d+)?$/,
   kendo: /^20\d{2}\.[1-4]\.\d{2,4}$/,
   triple: /^\d+\.\d+\.\d+$/, twoThree: /^\d+\.\d+(?:\.\d+)?$/, four: /^\d+\.\d+\.\d+\.\d+$/,
   sdk: /^\d+\.\d+\.[1-9]\d{2}$/, win: /^(?:10\.0\.)?\d{5}\.\d+$/, build: /^\d{6,9}$/,
@@ -59,7 +63,11 @@ async function nvdPage(id,product,version,range,offset) {
   const family=product.match.startsWith('family:');
   if(family)url.searchParams.set('keywordSearch',product.match.slice(7));
   else {
-    url.searchParams.set('cpeName','cpe:2.3:'+product.match.slice(4)+':'+(product.format==='maria'?version.split('-')[0]:version)+':*:*:*:*:*:*:*');
+    const installed=product.cpeParts?version.split('.').slice(0,product.cpeParts).join('.'):version;
+    const [major, servicePack] = version.split('.');
+    const cpeVersion = id==='sles' && ['12','15'].includes(major) && servicePack
+      ? major+':sp'+servicePack : (product.format==='maria'?version.split('-')[0]:installed)+':*';
+    url.searchParams.set('cpeName','cpe:2.3:'+product.match.slice(4)+':'+cpeVersion+':*:*:*:*:*:*');
     url.searchParams.set('isVulnerable','');
   }
   const size=family?12:100;
@@ -69,6 +77,7 @@ async function nvdPage(id,product,version,range,offset) {
   const rows=await Promise.all(data.vulnerabilities.map(async ({cve})=>{
     if(!/^CVE-\d{4}-\d{4,}$/.test(cve.id))throw Error('Invalid advisory');
     let evidence=product.format==='maria'&&version.includes('-')?'Upstream version match · verify distributor backports':'NVD vulnerable product/version match';
+    if(product.source.startsWith('distribution:'))evidence='Distribution advisory · verify installed packages and vendor patches';
     if(family){
       evidence='Product lead · verify the vendor build';
       if(product.vendor==='Microsoft'){
@@ -79,8 +88,26 @@ async function nvdPage(id,product,version,range,offset) {
         } catch { /* The NVD lead remains usable without a verified build range. */ }
       }
     }
-    return {id:cve.id,title:cve.descriptions?.find(d=>d.lang==='en')?.value||cve.id,published:cve.published,
-      url:'https://nvd.nist.gov/vuln/detail/'+cve.id,evidence};
+    const summary=cve.descriptions?.find(d=>d.lang==='en')?.value||cve.id;
+    const metrics=cve.metrics||{};
+    const scores=metrics.cvssMetricV40||metrics.cvssMetricV31||metrics.cvssMetricV30||metrics.cvssMetricV2||[];
+    const metric=scores.find(m=>m.type==='Primary')||scores[0];
+    const url='https://nvd.nist.gov/vuln/detail/'+cve.id;
+    const affected=(cve.configurations||[]).flatMap(c=>(c.nodes||[]).flatMap(n=>(n.cpeMatch||[])
+      .filter(m=>m.vulnerable).map(m=>[m.criteria,
+        m.versionStartIncluding && 'from '+m.versionStartIncluding,
+        m.versionStartExcluding && 'after '+m.versionStartExcluding,
+        m.versionEndExcluding && 'before '+m.versionEndExcluding,
+        m.versionEndIncluding && 'through '+m.versionEndIncluding].filter(Boolean).join(' '))));
+    const title=summary.split(/(?<=[.!?])\s/)[0];
+    return {id:cve.id,title:title.length>160?title.slice(0,157).replace(/\s+\S*$/,'')+'…':title,summary,published:cve.published,updated:cve.lastModified,url,evidence,
+      status:'NVD · '+(cve.vulnStatus||'published'),cvss:metric?.cvssData?.baseScore,
+      severity:(metric?.cvssData?.baseSeverity||metric?.baseSeverity||'unrated').toLowerCase(),
+      affected:[...new Set(affected)].join('\n'),kev_added:cve.cisaExploitAdd,
+      exploitation:cve.cisaExploitAdd?'Listed in CISA KEV':undefined,
+      kev_required_action:cve.cisaRequiredAction,kev_due_date:cve.cisaActionDue,
+      sources:[{url,label:'NVD vulnerability record'},...(product.vendorAdvisories?[{url:product.vendorAdvisories,label:product.name+' security information'}]:[]),...(cve.references||[]).map(r=>({url:r.url,label:r.tags?.join(' · ')}))]};
+
   }));
   const more=offset+rows.length<data.totalResults;
   if(more&&!rows.length)throw Error('Incomplete NVD page');
@@ -93,8 +120,19 @@ async function osvPage(product,version,range,cursor) {
   if(data.vulns!==undefined&&!Array.isArray(data.vulns))throw Error('Incomplete OSV page');
   const start=Date.parse(range.start),end=Date.parse(range.end);
   const rows=(data.vulns||[]).filter(v=>!v.withdrawn&&Date.parse(v.published)>=start&&Date.parse(v.published)<=end)
-    .map(v=>({id:v.aliases?.find(a=>/^CVE-\d{4}-\d+$/.test(a))||v.id,title:v.summary||v.details||v.id,
-      published:v.published,url:'https://osv.dev/vulnerability/'+encodeURIComponent(v.id),evidence:'OSV package/version match'}));
+    .map(v=>{
+      const url='https://osv.dev/vulnerability/'+encodeURIComponent(v.id);
+      const packages=(v.affected||[]).filter(a=>a.package?.name===name&&a.package?.ecosystem===ecosystem);
+      const ranges=packages.flatMap(a=>(a.ranges||[]).map(r=>(r.events||[]).map(event=>
+        Object.entries(event).map(([kind,value])=>kind+' '+value).join(', ')).join(' · ')));
+      const fixed=packages.flatMap(a=>(a.ranges||[]).flatMap(r=>(r.events||[]).map(e=>e.fixed).filter(Boolean)));
+      return {id:v.aliases?.find(a=>/^CVE-\d{4}-\d+$/.test(a))||v.id,title:v.summary||v.details||v.id,
+        summary:v.details||v.summary,updated:v.modified,published:v.published,url,evidence:'OSV package/version match',
+        status:'OSV · '+v.id,severity:String(v.database_specific?.severity||'unrated').toLowerCase(),
+        affected:[ecosystem+' · '+name,...ranges].join('\n'),
+        remediation:fixed.length?'Reported fixed releases: '+[...new Set(fixed)].join(', '):undefined,
+        sources:[{url,label:'OSV advisory'},...(v.references||[]).map(r=>({url:r.url,label:r.type}))]};
+    });
   return {rows,next:data.next_page_token||null};
 }
 export async function versionResponse(request,env) {
@@ -105,7 +143,7 @@ export async function versionResponse(request,env) {
   const route=url.pathname.slice('/v1/version-picker/'.length);
   if(route==='catalogue'){
     let releases=seed;
-    try {const object=await env.INTELLIGENCE_BUCKET?.get('picker/releases-v1.json');if(object)releases={...seed,...await object.json()};}catch{}
+    try {const object=await env.INTELLIGENCE_BUCKET?.get('picker/releases-v2.json');if(object)releases={...seed,...await object.json()};}catch{}
     return json({cards:catalogue.cards,products:catalogue.products,releases,formats:Object.fromEntries(Object.entries(patterns).map(([k,v])=>[k,v.source]))});
   }
   if(route!=='scan')return json({error:'Unknown route'},404);
@@ -122,7 +160,7 @@ export async function versionResponse(request,env) {
   if(!osv&&cursor&&!/^\d{1,7}$/.test(cursor))return json({error:'Invalid page.'},400);
   const range=osv?{start:monthsBefore(anchor,months).toISOString(),end:anchor.toISOString()}:windowFor(anchor,q);
   // Cache only public product queries; do not include gate credentials or account identifiers.
-  const key=new Request(url.origin+'/__version_scan_cache/'+[id,version,date,months,q,cursor].map(encodeURIComponent).join('/'));
+  const key=new Request(url.origin+'/__version_scan_cache/v2/'+[id,version,date,months,q,cursor].map(encodeURIComponent).join('/'));
   const cache=globalThis.caches?.default;
   try{
     const hit=await cache?.match(key);

@@ -5,12 +5,17 @@ import {versionResponse,validVersion,windowFor,buildMatch} from '../version-scan
 import config from '../version-products.json' with {type:'json'};
 import releases from '../version-releases.json' with {type:'json'};
 
-test('every card offers concrete products with ten distinct, well-formed releases',()=>{
+test('every card offers concrete products with distinct, well-formed releases across all offered lines',()=>{
   assert.deepEqual(Object.keys(config.cards).sort(),[...catalogueNames].sort());
   for(const ids of Object.values(config.cards))for(const id of ids){
     const p=config.products[id], list=releases[id].versions;
     assert.ok(validVersion(p,p.example),id);
-    assert.equal(new Set(list.map(x=>x.version)).size,10,id);
+    assert.ok(list.length>0,id);
+    if(!p.source.startsWith('distribution:'))assert.equal(list.length,10,id);
+    assert.equal(new Set(list.map(x=>x.version)).size,list.length,id);
+    for(const r of [...Object.values(releases[id].lines||{}).flat(),...(releases[id].supported||[])]){
+      assert.ok(validVersion(p,r.version),id+' '+r.version);
+    }
     for(const r of list)assert.ok(validVersion(p,r.version),id+' '+r.version);
     assert.equal(validVersion(p,'2.*'),false);
   }
@@ -43,4 +48,23 @@ test('OSV receives only the selected public package/version and respects disclos
     const r=await versionResponse(new Request('https://example.test/v1/version-picker/scan?'+new URLSearchParams({product:'react',version:'19.0.0',day,months})),{});
     assert.equal(r.status,200);assert.equal((await r.json()).rows.length,expected);
   }
+});
+
+test('SQL branches validate their own build, and distributions query their published OS identity',async t=>{
+  assert.equal(config.cards['SQL Server'].length,6);
+  assert.ok(config.cards.Linux.includes('ubuntu')&&config.cards.Linux.includes('debian')&&config.cards.Linux.includes('linux'));
+  for(const id of config.cards['SQL Server']){
+    for(const other of config.cards['SQL Server'])assert.equal(validVersion(config.products[id],releases[other].versions[0].version),id===other);
+  }
+  const fetched=[];
+  t.mock.method(globalThis,'fetch',async url=>{
+    fetched.push(url.searchParams.get('cpeName'));
+    return Response.json({vulnerabilities:[],startIndex:0,totalResults:0});
+  });
+  const day=new Date().toISOString().slice(0,10);
+  for(const [product,version] of [['ubuntu','24.04.5'],['debian','13.7'],['sles','15.7']]){
+    const res=await versionResponse(new Request('https://example.test/v1/version-picker/scan?'+new URLSearchParams({product,version,day,months:3})),{});
+    assert.equal(res.status,200);
+  }
+  assert.deepEqual(fetched,['o:canonical:ubuntu_linux:24.04:*','o:debian:debian_linux:13:*','o:suse:sles:15:sp7'].map(v=>'cpe:2.3:'+v+':*:*:*:*:*:*'));
 });
