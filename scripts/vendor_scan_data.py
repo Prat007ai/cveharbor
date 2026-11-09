@@ -14,7 +14,7 @@ import ijson
 MSRC = 'https://api.msrc.microsoft.com/cvrf/v3.0/'
 USNS = 'https://usn.ubuntu.com/usn-db/database.json.bz2'
 CVE = re.compile(r'CVE-\d{4}-\d{4,}')
-SQL = re.compile(r'Microsoft SQL Server 2019 for x64-based Systems(?: \((GDR|CU\d+)\))?', re.I)
+SQL = re.compile(r'Microsoft SQL Server 2019 for x64-based Systems(?: \((GDR|CU\s*\d+)\))?', re.I)
 
 
 def read(url):
@@ -36,11 +36,31 @@ def sql_month(month):
     for product in data['ProductTree']['FullProductName']:
         match = SQL.fullmatch(product['Value'])
         if match:
-            products[product['ProductID']] = match.group(1) or 'unspecified'
+            products[product['ProductID']] = (match.group(1) or 'unspecified').replace(' ', '').upper()
+    # A SQL KB can explicitly include a CVE omitted from the product-status
+    # matrix. Verify the product bulletin and associate only its own fixes.
+    bulletins = {}
+    for vuln in data['Vulnerability']:
+        for fix in vuln.get('Remediations', []):
+            build = fix.get('FixedBuild', '')
+            kb = (fix.get('Description') or {}).get('Value', '')
+            for pid in set(fix.get('ProductID', [])) & products.keys():
+                if fix['Type'] == 2 and re.fullmatch(r'15\.0\.\d+\.\d+', build or '') and re.fullmatch(r'\d{7}',kb):
+                    bulletins[kb] = {'branch': products[pid], 'build': build, 'kb': kb}
+    article_fixes = {}
+    for kb, fix in bulletins.items():
+        with read('https://support.microsoft.com/help/'+kb) as response:
+            article = response.read().decode('utf-8')
+        title = re.search(r'<title[^>]*>(.*?)</title>', article, re.I | re.S)
+        if not title or 'sql server 2019' not in plain(title[1]).lower():
+            raise ValueError('Could not validate SQL Server 2019 bulletin KB'+kb)
+        linked = set(re.findall(r'https://msrc\.microsoft\.com/update-guide/(?:[a-z-]+/)?vulnerability/(CVE-\d{4}-\d{4,})', article, re.I))
+        for cve in linked:
+            article_fixes.setdefault(cve.upper(), []).append(fix)
     rows = []
     for v in data['Vulnerability']:
         affected = {p for s in v.get('ProductStatuses', []) if s['Type'] == 3 for p in s['ProductID'] if p in products}
-        if not affected or not CVE.fullmatch(v['CVE']):
+        if (not affected and v['CVE'] not in article_fixes) or not CVE.fullmatch(v['CVE']):
             continue
         fixes = []
         for fix in v.get('Remediations', []):
@@ -48,6 +68,9 @@ def sql_month(month):
                 continue
             for p in sorted(affected.intersection(fix.get('ProductID', []))):
                 fixes.append({'branch': products[p], 'build': fix['FixedBuild'], 'kb': fix.get('Description', {}).get('Value', '')})
+        for fix in article_fixes.get(v['CVE'], []):
+            if fix not in fixes:
+                fixes.append(fix)
         revisions = sorted(r['Date'] for r in v['RevisionHistory'])
         description = next((n.get('Value', '') for n in v.get('Notes', []) if n.get('Title') == 'Description'), '')
         score = max((s['BaseScore'] for s in v.get('CVSSScoreSets', []) if affected.intersection(s.get('ProductID', []))), default=None)
