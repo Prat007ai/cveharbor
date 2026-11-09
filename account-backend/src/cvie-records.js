@@ -153,22 +153,27 @@ function unifiedCte(env,scope='all'){
   ${sharedRows}
   SELECT p.id AS product_id,a.cve_id,a.published,a.record_json,p.cpe
   FROM owned p JOIN cvie_advisories a ON a.product_id=p.id ${legacyFilter}
- ), verdicts AS MATERIALIZED (
-  SELECT product_id,cve_id,MAX(applicability='affected') AS affected,MAX(applicability='unaffected') AS unaffected
-  FROM verified_matches GROUP BY product_id,cve_id
+ ), merged AS MATERIALIZED (
+  -- Each owned product/CVE has at most one NVD row. Group both evidence streams
+  -- once so a populated NVD history does not rescan every disclosure per row.
+  SELECT product_id,cve_id,MAX(published) AS published,MAX(record_json) AS record_json,MAX(cpe) AS cpe,
+   MAX(affected) AS affected,MAX(unaffected) AS unaffected
+  FROM (
+   SELECT product_id,cve_id,published,record_json,cpe,NULL AS affected,NULL AS unaffected FROM nvd
+   UNION ALL
+   SELECT product_id,cve_id,NULL,NULL,NULL,applicability='affected',applicability='unaffected' FROM verified_matches
+  ) GROUP BY product_id,cve_id
  ), unified AS (
-  SELECT COALESCE(a.product_id,v.product_id) AS product_id,COALESCE(a.cve_id,v.cve_id) AS cve_id,
-   COALESCE(CASE WHEN v.cve_id IS NOT NULL THEN d.published END,a.published) AS published,
-   a.record_json AS nvd_json,CASE WHEN v.cve_id IS NOT NULL THEN d.record_json END AS cna_json,
+  SELECT m.product_id,m.cve_id,COALESCE(CASE WHEN m.affected IS NOT NULL THEN d.published END,m.published) AS published,
+   m.record_json AS nvd_json,CASE WHEN m.affected IS NOT NULL THEN d.record_json END AS cna_json,
    d.checked_at AS cna_checked_at,k.record_json AS kev_json,j.cve_id AS queued_id
-  FROM nvd a FULL OUTER JOIN verdicts v ON v.product_id=a.product_id AND v.cve_id=a.cve_id
-  LEFT JOIN cvie_disclosures d ON d.cve_id=COALESCE(a.cve_id,v.cve_id)
-  LEFT JOIN cvie_kev k ON k.cve_id=COALESCE(a.cve_id,v.cve_id)
-  LEFT JOIN cvie_disclosure_queue j ON j.cve_id=COALESCE(a.cve_id,v.cve_id)
-  WHERE COALESCE(d.state,'PUBLISHED')<>'REJECTED' AND (v.unaffected IS NOT 1 OR v.affected IS 1)
-  AND (v.cve_id IS NOT NULL OR NOT EXISTS(SELECT 1 FROM families f WHERE f.product_id=a.product_id AND f.scope='windows_hyperv')
-   OR (EXISTS(SELECT 1 FROM families f WHERE f.product_id=a.product_id AND f.family_key='cpe:'||a.cpe)
-    AND ${hyperVStatementSql('a.record_json')} AND (d.state IS NOT 'PUBLISHED' OR ${hyperVStatementSql('d.record_json')})))
+  FROM merged m LEFT JOIN cvie_disclosures d ON d.cve_id=m.cve_id
+  LEFT JOIN cvie_kev k ON k.cve_id=m.cve_id
+  LEFT JOIN cvie_disclosure_queue j ON j.cve_id=m.cve_id
+  WHERE COALESCE(d.state,'PUBLISHED')<>'REJECTED' AND (m.unaffected IS NOT 1 OR m.affected IS 1)
+  AND (m.affected IS NOT NULL OR NOT EXISTS(SELECT 1 FROM families f WHERE f.product_id=m.product_id AND f.scope='windows_hyperv')
+   OR (EXISTS(SELECT 1 FROM families f WHERE f.product_id=m.product_id AND f.family_key='cpe:'||m.cpe)
+    AND ${hyperVStatementSql('m.record_json')} AND (d.state IS NOT 'PUBLISHED' OR ${hyperVStatementSql('d.record_json')})))
  ) `;}
 export async function combinedPage(env,userId,cutoff,after='',productId='',now=Date.now(),context=null){
  const ctx=context||await evidenceContext(env,userId);if(!ctx)return null;
