@@ -14,6 +14,7 @@ const products=[
  {name:'PHP',vendor:'php',cpe:'cpe:2.3:a:php:php:*:*:*:*:*:*:*:*'},
  {name:'.NET Core',vendor:'microsoft',cpe:'cpe:2.3:a:microsoft:.net:*:*:*:*:*:*:*:*'},
  {name:'HyperV',vendor:'microsoft',cpe:'cpe:2.3:o:microsoft:windows_server_2022:*:*:*:*:*:*:*:*'},
+ {name:'Windows Server OS',vendor:'microsoft',cpe:'cpe:2.3:o:microsoft:windows_server_2022:*:*:*:*:*:*:*:*'},
  ...catalogueNames.map(name=>({name,vendor:'',cpe:name==='HyperV'?'cpe:2.3:o:microsoft:windows_server_2022:*:*:*:*:*:*:*:*':knownIdentity(name)?.cpe||''})),
 ].map((p,i)=>({...p,id:'cvie-d1-readonly-probe-'+i,user_id:userId,last_success_at:Date.now(),
  status:p.cpe?'ready':'needs_identity',candidates_json:'[]',cursor_json:JSON.stringify(coverageMetadata(coveragePlan(p))),
@@ -51,6 +52,21 @@ await check('combined counts',async()=>{const counts=await combinedCounts(env,us
 await check('advisory page',async()=>{const page=await combinedPage(env,userId,recent,'','',now,ctx);assert.ok(page.advisories.length,'Expected public advisories for the synthetic product catalogue');});
 await check('withdrawal exclusions',()=>excludedProductCves(env,userId,ctx));
 await check('digest page',()=>combinedPage(env,userId,recent,'','',now,{...ctx,digest:true}));
+// The synthetic account has no private NVD history. Exercise both sides of
+// reconciliation with the existing public Windows history, without subscribing
+// an account, reading private assignments, or writing to production.
+const publicNvd="SELECT f.product_id,a.cve_id,a.published,a.record_json,s.cpe FROM families f JOIN cvie_shared_scopes s ON f.family_key='cpe:'||s.cpe JOIN cvie_shared_advisories a ON a.scope_id=s.id WHERE f.scope='' AND s.cpe='cpe:2.3:o:microsoft:windows_server_2022:*:*:*:*:*:*:*:*'";
+const publicHistoryEnv={...env,DB:{prepare(sql){
+ return DB.prepare(sql.replace('nvd AS MATERIALIZED (','nvd AS MATERIALIZED ('+publicNvd+' UNION ALL '));
+}}};
+await check('populated public Windows history reconciles with original disclosures',async()=>{
+ const windows=products.find(p=>p.name==='Windows Server OS'&&p.cpe);
+ const counts=await combinedCounts(publicHistoryEnv,userId,recent,history,now,ctx);
+ assert.ok(counts.some(c=>c.product_id===windows.id&&c.history_count>0));
+ const first=await combinedPage(publicHistoryEnv,userId,recent,'',windows.id,now,ctx);
+ assert.ok(first.advisories.some(a=>a.provenance.some(p=>p.source==='nvd'))||first.next,
+  'Expected a populated first page of reconciled history');
+});
 // Use the actual status handler, substituting only the owned-product SELECT.
 // All evidence queries still execute on real D1; writes remain prohibited.
 const statusEnv={...env,DB:{prepare(sql){
