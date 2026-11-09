@@ -1,5 +1,7 @@
 import {updateTopicHistory} from './cvie-topic-history.js';
 import {firewallRoute,dispatchFirewallDigest} from './firewall-digest.js';
+import {harborPng} from './firewall-artwork.js';
+import {artworkPath} from './firewall-templates.js';
 import {recoveryProtected} from './recovery-control.js';
 import {saveCustomerRemediation,customerTicket} from './customer-remediation.js';
 import {releaseReadiness} from './release-readiness.js';
@@ -61,6 +63,11 @@ const application = {async fetch(req,env,ctx){
  const url=new URL(req.url),origin=req.headers.get('origin');
  // The confirmation hostname exposes only the guest confirmation page, never account APIs.
  if(url.hostname==='confirm.cveharbor.com'){
+  if(url.pathname===artworkPath){
+   if(req.method!=='GET' && req.method!=='HEAD')return new Response(null,{status:405,headers:{Allow:'GET, HEAD'}});
+   const bytes=req.method==='GET'?Uint8Array.from(atob(harborPng),ch=>ch.charCodeAt(0)):null;
+   return new Response(bytes,{headers:{'Content-Type':'image/png','Cache-Control':'public, max-age=31536000, immutable','X-Content-Type-Options':'nosniff'}});
+  }
   if(/^\/firewall-updates\/(confirm|unsubscribe)\/[a-f0-9]{64}$/.test(url.pathname)){
    try{return await firewallRoute(req,env,limit);}catch{return response({error:'Subscription service temporarily unavailable'},503);}
   }

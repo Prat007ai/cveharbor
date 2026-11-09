@@ -3,7 +3,7 @@ import {createHash} from 'node:crypto';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import worker from '../src/index.js';
-import {dailyEmail} from '../src/firewall-templates.js';
+import {dailyEmail,artworkPath} from '../src/firewall-templates.js';
 import {DB} from './helpers/d1.mjs';
 import {firewallRoute,dispatchFirewallDigest} from '../src/firewall-digest.js';
 
@@ -84,4 +84,21 @@ test('the email shows at most ten samples and counts the full list',()=>{
  assert.match(email.subject,/12 new IPs/);assert.match(email.html,/10 of 12/);
  for(const ip of ips.slice(0,10))assert.ok(email.text.split('\n').includes(ip));
  assert.ok(!email.text.includes(ips[11]));assert.match(email.text,/Full list: https:\/\/example.test\/file/);
+});
+
+test('browser subscription forms retain their origin without sending the private link as referrer; artwork is a public PNG',async t=>{
+ const db=new DB();t.after(()=>db.sql.close());
+ db.sql.exec(fs.readFileSync(new URL('../../deployment/proposals/firewall-digest/schema.sql',import.meta.url),'utf8'));
+ const proof='a'.repeat(64),hash=createHash('sha256').update(proof).digest('hex');
+ db.sql.prepare('INSERT INTO firewall_subscribers(id,email,confirmation_hash,requested_at,unsubscribe_token) VALUES(?,?,?,unixepoch(),?)').run('demo','demo@example.test',hash,'b'.repeat(64));
+ const origin='https://confirm.cveharbor.com',route=(path,opts)=>worker.fetch(new Request(origin+path,opts),{DB:db},{});
+ const confirm='/firewall-updates/confirm/'+proof;
+ const form=await route(confirm);assert.equal(form.headers.get('Referrer-Policy'),'strict-origin');
+ assert.ok((await form.text()).includes(origin+artworkPath));
+ const blocked=await route(confirm,{method:'POST',headers:{Origin:'null'}});assert.equal(blocked.status,403);
+ const approved=await route(confirm,{method:'POST',headers:{Origin:origin}});assert.match(await approved.text(),/SUBSCRIPTION CONFIRMED/);
+ const img=await route(artworkPath);assert.equal(img.headers.get('Content-Type'),'image/png');
+ const bytes=Buffer.from(await img.arrayBuffer());assert.equal(bytes.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
+ assert.equal(bytes.readUInt32BE(16),384);assert.equal(bytes.readUInt32BE(20),224);
+ assert.equal((await route(artworkPath,{method:'POST'})).status,405);
 });
