@@ -65,4 +65,7 @@ export function versionedLabelSql(row,labels){
     WHERE bound.key IN('version','lessThan','lessThanOrEqual') AND (
      lower(bound.value)=release OR lower(substr(bound.value,1,length(release)+1)) IN(release||'.',release||'-')))))`;
 }
-export const cnaCoverageAdapters=[{key:DOTNET_FAMILY,matchSql:dotnetAffectedSql}];
+// affectedFamilies stores punctuation-free, lower-case product names. Every
+// accepted .NET label starts with one of these two normalized prefixes.
+export const cnaCoverageAdapters=[{key:DOTNET_FAMILY,matchSql:dotnetAffectedSql,
+ candidateSql:"(d.family_key GLOB 'name:microsoft:net*' OR d.family_key GLOB 'name:microsoft:aspnetcore*')"}];
