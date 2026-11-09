@@ -24,7 +24,7 @@ export function windowFor(anchor, quarter) {
     end:new Date(monthsBefore(anchor,3*quarter).getTime()-(quarter?1:0)).toISOString()};
 }
 async function upstream(url,options={}) {
-  const response=await fetch(url,{...options,redirect:'error',signal:AbortSignal.timeout(18000),
+  const response=await fetch(url,{...options,redirect:'manual',signal:AbortSignal.timeout(18000),
     headers:{'User-Agent':'CVEHarbor version checks','Accept':'application/json',...options.headers}});
   if(!response.ok)throw Error('Advisory source returned '+response.status);
   return response.json();

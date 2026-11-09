@@ -35,6 +35,7 @@ test('OSV receives only the selected public package/version and respects disclos
   const old=new Date(anchor);old.setUTCMonth(old.getUTCMonth()-6);
   t.mock.method(globalThis,'fetch',async(url,opts)=>{
     assert.equal(url,'https://api.osv.dev/v1/query');
+    assert.equal(opts.redirect,'manual');
     assert.deepEqual(JSON.parse(opts.body),{package:{ecosystem:'npm',name:'react'},version:'19.0.0'});
     return Response.json({vulns:[{id:'GHSA-example',published:old.toISOString()},{id:'GHSA-withdrawn',published:day,withdrawn:day}]});
   });
