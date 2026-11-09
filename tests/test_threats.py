@@ -280,6 +280,7 @@ class AttackFeedExpansionTests(unittest.TestCase):
         self.assertEqual(report['sources']['blocklist_de']['published_count'],500)
         self.assertTrue(report['sources']['blocklist_de']['truncated'])
         self.assertEqual(report['attack_export']['count'],602)
+        self.assertEqual(report['firewall_exports']['new_hosts'],602)
         self.assertTrue(report['attack_export']['complete'])
         self.assertEqual(len(fixture.attack_text.splitlines()),602)
         self.assertIn(addresses[-1],fixture.attack_text.splitlines())
