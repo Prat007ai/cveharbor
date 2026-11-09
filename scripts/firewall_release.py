@@ -19,12 +19,12 @@ DEPLOYMENT = 'b8c33d71-effe-49be-a2c6-0fd60182b20f'
 def reviewed_pr():
     prs = prod.github('/commits/' + os.environ['GITHUB_SHA'] + '/pulls')
     found = [p['number'] for p in prs if p['merged_at'] and p['base']['ref'] == 'main'
-             and p['head']['ref'] == 'fix/firewall-confirm-browser']
+             and p['head']['ref'] == 'fix/firewall-list-host']
     pkg.require(len(found) == 1, 'Expected reviewed firewall email design PR')
-    delta = set(pkg.git('diff','--name-only','a090612334a24bdb5c4630fe03ee51db0e4babad',
+    delta = set(pkg.git('diff','--name-only','05db2abee35b83833deaa343e2da35c22ec0bcbb',
                         os.environ['GITHUB_SHA']).decode().splitlines())
-    pkg.require(delta == {'scripts/firewall_release.py','account-backend/src/firewall-templates.js',
-                'account-backend/src/firewall-artwork.js','account-backend/src/index.js',
+    pkg.require(delta == {'scripts/firewall_release.py','account-backend/src/firewall-digest.js',
+                'account-backend/src/index.js',
                 'account-backend/tests/firewall-digest.test.mjs','release/firewall-backend-identity.txt'},
                 'Unexpected changes outside the firewall email release')
     prod.evidence(found[0])
@@ -101,6 +101,6 @@ if __name__ == '__main__':
         raise ValueError('Expected backend')
     if os.environ.get('GITHUB_ACTIONS') == 'true':
         reviewed_pr()
-        prod.ready('b892d1d656658579e43277054bd05d5b8c7cdab89fbaf583f1652f08528f67a3')
+        prod.ready('bf1cea29abd6326677634550c78ff9e5a32050b6669cd0a3336e32abd7b63f17')
     backend(Path(sys.argv[2]).resolve())
 

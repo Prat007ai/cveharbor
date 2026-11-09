@@ -68,7 +68,7 @@ const application = {async fetch(req,env,ctx){
    const bytes=req.method==='GET'?Uint8Array.from(atob(harborPng),ch=>ch.charCodeAt(0)):null;
    return new Response(bytes,{headers:{'Content-Type':'image/png','Cache-Control':'public, max-age=31536000, immutable','X-Content-Type-Options':'nosniff'}});
   }
-  if(/^\/firewall-updates\/(confirm|unsubscribe)\/[a-f0-9]{64}$/.test(url.pathname)){
+  if(/^\/firewall-updates\/(?:(?:confirm|unsubscribe)\/[a-f0-9]{64}|addresses\/\d{4}-\d{2}-\d{2}\.txt)$/.test(url.pathname)){
    try{return await firewallRoute(req,env,limit);}catch{return response({error:'Subscription service temporarily unavailable'},503);}
   }
   if(url.pathname.startsWith('/assignment/'))return reviewerRoute(req,env,ctx);

@@ -42,6 +42,8 @@ test('confirmed opt-in, full-day additions, repeat dispatch and one-click remova
  assert.match(mails[1].text_body,/1\.2\.3\.4/);assert.doesNotMatch(mails[1].text_body,/2\.3\.4\.5/);
  assert.equal(db.sql.prepare('select provider_id from firewall_digest_deliveries').get().provider_id,'fixture-receipt');
  assert.match(mails[1].html_body,/Newly observed addresses/);assert.match(mails[1].html_body,/1 of 1/);assert.match(mails[1].html_body,/Unsubscribe or manage email preferences/);
+ const file='https://confirm.cveharbor.com/firewall-updates/addresses/2026-11-08.txt';
+ assert.ok(mails[1].text_body.includes('Full list: '+file));assert.ok(mails[1].html_body.includes('href="'+file+'"'));
  const unsub=mails[1].custom_headers[0].value.slice(1,-1);
  await route(new Request(unsub));assert.equal(db.sql.prepare('select count(*) n from firewall_subscribers').get().n,1);
  await route(new Request(unsub,{method:'POST',body:'List-Unsubscribe=One-Click'}));assert.equal(db.sql.prepare('select count(*) n from firewall_subscribers').get().n,0);
@@ -78,6 +80,20 @@ test('preferences cover both scopes, preserve unrelated delivery and reject cros
  assert.equal((await send(origin+'/v1/me')).status,404);
  assert.equal((await send(origin+'/firewall-updates')).status,404);
 });
+test('dated lists use the confirmation hostname and preserve API downloads',async()=>{
+ const today=new Date();today.setUTCHours(0,0,0,0);
+ const yesterday=new Date(today.getTime()-86400000),day=yesterday.toISOString().slice(0,10);
+ const env={INTELLIGENCE_SOURCE:'r2',INTELLIGENCE_BUCKET:bucket({generated_at:today.toISOString(),addresses:{'192.0.2.10':{first_indexed:yesterday.toISOString()}}})};
+ const path='/firewall-updates/addresses/'+day+'.txt',url='https://confirm.cveharbor.com'+path,api='https://api.cveharbor.com/v1'+path;
+ const get=(u,options)=>worker.fetch(new Request(u,options),env,{});
+ for(const address of [url,api]){
+  const r=await get(address);assert.equal(r.status,200);assert.equal(await r.text(),'192.0.2.10\n');
+ }
+ const redirect=await get(api,{headers:{'Sec-Fetch-Mode':'navigate'}});assert.equal(redirect.status,302);assert.equal(redirect.headers.get('Location'),url);
+ assert.equal((await get(url.replace(day,today.toISOString().slice(0,10)))).status,404);
+ assert.equal((await get(url.replace(day,'not-a-date'))).status,404);
+});
+
 test('the email shows at most ten samples and counts the full list',()=>{
  const ips=Array.from({length:12},(_,i)=>'192.0.2.'+(i+1));
  const email=dailyEmail('2026-11-08',ips,'https://example.test/file','https://example.test/unsubscribe');
