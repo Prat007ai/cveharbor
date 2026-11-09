@@ -62,9 +62,31 @@ test('SQL branches validate their own build, and distributions query their publi
     return Response.json({vulnerabilities:[],startIndex:0,totalResults:0});
   });
   const day=new Date().toISOString().slice(0,10);
-  for(const [product,version] of [['ubuntu','24.04.5'],['debian','13.7'],['sles','15.7']]){
+  for(const [product,version] of [['ubuntu','22.04.5'],['debian','13.7'],['sles','15.7']]){
     const res=await versionResponse(new Request('https://example.test/v1/version-picker/scan?'+new URLSearchParams({product,version,day,months:3})),{});
     assert.equal(res.status,200);
   }
-  assert.deepEqual(fetched,['o:canonical:ubuntu_linux:24.04:*','o:debian:debian_linux:13:*','o:suse:sles:15:sp7'].map(v=>'cpe:2.3:'+v+':*:*:*:*:*:*'));
+  assert.deepEqual(fetched,['o:canonical:ubuntu_linux:22.04:*','o:debian:debian_linux:13:*','o:suse:sles:15:sp7'].map(v=>'cpe:2.3:'+v+':*:*:*:*:*:*'));
+});
+
+test('vendor scans distinguish SQL servicing branches and Noble package notices from installed exposure', async()=>{
+  const today=new Date().toISOString(), month=today.slice(0,7), digest='a'.repeat(64), snapshot='b'.repeat(64);
+  const day=today.slice(0,10);
+  async function scan(product,version,rows){
+    const key=product==='ubuntu'?'ubuntu-noble':product;
+    const directory={product:key,from:'2020-01-01',checked:today,snapshot,months:{[month]:digest}};
+    const bucket={get:async path=>({json:async()=>path.endsWith('current.json')?directory:rows})};
+    const res=await versionResponse(new Request('https://example.test/v1/version-picker/scan?'+new URLSearchParams({product,version,day,months:3})),{INTELLIGENCE_BUCKET:bucket});
+    assert.equal(res.status,200);
+    return (await res.json()).rows[0];
+  }
+  const sql=[{id:'CVE-2099-9999',published:today,fixes:[{branch:'CU32',build:'15.0.4500.2',kb:'5128494'},{branch:'GDR',build:'15.0.2200.2',kb:'5128495'}]}];
+  for(const [version,label] of [['15.0.4490.9',/predates the CU32/],['15.0.4500.2',/included.*CU32/],['15.0.2200.2',/included.*GDR/],['15.0.1000.9',/verify servicing/]]){
+    assert.match((await scan('sql2019',version,sql)).evidence,label);
+  }
+  const row=await scan('ubuntu','24.04.5',[{id:'USN-9008-1',published:today,packages:{libnfs:'5.0.2-1ubuntu0.24.04.2'},
+    binaries:{libnfs14:'5.0.2-1ubuntu0.24.04.2'},cves:['CVE-2026-108985']}]);
+  assert.match(row.affected,/CVE-2026-108985/);assert.match(row.remediation,/libnfs14/);assert.match(row.evidence,/verify installed packages/);
+  const res=await versionResponse(new Request('https://example.test/v1/version-picker/scan?product=sql2019&version=15.0.4500.2&months=3&day='+day),{});
+  assert.equal(res.status,503);
 });

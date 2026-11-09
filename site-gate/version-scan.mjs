@@ -1,3 +1,4 @@
+import {vendorPage} from './vendor-scan.mjs';
 import catalogue from './version-products.json' with {type:'json'};
 import seed from './version-releases.json' with {type:'json'};
 
@@ -157,15 +158,16 @@ export async function versionResponse(request,env) {
   if(![3,12].includes(months)||!Number.isInteger(q)||q<0||q>=months/3||!/^\d{4}-\d\d-\d\d$/.test(date)||!Number.isFinite(anchor.getTime())||
       Math.abs(Date.now()-anchor.getTime())>2*86400000||cursor.length>2048)return json({error:'Invalid scan window.'},400);
   const osv=product.match.startsWith('osv:');
-  if(!osv&&cursor&&!/^\d{1,7}$/.test(cursor))return json({error:'Invalid page.'},400);
+  const vendor=id==='sql2019'?'sql2019':id==='ubuntu'&&/^24\.04(?:\.|$)/.test(version)?'ubuntu-noble':null;
+  if(!osv&&cursor&&!(vendor?/^[a-f0-9]{64}\.\d{1,7}$/:/^\d{1,7}$/).test(cursor))return json({error:'Invalid page.'},400);
   const range=osv?{start:monthsBefore(anchor,months).toISOString(),end:anchor.toISOString()}:windowFor(anchor,q);
   // Cache only public product queries; do not include gate credentials or account identifiers.
-  const key=new Request(url.origin+'/__version_scan_cache/v2/'+[id,version,date,months,q,cursor].map(encodeURIComponent).join('/'));
+  const key=new Request(url.origin+'/__version_scan_cache/v3/'+[id,version,date,months,q,cursor].map(encodeURIComponent).join('/'));
   const cache=globalThis.caches?.default;
   try{
     const hit=await cache?.match(key);
     if(hit)return json(await hit.json());
-    const page=osv?await osvPage(product,version,range,cursor):await nvdPage(id,product,version,range,Number(cursor));
+    const page=vendor?await vendorPage(env.INTELLIGENCE_BUCKET,vendor,version,range,cursor):osv?await osvPage(product,version,range,cursor):await nvdPage(id,product,version,range,Number(cursor));
     const body={...page,nextQuarter:!osv&&q+1<months/3?q+1:null,range};
     if(cache)await cache.put(key,Response.json(body,{headers:{'Cache-Control':'public, max-age=1800'}})).catch(()=>{});
     return json(body);
