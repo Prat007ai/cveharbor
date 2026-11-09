@@ -1,11 +1,8 @@
 const ink='#142f36', muted='#4b676c', mist='#f0f6f3', teal='#075d56';
 export const escapeHtml=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-// A small tiled lighthouse survives remote-image blocking in email clients.
-const light=['.......m....','......mmm...','bbbbbbyyy...','...bbbmwm...','.......w....','......mwm...','......www...','.....mmwwm..','..mmmmmmmmmm','....bbb.....'];
-const colors={'.':'#103942',m:'#53b9aa',w:'#d4f3e7',b:'#28676d',y:'#ffeead'};
-const tiles=light.map(line=>'<tr>'+Array.from(line.matchAll(/(.)\1*/g),m=>'<td colspan="'+m[0].length+'" height="4" bgcolor="'+colors[m[1]]+'" style="width:'+m[0].length*5+'px;height:4px;font-size:0;line-height:4px">&nbsp;</td>').join('')+'</tr>').join('');
-const artwork='<table width="60" aria-hidden="true" role="presentation" cellspacing="0" cellpadding="0" border="0">'+tiles+'</table>';
+export const artworkPath='/firewall-updates/assets/harbor-v1.png';
+const artwork='<img src="https://confirm.cveharbor.com'+artworkPath+'" width="112" height="65" alt="" style="display:block;width:112px;max-width:100%;height:auto;border:0">';
 const buttonStyle='display:inline-block;background:'+teal+';color:#fff;text-decoration:none;border:0;border-radius:6px;padding:13px 19px;font:600 15px Arial,sans-serif;cursor:pointer';
 function frame(label,title,content){
  return '<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 auto;max-width:620px;background:white;color:'+ink+';font:16px/1.55 Arial,sans-serif;border:1px solid #ccdeda;border-radius:12px;overflow:hidden">'+
@@ -17,7 +14,7 @@ const cta=(label,url)=>'<a href="'+escapeHtml(url)+'" style="'+buttonStyle+'">'+
 const panel=html=>'<div style="background:'+mist+';border-left:3px solid #35aa99;padding:14px 18px;margin:16px 0">'+html+'</div>';
 export function firewallPage(title,content,status=200,label='EMAIL SUBSCRIPTION'){
  const style='*{box-sizing:border-box}body{margin:0;padding:clamp(12px,5vw,60px) 10px;background:#edf4f2;color:'+ink+';font:16px/1.55 Arial,sans-serif}button{'+buttonStyle+'}p{margin:0 0 18px}fieldset{border:1px solid #b3cbc4;border-radius:8px;margin:15px 0;padding:10px}fieldset label{display:block;padding:6px}input[type=email]{width:100%;padding:12px;margin:8px 0 14px}a{color:'+teal+'}button:focus-visible,a:focus-visible{outline:3px solid #177db3;outline-offset:3px}';
- return new Response('<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+title+' | CVEHarbor</title><style>'+style+'</style><main>'+frame(label,title,content)+'</main></html>',{status,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Referrer-Policy':'no-referrer','X-Robots-Tag':'noindex','Content-Security-Policy':"default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",'X-Content-Type-Options':'nosniff'}});
+ return new Response('<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+title+' | CVEHarbor</title><style>'+style+'</style><main>'+frame(label,title,content)+'</main></html>',{status,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Referrer-Policy':'strict-origin','X-Robots-Tag':'noindex','Content-Security-Policy':"default-src 'none'; style-src 'unsafe-inline'; img-src https://confirm.cveharbor.com; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",'X-Content-Type-Options':'nosniff'}});
 }
 export function confirmEmail(link){
  return {subject:'Confirm your CVEHarbor firewall updates',text:'Confirm your email to receive daily firewall updates. This link expires in 24 hours. '+link,
