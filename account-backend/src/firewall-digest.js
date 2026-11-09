@@ -82,7 +82,7 @@ export async function dispatchFirewallDigest(env,now=new Date(),sender=sendEmail
     AND NOT EXISTS(SELECT 1 FROM firewall_digest_deliveries d WHERE d.subscriber_id=s.id AND d.day=?) ORDER BY s.confirmed_at,s.id LIMIT 20`).bind(begin/1000,day).all()).results;
   if(!subscribers.length)return;
   const ips=await historyFor(env,day);if(!ips.length)return;
-  const file=base+'/addresses/'+day+'.txt', subject='CVEHarbor firewall updates Â· '+day+' Â· '+ips.length+' new IPs';
+  const file=base+'/addresses/'+day+'.txt', subject='CVEHarbor firewall updates · '+day+' · '+ips.length+' new IPs';
   for(const sub of subscribers){
     const claim=await env.DB.prepare(`INSERT OR IGNORE INTO firewall_digest_deliveries(subscriber_id,day,claimed_at) SELECT id,?,? FROM firewall_subscribers WHERE id=? AND confirmed_at IS NOT NULL`).bind(day,seconds(),sub.id).run();
     if(!claim.meta.changes)continue;
