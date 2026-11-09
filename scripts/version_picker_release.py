@@ -64,7 +64,7 @@ def normalized(path,live):
     value=prod.origin_bytes(path,live)
     return PIN.sub(rb'\1"',value) if path.endswith('.html') else value
 
-def publish(out):
+def publish(out, *, changed=None, previous_version=VERSION, previous_deployment=DEPLOYMENT, reviewed_pr=None, ready=readiness):
     password=os.environ['SITE_GATE_PASSWORD']
     auth='Basic '+base64.b64encode(('cveharbor:'+password).encode()).decode()
     with prod.request(prod.ORIGIN+'feed-health.json',{'Authorization':auth}) as health:
@@ -80,8 +80,8 @@ def publish(out):
             return body
     def check(path,auth,expected):
         pkg.require(pkg.digest(normalized(path,asset(path,auth)))==expected,'Unexpected live bytes for '+path)
-    prod.publish(out,site_env=ENV,pr_number=pr_number(),previous_version=VERSION,previous_deployment=DEPLOYMENT,
-        changed=CHANGED | {MODULE},readiness=readiness,verify_served=check,read_asset=asset,canonical=normalized)
+    prod.publish(out,site_env=ENV,pr_number=reviewed_pr or pr_number(),previous_version=previous_version,previous_deployment=previous_deployment,
+        changed=changed if changed is not None else CHANGED | {MODULE},readiness=ready,verify_served=check,read_asset=asset,canonical=normalized)
     with prod.request(prod.ORIGIN+'v1/version-picker/catalogue',{'Authorization':auth}) as r:
         live=json.load(r)
     pkg.require(set(live['cards'])==set(json.loads(Path('site-gate/version-products.json').read_text())['cards'])

@@ -47,6 +47,10 @@ on:
       - '.github/workflows/deploy-worker-code.yml'
   workflow_dispatch:
     inputs:
+      firewall_digest:
+        description: Publish only confirmed firewall signup and daily delivery on the serving backend
+        type: boolean
+        default: false
       intelligence:
         description: Publish only the reviewed CVIE query repair and data reader
         type: boolean
@@ -200,6 +204,19 @@ jobs:
           python scripts/intelligence_release.py backend release/.build/intelligence
           rsync --archive --delete release/.build/intelligence/account-backend/src/ account-backend/src/
           node scripts/verify_cvie_d1.mjs
+      - name: Assemble the firewall subscription backend on its serving baseline
+        if: inputs.firewall_digest == true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MODE: ${{ inputs.release_mode }}
+          OTHER_PACKAGE: ${{ inputs.intelligence || inputs.manual_customer || inputs.customer_reminders || inputs.customer_investigation || inputs.assignment_release || inputs.query_fix_287 }}
+        run: |
+          test "$MODE" = code-only
+          test "$OTHER_PACKAGE" != true
+          python scripts/firewall_release.py backend release/.build/firewall
+          rsync --archive --delete release/.build/firewall/account-backend/src/ account-backend/src/
+          node --input-type=module -e "import {backendIdentity} from './scripts/build_release_identity.mjs'; import fs from 'node:fs'; import assert from 'node:assert/strict'; assert.equal(backendIdentity(),fs.readFileSync('release/firewall-backend-identity.txt','utf8').trim())"
+          node --test account-backend/tests/firewall-digest.test.mjs
       - name: Confirm deployment credentials
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CVEHARBOR_PROD_WORKER_TOKEN }}
