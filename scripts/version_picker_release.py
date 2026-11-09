@@ -38,7 +38,12 @@ def prepare(out):
             ancestor.write_bytes(pkg.git('show',BASE+':'+name))
             source=Path(temp)/'updated'
             source.write_bytes(pkg.git('show','HEAD:'+name))
-            merged=pkg.git('merge-file','-p',str(out/'before'/name),str(ancestor),str(source))
+            if name=='cvie.css':
+                original,updated=ancestor.read_bytes(),source.read_bytes()
+                pkg.require(updated.startswith(original),'Expected only additive picker styles')
+                merged=(out/'before'/name).read_bytes()+updated[len(original):]
+            else:
+                merged=pkg.git('merge-file','-p',str(out/'before'/name),str(ancestor),str(source))
             (out/'after'/name).write_bytes(merged)
     (out/'after'/MODULE).write_bytes(pkg.git('show','HEAD:'+MODULE))
     for name in ('worker.mjs','version-scan.mjs','version-products.json','version-releases.json'):
