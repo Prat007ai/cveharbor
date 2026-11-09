@@ -514,6 +514,13 @@
       if(catalogueSignedIn&&personalized){const remove=text('button','technology-remove','×');remove.type='button';remove.title='Remove '+x.name+' from my catalogue';remove.setAttribute('aria-label',remove.title);remove.disabled=catalogueSaving;remove.addEventListener('click',event=>{event.stopPropagation();void removeTechnology(x.name)});nameLine.append(remove)}
       label.append(nameLine,freshness);
       if(scan){const choosing=scan.status==='needs_identity'||!scan.cpe;const status=text(choosing?'button':'span','cvie-row-state '+scan.status,choosing?(featured.has(x.name)?'Refine for my environment':'Choose the exact product'):window.CVEHARBOR_CVIE.statusFor(scan));if(choosing){status.type='button';status.classList.add('technology-choose');status.addEventListener('click',event=>{event.stopPropagation();window.CVEHARBOR_CVIE.openIdentity(x.name)})}label.append(status);button.setAttribute('aria-label',`View ${x.name}: ${window.CVEHARBOR_CVIE.statusFor(scan)}`);}
+      if(featured.has(x.name)){
+        const pick=text('button','cvie-choose-product','Check installed version');pick.type='button';
+        pick.setAttribute('aria-label','Check installed version for '+x.name);
+        pick.onclick=event=>{event.stopPropagation();void openVersionPicker(x.name);};
+        if(featured.has(x.name))label.querySelector('button.technology-choose')?.remove();
+        label.append(pick);
+      }
       const counts=text('span','technology-row-counts','');
       counts.append(text('span','technology-count-new'+(recent?' has-new':''),missingCounts?'— new':`${recent} new`),
                     text('span','technology-count-all',`${missingCounts||scan&&!(horizon===12?scan.history_complete_at:scan.recent_complete_at)&&!total?'—':total} / ${horizon} months`));
@@ -964,6 +971,36 @@
       catalogueSaving=false;controls.forEach(el=>el.disabled=false);drawCustomizer();renderCategories();
     }
   }
+  let pickerModule;
+  async function openVersionPicker(card){
+    if(!personalized)await loadCatalogue();
+    if(!personalized){manageButton.click();return;}
+    const account=catalogueAccount;
+    try{
+      pickerModule=await import('/technology-version-picker.mjs');
+      if(account!==catalogueAccount)return;
+      await pickerModule.openPicker(card,{
+        saved:name=>personalized?.products.find(p=>catalogueKey(p.name)===catalogueKey(name))?.version,
+        save:async(product,version)=>{
+          if(account!==catalogueAccount||!personalized)throw Error('Your session changed. Reopen the picker.');
+          if(draft&&!$('technologyCustomizer').hidden&&comparableCatalogue(draft)!==comparableCatalogue(personalized))
+            throw Error('Save your catalogue edits before saving an installed version.');
+          const old=personalized.products.find(p=>catalogueKey(p.name)===catalogueKey(product.name));
+          if(!old&&personalized.products.length>=50)throw Error('Your catalogue already has 50 additional products.');
+          const category=old?.category||Object.keys(technologyGroups).find(k=>technologyGroups[k].includes(card))||'applications';
+          const family=product.match.startsWith('cpe:')?product.match.slice(4):'';
+          const cpe=/^[aoh]:[a-z0-9_.-]+:[a-z0-9_.-]+$/.test(family)?'cpe:2.3:'+family+':*:*:*:*:*:*:*:*':'';
+          if(old&&(old.cpe&&old.cpe!==cpe||old.vendor&&catalogueKey(old.vendor)!==catalogueKey(product.vendor)))
+            throw Error('A catalogue entry with this name has a different product identity. Review it in Customize technologies.');
+          const entry={...old,name:product.name,vendor:product.vendor,version,category,cpe,enabled:true};
+          const products=[...personalized.products.filter(p=>p!==old),entry];
+          if(!await saveCatalogue({...personalized,products}))throw Error(customizeStatus.textContent||'The catalogue could not be saved.');
+          if(draft){draft=JSON.parse(JSON.stringify(personalized));draftRevision=catalogueRevision;drawCustomizer();}
+        }
+      });
+    }catch{statusMessage('The version picker could not load. Please retry.');}
+  }
+  window.CVEHarborOpenVersionPicker=name=>{if(!featured.has(name))return false;void openVersionPicker(name);return true;};
   async function removeTechnology(name){
     if(!personalized||catalogueSaving)return;
     const key=catalogueKey(name);
@@ -1120,6 +1157,7 @@
     renderTopicFeed();renderCategories();renderBars();renderFocus();render();
   }
   function clearCatalogue(){
+    pickerModule?.dismiss();
     catalogueSignedIn=false;catalogueAccount=undefined;personalized=null;draft=null;
     catalogueRevision=undefined;draftRevision=undefined;
     customForm.reset();$('technologyCustomizer').hidden=true;applyPersonalized();

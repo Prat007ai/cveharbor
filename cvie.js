@@ -160,6 +160,7 @@ async function readIdentity(){
  finally{identityReading=false;if(generation===identityGeneration)scheduleIdentityRead();}
 }
 function openIdentity(name){
+ if(window.CVEHarborOpenVersionPicker?.(name))return;
  const p=products.find(x=>normalize(x.name)===normalize(name));if(!p)return;
  if(!identityDialog){
   identityDialog=node('dialog','','cvie-identity-dialog');identityDialog.setAttribute('aria-labelledby','cvieIdentityTitle');

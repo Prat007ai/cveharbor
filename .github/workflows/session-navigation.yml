@@ -19,7 +19,7 @@ on:
       site_release:
         description: Reviewed production package
         type: choice
-        options: [followed-topics, assignment-291, customer-investigation, manual-customer, intelligence]
+        options: [followed-topics, assignment-291, customer-investigation, manual-customer, intelligence, version-picker]
         default: followed-topics
       feed_run_id:
         description: Data run containing the verified intelligence receipt (intelligence release only)
@@ -36,9 +36,9 @@ jobs:
     env:
       FEED_RUN_ID: ${{ inputs.feed_run_id }}
       FEED_RECEIPT: ${{ github.workspace }}/.feed-receipt/feed-receipt.json
-      CVEHARBOR_SITE_RELEASE: ${{ inputs.site_release || (github.head_ref == 'feature/assignment-manual-customer' && 'manual-customer') || (github.head_ref == 'feature/customer-advisory-review' && 'customer-investigation') || 'followed-topics' }}
+      CVEHARBOR_SITE_RELEASE: ${{ inputs.site_release || (github.head_ref == 'feature/technology-version-picker' && 'version-picker') || (github.head_ref == 'feature/assignment-manual-customer' && 'manual-customer') || (github.head_ref == 'feature/customer-advisory-review' && 'customer-investigation') || 'followed-topics' }}
     name: Test followed topics in the production package
-    if: (github.event_name == 'pull_request' && (github.head_ref == 'feature/cvie-topic-delivery' || github.head_ref == 'feature/customer-advisory-review' || github.head_ref == 'feature/assignment-manual-customer') && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
+    if: (github.event_name == 'pull_request' && (github.head_ref == 'feature/technology-version-picker' || github.head_ref == 'feature/cvie-topic-delivery' || github.head_ref == 'feature/customer-advisory-review' || github.head_ref == 'feature/assignment-manual-customer') && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'workflow_dispatch' && inputs.reviewed_commit != '')
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -5,6 +5,8 @@ import path from 'node:path';
 const {chromium}=await import(process.env.CVEHARBOR_PLAYWRIGHT_MODULE||'playwright');
 import {DB} from '../account-backend/tests/helpers/d1.mjs';
 import worker from '../account-backend/src/index.js';
+import {versionResponse} from '../site-gate/version-scan.mjs';
+const scanRequests=[];
 import {identityCandidates} from '../account-backend/src/product-identity.js';
 import {catalogueRevision} from '../account-backend/src/catalogue-selection.js';
 const env={DB:new DB(),CVIE_SHARED_SCANS_ENABLED:'true'},token='a'.repeat(64);
@@ -66,10 +68,18 @@ try{
    return route.fulfill({status:response.status,headers,contentType:'application/json',body:await response.text()});
   }
   if(url.hostname!=='127.0.0.1')return route.abort();
+  if(url.pathname==='/v1/version-picker/catalogue'){
+    const response=await versionResponse(new Request(url),{});return route.fulfill({contentType:'application/json',body:await response.text()});
+  }
+  if(url.pathname==='/v1/version-picker/scan'){
+    scanRequests.push(Object.fromEntries(url.searchParams));
+    const q=Number(url.searchParams.get('quarter')),months=Number(url.searchParams.get('months'));
+    return route.fulfill({contentType:'application/json',body:JSON.stringify({rows:[],next:null,nextQuarter:q+1<months/3?q+1:null})});
+  }
   if(url.pathname==='/data.js')return route.fulfill({contentType:'application/javascript',body:'window.CVEHARBOR_DATA='+JSON.stringify(data)});
   const filename=path.resolve(assetRoot,'.'+url.pathname+(url.pathname.endsWith('/')?'index.html':''));
   if(!filename.startsWith(assetRoot+path.sep)||!fs.existsSync(filename))return route.fulfill({status:404,body:''});
-  return route.fulfill({contentType:{'.html':'text/html','.js':'application/javascript','.css':'text/css','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp'}[path.extname(filename)]||'application/octet-stream',body:fs.readFileSync(filename)});
+  return route.fulfill({contentType:{'.html':'text/html','.js':'application/javascript','.mjs':'application/javascript','.css':'text/css','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp'}[path.extname(filename)]||'application/octet-stream',body:fs.readFileSync(filename)});
  });
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('http://127.0.0.1:8080/vulnerabilities/');
@@ -236,6 +246,30 @@ try{
  assert.equal(await topics.locator('tbody tr').count(),1);assert.match(await topics.locator('tbody tr').innerText(),/CVE-2099-40052/);
  await topics.getByLabel('Published',{exact:true}).selectOption('3');await query.fill('');
  // Actual API chooser and card removal, with synthetic provider-directory records.
+ if(fs.existsSync(path.join(assetRoot,'technology-version-picker.mjs'))){
+  if(await page.locator('#technologyManageClose').isVisible())await page.locator('#technologyManageClose').click();
+  const saved=await (await fetcher('https://api.cveharbor.com/v1/technology-catalogue')).json();
+  const picker=page.locator('.version-picker[open]');
+  await page.getByRole('button',{name:'Check installed version for Windows Server OS',exact:true}).click();
+  await picker.getByLabel('Release',{exact:true}).waitFor();
+  assert.equal(await picker.getByLabel('Release',{exact:true}).locator('option').count(),12);
+  await picker.getByLabel('Release',{exact:true}).selectOption('manual');
+  await picker.getByLabel('Installed version',{exact:true}).fill('wrong');
+  await picker.getByText('Save and scan last 3 months').click();
+  assert.match(await picker.innerText(),/20348\.2849/);assert.equal(scanRequests.length,0);
+  await picker.getByLabel('Installed version',{exact:true}).fill('20348.2849');
+  await picker.getByText('Save and scan last 3 months').click();
+  await picker.getByText('Find more vulnerabilities · last 12 months').waitFor({state:'visible'});
+  assert.deepEqual(scanRequests.map(r=>r.months),['3']);
+  await picker.getByText('Find more vulnerabilities · last 12 months').click();
+  await picker.getByText(/in the last 12 months/).waitFor();
+  assert.deepEqual(scanRequests.map(r=>r.quarter),['0','1','2','3']);
+  const changed=await (await fetcher('https://api.cveharbor.com/v1/technology-catalogue')).json();
+  assert.equal(changed.products.find(p=>p.name==='Windows Server').version,'20348.2849');
+  await picker.getByRole('button',{name:'Close',exact:true}).click();
+  await fetcher('https://api.cveharbor.com/v1/technology-catalogue',{method:'PUT',body:JSON.stringify({...saved,revision:changed.revision})});
+  await reopen();
+ }else{
  const family=name=>'cpe:2.3:o:microsoft:'+name+':*:*:*:*:*:*:*:*';
  const options=identityCandidates({products:['windows_server_2025','windows_server_2022','windows_server_2019'].map(name=>({cpe:{cpeName:family(name)}}))},{name:'Windows Server OS'});
  // Start with zero stored candidates and a busy provider budget, matching the production failure.
@@ -258,6 +292,7 @@ try{
  await page.getByRole('button',{name:'Use selected product',exact:true}).click();await page.waitForFunction(()=>!document.querySelector('.cvie-identity-dialog').open);
  assert.equal(env.DB.sql.prepare("SELECT cpe FROM cvie_products WHERE name='Windows Server OS'").get().cpe,family('windows_server_2025'));
  await page.waitForFunction(()=>!window.CVEHARBOR_CVIE.loading&&window.CVEHARBOR_CVIE.product('Windows Server OS')?.cpe);
+ }
  const remove=page.getByRole('button',{name:'Remove Windows Server OS from my catalogue',exact:true});
  await remove.focus();assert.equal(await remove.evaluate(el=>getComputedStyle(el).opacity),'1');
  failSave=true;await remove.click();await page.waitForFunction(()=>document.getElementById('technologyActionStatus').textContent.includes('Unable to save'));assert.equal(await page.locator('.technology-row').count(),2);failSave=false;

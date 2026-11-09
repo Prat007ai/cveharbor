@@ -1,4 +1,5 @@
 import { intelligenceResponse, useIntelligenceStore, openIntelligenceSnapshot, pinIntelligenceScripts } from '../account-backend/src/intelligence-store.js';
+import {versionResponse} from './version-scan.mjs';
 const realm='Basic realm="CVEHarbor development", charset="UTF-8"';
 
 function privateHeaders(){
@@ -50,6 +51,8 @@ export default {
       }
     }
     try {
+      const picker=await versionResponse(request,env);
+      if(picker)return picker;
       const feed=await intelligenceResponse(request,env);
       if(feed){
         if(gated)for(const [name,value] of Object.entries(privateHeaders()))feed.headers.set(name,value);
