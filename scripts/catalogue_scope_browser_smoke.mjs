@@ -74,7 +74,7 @@ try{
   if(url.pathname==='/v1/version-picker/scan'){
     scanRequests.push(Object.fromEntries(url.searchParams));
     const q=Number(url.searchParams.get('quarter')),months=Number(url.searchParams.get('months'));
-    return route.fulfill({contentType:'application/json',body:JSON.stringify({rows:[],next:null,nextQuarter:q+1<months/3?q+1:null})});
+    return route.fulfill({contentType:'application/json',body:JSON.stringify({rows:[{id:'CVE-2099-98011',title:'Synthetic scanned advisory',summary:'Full synthetic description',published:'2099-01-01',evidence:'Product lead',url:'https://example.org/advisory',sources:[{url:'https://example.org/advisory',label:'Vendor bulletin'}]}],next:null,nextQuarter:q+1<months/3?q+1:null})});
   }
   if(url.pathname==='/data.js')return route.fulfill({contentType:'application/javascript',body:'window.CVEHARBOR_DATA='+JSON.stringify(data)});
   const filename=path.resolve(assetRoot,'.'+url.pathname+(url.pathname.endsWith('/')?'index.html':''));
@@ -261,6 +261,13 @@ try{
   await picker.getByText('Save and scan last 3 months').click();
   await picker.getByText('Find more vulnerabilities · last 12 months').waitFor({state:'visible'});
   assert.deepEqual(scanRequests.map(r=>r.months),['3']);
+  await picker.getByRole('button',{name:/CVE-2099-98011/}).click();
+  const scanDetail=page.locator('#detailDialog[open]');
+  await scanDetail.getByRole('heading',{name:'Synthetic scanned advisory'}).waitFor();
+  assert.ok(await scanDetail.getByText('Full synthetic description',{exact:true}).isVisible());
+  assert.equal(await scanDetail.getByRole('link',{name:'Vendor bulletin'}).getAttribute('href'),'https://example.org/advisory');
+  await page.keyboard.press('Escape');
+  assert.ok(await picker.isVisible());
   await picker.getByText('Find more vulnerabilities · last 12 months').click();
   await picker.getByText(/in the last 12 months/).waitFor();
   assert.deepEqual(scanRequests.map(r=>r.quarter),['0','1','2','3']);

@@ -515,7 +515,7 @@
       label.append(nameLine,freshness);
       if(scan){const choosing=scan.status==='needs_identity'||!scan.cpe;const status=text(choosing?'button':'span','cvie-row-state '+scan.status,choosing?(featured.has(x.name)?'Refine for my environment':'Choose the exact product'):window.CVEHARBOR_CVIE.statusFor(scan));if(choosing){status.type='button';status.classList.add('technology-choose');status.addEventListener('click',event=>{event.stopPropagation();window.CVEHARBOR_CVIE.openIdentity(x.name)})}label.append(status);button.setAttribute('aria-label',`View ${x.name}: ${window.CVEHARBOR_CVIE.statusFor(scan)}`);}
       if(featured.has(x.name)){
-        const pick=text('button','cvie-choose-product','Check installed version');pick.type='button';
+        const pick=text('button','technology-version-action','Check version ›');pick.type='button';
         pick.setAttribute('aria-label','Check installed version for '+x.name);
         pick.onclick=event=>{event.stopPropagation();void openVersionPicker(x.name);};
         if(featured.has(x.name))label.querySelector('button.technology-choose')?.remove();
@@ -719,11 +719,12 @@
     const remaining=Math.max(0,selected.length-visible);
     $('showMore').textContent=`Show ${Math.min(PAGE_SIZE,remaining)} more`;
   }
-  function showDetail(x){
+  function showDetail(x,context){
     window.CVEHARBOR_ADVISORY_DETAILS.render($('dialogContent'),x,{
-      disclosureBadge:makeDisclosureBadge(x),
+      disclosureBadge:makeDisclosureBadge(x),context,
       onAssign:()=>{
         const dialog=$('detailDialog');
+        if(context)pickerModule?.dismiss();
         if(typeof dialog.close==='function')dialog.close();else dialog.removeAttribute('open');
         window.dispatchEvent(new CustomEvent('cveharbor:assign-remediation',{detail:{id:x.id}}));
       }
@@ -980,6 +981,17 @@
       pickerModule=await import('/technology-version-picker.mjs');
       if(account!==catalogueAccount)return;
       await pickerModule.openPicker(card,{
+        detail:(row,product,version)=>{
+          const indexed=items.find(item=>item.id===row.id);
+          const details={...row,...indexed};
+          for(const key of ['summary','affected','remediation','cvss','updated','exploitation','kev_added']){
+            if(details[key]==null||details[key]==='')details[key]=row[key];
+          }
+          details.categories=[...new Set([product.name,...(indexed?.categories||[])])];
+          details.sources=[...(indexed?.sources||[]),...(row.sources||[{url:row.url}])];
+          const match=text('p','scan-match-context',product.name+' '+version+' · '+row.evidence);
+          showDetail(details,match);
+        },
         saved:name=>personalized?.products.find(p=>catalogueKey(p.name)===catalogueKey(name))?.version,
         save:async(product,version)=>{
           if(account!==catalogueAccount||!personalized)throw Error('Your session changed. Reopen the picker.');

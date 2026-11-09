@@ -20,6 +20,18 @@
       "wordpress"
     ],
     "Linux": [
+      "ubuntu",
+      "debian",
+      "rhel",
+      "almalinux",
+      "rocky-linux",
+      "oracle-linux",
+      "sles",
+      "opensuse",
+      "amazon-linux",
+      "fedora",
+      "centos-stream",
+      "alpine-linux",
       "linux"
     ],
     "PHP": [
@@ -39,7 +51,12 @@
       "exchange"
     ],
     "SQL Server": [
-      "sql"
+      "sql2025",
+      "sql",
+      "sql2019",
+      "sql2017",
+      "sql2016",
+      "sql2014"
     ],
     "MySQL / MariaDB": [
       "mysql",
@@ -138,7 +155,8 @@
       "source": "dotnet:runtime",
       "example": "8.0.12",
       "format": "triple",
-      "match": "cpe:a:microsoft:.net"
+      "match": "cpe:a:microsoft:.net",
+      "lifecycle": "dotnet"
     },
     "aspnet": {
       "name": "ASP.NET Core Runtime",
@@ -146,7 +164,8 @@
       "source": "dotnet:aspnetcore-runtime",
       "example": "8.0.12",
       "format": "triple",
-      "match": "cpe:a:microsoft:asp.net_core"
+      "match": "cpe:a:microsoft:asp.net_core",
+      "lifecycle": "dotnet"
     },
     "sdk": {
       "name": ".NET SDK",
@@ -154,7 +173,8 @@
       "source": "dotnet:sdk",
       "example": "8.0.405",
       "format": "sdk",
-      "match": "cpe:a:microsoft:.net_core_sdk"
+      "match": "cpe:a:microsoft:.net_core_sdk",
+      "lifecycle": "dotnet"
     },
     "wordpress": {
       "name": "WordPress Core",
@@ -162,7 +182,8 @@
       "source": "release:wordpress",
       "example": "6.7.2",
       "format": "twoThree",
-      "match": "cpe:a:wordpress:wordpress"
+      "match": "cpe:a:wordpress:wordpress",
+      "lifecycle": "wordpress"
     },
     "linux": {
       "name": "Linux kernel (upstream)",
@@ -170,7 +191,8 @@
       "source": "release:linux-kernel",
       "example": "6.12.8",
       "format": "twoThree",
-      "match": "cpe:o:linux:linux_kernel"
+      "match": "cpe:o:linux:linux_kernel",
+      "lifecycle": "linux"
     },
     "php": {
       "name": "PHP",
@@ -178,7 +200,8 @@
       "source": "release:php",
       "example": "8.4.2",
       "format": "triple",
-      "match": "cpe:a:php:php"
+      "match": "cpe:a:php:php",
+      "lifecycle": "php"
     },
     "python": {
       "name": "CPython",
@@ -186,7 +209,8 @@
       "source": "release:python",
       "example": "3.12.8",
       "format": "triple",
-      "match": "cpe:a:python:python"
+      "match": "cpe:a:python:python",
+      "lifecycle": "python"
     },
     "mysql": {
       "name": "MySQL Server",
@@ -194,7 +218,8 @@
       "source": "release:mysql",
       "example": "8.4.3",
       "format": "triple",
-      "match": "cpe:a:oracle:mysql"
+      "match": "cpe:a:oracle:mysql",
+      "lifecycle": "mysql"
     },
     "maria": {
       "name": "MariaDB Server",
@@ -202,7 +227,8 @@
       "source": "release:mariadb",
       "example": "10.6.28-24",
       "format": "maria",
-      "match": "cpe:a:mariadb:mariadb"
+      "match": "cpe:a:mariadb:mariadb",
+      "lifecycle": "mariadb"
     },
     "veeam": {
       "name": "Veeam Backup & Replication",
@@ -210,7 +236,8 @@
       "source": "release:veeam-backup-and-replication",
       "example": "12.3.0.310",
       "format": "four",
-      "match": "cpe:a:veeam:backup_\\&_replication"
+      "match": "cpe:a:veeam:backup_\\&_replication",
+      "lifecycle": "veeam-backup-and-replication"
     },
     "docker": {
       "name": "Docker Engine",
@@ -218,7 +245,8 @@
       "source": "release:docker-engine",
       "example": "27.5.1",
       "format": "triple",
-      "match": "cpe:a:docker:docker"
+      "match": "cpe:a:docker:docker",
+      "lifecycle": "docker-engine"
     },
     "k8s": {
       "name": "Kubernetes",
@@ -226,7 +254,8 @@
       "source": "release:kubernetes",
       "example": "1.32.1",
       "format": "triple",
-      "match": "cpe:a:kubernetes:kubernetes"
+      "match": "cpe:a:kubernetes:kubernetes",
+      "lifecycle": "kubernetes"
     },
     "mongo": {
       "name": "MongoDB Server",
@@ -234,7 +263,8 @@
       "source": "release:mongodb",
       "example": "8.0.4",
       "format": "triple",
-      "match": "cpe:a:mongodb:mongodb"
+      "match": "cpe:a:mongodb:mongodb",
+      "lifecycle": "mongodb"
     },
     "ios": {
       "name": "iOS",
@@ -242,7 +272,8 @@
       "source": "release:ios",
       "example": "18.2.1",
       "format": "twoThree",
-      "match": "cpe:o:apple:iphone_os"
+      "match": "cpe:o:apple:iphone_os",
+      "lifecycle": "ios"
     },
     "node": {
       "name": "Node.js",
@@ -250,7 +281,8 @@
       "source": "release:nodejs",
       "example": "22.13.1",
       "format": "triple",
-      "match": "cpe:a:nodejs:node.js"
+      "match": "cpe:a:nodejs:node.js",
+      "lifecycle": "nodejs"
     },
     "drupal": {
       "name": "Drupal Core",
@@ -258,7 +290,8 @@
       "source": "release:drupal",
       "example": "11.1.1",
       "format": "triple",
-      "match": "cpe:a:drupal:drupal"
+      "match": "cpe:a:drupal:drupal",
+      "lifecycle": "drupal"
     },
     "angular": {
       "name": "Angular Core",
@@ -266,7 +299,8 @@
       "source": "npm:@angular/core",
       "example": "19.1.2",
       "format": "triple",
-      "match": "osv:npm:@angular/core"
+      "match": "osv:npm:@angular/core",
+      "lifecycle": "angular"
     },
     "react": {
       "name": "React",
@@ -274,7 +308,8 @@
       "source": "npm:react",
       "example": "19.0.0",
       "format": "triple",
-      "match": "osv:npm:react"
+      "match": "osv:npm:react",
+      "lifecycle": "react"
     },
     "next": {
       "name": "Next.js",
@@ -282,7 +317,8 @@
       "source": "npm:next",
       "example": "15.1.6",
       "format": "triple",
-      "match": "osv:npm:next"
+      "match": "osv:npm:next",
+      "lifecycle": "nextjs"
     },
     "ts": {
       "name": "TypeScript",
@@ -298,7 +334,8 @@
       "source": "npm:jquery",
       "example": "3.7.1",
       "format": "triple",
-      "match": "osv:npm:jquery"
+      "match": "osv:npm:jquery",
+      "lifecycle": "jquery"
     },
     "bootstrap": {
       "name": "Bootstrap",
@@ -306,7 +343,8 @@
       "source": "npm:bootstrap",
       "example": "5.3.3",
       "format": "triple",
-      "match": "osv:npm:bootstrap"
+      "match": "osv:npm:bootstrap",
+      "lifecycle": "bootstrap"
     },
     "kendo": {
       "name": "Kendo UI for jQuery",
@@ -418,7 +456,8 @@
       "source": "ms:server",
       "example": "20348.2849",
       "format": "win",
-      "match": "family:Windows Server"
+      "match": "family:Windows Server",
+      "lifecycle": "windows-server"
     },
     "hyperv": {
       "name": "Hyper-V on Windows Server",
@@ -426,7 +465,8 @@
       "source": "ms:server",
       "example": "20348.2849",
       "format": "win",
-      "match": "family:Windows Hyper-V"
+      "match": "family:Windows Hyper-V",
+      "lifecycle": "windows-server"
     },
     "exchange": {
       "name": "Exchange Server Subscription Edition",
@@ -440,7 +480,7 @@
       "name": "SQL Server 2022",
       "vendor": "Microsoft",
       "source": "ms:sql",
-      "example": "16.0.4175.1",
+      "example": "16.0.1000.1",
       "format": "sql2022",
       "match": "family:SQL Server 2022"
     },
@@ -458,7 +498,8 @@
       "source": "vendor:forti",
       "example": "7.4.6",
       "format": "triple",
-      "match": "cpe:o:fortinet:fortios"
+      "match": "cpe:o:fortinet:fortios",
+      "lifecycle": "fortios"
     },
     "sophos": {
       "name": "Sophos Firewall OS",
@@ -490,7 +531,170 @@
       "source": "vendor:android",
       "example": "15",
       "format": "android",
-      "match": "cpe:o:google:android"
+      "match": "cpe:o:google:android",
+      "lifecycle": "android"
+    },
+    "sql2025": {
+      "name": "SQL Server 2025",
+      "vendor": "Microsoft",
+      "source": "ms:sql",
+      "example": "17.0.5035.5",
+      "format": "sql2025",
+      "match": "family:SQL Server 2025"
+    },
+    "sql2019": {
+      "name": "SQL Server 2019",
+      "vendor": "Microsoft",
+      "source": "ms:sql",
+      "example": "15.0.4500.2",
+      "format": "sql2019",
+      "match": "family:SQL Server 2019"
+    },
+    "sql2017": {
+      "name": "SQL Server 2017",
+      "vendor": "Microsoft",
+      "source": "ms:sql",
+      "example": "14.0.3560.2",
+      "format": "sql2017",
+      "match": "family:SQL Server 2017"
+    },
+    "sql2016": {
+      "name": "SQL Server 2016",
+      "vendor": "Microsoft",
+      "source": "ms:sql",
+      "example": "13.0.7095.1",
+      "format": "sql2016",
+      "match": "family:SQL Server 2016",
+      "supportNote": "Extended Security Updates require an eligible installation."
+    },
+    "sql2014": {
+      "name": "SQL Server 2014",
+      "vendor": "Microsoft",
+      "source": "ms:sql",
+      "example": "12.0.6449.1",
+      "format": "sql2014",
+      "match": "family:SQL Server 2014",
+      "supportNote": "Extended Security Updates require an eligible installation."
+    },
+    "ubuntu": {
+      "name": "Ubuntu",
+      "vendor": "Canonical",
+      "match": "cpe:o:canonical:ubuntu_linux",
+      "example": "24.04",
+      "format": "ubuntu",
+      "source": "distribution:ubuntu",
+      "cpeParts": 2,
+      "vendorAdvisories": "https://ubuntu.com/security/notices"
+    },
+    "debian": {
+      "name": "Debian GNU/Linux",
+      "vendor": "Debian",
+      "match": "cpe:o:debian:debian_linux",
+      "example": "13.7",
+      "format": "osPoint",
+      "source": "distribution:debian",
+      "cpeParts": 1,
+      "vendorAdvisories": "https://security-tracker.debian.org/tracker/"
+    },
+    "rhel": {
+      "name": "Red Hat Enterprise Linux",
+      "vendor": "Red Hat",
+      "match": "cpe:o:redhat:enterprise_linux",
+      "example": "9.8",
+      "format": "osPoint",
+      "source": "distribution:rhel",
+      "cpeParts": 0,
+      "vendorAdvisories": "https://access.redhat.com/security/security-updates/security-advisories"
+    },
+    "almalinux": {
+      "name": "AlmaLinux OS",
+      "vendor": "AlmaLinux",
+      "match": "cpe:o:almalinux:almalinux",
+      "example": "9.8",
+      "format": "osPoint",
+      "source": "distribution:almalinux",
+      "cpeParts": 0,
+      "vendorAdvisories": "https://errata.almalinux.org/"
+    },
+    "rocky-linux": {
+      "name": "Rocky Linux",
+      "vendor": "Rocky Enterprise Software Foundation",
+      "match": "cpe:o:rocky:rocky",
+      "example": "9.8",
+      "format": "osPoint",
+      "source": "distribution:rocky-linux",
+      "cpeParts": 0,
+      "vendorAdvisories": "https://errata.rockylinux.org/"
+    },
+    "oracle-linux": {
+      "name": "Oracle Linux",
+      "vendor": "Oracle",
+      "match": "cpe:o:oracle:linux",
+      "example": "9.8",
+      "format": "osPoint",
+      "source": "distribution:oracle-linux",
+      "cpeParts": 0,
+      "vendorAdvisories": "https://linux.oracle.com/errata/"
+    },
+    "sles": {
+      "name": "SUSE Linux Enterprise Server",
+      "vendor": "SUSE",
+      "match": "cpe:o:suse:sles",
+      "example": "15.7",
+      "format": "osPoint",
+      "source": "distribution:sles",
+      "cpeParts": 0,
+      "vendorAdvisories": "https://www.suse.com/support/update/"
+    },
+    "opensuse": {
+      "name": "openSUSE Leap",
+      "vendor": "openSUSE",
+      "match": "cpe:o:opensuse:leap",
+      "example": "16.0",
+      "format": "twoThree",
+      "source": "distribution:opensuse",
+      "cpeParts": 0,
+      "vendorAdvisories": "https://www.suse.com/support/update/"
+    },
+    "amazon-linux": {
+      "name": "Amazon Linux",
+      "vendor": "Amazon",
+      "match": "cpe:o:amazon:amazon_linux",
+      "example": "2023",
+      "format": "amazon",
+      "source": "distribution:amazon-linux",
+      "cpeParts": 1,
+      "vendorAdvisories": "https://alas.aws.amazon.com/"
+    },
+    "fedora": {
+      "name": "Fedora Linux",
+      "vendor": "Fedora Project",
+      "match": "cpe:o:fedoraproject:fedora",
+      "example": "44",
+      "format": "integer",
+      "source": "distribution:fedora",
+      "cpeParts": 0,
+      "vendorAdvisories": "https://bodhi.fedoraproject.org/updates/"
+    },
+    "centos-stream": {
+      "name": "CentOS Stream",
+      "vendor": "CentOS",
+      "match": "cpe:o:centos:stream",
+      "example": "10",
+      "format": "integer",
+      "source": "distribution:centos-stream",
+      "cpeParts": 0,
+      "vendorAdvisories": "https://www.centos.org/centos-stream/"
+    },
+    "alpine-linux": {
+      "name": "Alpine Linux",
+      "vendor": "Alpine Linux",
+      "match": "cpe:o:alpinelinux:alpine_linux",
+      "example": "3.24.4",
+      "format": "twoThree",
+      "source": "distribution:alpine-linux",
+      "cpeParts": 0,
+      "vendorAdvisories": "https://security.alpinelinux.org/"
     }
   }
 }

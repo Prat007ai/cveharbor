@@ -15,7 +15,7 @@ from collect_sql_updates import MicrosoftSqlParser
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = json.loads((ROOT / 'site-gate/version-products.json').read_text())
 SEED = ROOT / 'site-gate/version-releases.json'
-KEY = 'picker/releases-v1.json'
+KEY = 'picker/releases-v2.json'
 RAW = 'https://raw.githubusercontent.com/endoflife-date/release-data/main/releases/'
 INDEX = 'https://builds.dotnet.microsoft.com/dotnet/release-metadata/'
 MS = 'https://learn.microsoft.com/en-us/'
@@ -24,7 +24,7 @@ PAGES = {
     'server': MS+'windows/release-health/windows-server-release-info',
     'exchange': MS+'exchange/new-features/build-numbers-and-release-dates',
     'sharepoint': MS+'officeupdates/sharepoint-updates',
-    'sql': 'https://support.microsoft.com/en-us/servicing/sql/sql-server-2022/kb5023451-build-versions',
+    'sql': MS+'troubleshoot/sql/general/determine-version-edition-update-level',
     'esxi': 'https://knowledge.broadcom.com/external/article/316595',
     'forti': 'https://raw.githubusercontent.com/godstoge/fortios_release_dates/main/README.md',
     'android':'https://endoflife.date/api/v1/products/android/',
@@ -33,6 +33,30 @@ PAGES = {
 FORMATS = {'maria':r'\d+\.\d+\.\d+', 'sql2022':r'16\.0\.\d+\.\d+', 'kendo':r'(?:20\d\d)\.[1-4]\.\d{2,4}', 'triple':r'\d+\.\d+\.\d+', 'twoThree':r'\d+\.\d+(?:\.\d+)?',
            'four':r'\d+\.\d+\.\d+\.\d+', 'win':r'\d{5}\.\d+', 'android':r'\d+(?:\.\d+){0,2}',
            'sdk':r'\d+\.\d+\.\d{3}', 'sfos':r'\d+\.\d+ (?:GA|MR\d+) Build \d+', 'build':r'\d{6,9}'}
+
+FORMATS.update({f'sql{year}': rf'{major}\.0\.\d+\.\d+' for year, major in
+                [(2025,17),(2022,16),(2019,15),(2017,14),(2016,13),(2014,12)]})
+FORMATS.update(ubuntu=r'\d{2}\.(?:04|10)(?:\.\d+)?', osPoint=r'\d+(?:\.\d+)?',
+               integer=r'\d+', amazon=r'(?:2|20\d{2})(?:\.\d+\.\d{8}\.\d+)?')
+
+def distribution(product):
+    slug = product['source'].split(':')[1]
+    url = 'https://endoflife.date/api/v1/products/'+slug+'/'
+    releases = []
+    for row in json.loads(read(url))['result']['releases']:
+        if row['isEol'] is False:
+            support = 'Security support'
+        elif row.get('isEoes') is False:
+            support = 'Extended support · check entitlement'
+        else:
+            continue
+        latest = row.get('latest') or {}
+        version = latest.get('name') or row['name']
+        if not re.fullmatch(FORMATS[product['format']], version):
+            raise ValueError('Unrecognized distribution version '+version)
+        releases.append({'version':version, 'date':latest.get('date') or row['releaseDate'],
+                         'line':row['name'], 'support':support})
+    return url, releases
 
 @lru_cache(maxsize=80)
 def read(url):
@@ -103,16 +127,43 @@ def rows(product):
         if key=='exchange' and not re.search(r'Exchange Server SE\b|Subscription Edition',line,re.I):continue
         if key=='sharepoint' and 'Subscription Edition' not in line:continue
         if key=='esxi' and not re.search(r'ESXi\b',line,re.I):continue
-        pattern={'windows11':r'\d{5}\.\d+', 'server':r'\d{5}\.\d+', 'sql':r'16\.0\.\d+\.\d+',
+        pattern={'windows11':r'\d{5}\.\d+', 'server':r'\d{5}\.\d+', 'sql':FORMATS[product['format']],
                  'sharepoint':r'16\.0\.\d+\.\d+', 'exchange':r'15\.2\.\d+\.\d+', 'esxi':r'\d{7,9}'}[key]
         version=next((v for v in cells if re.fullmatch(pattern,v)),None)
         date=next((day(c) for c in cells if day(c)),'')
         if version and date:releases.append((version,date))
     return url,releases
 
+def supported_lines(product, ordered, dates):
+    slug = product.get('lifecycle')
+    if not slug:
+        return {}
+    url = 'https://endoflife.date/api/v1/products/'+slug+'/'
+    releases = json.loads(read(url))['result']['releases']
+    choices = []
+    for release in releases:
+        extended = release.get('isEol') is True and release.get('isEoes') is False
+        if release.get('isEol') is not False and not extended:
+            continue
+        line = release['name']
+        prefix = line
+        if slug == 'windows-server':
+            prefix = (release.get('latest') or {}).get('name','').removeprefix('10.0.')
+        if not re.fullmatch(r'\d+(?:\.\d+)*', prefix):
+            continue
+        version = next((v for v in ordered if v == prefix or v.startswith(prefix+'.')), None)
+        if version:
+            choices.append({'version':version, 'date':dates[version], 'line':line,
+                            'support':'Extended support · check entitlement' if extended else 'Supported line'})
+    return {'supported':choices, 'lifecycleUrl':url}
+
 def collect_one(item):
     key,product=item
     try:
+        if product['source'].startswith('distribution:'):
+            url, versions = distribution(product)
+            return key, {'url':url, 'checked':datetime.now(timezone.utc).isoformat(),
+                         'order':'release line', 'versions':versions}
         url,raw=rows(product)
         latest={}
         for v,date in raw:
@@ -120,7 +171,20 @@ def collect_one(item):
                 latest[v]=max(latest.get(v,''),date)
         ordered=sorted(latest,key=lambda v:(latest[v],tuple(map(int,re.findall(r'\d+',v)))),reverse=True)
         if not ordered:raise ValueError('No matching stable releases')
-        return key,{'url':url,'checked':datetime.now(timezone.utc).isoformat(),
+        # Keep the quick list short while exposing other release lines on demand.
+        # Windows build trains and SQL build numbers use different version components.
+        def line(version):
+            parts=version.split('.')
+            if product['source']=='ms:sql':
+                return product['name']
+            if product['format'] in ('build','sfos'):
+                return product['name']
+            return parts[0]
+        by_line={}
+        for v in ordered:
+            by_line.setdefault(line(v), []).append({'version':v,'date':latest[v]})
+        return key,{'lines':{name:values[:10] for name,values in by_line.items()},
+                    **supported_lines(product, ordered, latest),'url':url,'checked':datetime.now(timezone.utc).isoformat(),
                     'order':'publication' if all(latest.values()) else 'version',
                     'versions':[{'version':v,'date':latest[v]} for v in ordered[:10]]}
     except Exception as exc:
@@ -136,7 +200,7 @@ def main():
         from feed_snapshot import S3Store
         store=S3Store()
         raw,etag=store.get(KEY)
-        if raw:old=json.loads(raw)
+        if raw:old.update(json.loads(raw))
         now=datetime.now(timezone.utc)
         if raw and all(entry.get('checked','')[:10]==now.date().isoformat() for entry in old.values()) and set(old)==set(CONFIG['products']):return
     with ThreadPoolExecutor(max_workers=6) as pool:
