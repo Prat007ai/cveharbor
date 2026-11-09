@@ -24,6 +24,7 @@ export async function openPicker(card,context) {
   const ids=directory.cards[card]||Object.keys(directory.products).filter(k=>directory.products[k].name===card);
   if(!ids.length){message.textContent='Use Customize technologies to register this custom product.';return;}
   function field(title,input){
+    input.setAttribute('aria-label',title);
     const label=element('label');label.className='version-field';label.append(element('span',title),input);panel.append(label);return label;
   }
   const select=element('select');for(const id of ids)select.add(new Option(directory.products[id].name,id));
