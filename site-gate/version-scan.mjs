@@ -68,7 +68,7 @@ async function nvdPage(id,product,version,range,offset) {
   if(!Array.isArray(data.vulnerabilities)||data.startIndex!==offset||!Number.isSafeInteger(data.totalResults))throw Error('Incomplete NVD page');
   const rows=await Promise.all(data.vulnerabilities.map(async ({cve})=>{
     if(!/^CVE-\d{4}-\d{4,}$/.test(cve.id))throw Error('Invalid advisory');
-    let evidence=product.format==='maria'&&version.includes('-')?'Upstream version match � verify distributor backports':'NVD vulnerable product/version match';
+    let evidence=product.format==='maria'&&version.includes('-')?'Upstream version match · verify distributor backports':'NVD vulnerable product/version match';
     if(family){
       evidence='Product lead · verify the vendor build';
       if(product.vendor==='Microsoft'){

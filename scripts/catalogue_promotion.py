@@ -144,7 +144,9 @@ def verify_asset(path, auth, expected):
 
 def publish(out, *, site_env=SITE_ENV, independent=False, pr_number=283, previous_version=OLD_VERSION,
             previous_deployment=OLD_DEPLOYMENT, changed=CHANGED, readiness=None, verify_served=verify_asset,
-            read_asset=protected_asset, canonical=origin_bytes, added=frozenset()):
+            read_asset=None, canonical=origin_bytes, added=frozenset()):
+    if read_asset is None:
+        read_asset = protected_asset
     if readiness is None:
         readiness = ready
     policy(site_env, independent)

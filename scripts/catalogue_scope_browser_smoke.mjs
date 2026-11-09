@@ -126,7 +126,7 @@ try{
  await save.click();await waitStatus('No changes to save.');assert.equal(puts(),1);
  page.off('response',observeSave);
  await php.uncheck();delaySave=true;await save.click();
- await waitStatus('Savingâ€¦');assert.equal(await save.isDisabled(),true);
+ await waitStatus('Saving…');assert.equal(await save.isDisabled(),true);
  await holdSave();await waitStatus('Catalogue saved. 37 technologies selected.');
  await reopen();assert.equal(await php.isChecked(),false);
  await editor.locator('summary').click();
@@ -251,6 +251,7 @@ try{
   const saved=await (await fetcher('https://api.cveharbor.com/v1/technology-catalogue')).json();
   const picker=page.locator('.version-picker[open]');
   await page.getByRole('button',{name:'Check installed version for Windows Server OS',exact:true}).click();
+  await picker.getByLabel('Release',{exact:true}).waitFor();
   assert.equal(await picker.getByLabel('Release',{exact:true}).locator('option').count(),12);
   await picker.getByLabel('Release',{exact:true}).selectOption('manual');
   await picker.getByLabel('Installed version',{exact:true}).fill('wrong');
