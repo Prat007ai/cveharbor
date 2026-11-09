@@ -1,0 +1,496 @@
+{
+  "cards": {
+    "Windows Server OS": [
+      "server"
+    ],
+    "Windows 11 OS": [
+      "win11"
+    ],
+    ".NET / ASP.NET": [
+      "runtime",
+      "aspnet",
+      "sdk"
+    ],
+    ".NET Core": [
+      "runtime",
+      "aspnet",
+      "sdk"
+    ],
+    "WordPress / Plugins": [
+      "wordpress"
+    ],
+    "Linux": [
+      "linux"
+    ],
+    "PHP": [
+      "php"
+    ],
+    "Python / PyPI": [
+      "python",
+      "requests"
+    ],
+    "Azure": [
+      "azure"
+    ],
+    "Microsoft 365": [
+      "office"
+    ],
+    "Exchange SE": [
+      "exchange"
+    ],
+    "SQL Server": [
+      "sql"
+    ],
+    "MySQL / MariaDB": [
+      "mysql",
+      "maria"
+    ],
+    "Fortinet": [
+      "forti"
+    ],
+    "Sophos Firewall": [
+      "sophos"
+    ],
+    "VMware": [
+      "esxi"
+    ],
+    "Veeam Backup & Replication": [
+      "veeam"
+    ],
+    "HyperV": [
+      "hyperv"
+    ],
+    "Docker / Kubernetes": [
+      "docker",
+      "k8s"
+    ],
+    "Progress Telerik": [
+      "telerik",
+      "kendo"
+    ],
+    "Sitefinity": [
+      "sitefinity"
+    ],
+    "Angular": [
+      "angular"
+    ],
+    "React / Next.js": [
+      "react",
+      "next"
+    ],
+    "JavaScript / TypeScript": [
+      "ts",
+      "node"
+    ],
+    "jQuery / Bootstrap": [
+      "jquery",
+      "bootstrap"
+    ],
+    "Kendo UI": [
+      "kendo"
+    ],
+    "SharePoint / SharePoint Server": [
+      "sharepoint"
+    ],
+    "Microsoft Power Platform": [
+      "power",
+      "crm"
+    ],
+    "Dynamics 365": [
+      "crm"
+    ],
+    "Microsoft Fabric / Power BI": [
+      "bi"
+    ],
+    "Azure AI / AI SDK": [
+      "ai"
+    ],
+    "NoSQL / MongoDB": [
+      "mongo"
+    ],
+    "AWS": [
+      "aws"
+    ],
+    "iOS / Android": [
+      "ios",
+      "android"
+    ],
+    "Node.js / npm": [
+      "node",
+      "npm"
+    ],
+    "Drupal / CMS": [
+      "drupal"
+    ],
+    "Application dependencies": [
+      "lodash",
+      "requests"
+    ],
+    "Windows": [
+      "win11",
+      "server"
+    ]
+  },
+  "products": {
+    "runtime": {
+      "name": ".NET Runtime",
+      "vendor": "Microsoft",
+      "source": "dotnet:runtime",
+      "example": "8.0.12",
+      "format": "triple",
+      "match": "cpe:a:microsoft:.net"
+    },
+    "aspnet": {
+      "name": "ASP.NET Core Runtime",
+      "vendor": "Microsoft",
+      "source": "dotnet:aspnetcore-runtime",
+      "example": "8.0.12",
+      "format": "triple",
+      "match": "cpe:a:microsoft:asp.net_core"
+    },
+    "sdk": {
+      "name": ".NET SDK",
+      "vendor": "Microsoft",
+      "source": "dotnet:sdk",
+      "example": "8.0.405",
+      "format": "sdk",
+      "match": "cpe:a:microsoft:.net_core_sdk"
+    },
+    "wordpress": {
+      "name": "WordPress Core",
+      "vendor": "WordPress",
+      "source": "release:wordpress",
+      "example": "6.7.2",
+      "format": "twoThree",
+      "match": "cpe:a:wordpress:wordpress"
+    },
+    "linux": {
+      "name": "Linux kernel (upstream)",
+      "vendor": "Linux",
+      "source": "release:linux-kernel",
+      "example": "6.12.8",
+      "format": "twoThree",
+      "match": "cpe:o:linux:linux_kernel"
+    },
+    "php": {
+      "name": "PHP",
+      "vendor": "PHP",
+      "source": "release:php",
+      "example": "8.4.2",
+      "format": "triple",
+      "match": "cpe:a:php:php"
+    },
+    "python": {
+      "name": "CPython",
+      "vendor": "Python",
+      "source": "release:python",
+      "example": "3.12.8",
+      "format": "triple",
+      "match": "cpe:a:python:python"
+    },
+    "mysql": {
+      "name": "MySQL Server",
+      "vendor": "Oracle",
+      "source": "release:mysql",
+      "example": "8.4.3",
+      "format": "triple",
+      "match": "cpe:a:oracle:mysql"
+    },
+    "maria": {
+      "name": "MariaDB Server",
+      "vendor": "MariaDB",
+      "source": "release:mariadb",
+      "example": "10.6.28-24",
+      "format": "maria",
+      "match": "cpe:a:mariadb:mariadb"
+    },
+    "veeam": {
+      "name": "Veeam Backup & Replication",
+      "vendor": "Veeam",
+      "source": "release:veeam-backup-and-replication",
+      "example": "12.3.0.310",
+      "format": "four",
+      "match": "cpe:a:veeam:backup_\\&_replication"
+    },
+    "docker": {
+      "name": "Docker Engine",
+      "vendor": "Docker",
+      "source": "release:docker-engine",
+      "example": "27.5.1",
+      "format": "triple",
+      "match": "cpe:a:docker:docker"
+    },
+    "k8s": {
+      "name": "Kubernetes",
+      "vendor": "Kubernetes",
+      "source": "release:kubernetes",
+      "example": "1.32.1",
+      "format": "triple",
+      "match": "cpe:a:kubernetes:kubernetes"
+    },
+    "mongo": {
+      "name": "MongoDB Server",
+      "vendor": "MongoDB",
+      "source": "release:mongodb",
+      "example": "8.0.4",
+      "format": "triple",
+      "match": "cpe:a:mongodb:mongodb"
+    },
+    "ios": {
+      "name": "iOS",
+      "vendor": "Apple",
+      "source": "release:ios",
+      "example": "18.2.1",
+      "format": "twoThree",
+      "match": "cpe:o:apple:iphone_os"
+    },
+    "node": {
+      "name": "Node.js",
+      "vendor": "Node.js",
+      "source": "release:nodejs",
+      "example": "22.13.1",
+      "format": "triple",
+      "match": "cpe:a:nodejs:node.js"
+    },
+    "drupal": {
+      "name": "Drupal Core",
+      "vendor": "Drupal",
+      "source": "release:drupal",
+      "example": "11.1.1",
+      "format": "triple",
+      "match": "cpe:a:drupal:drupal"
+    },
+    "angular": {
+      "name": "Angular Core",
+      "vendor": "Angular",
+      "source": "npm:@angular/core",
+      "example": "19.1.2",
+      "format": "triple",
+      "match": "osv:npm:@angular/core"
+    },
+    "react": {
+      "name": "React",
+      "vendor": "Meta",
+      "source": "npm:react",
+      "example": "19.0.0",
+      "format": "triple",
+      "match": "osv:npm:react"
+    },
+    "next": {
+      "name": "Next.js",
+      "vendor": "Vercel",
+      "source": "npm:next",
+      "example": "15.1.6",
+      "format": "triple",
+      "match": "osv:npm:next"
+    },
+    "ts": {
+      "name": "TypeScript",
+      "vendor": "Microsoft",
+      "source": "npm:typescript",
+      "example": "5.7.3",
+      "format": "triple",
+      "match": "osv:npm:typescript"
+    },
+    "jquery": {
+      "name": "jQuery",
+      "vendor": "OpenJS",
+      "source": "npm:jquery",
+      "example": "3.7.1",
+      "format": "triple",
+      "match": "osv:npm:jquery"
+    },
+    "bootstrap": {
+      "name": "Bootstrap",
+      "vendor": "Bootstrap",
+      "source": "npm:bootstrap",
+      "example": "5.3.3",
+      "format": "triple",
+      "match": "osv:npm:bootstrap"
+    },
+    "kendo": {
+      "name": "Kendo UI for jQuery",
+      "vendor": "Progress",
+      "source": "npm:@progress/kendo-ui",
+      "example": "2024.4.1112",
+      "format": "kendo",
+      "match": "osv:npm:@progress/kendo-ui"
+    },
+    "telerik": {
+      "name": "KendoReact Grid",
+      "vendor": "Progress",
+      "source": "npm:@progress/kendo-react-grid",
+      "example": "9.0.0",
+      "format": "triple",
+      "match": "osv:npm:@progress/kendo-react-grid"
+    },
+    "npm": {
+      "name": "npm CLI",
+      "vendor": "npm",
+      "source": "npm:npm",
+      "example": "10.9.2",
+      "format": "triple",
+      "match": "osv:npm:npm"
+    },
+    "office": {
+      "name": "Microsoft Graph JavaScript SDK",
+      "vendor": "Microsoft",
+      "source": "npm:@microsoft/microsoft-graph-client",
+      "example": "3.0.7",
+      "format": "triple",
+      "match": "osv:npm:@microsoft/microsoft-graph-client"
+    },
+    "power": {
+      "name": "Power Apps SDK",
+      "vendor": "Microsoft",
+      "source": "npm:@microsoft/power-apps",
+      "example": "1.0.0",
+      "format": "triple",
+      "match": "osv:npm:@microsoft/power-apps"
+    },
+    "bi": {
+      "name": "Power BI JavaScript client",
+      "vendor": "Microsoft",
+      "source": "npm:powerbi-client",
+      "example": "2.23.1",
+      "format": "triple",
+      "match": "osv:npm:powerbi-client"
+    },
+    "lodash": {
+      "name": "Lodash",
+      "vendor": "Lodash",
+      "source": "npm:lodash",
+      "example": "4.17.21",
+      "format": "triple",
+      "match": "osv:npm:lodash"
+    },
+    "azure": {
+      "name": "Azure CLI",
+      "vendor": "Microsoft",
+      "source": "PyPI:azure-cli",
+      "example": "2.67.0",
+      "format": "triple",
+      "match": "osv:PyPI:azure-cli"
+    },
+    "ai": {
+      "name": "Azure AI Search SDK for Python",
+      "vendor": "Microsoft",
+      "source": "PyPI:azure-search-documents",
+      "example": "11.5.2",
+      "format": "triple",
+      "match": "osv:PyPI:azure-search-documents"
+    },
+    "aws": {
+      "name": "AWS CLI v1",
+      "vendor": "Amazon",
+      "source": "PyPI:awscli",
+      "example": "1.36.0",
+      "format": "triple",
+      "match": "osv:PyPI:awscli"
+    },
+    "requests": {
+      "name": "Requests for Python",
+      "vendor": "Python Requests",
+      "source": "PyPI:requests",
+      "example": "2.32.3",
+      "format": "triple",
+      "match": "osv:PyPI:requests"
+    },
+    "crm": {
+      "name": "Dataverse client for .NET",
+      "vendor": "Microsoft",
+      "source": "NuGet:Microsoft.PowerPlatform.Dataverse.Client",
+      "example": "1.2.3",
+      "format": "triple",
+      "match": "osv:NuGet:Microsoft.PowerPlatform.Dataverse.Client"
+    },
+    "win11": {
+      "name": "Windows 11",
+      "vendor": "Microsoft",
+      "source": "ms:windows11",
+      "example": "26100.2605",
+      "format": "win",
+      "match": "family:Windows 11"
+    },
+    "server": {
+      "name": "Windows Server",
+      "vendor": "Microsoft",
+      "source": "ms:server",
+      "example": "20348.2849",
+      "format": "win",
+      "match": "family:Windows Server"
+    },
+    "hyperv": {
+      "name": "Hyper-V on Windows Server",
+      "vendor": "Microsoft",
+      "source": "ms:server",
+      "example": "20348.2849",
+      "format": "win",
+      "match": "family:Windows Hyper-V"
+    },
+    "exchange": {
+      "name": "Exchange Server Subscription Edition",
+      "vendor": "Microsoft",
+      "source": "ms:exchange",
+      "example": "15.2.2562.17",
+      "format": "four",
+      "match": "family:Exchange Server Subscription Edition"
+    },
+    "sql": {
+      "name": "SQL Server 2022",
+      "vendor": "Microsoft",
+      "source": "ms:sql",
+      "example": "16.0.4175.1",
+      "format": "sql2022",
+      "match": "family:SQL Server 2022"
+    },
+    "sharepoint": {
+      "name": "SharePoint Server Subscription Edition",
+      "vendor": "Microsoft",
+      "source": "ms:sharepoint",
+      "example": "16.0.17928.20216",
+      "format": "four",
+      "match": "family:SharePoint Server Subscription Edition"
+    },
+    "forti": {
+      "name": "FortiOS",
+      "vendor": "Fortinet",
+      "source": "vendor:forti",
+      "example": "7.4.6",
+      "format": "triple",
+      "match": "cpe:o:fortinet:fortios"
+    },
+    "sophos": {
+      "name": "Sophos Firewall OS",
+      "vendor": "Sophos",
+      "source": "vendor:sophos",
+      "example": "21.5 MR2 Build 323",
+      "format": "sfos",
+      "match": "family:Sophos Firewall"
+    },
+    "esxi": {
+      "name": "VMware ESXi",
+      "vendor": "VMware",
+      "source": "vendor:esxi",
+      "example": "24585383",
+      "format": "build",
+      "match": "family:VMware ESXi"
+    },
+    "sitefinity": {
+      "name": "Sitefinity CMS",
+      "vendor": "Progress",
+      "source": "NuGet:Telerik.Sitefinity.All",
+      "example": "15.2.8400",
+      "format": "triple",
+      "match": "cpe:a:progress:sitefinity"
+    },
+    "android": {
+      "name": "Android",
+      "vendor": "Google",
+      "source": "vendor:android",
+      "example": "15",
+      "format": "android",
+      "match": "cpe:o:google:android"
+    }
+  }
+}

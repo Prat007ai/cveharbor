@@ -143,7 +143,8 @@ def verify_asset(path, auth, expected):
 
 
 def publish(out, *, site_env=SITE_ENV, independent=False, pr_number=283, previous_version=OLD_VERSION,
-            previous_deployment=OLD_DEPLOYMENT, changed=CHANGED, readiness=None, verify_served=verify_asset):
+            previous_deployment=OLD_DEPLOYMENT, changed=CHANGED, readiness=None, verify_served=verify_asset,
+            read_asset=protected_asset, canonical=origin_bytes, added=frozenset()):
     if readiness is None:
         readiness = ready
     policy(site_env, independent)
@@ -159,7 +160,7 @@ def publish(out, *, site_env=SITE_ENV, independent=False, pr_number=283, previou
     paths = sorted(files(before) | LIVE_ONLY)
     hashes = {}
     for path in paths:
-        live = origin_bytes(path, protected_asset(path, auth))
+        live = canonical(path, read_asset(path, auth))
         if path in changed or path.endswith(".html"):
             baseline = (before / path).read_bytes()
             require(live == baseline, f"Live catalogue baseline differs: {path} "
@@ -167,6 +168,10 @@ def publish(out, *, site_env=SITE_ENV, independent=False, pr_number=283, previou
         else:
             (after / path).write_bytes(live)
         hashes[path] = digest((after / path).read_bytes())
+    require(files(after) - set(paths) == added, "Unexpected additional website assets")
+    for path in sorted(added):
+        hashes[path] = digest((after / path).read_bytes())
+        paths.append(path)
     # Use the historical gate, bindings and asset routing. Version upload cannot update DNS or routes.
     config = out / "source/site-gate/wrangler.json"
     settings = json.loads(config.read_text())

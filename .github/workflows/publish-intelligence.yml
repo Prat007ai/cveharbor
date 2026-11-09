@@ -54,6 +54,14 @@ jobs:
           MALWAREBAZAAR_API_KEY: ${{ secrets.MALWAREBAZAAR_API_KEY }}
           THREATFOX_AUTH_KEY: ${{ secrets.THREATFOX_AUTH_KEY || secrets.MALWAREBAZAAR_API_KEY }}
         run: python scripts/feed_snapshot.py collect
+      - name: Refresh the public installed-version directory
+        if: success()
+        env:
+          FEED_R2_ACCOUNT_ID: ${{ vars.FEED_R2_ACCOUNT_ID }}
+          FEED_R2_BUCKET: ${{ vars.FEED_R2_BUCKET }}
+          FEED_R2_ACCESS_KEY_ID: ${{ secrets.FEED_R2_ACCESS_KEY_ID }}
+          FEED_R2_SECRET_ACCESS_KEY: ${{ secrets.FEED_R2_SECRET_ACCESS_KEY }}
+        run: python scripts/technology_releases.py --publish
       - name: Retain the public snapshot receipt
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
