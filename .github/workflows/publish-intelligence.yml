@@ -4,6 +4,10 @@ on:
     - cron: '17 * * * *'
   workflow_dispatch:
     inputs:
+      vendor_only:
+        description: Refresh only Microsoft SQL Server and Canonical package advisories
+        type: boolean
+        default: false
       initialize:
         description: Seed the empty production bucket from the reviewed original snapshot
         type: boolean
@@ -32,16 +36,24 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install data storage client
-        run: python -m pip install boto3==1.40.70
+        run: python -m pip install boto3==1.40.70 ijson==3.4.0.post0
       - name: Initialize only on explicit first dispatch
-        if: github.event_name == 'workflow_dispatch' && inputs.initialize == true
+        if: github.event_name == 'workflow_dispatch' && inputs.initialize == true && !inputs.vendor_only
         env:
           FEED_R2_ACCOUNT_ID: ${{ vars.FEED_R2_ACCOUNT_ID }}
           FEED_R2_BUCKET: ${{ vars.FEED_R2_BUCKET }}
           FEED_R2_ACCESS_KEY_ID: ${{ secrets.FEED_R2_ACCESS_KEY_ID }}
           FEED_R2_SECRET_ACCESS_KEY: ${{ secrets.FEED_R2_SECRET_ACCESS_KEY }}
         run: python scripts/initialize_intelligence_feed.py
+      - name: Refresh vendor scan evidence when due
+        env:
+          FEED_R2_ACCOUNT_ID: ${{ vars.FEED_R2_ACCOUNT_ID }}
+          FEED_R2_BUCKET: ${{ vars.FEED_R2_BUCKET }}
+          FEED_R2_ACCESS_KEY_ID: ${{ secrets.FEED_R2_ACCESS_KEY_ID }}
+          FEED_R2_SECRET_ACCESS_KEY: ${{ secrets.FEED_R2_SECRET_ACCESS_KEY }}
+        run: python scripts/vendor_scan_data.py
       - name: Restore durable state, collect all sources, verify objects and promote once
+        if: ${{ !inputs.vendor_only && !cancelled() }}
         id: collect
         env:
           FEED_R2_ACCOUNT_ID: ${{ vars.FEED_R2_ACCOUNT_ID }}
@@ -64,7 +76,7 @@ jobs:
           FEED_R2_SECRET_ACCESS_KEY: ${{ secrets.FEED_R2_SECRET_ACCESS_KEY }}
         run: python scripts/technology_releases.py --publish
       - name: Retain the public snapshot receipt
-        if: always()
+        if: always() && !inputs.vendor_only
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: feed-receipt

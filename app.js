@@ -983,7 +983,8 @@
       await pickerModule.openPicker(card,{
         detail:(row,product,version)=>{
           const indexed=items.find(item=>item.id===row.id);
-          const details={...row,...indexed};
+          const vendorRecord=row.status==='Microsoft Security Response Center'||row.status==='Canonical Ubuntu Security Notice';
+          const details=vendorRecord?{...indexed,...row}:{...row,...indexed};
           for(const key of ['summary','affected','remediation','cvss','updated','exploitation','kev_added']){
             if(details[key]==null||details[key]==='')details[key]=row[key];
           }

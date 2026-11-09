@@ -1,4 +1,4 @@
-"""Apply only the installed-release explorer to the published firewall website."""
+"""Apply vendor scan evidence to the published installed-release explorer."""
 import os
 from pathlib import Path
 import shutil
@@ -11,10 +11,10 @@ import catalogue_promotion as prod
 import firewall_release as firewall
 import version_picker_release as picker
 
-LIVE_SITE = '58df925c25a5814407b56370a0114cf10c582f41'
-BASE = 'ff21524332eaeb7483014cc3b7179a9f707817aa'
-CHANGED = {'app.js', 'cvie.css', picker.MODULE}
-MODULES = {'version-scan.mjs', 'version-products.json', 'version-releases.json'}
+LIVE_SITE = 'ab12091a1348c4a61ae8fb3adcbd579c237629e4'
+BASE = LIVE_SITE
+CHANGED = {'app.js'}
+MODULES = {'version-scan.mjs', 'vendor-scan.mjs'}
 
 def prepare(out):
     with tempfile.TemporaryDirectory() as tmp:
@@ -22,7 +22,7 @@ def prepare(out):
         pkg.git('-c','core.autocrlf=false','worktree','add','--detach',str(prior),LIVE_SITE)
         try:
             subprocess.run([sys.executable,'scripts/session_navigation_release.py','prepare',str(out)],
-                           cwd=prior,check=True,env={**os.environ,'CVEHARBOR_SITE_RELEASE':'firewall-digest'})
+                           cwd=prior,check=True,env={**os.environ,'CVEHARBOR_SITE_RELEASE':'installed-releases'})
         finally:
             pkg.git('worktree','remove','--force',str(prior))
         shutil.copytree(out/'after',out/'before',dirs_exist_ok=True)
@@ -39,7 +39,7 @@ def prepare(out):
 def reviewed():
     sha = os.environ['GITHUB_SHA']
     candidates = [p['number'] for p in prod.github('/commits/'+sha+'/pulls') if p['merged_at']
-                  and p['base']['ref']=='main' and p['head']['ref']=='feature/installed-release-explorer']
+                  and p['base']['ref']=='main' and p['head']['ref']=='fix/vendor-version-scans']
     pkg.require(len(candidates)==1,'Expected the reviewed installed-release explorer')
     prod.evidence(candidates[0])
     return candidates[0]
@@ -57,9 +57,7 @@ def run(action,out):
         healthy_backend()
     elif action=='publish':
         picker.publish(out,changed=CHANGED,reviewed_pr=pr,ready=healthy_backend,
-                       # Run 42688807113 uploaded this version but stopped before activation.
-                       previous_upload='66ee47cd-e14b-456e-8e18-fe2d4a8766c1',
-                       previous_version='28f26db5-bd5a-4e7e-b592-031c3aca8405',
-                       previous_deployment='951a5c68-d87c-4f4e-9623-becb3c29b525')
+                       previous_version='b4f7494a-777d-4d9a-b8bb-2fb79801f9f8',
+                       previous_deployment='b544c85d-6f51-4c5a-b4d4-0072ec68f2e4')
     else:
         raise ValueError(action)
