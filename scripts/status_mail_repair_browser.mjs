@@ -32,20 +32,22 @@ try{
   const file=path.resolve('public','.'+url.pathname+(url.pathname.endsWith('/')?'index.html':''));if(!file.startsWith(path.resolve('public')+path.sep)||!fs.existsSync(file))return route.fulfill({status:404,body:''});return route.fulfill({contentType:{'.html':'text/html','.js':'application/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml'}[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)});
  });
  const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto('https://cveharbor.com/customer-dashboard/');await page.waitForSelector('#customerDashStatus[data-ready=true]');await page.locator('#customerDashFilter').selectOption('c-'+assetOne);await page.locator('#customerDashEnvironment').selectOption('e-'+assetOne);
+ // Both filters fetch fixture data asynchronously and redraw the disclosure on completion.
+ await page.waitForLoadState('networkidle');
  const table=page.locator('.customer-vulnerability-table');await table.locator('tbody tr').first().waitFor({state:'attached'});await table.evaluate(n=>{let p=n.parentElement;while(p){if(p.tagName==='DETAILS')p.open=true;p=p.parentElement;}});
- assert.deepEqual(await table.locator('thead th').allTextContents(),['CVE','Published ⇅','Severity ⇅','Software / Asset ⇅','Vulnerability summary','Vulnerability Fix Status ⇅','DevOps Ticket #']);
+ assert.deepEqual(await table.locator('thead th').allTextContents(),['CVE','Published â‡…','Severity â‡…','Software / Asset â‡…','Vulnerability summary','Vulnerability Fix Status â‡…','DevOps Ticket #']);
  assert.equal(seen.some(x=>/^\/v1\/(?:finding|remediation)/.test(x.path)&&x.method!=='GET'),false,'Viewing customer findings performs no writes');
- const row=table.locator('tbody tr').first();assert.match(await row.innerText(),/Existing record — connect it to this customer asset/);assert.match(await row.innerText(),/Acknowledged · alex@example.net/);
+ const row=table.locator('tbody tr').first();assert.match(await row.innerText(),/Existing record â€” connect it to this customer asset/);assert.match(await row.innerText(),/Acknowledged Â· alex@example.net/);
  await row.getByRole('combobox').selectOption('Fix in Progress');await row.getByRole('button',{name:'Save status',exact:true}).click();const dialog=page.locator('.shared-record');await dialog.getByRole('heading',{name:'Link existing assignment'}).waitFor();
  // The heading precedes the assignments fetch; the link form marks completed rendering.
  await dialog.getByRole('button',{name:'Link existing assignment',exact:true}).waitFor();
- assert.match(await dialog.innerText(),/Customer North.*Production.*Web Server 01/);assert.match(await dialog.innerText(),/alex@example.net · Acknowledged/);
+ assert.match(await dialog.innerText(),/Customer North.*Production.*Web Server 01/);assert.match(await dialog.innerText(),/alex@example.net Â· Acknowledged/);
  assert.equal(await dialog.getByLabel('Status after linking').inputValue(),'Investigating');
  await dialog.screenshot({path:directory+'/link-preview.png'});
  assert.match(await dialog.innerText(),/Status update recipients:.*manager@example.net.*sender@example.test/s);await dialog.getByLabel('Reason for this change').fill('Review resumed after confirming the customer asset.');await dialog.getByLabel('I confirm this existing assignment belongs').check();await dialog.getByRole('button',{name:'Link existing assignment',exact:true}).click();await dialog.getByRole('heading',{name:fixtureCve,exact:true}).waitFor();
- assert.match(await dialog.innerText(),/alex@example.net · Acknowledged/);assert.match(await dialog.innerText(),/Linked the existing assignment/);assert.match(await dialog.innerText(),/Earlier supporting evidence must be retained/);assert.equal(f.emails.length,mailCount+3);assert.deepEqual(statusMails().map(x=>x.to[0]).sort(),['alex@example.net','manager@example.net','sender@example.test']);
+ assert.match(await dialog.innerText(),/alex@example.net Â· Acknowledged/);assert.match(await dialog.innerText(),/Linked the existing assignment/);assert.match(await dialog.innerText(),/Earlier supporting evidence must be retained/);assert.equal(f.emails.length,mailCount+3);assert.deepEqual(statusMails().map(x=>x.to[0]).sort(),['alex@example.net','manager@example.net','sender@example.test']);
  await dialog.getByRole('button',{name:'Close',exact:true}).click();await page.waitForFunction(()=>document.querySelector('.finding-assignment-summary')?.textContent.includes('Assigned reviewer(s)'));
- assert.doesNotMatch(await row.innerText(),/Existing record — connect/);assert.match(await row.innerText(),/Acknowledged · alex@example.net/);assert.match(await row.innerText(),/Receipt acknowledged/);
+ assert.doesNotMatch(await row.innerText(),/Existing record â€” connect/);assert.match(await row.innerText(),/Acknowledged Â· alex@example.net/);assert.match(await row.innerText(),/Receipt acknowledged/);
  await row.screenshot({path:directory+'/finding-acknowledged.png'});
  // Keep resolved rows visible while changing status directly in the finding table.
  await page.getByRole('button',{name:/^All \(\d+\)$/}).click();
