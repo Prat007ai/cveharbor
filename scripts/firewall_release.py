@@ -19,13 +19,14 @@ DEPLOYMENT = 'b8c33d71-effe-49be-a2c6-0fd60182b20f'
 def reviewed_pr():
     prs = prod.github('/commits/' + os.environ['GITHUB_SHA'] + '/pulls')
     found = [p['number'] for p in prs if p['merged_at'] and p['base']['ref'] == 'main'
-             and p['head']['ref'] in ('feat/daily-firewall-digest','fix/firewall-subscription-preflight')]
-    pkg.require(len(found) == 1, 'Expected reviewed firewall digest PR')
-    if prs and found[0] != 306:
-        delta = set(pkg.git('diff','--name-only','c342de7f8bbf8a27553330f4df4ea84cca4288bf',
-                            os.environ['GITHUB_SHA']).decode().splitlines())
-        pkg.require(delta == {'scripts/firewall_release.py','scripts/activate_customer_assignment_schema.mjs'},
-                    'The preflight correction must preserve the reviewed application and schema.')
+             and p['head']['ref'] == 'feat/firewall-mail-designs']
+    pkg.require(len(found) == 1, 'Expected reviewed firewall email design PR')
+    delta = set(pkg.git('diff','--name-only','58df925c25a5814407b56370a0114cf10c582f41',
+                        os.environ['GITHUB_SHA']).decode().splitlines())
+    pkg.require(delta == {'scripts/firewall_release.py','account-backend/src/firewall-templates.js',
+                'account-backend/src/firewall-digest.js','account-backend/src/index.js',
+                'account-backend/tests/firewall-digest.test.mjs','release/firewall-backend-identity.txt'},
+                'Unexpected changes outside the firewall email release')
     prod.evidence(found[0])
     return found[0]
 
@@ -47,7 +48,7 @@ def backend(out):
             subprocess.run([sys.executable,'scripts/intelligence_release.py','backend',str(out)],cwd=prior,check=True)
         finally:
             pkg.git('worktree','remove','--force',str(prior))
-    # Main also contains held features. Insert only the three reviewed hooks.
+    # Main also contains held features. Insert only the reviewed firewall hooks.
     from difflib import SequenceMatcher
     name = 'account-backend/src/index.js'
     old = pkg.git('show', BASE+':'+name).decode().splitlines(keepends=True)
@@ -67,11 +68,12 @@ def backend(out):
         else:
             raise ValueError('Missing unique production hook')
         added += 1
-    pkg.require(added == 3, 'Unexpected number of firewall hooks')
+    pkg.require(added == 4, 'Unexpected number of firewall hooks')
     target.write_bytes(live.encode())
-    target = out/'account-backend/src/firewall-digest.js'
-    pkg.require(not target.exists(), 'Unexpected firewall module in baseline')
-    target.write_bytes(Path('account-backend/src/firewall-digest.js').read_bytes().replace(b'\r\n',b'\n'))
+    for name in ('firewall-digest.js','firewall-templates.js'):
+        target = out/'account-backend/src'/name
+        pkg.require(not target.exists(), 'Unexpected firewall module in baseline')
+        target.write_bytes(Path('account-backend/src',name).read_bytes().replace(b'\\r\\n',b'\\n'))
 
 
 def ready():
@@ -99,6 +101,6 @@ if __name__ == '__main__':
         raise ValueError('Expected backend')
     if os.environ.get('GITHUB_ACTIONS') == 'true':
         reviewed_pr()
-        prod.ready(Path('release/intelligence-baseline/backend-identity.txt').read_text().strip())
+        prod.ready('397e66ef96a7fa465949f1d7446fc7dd2192deff9cc13620e4b3a3b685ba769d')
     backend(Path(sys.argv[2]).resolve())
 
