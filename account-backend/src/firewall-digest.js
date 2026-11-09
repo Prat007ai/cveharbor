@@ -81,9 +81,11 @@ export async function firewallRoute(req,env,limit){
     return stoppedPage(scope,row.email);
   }
   const file=/^\/addresses\/(\d{4}-\d{2}-\d{2})\.txt$/.exec(suffix);
-  if(file&&get&&!branded){
+  if(file&&get){
     const stamp=Date.parse(file[1]), today=Math.floor(Date.now()/dayMs)*dayMs;
     if(!Number.isFinite(stamp)||new Date(stamp).toISOString().slice(0,10)!==file[1]||stamp>=today||stamp<today-30*dayMs)return new Response('Date unavailable',{status:404});
+    if(!branded && req.headers.get('Sec-Fetch-Mode')==='navigate')
+      return new Response(null,{status:302,headers:{Location:publicLinks+suffix,'Cache-Control':'no-store',Vary:'Sec-Fetch-Mode'}});
     const cache=globalThis.caches?.default, key=base+suffix;
     const cached=await cache?.match(key); if(cached)return cached;
     const ips=await historyFor(env,file[1]);
@@ -116,7 +118,7 @@ export async function dispatchFirewallDigest(env,now=new Date(),sender=sendEmail
     AND NOT EXISTS(SELECT 1 FROM firewall_digest_deliveries d WHERE d.subscriber_id=s.id AND d.day=?) ORDER BY s.confirmed_at,s.id LIMIT 20`).bind(begin/1000,day).all()).results;
   if(!subscribers.length)return;
   const ips=await historyFor(env,day);if(!ips.length)return;
-  const file=base+'/addresses/'+day+'.txt';
+  const file=publicLinks+'/addresses/'+day+'.txt';
   for(const sub of subscribers){
     const claim=await env.DB.prepare(`INSERT OR IGNORE INTO firewall_digest_deliveries(subscriber_id,day,claimed_at) SELECT id,?,? FROM firewall_subscribers WHERE id=? AND confirmed_at IS NOT NULL`).bind(day,seconds(),sub.id).run();
     if(!claim.meta.changes)continue;
