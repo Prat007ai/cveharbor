@@ -8,15 +8,16 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from urllib.error import HTTPError
+from datetime import datetime, timezone
 
 import catalogue_package as pkg
 import catalogue_promotion as prod
 from feed_snapshot import FILES, decode
 
 BASE='61344d38b5987fc24c0ecf8d35039aac808f1420'
-VERSION='52dff137-fe84-48da-a8d1-dbae9403057d'
-DEPLOYMENT='64bbcb6c-9f13-4cda-91ce-231c70e6fdb8'
+PICKER_COMMIT='9982c9f1f5dcfdc3eaa1d95deaeacd67fa12253f'
+VERSION='9060c8b1-8570-4dd6-8791-2a919ef0f639'
+DEPLOYMENT='add65052-b67f-49cf-b4a6-53bfd9db93a5'
 ENV='cloudflare-site-production'
 CHANGED={'app.js','cvie.js','cvie.css'}
 MODULE='technology-version-picker.mjs'
@@ -46,6 +47,12 @@ def prepare(out):
                 merged=pkg.git('merge-file','-p',str(out/'before'/name),str(ancestor),str(source))
             (out/'after'/name).write_bytes(merged)
     (out/'after'/MODULE).write_bytes(pkg.git('show','HEAD:'+MODULE))
+    # This release changes only the Worker's advisory requests. Compare the
+    # assembled browser assets with the version already served by PR #302.
+    for name in CHANGED | {MODULE}:
+        pkg.require(pkg.git('show',PICKER_COMMIT+':'+name)==pkg.git('show','HEAD:'+name),
+                    'Unexpected frontend change: '+name)
+        shutil.copyfile(out/'after'/name,out/'before'/name)
     for name in ('worker.mjs','version-scan.mjs','version-products.json','version-releases.json'):
         path='site-gate/'+name
         (out/'source'/path).write_bytes(pkg.git('show','HEAD:'+path))
@@ -73,20 +80,22 @@ def publish(out):
             return body
     def check(path,auth,expected):
         pkg.require(pkg.digest(normalized(path,asset(path,auth)))==expected,'Unexpected live bytes for '+path)
-    try:
-        prod.protected_asset(MODULE,auth)
-    except HTTPError as exc:
-        if exc.code!=404:raise
-    else:raise RuntimeError('Picker module already exists on production')
     prod.publish(out,site_env=ENV,pr_number=pr_number(),previous_version=VERSION,previous_deployment=DEPLOYMENT,
-        changed=CHANGED,readiness=readiness,verify_served=check,read_asset=asset,canonical=normalized,added={MODULE})
+        changed=CHANGED | {MODULE},readiness=readiness,verify_served=check,read_asset=asset,canonical=normalized)
     with prod.request(prod.ORIGIN+'v1/version-picker/catalogue',{'Authorization':auth}) as r:
         live=json.load(r)
     pkg.require(set(live['cards'])==set(json.loads(Path('site-gate/version-products.json').read_text())['cards'])
         and all(live['releases'].get(key,{}).get('versions') for key in live['products']),'Incomplete live release picker')
+    day=datetime.now(timezone.utc).date().isoformat()
+    for query in ('product=runtime&version=8.0.12&months=3','product=react&version=19.0.0&months=12'):
+        def verify_source():
+            with prod.request(prod.ORIGIN+'v1/version-picker/scan?day='+day+'&'+query,{'Authorization':auth}) as r:
+                page=json.load(r)
+            pkg.require(isinstance(page.get('rows'),list) and 'range' in page,'Live source scan incomplete')
+        prod.await_read(verify_source)
 
 def pr_number():
-    matches=[p['number'] for p in prod.github('/commits/'+os.environ['GITHUB_SHA']+'/pulls') if p['merged_at'] and p['head']['ref']=='feature/technology-version-picker' and p['base']['ref']=='main']
+    matches=[p['number'] for p in prod.github('/commits/'+os.environ['GITHUB_SHA']+'/pulls') if p['merged_at'] and p['head']['ref']=='fix/version-picker-cloudflare' and p['base']['ref']=='main']
     pkg.require(len(matches)==1,'Missing exact reviewed picker PR')
     return matches[0]
 
