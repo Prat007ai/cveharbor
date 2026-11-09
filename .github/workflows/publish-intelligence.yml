@@ -42,6 +42,7 @@ jobs:
           FEED_R2_SECRET_ACCESS_KEY: ${{ secrets.FEED_R2_SECRET_ACCESS_KEY }}
         run: python scripts/initialize_intelligence_feed.py
       - name: Restore durable state, collect all sources, verify objects and promote once
+        id: collect
         env:
           FEED_R2_ACCOUNT_ID: ${{ vars.FEED_R2_ACCOUNT_ID }}
           FEED_R2_BUCKET: ${{ vars.FEED_R2_BUCKET }}
@@ -55,7 +56,7 @@ jobs:
           THREATFOX_AUTH_KEY: ${{ secrets.THREATFOX_AUTH_KEY || secrets.MALWAREBAZAAR_API_KEY }}
         run: python scripts/feed_snapshot.py collect
       - name: Refresh the public installed-version directory
-        if: success()
+        if: ${{ !cancelled() && (steps.collect.outcome == 'success' || steps.collect.outcome == 'failure') }}
         env:
           FEED_R2_ACCOUNT_ID: ${{ vars.FEED_R2_ACCOUNT_ID }}
           FEED_R2_BUCKET: ${{ vars.FEED_R2_BUCKET }}
