@@ -1,4 +1,5 @@
 import {updateTopicHistory} from './cvie-topic-history.js';
+import {firewallRoute,dispatchFirewallDigest} from './firewall-digest.js';
 import {recoveryProtected} from './recovery-control.js';
 import {saveCustomerRemediation,customerTicket} from './customer-remediation.js';
 import {releaseReadiness} from './release-readiness.js';
@@ -68,6 +69,9 @@ const application = {async fetch(req,env,ctx){
  if(url.pathname.startsWith('/v1/acknowledge/'))return acknowledgementRoute(req,env,ctx);
  if(req.method==='OPTIONS'){if(origin!==ALLOWED_ORIGIN)return response({error:'Forbidden'},403);return new Response(null,{status:204,headers:{'Access-Control-Allow-Origin':ALLOWED_ORIGIN,'Access-Control-Allow-Credentials':'true','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST,PUT,DELETE,OPTIONS','Vary':'Origin'}})}
  if(!url.pathname.startsWith('/v1/'))return response({error:'Not found'},404);
+ if(url.pathname==='/v1/firewall-updates'||url.pathname.startsWith('/v1/firewall-updates/')){
+  try{return await firewallRoute(req,env,limit);}catch{return response({error:'Firewall updates are temporarily unavailable.'},503);}
+ }
  if(url.pathname==='/v1/monitoring/webhooks/smtp2go'){
   if(!env.DB)return response({error:'Monitoring unavailable'},503);
   try{return await smtp2goWebhook(req,env);}catch{return response({error:'Event reconciliation unavailable; retry later'},503);}
@@ -396,6 +400,7 @@ const application = {async fetch(req,env,ctx){
  }catch(error){error=integrityError(error);if(error instanceof ReviewError||error instanceof WorkflowError||error instanceof FyiError||error instanceof AssignmentError||error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
 },
  async scheduled(_event,env,ctx) {
+  if(_event.cron==='*/5 * * * *')ctx.waitUntil(dispatchFirewallDigest(env));
   if(_event.cron==='* * * * *'&&env.CVIE_TOPIC_HISTORY_ENABLED==='true'){
    ctx.waitUntil(updateTopicHistory(env));
    if(Math.floor((_event.scheduledTime||Date.now())/60000)%5===2)ctx.waitUntil(discoverTopicArchive(env));

@@ -662,7 +662,19 @@ for(const entry of cycles){
  row.append(header,elem('p','', 'End of life: '+(entry.eol_date||'Not confirmed')+' · Support: '+(entry.support_date||'Not confirmed')));
  const a=elem('a','ops-link','Check lifecycle source');a.href=entry.url;a.target='_blank';a.rel='noopener noreferrer';row.append(a);$('lifecycleRows').append(row);
 }
-$('firewallObservedCount').textContent=(threats.indicators||[]).length+' reported IP indicators in the current snapshot';
+const exports=threats.firewall_exports;
+$('firewallObservedCount').textContent=exports
+ ? exports.new_hosts.toLocaleString()+' newly indexed IPv4 addresses in this refresh · '+exports.cumulative_hosts.toLocaleString()+' in the full firewall files'
+ : (threats.indicators||[]).length+' indicators in the screen preview';
+const signup=elem('form','ops-result');
+signup.action='https://api.cveharbor.com/v1/firewall-updates';
+signup.method='post';
+const emailLabel=elem('label','','Email address');
+const email=elem('input','');email.name='email';email.type='email';email.autocomplete='email';email.required=true;email.maxLength=254;
+emailLabel.append(email);
+const subscribe=elem('button','ops-download','Subscribe to daily updates');subscribe.type='submit';
+signup.append(elem('h4','','Daily firewall updates'),elem('p','','Receive a daily email when new IPv4 addresses appear. Confirm your address to join.'),emailLabel,subscribe);
+$('firewallDownloads').after(signup);
 for(const item of [['FortiGate initial','fortigate-suspicious-ip-initial.txt'],['FortiGate incremental','fortigate-suspicious-ip-incremental.txt'],['Sophos initial','sophos-suspicious-ip-initial.txt'],['Sophos incremental','sophos-suspicious-ip-incremental.txt']]){
  const a=elem('a','ops-download',item[0]);a.href='/'+item[1];a.download=item[1];$('firewallDownloads').append(a);
 }

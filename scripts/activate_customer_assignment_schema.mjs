@@ -9,14 +9,15 @@ import {verifyService} from './production_service_health.mjs';
 
 const account='aa99b9b15e0492302e4f6484b8d27bc2';
 const schema=process.env.CUSTOMER_SCHEMA||'managed';
-assert.ok(['managed','manual'].includes(schema));
+assert.ok(['managed','manual','firewall'].includes(schema));
+const firewall=schema==='firewall';
 const manual=schema==='manual';
 const identity=manual?'manual-backend-identity.txt':'backend-identity.txt';
-const release=fs.readFileSync('release/customer-investigation/'+identity,'utf8').trim();
-const sql=fs.readFileSync('deployment/proposals/customer-remediation/'+(manual?'manual-scope.sql':'schema.sql'),'utf8').replaceAll('\r\n','\n');
-assert.equal(createHash('sha256').update(sql).digest('hex'),manual?'8bc72fce5ddb0ca44df71cdbd39abeacae8eae6af19f04a9a39112cb5d76f338':'4cb409cd1ad836c3e71394e3f054168d99b7896817421d92d795d71235a8977a');
-const tables=manual?['remediation_manual_scopes']:['remediation_customer_scopes','remediation_customer_ticket_history'];
-const dependencies=new Set(manual?['remediations']:['users','remediations','inventory_customers','inventory_environments','remediation_finding_links','remediation_retired_records']);
+const release=fs.readFileSync(firewall?'release/intelligence-baseline/backend-identity.txt':'release/customer-investigation/'+identity,'utf8').trim();
+const sql=fs.readFileSync(firewall?'deployment/proposals/firewall-digest/schema.sql':'deployment/proposals/customer-remediation/'+(manual?'manual-scope.sql':'schema.sql'),'utf8').replaceAll('\r\n','\n');
+assert.equal(createHash('sha256').update(sql).digest('hex'),firewall?'e3bf15dee948cba0273a2d98046fc92862752051612a9b85da89af53d761ad27':manual?'8bc72fce5ddb0ca44df71cdbd39abeacae8eae6af19f04a9a39112cb5d76f338':'4cb409cd1ad836c3e71394e3f054168d99b7896817421d92d795d71235a8977a');
+const tables=firewall?['firewall_subscribers','firewall_digest_deliveries']:manual?['remediation_manual_scopes']:['remediation_customer_scopes','remediation_customer_ticket_history'];
+const dependencies=new Set(firewall?['operations_control']:manual?['remediations']:['users','remediations','inventory_customers','inventory_environments','remediation_finding_links','remediation_retired_records']);
 const guards=tables.flatMap(table=>['insert','update','delete'].map(op=>guardSQL(table,op)+';')).join('\n');
 // D1 already enforces foreign keys. Only the pinned DDL and recovery triggers are sent.
 const ddl=sql.slice(sql.indexOf('CREATE TABLE '))+'\n'+guards;
@@ -33,7 +34,7 @@ assert.equal(writes(),before);
 const added=local.prepare(schemaSQL).all().filter(r=>!originalNames.has(r.name));
 assert.equal(added.filter(r=>r.type==='table').length,tables.length);
 assert.equal(added.filter(r=>r.type==='index').length,manual?0:1);
-assert.equal(added.filter(r=>r.type==='trigger').length,manual?4:15);
+assert.equal(added.filter(r=>r.type==='trigger').length,firewall?6:manual?4:15);
 const names=new Set(added.map(r=>r.name));
 local.close();
 
@@ -70,7 +71,7 @@ async function apply(){
   assert.equal((await db.prepare('SELECT count(*) n FROM pragma_foreign_key_check').first()).n,0);
   assert.equal((await holdStatus(db)).guards_complete,true);
   await verifyService({expectedRelease:release});
-  console.log('Verified customer assignment storage, indexes, guards, foreign keys and live service.');
+  console.log('Verified '+schema+' storage, indexes, guards, foreign keys and live service.');
 }
 if(process.argv[2]==='--apply')await apply();
 else {assert.equal(process.argv[2],'--rehearse');console.log('Verified additive customer schema and recovery guards in SQLite. Existing records untouched.');}
