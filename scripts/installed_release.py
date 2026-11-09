@@ -44,6 +44,9 @@ def reviewed():
     prod.evidence(candidates[0])
     return candidates[0]
 
+def healthy_backend():
+    prod.await_read(firewall.ready)
+
 def run(action,out):
     if action=='prepare':
         prepare(out)
@@ -51,9 +54,11 @@ def run(action,out):
     pr = reviewed()
     if action=='preflight':
         prod.policy(picker.ENV)
-        firewall.ready()
+        healthy_backend()
     elif action=='publish':
-        picker.publish(out,changed=CHANGED,reviewed_pr=pr,ready=firewall.ready,
+        picker.publish(out,changed=CHANGED,reviewed_pr=pr,ready=healthy_backend,
+                       # Run 42688807113 uploaded this version but stopped before activation.
+                       previous_upload='66ee47cd-e14b-456e-8e18-fe2d4a8766c1',
                        previous_version='28f26db5-bd5a-4e7e-b592-031c3aca8405',
                        previous_deployment='951a5c68-d87c-4f4e-9623-becb3c29b525')
     else:

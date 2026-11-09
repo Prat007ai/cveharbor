@@ -144,7 +144,7 @@ def verify_asset(path, auth, expected):
 
 def publish(out, *, site_env=SITE_ENV, independent=False, pr_number=283, previous_version=OLD_VERSION,
             previous_deployment=OLD_DEPLOYMENT, changed=CHANGED, readiness=None, verify_served=verify_asset,
-            read_asset=None, canonical=origin_bytes, added=frozenset()):
+            read_asset=None, canonical=origin_bytes, added=frozenset(), previous_upload=None):
     if read_asset is None:
         read_asset = protected_asset
     if readiness is None:
@@ -182,7 +182,7 @@ def publish(out, *, site_env=SITE_ENV, independent=False, pr_number=283, previou
     config.write_text(json.dumps(settings))
     tag = "catalogue-" + os.environ["GITHUB_RUN_ID"]
     active(previous_version, previous_deployment)
-    require(provider("/versions?per_page=1")["items"][0]["id"] == previous_version,
+    require(provider("/versions?per_page=1")["items"][0]["id"] == (previous_upload or previous_version),
             "A newer unpublished version exists. Review before upload.")
     child = {k: os.environ[k] for k in ("PATH", "HOME", "CLOUDFLARE_ACCOUNT_ID", "CLOUDFLARE_API_TOKEN")}
     receipt = out / "upload.ndjson"
