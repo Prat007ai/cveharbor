@@ -1,18 +1,16 @@
+import {CONFIRM_ORIGIN} from './confirmation-host.js';
+import {firewallPage as page,confirmEmail,confirmPage,activePage,preferencesPage,stoppedPage,dailyEmail} from './firewall-templates.js';
 import {sendEmail} from './delivery.js';
 import {openIntelligenceSnapshot} from './intelligence-store.js';
 
 const base = 'https://api.cveharbor.com/v1/firewall-updates';
+const publicLinks=CONFIRM_ORIGIN+'/firewall-updates';
 const site = 'https://cveharbor.com';
 const dayMs = 86400000;
 const seconds = () => Math.floor(Date.now()/1000);
 const token = () => crypto.randomUUID().replaceAll('-','') + crypto.randomUUID().replaceAll('-','');
 const hex = bytes => Array.from(new Uint8Array(bytes), byte => byte.toString(16).padStart(2,'0')).join('');
 const hashed = async value => hex(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)));
-const style = 'body{background:#0c2232;color:#eef7f8;font:18px/1.6 system-ui;max-width:36rem;margin:12vh auto;padding:1.5rem}a{color:#8be2d1}button,input{font:inherit;padding:.6rem .9rem;margin:.5rem 0;box-sizing:border-box;width:100%}button{background:#83dfcf;color:#132c38;border:0;border-radius:.35rem}';
-function page(title, content, status=200) {
-  return new Response('<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>'+title+' | CVEHarbor</title><style>'+style+'</style><main><b>CVEHarbor</b><h1>'+title+'</h1>'+content+'</main></html>',{status,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'none'; style-src 'unsafe-inline'; form-action 'self' https://api.cveharbor.com; frame-ancestors 'none'; base-uri 'none'",'X-Content-Type-Options':'nosniff'}});
-}
-const button = (label) => '<form method="post"><button>'+label+'</button></form>';
 export function dailyHosts(history, day) {
   const start=Date.parse(day+'T00:00:00Z');
   return Object.entries(history.addresses).filter(([,record])=>{
@@ -26,10 +24,11 @@ async function historyFor(env,day) {
   return dailyHosts(history,day);
 }
 export async function firewallRoute(req,env,limit){
-  const url=new URL(req.url), suffix=url.pathname.slice('/v1/firewall-updates'.length);
+  const url=new URL(req.url), branded=url.origin===CONFIRM_ORIGIN,
+    suffix=url.pathname.slice((branded?'/firewall-updates':'/v1/firewall-updates').length);
   const get=req.method==='GET', post=req.method==='POST';
   if(!get&&!post)return new Response(null,{status:405,headers:{Allow:'GET, POST'}});
-  if(!suffix){
+  if(!suffix&&!branded){
     if(get)return page('Daily firewall updates','<p>Receive one email on days when CVEHarbor has newly observed firewall IPs. Confirm your address to subscribe.</p><form method="post"><label>Email address<input name="email" type="email" required maxlength="254" autocomplete="email"></label><button>Subscribe to daily updates</button></form>');
     if(![site,new URL(base).origin].includes(req.headers.get('Origin')))return page('Request unavailable','Please open the signup form again.',403);
     if(!req.headers.get('Content-Type')?.startsWith('application/x-www-form-urlencoded'))return page('Invalid form','Please open the signup form again.',415);
@@ -46,8 +45,8 @@ export async function firewallRoute(req,env,limit){
       WHERE firewall_subscribers.confirmed_at IS NULL AND firewall_subscribers.requested_at<=excluded.requested_at-86400 RETURNING id`)
       .bind(crypto.randomUUID(),email,await hashed(proof),now,token()).first();
     if(row){
-      const link=base+'/confirm/'+proof;
-      try {await sendEmail(env,email,{subject:'Confirm your CVEHarbor firewall updates',text:'Confirm your email to receive daily updates about newly observed firewall IPs. This link expires in 24 hours. '+link,html:'<p>Confirm your address to receive daily firewall updates.</p><p><a href="'+link+'">Confirm subscription</a> (valid for 24 hours)</p>'});}
+      const link=publicLinks+'/confirm/'+proof;
+      try {await sendEmail(env,email,confirmEmail(link));}
       catch(error){await env.DB.prepare('DELETE FROM firewall_subscribers WHERE id=? AND confirmation_hash=? AND confirmed_at IS NULL').bind(row.id,await hashed(proof)).run();throw error;}
     }
     return page('Check your inbox','If your address needs confirmation, you will receive a link by email.');
@@ -55,16 +54,34 @@ export async function firewallRoute(req,env,limit){
   const action=/^\/(confirm|unsubscribe)\/([a-f0-9]{64})$/.exec(suffix);
   if(action){
     const confirm=action[1]==='confirm';
-    if(get)return page(confirm?'Confirm your subscription':'Unsubscribe from daily firewall updates',button(confirm?'Confirm subscription':'Unsubscribe'));
+    const token=action[2];
+    if(post && req.headers.has('Origin') && req.headers.get('Origin')!==url.origin)
+      return page('Request unavailable','<p>Open the link in your email again.</p>',403);
     if(confirm){
-      const result=await env.DB.prepare('UPDATE firewall_subscribers SET confirmed_at=?, confirmation_hash=NULL WHERE confirmation_hash=? AND requested_at>=? AND confirmed_at IS NULL')
-        .bind(seconds(),await hashed(action[2]),seconds()-86400).run();
-      if(!result.meta.changes)return page('Link already used or expired','If you still need to subscribe, <a href="'+base+'">request a confirmation email</a>.');
-    }else await env.DB.prepare('DELETE FROM firewall_subscribers WHERE unsubscribe_token=?').bind(action[2]).run();
-    return page(confirm?'Subscription confirmed':'Unsubscribed',confirm?'You will receive updates for new firewall IPs starting with your first full UTC day.':'Daily firewall emails have been stopped for this subscription.');
+      const hash=await hashed(token), cutoff=seconds()-86400;
+      const row=get
+        ? await env.DB.prepare('SELECT email FROM firewall_subscribers WHERE confirmation_hash=? AND requested_at>=? AND confirmed_at IS NULL').bind(hash,cutoff).first()
+        : await env.DB.prepare('UPDATE firewall_subscribers SET confirmed_at=?,confirmation_hash=NULL WHERE confirmation_hash=? AND requested_at>=? AND confirmed_at IS NULL RETURNING email,unsubscribe_token').bind(seconds(),hash,cutoff).first();
+      if(!row)return page('Link already used or expired','<p>Already confirmed? Your subscription is active. Otherwise, <a href="'+base+'">request another confirmation email</a>.</p>');
+      return get?confirmPage(row.email):activePage(row.email,publicLinks+'/unsubscribe/'+row.unsubscribe_token);
+    }
+    const row=await env.DB.prepare('SELECT email FROM firewall_subscribers WHERE unsubscribe_token=? AND confirmed_at IS NOT NULL').bind(token).first();
+    if(!row)return page('Subscription link is inactive','<p>This link has already been used or is no longer valid.</p>');
+    if(get)return preferencesPage(row.email);
+    let scope='digest';
+    if(req.body){
+      const reader=req.body.getReader();let data='',size=0;
+      for(;;){const {value,done}=await reader.read();if(done)break;size+=value.length;
+        if(size>128){await reader.cancel();return page('Invalid selection','<p>Open the preferences page again.</p>',400);}
+        data+=String.fromCharCode(...value);}
+      if(data==='scope=all' && req.headers.get('Origin')===url.origin)scope='all';
+      else if(!['','scope=digest','List-Unsubscribe=One-Click'].includes(data))return page('Invalid selection','<p>Choose an option on the preferences page.</p>',400);
+    }
+    await stopSubscriptions(env.DB,token,scope);
+    return stoppedPage(scope,row.email);
   }
   const file=/^\/addresses\/(\d{4}-\d{2}-\d{2})\.txt$/.exec(suffix);
-  if(file&&get){
+  if(file&&get&&!branded){
     const stamp=Date.parse(file[1]), today=Math.floor(Date.now()/dayMs)*dayMs;
     if(!Number.isFinite(stamp)||new Date(stamp).toISOString().slice(0,10)!==file[1]||stamp>=today||stamp<today-30*dayMs)return new Response('Date unavailable',{status:404});
     const cache=globalThis.caches?.default, key=base+suffix;
@@ -75,6 +92,23 @@ export async function firewallRoute(req,env,limit){
   }
   return new Response('Not found',{status:404});
 }
+async function stopSubscriptions(db,token,scope){
+  const writes=[];
+  if(scope==='all'){
+    // Every statement rechecks the same live bearer, inside one D1 transaction.
+    const owner='(SELECT u.id FROM users u JOIN firewall_subscribers s ON s.email=u.email COLLATE NOCASE WHERE s.unsubscribe_token=? AND s.confirmed_at IS NOT NULL)';
+    writes.push(
+      db.prepare('UPDATE alert_preferences SET enabled=0,updated_at=CURRENT_TIMESTAMP WHERE user_id IN '+owner).bind(token),
+      db.prepare('DELETE FROM alert_optins WHERE user_id IN '+owner).bind(token),
+      db.prepare('UPDATE lifecycle_preferences SET email_enabled=0,updated_at=? WHERE user_id IN '+owner).bind(seconds(),token)
+    );
+    // Some deployments have lifecycle preferences before notification delivery is installed.
+    if(await db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='lifecycle_monitor_notifications'").first())
+      writes.push(db.prepare("UPDATE lifecycle_monitor_notifications SET state='suppressed' WHERE state IN ('pending','queued') AND user_id IN "+owner).bind(token));
+  }
+  writes.push(db.prepare('DELETE FROM firewall_subscribers WHERE unsubscribe_token=? AND confirmed_at IS NOT NULL').bind(token));
+  await db.batch(writes);
+}
 export async function dispatchFirewallDigest(env,now=new Date(),sender=sendEmail){
   const begin=Math.floor(now.getTime()/dayMs)*dayMs-dayMs, day=new Date(begin).toISOString().slice(0,10);
   await env.DB.prepare('DELETE FROM firewall_subscribers WHERE confirmed_at IS NULL AND requested_at<?').bind(seconds()-2*86400).run();
@@ -82,14 +116,13 @@ export async function dispatchFirewallDigest(env,now=new Date(),sender=sendEmail
     AND NOT EXISTS(SELECT 1 FROM firewall_digest_deliveries d WHERE d.subscriber_id=s.id AND d.day=?) ORDER BY s.confirmed_at,s.id LIMIT 20`).bind(begin/1000,day).all()).results;
   if(!subscribers.length)return;
   const ips=await historyFor(env,day);if(!ips.length)return;
-  const file=base+'/addresses/'+day+'.txt', subject='CVEHarbor firewall updates · '+day+' · '+ips.length+' new IPs';
+  const file=base+'/addresses/'+day+'.txt';
   for(const sub of subscribers){
     const claim=await env.DB.prepare(`INSERT OR IGNORE INTO firewall_digest_deliveries(subscriber_id,day,claimed_at) SELECT id,?,? FROM firewall_subscribers WHERE id=? AND confirmed_at IS NOT NULL`).bind(day,seconds(),sub.id).run();
     if(!claim.meta.changes)continue;
-    const unsubscribe=base+'/unsubscribe/'+sub.unsubscribe_token;
-    const message=ips.length+' IPv4 addresses first appeared in the firewall exports on '+day+' (UTC). Review them before changing any firewall policy.';
+    const unsubscribe=publicLinks+'/unsubscribe/'+sub.unsubscribe_token;
     try{
-      const receipt=await sender(env,sub.email,{subject,text:message+'\n'+ips.slice(0,10).join('\n')+'\nFull list: '+file+'\nUnsubscribe: '+unsubscribe,html:'<p>'+message+'</p><pre>'+ips.slice(0,10).join('\n')+'</pre><p><a href="'+file+'">Download all '+ips.length+' addresses</a></p><p><a href="'+unsubscribe+'">Unsubscribe</a></p>'},unsubscribe);
+      const receipt=await sender(env,sub.email,dailyEmail(day,ips,file,unsubscribe),unsubscribe);
       await env.DB.prepare('UPDATE firewall_digest_deliveries SET accepted_at=?,provider_id=? WHERE subscriber_id=? AND day=?').bind(seconds(),receipt,sub.id,day).run();
     }catch{console.error('Firewall digest delivery needs reconciliation for day '+day+' and claim '+sub.id);}
   }

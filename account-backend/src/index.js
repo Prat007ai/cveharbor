@@ -61,6 +61,9 @@ const application = {async fetch(req,env,ctx){
  const url=new URL(req.url),origin=req.headers.get('origin');
  // The confirmation hostname exposes only the guest confirmation page, never account APIs.
  if(url.hostname==='confirm.cveharbor.com'){
+  if(/^\/firewall-updates\/(confirm|unsubscribe)\/[a-f0-9]{64}$/.test(url.pathname)){
+   try{return await firewallRoute(req,env,limit);}catch{return response({error:'Subscription service temporarily unavailable'},503);}
+  }
   if(url.pathname.startsWith('/assignment/'))return reviewerRoute(req,env,ctx);
   if(url.pathname.startsWith(CONFIRM_PREFIX))return acknowledgementRoute(req,env,ctx);
   return new Response('Open the confirmation link in your assignment email.',{status:404,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'}});
