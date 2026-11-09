@@ -19,8 +19,13 @@ DEPLOYMENT = 'b8c33d71-effe-49be-a2c6-0fd60182b20f'
 def reviewed_pr():
     prs = prod.github('/commits/' + os.environ['GITHUB_SHA'] + '/pulls')
     found = [p['number'] for p in prs if p['merged_at'] and p['base']['ref'] == 'main'
-             and p['head']['ref'] == 'feat/daily-firewall-digest']
+             and p['head']['ref'] in ('feat/daily-firewall-digest','fix/firewall-subscription-preflight')]
     pkg.require(len(found) == 1, 'Expected reviewed firewall digest PR')
+    if prs and found[0] != 306:
+        delta = set(pkg.git('diff','--name-only','c342de7f8bbf8a27553330f4df4ea84cca4288bf',
+                            os.environ['GITHUB_SHA']).decode().splitlines())
+        pkg.require(delta == {'scripts/firewall_release.py','scripts/activate_customer_assignment_schema.mjs'},
+                    'The preflight correction must preserve the reviewed application and schema.')
     prod.evidence(found[0])
     return found[0]
 
