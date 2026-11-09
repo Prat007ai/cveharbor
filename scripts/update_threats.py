@@ -181,7 +181,7 @@ def export_attack_current(report,source_entries,output_root=None):
     (folder/ATTACK_EXPORT_FILES[2]).write_text(json.dumps(meta,indent=2,sort_keys=True)+"\n",encoding="utf-8")
     return meta
 
-def export_templates(report):
+def export_templates(report, source_entries=None):
     """Append-only, review-only history. Never equate collection time with last seen.
 
     Delta is relative to the immediately preceding successful publication, NOT
@@ -201,7 +201,8 @@ def export_templates(report):
                                  "last_indexed":entry.get("last_indexed") or ""}
     additions={}
     timestamp=report.get("checked_at") or datetime.now(timezone.utc).isoformat()
-    for entry in report.get("indicators") or []:
+    entries=(entry for source in source_entries.values() for entry in source.values()) if source_entries is not None else report.get("indicators",[])
+    for entry in entries:
         source=entry.get("source_id")
         address=public_ipv4(str(entry.get("ip") or ""))
         if not address or not report.get("sources",{}).get(source,{}).get("ok"):
@@ -214,6 +215,7 @@ def export_templates(report):
             cumulative[address]["last_indexed"]=timestamp
     all_ips=ip_order(cumulative)
     new_ips=ip_order(additions)
+    report["firewall_exports"]={"new_hosts":len(new_ips),"cumulative_hosts":len(all_ips),"checked_at":timestamp}
     HISTORY.parent.mkdir(parents=True,exist_ok=True)
     HISTORY.write_text(json.dumps({"generated_at":timestamp,"group_name":GROUP_NAME,
                                     "addresses":cumulative},indent=2,sort_keys=True)+"\n",encoding="utf-8")
@@ -332,7 +334,7 @@ def collect():
     timestamp=datetime.now(timezone.utc).isoformat()
     report={"schema_version":2,"checked_at":timestamp,"sources":{},"indicators":[],
             "per_source_limit":SOURCE_LIMIT,"added_count":0,"removed_count":0}
-    attack_entries={}
+    source_entries={}
     for key,(url,name,activity) in FEEDS.items():
         parsing={}
         try:
@@ -352,7 +354,7 @@ def collect():
                 modified=resp.headers.get("Last-Modified")
             if len(body)>max_bytes:raise ValueError("Feed larger than safety limit")
             entries=parse_source(key,body.decode("utf-8-sig"),datetime.now(timezone.utc),parsing)
-            if key in ATTACK_SOURCE_IDS:attack_entries[key]=entries
+            source_entries[key]=entries
             published=list(entries.values())[:SOURCE_LIMIT]
             old={x["ip"] for x in previous.get("indicators",[]) if x.get("source_id")==key}
             current={x["ip"] for x in published}
@@ -388,7 +390,7 @@ def collect():
     report["unique_ip_count"]=len({x["ip"] for x in report["indicators"] if x.get("kind")!="network"})
     report["network_range_count"]=len({x["ip"] for x in report["indicators"] if x.get("kind")=="network"})
     report["stale_count"]=sum(bool(x.get("stale")) for x in report["indicators"])
-    report["attack_export"]=export_attack_current(report,attack_entries)
+    report["attack_export"]=export_attack_current(report,source_entries)
     # Geographic attribution is approximate IP network registration data, not
     # the location of a person controlling the address. Cache to minimize API calls.
     cache_path=ROOT/"data"/"ip-geolocation-cache.json"
@@ -427,7 +429,7 @@ def collect():
     report["geolocated_count"]=sum(1 for x in report["indicators"] if x.get("geo"))
     report["geo_source"]="ipwho.is IP geolocation; approximate network location, not verified origin"
     report["count"]=len(report["indicators"])
-    export_templates(report)
+    export_templates(report,source_entries)
     # Never make source first-seen or the collection timestamp look like attacker last-seen evidence.
     OUT.write_text("window.CVEHARBOR_THREATS = "+json.dumps(report,separators=(",",":")).replace("</","<\\/")+";\n",encoding="utf-8")
     print("Threat IP feeds:",{k:v.get("count",v.get("error")) for k,v in report["sources"].items()})
