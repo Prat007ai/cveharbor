@@ -138,7 +138,7 @@ def main():
         raw,etag=store.get(KEY)
         if raw:old=json.loads(raw)
         now=datetime.now(timezone.utc)
-        if old and all(entry.get('checked','')[:10]==now.date().isoformat() for entry in old.values()) and len(old)==len(CONFIG['products']):return
+        if raw and all(entry.get('checked','')[:10]==now.date().isoformat() for entry in old.values()) and set(old)==set(CONFIG['products']):return
     with ThreadPoolExecutor(max_workers=6) as pool:
         for key,data in pool.map(collect_one,CONFIG['products'].items()):
             if data:old[key]=data
