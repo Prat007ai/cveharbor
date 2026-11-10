@@ -3,7 +3,8 @@ from concurrent.futures import ThreadPoolExecutor
 import re
 
 from urllib.error import HTTPError
-from vendor_scan_data import MSRC, document, read
+from urllib.request import Request, urlopen
+from vendor_scan_data import MSRC, document
 
 
 SQL_KEYS = {'2025':'sql2025','2022':'sql','2017':'sql2017','2016':'sql2016','2014':'sql2014'}
@@ -32,7 +33,8 @@ def sql_bulletins(start,out):
         for kb,(key,branch,build) in articles.items():
             linked=listed[kb].copy()
             try:
-                with read('https://support.microsoft.com/help/'+kb) as response:
+                request=Request('https://support.microsoft.com/en-us/help/'+kb,headers={'Accept':'text/html','User-Agent':'CVEHarbor'})
+                with urlopen(request,timeout=60) as response:
                     article=response.read().decode()
             except HTTPError as exc:
                 if exc.code not in (403,404,410):raise
