@@ -6,11 +6,13 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta, timezone
 import json
 import os
+import re
+import subprocess
 from pathlib import Path
 import time
 from urllib.parse import urlencode
 
-from catalogue_promotion import ORIGIN, request
+from catalogue_promotion import ORIGIN, REPO, request
 
 CONFIG = json.loads((Path(__file__).resolve().parents[1]/'site-gate/version-products.json').read_text())
 COMPONENTS = {'react':'optional', 'sitefinity':'optional', 'npm':'bundled'}
@@ -123,22 +125,93 @@ def compare(results, day, expected, errors):
     return failures, report
 
 
+WORKFLOW = REPO+'/actions/workflows/daily-vendor-scan-check.yml'
+
+
+def validate(audit, day):
+    if audit['day'] != day.isoformat() or audit['cards'] != len(CONFIG['cards']):
+        raise ValueError('Unexpected scan date or card count')
+    products = set(CONFIG['products'])
+    windows = {}
+    for scan in audit['scans']:
+        key, version, months = scan['key'], scan['version'], scan['months']
+        if key not in products or months not in (3,12) or not re.fullmatch(r'[A-Za-z0-9.+~ -]{1,48}',version):
+            raise ValueError('Unexpected product, version or window')
+        observed = windows.setdefault((key,version),set())
+        if months in observed:
+            raise ValueError('Duplicate scan')
+        observed.add(months)
+        if 'error' in scan:
+            if scan['error'] not in {t+' while reading production' for t in
+                    ('HTTPError','URLError','TimeoutError','ValueError','KeyError','TypeError','OSError','JSONDecodeError',
+                     'ConnectionResetError','RemoteDisconnected','SSLError','IncompleteRead','ConnectionError')}:
+                raise ValueError('Invalid production error')
+            continue
+        expected = {'direct'} | ({COMPONENTS[key]} if key in COMPONENTS else set())
+        present, empty = set(scan['present']), set(scan['empty'])
+        if present & empty or present | empty != expected:
+            raise ValueError('Incomplete scan coverage')
+    if ({k for k,v in windows} != products or ('ubuntu','24.04.5') not in windows or
+            any(pair != {3,12} for pair in windows.values())):
+        raise ValueError('Missing product or scan window')
+
+
+def submit(audit):
+    # GitHub only receives this public inventory and result classification.
+    credentials = subprocess.run(['git','credential','fill'],input='protocol=https\nhost=github.com\n\n',
+                                 text=True,capture_output=True,check=True)
+    token = next(line[9:] for line in credentials.stdout.splitlines() if line.startswith('password='))
+    body = {'ref':'main','inputs':{'day':audit['day'],'scan_results':json.dumps(audit,separators=(',',':'))}}
+    with request(WORKFLOW+'/dispatches',{'Authorization':'Bearer '+token},body) as response:
+        if response.status not in (200,204):
+            raise RuntimeError('GitHub did not accept the scan')
+    print('Public scan results submitted for '+audit['day'],flush=True)
+
+
+def watchdog(day):
+    query=urlencode(dict(branch='main',event='workflow_dispatch',per_page=100,created='>='+day.isoformat()))
+    with request(WORKFLOW+'/runs?'+query,{'Authorization':'Bearer '+os.environ['GITHUB_TOKEN']}) as response:
+        runs=json.load(response)['workflow_runs']
+    latest=next((r for r in runs if r['display_title']=='Vendor scan check '+day.isoformat()),None)
+    if not latest:
+        raise SystemExit('Missing daily production scan for '+day.isoformat())
+    print(latest['html_url'],flush=True)
+    if latest['conclusion']!='success':
+        raise SystemExit('Daily production coverage did not pass: '+str(latest['conclusion'] or latest['status']))
+
+
 def main():
     ap=argparse.ArgumentParser()
-    ap.add_argument('action',choices=('probe','compare'))
-    ap.add_argument('file',type=Path)
+    ap.add_argument('action',choices=('probe','compare','submit','watchdog'))
+    ap.add_argument('file',type=Path,nargs='?')
+    ap.add_argument('--site-gate-file',type=Path)
     args=ap.parse_args()
-    if args.action=='probe':
-        day=datetime.now(timezone.utc).date()-timedelta(days=1)
+    day=datetime.now(timezone.utc).date()-timedelta(days=1)
+    if args.action=='watchdog':
+        return watchdog(day)
+    if args.action in ('probe','submit'):
+        if args.site_gate_file:
+            access=args.site_gate_file.read_text(encoding='utf-8-sig').strip().splitlines()
+            if access[-2].strip()!='cveharbor' or not access[-1].strip():
+                raise ValueError('Invalid site access file')
+            os.environ['SITE_GATE_PASSWORD']=access[-1].strip()
         catalogue=live_get('catalogue')
         with ThreadPoolExecutor(max_workers=3) as pool:
             scans=list(pool.map(lambda target:probe(target,day.isoformat()),targets(catalogue)))
-        args.file.write_text(json.dumps(dict(day=day.isoformat(),cards=len(catalogue['cards']),scans=scans)))
+        audit=dict(day=day.isoformat(),cards=len(catalogue['cards']),scans=scans)
+        validate(audit,day)
+        if args.file:
+            args.file.write_text(json.dumps(audit))
+        if args.action=='submit':
+            os.environ.pop('SITE_GATE_PASSWORD',None)
+            submit(audit)
         print(f"Probed {len(scans)} scan windows across {len(catalogue['cards'])} cards.")
     else:
         from monitor_vendor_sources import evidence
-        audit=json.loads(args.file.read_text())
-        day=date.fromisoformat(audit['day'])
+        audit=json.loads(args.file.read_text() if args.file else os.environ['SCAN_RESULTS'])
+        if os.environ.get('SCAN_DAY',audit['day'])!=audit['day']:
+            raise ValueError('Workflow day differs from the production audit')
+        validate(audit,day)
         expected,errors=evidence(audit['scans'],period_start(day,12))
         failures,empty=compare(audit['scans'],day,expected,errors)
         lines=[f"## Daily production scan check · {day} UTC",
