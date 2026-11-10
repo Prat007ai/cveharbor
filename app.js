@@ -457,6 +457,7 @@
       img.addEventListener('error',()=>{img.remove();node.textContent=name.slice(0,2).toUpperCase()||'◇'});
       node.append(img);return node;
     }
+  const installedCoverage = new Map();
   function renderCategories(){
     const main=$('categoryGrid'),q=$('technologySearch').value.trim().toLowerCase();
     main.replaceChildren();
@@ -514,6 +515,12 @@
       if(catalogueSignedIn&&personalized){const remove=text('button','technology-remove','×');remove.type='button';remove.title='Remove '+x.name+' from my catalogue';remove.setAttribute('aria-label',remove.title);remove.disabled=catalogueSaving;remove.addEventListener('click',event=>{event.stopPropagation();void removeTechnology(x.name)});nameLine.append(remove)}
       label.append(nameLine,freshness);
       if(scan){const choosing=scan.status==='needs_identity'||!scan.cpe;const status=text(choosing?'button':'span','cvie-row-state '+scan.status,choosing?(featured.has(x.name)?'Refine for my environment':'Choose the exact product'):window.CVEHARBOR_CVIE.statusFor(scan));if(choosing){status.type='button';status.classList.add('technology-choose');status.addEventListener('click',event=>{event.stopPropagation();window.CVEHARBOR_CVIE.openIdentity(x.name)})}label.append(status);button.setAttribute('aria-label',`View ${x.name}: ${window.CVEHARBOR_CVIE.statusFor(scan)}`);}
+      const lastCheck=installedCoverage.get(x.name);
+      if(lastCheck || (!total && (missingCounts || scan?.coverage?.limited || scan?.stale || scan?.status==='retrying'))){
+        const warning=text('span','cvie-row-state','Coverage incomplete');
+        warning.title=lastCheck || 'Source coverage for this technology has not been verified.';
+        label.append(warning);
+      }
       if(featured.has(x.name)){
         const pick=text('button','technology-version-action','Check version ›');pick.type='button';
         pick.setAttribute('aria-label','Check installed version for '+x.name);
@@ -981,6 +988,12 @@
       pickerModule=await import('/technology-version-picker.mjs');
       if(account!==catalogueAccount)return;
       await pickerModule.openPicker(card,{
+        reportCoverage:(product,version,months,incomplete)=>{
+          if(account!==catalogueAccount)return;
+          if(incomplete)installedCoverage.set(card,product.name+' '+version+' · '+months+'-month installed-version scan');
+          else installedCoverage.delete(card);
+          renderCategories();
+        },
         detail:(row,product,version)=>{
           const indexed=items.find(item=>item.id===row.id);
           const vendorRecord=row.status && !row.status.startsWith('NVD') && !row.status.startsWith('OSV');
@@ -1171,6 +1184,7 @@
   }
   function clearCatalogue(){
     pickerModule?.dismiss();
+    installedCoverage.clear();
     catalogueSignedIn=false;catalogueAccount=undefined;personalized=null;draft=null;
     catalogueRevision=undefined;draftRevision=undefined;
     customForm.reset();$('technologyCustomizer').hidden=true;applyPersonalized();

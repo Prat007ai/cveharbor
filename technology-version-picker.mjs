@@ -157,8 +157,9 @@ export async function openPicker(card,context) {
       }else if(!s.seen.size && !s.components.size){
         resultStatus.textContent='No matching public advisories found for '+directory.products[s.id].name+' '+s.version+' in the last '+s.months+' months. The configured public sources completed this check.';
       }
+      context.reportCoverage?.(directory.products[s.id],s.version,s.months,s.gaps.size>0);
       more.hidden=s.months===12;
-    }catch{if(ticket===generation&&panel.open){resultStatus.textContent='Coverage incomplete · A source could not be verified. Retry the unfinished check. Any results already shown are retained.';retry.hidden=false;}}
+    }catch{if(ticket===generation&&panel.open){context.reportCoverage?.(directory.products[s.id],s.version,s.months,true);resultStatus.textContent='Coverage incomplete · A source could not be verified. Retry the unfinished check. Any results already shown are retained.';retry.hidden=false;}}
   }
   action.onclick=async()=>{
     if(locked)return;

@@ -32,7 +32,9 @@ try {
     let paths=0;
     for(const [card,ids] of Object.entries(products.cards)){
       for(const id of ids){
-        await openPicker(card,{saved:()=>'',save:async()=>{},detail:()=>{}});
+        let cardWarning;
+        await openPicker(card,{saved:()=>'',save:async()=>{},detail:()=>{},
+          reportCoverage:(p,v,m,incomplete)=>{cardWarning=incomplete;}});
         const panel=document.querySelector('dialog[open]');
         const product=panel.querySelector('[aria-label="Installed product"]');
         product.value=id;product.onchange();
@@ -48,6 +50,7 @@ try {
         }
         scenario='complete';await scan.onclick();expect('No matching public advisories');
         scenario='restricted';await scan.onclick();expect('Coverage incomplete');expect('Customer portal');
+        if(cardWarning!==true)throw Error('Missing card warning: '+id);
         more.click();
         await waitForResult();
         expect('last 12 months');expect('Customer portal');
@@ -55,6 +58,7 @@ try {
         if(retry.hidden||!panel.querySelector('.version-result'))throw Error('Missing retry or partial finding: '+id);
         scenario='complete';retry.click();await waitForResult();
         expect('1 direct product advisor');
+        if(cardWarning!==false)throw Error('Card warning survived recovery: '+id);
         dismiss();paths++;
       }
     }

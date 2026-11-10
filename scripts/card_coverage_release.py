@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import tempfile
 import time
 
 import catalogue_package as pkg
@@ -19,6 +20,13 @@ WORKER_MODULES = ('site-gate/version-scan.mjs', 'site-gate/catalogue-history.mjs
 def prepare(out):
     team_release.previous(SITE, 'session_navigation_release.py', 'prepare', out, site_release='team-access')
     shutil.copytree(out/'after', out/'before', dirs_exist_ok=True)
+    # The production app bundle includes reviewed overlays from earlier releases.
+    with tempfile.TemporaryDirectory() as tmp:
+        base, updated = Path(tmp)/'base', Path(tmp)/'updated'
+        base.write_bytes(pkg.git('show', SITE+':app.js'))
+        updated.write_bytes(pkg.git('show', 'HEAD:app.js'))
+        app = out/'after/app.js'
+        app.write_bytes(pkg.git('merge-file', '-p', str(app), str(base), str(updated)))
     for path in (picker.MODULE, *WORKER_MODULES):
         target = out/('after' if path == picker.MODULE else 'source')/path
         pkg.require(target.read_bytes() == pkg.git('show', SITE+':'+path), 'Unexpected site baseline for '+path)
@@ -46,7 +54,7 @@ def run(action, out):
         prod.policy(picker.ENV)
         ready()
     elif action == 'publish':
-        picker.publish(out, changed={picker.MODULE}, reviewed_pr=matches[0], ready=ready,
+        picker.publish(out, changed={picker.MODULE,'app.js'}, reviewed_pr=matches[0], ready=ready,
                        previous_version=VERSION, previous_deployment=DEPLOYMENT)
     else:
         raise ValueError(action)
