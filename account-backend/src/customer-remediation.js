@@ -5,7 +5,7 @@ import {recordScope,recordKey} from './remediation-identity.js';
 import {activeRecords} from './remediation-integrity.js';
 import {linkFinding} from './finding-remediation.js';
 import {customerContext,customerRecordsReady} from './customer-remediation-context.js';
-export async function saveCustomerRemediation(env,user,data){
+export async function saveCustomerRemediation(env,user,data,writeGuards=[]){
  const cve=String(data.cve_id||'').trim().toUpperCase();if(!/^CVE-\d{4}-\d{4,}$/.test(cve)||cve.length>28)throw new WorkflowError('Invalid CVE ID.');
  const context=await customerContext(env,user,data);
  let id=data.existing_id?recordKey(data.existing_id):null;
@@ -34,7 +34,7 @@ export async function saveCustomerRemediation(env,user,data){
  if(duplicate)throw new WorkflowError('A record already exists for this customer context and CVE. Open it instead.',409);
  id||=cve+'~'+crypto.randomUUID().toUpperCase();
  const item=normalizeRecord(id,data),stamp=new Date().toISOString();
- const statements=await workflowWriteStatements(env,user,item,data,stamp);
+ const statements=[...writeGuards,...await workflowWriteStatements(env,user,item,data,stamp)];
  statements.push(env.DB.prepare('INSERT INTO remediation_customer_scopes(user_id,record_id,cve_id,customer_id,environment_id,associated_by,associated_at) VALUES(?,?,?,?,?,?,?)').bind(user.id,id,cve,context.customer,context.environment,user.email,stamp));
  try{await runWorkflowWrite(env,statements);}catch(error){if(/UNIQUE|Customer remediation/i.test(String(error.message)))throw new WorkflowError('Customer context changed or already has this CVE. Refresh before saving.',409);throw error;}
  return Response.json({saved:true,id},{headers:{'Cache-Control':'no-store'}});

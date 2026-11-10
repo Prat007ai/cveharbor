@@ -35,7 +35,7 @@ async function cap(env,table,userId,max){
   const row=await env.DB.prepare('SELECT COUNT(*) AS total FROM '+table+' WHERE user_id=?').bind(userId).first();
   if(Number(row?.total||0)>=max)throw new InventoryError('Inventory limit reached',409);
 }
-export async function inventoryRoute(req,env,user,path,data={}){
+export async function inventoryRoute(req,env,user,path,data={},write=statement=>statement.run()){
   if(path==='/v1/inventory/status'&&req.method==='GET')
     return json({storage:'d1',ready:await ready(env),max_customers:100,max_environments:500,max_assets:3000});
   await ensureReady(env);
@@ -108,7 +108,7 @@ export async function inventoryRoute(req,env,user,path,data={}){
   if(path==='/v1/inventory/customers'&&req.method==='POST'){
     const name=required(data.name,120,'customer name');await cap(env,'inventory_customers',user.id,100);
     const recordId=crypto.randomUUID();
-    await env.DB.prepare('INSERT INTO inventory_customers(id,user_id,name) VALUES(?,?,?)').bind(recordId,user.id,name).run();
+    await write(env.DB.prepare('INSERT INTO inventory_customers(id,user_id,name) VALUES(?,?,?)').bind(recordId,user.id,name));
     return json({created:true,id:recordId},201);
   }
   if(path==='/v1/inventory/environments'&&req.method==='POST'){
@@ -121,8 +121,8 @@ export async function inventoryRoute(req,env,user,path,data={}){
       throw new InventoryError('Invalid environment type');
     await cap(env,'inventory_environments',user.id,500);
     const recordId=crypto.randomUUID();
-    await env.DB.prepare('INSERT INTO inventory_environments(id,user_id,customer_id,name,kind) VALUES(?,?,?,?,?)')
-      .bind(recordId,user.id,customer,name,kind).run();
+    await write(env.DB.prepare('INSERT INTO inventory_environments(id,user_id,customer_id,name,kind) VALUES(?,?,?,?,?)')
+      .bind(recordId,user.id,customer,name,kind));
     return json({created:true,id:recordId},201);
   }
   if(path==='/v1/inventory/assets'&&req.method==='POST'){
@@ -138,8 +138,8 @@ export async function inventoryRoute(req,env,user,path,data={}){
     if(version.length>80||notes.length>500)throw new InventoryError('Asset details too long');
     await cap(env,'inventory_assets',user.id,3000);
     const recordId=crypto.randomUUID();
-    await env.DB.prepare('INSERT INTO inventory_assets(id,user_id,environment_id,name,asset_type,technology,version,notes) VALUES(?,?,?,?,?,?,?,?)')
-      .bind(recordId,user.id,environment,name,assetType,technology,version,notes).run();
+    await write(env.DB.prepare('INSERT INTO inventory_assets(id,user_id,environment_id,name,asset_type,technology,version,notes) VALUES(?,?,?,?,?,?,?,?)')
+      .bind(recordId,user.id,environment,name,assetType,technology,version,notes));
     return json({created:true,id:recordId},201);
   }
   const match=/^\/v1\/inventory\/(customers|environments|assets)\/([0-9a-f-]{36})$/.exec(path);
@@ -176,8 +176,8 @@ export async function inventoryRoute(req,env,user,path,data={}){
     const version=String(data.version||'').trim(),notes=String(data.notes||'').trim();
     if(!['Server','WEB','Application','Database','Cloud Service','Network Device','Software','Other'].includes(assetType)||
       version.length>80||notes.length>500)throw new InventoryError('Invalid asset details');
-    await env.DB.prepare('UPDATE inventory_assets SET name=?,asset_type=?,technology=?,version=?,notes=? WHERE id=? AND user_id=?')
-      .bind(name,assetType,technology,version,notes,match[2],user.id).run();
+    await write(env.DB.prepare('UPDATE inventory_assets SET name=?,asset_type=?,technology=?,version=?,notes=? WHERE id=? AND user_id=?')
+      .bind(name,assetType,technology,version,notes,match[2],user.id));
     return json({saved:true});
   }
   return json({error:'Inventory endpoint not found'},404);

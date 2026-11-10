@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import {hashToken} from '../../src/assignment-acknowledgement.js';
 export class AssignmentDB{
  constructor(){this.sql=new DatabaseSync(':memory:');this.queries=[];this.sql.exec('PRAGMA foreign_keys=ON');for(const file of ['schema.sql','totp-schema.sql','remediation-schema.sql','migrations/0024_assignment_acknowledgements.sql','migrations/0025_assignment_fyi.sql'])this.sql.exec(fs.readFileSync(new URL('../../'+file,import.meta.url),'utf8'));}
- prepare(sql){const db=this;const make=args=>({bind:(...values)=>make(values),async first(){db.queries.push(sql);return db.sql.prepare(sql).get(...args)||null},async all(){db.queries.push(sql);return {results:db.sql.prepare(sql).all(...args)}},async run(){db.queries.push(sql);const r=db.sql.prepare(sql).run(...args);return {meta:{changes:Number(r.changes)}}}});return make([]);}
+ prepare(sql){const db=this;const make=args=>({bind:(...values)=>make(values),async first(){db.queries.push(sql);return db.sql.prepare(sql).get(...args)||null},async all(){db.queries.push(sql);return {results:db.sql.prepare(sql).all(...args)}},async run(){db.queries.push(sql);const statement=db.sql.prepare(sql);if(statement.columns().length)return {results:statement.all(...args)};const r=statement.run(...args);return {meta:{changes:Number(r.changes)}}}});return make([]);}
  async batch(statements){this.sql.exec('BEGIN');try{const results=[];for(const s of statements)results.push(await s.run());this.sql.exec('COMMIT');return results}catch(error){this.sql.exec('ROLLBACK');throw error}}
 }
 export const fixtureCve='CVE-2026-81000';

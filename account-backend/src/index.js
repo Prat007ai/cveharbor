@@ -1,3 +1,4 @@
+import {teamRoute} from './team-access.js';
 import {updateTopicHistory} from './cvie-topic-history.js';
 import {firewallRoute,dispatchFirewallDigest} from './firewall-digest.js';
 import {harborPng} from './firewall-artwork.js';
@@ -104,6 +105,7 @@ const application = {async fetch(req,env,ctx){
   if(path==='/v1/auth/request'&&req.method==='POST'){
    if(!env.SMTP2GO_API_KEY||!env.EMAIL_FROM)return response({error:'Email login unavailable'},503);
    const data=await body(req),address=String(data.email||'').trim().toLowerCase();
+   if(address.endsWith('@workspace.cveharbor.invalid'))return response({error:'Valid email required'},400);
    if(!/^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]+$/.test(address))return response({error:'Valid email required'},400);
    const ip=req.headers.get('CF-Connecting-IP')||'unknown';
    const ipKey='ip:'+await sha(ip),emailKey='email:'+await sha(address);
@@ -210,6 +212,7 @@ const application = {async fetch(req,env,ctx){
   const user=await me(req,env);
   if(path==='/v1/me'&&req.method==='GET')return response(user?{authenticated:true,email:user.email}:{authenticated:false},user?200:401);
   if(!user)return response({error:'Sign in required'},401);
+  if(path.startsWith('/v1/team/'))return await teamRoute(req,env,user,path,{response,body,token,sha,limit});
   const recordPath=/^\/v1\/(remediations|remediation-records)\/(CVE-\d{4}-\d{4,}(?:~[A-F0-9-]{36})?)(.*)$/.exec(path);
   if(recordPath){const canonical=await canonicalRecord(env,user.id,recordPath[2]);if(canonical!==recordPath[2]){if(req.method!=='GET')return response({error:'This record was linked to an existing assignment. Open the current shared record before making changes.',canonical_id:canonical},409);path='/v1/'+recordPath[1]+'/'+canonical+recordPath[3];}}
   if(path.startsWith('/v1/workspace/'))return await workspaceRoute(req,env,user);
@@ -404,7 +407,13 @@ const application = {async fetch(req,env,ctx){
    return await sendUserSample(env,user);
   }
   if(path==='/v1/account'&&req.method==='DELETE'){
-   await env.DB.prepare('DELETE FROM users WHERE id=?').bind(user.id).run();return response({deleted:true},200,{'Set-Cookie':setCookie('',0)});
+   try{await env.DB.prepare('DELETE FROM users WHERE id=?').bind(user.id).run();}
+   catch(error){
+    if(String(error.message).includes('Keep an active workspace Owner'))return response({error:'Assign another active Owner before deleting this account.'},409);
+    if(/FOREIGN KEY constraint failed/i.test(error.message)&&await env.DB.prepare("SELECT 1 FROM sqlite_master WHERE name='team_organizations'").first()&&await env.DB.prepare('SELECT 1 FROM team_organizations WHERE data_owner=?').bind(user.id).first())return response({error:'This account owns shared customer inventory. Contact support before deleting the account.'},409);
+    throw error;
+   }
+   return response({deleted:true},200,{'Set-Cookie':setCookie('',0)});
   }
   return response({error:'Not found'},404);
  }catch(error){error=integrityError(error);if(error instanceof ReviewError||error instanceof WorkflowError||error instanceof FyiError||error instanceof AssignmentError||error instanceof MonitorError||error instanceof CvieError||error instanceof RemediationError||error instanceof InventoryError||error instanceof FindingStatusError||error instanceof LifecycleError)return response({error:error.message},error.status);return response({error:'Unable to process request'},500)}
