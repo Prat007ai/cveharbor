@@ -14,17 +14,18 @@ FEATURE = '86b431c72fca8647aa0e08c3c7f3e220729bcbc7'
 BASE = '6bf49474404eaeea3ca916a7dcc8a549c88b2611'
 WORKER = 'ff21524332eaeb7483014cc3b7179a9f707817aa'
 SITE = 'f13131b0905dee86bfbf694221822e8384da3cda'
+SQL_SITE = '94378f48e8dde85b3de2109c841696c89b68a6c5'
 PAGES = {'account/index.html', 'workspace/index.html'}
 ASSETS = {'team-admin.js', 'team-entry.js', 'team-ui.js', 'team-workspace.js', 'team-access.css'}
 MODULES = {'team-access.js', 'team-data.js', 'team-mail.js', 'team-invitation-art.js'}
 
 
-def previous(commit, script, action, out):
+def previous(commit, script, action, out, site_release='installed-releases'):
     with tempfile.TemporaryDirectory() as tmp:
         checkout = Path(tmp) / 'base'
         pkg.git('-c', 'core.autocrlf=false', 'worktree', 'add', '--detach', str(checkout), commit)
         try:
-            env = {**os.environ, 'CVEHARBOR_SITE_RELEASE': 'installed-releases'}
+            env = {**os.environ, 'CVEHARBOR_SITE_RELEASE': site_release}
             # Rebuild an already verified historical package. It is not a new GitHub deployment.
             env.pop('GITHUB_ACTIONS', None)
             subprocess.run([sys.executable, 'scripts/'+script, action, str(out)], check=True, cwd=checkout, env=env)
@@ -75,7 +76,7 @@ def backend(out, enabled):
 
 
 def prepare(out):
-    previous(SITE,'session_navigation_release.py','prepare',out)
+    previous(SQL_SITE, 'session_navigation_release.py', 'prepare', out, site_release='sql-esu-coverage')
     shutil.copytree(out/'after',out/'before',dirs_exist_ok=True)
     for name in PAGES:
         overlay(out/'after'/name,name)
@@ -110,8 +111,8 @@ def site(action,out):
         ready()
     elif action=='publish':
         picker.publish(out,changed=PAGES,added=ASSETS|{'team-invitation-art.js'},reviewed_pr=pr,ready=ready,
-                       previous_version='559aed2e-95b5-4b4c-834a-244fd4c3dcc0',
-                       previous_deployment='a9c36b6f-1ada-4584-a70b-5de33098457d')
+                       previous_version='8bb8db48-be38-4a72-a6b2-c5b19da84034',
+                       previous_deployment='f9a0a3d2-2f0e-4449-8c0c-656cd4017481')
     else:
         raise ValueError(action)
 
