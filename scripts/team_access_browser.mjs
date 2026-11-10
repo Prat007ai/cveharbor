@@ -130,6 +130,14 @@ try{
       await john.locator('#teamPanel').getByText('Web Server 02',{exact:true}).first().waitFor();
       assert.equal(await john.locator('#teamPanel').getByText('Web Server 01',{exact:true}).count(),0);
       await john.locator('#teamPanel').getByRole('button',{name:'Edit asset'}).waitFor();
+      if(harborDesign){
+        await john.getByRole('button',{name:'Add asset',exact:true}).waitFor();
+        await screenshot(john,'editor-workspace');
+        await owner.setViewportSize({width:390,height:844});
+        assert.ok(await owner.locator('#teamPanel .team-table-wrap').evaluate(el=>
+          el.getBoundingClientRect().right<=innerWidth+1 && el.scrollWidth>=el.clientWidth));
+        await owner.setViewportSize({width:1080,height:900});
+      }
       if(harborDesign)await member.locator('summary').click();
       owner.once('dialog',dialog=>dialog.accept());
       await member.getByRole('button',{name:'Remove'}).click();
