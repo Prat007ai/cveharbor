@@ -18,6 +18,7 @@ from zipfile import ZipFile
 import xml.etree.ElementTree as ET
 
 import ijson
+from technology_releases import collect_one
 from catalogue_components import renderer_history, npm_history
 from catalogue_vendor_bulletins import sql_bulletins, sophos_bulletins
 
@@ -413,8 +414,10 @@ def main():
             collect(*args_)
             print(name,'complete;',sum(map(len,out.values())),'records',flush=True)
         renderer_history(start,out,load_json)
-        npm_versions=json.loads((ROOT/'site-gate/version-releases.json').read_text())['npm']['versions']
-        npm_history(start,out,[v['version'] for v in npm_versions],load_json,fetch)
+        _, npm_release = collect_one(('npm', CONFIG['npm']))
+        if not npm_release:
+            raise ValueError('Could not verify the current npm release list')
+        npm_history(start,out,[v['version'] for v in npm_release['versions']],load_json,fetch)
         if len(out['linux'])<100 or len(out['server'])<100 or not out['next'] or len(out)<65:
             raise ValueError('Incomplete vendor history inputs')
         directory={}
