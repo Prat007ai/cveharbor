@@ -90,10 +90,21 @@ def prepare(out):
         dest.write_bytes(reviewed_asset)
 
 
-def reviewed():
+def refresh_backend(out):
+    backend(out, True)
+    module = 'account-backend/src/cvie-records.js'
+    target = out/module
+    pkg.require(target.read_bytes() == pkg.git('show', 'f44bacc15906f99941591c60c10aa2bc66a1d830:'+module),
+                'Advisory query module differs from the serving predecessor')
+    target.write_bytes(pkg.git('show', 'HEAD:'+module))
+    pkg.require(identity(out) == Path('release/cvie-refresh-backend.txt').read_text().strip(),
+                'CVIE refresh package differs from the reviewed build')
+
+
+def reviewed(branch='release/organization-team-access'):
     prs = prod.github('/commits/'+os.environ['GITHUB_SHA']+'/pulls')
     matches = [p['number'] for p in prs if p['merged_at'] and p['base']['ref']=='main'
-               and p['head']['ref']=='release/organization-team-access']
+               and p['head']['ref']==branch]
     pkg.require(len(matches)==1,'Expected reviewed team release package')
     prod.evidence(matches[0])
     return matches[0]
@@ -120,7 +131,9 @@ def site(action,out):
 if __name__=='__main__':
     action=sys.argv[1]
     output=Path(sys.argv[2]).resolve() if len(sys.argv)>2 else None
-    if action in ('disabled','enabled'):
+    if action == 'cvie-refresh':
+        refresh_backend(output)
+    elif action in ('disabled','enabled'):
         backend(output,action=='enabled')
     else:
         site(action,output)

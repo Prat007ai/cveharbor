@@ -153,3 +153,25 @@ check('the minute evidence cron does not run hourly email or website-monitoring 
  await worker.scheduled({cron:'* * * * *'},e,{waitUntil:p=>pending.push(p)});await Promise.all(pending);
  assert.ok(calls.length);assert.ok(calls.every(url=>!url.includes('smtp2go')&&!url.includes('nvd.nist.gov')));
 });
+
+check('large vendor documents paginate within a byte budget without omitting matches',async()=>{
+ const e=env();await subscribeProducts(e,'a',[{name:'Apache Tomcat'}]);
+ const p=await q(e,'SELECT id FROM cvie_products WHERE user_id=?','a').first();
+ const ids=['CVE-2026-20001','CVE-2026-20002','CVE-2026-20003','CVE-2026-20004'];
+ for(const [i,id] of ids.entries()){
+  const record={id,published:'2026-10-15T00:00:00Z',summary:'x'.repeat(i===1?600000:300000)};
+  await q(e,'INSERT INTO cvie_advisories VALUES(?,?,?,?,?)',p.id,id,record.published,JSON.stringify(record),'fixture').run();
+ }
+ for(const cutoff of ['2026-08-01','2025-11-01']){
+  let cursor='',found=[];
+  do{
+   const page=await combinedPage(e,'a',cutoff,cursor);
+   assert.equal(page.advisories.length,1,'one large vendor record fits per page');
+   found.push(page.advisories[0].id);
+   assert.equal(page.next,found.length===ids.length?null:p.id+'/'+found.at(-1));
+   cursor=page.next;
+  }while(cursor);
+  assert.deepEqual(found,ids);
+  assert.equal((await combinedPage(e,'b',cutoff)).advisories.length,0);
+ }
+});
