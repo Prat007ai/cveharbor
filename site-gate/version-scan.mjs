@@ -1,3 +1,4 @@
+import {veeamBulletins} from './veeam-bulletins.mjs';
 import {cataloguePage} from './catalogue-history.mjs';
 import {vendorPage} from './vendor-scan.mjs';
 import catalogue from './version-products.json' with {type:'json'};
@@ -14,17 +15,8 @@ const patterns = {
   sdk: /^\d+\.\d+\.[1-9]\d{2}$/, win: /^(?:10\.0\.)?\d{5}\.\d+$/, build: /^\d{6,9}$/,
   android: /^\d+(?:\.\d+){0,2}$/, sfos: /^\d+\.\d+ (?:GA|MR\d+) Build \d+$/
 };
-// These customer-specific channels are outside the public sources queried by this picker.
+// SQL ESU applicability is determined for an enrolled instance in the Azure portal.
 const privateChannels = {
-  sitefinity: 'Check your licensed Sitefinity Download Center for patches available to your installation.',
-  kendo: 'Check any private Progress support tickets for workarounds issued for your installed release.',
-  esxi: 'Check the Broadcom Support Portal for patches offered under your ESXi entitlement.',
-  veeam: 'Private fixes issued by Veeam Support are outside the public scan.',
-  forti: 'Check FortiCare for firmware offered for your registered device.',
-  rhel: 'Check your enabled Red Hat subscription repositories for additional errata.',
-  sles: 'Check your registered SUSE update channels, including LTSS if applicable.',
-  'oracle-linux': 'Check your subscribed Oracle ULN and Ksplice channels if applicable.',
-  ubuntu: 'Check any Ubuntu Pro update channels enabled on this installation.',
   sql2014: 'CVEHarbor cannot verify which ESU patches Microsoft offers your enrolled instance.',
   sql2016: 'CVEHarbor cannot verify which ESU patches Microsoft offers your enrolled instance.'
 };
@@ -180,20 +172,24 @@ export async function versionResponse(request,env) {
       Math.abs(Date.now()-anchor.getTime())>2*86400000||cursor.length>2048)return json({error:'Invalid scan window.'},400);
   const osv=product.match.startsWith('osv:');
   const vendor=id==='sql2019'?'sql2019':id==='ubuntu'&&/^24\.04(?:\.|$)/.test(version)?'ubuntu-noble':null;
-  const history=!vendor&&!cursor.startsWith('source:');
+  const veeam=id==='veeam'&&/^(13\.|12\.3\.)/.test(version);
+  const bulletin=veeam&&/^veeam:(?:CVE-\d{4}-\d{4,})?$/.test(cursor);
+  const history=!vendor&&!bulletin&&!cursor.startsWith('source:');
   const token=vendor||history?cursor:cursor.slice(7);
-  if(token && (vendor||history ? !/^[a-f0-9]{64}\.\d{1,7}$/.test(token) : !osv&&!/^\d{1,7}$/.test(token)))return json({error:'Invalid page.'},400);
+  if(!bulletin&&token && (vendor||history ? !/^[a-f0-9]{64}\.\d{1,7}$/.test(token) : !osv&&!/^\d{1,7}$/.test(token)))return json({error:'Invalid page.'},400);
   const range=osv?{start:monthsBefore(anchor,months).toISOString(),end:anchor.toISOString()}:windowFor(anchor,q);
   // Cache only public product queries; do not include gate credentials or account identifiers.
-  const key=new Request(url.origin+'/__version_scan_cache/v6/'+[id,version,date,months,q,cursor].map(encodeURIComponent).join('/'));
+  const key=new Request(url.origin+'/__version_scan_cache/v7/'+[id,version,date,months,q,cursor].map(encodeURIComponent).join('/'));
   const cache=globalThis.caches?.default;
   try{
     const hit=await cache?.match(key);
     if(hit)return json(await hit.json());
     const page=vendor?await vendorPage(env.INTELLIGENCE_BUCKET,vendor,version,range,token)
+      :bulletin?await veeamBulletins(version,range,cursor.slice(6))
       :history?await cataloguePage(env.INTELLIGENCE_BUCKET,id,version,range,token)
       :osv?await osvPage(product,version,range,token):await nvdPage(id,product,version,range,Number(token));
-    if(!vendor&&!history&&page.next)page.next='source:'+page.next;
+    if(veeam&&history&&page.next==='source:')page.next='veeam:';
+    if(!vendor&&!history&&!bulletin&&page.next)page.next='source:'+page.next;
     const coverageGaps=[...(page.coverageGaps||[])];
     if(privateChannels[id])coverageGaps.push(privateChannels[id]);
     if(id==='debian' && Number(version.split('.')[0])<=11)
