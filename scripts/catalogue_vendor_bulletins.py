@@ -1,5 +1,6 @@
 """Vendor bulletins that extend the CVE product matrix to specific distributions."""
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 import re
 
 from urllib.error import HTTPError
@@ -8,6 +9,30 @@ from vendor_scan_data import MSRC, document
 
 
 SQL_KEYS = {'2025':'sql2025','2022':'sql','2017':'sql2017','2016':'sql2016','2014':'sql2014'}
+
+
+def sql_article(kb, product, branch, month):
+    year = next(year for year, key in SQL_KEYS.items() if key == product)
+    date = datetime.strptime(month, '%Y-%b').strftime('%B-%Y').lower()
+    cu = branch.replace(' ', '').lower()
+    track = 'cumulative-update' if cu.startswith('cu') else 'general-distribution-release'
+    suffix = (cu+'-gdr-' if track == 'cumulative-update' else '') + date
+    base = 'https://support.microsoft.com/'
+    paths = ['en-us/servicing/sql/sql-server-'+year+'/'+track+'/kb'+kb+'-'+suffix,
+             'help/'+kb, 'en-us/help/'+kb]
+    for path in paths:
+        try:
+            request = Request(base+path, headers={'Accept':'text/html','User-Agent':'CVEHarbor'})
+            with urlopen(request,timeout=60) as response:
+                article = response.read().decode()
+        except HTTPError as exc:
+            if exc.code not in (403,404,410):raise
+            continue
+        title = re.search(r'<title[^>]*>(.*?)</title>', article, re.I|re.S)
+        if title and 'sql server '+year in title[1].lower():
+            return article
+    print('SQL KB',kb,'article unavailable; using MSRC product-specific remediation',flush=True)
+    return ''
 
 
 def sql_bulletins(start,out):
@@ -32,17 +57,8 @@ def sql_bulletins(start,out):
         findings=[]
         for kb,(key,branch,build) in articles.items():
             linked=listed[kb].copy()
-            try:
-                request=Request('https://support.microsoft.com/en-us/help/'+kb,headers={'Accept':'text/html','User-Agent':'CVEHarbor'})
-                with urlopen(request,timeout=60) as response:
-                    article=response.read().decode()
-            except HTTPError as exc:
-                if exc.code not in (403,404,410):raise
-                print('SQL KB',kb,'article unavailable; using MSRC product-specific remediation',flush=True)
-                article=''
-            title=re.search(r'<title[^>]*>(.*?)</title>',article,re.I|re.S)
-            if title and any(('sql server '+year) in title[1].lower() for year,ident in SQL_KEYS.items() if ident==key):
-                linked.update(re.findall(r'https://msrc\.microsoft\.com/update-guide/(?:[a-z-]+/)?vulnerability/(CVE-\d{4}-\d+)',article,re.I))
+            article = sql_article(kb,key,branch,name)
+            linked.update(re.findall(r'https://msrc\.microsoft\.com/update-guide/(?:[a-z-]+/)?vulnerability/(CVE-\d{4}-\d+)',article,re.I))
             for ident in sorted(linked):
                 v=by_id.get(ident)
                 if not v:continue
