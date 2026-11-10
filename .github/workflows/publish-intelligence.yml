@@ -36,7 +36,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install data storage client
-        run: python -m pip install boto3==1.40.70 ijson==3.4.0.post0
+        run: python -m pip install boto3==1.40.70 ijson==3.4.0.post0 zstandard==0.25.0
       - name: Initialize only on explicit first dispatch
         if: github.event_name == 'workflow_dispatch' && inputs.initialize == true && !inputs.vendor_only
         env:

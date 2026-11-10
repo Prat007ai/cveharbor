@@ -317,6 +317,79 @@ def other_ubuntu(start,out):
                 put(out,'ubuntu@'+series[code],row)
 
 
+def centos_changes(start, out):
+    import gzip
+    import zstandard
+    for stream in ('9', '10'):
+        for repo in ('BaseOS', 'AppStream'):
+            base = f'https://mirror.stream.centos.org/{stream}-stream/{repo}/x86_64/os/'
+            with fetch(base + 'repodata/repomd.xml') as response:
+                manifest = ET.parse(response)
+            record = manifest.find(".//{*}data[@type='other']")
+            path = record.find('{*}location').get('href')
+            if not re.fullmatch(r'repodata/[a-f0-9]+-other\.xml\.(gz|zst)', path):
+                raise ValueError('Unrecognized CentOS changelog metadata')
+            with fetch(base + path) as response:
+                compressed = response.read()
+            if hashlib.sha256(compressed).hexdigest() != record.findtext('{*}checksum'):
+                raise ValueError('CentOS repository checksum mismatch')
+            stream_data = (gzip.decompress(compressed) if path.endswith('.gz') else
+                           zstandard.ZstdDecompressor().decompress(compressed, max_output_size=160*1024*1024))
+            scope = out['centos-stream@' + stream]
+            for package in ET.fromstring(stream_data).findall('{*}package'):
+                name = package.get('name')
+                for change in package.findall('{*}changelog'):
+                    date = datetime.fromtimestamp(int(change.get('date')), timezone.utc).date().isoformat()
+                    if date < start:
+                        continue
+                    for ident in set(re.findall(r'\bCVE-\d{4}-\d{4,}\b', change.text or '', re.I)):
+                        ident = ident.upper()
+                        link = 'https://www.cve.org/CVERecord?id=' + ident
+                        row = scope.setdefault(ident, dict(id=ident, title=ident + ' · CentOS Stream package changelog',
+                            published=date+'T00:00:00Z', url=link, status='CentOS Stream x86_64 repository changelog',
+                            evidence='Vendor changelog mentions this CVE · check the installed package',
+                            summary='The date is the first matching package changelog entry in the audited window. Coverage is limited to the changelogs retained in BaseOS and AppStream for x86_64.',
+                            sources=[{'url':link,'label':'CVE Program record'}], packages=set()))
+                        row['published'] = min(row['published'], date+'T00:00:00Z')
+                        row['packages'].add(name)
+                        if not any(item['url'] == base for item in row['sources']):
+                            row['sources'].append({'url':base,'label':'CentOS Stream '+stream+' '+repo+' repository'})
+        for row in out['centos-stream@'+stream].values():
+            row['affected'] = ', '.join(sorted(row.pop('packages')))
+
+
+def mariadb_bulletins(start, out):
+    url = 'https://mariadb.com/docs/server/security/cve/community-server'
+    with fetch(url + '.md') as response:
+        table = response.read().decode('utf-8')
+    parsed = 0
+    for line in table.splitlines():
+        cells = [cell.strip() for cell in line.strip().strip('|').split('|')]
+        if len(cells) < 4:
+            continue
+        ident = re.match(r'\[(CVE-\d{4}-\d+)\]', cells[0])
+        if not ident or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', cells[1]):
+            continue
+        parsed += 1
+        if cells[1] < start:
+            continue
+        fixes = re.findall(r'\[(\d+\.\d+\.\d+)\]\([^)]*/community-server/[^)]*\)', cells[3])
+        if not fixes:
+            continue
+        cve = ident[1]
+        reference = 'https://www.cve.org/CVERecord?id=' + cve
+        row = out['maria'].setdefault(cve, dict(id=cve, title=cve + ' · MariaDB Community Server security fix',
+            published=cells[1] + 'T00:00:00Z', url=reference, sources=[{'url':reference,'label':'CVE record'}]))
+        row.update(status='MariaDB Community Server security bulletin',
+                   evidence='Vendor fix history · check the installed release series',
+                   remediation='MariaDB lists fixes in ' + ', '.join(dict.fromkeys(fixes)) + '.')
+        if re.fullmatch(r'\d+(?:\.\d+)?', cells[2]):
+            row['cvss'] = float(cells[2])
+        row['sources'].append({'url':url, 'label':'MariaDB Community Server fixes'})
+    if not parsed:
+        raise ValueError('Could not read the MariaDB Community Server fix table')
+
+
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument('--cache',type=Path)
@@ -326,13 +399,14 @@ def main():
     if not args.output:
         from feed_snapshot import S3Store
         store=S3Store();old,etag=store.get(PREFIX+'current.json')
-        if old and now-datetime.fromisoformat(json.loads(old)['checked'])<timedelta(hours=22):return
+        previous = json.loads(old) if old else {}
+        if previous.get('publisherRevision') == 2 and now-datetime.fromisoformat(previous['checked'])<timedelta(hours=22):return
     with tempfile.TemporaryDirectory() as tmp:
         cache=args.cache or Path(tmp);out=defaultdict(dict)
         for name, collect, args_ in [('CVE Program',cve_history,(cache,start,out)),('Reviewed packages',packages,(cache,start,out)),
                                       ('.NET releases',dotnet,(start,out)),('Distribution exports',distro_history,(cache,start,out)),
                                       ('Vendor errata',other_distributions,(start,out)),('Ubuntu',other_ubuntu,(start,out)),
-                                      ('SQL bulletins',sql_bulletins,(start,out)),('SFOS bulletins',sophos_bulletins,(start,out))]:
+                                      ('CentOS changelogs',centos_changes,(start,out)),('MariaDB bulletins',mariadb_bulletins,(start,out)),('SQL bulletins',sql_bulletins,(start,out)),('SFOS bulletins',sophos_bulletins,(start,out))]:
             print('Reading',name,flush=True)
             collect(*args_)
             print(name,'complete;',sum(map(len,out.values())),'records',flush=True)
@@ -351,7 +425,7 @@ def main():
                 h=hashlib.sha256(body).hexdigest()
                 write(h+'.json',body);pages.append([page[-1]['published'][:10],page[0]['published'][:10],h])
             directory[key]=pages
-        data={'from':start,'checked':stamp,'products':directory,'audited':sorted(CONFIG)}
+        data={'publisherRevision':2,'from':start,'checked':stamp,'products':directory,'audited':sorted(CONFIG)}
         digest=hashlib.sha256(json.dumps(data,sort_keys=True).encode()).hexdigest()
         data['snapshot']=digest;body=json.dumps(data,separators=(',',':')).encode()
         write(digest+'.json',body)
